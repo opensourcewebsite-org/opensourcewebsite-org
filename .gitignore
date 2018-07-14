@@ -35,3 +35,5 @@ tests/_support/_generated
 config/db.php
 config/test_db.php
 config/params.php
+
+views/layouts/analytics.php
