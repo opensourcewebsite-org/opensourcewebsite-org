@@ -32,8 +32,8 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
-config/db.php
-config/test_db.php
-config/params.php
+/config/db.php
+/config/test_db.php
+/config/params.php
 
-views/layouts/analytics.php
+/views/layouts/analytics.php
