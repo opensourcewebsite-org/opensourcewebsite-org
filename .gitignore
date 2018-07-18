@@ -32,6 +32,7 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
+/config/web-local.php
 /config/db.php
 /config/test_db.php
 /config/params.php
