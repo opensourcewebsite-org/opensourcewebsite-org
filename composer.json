@@ -22,7 +22,9 @@
         "php": ">=7.0",
         "yiisoft/yii2": "~2.0.14",
         "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0"
+        "yiisoft/yii2-swiftmailer": "~2.0.0",
+        "fortAwesome/font-awesome": "^4.7",
+        "dmstr/yii2-adminlte-asset": "^2.6"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
