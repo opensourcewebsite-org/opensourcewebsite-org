@@ -42,7 +42,15 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ## Contribute to the core code or fix bugs
 
+#### Getting Started
+
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the core team before making a change.
+
+- Make sure you have a [GitLab account](https://gitlab.com/users/sign_in).
+- Submit a GitLab issue for your issue if one does not already exist.
+  - A issue is not necessary for trivial changes.
+- Create a new branch (preferred) or fork the repository on GitLab.
+- Make your change. Add tests for your change. Make the tests pass.
 
 #### Your First Code Contribution
 
@@ -53,30 +61,37 @@ Unsure where to begin contributing to OpenSourceWebsite? You can start by lookin
 
 Both issue lists are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
 
+#### Pull request process
+
+- Let's name the commits starting with issue number (for example: #234 YOUR_COMMIT_NAME).
+- Update the [README.md](README.md) with details of changes to the interface, this includes new environment variables, exposed ports, useful file locations and container parameters.
+- Increase the version numbers in any examples files and the [README.md](README.md) to the new version that this pull request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
+- You may merge the pull request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+- Fill in [the required template](PULL_REQUEST_TEMPLATE.md).
+- Do not include issue numbers in the pull request title.
+- Ensure the pull request description clearly describes the problem and solution. Include the relevant issue number if applicable.
+- Pull requests that do not solve an existing issue are essentially un-prioritized–don't expect these to be addressed quickly.
+- Try not to pollute your pull request with unintended changes–keep them simple and small.
+- Try to share which browsers your code has been tested in before submitting a pull request.
+- Include screenshots and animated GIFs in your pull request whenever possible.
+- Follow the [JavaScript](#javascript-styleguide) and [PHP](#php-styleguide) styleguides.
+- Document new code based on the [Documentation Styleguide](#documentation-styleguide).
+- End all files with a newline.
+- [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/).
+
+#### Making Changes
+
+#### Writing translatable code
+
+#### Making Trivial Changes
+
+#### Submitting Changes
+
+#### Revert Policy
+
 #### Key branches
 
 - `master` is the latest, deployed version
-
-#### Pull requests
-
-- Fill in [the required template](PULL_REQUEST_TEMPLATE.md)
-- Do not include issue numbers in the pull request title
-- Ensure the pull request description clearly describes the problem and solution. Include the relevant issue number if applicable.
-- Pull requests that do not solve an existing issue are essentially un-prioritized–don't expect these to be addressed quickly
-- Try not to pollute your pull request with unintended changes–keep them simple and small
-- Try to share which browsers your code has been tested in before submitting a pull request
-- Include screenshots and animated GIFs in your pull request whenever possible.
-- Follow the [JavaScript](#javascript-styleguide) and [PHP](#php-styleguide) styleguides.
-* Document new code based on the [Documentation Styleguide](#documentation-styleguide)
-* End all files with a newline
-* [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/)
-
-#### Pull request process
-
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-2. Update the [README.md](README.md) with details of changes to the interface, this includes new environment variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the [README.md](README.md) to the new version that this pull request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
-4. You may merge the pull request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
 ## Contribute/translate to documentations or messages
 
