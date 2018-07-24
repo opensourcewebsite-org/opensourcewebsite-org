@@ -39,10 +39,6 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
-    ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
@@ -76,10 +72,12 @@ AppAsset::register($this);
     <div class="container">
         <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
         <?= Html::a(Yii::t('app', 'Code repository '), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-        <?= Html::a(Yii::t('app', 'Wiki'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/wikis/home') ?> |
         <?= Html::a(Yii::t('app', 'Issues'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues') ?> |
+        <?= Html::a(Yii::t('app', 'Wiki'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/wikis/home') ?> |
+        <?= Html::a(Yii::t('app', 'Team'), ['site/team']) ?> |
         <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
-        <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
+        <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
+        <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?>
     </div>
 </footer>
 

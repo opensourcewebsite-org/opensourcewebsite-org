@@ -73,6 +73,11 @@ class SiteController extends Controller
         return $this->render('donate');
     }
 
+    public function actionTeam()
+    {
+        return $this->render('team');
+    }
+
     public function actionTermsOfUse()
     {
         return $this->render('terms-of-use');
@@ -139,16 +144,6 @@ class SiteController extends Controller
         return $this->render('contact', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 
     /**

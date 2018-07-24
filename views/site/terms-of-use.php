@@ -151,3 +151,5 @@ These TOS are in the English language only, which language shall be controlling 
 <p>
 In the event you believe that material or content published on the Website may infringe on your copyright or that of another, please <a href="/contact">contact</a> us.
 </p>
+
+</div>

@@ -1,12 +1,14 @@
+[![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com) [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
+
 # OpenSourceWebsite
 
 OpenSourceWebsite is an open source website for online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
 
 ## Minimum technical requirements
 
-- PHP 7.0
-- Yii 2.0.14 ![Yii2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat)
-- MySQL 5.7
+- ![PHP7](https://img.shields.io/badge/Powered_by-PHP-green.svg?style=flat) - PHP 7.0
+- ![Yii2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat) - Yii 2.0.14
+- ![MySQL5](https://img.shields.io/badge/Powered_by-MySQL-green.svg?style=flat) - MySQL 5.7
 
 ## Code of conduct
 
