@@ -2,13 +2,13 @@
 
 # OpenSourceWebsite
 
-OpenSourceWebsite is an open source website for online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
+OpenSourceWebsite (OSW) is an open source website for the world's largest online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
 
 ## Minimum technical requirements
 
-- ![PHP7](https://img.shields.io/badge/Powered_by-PHP-green.svg?style=flat) - PHP 7.0
-- ![Yii2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat) - Yii 2.0.14
-- ![MySQL5](https://img.shields.io/badge/Powered_by-MySQL-green.svg?style=flat) - MySQL 5.7
+- ![PHP 7](https://img.shields.io/badge/Powered_by-PHP-green.svg?style=flat) - PHP 7.0
+- ![Yii 2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat) - Yii 2.0.14
+- ![MySQL 5](https://img.shields.io/badge/Powered_by-MySQL-green.svg?style=flat) - MySQL 5.7
 
 ## Code of conduct
 

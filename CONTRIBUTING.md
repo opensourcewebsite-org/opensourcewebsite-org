@@ -63,10 +63,6 @@ Both issue lists are sorted by total number of comments. While not perfect, numb
 
 #### Pull request process
 
-- Let's name the commits starting with issue number (for example: #234 YOUR_COMMIT_NAME).
-- Update the [README.md](README.md) with details of changes to the interface, this includes new environment variables, exposed ports, useful file locations and container parameters.
-- Increase the version numbers in any examples files and the [README.md](README.md) to the new version that this pull request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
-- You may merge the pull request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 - Fill in [the required template](PULL_REQUEST_TEMPLATE.md).
 - Do not include issue numbers in the pull request title.
 - Ensure the pull request description clearly describes the problem and solution. Include the relevant issue number if applicable.
@@ -97,19 +93,20 @@ Both issue lists are sorted by total number of comments. While not perfect, numb
 
 You can help improve documentations/translations by making them more coherent, consistent, or readable, adding missing information, correcting factual errors, fixing typos.
 
-To do so, make changes to source files (located here on GitLab). Then open a pull request to apply your changes to master branch.
+To do so, make changes to source files. Then open a pull request to apply your changes to master branch.
 
-To help our CI servers you should add [ci skip] to your documentation commit message to skip build on that commit. Please remember to use it for commits containing only documentation changes.
+To help our CI servers you should add `[ci skip]` to your documentation commit message to skip build on that commit. Please remember to use it for commits containing only documentation changes.
 
 ## Styleguides
 
 #### Git Commit Messages
 
-* Use the present tense ("Add feature" not "Added feature")
-* Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
-* Limit the first line to 72 characters or less
-* Reference issues and pull requests liberally after the first line
-* When only changing documentation, include `[ci skip]` in the commit title
+- Use the present tense ("Add feature" not "Added feature")
+- Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+- Limit the first line to 72 characters or less
+- Reference issues and pull requests liberally after the first line
+- When only changing documentation, include `[ci skip]` in the commit title
+- When there is a issue, include issue number in the commit title (for example: #234 YOUR_COMMIT_NAME).
 
 #### JavaScript Styleguide
 
