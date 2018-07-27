@@ -86,7 +86,7 @@ Personal information is information that is associated with your name or persona
 </p>
 
 <p>
-<b>Members-Only Web Site</b>
+<b>Members-Only Website</b>
 </p>
 
 <p>
@@ -147,6 +147,12 @@ OSW are committed to keeping the personal information of our members accurate. A
 
 <p>
 OSW make every effort to protect personal information by users of the Website, including using firewalls and other security measures on its servers. No server, however, is 100% secure, and you should take this into account when submitting personal or confidential information about yourself on any web site, including this one. Much of the personal information is used in conjunction with member services such as collaboration and discussion, so some types of personal information such as your name, company affiliation, and email address will be visible to other OSW’s members and to the public. OSW assume no liability for the interception, alteration, or misuse of the information you provide. You alone are responsible for maintaining the secrecy of your personal information. Please use care when use access this Website and provide personal information.
+</p>
+
+<h4>Links</h4>
+
+<p>
+This Website may contain links to other websites. OSW is not responsible for the privacy policies and/or procedures of such websites. If you access a hyperlink, we encourage you to read the privacy statement of those other websites you visit.
 </p>
 
 <h4>Opting Out</h4>
