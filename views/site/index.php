@@ -29,6 +29,8 @@ use yii\helpers\Html;
     <li><?= Html::a('CSS 3', 'https://en.wikipedia.org/wiki/Cascading_Style_Sheets') ?></li>
     <li><?= Html::a('MySQL 5', 'https://en.wikipedia.org/wiki/MySQL') ?></li>
     <li><?= Html::a('Let\'s Encrypt', 'https://en.wikipedia.org/wiki/Let%27s_Encrypt') ?></li>
+    <li><?= Html::a('Font Awesome 5', 'https://en.wikipedia.org/wiki/Font_Awesome') ?></li>
+    <li><?= Html::a('AdminLTE Control Panel Template', 'https://adminlte.io') ?></li>
 </ul>
 
 <h4>Web services</h4>
