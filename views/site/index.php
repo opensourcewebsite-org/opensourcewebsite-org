@@ -31,11 +31,14 @@ use yii\helpers\Html;
     <li><?= Html::a('Let\'s Encrypt', 'https://en.wikipedia.org/wiki/Let%27s_Encrypt') ?></li>
     <li><?= Html::a('Font Awesome 5', 'https://en.wikipedia.org/wiki/Font_Awesome') ?></li>
     <li><?= Html::a('AdminLTE Control Panel Template', 'https://adminlte.io') ?></li>
+    <li><?= Html::a('Git', 'https://en.wikipedia.org/wiki/Git') ?></li>
 </ul>
 
 <h4>Web services</h4>
 
 <ul>
     <li><?= Html::a('GitLab.com', 'https://gitlab.com') ?> - <?= Html::a('OSW page', 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?></li>
-    <li><?= Html::a('Moqups.com', 'https://moqups.com') ?> - <?= Html::a('OSW page', 'https://app.moqups.com/opensourcewebsite/LMtjCISodJ') ?></li></li>
+    <li><?= Html::a('Moqups.com', 'https://moqups.com') ?> - <?= Html::a('OSW page', 'https://app.moqups.com/opensourcewebsite/LMtjCISodJ') ?></li>
+    <li><?= Html::a('Cloudflare.com', 'https://cloudflare.com') ?></li>
+    <li><?= Html::a('DigitalOcean.com', 'https://m.do.co/c/4d16b1d56809') ?></li>
 </ul>
