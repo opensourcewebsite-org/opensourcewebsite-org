@@ -25,7 +25,8 @@
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "fortAwesome/font-awesome": "^4.7",
-        "almasaeed2010/adminlte": "^3.0"
+        "almasaeed2010/adminlte": "^3.0",
+        "cebe/yii2-gravatar": "^1.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
