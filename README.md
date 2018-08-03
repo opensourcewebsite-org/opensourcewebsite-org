@@ -1,5 +1,8 @@
 [![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com) [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
 
+[![pipeline status](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/pipeline.svg)](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/commits/master) [![coverage report](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/coverage.svg)](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/commits/master)
+
+
 # OpenSourceWebsite
 
 OpenSourceWebsite (OSW) is an open source website for the world's largest online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
