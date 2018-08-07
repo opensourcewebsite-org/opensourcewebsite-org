@@ -29,7 +29,7 @@ $this->title = 'Donate';
 
 <p>
     <ul>
-        <li>Processing with <?= Html::a('SnowballFundraising.com', 'https://opensourcewebsite.snwbll.com/giving-portal') ?></li>
+        <li>Processing with <?= Html::a('SnowballFundraising.com', 'https://opensourcewebste.snwbll.com/giving-portal') ?></li>
     </ul>
 </p>
 
