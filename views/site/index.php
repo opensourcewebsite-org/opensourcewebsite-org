@@ -11,7 +11,12 @@ use yii\helpers\Html;
 </p>
 
 <p>
-    <?= Yii::t('app', 'What the Website will look like and what functions it will have depends only on the users\' decisions.') ?>
+    <?= Yii::t('app', 'What the Website will look like and what functions it will have depends only on the users\' decisions. This Website supports and develops ideas of E-democracy (also known as digital democracy or Internet democracy).') ?>
+</p>
+
+
+<p>
+    <?= Yii::t('app', 'The Website will look like and what functions it will have depends only on the users\' decisions.') ?>
 </p>
 
 <p>
