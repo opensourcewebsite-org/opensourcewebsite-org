@@ -10,6 +10,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
+use cebe\gravatar\Gravatar;
 
 AppAsset::register($this);
 ?>
@@ -43,14 +44,24 @@ AppAsset::register($this);
         $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
-        $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
-            . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
-                ['class' => 'btn btn-link logout']
-            )
-            . Html::endForm()
-            . '</li>';
+        $menuItems[] = '
+            <ul class="navbar-nav navbar-right nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown"> ' . Gravatar::widget([
+                        'email' => Yii::$app->user->identity->email,
+                        'options' => [
+                            'alt' => 'Profile Gravatar',
+                            'class' => 'img-circle',
+                        ],
+                        'size' => 30
+                    ]) . ' ' . Yii::$app->user->identity->email . ' <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>' . Html::a(Yii::t('app', 'Account'), ['site/account'], ['tabindex' => -1]) . '</li>
+                        <li>' . Html::a(Yii::t('app', 'Logout'), ['site/logout'], ['data-method' => 'post', 'tabindex' => -1]) . '</li>
+                    </ul>
+                </li>
+            </ul>
+        ';
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],

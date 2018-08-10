@@ -216,4 +216,11 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
+    public function actionAccount()
+    {
+        $model = Yii::$app->user->identity;
+
+        return $this->render('account', ['model' => $model]);
+    }
 }

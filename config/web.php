@@ -50,7 +50,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy)>' => 'site/<action>',
+                '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
             ],
         ],
 
