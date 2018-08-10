@@ -77,7 +77,8 @@ AppAsset::register($this);
         <?= Html::a(Yii::t('app', 'Team'), ['site/team']) ?> |
         <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
         <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
-        <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?>
+        <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?> |
+        <?= Html::a(Yii::t('app', 'Slack chat'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE') ?>
     </div>
 </footer>
 

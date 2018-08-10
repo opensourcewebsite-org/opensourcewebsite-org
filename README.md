@@ -24,11 +24,3 @@ Please read through our [contributing guidelines](CONTRIBUTING.md).
 ## License
 
 The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/graphs/master).
-
-## Support
-
-If you're looking for support there are a lot of options, check out:
-
-- [API Documentation](API Documentation)
-- [Wiki](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/wikis/home)
-- [Chat](Chat)
