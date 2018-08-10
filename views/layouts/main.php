@@ -82,13 +82,14 @@ AppAsset::register($this);
 <footer class="footer">
     <div class="container">
         <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
+        <?= Html::a(Yii::t('app', 'Career'), ['site/team']) ?> |
         <?= Html::a(Yii::t('app', 'Code repository '), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
         <?= Html::a(Yii::t('app', 'Issues'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues') ?> |
         <?= Html::a(Yii::t('app', 'Wiki'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/wikis/home') ?> |
-        <?= Html::a(Yii::t('app', 'Team'), ['site/team']) ?> |
         <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
         <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
-        <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?>
+        <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?> |
+        <?= Html::a(Yii::t('app', 'Slack chat'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE') ?>
     </div>
 </footer>
 
