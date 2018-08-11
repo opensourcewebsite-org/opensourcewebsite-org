@@ -54,6 +54,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['is_email_confirmed', 'integer'],
         ];
     }
 
@@ -214,5 +215,34 @@ class User extends ActiveRecord implements IdentityInterface
             'email' => 'Email',
             'rating' => 'Socail Rating',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($insert) {
+            $this->is_email_confirmed = false;
+        }
+        return parent::beforeSave($insert);
+    }
+
+    /**
+     * Sends an email with a link, for confirming the registration.
+     *
+     * @return bool whether the email was send
+     */
+    public function sendConfirmationEmail($user)
+    {
+        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'auth_key' => $user->auth_key]);
+
+        return Yii::$app
+            ->mailer
+            ->compose('register', [
+                'user' => $user,
+                'link' => $link,
+            ])
+            ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name . ' Robot'])
+            ->setTo($user->email)
+            ->setSubject('Register for ' . Yii::$app->name)
+            ->send();
     }
 }

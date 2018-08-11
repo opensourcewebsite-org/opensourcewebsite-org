@@ -13,6 +13,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -157,6 +158,8 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
                 if (Yii::$app->getUser()->login($user)) {
+                    $user->sendConfirmationEmail($user);
+                    Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
                     return $this->goHome();
                 }
             }
@@ -222,5 +225,31 @@ class SiteController extends Controller
         $model = Yii::$app->user->identity;
 
         return $this->render('account', ['model' => $model]);
+    }
+
+    public function actionConfirm($id, $auth_key)
+    {
+        $user = User::findOne([
+            'id' => $id,
+            'auth_key' => $auth_key,
+        ]);
+        if (!empty($user)) {
+            $user->is_email_confirmed = true;
+            $user->status = User::STATUS_ACTIVE;
+            $user->save();
+            Yii::$app->session->setFlash('success', 'Your email has been successfully confirmed.');
+        }
+
+        return $this->goHome();
+    }
+
+    public function actionResendConfirmationEmail()
+    {
+        $user = Yii::$app->user->identity;
+        if ($user->sendConfirmationEmail($user)) {
+            Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
+        }
+
+        return $this->goHome();
     }
 }
