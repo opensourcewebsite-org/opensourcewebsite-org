@@ -24,7 +24,7 @@ use yii\helpers\Html;
 </p>
 
 <p>
-    <?php if(!Yii::$app->user->isGuest && !Yii::$app->user->identity->is_email_confirmed) : ?>
+    <?php if (!Yii::$app->user->isGuest && !Yii::$app->user->identity->is_email_confirmed) : ?>
     <?php echo Html::a('Resend Confirmation Email', ['site/resend-confirmation-email'], ['class' => 'btn btn-primary']); ?>
     <?php endif; ?>
 </p>

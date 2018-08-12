@@ -13,7 +13,7 @@ class m180811_170313_user_add_column_is_email_confirmed extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('user', 'is_email_confirmed', $this->integer()->null()->after('email'));
+        $this->addColumn('user', 'is_email_confirmed', $this->tinyInteger()->null()->after('email'));
     }
 
     /**

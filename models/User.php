@@ -213,7 +213,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'id' => 'ID',
             'email' => 'Email',
-            'rating' => 'Socail Rating',
+            'rating' => 'Social Rating',
         ];
     }
 
