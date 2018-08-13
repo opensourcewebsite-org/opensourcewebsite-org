@@ -7,8 +7,6 @@ use yii\helpers\Html;
 $this->title = 'Terms of Service';
 ?>
 <div class="site-contact">
-    <h1><?= Html::encode($this->title) ?></h1>
-
 <p>
 OpenSourceWebSite ("OSW") provide this web site (the "Website") as a public service to our users.
 </p>

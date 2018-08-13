@@ -6,12 +6,11 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'name' => 'OpenSourceWebsite',
+    'layout'=>'adminlte-main',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
     	'log',
-    	[
-        'class' => 'app\components\LanguageSelector',
-      ],
+    	['class' => 'app\components\LanguageSelector'],
     ],
     'language' => 'en',
     'aliases' => [

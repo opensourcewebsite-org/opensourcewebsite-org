@@ -1,0 +1,13 @@
+body.sidebar-collapse nav > .container {
+	margin-left:0;
+	max-width:100%;
+}
+
+.navbar {
+	margin-bottom:0;
+}
+
+body.sidebar-open .brand-abbr,
+body.sidebar-collapse .main-sidebar:hover .brand-abbr{
+	display:none;
+}
