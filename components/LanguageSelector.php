@@ -15,7 +15,7 @@ class LanguageSelector implements BootstrapInterface
 		if ($langCookie != NULL && $lang != NULL) {
 			$app->language = $langCookie;
 		} else {
-			$preferredLanguage = $app->request->getPreferredLanguage($this->supportedLanguages);
+			$preferredLanguage = $app->request->getPreferredLanguage();
 			$app->language = $preferredLanguage;
 		}
 	}
