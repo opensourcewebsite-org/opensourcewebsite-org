@@ -12,10 +12,9 @@ class LanguageSelector implements BootstrapInterface
 		$lang = \app\models\Language::find($langCookie)->one();
 
 		//If the cookie exists and the value that it store is valid, then asign the language, otherwise check the browser language
-		if ($langCookie != NULL && $lang != NULL){
+		if ($langCookie != NULL && $lang != NULL) {
 			$app->language = $langCookie;
-		}
-		else{
+		} else {
 			$preferredLanguage = $app->request->getPreferredLanguage($this->supportedLanguages);
 			$app->language = $preferredLanguage;
 		}

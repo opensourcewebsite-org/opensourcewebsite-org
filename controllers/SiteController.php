@@ -258,20 +258,21 @@ class SiteController extends Controller
      * @param $lang String The language to be set
      * @return Redirect to the previous page or if is not set, to the home page
      */
-    public function actionChangeLanguage($lang){
-    	$language = \app\models\Language::find($lang)->one();
+    public function actionChangeLanguage($lang)
+    {
+        $language = \app\models\Language::find($lang)->one();
 
-    	if ($language != NULL){
-    		$cookies = Yii::$app->response->cookies;
+        if ($language != NULL) {
+            $cookies = Yii::$app->response->cookies;
 
-    		$langCookie = new \yii\web\Cookie([
-    			'name'=>'language',
-    			'value'=>$lang,
-    		]);
+            $langCookie = new \yii\web\Cookie([
+                'name' => 'language',
+                'value' => $lang,
+            ]);
 
-    		$cookies->add($langCookie);
+            $cookies->add($langCookie);
 
-    		return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
-    	}
+            return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+        }
     }
 }
