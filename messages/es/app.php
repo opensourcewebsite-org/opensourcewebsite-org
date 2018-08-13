@@ -17,12 +17,15 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Code repository ' => '',
-    'Donate' => '',
-    'Issues' => '',
-    'Privacy Policy' => '',
-    'Terms of Use' => '',
+    'Code repository ' => 'Repositorio del código',
+    'Donate' => 'Donar',
+    'Issues' => 'Problemas',
+    'Privacy Policy' => 'Politica de privacidad',
+    'Terms of Use' => 'Acuerdos de uso',
     'What the site will look like and what functions it will have depends only on the users\' decisions.' => '',
     'Wiki' => '',
     'is an open source website for online social community. The site is managed by users. Any user can suggest changes to the code. The site is updated on the server after each code change. Thus, anyone can influence the functions of the site.' => '',
+    'Contact'=>'Contacto',
+    'Career'=>'Profesión',
+    'Slack chat'=>'Chat en Slack',
 ];

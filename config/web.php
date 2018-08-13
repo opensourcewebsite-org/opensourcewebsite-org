@@ -7,7 +7,12 @@ $config = [
     'id' => 'basic',
     'name' => 'OpenSourceWebsite',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+    	'log',
+    	[
+        'class' => 'app\components\LanguageSelector',
+      ],
+    ],
     'language' => 'en',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -53,6 +58,13 @@ $config = [
                 '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
             ],
         ],
+        'i18n' => [
+	        'translations' => [
+	            '*' => [
+	                'class' => 'yii\i18n\PhpMessageSource',
+            	],
+	        ],
+	    ],
 
     ],
     'params' => $params,

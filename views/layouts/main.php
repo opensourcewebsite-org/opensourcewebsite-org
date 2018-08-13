@@ -13,6 +13,23 @@ use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 
 AppAsset::register($this);
+
+$this->registerCss('#lang-menu {
+    overflow: auto;
+    max-height: 200px;
+}');
+
+//List of language options
+$languages = \app\models\Language::find()->all();
+$langOpt = '';
+
+if (!empty($languages)) {
+    foreach ($languages as $lang) {
+        //Check if the language is the active
+        $active = ($lang->code == Yii::$app->language) ? 'active' : '';
+        $langOpt .= '<li class="'.$active.'">'.Html::a(Yii::t('language', $lang->name_ascii), ['site/change-language', 'lang' => $lang->code]).'</li>';
+    }
+}
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -58,6 +75,16 @@ AppAsset::register($this);
                     <ul class="dropdown-menu">
                         <li>' . Html::a(Yii::t('app', 'Account'), ['site/account'], ['tabindex' => -1]) . '</li>
                         <li>' . Html::a(Yii::t('app', 'Logout'), ['site/logout'], ['data-method' => 'post', 'tabindex' => -1]) . '</li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-globe"></span>
+                        '.(Yii::t('menu', 'Language')).'
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" id="lang-menu">
+                        '.$langOpt.'
                     </ul>
                 </li>
             </ul>
