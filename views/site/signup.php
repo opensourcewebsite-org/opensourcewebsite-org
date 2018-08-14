@@ -24,9 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-body">
                 <p>Please fill out the following fields to signup:</p>
                 <div class="form-group">
-                    <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-                </div>
-                <div class="form-group">
                     <?= $form->field($model, 'email') ?>
                 </div>
                 <div class="form-group">
