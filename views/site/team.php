@@ -7,8 +7,6 @@ use yii\helpers\Html;
 $this->title = 'Careers and volunteering';
 ?>
 <div class="site-contact">
-    <h1><?= Html::encode($this->title) ?></h1>
-
 <p>
 OpenSourceWebsite (OSW) exists and succeeds because of the commitments and contributions of our community. We would like to thank everyone who participates in the development and growth of this Website. We’d greatly appreciate input from the community on this.
 </p>

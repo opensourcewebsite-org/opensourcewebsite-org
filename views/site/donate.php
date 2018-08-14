@@ -7,8 +7,6 @@ use yii\helpers\Html;
 $this->title = 'Donate';
 ?>
 <div class="site-contact">
-    <h1><?= Html::encode($this->title) ?></h1>
-
 <p>
     OpenSourceWebsite is entirely supported by the general public.
 </p>

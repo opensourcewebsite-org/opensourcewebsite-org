@@ -275,4 +275,19 @@ class SiteController extends Controller
             return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
         }
     }
+
+    public function actionDesignList()
+    {
+        return $this->render('design-list');
+    }
+
+    public function actionDesignView()
+    {
+        return $this->render('design-view');
+    }
+
+    public function actionDesignEdit()
+    {
+        return $this->render('design-edit');
+    }
 }
