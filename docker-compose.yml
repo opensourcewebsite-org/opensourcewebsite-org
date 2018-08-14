@@ -7,3 +7,17 @@ services:
       - ./:/app:delegated
     ports:
       - '8000:80'
+
+  db:
+    image: mysql:5.7
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  db:
