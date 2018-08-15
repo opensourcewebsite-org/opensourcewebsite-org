@@ -25,10 +25,9 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'design-list', 'design-view', 'design-edit'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -289,5 +288,23 @@ class SiteController extends Controller
     public function actionDesignEdit()
     {
         return $this->render('design-edit');
+    }
+
+    /**
+     * Do tasks before the action is executed
+     */
+    public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        if (Yii::$app->user->isGuest) {
+            $this->layout = 'adminlte-guest';
+        } else {
+            $this->layout = 'adminlte-main';
+        }
+
+        return true;
     }
 }
