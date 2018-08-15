@@ -4,7 +4,7 @@
 
 /* @var $content string */
 
-use app\assets\AdminLteAsset;
+use app\assets\AdminLteGuestAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
@@ -12,7 +12,7 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 
-AdminLteAsset::register($this);
+AdminLteGuestAsset::register($this);
 
 $this->registerCssFile('@web/css/adminlte-fix.css', [
     'depends' => [\yii\bootstrap\BootstrapAsset::className()],
@@ -20,6 +20,10 @@ $this->registerCssFile('@web/css/adminlte-fix.css', [
 $this->registerCss('#lang-menu{
     overflow: auto;
     max-height: 200px;
+}');
+
+$this->registerCss('.main-sidebar:hover{
+    width: 4.6rem !important;
 }');
 
 //List of language options
@@ -40,6 +44,9 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" style="font-size: 14px">
 <head>
+    <?php if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'analytics.php')) {
+        echo $this->render('analytics');
+    } ?>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +54,7 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     <title><?= Html::encode(Yii::$app->name . ($this->title ? " - $this->title" : '')) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="sidebar-mini sidebar-open">
+<body class="sidebar-mini sidebar-collapse">
 <?php $this->beginBody() ?>
 <div class="wrapper">
     <?php
@@ -56,34 +63,10 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
             'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
         ],
     ]);
-    
-    $menuItemsLeft[] = ['label' => '', 'url' => '#', 'options'=>['class'=>'nav-item', 'data-widget'=>'pushmenu'], 'linkOptions'=>['class'=>'nav-link fa fa-bars']];
-    $menuItemsRight[] = [
-        'label' => Gravatar::widget([
-                    'email' => Yii::$app->user->identity->email,
-                    'options' => [
-                        'alt' => 'Profile Gravatar',
-                        'class' => 'img-circle',
-                    ],
-                    'size' => 20
-                ]) . ' ' . Yii::$app->user->identity->email,
-        'items' => [
-            ['label' => Yii::t('app', 'Account'), 'url' => ['site/account'], 'linkOptions' => ['tabindex' => -1]],
-            ['label' => Yii::t('app', 'Logout'), 'url' => ['site/logout'], 'linkOptions' => ['data-method' => 'post', 'tabindex' => -1]],
-        ],
-        'encode' => FALSE,
-        'options' => ['class' => 'nav-item'], 
-        'linkOptions' => ['class' => 'nav-link'],
-    ];
-    $menuItemsRight[] = [
-        'label' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-globe'])
-            . (Yii::t('menu', 'Language')),
-        'items' => $langOpt,
-        'encode' => FALSE,
-        'dropDownOptions' => ['id' => 'lang-menu'],
-        'options' => ['class' => 'nav-item'], 
-        'linkOptions' => ['class' => 'nav-link'],
-    ];
+
+    $menuItemsLeft[] = ['label' => '', 'url' => Yii::$app->homeUrl, 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link fa fa-home', 'style'=>'font-size:1.6rem']];
+    $menuItemsRight[] = ['label' => 'Signup', 'url' => ['/site/signup'], 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
+    $menuItemsRight[] = ['label' => 'Login', 'url' => ['/site/login'], 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
 
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'], 
@@ -99,46 +82,10 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     ?>
 
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <!-- Brand Logo -->
         <a href="<?=Yii::$app->homeUrl?>" class="brand-link">
             <!--<img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">-->
-            <span class="brand-abbr font-weight-light">OSW</span>
-            <span class="brand-text font-weight-light"><?= Yii::$app->name ?></span>
+            <span class="font-weight-light">OSW</span>
         </a>
-
-        <div class="sidebar">
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <li class="nav-item has-treeview  <?= in_array($currentUrl, ['site/design-list', 'site/design-view', 'site/design-edit']) ? 'menu-open' : '' ?>">
-                        <a href="#" class="nav-link <?= in_array($currentUrl, ['site/design-list', 'site/design-view', 'site/design-edit']) ? 'active' : '' ?>">
-                            <i class="nav-icon fa fa-edit"></i>
-                            <p>Design<i class="fa fa-angle-left right"></i></p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="<?= Yii::$app->urlManager->createUrl(['site/design-list']) ?>" class="nav-link <?= $currentUrl == 'site/design-list' ? 'active' : '' ?>">
-                                    <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>List</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="<?= Yii::$app->urlManager->createUrl(['site/design-view']) ?>" class="nav-link <?= $currentUrl == 'site/design-view' ? 'active' : '' ?>">
-                                    <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>View</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="<?= Yii::$app->urlManager->createUrl(['site/design-edit']) ?>" class="nav-link <?= $currentUrl == 'site/design-edit' ? 'active' : '' ?>">
-                                    <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>Edit</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav><!-- /.sidebar-menu -->
-        </div><!-- /.sidebar -->
     </aside><!-- /.main-sidebar -->
 
 
