@@ -40,11 +40,25 @@ $config = [
             'useFileTransport' => YII_ENV_DEV,
         ],
         'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
-                [
+                'file' => [
                     'class' => 'yii\log\FileTarget',
+                    'logFile' => '@runtime/logs/web.log',
                     'levels' => ['error', 'warning'],
+                    'maxFileSize' => 1024,
+                    'maxLogFiles' => 10,
+                    'except' => [
+                        'yii\web\HttpException:400',
+                        'yii\web\HttpException:403',
+                        'yii\web\HttpException:404',
+                        'yii\web\HttpException:429',
+                        'yii\i18n\PhpMessageSource',
+                    ],
+                ],
+                'bad-requests' => [
+                    'class' => 'yii\log\FileTarget',
+                    'categories' => ['yii\web\HttpException:400'],
+                    'logFile' => '@runtime/logs/bad-requests.log',
                 ],
             ],
         ],

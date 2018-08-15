@@ -18,9 +18,18 @@ $config = [
         ],
         'log' => [
             'targets' => [
-                [
+                'file' => [
                     'class' => 'yii\log\FileTarget',
+                    'logFile' => '@runtime/logs/console.log',
                     'levels' => ['error', 'warning'],
+                    'maxFileSize' => 1024,
+                    'except' => [
+                        'yii\web\HttpException:400',
+                        'yii\web\HttpException:403',
+                        'yii\web\HttpException:404',
+                        'yii\web\HttpException:429',
+                        'yii\i18n\PhpMessageSource',
+                    ],
                 ],
             ],
         ],
