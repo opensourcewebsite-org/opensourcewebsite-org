@@ -64,30 +64,22 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
         ],
     ]);
 
-    $menuItemsLeft[] = ['label' => '', 'url' => Yii::$app->homeUrl, 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link fa fa-home', 'style'=>'font-size:1.6rem']];
+    $menuItemsLeft[] = ['label' => 'OpenSourceWebsite', 'url' => Yii::$app->homeUrl, 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
     $menuItemsRight[] = ['label' => 'Signup', 'url' => ['/site/signup'], 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
     $menuItemsRight[] = ['label' => 'Login', 'url' => ['/site/login'], 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
 
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'], 
+        'options' => ['class' => 'navbar-nav'],
         'items' => $menuItemsLeft,
         'dropDownCaret'=>'',
     ]);
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav ml-auto'], 
+        'options' => ['class' => 'navbar-nav ml-auto'],
         'items' => $menuItemsRight,
         'dropDownCaret'=>'',
     ]);
     NavBar::end();
     ?>
-
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="<?=Yii::$app->homeUrl?>" class="brand-link">
-            <!--<img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">-->
-            <span class="font-weight-light">OSW</span>
-        </a>
-    </aside><!-- /.main-sidebar -->
-
 
     <div class="content-wrapper">
         <div class="content-header">
@@ -132,8 +124,6 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
             <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
             <?= Html::a(Yii::t('app', 'Career'), ['site/team']) ?> |
             <?= Html::a(Yii::t('app', 'Code repository '), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-            <?= Html::a(Yii::t('app', 'Issues'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues') ?> |
-            <?= Html::a(Yii::t('app', 'Wiki'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/wikis/home') ?> |
             <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
             <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
             <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?> |

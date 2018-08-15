@@ -56,7 +56,7 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
             'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
         ],
     ]);
-    
+
     $menuItemsLeft[] = ['label' => '', 'url' => '#', 'options'=>['class'=>'nav-item', 'data-widget'=>'pushmenu'], 'linkOptions'=>['class'=>'nav-link fa fa-bars']];
     $menuItemsRight[] = [
         'label' => Gravatar::widget([
@@ -72,7 +72,7 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
             ['label' => Yii::t('app', 'Logout'), 'url' => ['site/logout'], 'linkOptions' => ['data-method' => 'post', 'tabindex' => -1]],
         ],
         'encode' => FALSE,
-        'options' => ['class' => 'nav-item'], 
+        'options' => ['class' => 'nav-item'],
         'linkOptions' => ['class' => 'nav-link'],
     ];
     $menuItemsRight[] = [
@@ -81,17 +81,17 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
         'items' => $langOpt,
         'encode' => FALSE,
         'dropDownOptions' => ['id' => 'lang-menu'],
-        'options' => ['class' => 'nav-item'], 
+        'options' => ['class' => 'nav-item'],
         'linkOptions' => ['class' => 'nav-link'],
     ];
 
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'], 
+        'options' => ['class' => 'navbar-nav'],
         'items' => $menuItemsLeft,
         'dropDownCaret'=>'',
     ]);
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav ml-auto'], 
+        'options' => ['class' => 'navbar-nav ml-auto'],
         'items' => $menuItemsRight,
         'dropDownCaret'=>'',
     ]);
@@ -101,9 +101,8 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="<?=Yii::$app->homeUrl?>" class="brand-link">
-            <!--<img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">-->
             <span class="brand-abbr font-weight-light">OSW</span>
-            <span class="brand-text font-weight-light"><?= Yii::$app->name ?></span>
+            <span class="brand-text font-weight-light">OSW</span>
         </a>
 
         <div class="sidebar">
@@ -185,8 +184,6 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
             <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
             <?= Html::a(Yii::t('app', 'Career'), ['site/team']) ?> |
             <?= Html::a(Yii::t('app', 'Code repository '), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-            <?= Html::a(Yii::t('app', 'Issues'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues') ?> |
-            <?= Html::a(Yii::t('app', 'Wiki'), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/wikis/home') ?> |
             <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
             <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
             <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?> |
