@@ -18,6 +18,23 @@ $config = [
         '@npm' => '@vendor/npm-asset',
     ],
     'components' => [
+        'assetManager' => [
+            'class' => 'app\components\AssetManager',
+            'linkAssets' => true,
+            'appendTimestamp' => true,
+            'bundles' => [
+                'yii\bootstrap\BootstrapAsset' => [
+                    'css' => [
+                        YII_ENV_DEV ? 'css/bootstrap.css' : 'css/bootstrap.min.css',
+                    ],
+                ],
+                'yii\bootstrap\BootstrapThemeAsset' => [
+                    'css' => [
+                        YII_ENV_DEV ? 'css/bootstrap-theme.css' : 'css/bootstrap-theme.min.css',
+                    ],
+                ],
+            ],
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'je4dpj7-SEqGW0z6eo4nc8ezzyLGYwNm',
@@ -80,6 +97,7 @@ $config = [
 	    ],
 
     ],
+    'timeZone' => 'UTC',
     'params' => $params,
 ];
 
