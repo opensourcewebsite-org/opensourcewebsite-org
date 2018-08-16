@@ -43,7 +43,7 @@ use yii\helpers\Html;
 <h4>Web services</h4>
 
 <ul>
-    <li><?= Html::a('GitLab.com', 'https://gitlab.com') ?> - <?= Html::a('OSW page', 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?></li>
+    <li><?= Html::a('GitHub.com', 'https://github.com') ?> - <?= Html::a('OSW page', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?></li>
     <li><?= Html::a('Moqups.com', 'https://moqups.com') ?> - <?= Html::a('OSW page', 'https://app.moqups.com/opensourcewebsite/LMtjCISodJ') ?></li>
     <li><?= Html::a('Cloudflare.com', 'https://cloudflare.com') ?></li>
     <li><?= Html::a('DigitalOcean.com', 'https://m.do.co/c/4d16b1d56809') ?></li>

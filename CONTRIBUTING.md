@@ -2,7 +2,7 @@
 
 First off, thanks for taking the time to contribute!
 
-The following is a set of guidelines for contributing to OpenSourceWebsite, which are hosted in the [OpenSourceWebsite Organization](https://gitlab.com/opensourcewebsite-org) on GitLab. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+The following is a set of guidelines for contributing to OpenSourceWebsite, which are hosted in the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ## Code of conduct
 
@@ -10,15 +10,15 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ## Request a new feature, give us feedback or start a design discussion
 
-- **Ensure the feature was not already reported** by searching on GitLab under [Issues](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one.
+- **Ensure the feature was not already reported** by searching on GitHub under [Issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one.
 
-- If you're unable to find an open issue addressing the feature, [open a new one](hhttps://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating an enhancement suggestion, please include as many details as possible. Fill in [the template](ISSUE_TEMPLATE.md), including the steps that you imagine you would take if the feature you're requesting existed.
+- If you're unable to find an open issue addressing the feature, [open a new one](hhttps://github.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating an enhancement suggestion, please include as many details as possible. Fill in [the template](ISSUE_TEMPLATE.md), including the steps that you imagine you would take if the feature you're requesting existed.
 
 #### What is a (Good) feature request
 
 - **Use a clear and descriptive title** for the issue to identify the suggestion.
 - **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
-- **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code](https://gitlab.com/help/user/markdown).
+- **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code](https://guides.github.com/features/mastering-markdown/).
 - **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
 - **Include screenshots and animated GIFs** which help you demonstrate the steps or point out the part of Website which the suggestion is related to. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
 - **Explain why this enhancement would be useful** to most Website users.
@@ -26,15 +26,15 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ## Submit a bug report
 
-- **Ensure the bug was not already reported** by searching on GitLab under [Issues](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one. If you find a closed issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
+- **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one. If you find a closed issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
 
-- If you're unable to find an open issue addressing the problem, [open a new one](hhttps://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating a bug report, please include as many details as possible. Fill out [the required template](ISSUE_TEMPLATE.md), the information it asks for helps us resolve issues faster.
+- If you're unable to find an open issue addressing the problem, [open a new one](hhttps://github.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating a bug report, please include as many details as possible. Fill out [the required template](ISSUE_TEMPLATE.md), the information it asks for helps us resolve issues faster.
 
 #### What is a (Good) bug report
 
 - **Use a clear and descriptive title** for the issue to identify the problem.
 - **Describe the exact steps which reproduce the problem** in as many details as possible. When listing steps, **don't just say what you did, but explain how you did it**.
-- **Provide specific examples to demonstrate the steps**. Include links to files or GitHub/GitLab projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code](https://gitlab.com/help/user/markdown).
+- **Provide specific examples to demonstrate the steps**. Include links to files or GitHub/GitLab projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code](https://guides.github.com/features/mastering-markdown/).
 - **Describe the behavior you observed after following the steps** and point out what exactly is the problem with that behavior.
 - **Explain which behavior you expected to see instead and why.**
 - **Include screenshots and animated GIFs** which show you following the described steps and clearly demonstrate the problem. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
@@ -46,10 +46,10 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the core team before making a change.
 
-- Make sure you have a [GitLab account](https://gitlab.com/users/sign_in).
-- Submit a GitLab issue for your issue if one does not already exist.
+- Make sure you have a [GitHub account](https://github.com/login).
+- Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
-- Create a new branch (preferred) or fork the repository on GitLab.
+- Create a new branch (preferred) or fork the repository on GitHub.
 - Make your change. Add tests for your change. Make the tests pass.
 
 #### Your First Code Contribution

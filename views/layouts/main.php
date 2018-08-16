@@ -110,7 +110,7 @@ if (!empty($languages)) {
     <div class="container">
         <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
         <?= Html::a(Yii::t('app', 'Career'), ['site/team']) ?> |
-        <?= Html::a(Yii::t('app', 'Code repository '), 'https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
+        <?= Html::a(Yii::t('app', 'Code repository '), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
         <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
         <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
         <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?> |

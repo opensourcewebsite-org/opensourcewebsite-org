@@ -1,6 +1,6 @@
 [![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com) [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
 
-[![pipeline status](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/pipeline.svg)](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/commits/master) [![coverage report](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/coverage.svg)](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/commits/master)
+[![pipeline status](https://github.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/pipeline.svg)](https://github.com/opensourcewebsite-org/opensourcewebsite-org/commits/master) [![coverage report](https://github.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/coverage.svg)](https://github.com/opensourcewebsite-org/opensourcewebsite-org/commits/master)
 
 
 # OpenSourceWebsite
@@ -23,4 +23,4 @@ Please read through our [contributing guidelines](CONTRIBUTING.md).
 
 ## License
 
-The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://gitlab.com/opensourcewebsite-org/opensourcewebsite-org/graphs/master).
+The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).
