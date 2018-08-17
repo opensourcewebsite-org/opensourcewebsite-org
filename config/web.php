@@ -79,6 +79,13 @@ $config = [
                 ],
             ],
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'nullDisplay' => '',
+            'datetimeFormat' => 'php:Y-m-d H:i:s',
+            'dateFormat' => 'php:Y-m-d',
+            'sizeFormatBase' => 1000,
+        ],
         'db' => $db,
 
         'urlManager' => [
