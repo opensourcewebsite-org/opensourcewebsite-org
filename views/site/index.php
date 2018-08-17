@@ -33,10 +33,11 @@ use yii\helpers\Html;
     <li><?= Html::a('Vue.js 2 JavaScript Framework', 'https://en.wikipedia.org/wiki/Vue.js') ?></li>
     <li><?= Html::a('HTML 5', 'https://en.wikipedia.org/wiki/HTML') ?></li>
     <li><?= Html::a('CSS 3', 'https://en.wikipedia.org/wiki/Cascading_Style_Sheets') ?></li>
+    <li><?= Html::a('Bootstrap 4', 'https://en.wikipedia.org/wiki/Bootstrap_(front-end_framework)') ?></li>
+    <li><?= Html::a('AdminLTE Control Panel Template', 'https://adminlte.io') ?></li>
     <li><?= Html::a('MySQL 5', 'https://en.wikipedia.org/wiki/MySQL') ?></li>
     <li><?= Html::a('Let\'s Encrypt', 'https://en.wikipedia.org/wiki/Let%27s_Encrypt') ?></li>
     <li><?= Html::a('Font Awesome 5', 'https://en.wikipedia.org/wiki/Font_Awesome') ?></li>
-    <li><?= Html::a('AdminLTE Control Panel Template', 'https://adminlte.io') ?></li>
     <li><?= Html::a('Git', 'https://en.wikipedia.org/wiki/Git') ?></li>
 </ul>
 
