@@ -50,4 +50,9 @@ use yii\helpers\Html;
     <li><?= Html::a('SonarCloud.io', 'https://sonarcloud.io/dashboard?id=opensourcewebsite-org') ?></li>
     <li><?= Html::a('Travis-CI.org', 'https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org') ?></li>
     <li><?= Html::a('CodeClimate.com', 'https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org') ?></li>
+    <li><?= Html::a('Semaphore.com', 'https://semaphoreci.com/opensourcewebsite-org/opensourcewebsite-org') ?></li>
+    <li><?= Html::a('Codebeat.co', 'https://codebeat.co/projects/github-com-opensourcewebsite-org-opensourcewebsite-org-master') ?></li>
+    <li><?= Html::a('Codacy.com', 'https://app.codacy.com/project/opensourcewebsite-org/opensourcewebsite-org/dashboard') ?></li>
+    <li><?= Html::a('Coveralls.io', 'https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org') ?></li>
+    <li><?= Html::a('Codecov.io', 'https://codecov.io/gh/opensourcewebsite-org/opensourcewebsite-org') ?></li>
 </ul>
