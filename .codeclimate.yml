@@ -1,0 +1,34 @@
+plugins:
+  csslint:
+    enabled: true
+  fixme:
+    enabled: true
+  eslint:
+    enabled: true
+    channel: "eslint-4"
+    config:
+      config: .eslintrc
+  git-legal:
+    enabled: true
+  markdownlint:
+    enabled: true
+  phan:
+    enabled: true
+    config:
+      file_extensions: "php"
+  phpcodesniffer:
+    enabled: true
+    config:
+    	standard: "PSR1,PSR2"
+        ignore_warnings: true
+  phpmd:
+    enabled: true
+    config:
+      file_extensions:
+        - php
+  sonar-php:
+    enabled: true
+    config:
+      minimum_severity: critical
+  stylelint:
+    enabled: true

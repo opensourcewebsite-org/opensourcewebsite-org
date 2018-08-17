@@ -1,0 +1,21 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
+
+language: php
+
+php:
+- 7.2
+
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- ./cc-test-reporter before-build
+
+script:
+# Running unit tests with clover coverage report
+- vendor/bin/codecept run unit --coverage --coverage-xml
+
+after_script:
+- mv tests/_output/coverage.xml clover.xml
+- ./cc-test-reporter after-build --coverage-input-type clover --id 12345 --exit-code $TRAVIS_TEST_RESULT

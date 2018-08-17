@@ -49,4 +49,5 @@ use yii\helpers\Html;
     <li><?= Html::a('DigitalOcean.com', 'https://m.do.co/c/4d16b1d56809') ?></li>
     <li><?= Html::a('SonarCloud.io', 'https://sonarcloud.io/dashboard?id=opensourcewebsite-org') ?></li>
     <li><?= Html::a('Travis-CI.org', 'https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org') ?></li>
+    <li><?= Html::a('CodeClimate.com', 'https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org') ?></li>
 </ul>

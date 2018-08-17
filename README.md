@@ -1,6 +1,6 @@
 [![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com) [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
 
-[![Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org) [![coverage report](https://github.com/opensourcewebsite-org/opensourcewebsite-org/badges/master/coverage.svg)](https://github.com/opensourcewebsite-org/opensourcewebsite-org/commits/master)
+[![Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org) [![Maintainability](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/maintainability)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/test_coverage)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/test_coverage)
 
 
 # OpenSourceWebsite
