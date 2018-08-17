@@ -14,9 +14,6 @@ use cebe\gravatar\Gravatar;
 
 AdminLteAsset::register($this);
 
-$this->registerCssFile('@web/css/adminlte-fix.css', [
-    'depends' => [\yii\bootstrap\BootstrapAsset::className()],
-]);
 $this->registerCss('#lang-menu{
     overflow: auto;
     max-height: 200px;
@@ -112,25 +109,25 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
                     <li class="nav-item has-treeview  <?= in_array($currentUrl, ['site/design-list', 'site/design-view', 'site/design-edit']) ? 'menu-open' : '' ?>">
                         <a href="#" class="nav-link <?= in_array($currentUrl, ['site/design-list', 'site/design-view', 'site/design-edit']) ? 'active' : '' ?>">
                             <i class="nav-icon fa fa-edit"></i>
-                            <p>Design<i class="fa fa-angle-left right"></i></p>
+                            <p>Developer<i class="fa fa-angle-left right"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['site/design-list']) ?>" class="nav-link <?= $currentUrl == 'site/design-list' ? 'active' : '' ?>">
                                     <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>List</p>
+                                    <p>Moqups</p>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['site/design-view']) ?>" class="nav-link <?= $currentUrl == 'site/design-view' ? 'active' : '' ?>">
                                     <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>View</p>
+                                    <p>Moqup preview</p>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['site/design-edit']) ?>" class="nav-link <?= $currentUrl == 'site/design-edit' ? 'active' : '' ?>">
                                     <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>Edit</p>
+                                    <p>Moqup edit</p>
                                 </a>
                             </li>
                         </ul>
@@ -170,10 +167,8 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
         <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
-                <div class="card card-primary">
-                    <div class="card-body">
+                <div class="card">
                         <?= $content ?>
-                    </div>
                 </div>
             </div>
         </section><!-- /.content -->

@@ -14,9 +14,6 @@ use cebe\gravatar\Gravatar;
 
 AdminLteGuestAsset::register($this);
 
-$this->registerCssFile('@web/css/adminlte-fix.css', [
-    'depends' => [\yii\bootstrap\BootstrapAsset::className()],
-]);
 $this->registerCss('#lang-menu{
     overflow: auto;
     max-height: 200px;
@@ -54,7 +51,7 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     <title><?= Html::encode(Yii::$app->name . ($this->title ? " - $this->title" : '')) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="sidebar-mini sidebar-collapse">
+<body class="sidebar-collapse">
 <?php $this->beginBody() ?>
 <div class="wrapper">
     <?php
