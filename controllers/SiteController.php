@@ -100,11 +100,26 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+        if (Yii::$app->request->isPost) {
+            if (Yii::$app->request->isAjax) {
+                parse_str(Yii::$app->request->post('data'), $postData);
+            } else {
+                $postData = Yii::$app->request->post();
+            }
+
+            if ($model->load($postData) && $model->login()) {
+                return $this->goBack();
+            }
         }
 
         $model->password = '';
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('login-ajax', [
+                'model' => $model,
+            ]);
+        }
 
         return $this->render('login', [
             'model' => $model,
@@ -153,18 +168,27 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
+        if (!Yii::$app->request->isAjax){
+            throw new \yii\web\BadRequestHttpException();
+        }
+
         $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    $user->sendConfirmationEmail($user);
-                    Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
-                    return $this->goHome();
+
+        if (Yii::$app->request->isPost) {
+            parse_str(Yii::$app->request->post('data'), $postData);
+
+            if ($model->load($postData)) {
+                if ($user = $model->signup()) {
+                    if (Yii::$app->getUser()->login($user)) {
+                        $user->sendConfirmationEmail($user);
+                        Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
+                        return $this->goHome();
+                    }
                 }
             }
         }
 
-        return $this->render('signup', [
+        return $this->renderAjax('signup', [
             'model' => $model,
         ]);
     }
@@ -176,18 +200,27 @@ class SiteController extends Controller
      */
     public function actionRequestPasswordReset()
     {
-        $model = new PasswordResetRequestForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
-
-                return $this->goHome();
-            }
-
-            Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
+        if (!Yii::$app->request->isAjax){
+            throw new \yii\web\BadRequestHttpException();
         }
 
-        return $this->render('requestPasswordResetToken', [
+        $model = new PasswordResetRequestForm();
+
+        if (Yii::$app->request->isPost) {
+            parse_str(Yii::$app->request->post('data'), $postData);
+            
+            if ($model->load($postData) && $model->validate()) {
+                if ($model->sendEmail()) {
+                    Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+
+                    return $this->goHome();
+                }
+
+                $model->addError('email', 'Sorry, we are unable to reset password for the provided email address.');
+            }
+        }
+
+        return $this->renderAjax('requestPasswordResetToken', [
             'model' => $model,
         ]);
     }
