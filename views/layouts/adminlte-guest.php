@@ -5,6 +5,7 @@
 /* @var $content string */
 
 use app\assets\AdminLteGuestAsset;
+use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Modal;
 use yii\bootstrap\Nav;
@@ -14,6 +15,7 @@ use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 
 AdminLteGuestAsset::register($this);
+FontAwesomeAsset::register($this);
 
 $this->registerCss('#lang-menu{
     overflow: auto;

@@ -11,7 +11,6 @@ class AdminLteAsset extends AssetBundle
     public $sourcePath = '@vendor/almasaeed2010/adminlte';
     public $css = [
       'dist/css/adminlte.min.css',
-      'plugins/font-awesome/css/font-awesome.min.css',
     ];
     public $js = [
     	'dist/js/adminlte.min.js',
