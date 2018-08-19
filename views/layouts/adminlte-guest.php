@@ -6,6 +6,7 @@
 
 use app\assets\AdminLteGuestAsset;
 use app\widgets\Alert;
+use yii\bootstrap\Modal;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
@@ -52,7 +53,39 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     <?php $this->head() ?>
 </head>
 <body class="sidebar-collapse">
-<?php $this->beginBody() ?>
+<?php 
+$this->beginBody();
+Modal::begin([
+    'id' => 'main-modal',
+    'size' => Modal::SIZE_LARGE,
+    'closeButton' => false,
+    'clientEvents' => [
+        'show.bs.modal' => 'function (e) {
+            $("#main-modal").addClass("show");
+        }',
+        'hide.bs.modal' => 'function (e) {
+            $("#main-modal").removeClass("show");
+        }',
+    ],
+    'footer' => Html::button(Yii::t('app', 'Close'), [
+        'class' => 'btn btn-default',
+        'data-dismiss' => 'modal',
+    ])
+    . Html::button(Yii::t('app', 'Submit'), [
+        'class' => 'btn btn-primary',
+        'onclick' => 'var data = $("#main-modal-body").find("form").serialize();'
+            . 'var target = $("#main-modal-header").data("target");'
+            . '$.post(target, {"data":data}, function (result){
+                $("#main-modal-body").html(result);
+            })'
+    ]),
+    'options' => ['class' => 'card-primary'],
+    'header' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
+    'headerOptions' => ['class' => 'card-header'],
+    'bodyOptions' => ['id' => 'main-modal-body'],
+]);
+Modal::end();
+?>
 <div class="wrapper">
     <?php
     NavBar::begin([
@@ -62,8 +95,22 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     ]);
 
     $menuItemsLeft[] = ['label' => 'OpenSourceWebsite', 'url' => Yii::$app->homeUrl, 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
-    $menuItemsRight[] = ['label' => 'Signup', 'url' => ['/site/signup'], 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
-    $menuItemsRight[] = ['label' => 'Login', 'url' => ['/site/login'], 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
+    $menuItemsRight[] = ['label' => 'Signup', 'url' => '#', 'options'=>['class'=>'nav-item'], 'linkOptions'=>[
+        'class'=>'nav-link',
+        'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['site/signup']) .'", {}, function (result){
+            $("#main-modal-body").html(result);
+            $("#main-modal-header").html("' . Yii::t('app', 'Signup') . '").data("target", "' . Yii::$app->urlManager->createUrl(['site/signup']) . '");
+            $("#main-modal").modal("show");
+        })',
+    ]];
+    $menuItemsRight[] = ['label' => 'Login', 'url' => '#', 'options'=>['class'=>'nav-item'], 'linkOptions'=>[
+        'class'=>'nav-link',
+        'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['site/login']) .'", {}, function (result){
+            $("#main-modal-body").html(result);
+            $("#main-modal-header").html("' . Yii::t('app', 'Login') . '").data("target", "' . Yii::$app->urlManager->createUrl(['site/login']) . '");
+            $("#main-modal").modal("show");
+        })',
+    ]];
 
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
