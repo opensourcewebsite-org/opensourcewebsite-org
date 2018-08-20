@@ -38,5 +38,12 @@ return [
             */
         ],
     ],
+    'controllerMap' => [
+        'fixture' => [
+            'class' => 'yii\faker\FixtureController',
+            'namespace' => 'app\tests\fixtures',
+            'fixtureDataPath' => '@tests/fixtures/data',
+        ],
+    ],
     'params' => $params,
 ];
