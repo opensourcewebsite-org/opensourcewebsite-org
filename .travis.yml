@@ -8,7 +8,8 @@ php:
   - 7.2
 
 # faster builds on new travis setup not using sudo
-sudo: false
+sudo: required
+dist: xenial
 
 cache:
   directories:
