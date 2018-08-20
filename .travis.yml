@@ -29,10 +29,8 @@ addons:
 
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - export DB_NAME="test"
   - travis_retry composer install --prefer-dist --no-interaction
-#  - cp config/db.dist.php config/db.php
-  - cp config/test_db.travis.php config/db.php
-  - cp config/test_db.travis.php config/test_db.php
   - cp config/params.dist.php config/params.php
   - cp config/web-local.dist.php config/web-local.php
 
