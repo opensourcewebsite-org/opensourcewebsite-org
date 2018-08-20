@@ -26,9 +26,6 @@ $config = [
                 'yii\bootstrap\BootstrapAsset' => [
                     'css' => [],
                 ],
-                'yii\bootstrap\BootstrapPluginAsset' => [
-                    'js'=>[]
-                ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
                     'css' => [],
                 ],
