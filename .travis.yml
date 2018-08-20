@@ -13,6 +13,7 @@ sudo: false
 cache:
   directories:
     - $HOME/.composer/cache
+    - $HOME/.composer/vendor
     - vendor
 
 services:
@@ -37,7 +38,7 @@ install:
 before_script:
   - pip install --user codecov
   - mysql --version
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test CHARACTER SET utf8 COLLATE utf8_general_ci;'
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
