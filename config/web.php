@@ -24,14 +24,13 @@ $config = [
             'appendTimestamp' => true,
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
-                    'css' => [
-                        YII_ENV_DEV ? 'css/bootstrap.css' : 'css/bootstrap.min.css',
-                    ],
+                    'css' => [],
+                ],
+                'yii\bootstrap\BootstrapPluginAsset' => [
+                    'js'=>[]
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
-                    'css' => [
-                        YII_ENV_DEV ? 'css/bootstrap-theme.css' : 'css/bootstrap-theme.min.css',
-                    ],
+                    'css' => [],
                 ],
             ],
         ],
