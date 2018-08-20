@@ -5,7 +5,7 @@ env:
 language: php
 
 php:
-- 7.2
+  - 7.2
 
 # faster builds on new travis setup not using sudo
 sudo: false
@@ -14,10 +14,11 @@ sudo: false
 cache:
   directories:
     - $HOME/.composer/cache
+    - vendor
 
 services:
   - mysql
-  
+
 addons:
   apt:
     sources:
@@ -27,22 +28,26 @@ addons:
       - mysql-client
 
 install:
-- export PATH="$HOME/.composer/vendor/bin:$PATH"
-- travis_retry composer install --dev --prefer-dist --no-interaction
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - travis_retry composer install --dev --prefer-dist --no-interaction
+  - cp config/db.dist.php config/db.php
+  - cp config/test_db.travis.php config/test_db.php
+  - cp config/params.dist.php config/params.php
+  - cp config/web-local.dist.php config/web-local.php
 
 before_script:
-- pip install --user codecov
-- mysql --version
-- mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build
-- php yii migrate --interactive=0
+  - pip install --user codecov
+  - mysql --version
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+  - php yii migrate --interactive=0 -c
 
 script:
-# Running unit tests with clover coverage report
-- ./vendor/bin/codecept run unit --coverage --coverage-xml
+  # Running unit tests with clover coverage report
+  - ./vendor/bin/codecept run unit --coverage --coverage-xml
 
 after_script:
-- mv tests/_output/coverage.xml clover.xml
-- ./cc-test-reporter after-build --coverage-input-type clover --id 12345 --exit-code $TRAVIS_TEST_RESULT
+  - mv tests/_output/coverage.xml clover.xml
+  - ./cc-test-reporter after-build --coverage-input-type clover --id 12345 --exit-code $TRAVIS_TEST_RESULT
