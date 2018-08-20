@@ -7,14 +7,32 @@ language: php
 php:
 - 7.2
 
+# faster builds on new travis setup not using sudo
+sudo: false
+
+# cache vendor dirs
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+install:
+- travis_retry composer self-update && composer --version
+- export PATH="$HOME/.composer/vendor/bin:$PATH"
+- travis_retry composer install --dev --prefer-dist --no-interaction
+# setup database:
+- mysql -e 'CREATE DATABASE oswtest;';
+
 before_script:
+- pip install --user codecov
+- mysql --version
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - ./cc-test-reporter before-build
+- cd tests/codeception/bin && php yii migrate --interactive=0 && cd ../../..
 
 script:
 # Running unit tests with clover coverage report
-- vendor/bin/codecept run unit --coverage --coverage-xml
+- ./vendor/bin/codecept run unit --coverage --coverage-xml
 
 after_script:
 - mv tests/_output/coverage.xml clover.xml
