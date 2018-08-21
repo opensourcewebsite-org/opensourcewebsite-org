@@ -18,7 +18,7 @@ $config = yii\helpers\ArrayHelper::merge(
     require __DIR__ . '/../../config/console.php',
     [
         'components' => [
-            'db' => require __DIR__ . '/../../config/test_db.dist.php',
+            'db' => require __DIR__ . '/../../config/test_db.php',
         ],
     ]
 );
