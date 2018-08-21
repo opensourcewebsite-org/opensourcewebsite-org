@@ -32,6 +32,7 @@ addons:
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction
+  - cp .env.dist .env
   - cp config/params.dist.php config/params.php
   - cp config/web-local.dist.php config/web-local.php
 
