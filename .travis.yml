@@ -1,6 +1,6 @@
 env:
-  global:
-    - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
+  - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
+  - DB_NAME=test
 
 language: php
 
@@ -30,7 +30,6 @@ addons:
 
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - export DB_NAME="test"
   - travis_retry composer install --prefer-dist --no-interaction
   - cp config/params.dist.php config/params.php
   - cp config/web-local.dist.php config/web-local.php
