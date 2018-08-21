@@ -2,11 +2,20 @@
 
 return [
     [
-        'id' => 1,
-        'username' => 'test',
-        'auth_key' => 'test',
-        'password_hash' => 'test',
-        'email' => 'test@example.com',
+        'id' => 100,
+        'username' => 'admin',
+        'auth_key' => 'test100key',
+        'password_hash' => Yii::$app->security->generatePasswordHash('123456'),
+        'email' => 'admin@example.com',
+        'created_at' => time(),
+        'updated_at' => time(),
+    ],
+    [
+        'id' => 101,
+        'username' => 'webmaster',
+        'auth_key' => 'test101key',
+        'password_hash' => Yii::$app->security->generatePasswordHash('webmaster'),
+        'email' => 'demo@example.com',
         'created_at' => time(),
         'updated_at' => time(),
     ],
