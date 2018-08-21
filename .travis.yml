@@ -1,6 +1,7 @@
 env:
-  - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
-  - DB_NAME=test
+  global:
+    - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
+    - DB_NAME=test
 
 language: php
 
