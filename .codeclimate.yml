@@ -19,8 +19,8 @@ plugins:
   phpcodesniffer:
     enabled: true
     config:
-    	standard: "PSR1,PSR2"
-        ignore_warnings: true
+      ignore_warnings: true
+      standard: "PSR1,PSR2"
   phpmd:
     enabled: true
     config:
