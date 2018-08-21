@@ -5,7 +5,7 @@ return [
         'id' => 100,
         'username' => 'admin',
         'auth_key' => 'test100key',
-        'password_hash' => Yii::$app->security->generatePasswordHash('123456'),
+        'password_hash' => Yii::$app->security->generatePasswordHash('admin'),
         'email' => 'admin@example.com',
         'created_at' => time(),
         'updated_at' => time(),
