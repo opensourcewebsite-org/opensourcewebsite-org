@@ -23,14 +23,6 @@ $this->title = 'Donate';
     </ul>
 </p>
 
-<h4>Credit cards</h4>
-
-<p>
-    <ul>
-        <li>Processing with <?= Html::a('SnowballFundraising.com', 'https://opensourcewebste.snwbll.com/giving-portal') ?></li>
-    </ul>
-</p>
-
 <h4>Cryptocurrencies</h4>
 
 <p>
