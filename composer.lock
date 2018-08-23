@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e6be7e4951e818f3ccd9934116c5d333",
+    "content-hash": "ef50ad694de775c55d5a311d55bc8899",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -146,6 +146,49 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "brussens/yii2-maintenance-mode",
+            "version": "0.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brussens/yii2-maintenance-mode.git",
+                "reference": "b73a64ae9edf0fa7b55684948b881260863f3a7b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brussens/yii2-maintenance-mode/zipball/b73a64ae9edf0fa7b55684948b881260863f3a7b",
+                "reference": "b73a64ae9edf0fa7b55684948b881260863f3a7b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "brussens\\maintenance\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brusenskiy Dmitry",
+                    "email": "brussens@nativeweb.ru"
+                }
+            ],
+            "description": "Maintenance mode component for Yii framework 2.x.x version.",
+            "keywords": [
+                "maintenance",
+                "mode",
+                "yii",
+                "yii2"
+            ],
+            "time": "2017-06-19T01:19:39+00:00"
         },
         {
             "name": "cebe/markdown",

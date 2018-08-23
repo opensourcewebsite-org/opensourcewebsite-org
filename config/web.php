@@ -11,6 +11,7 @@ $config = [
     'bootstrap' => [
     	'log',
     	['class' => 'app\components\LanguageSelector'],
+        'maintenanceMode',
     ],
     'language' => 'en',
     'aliases' => [
@@ -81,6 +82,13 @@ $config = [
             'datetimeFormat' => 'php:Y-m-d H:i:s',
             'dateFormat' => 'php:Y-m-d',
             'sizeFormatBase' => 1000,
+        ],
+        'maintenanceMode' => [
+            'class' => '\brussens\maintenance\MaintenanceMode',
+            'layoutPath' => 'maintenance',
+            'viewPath' => '/maintenance/index',
+            'enabled' => false,
+            'statusCode' => 503,
         ],
         'db' => $db,
 

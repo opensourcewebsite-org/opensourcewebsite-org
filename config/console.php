@@ -8,7 +8,7 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'maintenanceMode'],
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -18,6 +18,13 @@ $config = [
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
+        ],
+        'maintenanceMode' => [
+            'class' => '\brussens\maintenance\MaintenanceMode',
+            'layoutPath' => 'maintenance',
+            'viewPath' => '/maintenance/index',
+            'enabled' => false,
+            'statusCode' => 503,
         ],
         'log' => [
             'targets' => [

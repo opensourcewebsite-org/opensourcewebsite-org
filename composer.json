@@ -27,7 +27,8 @@
         "npm-asset/font-awesome" : "^5.2",
         "almasaeed2010/adminlte": "^3.0",
         "cebe/yii2-gravatar": "^1.1",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "brussens/yii2-maintenance-mode": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
