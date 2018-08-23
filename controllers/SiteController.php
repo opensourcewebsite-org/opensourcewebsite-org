@@ -14,18 +14,20 @@ use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use app\models\User;
+use app\models\Moqup;
+use app\models\Css;
+use yii\db\Query;
 
-class SiteController extends Controller
-{
+class SiteController extends Controller {
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'design-list', 'design-view', 'design-edit'],
+                'only' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -45,8 +47,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
-    {
+    public function actions() {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -63,28 +64,23 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         return $this->render('index');
     }
 
-    public function actionDonate()
-    {
+    public function actionDonate() {
         return $this->render('donate');
     }
 
-    public function actionTeam()
-    {
+    public function actionTeam() {
         return $this->render('team');
     }
 
-    public function actionTermsOfUse()
-    {
+    public function actionTermsOfUse() {
         return $this->render('terms-of-use');
     }
 
-    public function actionPrivacyPolicy()
-    {
+    public function actionPrivacyPolicy() {
         return $this->render('privacy-policy');
     }
 
@@ -93,8 +89,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionLogin()
-    {
+    public function actionLogin() {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -117,12 +112,12 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('login-ajax', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
 
         return $this->render('login', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -131,8 +126,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionLogout()
-    {
+    public function actionLogout() {
         Yii::$app->user->logout();
 
         return $this->goHome();
@@ -143,8 +137,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionContact()
-    {
+    public function actionContact() {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
@@ -157,7 +150,7 @@ class SiteController extends Controller
         }
 
         return $this->render('contact', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -166,9 +159,8 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionSignup()
-    {
-        if (!Yii::$app->request->isAjax){
+    public function actionSignup() {
+        if (!Yii::$app->request->isAjax) {
             throw new \yii\web\BadRequestHttpException();
         }
 
@@ -189,7 +181,7 @@ class SiteController extends Controller
         }
 
         return $this->renderAjax('signup', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -198,9 +190,8 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionRequestPasswordReset()
-    {
-        if (!Yii::$app->request->isAjax){
+    public function actionRequestPasswordReset() {
+        if (!Yii::$app->request->isAjax) {
             throw new \yii\web\BadRequestHttpException();
         }
 
@@ -208,7 +199,7 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isPost) {
             parse_str(Yii::$app->request->post('data'), $postData);
-            
+
             if ($model->load($postData) && $model->validate()) {
                 if ($model->sendEmail()) {
                     Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
@@ -221,7 +212,7 @@ class SiteController extends Controller
         }
 
         return $this->renderAjax('requestPasswordResetToken', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -233,8 +224,7 @@ class SiteController extends Controller
      * @return mixed
      * @throws BadRequestHttpException
      */
-    public function actionResetPassword($token)
-    {
+    public function actionResetPassword($token) {
         try {
             $model = new ResetPasswordForm($token);
         } catch (InvalidParamException $e) {
@@ -248,22 +238,20 @@ class SiteController extends Controller
         }
 
         return $this->render('resetPassword', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
-    public function actionAccount()
-    {
+    public function actionAccount() {
         $model = Yii::$app->user->identity;
 
         return $this->render('account', ['model' => $model]);
     }
 
-    public function actionConfirm($id, $auth_key)
-    {
+    public function actionConfirm($id, $auth_key) {
         $user = User::findOne([
-            'id' => $id,
-            'auth_key' => $auth_key,
+                    'id' => $id,
+                    'auth_key' => $auth_key,
         ]);
         if (!empty($user)) {
             $user->is_email_confirmed = true;
@@ -275,8 +263,7 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    public function actionResendConfirmationEmail()
-    {
+    public function actionResendConfirmationEmail() {
         $user = Yii::$app->user->identity;
         if ($user->sendConfirmationEmail($user)) {
             Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
@@ -290,8 +277,7 @@ class SiteController extends Controller
      * @param $lang String The language to be set
      * @return Redirect to the previous page or if is not set, to the home page
      */
-    public function actionChangeLanguage($lang)
-    {
+    public function actionChangeLanguage($lang) {
         $language = \app\models\Language::find($lang)->one();
 
         if ($language != NULL) {
@@ -308,26 +294,103 @@ class SiteController extends Controller
         }
     }
 
-    public function actionDesignList()
-    {
-        return $this->render('design-list');
+    public function actionDesignList($viewMode = NULL) {
+        if (!empty($viewMode)) {
+            $viewMode = 1;
+        } else {
+            $viewMode = 0;
+        }
+        $query = new Query;
+        $query->select(['moqup.*', 'user.username as username'])
+                ->from('moqup')
+                ->where(['!=', 'user_id', Yii::$app->user->id])
+                ->leftJoin('user', 'moqup.user_id = user.id')
+                ->all();
+
+        $command = $query->createCommand();
+        $moqups = $command->queryAll();
+
+        $your_moqups_qry = new Query;
+        $your_moqups_qry->select(['moqup.*', 'user.username as username'])
+                ->from('moqup')
+                ->where(['user_id' => Yii::$app->user->id])
+                ->leftJoin('user', 'moqup.user_id = user.id')
+                ->all();
+
+        $your_moqups_cmd = $your_moqups_qry->createCommand();
+        $your_moqups = $your_moqups_cmd->queryAll();
+
+        return $this->render('design-list', ['viewMode' => $viewMode, 'moqups' => $moqups, 'your_moqups' => $your_moqups]);
     }
 
-    public function actionDesignView()
-    {
-        return $this->render('design-view');
+    public function actionDesignView($id) {
+        $moqup = Moqup::find()
+                ->where(['id' => $id])
+                ->one();
+        $css = Css::find()
+                ->where(['moqup_id' => $id])
+                ->one();
+        return $this->render('design-view', ['moqup' => $moqup, 'css' => $css]);
     }
 
-    public function actionDesignEdit()
-    {
-        return $this->render('design-edit');
+    public function actionDesignAdd() {
+        if (Yii::$app->request->isPost) {
+            $formatter = \Yii::$app->formatter;
+            $now = $formatter->asDateTime('now');
+            $now = strtotime($now);
+
+            $moqup = new Moqup;
+            $moqup->user_id = Yii::$app->user->id;
+            $moqup->title = Yii::$app->request->post('title');
+            $moqup->html = Yii::$app->request->post('html');
+            $moqup->created_at = $now;
+            $moqup->updated_at = $now;
+            $moqup->save();
+
+            $css = new Css;
+            $css->moqup_id = $moqup->id;
+            $css->css = Yii::$app->request->post('css');
+            $css->created_at = $now;
+            $css->updated_at = $now;
+            $css->save();
+//            Yii::$app->session->setFlash('success', 'Your new moqup has been saved.');
+            return $this->redirect(['site/design-list']);
+        }
+        \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
+        return $this->render('design-add');
+    }
+
+    public function actionDesignEdit($id) {
+        $moqup = Moqup::find()
+                ->where(['id' => $id])
+                ->one();
+        $css = Css::find()
+                ->where(['moqup_id' => $id])
+                ->one();
+        if (Yii::$app->request->isPost) {
+            $formatter = \Yii::$app->formatter;
+            $now = $formatter->asDateTime('now');
+            $now = strtotime($now);
+
+            $moqup->user_id = Yii::$app->user->id;
+            $moqup->title = Yii::$app->request->post('title');
+            $moqup->html = Yii::$app->request->post('html');
+            $moqup->updated_at = $now;
+            $moqup->save();
+
+            $css->css = Yii::$app->request->post('css');
+            $css->updated_at = $now;
+//            Yii::$app->session->setFlash('success', 'Moqup has been updated.');
+            return $this->redirect(['site/design-list']);
+        }
+        \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
+        return $this->render('design-edit', ['moqup' => $moqup, 'css' => $css]);
     }
 
     /**
      * Do tasks before the action is executed
      */
-    public function beforeAction($action)
-    {
+    public function beforeAction($action) {
         if (!parent::beforeAction($action)) {
             return false;
         }
@@ -340,4 +403,5 @@ class SiteController extends Controller
 
         return true;
     }
+
 }
