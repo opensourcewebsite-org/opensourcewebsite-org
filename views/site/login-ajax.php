@@ -8,6 +8,7 @@
 use app\models\LoginForm;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+use yii\authclient\widgets\AuthChoice;
 
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
@@ -36,6 +37,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         $("#main-modal").modal("show");
                     })'
                 ]) ?>.
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <h2><?php echo Yii::t('app', 'Login with') ?>:</h2>
+                    <?php echo AuthChoice::widget([
+                        'baseAuthUrl' => ['/user/oauth']
+                    ]); ?>
+                </div>
             </div>
         </div>
         <?php ActiveForm::end(); ?>

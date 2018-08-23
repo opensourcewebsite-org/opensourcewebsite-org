@@ -8,6 +8,7 @@
 use app\models\SignupForm;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+use yii\authclient\widgets\AuthChoice;
 
 $this->title = 'Signup';
 $this->params['breadcrumbs'][] = $this->title;
@@ -24,6 +25,14 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="form-group">
                 <?= $form->field($model, 'password')->passwordInput() ?>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <h2><?php echo Yii::t('app', 'Signup with') ?>:</h2>
+                    <?php echo AuthChoice::widget([
+                        'baseAuthUrl' => ['/user/oauth']
+                    ]); ?>
+                </div>
             </div>
         </div>
         <?php ActiveForm::end(); ?>

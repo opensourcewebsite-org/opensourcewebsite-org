@@ -105,8 +105,23 @@ $config = [
 	                'class' => 'yii\i18n\PhpMessageSource',
             	],
 	        ],
-	    ],
-
+        ],
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'facebook' => [
+                    'class' => 'yii\authclient\clients\Facebook',
+                    'clientId' => getenv('FACEBOOK_CLIENT_ID'),
+                    'clientSecret' => getenv('FACEBOOK_CLIENT_SECRET'),
+                    'scope' => 'email',
+                    'attributeNames' => [
+                        'name',
+                        'email',
+                    ],
+                ],
+            ]
+        ],
+        
     ],
     'timeZone' => 'UTC',
     'params' => $params,
