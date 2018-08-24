@@ -1,3 +1,5 @@
+exclude_patterns:
+- "/vendor"
 plugins:
   csslint:
     enabled: true
@@ -19,7 +21,6 @@ plugins:
   phpcodesniffer:
     enabled: true
     config:
-      ignore_warnings: true
       standard: "PSR1,PSR2"
   phpmd:
     enabled: true
