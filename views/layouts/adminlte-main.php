@@ -107,14 +107,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <!-- Sidebar Menu -->
                     <nav class="mt-2">
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['site/design-list', 'site/design-add', 'site/design-view', 'site/design-edit']) ? 'menu-open' : '' ?>">
-                                <a href="#" class="nav-link <?= in_array($currentUrl, ['site/design-list', 'site/design-add', 'site/design-view', 'site/design-edit']) ? 'active' : '' ?>">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'menu-open' : '' ?>">
+                                <a href="#" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-edit"></i>
                                     <p>Developer<i class="fa fa-angle-left right"></i></p>
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="<?= Yii::$app->urlManager->createUrl(['site/design-list']) ?>" class="nav-link <?= in_array($currentUrl, ['site/design-list', 'site/design-add', 'site/design-view', 'site/design-edit']) ? 'active' : '' ?>">
+                                        <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
                                             <i class="fa fa-circle-o nav-icon"></i>
                                             <p>Moqups</p>
                                         </a>

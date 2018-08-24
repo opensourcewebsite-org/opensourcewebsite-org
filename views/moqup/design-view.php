@@ -9,7 +9,7 @@ if (!empty($moqup)) {
     <div class="card">
         <div class="card-header d-flex p-0">
             <h3 class="card-title p-3">
-                <?php echo $moqup->title; ?>
+                <?= $moqup->title; ?>
             </h3>
             <div class="ml-auto p-2">
                 <button type="button" class="btn btn-primary">Follow</button>
@@ -26,7 +26,7 @@ if (!empty($moqup)) {
     }
     ?>
             </style>
-            <?php echo $moqup->html; ?>
+            <?= $moqup->html; ?>
         </div>
     </div>
     <?php

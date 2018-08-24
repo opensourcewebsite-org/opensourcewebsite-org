@@ -13,7 +13,7 @@ $this->title = Yii::t('menu', 'Moqups');
         </h3>
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <a href="<?= Yii::$app->urlManager->createUrl(['site/design-add']) ?>"><button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="Create New"><i class="fa fa-plus"></i></button></a>
+                <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-add']) ?>"><button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="Create New"><i class="fa fa-plus"></i></button></a>
             </li>
             <?php
             $all_active = '';
@@ -25,10 +25,10 @@ $this->title = Yii::t('menu', 'Moqups');
             }
             ?>
             <li class="nav-item">
-                <a class="nav-link show<?php echo $all_active; ?>" href="<?= Yii::$app->urlManager->createUrl(['site/design-list']) ?>">All <span class="badge badge-light ml-1"><?php echo count($moqups); ?></span></a>
+                <a class="nav-link show<?= $all_active; ?>" href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>">All <span class="badge badge-light ml-1"><?= count($moqups); ?></span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?php echo $your_active; ?>" href="<?= Url::to(['site/design-list/', 'viewMode' => '1']); ?>">Your <span class="badge badge-light ml-1"><?php echo count($your_moqups); ?></span></a>
+                <a class="nav-link<?= $your_active; ?>" href="<?= Url::to(['moqup/design-list/', 'viewMode' => '1']); ?>">Your <span class="badge badge-light ml-1"><?= count($your_moqups); ?></span></a>
             </li>
         </ul>
     </div>
@@ -50,8 +50,8 @@ $this->title = Yii::t('menu', 'Moqups');
                             foreach ($your_moqups as $moqup) {
                                 ?>
                                 <tr>
-                                    <td><?php echo $moqup['title']; ?></td>
-                                    <td><?php echo $moqup['username']; ?></td>
+                                    <td><?= $moqup['title']; ?></td>
+                                    <td><?= $moqup['username']; ?></td>
                                     <td>
                                         <?php
                                         $formatter = \Yii::$app->formatter;
@@ -59,7 +59,7 @@ $this->title = Yii::t('menu', 'Moqups');
                                         echo $moqup_date;
                                         ?>
                                     </td>
-                                    <td class="text-right"><a href="<?= Url::to(['site/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a><a href="<?= Url::to(['site/design-edit/', 'id' => $moqup['id']]); ?>"> <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></button></a> <button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash-alt"></i></button></td>
+                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a><a href="<?= Url::to(['moqup/design-edit/', 'id' => $moqup['id']]); ?>"> <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></button></a> <button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash-alt"></i></button></td>
                                 </tr>
                                 <?php
                             }
@@ -69,8 +69,8 @@ $this->title = Yii::t('menu', 'Moqups');
                             foreach ($moqups as $moqup) {
                                 ?>
                                 <tr>
-                                    <td><?php echo $moqup['title']; ?></td>
-                                    <td><?php echo $moqup['username']; ?></td>
+                                    <td><?= $moqup['title']; ?></td>
+                                    <td><?= $moqup['username']; ?></td>
                                     <td>
                                         <?php
                                         $moqup_date_time = strtotime($moqup['created_at']);
@@ -78,7 +78,7 @@ $this->title = Yii::t('menu', 'Moqups');
                                         echo $moqup_date;
                                         ?>
                                     </td>
-                                    <td class="text-right"><a href="<?= Url::to(['site/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a></td>
+                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a></td>
                                 </tr>
                                 <?php
                             }

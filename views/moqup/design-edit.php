@@ -25,13 +25,13 @@ $this->title = Yii::t('menu', 'Edit design');
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="pageTitle">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required="required" value="<?php echo $moqup->title; ?>">
+                            <input type="text" class="form-control" id="title" name="title" required="required" value="<?= $moqup->title; ?>">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <ul class="nav nav-pills ml-auto p-2">
                             <li class="nav-item">
-                                <a class="nav-link active show" href="#html" data-toggle="tab">HTML</a>
+                                <a class="nav-link active" href="#html" data-toggle="tab">HTML</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#css" data-toggle="tab">CSS (optional)</a>
@@ -43,8 +43,8 @@ $this->title = Yii::t('menu', 'Edit design');
                     </div>
                     <div class="col-md-12">
                         <div class="tab-content p-0">
-                            <div class="tab-pane active show" id="html">
-                                <textarea class="form-control" name="html" rows="10" required="required" maxlength="100000"><?php echo $moqup->html; ?></textarea>
+                            <div class="tab-pane active" id="html">
+                                <textarea class="form-control" name="html" rows="10" required="required" maxlength="100000"><?= $moqup->html; ?></textarea>
                             </div>
                             <div class="tab-pane" id="css">
                                 <textarea name="css" class="form-control" rows="10" maxlength="100000">
@@ -64,7 +64,7 @@ $this->title = Yii::t('menu', 'Edit design');
             </div>
             <div class="card-footer">
                 <button type="submit" class="btn btn-success">Save</button>
-                <a type="button" href="<?= Yii::$app->urlManager->createUrl(['site/design-list']) ?>" class="btn btn-secondary"> Cancel</a>
+                <a type="button" href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="btn btn-secondary"> Cancel</a>
                 <button type="button" class="btn btn-outline-danger float-right"> Delete</button>
             </div>
         </form>

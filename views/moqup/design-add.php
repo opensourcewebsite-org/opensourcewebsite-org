@@ -28,7 +28,7 @@ $this->title = Yii::t('menu', 'Edit design');
                 <div class="col-md-12">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item">
-                            <a class="nav-link active show" href="#html" data-toggle="tab">HTML</a>
+                            <a class="nav-link active" href="#html" data-toggle="tab">HTML</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#css" data-toggle="tab">CSS (optional)</a>
@@ -45,7 +45,7 @@ $this->title = Yii::t('menu', 'Edit design');
                                                 <font size="1">(Maximum characters: 100000)<br>
                                                 You have <input readonly type="text" name="countdown" size="6" value="100000"> characters left.</font>
                                             </div>-->
-                        <div class="tab-pane active show" id="html">
+                        <div class="tab-pane active" id="html">
                             <textarea class="form-control" name="html" rows="10" required="required" maxlength="100000"></textarea>
                         </div>
                         <div class="tab-pane" id="css">
@@ -60,7 +60,7 @@ $this->title = Yii::t('menu', 'Edit design');
         </div>
         <div class="card-footer">
             <button type="submit" class="btn btn-success">Save</button>
-            <a type="button" href="<?= Yii::$app->urlManager->createUrl(['site/design-list']) ?>" class="btn btn-secondary"> Cancel</a>
+            <a type="button" href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="btn btn-secondary"> Cancel</a>
             <button type="button" class="btn btn-outline-danger float-right"> Delete</button>
         </div>
     </form>
