@@ -15,17 +15,18 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use app\models\User;
 
-class SiteController extends Controller
+class SiteController extends Controller 
 {
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors() 
     {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'design-list', 'design-view', 'design-edit'],
+                'only' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -45,7 +46,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions() 
     {
         return [
             'error' => [
@@ -63,7 +64,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex() 
     {
         return $this->render('index');
     }
@@ -73,7 +74,7 @@ class SiteController extends Controller
         return $this->render('donate');
     }
 
-    public function actionTeam()
+    public function actionTeam() 
     {
         return $this->render('team');
     }
@@ -93,7 +94,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionLogin()
+    public function actionLogin() 
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
@@ -131,7 +132,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionLogout()
+    public function actionLogout() 
     {
         Yii::$app->user->logout();
 
@@ -143,7 +144,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionContact()
+    public function actionContact() 
     {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
@@ -166,9 +167,9 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionSignup()
+    public function actionSignup() 
     {
-        if (!Yii::$app->request->isAjax){
+        if (!Yii::$app->request->isAjax) {
             throw new \yii\web\BadRequestHttpException();
         }
 
@@ -198,9 +199,9 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionRequestPasswordReset()
+    public function actionRequestPasswordReset() 
     {
-        if (!Yii::$app->request->isAjax){
+        if (!Yii::$app->request->isAjax) {
             throw new \yii\web\BadRequestHttpException();
         }
 
@@ -208,7 +209,7 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isPost) {
             parse_str(Yii::$app->request->post('data'), $postData);
-            
+
             if ($model->load($postData) && $model->validate()) {
                 if ($model->sendEmail()) {
                     Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
@@ -233,7 +234,7 @@ class SiteController extends Controller
      * @return mixed
      * @throws BadRequestHttpException
      */
-    public function actionResetPassword($token)
+    public function actionResetPassword($token) 
     {
         try {
             $model = new ResetPasswordForm($token);
@@ -252,18 +253,18 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionAccount()
+    public function actionAccount() 
     {
         $model = Yii::$app->user->identity;
 
         return $this->render('account', ['model' => $model]);
     }
 
-    public function actionConfirm($id, $auth_key)
+    public function actionConfirm($id, $auth_key) 
     {
         $user = User::findOne([
-            'id' => $id,
-            'auth_key' => $auth_key,
+                    'id' => $id,
+                    'auth_key' => $auth_key,
         ]);
         if (!empty($user)) {
             $user->is_email_confirmed = true;
@@ -290,7 +291,7 @@ class SiteController extends Controller
      * @param $lang String The language to be set
      * @return Redirect to the previous page or if is not set, to the home page
      */
-    public function actionChangeLanguage($lang)
+    public function actionChangeLanguage($lang) 
     {
         $language = \app\models\Language::find($lang)->one();
 
@@ -306,21 +307,6 @@ class SiteController extends Controller
 
             return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
         }
-    }
-
-    public function actionDesignList()
-    {
-        return $this->render('design-list');
-    }
-
-    public function actionDesignView()
-    {
-        return $this->render('design-view');
-    }
-
-    public function actionDesignEdit()
-    {
-        return $this->render('design-edit');
     }
 
     /**
@@ -340,4 +326,5 @@ class SiteController extends Controller
 
         return true;
     }
+
 }
