@@ -14,7 +14,7 @@ $this->title = Yii::t('menu', 'Moqups');
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
                 <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-add']) ?>"><button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="Create New"><i class="fa fa-plus"></i></button></a>
-            </li>
+            </li> 
             <?php
             $all_active = '';
             $your_active = '';
