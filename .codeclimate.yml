@@ -21,7 +21,9 @@ plugins:
   phpcodesniffer:
     enabled: true
     config:
-      standard: "PSR1,PSR2"
+      file_extensions: "php"
+      standard: "PSR1,PSR2,Yii2"
+      encoding: utf-8
   phpmd:
     enabled: true
     config:
@@ -33,3 +35,9 @@ plugins:
       minimum_severity: critical
   stylelint:
     enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
