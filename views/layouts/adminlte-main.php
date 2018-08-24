@@ -134,6 +134,12 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item has-treeview  <?= in_array($currentUrl, ['user/list']) ? 'menu-open' : '' ?>">
+                        <a href="/user/list" class="nav-link <?= in_array($currentUrl, ['user/list']) ? 'active' : '' ?>">
+                            <i class="nav-icon fa fa-users"></i>
+                            <p>Users</p>
+                        </a>
+                    </li>
                 </ul>
             </nav><!-- /.sidebar-menu -->
         </div><!-- /.sidebar -->
