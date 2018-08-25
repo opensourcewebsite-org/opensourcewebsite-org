@@ -121,7 +121,7 @@ class MoqupController extends Controller
             $css->updated_at = $now;
             $css->save();
 //            Yii::$app->session->setFlash('success', 'Your new moqup has been saved.');
-            return $this->redirect(['site/design-list']);
+            return $this->redirect(['moqup/design-list']);
         }
         \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
         return $this->render('design-add');
@@ -150,7 +150,7 @@ class MoqupController extends Controller
             $css->updated_at = $now;
             $css->save();
 //            Yii::$app->session->setFlash('success', 'Moqup has been updated.');
-            return $this->redirect(['site/design-list']);
+            return $this->redirect(['moqup/design-list']);
         }
         \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
         return $this->render('design-edit', ['moqup' => $moqup, 'css' => $css]);
