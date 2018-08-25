@@ -1,5 +1,6 @@
 exclude_patterns:
 - "/vendor"
+- "yii/"
 plugins:
   csslint:
     enabled: true
