@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use Yii;
@@ -19,7 +20,7 @@ class UserController extends Controller
                 'class' => AccessControl::className(),
                 'only' => ['display'],
                 'rules' => [
-                        [
+                    [
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -46,13 +47,10 @@ class UserController extends Controller
      */
     public function actionDisplay()
     {
-        $registered_users = User::find()->all();
         $confirmed_users = User::findAll(['is_email_confirmed' => true]);
 
         return $this->render('display', [
-            'registered_users' => count($registered_users),
             'confirmed_users' => count($confirmed_users),
-            'percentage' => (count($confirmed_users) / count($registered_users)) * 100,
         ]);
     }
 }
