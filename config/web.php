@@ -6,11 +6,11 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'name' => 'OpenSourceWebsite',
-    'layout'=>'adminlte-main',
+    'layout' => 'adminlte-main',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
-    	'log',
-    	['class' => 'app\components\LanguageSelector'],
+        'log',
+        ['class' => 'app\components\LanguageSelector'],
         'maintenanceMode',
     ],
     'language' => 'en',
@@ -91,22 +91,21 @@ $config = [
             'statusCode' => 503,
         ],
         'db' => $db,
-
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
                 '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
+//                '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],
         'i18n' => [
-	        'translations' => [
-	            '*' => [
-	                'class' => 'yii\i18n\PhpMessageSource',
-            	],
-	        ],
-	    ],
-
+            'translations' => [
+                '*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                ],
+            ],
+        ],
     ],
     'timeZone' => 'UTC',
     'params' => $params,
@@ -117,15 +116,15 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+            // uncomment the following to add your IP if you are not connecting from localhost.
+            //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+            // uncomment the following to add your IP if you are not connecting from localhost.
+            //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
 }
 
