@@ -6,7 +6,7 @@ use yii\widgets\LinkPager;
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Currency</h3>
+        <h3 class="card-title">Language</h3>
         <div class="card-tools">
             <?php echo LinkPager::widget([
                 'pagination' => $pages,

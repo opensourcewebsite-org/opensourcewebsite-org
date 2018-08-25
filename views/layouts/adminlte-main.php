@@ -147,7 +147,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                     <li class="nav-item">
                                         <a href="<?= Yii::$app->urlManager->createUrl(['data/country']) ?>" class="nav-link <?= in_array($currentUrl, ['data/country']) ? 'active' : '' ?>">
                                             <i class="fa fa-map-signs nav-icon"></i>
-                                            <p>Countries</p>
+                                            <p>Country</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
