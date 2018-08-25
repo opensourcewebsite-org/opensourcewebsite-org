@@ -24,7 +24,7 @@ class MoqupController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
+                'only' => ['logout', 'design-list', 'design-view', 'design-edit', 'design-add'],
                 'rules' => [
                     [
                         'allow' => true,
