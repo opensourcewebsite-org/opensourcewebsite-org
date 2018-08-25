@@ -137,6 +137,22 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 </ul>
                             </li>
                         </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/country']) ? 'menu-open' : '' ?>">
+                                <a href="#" class="nav-link <?= in_array($currentUrl, ['data/country']) ? 'active' : '' ?>">
+                                    <i class="nav-icon fa fa-edit"></i>
+                                    <p>Data<i class="fa fa-angle-left right"></i></p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="<?= Yii::$app->urlManager->createUrl(['data/country']) ?>" class="nav-link <?= in_array($currentUrl, ['data/country']) ? 'active' : '' ?>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Countries</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
                     </nav><!-- /.sidebar-menu -->
                 </div><!-- /.sidebar -->
             </aside><!-- /.main-sidebar -->
