@@ -59,7 +59,24 @@ $this->title = Yii::t('menu', 'Moqups');
                                         echo $moqup_date;
                                         ?>
                                     </td>
-                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a><a href="<?= Url::to(['moqup/design-edit/', 'id' => $moqup['id']]); ?>"> <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></button></a> <button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash-alt"></i></button></td>
+                                    <td class="text-right">
+                                        <a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank">
+                                            <button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </button>
+                                        </a>
+                                        <a href="<?= Url::to(['moqup/design-edit/', 'id' => $moqup['id']]); ?>">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </a>
+                                        <?= Html::a('<button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="tooltip" data-placement="top" title="Delete"> '
+                                                . '<i class="fas fa-trash-alt"></i> '
+                                            . '</button>', ['moqup/design-delete/', 'id' => $moqup['id']], [
+                                                'data-method' => 'post',
+                                                'class' => 'delete-moqup-anchor',
+                                            ]) ?>
+                                    </td>
                                 </tr>
                                 <?php
                             }
@@ -90,3 +107,22 @@ $this->title = Yii::t('menu', 'Moqups');
         </div>
     </div>
 </div>
+
+<?php
+$this->registerJs('$(".delete-moqup-anchor").click(function(event) {
+    event.preventDefault();
+    var url = $(this).attr("href");
+
+    if (confirm("' . Yii::t('moqup', 'Are you sure you want to delete this moqup?') . '")) {
+        $.post(url, {}, function(result) {
+            if (result == "1") {
+                location.reload();
+            }
+            else {
+                alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to delete the moqup') . '");
+            }
+        });
+    } 
+
+    return false;
+});');
