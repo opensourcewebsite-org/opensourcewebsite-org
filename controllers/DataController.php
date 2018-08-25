@@ -1,9 +1,10 @@
 <?php
-
 namespace app\controllers;
 
 use yii\web\Controller;
 use app\models\Country;
+use app\models\Currency;
+use app\models\Language;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 
@@ -18,7 +19,7 @@ class DataController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['country'],
+                'only' => ['country', 'currency', 'language'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -41,16 +42,6 @@ class DataController extends Controller
         ];
     }
 
-    public function actionCountrya()
-    {
-        $country = Country::find()
-            ->all();
-        
-        return $this->render('country', [
-            'country' => $country,
-        ]);
-    }
-    
     public function actionCountry()
     {
         $country = Country::find();
@@ -61,6 +52,36 @@ class DataController extends Controller
             ->all();
 
         return $this->render('country', [
+            'models' => $models,
+            'pages' => $pages,
+        ]);
+    }
+
+    public function actionCurrency()
+    {
+        $currency = Currency::find();
+        $countQuery = clone $currency;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $currency->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('currency', [
+            'models' => $models,
+            'pages' => $pages,
+        ]);
+    }
+
+    public function actionLanguage()
+    {
+        $language = Language::find();
+        $countQuery = clone $language;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $language->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('language', [
             'models' => $models,
             'pages' => $pages,
         ]);

@@ -1,13 +1,12 @@
 <?php
 
-use yii\helpers\Html;
 use yii\widgets\LinkPager;
 
 ?>
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Country</h3>
+        <h3 class="card-title">Currency</h3>
         <div class="card-tools">
             <?php echo LinkPager::widget([
                 'pagination' => $pages,
@@ -32,16 +31,14 @@ use yii\widgets\LinkPager;
                     <th>#</th>
                     <th>Name</th>
                     <th>Code</th>
-                    <th>Slug</th>
-                    <th>Wikipedia</th>
+                    <th>ASCII</th>
                 </tr>
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?php echo $key + 1; ?></td>
                         <td><?php echo $model->name ?? null; ?></td>
                         <td><?php echo $model->code ?? null; ?></td>
-                        <td><?php echo $model->slug ?? null; ?></td>
-                        <td><?php echo Html::a($model->wikipedia, $model->wikipedia); ?></td>
+                        <td><?php echo $model->name_ascii ?? null; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
