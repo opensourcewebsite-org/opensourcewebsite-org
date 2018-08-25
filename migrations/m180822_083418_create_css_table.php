@@ -18,12 +18,21 @@ class m180822_083418_create_css_table extends Migration {
             'created_at' => $this->integer()->unsigned(),
             'updated_at' => $this->integer()->unsigned()
         ]);
+
+        $this->addForeignKey(
+            'css_moqup_id_fk',
+            'css', 
+            'moqup_id', 
+            'moqup',
+            'id'
+        );
     }
 
     /**
      * {@inheritdoc}
      */
     public function safeDown() {
+        $this->dropForeignKey('css_moqup_id_fk', 'css');
         $this->dropTable('css');
     }
 
