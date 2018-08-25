@@ -95,8 +95,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
-//                '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
+                '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>'
             ],
         ],
         'i18n' => [

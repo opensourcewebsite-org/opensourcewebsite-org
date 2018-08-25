@@ -49,7 +49,7 @@ $this->title = Yii::t('menu', 'Moqups');
                         if (count($your_moqups) > 0) {
                             foreach ($your_moqups as $moqup) {
                                 ?>
-                                <tr>
+                                <tr id="tr_<?= $moqup['id']; ?>">
                                     <td><?= $moqup['title']; ?></td>
                                     <td><?= $moqup['username']; ?></td>
                                     <td>
@@ -59,7 +59,35 @@ $this->title = Yii::t('menu', 'Moqups');
                                         echo $moqup_date;
                                         ?>
                                     </td>
-                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a><a href="<?= Url::to(['moqup/design-edit/', 'id' => $moqup['id']]); ?>"> <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></button></a> <button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash-alt"></i></button></td>
+                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a><a href="<?= Url::to(['moqup/design-edit/', 'id' => $moqup['id']]); ?>"> <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></button></a> <button type="button" class="btn btn-sm btn-outline-danger delete"  data-toggle="tooltip" data-placement="top" title="Delete" data-id="<?= $moqup['id']; ?>"><i class="fas fa-trash-alt"></i></button>
+                                        <?php
+                                        $url = Yii::$app->getUrlManager()->createUrl("moqup/design-delete");
+                                        $this->registerJs('
+                                            jQuery("body").on("click", ".delete", function() {
+                                                if (confirm("Want to delete?")) {
+                                                    try {
+                                                        var id = $(this).attr("data-id");
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            cache: false,
+                                                            data:{"id":id},
+                                                            url: "' . $url . '",
+                                                            dataType: "json",
+                                                            success: function(data){
+                                                                if(data.status == "success") {
+                                                                    $("#tr_"+id).remove();
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                    catch(e) {
+                                                        alert(e); //check tosee any errors
+                                                    }
+                                                }
+                                            });
+                                        ');
+                                        ?>
+                                    </td>
                                 </tr>
                                 <?php
                             }
@@ -74,11 +102,11 @@ $this->title = Yii::t('menu', 'Moqups');
                                     <td>
                                         <?php
                                         $moqup_date_time = strtotime($moqup['created_at']);
-                                        $moqup_date = date('d-m-Y', $moqup_date_time);
+                                        $moqup_date = date('d-m-Y ', $moqup_date_time);
                                         echo $moqup_date;
                                         ?>
                                     </td>
-                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a></td>
+                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id  ']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a></td>
                                 </tr>
                                 <?php
                             }
@@ -87,6 +115,26 @@ $this->title = Yii::t('menu', 'Moqups');
                     ?>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm_delete_modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Confirm Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure want to delete this data?</p>
+                <input type="hidden" id="member_to_delete" value="">
+                <input type="hidden" id="delete_type" value="single">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="delete">Delete</button>
+            </div>
         </div>
     </div>
 </div>

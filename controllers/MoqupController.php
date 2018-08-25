@@ -84,7 +84,7 @@ class MoqupController extends Controller
 
         $your_moqups_cmd = $your_moqups_qry->createCommand();
         $your_moqups = $your_moqups_cmd->queryAll();
-
+        
         return $this->render('design-list', ['viewMode' => $viewMode, 'moqups' => $moqups, 'your_moqups' => $your_moqups]);
     }
 
@@ -123,7 +123,6 @@ class MoqupController extends Controller
 //            Yii::$app->session->setFlash('success', 'Your new moqup has been saved.');
             return $this->redirect(['moqup/design-list']);
         }
-        \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
         return $this->render('design-add');
     }
 
@@ -152,8 +151,27 @@ class MoqupController extends Controller
 //            Yii::$app->session->setFlash('success', 'Moqup has been updated.');
             return $this->redirect(['moqup/design-list']);
         }
-        \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
         return $this->render('design-edit', ['moqup' => $moqup, 'css' => $css]);
+    }
+    
+    public function actionDesignDelete()
+    {
+        if (Yii::$app->request->isPost) {
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+                $moqup_id = trim(Yii::$app->request->post('id'));
+                if(\app\models\Moqup::find()->where(['id' => $moqup_id])->one()->delete()) {
+                    return [
+                        "status" => "success"
+                    ];
+                }
+                else {
+                    return [
+                        "status" => "failure"
+                    ];
+                }
+            }
+        }
     }
 
     /**
