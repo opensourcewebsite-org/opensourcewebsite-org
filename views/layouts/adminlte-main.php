@@ -28,7 +28,7 @@ if (!empty($languages)) {
     foreach ($languages as $lang) {
         //Check if the language is the active
         $active = ($lang->code == Yii::$app->language) ? 'active' : '';
-        $langOpt[] = ['label' => Yii::t('language', $lang->name_ascii), 'url' => ['site/change-language', 'lang' => $lang->code], 'options' => ['class' => $active]];
+        $langOpt[] = ['label' => Yii::t('language', $lang->name_ascii), 'url' => ['site/change-language', 'lang' => $lang->code], 'linkOptions' => ['class' => "dropdown-item $active"]];
     }
 }
 
@@ -66,8 +66,23 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     'size' => 20
                 ]) . ' ' . Yii::$app->user->identity->email,
                 'items' => [
-                    ['label' => Yii::t('app', 'Account'), 'url' => ['site/account'], 'linkOptions' => ['tabindex' => -1]],
-                    ['label' => Yii::t('app', 'Logout'), 'url' => ['site/logout'], 'linkOptions' => ['data-method' => 'post', 'tabindex' => -1]],
+                    [
+                        'label' => Yii::t('app', 'Account'), 
+                        'url' => ['site/account'], 
+                        'linkOptions' => [
+                            'tabindex' => -1, 
+                            'class' => 'dropdown-item ' . ((Yii::$app->controller->id . '/' . Yii::$app->controller->action->id == 'site/account') ? 'active' : ''),
+                        ]
+                    ],
+                    [
+                        'label' => Yii::t('app', 'Logout'), 
+                        'url' => ['site/logout'], 
+                        'linkOptions' => [
+                            'data-method' => 'post', 
+                            'tabindex' => -1, 
+                            'class' => 'dropdown-item'
+                        ]
+                    ],
                 ],
                 'encode' => FALSE,
                 'options' => ['class' => 'nav-item'],
@@ -115,7 +130,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
                                         <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
-                                            <i class="fa fa-circle-o nav-icon"></i>
+                                            <i class="far fa-circle nav-icon"></i>
                                             <p>Moqups</p>
                                         </a>
                                     </li>

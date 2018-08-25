@@ -25,10 +25,15 @@ $config = [
             'appendTimestamp' => true,
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
-                    'css' => [],
+                    'css' => ['plugins/bootstrap/css/bootstrap.css'],
+                    'sourcePath' => '@vendor/almasaeed2010/adminlte',
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
                     'css' => [],
+                ],
+                'yii\bootstrap\BootstrapPluginAsset' => [
+                    'js' => ['plugins/bootstrap/js/bootstrap.js'],
+                    'sourcePath' => '@vendor/almasaeed2010/adminlte',
                 ],
             ],
         ],
