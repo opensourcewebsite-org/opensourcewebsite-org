@@ -3,9 +3,12 @@
 
 use yii\helpers\Url;
 use yii\helpers\Html;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
 
 $this->title = Yii::t('menu', 'Moqups');
 ?>
+<?php Pjax::begin(); ?>
 <div class="card">
     <div class="card-header d-flex p-0">
         <h3 class="card-title p-3">
@@ -13,103 +16,100 @@ $this->title = Yii::t('menu', 'Moqups');
         </h3>
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-add']) ?>"><button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="Create New"><i class="fa fa-plus"></i></button></a>
-            </li>
-            <?php
-            $all_active = '';
-            $your_active = '';
-            if ($viewMode) {
-                $your_active = ' active';
-            } else {
-                $all_active = ' active';
-            }
-            ?>
-            <li class="nav-item">
-                <a class="nav-link show<?= $all_active; ?>" href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>">All <span class="badge badge-light ml-1"><?= count($moqups); ?></span></a>
+                <?= Html::a('<i class="fa fa-plus"></i>', 
+                    ['moqup/design-edit'], [
+                        'class' => 'btn btn-outline-success',
+                        'title' => Yii::t('moqup', 'Create New'),
+                    ]); ?>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?= $your_active; ?>" href="<?= Url::to(['moqup/design-list/', 'viewMode' => '1']); ?>">Your <span class="badge badge-light ml-1"><?= count($your_moqups); ?></span></a>
+                <?= Html::a(Yii::t('moqup', 'All') . ' <span class="badge badge-light ml-1">' . $countAll . '</span>', 
+                    ['moqup/design-list'], [
+                        'class' => 'nav-link show ' . ($viewYours != 1 ? 'active' : ''),
+                    ]); ?>
+            </li>
+            <li class="nav-item">
+                <?= Html::a(Yii::t('moqup', 'Yours') . ' <span class="badge badge-light ml-1">' . $countYours . '</span>', 
+                    ['moqup/design-list', 'viewYours' => 1], [
+                        'class' => 'nav-link ' . ($viewYours == 1 ? ' active' : ''),
+                    ]); ?>
             </li>
         </ul>
     </div>
     <div class="card-body p-0">
-        <div class="card-body table-responsive p-0">
-            <table class="table table-hover" id="list_table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>User</th>
-                        <th>Date</th>
-                        <th data-orderable="false"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    if ($viewMode) {
-                        if (count($your_moqups) > 0) {
-                            foreach ($your_moqups as $moqup) {
-                                ?>
-                                <tr>
-                                    <td><?= $moqup['title']; ?></td>
-                                    <td><?= $moqup['username']; ?></td>
-                                    <td>
-                                        <?php
-                                        $formatter = \Yii::$app->formatter;
-                                        $moqup_date = $formatter->asDate($moqup['created_at']);
-                                        echo $moqup_date;
-                                        ?>
-                                    </td>
-                                    <td class="text-right">
-                                        <a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank">
-                                            <button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview">
-                                                <i class="fas fa-external-link-alt"></i>
-                                            </button>
-                                        </a>
-                                        <a href="<?= Url::to(['moqup/design-edit/', 'id' => $moqup['id']]); ?>">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary"  data-toggle="tooltip" data-placement="top" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </a>
-                                        <?= Html::a('<button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="tooltip" data-placement="top" title="Delete"> '
-                                                . '<i class="fas fa-trash-alt"></i> '
-                                            . '</button>', ['moqup/design-delete/', 'id' => $moqup['id']], [
-                                                'data-method' => 'post',
-                                                'class' => 'delete-moqup-anchor',
-                                            ]) ?>
-                                    </td>
-                                </tr>
-                                <?php
-                            }
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'filterPosition' => false,
+            'summary' => false,
+            'tableOptions' => ['class' => 'table table-hover'],
+            'columns' => [
+                [
+                    'attribute' => 'title',
+                    'contentOptions' => ['style' => 'width: ' . (($viewYours) ? '45%' : '25%') . '; white-space: normal']
+                ],
+                [
+                    'attribute' => 'user_id',
+                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
+                    'value' => function($model){
+                        return $model->user->username;
+                    },
+                    'visible' => $viewYours == false,
+                ],
+                [
+                    'attribute' => 'created_at',
+                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
+                    'format' => ['date', 'php:Y-m-d h:i a']
+                ],
+                [
+                    'attribute' => 'updated_at',
+                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
+                    'format' => ['date', 'php:Y-m-d h:i a']
+                ],
+                
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'buttons' => [
+                        'view' => function ($url, $model, $key) {
+                            $content = '<i class="fas fa-external-link-alt"></i>';
+                            return Html::a($content, ['moqup/design-view/', 'id' => $model->id], [
+                                'data-pjax' => 0,
+                                'target' => '_blank',
+                                'class' => 'btn btn-sm btn-outline-primary',
+                                'title' => 'View',
+                            ]);
+                        },
+                        'update' => function ($url, $model, $key) {
+                            $content = '<i class="fas fa-edit"></i>';
+                            return Html::a($content, ['moqup/design-edit/', 'id' => $model->id], [
+                                'data-pjax' => 0,
+                                'class' => 'btn btn-sm btn-outline-secondary',
+                                'title' => 'Edit',
+                            ]);
+                        },
+                        'delete' => function ($url, $model, $key) {
+                            $content = '<i class="fas fa-trash-alt"></i>';
+                            return Html::a($content, ['moqup/design-delete/', 'id' => $model->id], [
+                                'data-pjax' => 0,
+                                'data-method' => 'post',
+                                'class' => 'delete-moqup-anchor btn btn-sm btn-outline-danger',
+                                'title' => 'Delete',
+                            ]);
                         }
-                    } else {
-                        if (count($moqups) > 0) {
-                            foreach ($moqups as $moqup) {
-                                ?>
-                                <tr>
-                                    <td><?= $moqup['title']; ?></td>
-                                    <td><?= $moqup['username']; ?></td>
-                                    <td>
-                                        <?php
-                                        $moqup_date_time = strtotime($moqup['created_at']);
-                                        $moqup_date = date('d-m-Y', $moqup_date_time);
-                                        echo $moqup_date;
-                                        ?>
-                                    </td>
-                                    <td class="text-right"><a href="<?= Url::to(['moqup/design-view/', 'id' => $moqup['id']]); ?>" target="_blank"><button type="button" class="btn btn-sm btn-outline-primary"  data-toggle="tooltip" data-placement="top" title="Preview"><i class="fas fa-external-link-alt"></i></button></a></td>
-                                </tr>
-                                <?php
-                            }
-                        }
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+                    ],
+                    'visibleButtons' => [
+                        'update' => $viewYours,
+                        'delete' => $viewYours,
+                    ],
+                ],
+            ],
+        ]); ?>
     </div>
 </div>
 
+
 <?php
-$this->registerJs('$(".delete-moqup-anchor").click(function(event) {
+$this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
     event.preventDefault();
     var url = $(this).attr("href");
 
@@ -126,3 +126,5 @@ $this->registerJs('$(".delete-moqup-anchor").click(function(event) {
 
     return false;
 });');
+
+Pjax::end();
