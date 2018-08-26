@@ -10,6 +10,7 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use app\models\User;
 use app\models\Moqup;
+use app\models\MoqupSearch;
 use app\models\Css;
 use yii\db\Query;
 
@@ -50,112 +51,102 @@ class MoqupController extends Controller
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
         ];
     }
     
-    public function actionDesignList($viewMode = NULL)
+    /**
+     * Shows a list of the registered moqups
+     */
+    public function actionDesignList($viewYours = false)
     {
-        if (!empty($viewMode)) {
-            $viewMode = 1;
-        } else {
-            $viewMode = 0;
+        $searchModel = new MoqupSearch();
+        $params = Yii::$app->request->queryParams;
+
+        if ($viewYours) {
+            $params['viewYours'] = true;
         }
-        $query = new Query;
-//        $query = new \yii\db\Query;
-        $query->select(['moqup.*', 'user.username as username'])
-                ->from('moqup')
-                ->where(['!=', 'user_id', Yii::$app->user->id])
-                ->leftJoin('user', 'moqup.user_id = user.id')
-                ->all();
 
-        $command = $query->createCommand();
-        $moqups = $command->queryAll();
+        $dataProvider = $searchModel->search($params);
 
-        $your_moqups_qry = new Query;
-        $your_moqups_qry->select(['moqup.*', 'user.username as username'])
-                ->from('moqup')
-                ->where(['user_id' => Yii::$app->user->id])
-                ->leftJoin('user', 'moqup.user_id = user.id')
-                ->all();
-
-        $your_moqups_cmd = $your_moqups_qry->createCommand();
-        $your_moqups = $your_moqups_cmd->queryAll();
-
-        return $this->render('design-list', ['viewMode' => $viewMode, 'moqups' => $moqups, 'your_moqups' => $your_moqups]);
+        $countYours = Moqup::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
+        $countAll = Moqup::find()->where(['!=', 'user_id', Yii::$app->user->identity->id])->count();
+        
+        return $this->render('design-list', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'viewYours' => $viewYours,
+            'countYours' => $countYours,
+            'countAll' => $countAll,
+        ]);
     }
 
     public function actionDesignView($id)
     {
-        $moqup = Moqup::find()
-                ->where(['id' => $id])
-                ->one();
-        $css = Css::find()
-                ->where(['moqup_id' => $id])
-                ->one();
+        $moqup = Moqup::findOne($id);
+        $css = $moqup->css;
+        
         return $this->render('design-view', ['moqup' => $moqup, 'css' => $css]);
     }
 
-    public function actionDesignAdd()
+    /**
+     * Create or edit a moqup
+     * @param integer $id The id of the moqup to be updated
+     */
+    public function actionDesignEdit($id = null)
     {
-        if (Yii::$app->request->isPost) {
-            $formatter = \Yii::$app->formatter;
-            $now = $formatter->asDateTime('now');
-            $now = strtotime($now);
-
-            $moqup = new Moqup;
-            $moqup->user_id = Yii::$app->user->id;
-            $moqup->title = Yii::$app->request->post('title');
-            $moqup->html = Yii::$app->request->post('html');
-            $moqup->created_at = $now;
-            $moqup->updated_at = $now;
-            $moqup->save();
-
+        if ($id == null) {
+            $moqup = new Moqup(['user_id' => Yii::$app->user->identity->id]);
             $css = new Css;
-            $css->moqup_id = $moqup->id;
-            $css->css = Yii::$app->request->post('css');
-            $css->created_at = $now;
-            $css->updated_at = $now;
-            $css->save();
-//            Yii::$app->session->setFlash('success', 'Your new moqup has been saved.');
-            return $this->redirect(['moqup/design-list']);
+        } else {
+            $moqup = Moqup::findOne($id);
+
+            if ($moqup == null) {
+                throw new \yii\web\NotFoundHttpException;
+            }
+
+            if ($moqup->css != null) {
+                $css = $moqup->css;
+            } else {
+                $css = new Css;
+            }
         }
-        \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
-        return $this->render('design-add');
+
+        if ($moqup->load(Yii::$app->request->post()) && $css->load(Yii::$app->request->post())) {
+            $success = false;
+            $transaction = Yii::$app->db->beginTransaction();
+
+            if ($moqup->save()) {
+                $success = true;
+
+                if ($css->css != '') {
+                    $css->moqup_id = $moqup->id;
+
+                    if ($css->save()) {
+                        $success = true;
+                    } else {
+                        $success = false;
+                    }
+                }
+
+                if ($success) {
+                    $transaction->commit();
+                    return $this->redirect(['moqup/design-list', 'viewYours' => true]);
+                } else {
+                    $transaction->rollBack();
+                }
+            }
+        }
+
+        return $this->render('design-edit', [
+            'moqup' => $moqup,
+            'css' => $css,
+        ]);
     }
 
-    public function actionDesignEdit($id)
-    {
-        $moqup = Moqup::find()
-                ->where(['id' => $id])
-                ->one();
-        $css = Css::find()
-                ->where(['moqup_id' => $id])
-                ->one();
-        if (Yii::$app->request->isPost) {
-            $formatter = \Yii::$app->formatter;
-            $now = $formatter->asDateTime('now');
-            $now = strtotime($now);
-
-            $moqup->user_id = Yii::$app->user->id;
-            $moqup->title = Yii::$app->request->post('title');
-            $moqup->html = Yii::$app->request->post('html');
-            $moqup->updated_at = $now;
-            $moqup->save();
-
-            $css->css = Yii::$app->request->post('css');
-            $css->updated_at = $now;
-            $css->save();
-//            Yii::$app->session->setFlash('success', 'Moqup has been updated.');
-            return $this->redirect(['moqup/design-list']);
-        }
-        \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
-        return $this->render('design-edit', ['moqup' => $moqup, 'css' => $css]);
-    }
-
+    /**
+     * Deletes a moqup
+     * @param integer $id The id of the moqup being deleted
+     */
     public function actionDesignDelete($id)
     {
         $moqup = Moqup::findOne($id);
