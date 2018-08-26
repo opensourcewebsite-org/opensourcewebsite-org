@@ -16,20 +16,20 @@ $this->title = Yii::t('menu', 'Moqups');
         </h3>
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <?= Html::a('<i class="fa fa-plus"></i>', 
+                <?= Html::a('<i class="fa fa-plus"></i>',
                     ['moqup/design-edit'], [
                         'class' => 'btn btn-outline-success',
                         'title' => Yii::t('moqup', 'Create New'),
                     ]); ?>
             </li>
             <li class="nav-item">
-                <?= Html::a(Yii::t('moqup', 'All') . ' <span class="badge badge-light ml-1">' . $countAll . '</span>', 
+                <?= Html::a(Yii::t('moqup', 'All') . ' <span class="badge badge-light ml-1">' . $countAll . '</span>',
                     ['moqup/design-list'], [
                         'class' => 'nav-link show ' . ($viewYours != 1 ? 'active' : ''),
                     ]); ?>
             </li>
             <li class="nav-item">
-                <?= Html::a(Yii::t('moqup', 'Yours') . ' <span class="badge badge-light ml-1">' . $countYours . '</span>', 
+                <?= Html::a(Yii::t('moqup', 'Yours') . ' <span class="badge badge-light ml-1">' . $countYours . '</span>',
                     ['moqup/design-list', 'viewYours' => 1], [
                         'class' => 'nav-link ' . ($viewYours == 1 ? ' active' : ''),
                     ]); ?>
@@ -51,22 +51,15 @@ $this->title = Yii::t('menu', 'Moqups');
                 [
                     'attribute' => 'user_id',
                     'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
-                    'value' => function($model){
-                        return $model->user->username;
+                    'value' => function($model) {
+                        return $model->user->email;
                     },
                     'visible' => $viewYours == false,
                 ],
                 [
-                    'attribute' => 'created_at',
-                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
-                    'format' => ['date', 'php:Y-m-d h:i a']
-                ],
-                [
                     'attribute' => 'updated_at',
-                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
-                    'format' => ['date', 'php:Y-m-d h:i a']
+                    'format' => 'relativeTime',
                 ],
-                
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'buttons' => [
@@ -122,7 +115,7 @@ $this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
                 alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to delete the moqup') . '");
             }
         });
-    } 
+    }
 
     return false;
 });');
