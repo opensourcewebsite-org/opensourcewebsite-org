@@ -45,7 +45,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
         <title><?= Html::encode(Yii::$app->name . ($this->title ? " - $this->title" : '')) ?></title>
         <?php $this->head() ?>
     </head>
-    <body class="sidebar-mini sidebar-open">
+    <body class="sidebar-mini">
         <?php $this->beginBody() ?>
         <div class="wrapper">
             <?php
