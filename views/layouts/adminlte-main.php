@@ -143,6 +143,34 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 </ul>
                             </li>
                         </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language']) ? 'menu-open' : '' ?>">
+                                <a href="#" class="nav-link <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language']) ? 'active' : '' ?>">
+                                    <i class="nav-icon fa fa-edit"></i>
+                                    <p>Data<i class="fa fa-angle-left right"></i></p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="<?= Yii::$app->urlManager->createUrl(['data/country']) ?>" class="nav-link <?= in_array($currentUrl, ['data/country']) ? 'active' : '' ?>">
+                                            <i class="fa fa-map-signs nav-icon"></i>
+                                            <p>Country</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="<?= Yii::$app->urlManager->createUrl(['data/currency']) ?>" class="nav-link <?= in_array($currentUrl, ['data/currency']) ? 'active' : '' ?>">
+                                            <i class="fa fa-credit-card nav-icon"></i>
+                                            <p>Currency</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="<?= Yii::$app->urlManager->createUrl(['data/language']) ?>" class="nav-link <?= in_array($currentUrl, ['data/language']) ? 'active' : '' ?>">
+                                            <i class="fa fa-language nav-icon"></i>
+                                            <p>Language</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
                     </nav><!-- /.sidebar-menu -->
                 </div><!-- /.sidebar -->
             </aside><!-- /.main-sidebar -->
