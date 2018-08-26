@@ -1,10 +1,12 @@
 <?php
+
 /* @var $this \yii\web\View */
 
 /* @var $content string */
 
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
+use app\assets\AppAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Nav;
 use app\widgets\NavBar;
@@ -14,6 +16,7 @@ use cebe\gravatar\Gravatar;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
+AppAsset::register($this);
 
 $this->registerCss('#lang-menu{
     overflow: auto;

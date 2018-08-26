@@ -4,7 +4,7 @@
 
 /* @var $content string */
 
-use app\assets\AdminLteGuestAsset;
+use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Modal;
@@ -14,7 +14,7 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 
-AdminLteGuestAsset::register($this);
+AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 
 $this->registerCss('#lang-menu{
