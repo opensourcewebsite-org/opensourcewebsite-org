@@ -16,11 +16,11 @@ $this->title = Yii::t('menu', 'Moqups');
         </h3>
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-edit']) ?>">
-                    <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="Create New">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </a>
+                <?= Html::a('<i class="fa fa-plus"></i>', 
+                    ['moqup/design-edit'], [
+                        'class' => 'btn btn-outline-success',
+                        'title' => Yii::t('moqup', 'Create New'),
+                    ]); ?>
             </li>
             <li class="nav-item">
                 <?= Html::a(Yii::t('moqup', 'All') . ' <span class="badge badge-light ml-1">' . $countAll . '</span>', 
