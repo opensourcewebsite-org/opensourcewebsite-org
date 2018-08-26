@@ -25,7 +25,7 @@ class MoqupController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['design-add', 'design-list', 'design-view', 'design-edit', 'design-delete'],
+                'only' => ['design-add', 'design-list', 'design-view', 'design-edit', 'design-delete', 'design-preview'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -168,6 +168,15 @@ class MoqupController extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * Renders a page to preview the moqups
+     */
+    public function actionDesignPreview()
+    {
+        $this->layout = 'adminlte-moqup-preview';
+        return $this->render('design-preview');
     }
 
     /**

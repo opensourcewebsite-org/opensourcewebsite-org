@@ -31,7 +31,7 @@ $this->endBlock();
                 <?= Html::ul([
                     Html::a('HTML', '#html', ['class' => 'nav-link active', 'data-toggle' => 'tab']),
                     Html::a('CSS (optional)', '#css', ['class' => 'nav-link', 'data-toggle' => 'tab']),
-                    Html::a('Preview', '#preview', ['class' => 'nav-link', 'data-toggle' => 'tab']),
+                    Html::a('Preview', '#preview', ['class' => 'nav-link', 'data-toggle' => 'tab', 'id' => 'toggle-prev']),
                 ], [
                     'class' => 'nav nav-pills ml-auto p-2',
                     'encode' => false,
@@ -55,7 +55,9 @@ $this->endBlock();
                         ])->label(false) ?>
                     </div>
                     <div class="tab-pane" id="preview">
-                        <p>Coming soon</p>
+                        <div class="row">
+                            <iframe id="prev-frame" src="<?= yii::$app->urlManager->createUrl(['moqup/design-preview']) ?>" frameborder="0" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-pointer-lock" class="col-md-12"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,4 +84,22 @@ $this->endBlock();
         <?php endif; ?>
     </div>
 </div>
-<?php ActiveForm::end(); ?>
+<?php 
+ActiveForm::end();
+
+$this->registerjs('$("#toggle-prev").on("show.bs.tab", function() {
+    var prevFrame = $("#prev-frame").contents();
+    var prevCont = prevFrame.find("#prev-content");
+    var prevStyle = prevFrame.find("#prev-style");
+    
+    var currentCont = $("#moqup-html").val();
+    var currentStyle = $("#css-css").val();
+
+    prevCont.html(currentCont);
+    prevStyle.html(currentStyle);
+})');
+
+$this->registerjs('$("#toggle-prev").on("shown.bs.tab", function() {
+    var prevHeight = $("#prev-frame").contents().height();
+    $("#prev-frame").css("min-height", prevHeight + "px");
+})');
