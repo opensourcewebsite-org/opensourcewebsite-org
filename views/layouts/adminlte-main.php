@@ -122,8 +122,8 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <!-- Sidebar Menu -->
                     <nav class="mt-2">
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'menu-open' : '' ?>">
-                                <a href="#" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit', 'user/display']) ? 'menu-open' : '' ?>">
+                                <a href="#" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit', 'user/display']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-edit"></i>
                                     <p>Developer<i class="fa fa-angle-left right"></i></p>
                                 </a>
@@ -132,6 +132,12 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                         <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Moqups</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="<?= Yii::$app->urlManager->createUrl(['user/display']) ?>" class="nav-link <?= in_array($currentUrl, ['user/display']) ? 'active' : '' ?>">
+                                            <i class="fa fa-users nav-icon"></i>
+                                            <p>Users</p>
                                         </a>
                                     </li>
                                 </ul>
