@@ -24,7 +24,7 @@ class MoqupController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
+                'only' => ['design-add', 'design-list', 'design-view', 'design-edit', 'design-delete'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -35,7 +35,7 @@ class MoqupController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'design-delete' => ['post'],
                 ],
             ],
         ];
@@ -154,6 +154,29 @@ class MoqupController extends Controller
         }
         \Yii::$app->getView()->registerJsFile(\Yii::$app->request->BaseUrl . '/js/common.js');
         return $this->render('design-edit', ['moqup' => $moqup, 'css' => $css]);
+    }
+
+    public function actionDesignDelete($id)
+    {
+        $moqup = Moqup::findOne($id);
+
+        $css = Css::find()
+            ->where(['moqup_id' => $id])
+            ->one();
+
+        if ($moqup != null) {
+            if ($css != null) {
+                if (!$css->delete()) {
+                    return false;
+                }
+            }
+
+            if ($moqup->delete()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
