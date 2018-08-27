@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use yii\web\Controller;
 use app\models\Country;
+use app\models\Setting;
 use app\models\Currency;
 use app\models\Language;
 use yii\data\Pagination;
@@ -19,7 +20,7 @@ class DataController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['country', 'currency', 'language'],
+                'only' => ['country', 'currency', 'language', 'setting'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -82,6 +83,21 @@ class DataController extends Controller
             ->all();
 
         return $this->render('language', [
+            'models' => $models,
+            'pages' => $pages,
+        ]);
+    }
+
+    public function actionSetting()
+    {
+        $setting = Setting::find();
+        $countQuery = clone $setting;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $setting->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('setting', [
             'models' => $models,
             'pages' => $pages,
         ]);
