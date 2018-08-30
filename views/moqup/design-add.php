@@ -16,7 +16,7 @@ $this->title = Yii::t('menu', 'Edit design');
         <div class="card-body">
             <div class="alert alert-info">
                 <h5><i class="icon fa fa-info"></i> Important!</h5>
-                Use UI elements from <?= Html::a('AdminLTE 3', 'https://adminlte.io/themes/dev/AdminLTE/index3.html') ?> and <?= Html::a('Bootstrap 4', 'https://getbootstrap.com/docs/4.1/getting-started/introduction/') ?> examples.
+                Use UI elements from <?= Html::a('AdminLTE 3', 'https://adminlte.io/themes/dev/AdminLTE/index3.html') ?>, <?= Html::a('Bootstrap 4', 'https://getbootstrap.com/docs/4.1/getting-started/introduction/') ?> and <?= Html::a('Font Awesome 5', 'https://fontawesome.com/icons') ?> examples.
             </div>
             <div class="row">
                 <div class="col-md-12">
