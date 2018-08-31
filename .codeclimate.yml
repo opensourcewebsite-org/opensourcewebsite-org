@@ -19,6 +19,11 @@ plugins:
     enabled: true
     config:
       file_extensions: "php"
+    checks:
+      PhanUndeclaredClassMethod:
+        enabled: false
+      PhanUndeclaredProperty:
+        enabled: false
   phpcodesniffer:
     enabled: true
     config:
