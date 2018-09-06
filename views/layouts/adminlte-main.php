@@ -59,6 +59,15 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
             ]);
 
             $menuItemsLeft[] = ['label' => '', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link fa fa-bars']];
+
+            $menuItemsRight[] = [
+                'label' => Html::tag('span', '<i class="fas fa-globe"></i>'),
+                'items' => $langOpt,
+                'encode' => FALSE,
+                'dropDownOptions' => ['id' => 'lang-menu'],
+                'options' => ['class' => 'nav-item'],
+                'linkOptions' => ['class' => 'nav-link'],
+            ];
             $menuItemsRight[] = [
                 'label' => Gravatar::widget([
                     'email' => Yii::$app->user->identity->email,
@@ -67,7 +76,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                         'class' => 'img-circle',
                     ],
                     'size' => 20
-                ]) . ' ' . Yii::$app->user->identity->email,
+                ]),
                 'items' => [
                     [
                         'label' => Yii::t('app', 'Account'),
@@ -88,15 +97,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     ],
                 ],
                 'encode' => FALSE,
-                'options' => ['class' => 'nav-item'],
-                'linkOptions' => ['class' => 'nav-link'],
-            ];
-            $menuItemsRight[] = [
-                'label' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-globe'])
-                . (Yii::t('menu', 'Language')),
-                'items' => $langOpt,
-                'encode' => FALSE,
-                'dropDownOptions' => ['id' => 'lang-menu'],
                 'options' => ['class' => 'nav-item'],
                 'linkOptions' => ['class' => 'nav-link'],
             ];
