@@ -14,8 +14,8 @@ class m180908_092641_create_junction_user_and_wiki_page_table extends Migration
     public function safeUp()
     {
         $this->createTable('user_wiki_page', [
-            'user_id' => $this->integer(),
-            'wiki_page_id' => $this->integer(),
+            'user_id' => $this->integer()->unsigned(),
+            'wiki_page_id' => $this->integer()->unsigned(),
             'PRIMARY KEY(user_id, wiki_page_id)',
         ]);
     }
