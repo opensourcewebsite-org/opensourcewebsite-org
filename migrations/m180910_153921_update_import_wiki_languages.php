@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m180910_150403_update_import_wiki_languages
+ * Class m180910_153921_update_import_wiki_languages
  */
-class m180910_150403_update_import_wiki_languages extends Migration
+class m180910_153921_update_import_wiki_languages extends Migration
 {
 
     /**

@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `wiki_page`.
  */
-class m180906_150952_create_wiki_page_table extends Migration
+class m180910_154053_create_wiki_page_table extends Migration
 {
 
     /**
@@ -21,6 +21,12 @@ class m180906_150952_create_wiki_page_table extends Migration
             'group_id' => $this->integer()->unsigned(),
             'updated_at' => $this->integer()->unsigned()
         ]);
+
+        $this->createIndex('{{%idx-wiki_page-title}}', '{{%wiki_page}}', 'title');
+
+        $this->createIndex('{{%idx-wiki_page-language_id}}', '{{%wiki_page}}', 'language_id');
+
+        $this->addForeignKey('{{%fk-wiki_page-language}}', '{{%wiki_page}}', 'language_id', '{{%wiki_language}}', 'id', 'CASCADE');
     }
 
     /**

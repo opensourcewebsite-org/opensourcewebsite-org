@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `wiki_language`.
  */
-class m180910_150230_create_wiki_language_table extends Migration
+class m180910_153817_create_wiki_language_table extends Migration
 {
 
     /**
