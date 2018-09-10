@@ -69,7 +69,7 @@ class WikiPage extends ActiveRecord
 
     public function getLanguage()
     {
-        return $this->hasOne(Language::class, ['id' => 'language_id']);
+        return $this->hasOne(WikiLanguage::class, ['id' => 'language_id']);
     }
 
     public function getUrlTitle()

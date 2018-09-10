@@ -5,7 +5,7 @@ namespace app\controllers;
 use Yii;
 use yii\helpers\Url;
 use yii\web\Controller;
-use app\models\Language;
+use app\models\WikiLanguage;
 use app\models\UserWikiToken;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
@@ -64,7 +64,7 @@ class WikipediaPagesController extends Controller
      */
     public function actionView($code)
     {
-        if (!$language = Language::findOne(['code' => $code])) {
+        if (!$language = WikiLanguage::findOne(['code' => $code])) {
             throw new NotFoundHttpException();
         }
 
@@ -111,12 +111,12 @@ class WikipediaPagesController extends Controller
     /**
      * @param $code
      *
-     * @return Language
+     * @return WikiLanguage
      * @throws NotFoundHttpException
      */
     protected function findLanguage($code)
     {
-        if (!$language = Language::findOne(['code' => $code])) {
+        if (!$language = WikiLanguage::findOne(['code' => $code])) {
             throw new NotFoundHttpException();
         }
 

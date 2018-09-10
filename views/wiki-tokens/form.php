@@ -1,8 +1,8 @@
 <?php
 
 use yii\helpers\Html;
-use app\models\Language;
 use kartik\select2\Select2;
+use app\models\WikiLanguage;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
 use app\models\UserWikiToken;
@@ -22,7 +22,7 @@ use app\models\UserWikiToken;
             <?php if ($model->isNewRecord): ?>
                 <div class="form-group">
                     <?= $form->field($model, 'language_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map(Language::find()->where(
+                        'data' => ArrayHelper::map(WikiLanguage::find()->where(
                                 [
                                     'not in', 'id',
                                         UserWikiToken::find()
