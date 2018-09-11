@@ -101,6 +101,9 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
+                'wikipedia-pages' => 'wikipedia-pages/index',
+                'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
+                'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
 //                '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],

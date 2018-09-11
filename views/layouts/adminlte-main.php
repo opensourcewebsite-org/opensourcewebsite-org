@@ -13,6 +13,7 @@ use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
+use yii\bootstrap\Modal;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -50,6 +51,24 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
     </head>
     <body class="sidebar-mini">
         <?php $this->beginBody() ?>
+        <?php Modal::begin([
+            'id' => 'main-modal',
+            'size' => Modal::SIZE_LARGE,
+            'closeButton' => false,
+            'clientEvents' => [
+                'show.bs.modal' => 'function (e) {
+                    $("#main-modal").addClass("show");
+                }',
+                'hide.bs.modal' => 'function (e) {
+                    $("#main-modal").removeClass("show");
+                }',
+            ],
+            'options' => ['class' => 'card-primary', 'tabindex' => false],
+            'header' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
+            'headerOptions' => ['class' => 'card-header'],
+            'bodyOptions' => ['id' => 'main-modal-body'],
+        ]);
+        Modal::end(); ?>
         <div class="wrapper">
             <?php
             NavBar::begin([
@@ -178,6 +197,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                         </a>
                                     </li>
                                 </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['wikipedia-pages/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['wikipedia-pages']) ?>" class="nav-link <?= in_array($currentUrl, ['wikipedia-pages/index']) ? 'active' : '' ?>">
+                                    <i class="nav-icon fa fa-book"></i>
+                                    <p>Wikipedia Watchlists</p>
+                                </a>
                             </li>
                         </ul>
                     </nav><!-- /.sidebar-menu -->
