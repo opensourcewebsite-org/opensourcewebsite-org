@@ -1,6 +1,8 @@
 exclude_patterns:
-- "/vendor"
-- "yii/"
+  - "/vendor/"
+  - "/yii/"
+exclude_paths:
+  - "vendor/*"
 plugins:
   csslint:
     enabled: true
