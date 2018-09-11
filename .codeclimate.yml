@@ -1,8 +1,11 @@
-exclude_patterns:
-  - "/vendor/"
-  - "/yii/"
-exclude_paths:
-  - "vendor/*"
+version: "2"
+checks:
+  file-lines:
+    enabled: false
+  method-complexity:
+    enabled: false
+  method-lines:
+    enabled: false
 plugins:
   csslint:
     enabled: true
@@ -49,3 +52,6 @@ plugins:
       languages:
       - javascript
       - php
+exclude_patterns:
+  - "/vendor/"
+  - "/yii/"
