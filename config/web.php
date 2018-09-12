@@ -83,11 +83,11 @@ $config = [
                 ],
                 'mail' => [
                     'class' => EmailTarget::class,
-                    'enabled' => getenv('EMAIL_LOG'),
+                    'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
                     'levels' => ['error', 'warning'],
                     'message' => [
                         'subject' => 'OpenSourceWebsite bug log',
-                        'to' => getenv('EMAIL_LOG'),
+                        'to' => $params['securityEmail'],
                     ],
                     'except' => [
                         'yii\web\HttpException:400',
