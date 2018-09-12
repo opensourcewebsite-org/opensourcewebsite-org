@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-$this->title = 'Edit account';
+$this->title = 'Account';
 ?>
 
 <div class="user-profile-form">

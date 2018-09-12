@@ -1,3 +1,11 @@
+version: "2"
+checks:
+  file-lines:
+    enabled: false
+  method-complexity:
+    enabled: false
+  method-lines:
+    enabled: false
 plugins:
   csslint:
     enabled: true
@@ -16,11 +24,17 @@ plugins:
     enabled: true
     config:
       file_extensions: "php"
+    checks:
+      PhanUndeclaredClassMethod:
+        enabled: false
+      PhanUndeclaredProperty:
+        enabled: false
   phpcodesniffer:
     enabled: true
     config:
-      ignore_warnings: true
-      standard: "PSR1,PSR2"
+      file_extensions: "php"
+      standard: "PSR1,PSR2,Yii2"
+      encoding: utf-8
   phpmd:
     enabled: true
     config:
@@ -32,3 +46,12 @@ plugins:
       minimum_severity: critical
   stylelint:
     enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+exclude_patterns:
+  - "/vendor/"
+  - "/yii/"

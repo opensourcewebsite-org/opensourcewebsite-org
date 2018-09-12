@@ -1,0 +1,65 @@
+<!-- https://github.com/yiisoft/yii2-coding-standards/blob/master/Yii2/ruleset.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Yii2">
+    <description>Yii 2 Web Application Framework Coding Standard</description>
+    <rule ref="PSR2">
+        <!-- Property names MUST start with an initial underscore if they are private. -->
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+
+        <!-- Opening parenthesis of a multi-line function call must be the last content on the line. -->
+        <!-- Closing parenthesis of a multi-line function call must be on a line by itself. -->
+        <!-- Only one argument is allowed per line in a multi-line function call. -->
+        <exclude name="PEAR.Functions.FunctionCallSignature"/>
+
+        <!-- We don't have line length (line width) limits. -->
+        <exclude name="Generic.Files.LineLength"/>
+
+        <!-- CASE keyword must be indented 4 spaces from SWITCH keyword. -->
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
+    </rule>
+
+    <!-- Property declaration rules. -->
+    <!-- TODO: -->
+
+    <!-- Function call signature. -->
+    <!-- TODO: -->
+
+    <!-- Switch declaration. -->
+    <!-- TODO: -->
+
+    <!-- ... other Yii2 specific rules. -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <!-- If string doesn't contain variables or single quotes, use single quotes. -->
+    <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+        <!-- Not check variable substitution -->
+        <severity>0</severity>
+    </rule>
+
+    <!-- Ignore for migrations. -->
+    <!-- Ignore missing namespace for migrations -->
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>m\d{6}_\d{6}_.+\.php$</exclude-pattern>
+    </rule>
+    <!-- Ignore camel caps format for class name of migrations -->
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <exclude-pattern>m\d{6}_\d{6}_.+\.php$</exclude-pattern>
+    </rule>
+
+    <!-- Ignore for tests. -->
+    <!-- Ignore method name prefixed with underscore to indicate visibility -->
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>tests?/*(Cest|Test).php$</exclude-pattern>
+    </rule>
+    <!-- Ignore declare new symbols and execute logic with side effects same file -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>/tests?*/_bootstrap.php$</exclude-pattern>
+        <exclude-pattern>/web/(index|index-test).php$</exclude-pattern>
+    </rule>
+
+    <exclude-pattern>*/i18n/data/*</exclude-pattern>
+    <exclude-pattern>*/views/errorHandler/*</exclude-pattern>
+    <exclude-pattern>*/requirements/*</exclude-pattern>
+
+    <exclude-pattern>ProfileTarget.php</exclude-pattern>
+</ruleset>

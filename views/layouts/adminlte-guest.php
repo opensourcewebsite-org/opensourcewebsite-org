@@ -4,7 +4,7 @@
 
 /* @var $content string */
 
-use app\assets\AdminLteGuestAsset;
+use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Modal;
@@ -14,7 +14,7 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 
-AdminLteGuestAsset::register($this);
+AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 
 $this->registerCss('#lang-menu{
@@ -55,7 +55,7 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
     <?php $this->head() ?>
 </head>
 <body class="sidebar-collapse">
-<?php 
+<?php
 $this->beginBody();
 Modal::begin([
     'id' => 'main-modal',
@@ -168,12 +168,12 @@ Modal::end();
     <footer class="main-footer">
         <div class="container">
             <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
-            <?= Html::a(Yii::t('app', 'Career'), ['site/team']) ?> |
-            <?= Html::a(Yii::t('app', 'Code repository '), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
+            <?= Html::a(Yii::t('app', 'Contribution'), ['site/team']) ?> |
+            <?= Html::a(Yii::t('app', 'We\'re on GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
+            <?= Html::a(Yii::t('app', 'Join us on Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE') ?> |
+            <?= Html::a(Yii::t('app', 'Contact us'), ['site/contact']) ?><br />
             <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
-            <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?> |
-            <?= Html::a(Yii::t('app', 'Contact'), ['site/contact']) ?> |
-            <?= Html::a(Yii::t('app', 'Slack chat'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE') ?>
+            <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
         </div>
     </footer>
 </div>

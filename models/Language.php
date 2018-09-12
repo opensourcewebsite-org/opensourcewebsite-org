@@ -7,6 +7,7 @@ use Yii;
 /**
  * This is the model class for table "language".
  *
+ * @property integer $id
  * @property string $code
  * @property string $name
  * @property string $name_ascii
@@ -39,6 +40,7 @@ class Language extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
+            'id' => Yii::t('app', 'ID'),
             'code' => Yii::t('app', 'Code'),
             'name' => Yii::t('app', 'Name'),
             'name_ascii' => Yii::t('app', 'Name Ascii'),
