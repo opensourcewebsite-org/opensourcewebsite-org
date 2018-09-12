@@ -1,5 +1,7 @@
 <?php
 
+use yii\log\EmailTarget;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -79,6 +81,22 @@ $config = [
                     'categories' => ['yii\web\HttpException:400'],
                     'logFile' => '@runtime/logs/bad-requests.log',
                 ],
+                'mail' => [
+                    'class' => EmailTarget::class,
+                    'enabled' => getenv('EMAIL_LOG'),
+                    'levels' => ['error', 'warning'],
+                    'message' => [
+                        'subject' => 'OpenSourceWebsite bug log',
+                        'to' => getenv('EMAIL_LOG'),
+                    ],
+                    'except' => [
+                        'yii\web\HttpException:400',
+                        'yii\web\HttpException:403',
+                        'yii\web\HttpException:404',
+                        'yii\web\HttpException:429',
+                        'yii\i18n\PhpMessageSource',
+                    ],
+                ],
             ],
         ],
         'formatter' => [
@@ -124,15 +142,15 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
-            // uncomment the following to add your IP if you are not connecting from localhost.
-            //'allowedIPs' => ['127.0.0.1', '::1'],
+        // uncomment the following to add your IP if you are not connecting from localhost.
+        //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
-            // uncomment the following to add your IP if you are not connecting from localhost.
-            //'allowedIPs' => ['127.0.0.1', '::1'],
+        // uncomment the following to add your IP if you are not connecting from localhost.
+        //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
 }
 
