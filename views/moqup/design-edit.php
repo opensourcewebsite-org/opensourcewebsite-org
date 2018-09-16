@@ -115,11 +115,11 @@ $this->registerjs('$("#toggle-prev").on("shown.bs.tab", function() {
 
 //Activate the AceEditor
 $this->registerJs('htmlEditor = ace.edit("html-editor");
-    htmlEditor.setTheme("ace/theme/monokai");
+    htmlEditor.setTheme("ace/theme/chrome");
     htmlEditor.session.setMode("ace/mode/html");
 
     cssEditor = ace.edit("css-editor");
-    cssEditor.setTheme("ace/theme/monokai");
+    cssEditor.setTheme("ace/theme/chrome");
     cssEditor.session.setMode("ace/mode/css");');
 
 //Set the AceEditor values to the model inputs
