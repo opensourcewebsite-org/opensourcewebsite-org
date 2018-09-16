@@ -7,8 +7,11 @@ use yii\widgets\ActiveForm;
 $this->title = Yii::t('menu', ($moqup->isNewRecord) ? 'Add design' : 'Edit design');
 $this->beginBlock('content-header-data');
 $this->endBlock();
+\app\assets\AceEditorAsset::register($this);
 ?>
-<?php $form = ActiveForm::begin(); ?>
+<?php $form = ActiveForm::begin([
+    'id' => 'deign-edit-form'
+]); ?>
 <div class="card">
     <div class="card-header d-flex p-0">
         <h3 class="card-title p-3">
@@ -46,13 +49,17 @@ $this->endBlock();
                         <?= $form->field($moqup, 'html')->textArea([
                             'rows' => 10,
                             'max-length' => 100000,
+                            'style' => 'display:none',
                         ])->label(false) ?>
+                        <div id="html-editor" class="ace-editor"><?= Html::encode($moqup->html) ?></div>
                     </div>
                     <div class="tab-pane" id="css">
                         <?= $form->field($css, 'css')->textArea([
                             'rows' => 10,
                             'max-length' => 100000,
+                            'style' => 'display:none',
                         ])->label(false) ?>
+                        <div id="css-editor" class="ace-editor"><?= Html::encode($css->css) ?></div>
                     </div>
                     <div class="tab-pane" id="preview">
                         <div class="row">
@@ -87,19 +94,36 @@ $this->endBlock();
 <?php 
 ActiveForm::end();
 
+//Prepare the preview
 $this->registerjs('$("#toggle-prev").on("show.bs.tab", function() {
     var prevFrame = $("#prev-frame").contents();
     var prevCont = prevFrame.find("#prev-content");
     var prevStyle = prevFrame.find("#prev-style");
     
-    var currentCont = $("#moqup-html").val();
-    var currentStyle = $("#css-css").val();
+    var currentCont = htmlEditor.getValue();
+    var currentStyle = cssEditor.getValue();
 
     prevCont.html(currentCont);
     prevStyle.html(currentStyle);
 })');
 
+//Fix the preview frame height when shown
 $this->registerjs('$("#toggle-prev").on("shown.bs.tab", function() {
     var prevHeight = $("#prev-frame").contents().height();
     $("#prev-frame").css("min-height", prevHeight + "px");
 })');
+
+//Activate the AceEditor
+$this->registerJs('htmlEditor = ace.edit("html-editor");
+    htmlEditor.setTheme("ace/theme/monokai");
+    htmlEditor.session.setMode("ace/mode/html");
+
+    cssEditor = ace.edit("css-editor");
+    cssEditor.setTheme("ace/theme/monokai");
+    cssEditor.session.setMode("ace/mode/css");');
+
+//Set the AceEditor values to the model inputs
+$this->registerJs('$("#deign-edit-form").submit(function() {
+    $("#moqup-html").val(htmlEditor.getValue());
+    $("#css-css").val(cssEditor.getValue());
+});');
