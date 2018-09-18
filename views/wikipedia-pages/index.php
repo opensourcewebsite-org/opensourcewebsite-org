@@ -55,17 +55,6 @@ $countTokens = $tokensDataProvider->count;
                     ],
                     [
                         'class' => TitleColumn::class,
-                        'title' => 'List of titles of Wikipedia pages that our users watch and that you not watch.',
-                        'label' => 'Recommended pages',
-                        'value' => function ($model) {
-                            $count = $model->getAllPagesRatingCount() - $model->getWikiPagesIds()->count();
-
-                            return Html::a($count, ['wikipedia-page/recommended/' . $model->language->code]);
-                        },
-                        'format' => 'raw',
-                    ],
-                    [
-                        'class' => TitleColumn::class,
                         'title' => 'List of titles of Wikipedia pages that you watch.',
                         'label' => 'Your pages',
                         'value' => function ($model) use ($countTokens) {
