@@ -53,7 +53,7 @@ use app\models\UserWikiToken;
                 <div class="form-group">
                     <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
                     <?= Html::button(Yii::t('app', 'Close'), ['data-dismiss' => 'modal', 'class' => 'btn btn-default']) ?>
-                    <?php if (!$model->isNewRecord): ?>
+                    <?php if (!$model->isNewRecord) : ?>
                         <?= Html::a(Yii::t('app', 'Delete'), ['wiki-tokens/delete', 'id' => $model->id], [
                             'class' => 'btn btn-danger',
                             'data-pjax' => '0',
