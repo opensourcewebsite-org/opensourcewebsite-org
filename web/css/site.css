@@ -38,22 +38,26 @@ body {
 
 /* add sorting icons to gridview sort links */
 a.asc:after, a.desc:after {
+    font-family: 'Font Awesome 5 Free';
+    -moz-osx-font-smoothing:grayscale;
+    -webkit-font-smoothing:antialiased;
+    display:inline-block;
+    font-style:normal;
+    font-variant:normal;
+    text-rendering:auto;
+    line-height:1;
     position: relative;
     top: 1px;
-    display: inline-block;
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
     padding-left: 5px;
+    font-weight: 900;
 }
 
 a.asc:after {
-    content: /*"\e113"*/ "\e151";
+    content: "\f161";
 }
 
 a.desc:after {
-    content: /*"\e114"*/ "\e152";
+    content: "\f160";
 }
 
 .sort-numerical a.asc:after {
