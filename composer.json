@@ -30,7 +30,9 @@
         "vlucas/phpdotenv": "^2.5",
         "brussens/yii2-maintenance-mode": "*",
         "kartik-v/yii2-widget-select2": "@dev",
-        "npm-asset/ace-builds": "^1.4.1"
+        "npm-asset/ace-builds": "^1.4.1",
+        "yiisoft/yii2-httpclient": "^2.0",
+        "pusher/pusher-php-server": "^3.2"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

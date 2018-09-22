@@ -44,6 +44,7 @@ $config = [
             ],
         ],
         'db' => $db,
+        'pusher' => new \Pusher\Pusher(getenv('PUSHER_APP_KEY'), getenv('PUSHER_APP_SECRET'), getenv('PUSHER_APP_ID'), ['cluster' => 'ap2', 'useTLS' => true]),
     ],
     'params' => $params,
     'controllerMap' => [

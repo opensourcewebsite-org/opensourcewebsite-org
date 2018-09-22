@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
 use app\models\UserWikiToken;
@@ -12,6 +13,7 @@ $this->title = Yii::t('menu', 'Wikipedia watchlists');
 $countTokens = $tokensDataProvider->count;
 
 ?>
+<div id="flash-message" style="display: none;" class="alert alert-success"></div>
 <div class="card">
     <div class="card-header d-flex p-0">
         <ul class="nav nav-pills ml-auto p-2">
@@ -30,6 +32,9 @@ $countTokens = $tokensDataProvider->count;
     </div>
     <div class="card-body p-0">
         <?php if ($countTokens): ?>
+            <?php Pjax::begin([
+                'id' => 'watchlist-grid',
+            ]); ?>
             <?= GridView::widget([
                 'dataProvider' => $tokensDataProvider,
                 'summary' => false,
@@ -92,6 +97,20 @@ $countTokens = $tokensDataProvider->count;
                     ],
                 ],
             ]); ?>
+            <?php Pjax::end(); ?>
         <?php endif ?>
     </div>
 </div>
+<script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+<script>
+  var pusher = new Pusher("<?php echo getenv('PUSHER_APP_KEY'); ?>", {
+    cluster: 'ap2',
+    forceTLS: true
+  });
+
+  var channel = pusher.subscribe('my-channel');
+  channel.bind('my-event', function(data) {
+      $.pjax.reload({container: '#watchlist-grid', timeout: 4000});
+      $('#flash-message').html(data.message).fadeIn().delay(8000).fadeOut();
+  });
+</script>
