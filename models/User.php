@@ -246,4 +246,65 @@ class User extends ActiveRecord implements IdentityInterface
             ->setSubject('Register for ' . Yii::$app->name)
             ->send();
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowedUsers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'followed_user_id'])->viaTable('user_user_follow', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowedMoqups()
+    {
+        return $this->hasMany(Moqup::className(), ['id' => 'moqup_id'])->viaTable('user_moqup_follow', ['user_id' => 'id']);
+    }
+
+    /**
+     * Get a list of id of the moqups beign followed by the user
+     * @return array the list of moqups id
+     */
+    public function getFollowedMoqupsId()
+    {
+        $ids = [];
+
+        if (!empty($this->followedMoqups)) {
+            $ids = array_merge($ids, \yii\helpers\ArrayHelper::getColumn($this->followedMoqups, 'id'));
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get a list of id of the moqups beign followed by the user
+     * @return array the list of moqups id
+     */
+    public function getFollowedUsersId()
+    {
+        $ids = [];
+
+        if (!empty($this->followedUsers)) {
+            $ids = array_merge($ids, \yii\helpers\ArrayHelper::getColumn($this->followedUsers, 'id'));
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('user_user_follow', ['followed_user_id' => 'id']);
+    }
+
+    /**
+     * Return the number of followers to this user
+     */
+    public function getFollowersNumber() {
+        return count($this->followers);
+    }
 }
