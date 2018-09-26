@@ -99,47 +99,4 @@ class UserController extends Controller
         echo $withoutErrors;
         exit;
     }
-
-    /**
-     * Add a user to the list followed by the user
-     * @return boolean If the relation was saved
-     */
-    public function actionFollowUser($id)
-    {
-        $exists = UserUserFollow::findOne(['followed_user_id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-
-        $withoutErrors = false;
-
-        if ($exists == null) {
-            $relation = new UserUserFollow([
-                'followed_user_id' => $id,
-                'user_id' => Yii::$app->user->identity->id
-            ]);
-
-            if ($relation->save()) {
-               $withoutErrors = true;
-            }
-        }
-
-        echo $withoutErrors;
-        exit;
-    }
-
-    /**
-     * Remove a user from the list followed by the user
-     * @return boolean If the relation was removed
-     */
-    public function actionUnfollowUser($id)
-    {
-        $model = UserUserFollow::findOne(['followed_user_id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-
-        $withoutErrors = false;
-
-        if ($model != null && $model->delete()) {
-            $withoutErrors = true;
-        }
-
-        echo $withoutErrors;
-        exit;
-    }
 }
