@@ -86,6 +86,7 @@ $config = [
                     'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
                     'levels' => ['error', 'warning'],
                     'message' => [
+                        'from' => $params['adminEmail'],
                         'subject' => 'OpenSourceWebsite bug log',
                         'to' => $params['securityEmail'],
                     ],
