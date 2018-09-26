@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Moqup;
 use app\models\User;
+use app\models\UserMoqupFollow;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 
@@ -18,7 +20,7 @@ class UserController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['display'],
+                'only' => ['display', 'follow-moqup', 'unfollow-moqup', 'follow-user', 'unfollow-user'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -52,5 +54,48 @@ class UserController extends Controller
         return $this->render('display', [
             'confirmed_users' => count($confirmed_users),
         ]);
+    }
+
+    /**
+     * Add a moqup to the list followed by the user
+     * @return boolean If the relation was saved
+     */
+    public function actionFollowMoqup($id)
+    {
+        $exists = UserMoqupFollow::findOne(['moqup_id' => $id, 'user_id' => Yii::$app->user->identity->id]);
+
+        $withoutErrors = false;
+
+        if ($exists == null) {
+            $relation = new UserMoqupFollow([
+                'moqup_id' => $id,
+                'user_id' => Yii::$app->user->identity->id
+            ]);
+
+            if ($relation->save()) {
+               $withoutErrors = true;
+            }
+        }
+
+        echo $withoutErrors;
+        exit;
+    }
+
+    /**
+     * Remove a moqup from the list followed by the user
+     * @return boolean If the relation was removed
+     */
+    public function actionUnfollowMoqup($id)
+    {
+        $model = UserMoqupFollow::findOne(['moqup_id' => $id, 'user_id' => Yii::$app->user->identity->id]);
+
+        $withoutErrors = false;
+
+        if ($model != null && $model->delete()) {
+            $withoutErrors = true;
+        }
+
+        echo $withoutErrors;
+        exit;
     }
 }

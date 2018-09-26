@@ -246,4 +246,34 @@ class User extends ActiveRecord implements IdentityInterface
             ->setSubject('Register for ' . Yii::$app->name)
             ->send();
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowedMoqups()
+    {
+        return $this->hasMany(Moqup::className(), ['id' => 'moqup_id'])->viaTable('user_moqup_follow', ['user_id' => 'id']);
+    }
+
+    /**
+     * Get a list of id of the moqups beign followed by the user
+     * @return array the list of moqups id
+     */
+    public function getFollowedMoqupsId()
+    {
+        $ids = [];
+
+        if (!empty($this->followedMoqups)) {
+            $ids = array_merge($ids, \yii\helpers\ArrayHelper::getColumn($this->followedMoqups, 'id'));
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Return the number of followers to this user
+     */
+    public function getFollowersNumber() {
+        return count($this->followers);
+    }
 }

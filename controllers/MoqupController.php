@@ -11,6 +11,7 @@ use yii\web\Controller;
 use app\models\User;
 use app\models\Moqup;
 use app\models\MoqupSearch;
+use app\models\UserMoqupFollow;
 use app\models\Css;
 use yii\db\Query;
 
@@ -57,7 +58,7 @@ class MoqupController extends Controller
     /**
      * Shows a list of the registered moqups
      */
-    public function actionDesignList($viewYours = false)
+    public function actionDesignList($viewYours = false, $viewFollowing = false)
     {
         $searchModel = new MoqupSearch();
         $params = Yii::$app->request->queryParams;
@@ -66,16 +67,27 @@ class MoqupController extends Controller
             $params['viewYours'] = true;
         }
 
+        if ($viewFollowing) {
+            $params['viewFollowing'] = true;
+        }
+
         $dataProvider = $searchModel->search($params);
 
         $countYours = Moqup::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
-        $countAll = Moqup::find()->where(['!=', 'user_id', Yii::$app->user->identity->id])->count();
+        $countFollowing = Moqup::find()
+            ->alias('m')
+            ->leftJoin(UserMoqupFollow::tableName() . ' umf', 'umf.moqup_id = m.id')
+            ->where(['umf.user_id' => Yii::$app->user->identity->id])
+            ->count();
+        $countAll = Moqup::find()->count();
         
         return $this->render('design-list', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'viewFollowing' => $viewFollowing,
             'viewYours' => $viewYours,
             'countYours' => $countYours,
+            'countFollowing' => $countFollowing,
             'countAll' => $countAll,
         ]);
     }

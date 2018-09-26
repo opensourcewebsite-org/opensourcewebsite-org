@@ -79,4 +79,19 @@ class Moqup extends \yii\db\ActiveRecord
 
         return true;
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('user_moqup_follow', ['moqup_id' => 'id']);
+    }
+
+    /**
+     * Return the number of followers to this moqup
+     */
+    public function getFollowersNumber() {
+        return count($this->followers);
+    }
 }
