@@ -78,11 +78,7 @@ class MoqupController extends Controller
         $countFollowing = Moqup::find()
             ->alias('m')
             ->leftJoin(UserMoqupFollow::tableName() . ' umf', 'umf.moqup_id = m.id')
-            ->leftJoin(UserUserFollow::tableName() . ' uuf', 'uuf.followed_user_id = m.user_id')
-            ->where(['or', 
-                ['umf.user_id' => Yii::$app->user->identity->id],
-                ['uuf.user_id' => Yii::$app->user->identity->id],
-            ])
+            ->where(['umf.user_id' => Yii::$app->user->identity->id])
             ->count();
         $countAll = Moqup::find()->count();
         

@@ -76,17 +76,7 @@ $this->title = Yii::t('menu', 'Moqups');
                     'contentOptions' => ['style' => 'width: 40%; white-space: normal'],
                     'format' => 'html',
                     'value' => function($model) use ($viewFollowing) {
-                        $followed = in_array($model->user_id, Yii::$app->user->identity->followedUsersId);
                         $response = $model->user->email;
-
-                        if ($viewFollowing) {
-                            $response .= Html::a(Html::tag('i', '', ['class' => 'fa fa-star' . ($followed ? ' text-primary' : '')])
-                                . Html::tag('span', $model->user->followersNumber, ['class' => 'badge badge-light ml-1'])
-                                , [($followed ? 'user/unfollow-user' : 'user/follow-user'), 'id' => $model->user_id], [
-                                'class' => 'btn btn-sm btn-light float-right ' . ($followed ? 'unfollow-user' : 'follow-user'),
-                                'title' => $followed ? 'Unfollow User' : 'Follow User',
-                            ]);
-                        }
                         
                         return $response;
                     },
@@ -158,30 +148,17 @@ $this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
     return false;
 });
 
-$(".follow-page, .unfollow-page, .follow-user, .unfollow-user").on("click", function(event) {
+$(".unfollow-page").on("click", function(event) {
     event.preventDefault();
     var url = $(this).attr("href");
-    var message = "";
-
-    if ($(this).hasClass("follow-page")) {
-        message = "' . Yii::t('user', 'Are you sure you want to follow this moqup?') . '";
-    } else if ($(this).hasClass("unfollow-page")) {
-        message = "' . Yii::t('user', 'Are you sure you want to unfollow this moqup?') . '";
-    } else if ($(this).hasClass("follow-user")) {
-        message = "' . Yii::t('user', 'Are you sure you want to follow this user?') . '";
-    } else if ($(this).hasClass("unfollow-user")) {
-        message = "' . Yii::t('user', 'Are you sure you want to unfollow this user?') . '";
-    }
     
-    if (confirm(message)) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.reload();
-            } else {
-                alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to process your requirement') . '");
-            }
-        });
-    }
+    $.post(url, {}, function(result) {
+        if (result == "1") {
+            location.reload();
+        } else {
+            alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to process your requirement') . '");
+        }
+    });
 
     return false;
 });');

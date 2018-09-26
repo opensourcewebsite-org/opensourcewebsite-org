@@ -43,8 +43,7 @@ class MoqupSearch extends Moqup
     {
         $query = Moqup::find()
             ->alias('m')
-            ->leftJoin(UserMoqupFollow::tableName() . ' umf', 'umf.moqup_id = m.id')
-            ->leftJoin(UserUserFollow::tableName() . ' uuf', 'uuf.followed_user_id = m.user_id');
+            ->leftJoin(UserMoqupFollow::tableName() . ' umf', 'umf.moqup_id = m.id');
 
         // add conditions that should always apply here
 
@@ -58,10 +57,7 @@ class MoqupSearch extends Moqup
         if (isset($params['viewYours']) && $params['viewYours']) {
             $query->andFilterWhere(['m.user_id' => Yii::$app->user->identity->id]);
         } else if (isset($params['viewFollowing']) && $params['viewFollowing']) {
-            $query->andFilterWhere(['or', 
-                ['umf.user_id' => Yii::$app->user->identity->id],
-                ['uuf.user_id' => Yii::$app->user->identity->id],
-            ]);
+            $query->andFilterWhere(['umf.user_id' => Yii::$app->user->identity->id]);
         }
 
         if (!$this->validate()) {
