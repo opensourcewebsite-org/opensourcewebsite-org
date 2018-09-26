@@ -6,7 +6,6 @@ use Yii;
 use app\models\Moqup;
 use app\models\User;
 use app\models\UserMoqupFollow;
-use app\models\UserUserFollow;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 

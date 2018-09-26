@@ -12,7 +12,6 @@ use app\models\User;
 use app\models\Moqup;
 use app\models\MoqupSearch;
 use app\models\UserMoqupFollow;
-use app\models\UserUserFollow;
 use app\models\Css;
 use yii\db\Query;
 
