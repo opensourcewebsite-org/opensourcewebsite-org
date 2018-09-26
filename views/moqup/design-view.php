@@ -98,27 +98,14 @@ $("#prev-frame").css("min-height", prevHeight + "px");
 $(".follow-page, .unfollow-page, .follow-user, .unfollow-user").on("click", function(event) {
     event.preventDefault();
     var url = $(this).attr("href");
-    var message = "";
-
-    if ($(this).hasClass("follow-page")) {
-        message = "' . Yii::t('user', 'Are you sure you want to follow this moqup?') . '";
-    } else if ($(this).hasClass("unfollow-page")) {
-        message = "' . Yii::t('user', 'Are you sure you want to unfollow this moqup?') . '";
-    } else if ($(this).hasClass("follow-user")) {
-        message = "' . Yii::t('user', 'Are you sure you want to follow this user?') . '";
-    } else if ($(this).hasClass("unfollow-user")) {
-        message = "' . Yii::t('user', 'Are you sure you want to unfollow this user?') . '";
-    }
     
-    if (confirm(message)) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.reload();
-            } else {
-                alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to process your requirement') . '");
-            }
-        });
-    }
+    $.post(url, {}, function(result) {
+        if (result == "1") {
+            location.reload();
+        } else {
+            alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to process your requirement') . '");
+        }
+    });
 
     return false;
 });');
