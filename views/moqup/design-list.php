@@ -59,15 +59,6 @@ $this->title = Yii::t('menu', 'Moqups');
                         $followed = in_array($model->id, Yii::$app->user->identity->followedMoqupsId);
                         $response = $model->title;
 
-                        if ($viewFollowing) {
-                            $response .= Html::a(Html::tag('i', '', ['class' => 'fa fa-star' . ($followed ? ' text-primary' : '')])
-                                . Html::tag('span', $model->followersNumber, ['class' => 'badge badge-light ml-1'])
-                                , [($followed ? 'user/unfollow-moqup' : 'user/follow-moqup'), 'id' => $model->id], [
-                                'class' => 'btn btn-sm btn-light float-right ' . ($followed ? 'unfollow-page' : 'follow-page'),
-                                'title' => $followed ? 'Unfollow Page' : 'Follow Page',
-                            ]);
-                        }
-                        
                         return $response;
                     },
                 ],
@@ -144,21 +135,6 @@ $this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
             }
         });
     }
-
-    return false;
-});
-
-$(".unfollow-page").on("click", function(event) {
-    event.preventDefault();
-    var url = $(this).attr("href");
-    
-    $.post(url, {}, function(result) {
-        if (result == "1") {
-            location.reload();
-        } else {
-            alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to process your requirement') . '");
-        }
-    });
 
     return false;
 });');
