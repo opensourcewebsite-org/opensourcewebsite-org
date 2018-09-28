@@ -15,12 +15,15 @@ if (!empty($moqup)):
                 <?= $moqup->title; ?>
                 <small class="'class' => 'ml-2 text-secondary'">
                     by <?= Html::a($moqup->user->username, '') ?>
+                    <?php if ($moqup->forked_of != null): ?>
+                        (Forked from <?= Html::a($moqup->origin->title, ['moqup/design-view', 'id' => $moqup->forked_of]) ?>)
+                    <?php endif; ?>
                 </small>
             </h3>
             <div class="ml-auto p-2">
                 <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-code-branch'])
-                    . Html::tag('span', 0, ['class' => 'badge badge-light ml-1']),
-                    '', [
+                    . Html::tag('span', $moqup->forksNumber, ['class' => 'badge badge-light ml-1']),
+                    ['moqup/design-edit', 'fork' => $moqup->id], [
                         'class' => 'btn btn-light', 
                         'title' => 'Fork Page'
                     ]) ?>

@@ -11,6 +11,7 @@ use yii\web\Controller;
 use app\models\User;
 use app\models\Moqup;
 use app\models\MoqupSearch;
+use app\models\Setting;
 use app\models\UserMoqupFollow;
 use app\models\Css;
 use yii\db\Query;
@@ -95,6 +96,11 @@ class MoqupController extends Controller
     public function actionDesignView($id)
     {
         $moqup = Moqup::findOne($id);
+
+        if ($moqup == null) {
+            return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
+        }
+        
         $css = $moqup->css;
         
         return $this->render('design-view', ['moqup' => $moqup, 'css' => $css]);
@@ -104,11 +110,29 @@ class MoqupController extends Controller
      * Create or edit a moqup
      * @param integer $id The id of the moqup to be updated
      */
-    public function actionDesignEdit($id = null)
+    public function actionDesignEdit($id = null, $fork = null)
     {
-        if ($id == null) {
+        if ($id == null && $fork == null) {
             $moqup = new Moqup(['user_id' => Yii::$app->user->identity->id]);
             $css = new Css;
+        } else if ($id == null && $fork != null) {
+            $origin = Moqup::findOne($fork);
+            $maxMoqup = Setting::findOne(['key' => 'moqup_entries_limit']);
+            
+            if ($origin == null || ($maxMoqup != null && Yii::$app->user->identity->moqupsCount >= $maxMoqup->value)) {
+                return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
+            }
+
+            $moqup = new Moqup([
+                'user_id' => Yii::$app->user->identity->id,
+                'title' => $origin->title,
+                'html' => $origin->html,
+                'forked_of' => $origin->id,
+            ]);
+
+            $css = new Css([
+                'css' => ($origin->css != null) ? $origin->css->css : null,
+            ]);
         } else {
             $moqup = Moqup::findOne($id);
 

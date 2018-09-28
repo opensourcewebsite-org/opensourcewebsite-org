@@ -89,9 +89,32 @@ class Moqup extends \yii\db\ActiveRecord
     }
 
     /**
-     * Return the number of followers to this moqup
+     * @return integer The number of followers to this moqup
      */
     public function getFollowersNumber() {
         return count($this->followers);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrigin()
+    {
+        return $this->hasOne(Moqup::className(), ['id' => 'forked_of']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getForks()
+    {
+        return $this->hasMany(Moqup::className(), ['forked_of' => 'id']);
+    }
+
+    /**
+     * @return integer The number of forks that this moqup have
+     */
+    public function getForksNumber() {
+        return count($this->forks);
     }
 }

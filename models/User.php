@@ -250,6 +250,22 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMoqups()
+    {
+        return $this->hasMany(Moqup::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of moqups of the user
+     */
+    public function getMoqupsCount()
+    {
+        return count($this->moqups);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getFollowedMoqups()
     {
         return $this->hasMany(Moqup::className(), ['id' => 'moqup_id'])->viaTable('user_moqup_follow', ['user_id' => 'id']);
@@ -268,12 +284,5 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return $ids;
-    }
-
-    /**
-     * Return the number of followers to this user
-     */
-    public function getFollowersNumber() {
-        return count($this->followers);
     }
 }
