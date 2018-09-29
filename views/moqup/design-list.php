@@ -8,7 +8,34 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('menu', 'Moqups');
 ?>
-<?php Pjax::begin(); ?>
+<?php if ($viewYours): ?>
+    <?php $this->beginBlock('content-header-data'); ?>
+        <div class="row mb-2">
+            <div class="col-sm-4">
+                <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+            </div>
+            <div class="col-sm-7 alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-md-6">
+                        Your moqups entries limit: <b><?= Yii::$app->user->identity->maxMoqupsNumber ?></b>
+                    </div>
+                    <div class="col-md-6">
+                        Your current moqups entries: <b><?= Yii::$app->user->identity->moqupsCount ?></b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Your max moqups total size: <b><?= number_format(Yii::$app->user->identity->maxMoqupsSize, 0, ',', '.') ?></b> bytes
+                    </div>
+                    <div class="col-md-6">
+                        Your current total moqups size: <b><?= number_format(Yii::$app->user->identity->totalMoqupsSize, 0, ',', '.') ?></b> bytes
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php $this->endBlock(); ?>
+<?php endif; ?>
+
 <div class="card">
     <div class="card-header d-flex p-0">
         <h3 class="card-title p-3">
@@ -139,4 +166,3 @@ $this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
     return false;
 });');
 
-Pjax::end();
