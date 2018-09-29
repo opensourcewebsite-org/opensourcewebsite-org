@@ -121,6 +121,8 @@ class MoqupController extends Controller
      */
     public function actionDesignEdit($id = null, $fork = null)
     {
+        $maxMoqup = Setting::findOne(['key' => 'moqup_entries_limit']);
+
         if ($id == null && $fork == null) {
             if (Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
                 return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
