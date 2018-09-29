@@ -112,10 +112,8 @@ class MoqupController extends Controller
      */
     public function actionDesignEdit($id = null, $fork = null)
     {
-        $maxMoqup = Setting::findOne(['key' => 'moqup_entries_limit']);
-
         if ($id == null && $fork == null) {
-            if ($maxMoqup != null && Yii::$app->user->identity->moqupsCount >= $maxMoqup->value) {
+            if (Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
                 return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
             }
 
@@ -124,7 +122,7 @@ class MoqupController extends Controller
         } else if ($id == null && $fork != null) {
             $origin = Moqup::findOne($fork);
             
-            if ($origin == null || ($maxMoqup != null && Yii::$app->user->identity->moqupsCount >= $maxMoqup->value)) {
+            if ($origin == null || Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
                 return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
             }
 
@@ -156,11 +154,13 @@ class MoqupController extends Controller
             $success = false;
             $transaction = Yii::$app->db->beginTransaction();
 
-            $maxLength = Setting::findOne(['key' => 'moqup_bytes_limit']);
-            $moqupLength = strlen($moqup->html) + strlen($css->css);
+            $maxSize = Yii::$app->user->identity->maxMoqupsSize;
+            $currentSize = Yii::$app->user->identity->totalMoqupsSize;
+            $moqupLength = strlen($moqup->html);
+            $cssLength = strlen($css->css);
 
-            if ($moqupLength > $maxLength->value) {
-                $moqup->addError('title', 'The moqup size is too big');
+            if ($maxSize < ($currentSize + $moqupLength + $cssLength)) {
+                $moqup->addError('title', 'You reach your maximum moqups total size.');
             }
 
             if (!$moqup->hasErrors() && $moqup->save()) {
