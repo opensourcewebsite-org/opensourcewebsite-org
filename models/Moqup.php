@@ -30,7 +30,7 @@ class Moqup extends \yii\db\ActiveRecord
             [['user_id', 'title', 'html'], 'required'],
             [['user_id', 'created_at', 'updated_at'], 'integer'],
             [['created_at'], 'default', 'value' => time()],
-            [['html'], 'string'],
+            [['html'], 'string', 'max' => 100000],
             [['title'], 'string', 'max' => 255],
         ];
     }

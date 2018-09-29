@@ -113,13 +113,16 @@ class MoqupController extends Controller
     public function actionDesignEdit($id = null, $fork = null)
     {
         if ($id == null && $fork == null) {
+            if (Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
+                return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
+            }
+
             $moqup = new Moqup(['user_id' => Yii::$app->user->identity->id]);
             $css = new Css;
         } else if ($id == null && $fork != null) {
             $origin = Moqup::findOne($fork);
-            $maxMoqup = Setting::findOne(['key' => 'moqup_entries_limit']);
             
-            if ($origin == null || ($maxMoqup != null && Yii::$app->user->identity->moqupsCount >= $maxMoqup->value)) {
+            if ($origin == null || Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
                 return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
             }
 
@@ -151,7 +154,16 @@ class MoqupController extends Controller
             $success = false;
             $transaction = Yii::$app->db->beginTransaction();
 
-            if ($moqup->save()) {
+            $maxSize = Yii::$app->user->identity->maxMoqupsSize;
+            $currentSize = Yii::$app->user->identity->totalMoqupsSize;
+            $moqupLength = strlen($moqup->html);
+            $cssLength = strlen($css->css);
+
+            if ($maxSize < ($currentSize + $moqupLength + $cssLength)) {
+                $moqup->addError('title', 'You reach your maximum moqups total size.');
+            }
+
+            if (!$moqup->hasErrors() && $moqup->save()) {
                 $success = true;
 
                 if ($css->css != '') {
