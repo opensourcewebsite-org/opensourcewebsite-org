@@ -78,25 +78,6 @@ class UserWikiToken extends ActiveRecord
         ];
     }
 
-    public function afterValidate()
-    {
-        parent::afterValidate();
-
-        if (!$this->hasErrors()) {
-            $parser = new WikiParser([
-                'token' => $this,
-                'user_id' => Yii::$app->user->id,
-                'language_id' => $this->language->id,
-            ]);
-
-            try {
-                $parser->run();
-            } catch (ServerErrorHttpException $e) {
-                $this->addError('token', $e->getMessage());
-            }
-        }
-    }
-
     public function getName()
     {
         return "{$this->language->name} ({$this->language->code}.wikipedia.org)";

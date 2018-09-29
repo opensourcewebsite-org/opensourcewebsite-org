@@ -36,7 +36,7 @@ use app\models\UserWikiToken;
                             'title' => '',
                         ],
                         'pluginEvents' => [
-                            "change" => "function() { $('#main-modal').find('#main-modal-body').load('/wiki-tokens/create?language_id=' + $(this).val()) }",
+                            "change" => "function() { $('#main-modal').find('#main-modal-body').load('" . Yii::$app->urlManager->createUrl(['wiki-tokens/create']) . "?language_id=' + $(this).val()) }",
                         ],
                     ])->label(false); ?>
                 </div>
