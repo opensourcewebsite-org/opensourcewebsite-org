@@ -7,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use app\components\Converter;
 
 /**
  * User model
@@ -322,7 +323,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
         }
 
-        return $size;
+        return Converter::byteToMega($size);
     }
 
     /**
@@ -333,7 +334,7 @@ class User extends ActiveRecord implements IdentityInterface
         $setting = Setting::findOne(['key' => 'moqup_bytes_limit']);
         $maxLength = ($setting != null) ? $setting->value : 1;
 
-        return $maxLength * $this->rating;
+        return Converter::byteToMega($maxLength * $this->rating);
     }
 
     /**

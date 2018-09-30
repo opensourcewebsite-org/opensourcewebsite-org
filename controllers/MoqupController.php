@@ -8,6 +8,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use app\components\Converter;
 use app\models\User;
 use app\models\Moqup;
 use app\models\MoqupSearch;
@@ -81,6 +82,12 @@ class MoqupController extends Controller
             ->where(['umf.user_id' => Yii::$app->user->identity->id])
             ->count();
         $countAll = Moqup::find()->count();
+
+        $maxMoqupSetting = Setting::findOne(['key' => 'moqup_entries_limit']);
+        $maxMoqupValue = $maxMoqupSetting->value;
+
+        $sizeMoqupSetting = Setting::findOne(['key' => 'moqup_bytes_limit']);
+        $sizeMoqupValue = Converter::byteToMega($sizeMoqupSetting->value);
         
         return $this->render('design-list', [
             'searchModel' => $searchModel,
@@ -90,6 +97,8 @@ class MoqupController extends Controller
             'countYours' => $countYours,
             'countFollowing' => $countFollowing,
             'countAll' => $countAll,
+            'maxMoqupValue' => $maxMoqupValue,
+            'sizeMoqupValue' => $sizeMoqupValue,
         ]);
     }
 
