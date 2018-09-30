@@ -8,7 +8,24 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('menu', 'Moqups');
 ?>
-<?php Pjax::begin(); ?>
+<?php if ($viewYours): ?>
+    <?php $this->beginBlock('content-header-data'); ?>
+        <div class="row mb-2">
+            <div class="col-sm-4">
+                <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="alert alert-info" role="alert">
+                <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
+                (<?= $maxMoqupValue ?> per 1 User Rating), 
+                <b>Volume:</b> <?= Yii::$app->user->identity->totalMoqupsSize ?> MB/<?= Yii::$app->user->identity->maxMoqupsSize ?> MB. 
+                (<?= $sizeMoqupValue ?> MB per 1 User Rating)
+            </div>
+        </div>
+    <?php $this->endBlock(); ?>
+<?php endif; ?>
+
 <div class="card">
     <div class="card-header d-flex p-0">
         <h3 class="card-title p-3">
@@ -139,4 +156,3 @@ $this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
     return false;
 });');
 
-Pjax::end();
