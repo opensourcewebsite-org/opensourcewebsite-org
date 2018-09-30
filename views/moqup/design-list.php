@@ -14,23 +14,13 @@ $this->title = Yii::t('menu', 'Moqups');
             <div class="col-sm-4">
                 <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
             </div>
-            <div class="col-sm-7 alert alert-info" role="alert">
-                <div class="row">
-                    <div class="col-md-6">
-                        Your moqups entries limit: <b><?= Yii::$app->user->identity->maxMoqupsNumber ?></b>
-                    </div>
-                    <div class="col-md-6">
-                        Your current moqups entries: <b><?= Yii::$app->user->identity->moqupsCount ?></b>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        Your max moqups total size: <b><?= number_format(Yii::$app->user->identity->maxMoqupsSize, 0, ',', '.') ?></b> bytes
-                    </div>
-                    <div class="col-md-6">
-                        Your current total moqups size: <b><?= number_format(Yii::$app->user->identity->totalMoqupsSize, 0, ',', '.') ?></b> bytes
-                    </div>
-                </div>
+        </div>
+        <div class="row mb-2">
+            <div class="alert alert-info" role="alert">
+                <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
+                (<?= $maxMoqupValue ?> per 1 User Rating), 
+                <b>Volume:</b> <?= Yii::$app->user->identity->totalMoqupsSize ?> MB/<?= Yii::$app->user->identity->maxMoqupsSize ?> MB. 
+                (<?= $sizeMoqupValue ?> MB per 1 User Rating)
             </div>
         </div>
     <?php $this->endBlock(); ?>
