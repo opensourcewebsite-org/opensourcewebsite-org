@@ -32,6 +32,7 @@ $config = [
                     'class' => 'yii\log\FileTarget',
                     'logFile' => '@runtime/logs/console.log',
                     'levels' => ['error', 'warning'],
+                    'logVars' => ['_GET', '_POST', '_FILES'],
                     'maxFileSize' => 1024,
                     'except' => [
                         'yii\web\HttpException:400',
