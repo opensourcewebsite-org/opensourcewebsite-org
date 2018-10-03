@@ -8,7 +8,24 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('menu', 'Moqups');
 ?>
-<?php Pjax::begin(); ?>
+<?php if ($viewYours): ?>
+    <?php $this->beginBlock('content-header-data'); ?>
+        <div class="row mb-2">
+            <div class="col-sm-4">
+                <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="alert alert-info" role="alert">
+                <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
+                (<?= $maxMoqupValue ?> per 1 User Rating), 
+                <b>Volume:</b> <?= Yii::$app->user->identity->totalMoqupsSize ?> MB/<?= Yii::$app->user->identity->maxMoqupsSize ?> MB. 
+                (<?= $sizeMoqupValue ?> MB per 1 User Rating)
+            </div>
+        </div>
+    <?php $this->endBlock(); ?>
+<?php endif; ?>
+
 <div class="card">
     <div class="card-header d-flex p-0">
         <h3 class="card-title p-3">
@@ -25,7 +42,14 @@ $this->title = Yii::t('menu', 'Moqups');
             <li class="nav-item">
                 <?= Html::a(Yii::t('moqup', 'All') . ' <span class="badge badge-light ml-1">' . $countAll . '</span>',
                     ['moqup/design-list'], [
-                        'class' => 'nav-link show ' . ($viewYours != 1 ? 'active' : ''),
+                        'class' => 'nav-link show ' . ($viewYours != 1 && !$viewFollowing ? 'active' : ''),
+                    ]); ?>
+            </li>
+            <li class="nav-item">
+                <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-star'])
+                    . ' <span class="badge badge-light ml-1">' . $countFollowing . '</span>',
+                    ['moqup/design-list', 'viewFollowing' => 1], [
+                        'class' => 'nav-link show ' . ($viewFollowing == 1 ? 'active' : ''),
                     ]); ?>
             </li>
             <li class="nav-item">
@@ -46,18 +70,30 @@ $this->title = Yii::t('menu', 'Moqups');
             'columns' => [
                 [
                     'attribute' => 'title',
-                    'contentOptions' => ['style' => 'width: ' . (($viewYours) ? '45%' : '25%') . '; white-space: normal']
+                    'contentOptions' => ['style' => 'width: ' . (($viewYours) ? '65%' : '35%') . '; white-space: normal'],
+                    'format' => 'html',
+                    'value' => function($model) use ($viewYours, $viewFollowing){
+                        $followed = in_array($model->id, Yii::$app->user->identity->followedMoqupsId);
+                        $response = $model->title;
+
+                        return $response;
+                    },
                 ],
                 [
                     'attribute' => 'user_id',
-                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
-                    'value' => function($model) {
-                        return $model->user->email;
+                    'contentOptions' => ['style' => 'width: 40%; white-space: normal'],
+                    'format' => 'html',
+                    'value' => function($model) use ($viewFollowing) {
+                        $response = $model->user->email;
+                        
+                        return $response;
                     },
                     'visible' => $viewYours == false,
                 ],
                 [
                     'attribute' => 'updated_at',
+                    'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
+                    'label' => 'Last update',
                     'format' => 'relativeTime',
                 ],
                 [
@@ -120,4 +156,3 @@ $this->registerJs('$(".delete-moqup-anchor").on("click", function(event) {
     return false;
 });');
 
-Pjax::end();

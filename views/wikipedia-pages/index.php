@@ -55,17 +55,6 @@ $countTokens = $tokensDataProvider->count;
                     ],
                     [
                         'class' => TitleColumn::class,
-                        'title' => 'List of titles of Wikipedia pages that our users watch and that you not watch.',
-                        'label' => 'Recommended pages',
-                        'value' => function ($model) {
-                            $count = $model->getAllPagesRatingCount() - $model->getWikiPagesIds()->count();
-
-                            return Html::a($count, ['wikipedia-page/recommended/' . $model->language->code]);
-                        },
-                        'format' => 'raw',
-                    ],
-                    [
-                        'class' => TitleColumn::class,
                         'title' => 'List of titles of Wikipedia pages that you watch.',
                         'label' => 'Your pages',
                         'value' => function ($model) use ($countTokens) {
@@ -78,7 +67,7 @@ $countTokens = $tokensDataProvider->count;
                     ],
                     [
                         'class' => ActionColumn::class,
-                        'template' => '{update} {delete}',
+                        'template' => '{update}',
                         'controller' => 'wiki-tokens',
                         'buttons' => [
                             'update' => function ($url, $model) {
@@ -98,19 +87,6 @@ $countTokens = $tokensDataProvider->count;
                                     $("#main-modal").modal("show");
                                 })',
                                 ]);
-                            },
-                            'delete' => function ($url, $model, $key) {
-                                $title = Yii::t('app', 'Delete');
-                                $options = [
-                                    'data-pjax' => '0',
-                                    'data-confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                                    'data-method' => 'post',
-                                ];
-                                $icon = Html::tag('span', '', [
-                                        'class' => "fa fa-trash text-danger", 'data-toggle' => 'tooltip', 'title' => $title,
-                                ]);
-
-                                return Html::a($icon, $url, $options);
                             },
                         ],
                     ],

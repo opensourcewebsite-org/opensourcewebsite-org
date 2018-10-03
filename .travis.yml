@@ -29,6 +29,10 @@ addons:
       - mysql-server
       - mysql-client
 
+before_install:
+  - sudo systemctl unmask mysql.service
+  - sudo systemctl start mysql
+
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction

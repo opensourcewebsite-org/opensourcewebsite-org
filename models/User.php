@@ -7,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use app\components\Converter;
 
 /**
  * User model
@@ -245,5 +246,102 @@ class User extends ActiveRecord implements IdentityInterface
             ->setTo($user->email)
             ->setSubject('Register for ' . Yii::$app->name)
             ->send();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMoqups()
+    {
+        return $this->hasMany(Moqup::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of moqups of the user
+     */
+    public function getMoqupsCount()
+    {
+        return count($this->moqups);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowedMoqups()
+    {
+        return $this->hasMany(Moqup::className(), ['id' => 'moqup_id'])->viaTable('user_moqup_follow', ['user_id' => 'id']);
+    }
+
+    /**
+     * Get a list of id of the moqups beign followed by the user
+     * @return array the list of moqups id
+     */
+    public function getFollowedMoqupsId()
+    {
+        $ids = [];
+
+        if (!empty($this->followedMoqups)) {
+            $ids = array_merge($ids, \yii\helpers\ArrayHelper::getColumn($this->followedMoqups, 'id'));
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @return integer The max ammount of moqups the user can have
+     */
+    public function getMaxMoqupsNumber()
+    {
+        $setting = Setting::findOne(['key' => 'moqup_entries_limit']);
+        $maxMoqup = ($setting != null) ? $setting->value : 1;
+
+        return $maxMoqup * $this->rating;
+    }
+
+    /**
+     * @return boolean If the user reach its moqups limit
+     */
+    public function getReachMaxMoqupsNumber()
+    {
+        return $this->moqupsCount >= $this->maxMoqupsNumber;
+    }
+
+    /**
+     * @return integer The total amount of moqups size in bytes
+     */
+    public function getTotalMoqupsSize()
+    {
+        $size = 0;
+
+        if (!empty($this->moqups)) {
+            foreach ($this->moqups as $moq) {
+                $size += strlen($moq->html);
+
+                if ($moq->css != null) {
+                    $size += strlen($moq->css->css);
+                }
+            }
+        }
+
+        return Converter::byteToMega($size);
+    }
+
+    /**
+     * @return integer The max size that the user can have between moqups
+     */
+    public function getMaxMoqupsSize()
+    {
+        $setting = Setting::findOne(['key' => 'moqup_bytes_limit']);
+        $maxLength = ($setting != null) ? $setting->value : 1;
+
+        return Converter::byteToMega($maxLength * $this->rating);
+    }
+
+    /**
+     * @return boolean If the user reach the max size
+     */
+    public function getReachMaxMoqupsSize()
+    {
+        return $this->totalMoqupsSize >= $this->maxMoqupsSize;
     }
 }

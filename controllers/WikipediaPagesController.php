@@ -25,7 +25,7 @@ class WikipediaPagesController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'recommended'],
+                        'actions' => ['index', 'view'],
                         'roles' => ['@'],
                         'allow' => true,
                     ],
@@ -77,34 +77,6 @@ class WikipediaPagesController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'title' => Yii::t('app', 'Your pages') . " ({$language->code}.wikipedia.org)",
-        ]);
-    }
-
-    /**
-     * @param $code
-     *
-     * @return string
-     * @throws NotFoundHttpException
-     */
-    public function actionRecommended($code)
-    {
-        $language = $this->findLanguage($code);
-
-        if (!$wikiToken = UserWikiToken::findByLanguage($language->id)) {
-            throw new NotFoundHttpException();
-        }
-
-        $searchModel = new WikiPageSearch([
-            'type' => WikiPageSearch::TYPE_RECOMMENDED,
-            'language_id' => $language->id,
-        ]);
-
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('view', [
-            'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
-            'title' => "Recommended pages ({$language->code}.wikipedia.org)",
         ]);
     }
 

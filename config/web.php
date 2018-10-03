@@ -66,6 +66,7 @@ $config = [
                     'class' => 'yii\log\FileTarget',
                     'logFile' => '@runtime/logs/web.log',
                     'levels' => ['error', 'warning'],
+                    'logVars' => ['_GET', '_POST', '_FILES'],
                     'maxFileSize' => 1024,
                     'maxLogFiles' => 10,
                     'except' => [
@@ -85,7 +86,9 @@ $config = [
                     'class' => EmailTarget::class,
                     'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
                     'levels' => ['error', 'warning'],
+                    'logVars' => ['_GET', '_POST', '_FILES'],
                     'message' => [
+                        'from' => $params['adminEmail'],
                         'subject' => 'OpenSourceWebsite bug log',
                         'to' => $params['securityEmail'],
                     ],

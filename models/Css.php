@@ -34,7 +34,7 @@ class Css extends \yii\db\ActiveRecord
             [['moqup_id'], 'required'],
             [['moqup_id', 'created_at', 'updated_at'], 'integer'],
             [['created_at'], 'default', 'value' => time()],
-            [['css'], 'string'],
+            [['css'], 'string', 'max' => 100000],
             [['moqup_id'], 'exist', 'skipOnError' => true, 'targetClass' => Moqup::className(), 'targetAttribute' => ['moqup_id' => 'id']],
         ];
     }

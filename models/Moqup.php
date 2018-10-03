@@ -30,7 +30,7 @@ class Moqup extends \yii\db\ActiveRecord
             [['user_id', 'title', 'html'], 'required'],
             [['user_id', 'created_at', 'updated_at'], 'integer'],
             [['created_at'], 'default', 'value' => time()],
-            [['html'], 'string'],
+            [['html'], 'string', 'max' => 100000],
             [['title'], 'string', 'max' => 255],
         ];
     }
@@ -78,5 +78,43 @@ class Moqup extends \yii\db\ActiveRecord
         $this->updated_at = time();
 
         return true;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('user_moqup_follow', ['moqup_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of followers to this moqup
+     */
+    public function getFollowersNumber() {
+        return count($this->followers);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrigin()
+    {
+        return $this->hasOne(Moqup::className(), ['id' => 'forked_of']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getForks()
+    {
+        return $this->hasMany(Moqup::className(), ['forked_of' => 'id']);
+    }
+
+    /**
+     * @return integer The number of forks that this moqup have
+     */
+    public function getForksNumber() {
+        return count($this->forks);
     }
 }

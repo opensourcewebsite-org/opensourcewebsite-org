@@ -41,20 +41,23 @@ class MoqupSearch extends Moqup
      */
     public function search($params)
     {
-        $query = Moqup::find();
+        $query = Moqup::find()
+            ->alias('m')
+            ->leftJoin(UserMoqupFollow::tableName() . ' umf', 'umf.moqup_id = m.id');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]]
         ]);
 
         $this->load($params);
 
         if (isset($params['viewYours']) && $params['viewYours']) {
-            $query->andFilterWhere(['user_id' => Yii::$app->user->identity->id]);
-        } else {
-            $query->andFilterWhere(['!=', 'user_id', Yii::$app->user->identity->id]);
+            $query->andFilterWhere(['m.user_id' => Yii::$app->user->identity->id]);
+        } else if (isset($params['viewFollowing']) && $params['viewFollowing']) {
+            $query->andFilterWhere(['umf.user_id' => Yii::$app->user->identity->id]);
         }
 
         if (!$this->validate()) {
