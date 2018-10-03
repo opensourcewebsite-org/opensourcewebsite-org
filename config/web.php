@@ -85,7 +85,7 @@ $config = [
                 'mail' => [
                     'class' => EmailTarget::class,
                     'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error'],
                     'logVars' => ['_GET', '_POST', '_FILES'],
                     'message' => [
                         'from' => $params['adminEmail'],
@@ -97,7 +97,7 @@ $config = [
                         'yii\web\HttpException:403',
                         'yii\web\HttpException:404',
                         'yii\web\HttpException:429',
-                        'yii\i18n\PhpMessageSource',
+                        'yii\i18n\*',
                     ],
                 ],
             ],
