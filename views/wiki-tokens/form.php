@@ -14,6 +14,7 @@ use app\models\UserWikiToken;
 <div class="row">
     <div class="offset-md-2 col-md-8">
         <?php $form = ActiveForm::begin([
+                'id' => 'form-wiki-token',
                 'action' => [
                     'wiki-tokens/' . ($model->isNewRecord ? 'create?language_id=' . $model->language_id : 'update?id=' . $model->id),
                 ],
@@ -36,7 +37,7 @@ use app\models\UserWikiToken;
                             'title' => '',
                         ],
                         'pluginEvents' => [
-                            "change" => "function() { $('#main-modal').find('#main-modal-body').load('/wiki-tokens/create?language_id=' + $(this).val()) }",
+                            "change" => "function() { $('#main-modal').find('#main-modal-body').load('" . Yii::$app->urlManager->createUrl(['wiki-tokens/create']) . "?language_id=' + $(this).val()) }",
                         ],
                     ])->label(false); ?>
                 </div>
@@ -47,7 +48,7 @@ use app\models\UserWikiToken;
                     <p><?= Html::a(Yii::t('app', 'Look your username here'), "https://{$model->language->code}.wikipedia.org/wiki/Special:Preferences", ['target' => '_blank']) ?></p>
                 </div>
                 <div class="form-group">
-                    <?= $form->field($model, 'token') ?>
+                    <?= $form->field($model, 'token', ['errorOptions' => ['encode' => false]]) ?>
                     <p><?= Html::a(Yii::t('app', 'Look your token here'), "https://{$model->language->code}.wikipedia.org/wiki/Special:Preferences#mw-prefsection-watchlist", ['target' => '_blank']) ?></p>
                 </div>
                 <div class="form-group">
@@ -69,8 +70,25 @@ use app\models\UserWikiToken;
     </div>
 </div>
 <?php
-$js = <<<JS
-$('.select2-selection__rendered').tooltip('disable');
-JS;
+$js = 'var stopSubmit = false;
+$("#form-wiki-token").on("beforeSubmit", function(event) {
+    var action = $(this).attr("action");
+    var actionCreate = "' . Yii::$app->urlManager->createUrl(['wiki-tokens/create', 'language_id' => $model->language_id]) . '";
+    var actionUpdate = "' . Yii::$app->urlManager->createUrl(['wiki-tokens/update', 'id' => $model->id]) . '";
+
+    if (action == actionCreate || action == actionUpdate) {
+        stopSubmit = true;
+        var data = $(this).serialize();
+        $.get(action, data, function (result) {
+            $("#main-modal-body").html(result);
+        });
+    } else {
+        stopSubmit = false;
+    }
+}).on("submit", function(event) {
+    if (stopSubmit) {
+        event.preventDefault();
+    }
+});';
 
 $this->registerJs($js);

@@ -91,7 +91,7 @@ class UserWikiToken extends ActiveRecord
 
             try {
                 $parser->run();
-            } catch (ServerErrorHttpException $e) {
+            } catch (\yii\web\ServerErrorHttpException $e) {
                 $this->addError('token', $e->getMessage());
             }
         }

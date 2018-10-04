@@ -42,16 +42,11 @@ class WikiTokensController extends Controller
             'language_id' => $language_id,
         ]);
 
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($model);
-        }
-
-        if ($model->load(Yii::$app->request->post())) {
-            $model->save();
-        }
-
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
+            if ($model->load(Yii::$app->request->get()) && $model->save()) {
+                return $this->redirect(['wikipedia-pages/index']);
+            }
+
             return $this->renderAjax('form', ['model' => $model]);
         }
 
@@ -67,11 +62,11 @@ class WikiTokensController extends Controller
             return ActiveForm::validate($model);
         }
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->save();
-        }
-
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
+            if ($model->load(Yii::$app->request->get()) && $model->save()) {
+                return $this->redirect(['wikipedia-pages/index']);
+            }
+
             return $this->renderAjax('form', ['model' => $model]);
         }
 
