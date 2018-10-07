@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\widgets\ActiveForm;
 use app\models\UserWikiToken;
+use app\models\WikiLanguage;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
@@ -35,42 +36,40 @@ class WikiTokensController extends Controller
         ];
     }
 
-    public function actionCreate($language_id = null)
+    public function actionCreate()
     {
         $model = new UserWikiToken([
-            'user_id' => Yii::$app->user->id,
-            'language_id' => $language_id,
+            'user_id' => Yii::$app->user->id
         ]);
+
+        $languageArray = WikiLanguage::find()->where([
+            'not in', 'id',
+            UserWikiToken::find()->select('id')->where(['user_id' => Yii::$app->user->id]),
+        ])->all();
 
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
             if ($model->load(Yii::$app->request->get()) && $model->save()) {
                 return $this->redirect(['wikipedia-pages/index']);
             }
-
-            return $this->renderAjax('form', ['model' => $model]);
         }
-
-        return $this->goBack();
+        
+        return $this->renderAjax('form', [
+            'model' => $model,
+            'languageArray' => $languageArray,
+        ]);
     }
 
     public function actionUpdate($id)
     {
         $model = UserWikiToken::findOne($id);
 
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($model);
-        }
-
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
             if ($model->load(Yii::$app->request->get()) && $model->save()) {
                 return $this->redirect(['wikipedia-pages/index']);
             }
-
-            return $this->renderAjax('form', ['model' => $model]);
         }
-
-        return $this->goBack();
+        
+        return $this->renderAjax('form', ['model' => $model]);
     }
 
     public function actionDelete($id)
