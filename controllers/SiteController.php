@@ -14,6 +14,7 @@ use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use app\models\User;
+use app\models\Rating;
 
 class SiteController extends Controller
 {
@@ -265,11 +266,34 @@ class SiteController extends Controller
             'id' => $id,
             'auth_key' => $auth_key,
         ]);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        $commit = false;
+
         if (!empty($user)) {
             $user->is_email_confirmed = true;
             $user->status = User::STATUS_ACTIVE;
-            $user->save();
+
+            if ($user->save()) {
+                $rating = new Rating([
+                    'user_id' => $user->id,
+                    'balance' => $user->rating +1,
+                    'amount' => 1,
+                    'type' => Rating::CONFIRM_EMAIL,
+                ]);
+                
+                if ($rating->save()) {
+                    $commit = true;
+                }
+            }
+        }
+
+        if ($commit) {
+            $transaction->commit();
             Yii::$app->session->setFlash('success', 'Your email has been successfully confirmed.');
+        } else {
+            $transaction->rollback();
+            Yii::$app->session->setFlash('warning', 'There was an error validating your email, please try again.');
         }
 
         return $this->goHome();

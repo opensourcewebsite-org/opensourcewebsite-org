@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 
+use Yii;
 use yii\web\Controller;
 use app\models\Country;
 use app\models\Setting;
@@ -25,6 +26,9 @@ class DataController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->identity->is_email_confirmed;
+                        }
                     ],
                 ],
             ],

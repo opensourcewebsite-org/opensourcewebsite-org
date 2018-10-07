@@ -344,4 +344,14 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->totalMoqupsSize >= $this->maxMoqupsSize;
     }
+
+    /**
+     * @return integer The current rating of the user
+     */
+    public function getRating()
+    {
+        $rating = Rating::find()->where(['user_id' => $this->id])->orderBy('id DESC')->one();
+
+        return ($rating != NULL) ? $rating->balance : 0;
+    }
 }
