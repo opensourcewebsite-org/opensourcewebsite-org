@@ -10,6 +10,7 @@ use yii\widgets\ActiveForm;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
 use app\models\UserWikiPage;
+use app\models\WikiPage;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
@@ -76,11 +77,16 @@ class WikiTokensController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $pageIds = $model->wikiPagesIds;
 
-        if (!empty($model->wikiPagesIds)) {
+        if (!empty($pageIds)) {
             UserWikiPage::deleteAll([
                 'user_id' => Yii::$app->user->id,
-                'wiki_page_id' => $model->wikiPagesIds,
+                'wiki_page_id' => $pageIds,
+            ]);
+
+            WikiPage::deleteAll([
+                'id' => $pageIds,
             ]);
         }
 
