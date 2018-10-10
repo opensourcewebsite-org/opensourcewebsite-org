@@ -34,7 +34,7 @@ class WikiParser extends BaseObject
     /**
      * @throws ServerErrorHttpException
      */
-    public function run()
+    public function run($justValidateUser = false)
     {
         $token = $this->token;
 
@@ -63,6 +63,8 @@ class WikiParser extends BaseObject
                     $error = $data->error->info;
                 }
                 throw new ServerErrorHttpException($error);
+            } elseif ($justValidateUser) {
+                return true;
             }
 
             /** @var UserWikiPage $page */

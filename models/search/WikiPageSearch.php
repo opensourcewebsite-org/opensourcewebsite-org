@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use app\models\WikiPage;
 use app\models\UserWikiPage;
+use app\models\Rating;
 use yii\data\ActiveDataProvider;
 
 class WikiPageSearch extends WikiPage
@@ -40,14 +41,24 @@ class WikiPageSearch extends WikiPage
      */
     public function search($params)
     {
+        $subQueryRatingId = Rating::find()
+            ->select('(MAX(id))')
+            ->groupBy('user_id');
+
+        $subQueryUsersId = Rating::find()
+            ->select('user_id')
+            ->distinct(true)
+            ->where(['>', 'balance', 0])
+            ->andWhere(['id' => $subQueryRatingId]);
+
         $query = WikiPage::find()
-            ->select(['{{%wiki_page}}.*', 'SUM({{%user}}.rating) AS rating'])
+            ->select(['{{%wiki_page}}.*'/*, 'SUM({{%user}}.rating) AS rating'*/])
             ->joinWith('users')
             ->andWhere(['{{%wiki_page}}.language_id' => $this->language_id])
+            ->andWhere(['{{%user}}.id' => $subQueryUsersId])
             ->groupBy('{{%wiki_page}}.id')
-            ->having(['>', 'rating', 0])
-            ->orderBy(['rating' => SORT_DESC, 'title' => SORT_ASC]);
-
+            //->having(['>', 'rating', 0])
+            ->orderBy([/*'rating' => SORT_DESC, */'title' => SORT_ASC]);
 
         if ($this->type === null) {
             $query->andWhere(['{{%user_wiki_page}}.user_id' => Yii::$app->user->id]);

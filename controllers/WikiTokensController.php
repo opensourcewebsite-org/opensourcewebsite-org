@@ -9,6 +9,7 @@ use yii\filters\VerbFilter;
 use yii\widgets\ActiveForm;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
+use app\models\UserWikiPage;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
@@ -74,7 +75,16 @@ class WikiTokensController extends Controller
 
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        if (!empty($model->wikiPagesIds)) {
+            UserWikiPage::deleteAll([
+                'user_id' => Yii::$app->user->id,
+                'wiki_page_id' => $model->wikiPagesIds,
+            ]);
+        }
+
+        $model->delete();
 
         return $this->goBack();
     }
