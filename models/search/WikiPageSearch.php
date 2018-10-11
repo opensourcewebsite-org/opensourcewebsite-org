@@ -52,13 +52,12 @@ class WikiPageSearch extends WikiPage
             ->andWhere(['id' => $subQueryRatingId]);
 
         $query = WikiPage::find()
-            ->select(['{{%wiki_page}}.*'/*, 'SUM({{%user}}.rating) AS rating'*/])
+            ->select(['{{%wiki_page}}.*'])
             ->joinWith('users')
             ->andWhere(['{{%wiki_page}}.language_id' => $this->language_id])
             ->andWhere(['{{%user}}.id' => $subQueryUsersId])
             ->groupBy('{{%wiki_page}}.id')
-            //->having(['>', 'rating', 0])
-            ->orderBy([/*'rating' => SORT_DESC, */'title' => SORT_ASC]);
+            ->orderBy(['title' => SORT_ASC]);
 
         if ($this->type === null) {
             $query->andWhere(['{{%user_wiki_page}}.user_id' => Yii::$app->user->id]);
