@@ -79,6 +79,13 @@ class WikiPage extends ActiveRecord
 
     public function getRating()
     {
-        return $this->getUsers()->sum('rating');
+        $total = 0;
+
+        if (!empty($this->users)) {
+            foreach ($this->users as $user) {
+                $total += $user->rating;
+            }
+        }
+        return $total;
     }
 }

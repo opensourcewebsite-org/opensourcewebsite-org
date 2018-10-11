@@ -58,7 +58,7 @@ $countTokens = $tokensDataProvider->count;
                         'title' => 'List of titles of Wikipedia pages that you watch.',
                         'label' => 'Your pages',
                         'value' => function ($model) use ($countTokens) {
-                            $count = $model->getWikiPagesIds()->count();
+                            $count = count($model->wikiPagesIds);
                             if ($count > 0) {
                                 return Html::a($count, ['wikipedia-page/view/' . $model->language->code]);
                             }

@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use app\components\WikiParser;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "user_wiki_token".
@@ -74,6 +75,9 @@ class UserWikiToken extends ActiveRecord
             [
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => false,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
+                ],
             ],
         ];
     }
@@ -90,7 +94,7 @@ class UserWikiToken extends ActiveRecord
             ]);
 
             try {
-                $parser->run();
+                $parser->run(true);
             } catch (\yii\web\ServerErrorHttpException $e) {
                 $this->addError('token', $e->getMessage());
             }
@@ -114,7 +118,7 @@ class UserWikiToken extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return array|null The list of wikipages id
      */
     public function getWikiPagesIds()
     {
@@ -122,12 +126,15 @@ class UserWikiToken extends ActiveRecord
             ->select('id')
             ->where(['language_id' => $this->language_id]);
 
-        return UserWikiPage::find()
-                ->select('wiki_page_id')
-                ->where([
-                    'user_id' => $this->user_id,
-                    'wiki_page_id' => $currentLanguageWikiPages,
-        ]);
+        $ids = UserWikiPage::find()
+            ->select('wiki_page_id')
+            ->where([
+                'user_id' => $this->user_id,
+                'wiki_page_id' => $currentLanguageWikiPages,
+            ])
+            ->all();
+
+        return ArrayHelper::getColumn($ids, 'wiki_page_id');
     }
 
     /**
