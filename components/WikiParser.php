@@ -50,6 +50,10 @@ class WikiParser extends BaseObject
             $url .= "&wrcontinue={$this->_continue}";
         }
 
+        if ($justValidateUser) {
+            $url .= '&wrlimit=1';
+        }
+
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);

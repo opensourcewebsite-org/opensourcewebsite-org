@@ -32,12 +32,12 @@ $this->title = $title;
                         'title' => 'Titles of Wikipedia pages',
                         'format' => 'raw',
                     ],
-                    /*[
+                    [
                         'class' => TitleColumn::class,
-                        'attribute' => 'rating',
                         'label' => 'Rating',
                         'title' => 'The rating of Wikipedia pages. The rating adds 1 to the page from each user who watch the page and adds value of VIP level from same user.',
-                    ],*/
+                        'value' => 'rating',
+                    ],
                 ],
             ]); ?>
         <?php endif ?>
