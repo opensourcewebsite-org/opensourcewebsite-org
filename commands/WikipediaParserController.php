@@ -211,6 +211,8 @@ class WikipediaParserController extends Controller
 
     protected function log($message)
     {
-        Console::output($message, Console::FG_GREEN, Console::BOLD);
+        if ($this->log) {
+            Console::output($message, Console::FG_GREEN, Console::BOLD);
+        }
     }
 }
