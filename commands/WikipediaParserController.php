@@ -21,6 +21,7 @@ use yii\web\ServerErrorHttpException;
  */
 class WikipediaParserController extends Controller
 {
+    public $log = false;
 
     const PARSE_INTERVAL = 60;
     const UPDATE_INTERVAL = 24 * 3600;
