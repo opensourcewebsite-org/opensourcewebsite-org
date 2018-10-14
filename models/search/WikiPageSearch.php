@@ -41,6 +41,8 @@ class WikiPageSearch extends WikiPage
      */
     public function search($params)
     {
+        $allUsers = isset($params['allUsers']) ? $params['allUsers'] : false;
+
         $subQueryRatingId = Rating::find()
             ->select('(MAX(id))')
             ->groupBy('user_id');
@@ -59,7 +61,7 @@ class WikiPageSearch extends WikiPage
             ->groupBy('{{%wiki_page}}.id')
             ->orderBy(['title' => SORT_ASC]);
 
-        if ($this->type === null) {
+        if ($this->type === null && !$allUsers) {
             $query->andWhere(['{{%user_wiki_page}}.user_id' => Yii::$app->user->id]);
         } elseif ($this->type == self::TYPE_RECOMMENDED) {
             $query->andWhere([
