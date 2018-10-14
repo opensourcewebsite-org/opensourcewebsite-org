@@ -65,7 +65,7 @@ class WikipediaPagesController extends Controller
      * @return string
      * @throws NotFoundHttpException
      */
-    public function actionView($code)
+    public function actionView($code, $all = false)
     {
         if (!$language = WikiLanguage::findOne(['code' => $code])) {
             throw new NotFoundHttpException();
@@ -74,12 +74,15 @@ class WikipediaPagesController extends Controller
         Url::remember();
 
         $searchModel = new WikiPageSearch(['language_id' => $language->id]);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(array_merge(
+            Yii::$app->request->queryParams,
+            ['allUsers' => $all]
+        ));
 
         return $this->render('view', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'title' => Yii::t('app', 'Your pages') . " ({$language->code}.wikipedia.org)",
+            'title' => Yii::t('app', $all ? 'All users pages' : 'Your pages') . " ({$language->code}.wikipedia.org)",
         ]);
     }
 

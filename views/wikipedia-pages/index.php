@@ -1,11 +1,12 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
 use app\models\UserWikiToken;
+use app\models\UserWikiPage;
 use app\components\TitleColumn;
-
 /* @var $this \yii\web\View */
 
 $this->title = Yii::t('menu', 'Wikipedia watchlists');
@@ -64,6 +65,16 @@ $countTokens = $tokensDataProvider->count;
                             }
                         },
                         'format' => 'raw',
+                    ],
+                    [
+                        'label' => 'All users pages',
+                        'format' => 'html',
+                        'value' => function ($model) {
+                            $count = UserWikiPage::find()->joinWith('wikiPage')->where(['language_id' => $model->language->id])->count();
+                            if ($count > 0) {
+                                return Html::a($count, Url::to(['wikipedia-pages/view', 'code' => $model->language->code, 'all' => true]));
+                            }
+                        }
                     ],
                     [
                         'class' => ActionColumn::class,
