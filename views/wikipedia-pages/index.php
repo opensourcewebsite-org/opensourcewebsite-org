@@ -70,7 +70,7 @@ $countTokens = $tokensDataProvider->count;
                         'label' => 'All users pages',
                         'format' => 'html',
                         'value' => function ($model) {
-                            $count = UserWikiPage::find()->joinWith('wikiPage')->where(['language_id' => $model->language->id])->count();
+                            $count = UserWikiPage::find()->select('{{%wiki_page}}.id')->distinct()->joinWith('wikiPage')->where(['language_id' => $model->language->id])->count();
                             if ($count > 0) {
                                 return Html::a($count, Url::to(['wikipedia-pages/view', 'code' => $model->language->code, 'all' => true]));
                             }
