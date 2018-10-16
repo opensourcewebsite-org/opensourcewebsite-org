@@ -181,6 +181,7 @@ class WikipediaParserController extends Controller
                         ->andWhere(['>', 'user_wiki_token.updated_at', time() - self::UPDATE_ACTIVE_USER_TIMEOUT]),
                 ],*/
             ])
+            ->andWhere(['!=', 'status', UserWikiToken::STATUS_HAS_ERROR])
             ->all();
         $counter = count($tokens);
         $this->log("Found $counter tokens to update");
@@ -198,14 +199,6 @@ class WikipediaParserController extends Controller
         ]);
         try {
             $parser->run();
-
-            $this->log("Updated token #{$token->id}");
-            Yii::$app->db->createCommand()->update(
-                '{{%user_wiki_token}}', [
-                    'updated_at' => time(),
-                    'status' => UserWikiToken::STATUS_OK,
-                ], ['id' => $token->id]
-            )->execute();
         } catch (ServerErrorHttpException $e) {
             Yii::$app->db->createCommand()->update(
                 '{{%user_wiki_token}}', [
@@ -214,6 +207,10 @@ class WikipediaParserController extends Controller
                 ], ['user_id' => $token->user_id, 'language_id' => $token->language_id]
             )->execute();
         }
+        $this->log("Updated token #{$token->id}");
+        Yii::$app->db->createCommand()->update(
+            '{{%user_wiki_token}}', ['updated_at' => time()], ['id' => $token->id]
+        )->execute();
     }
 
     protected function log($message)

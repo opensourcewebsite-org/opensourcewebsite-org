@@ -66,8 +66,12 @@ class WikiTokensController extends Controller
         $model = UserWikiToken::findOne($id);
 
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
-            if ($model->load(Yii::$app->request->get()) && $model->save()) {
-                return $this->redirect(['wikipedia-pages/index']);
+            if ($model->load(Yii::$app->request->get())) {
+                $model->status = UserWikiToken::STATUS_OK;
+
+                if ($model->save()) {
+                    return $this->redirect(['wikipedia-pages/index']);
+                }
             }
         }
         
