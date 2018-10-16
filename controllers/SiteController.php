@@ -26,9 +26,21 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
+                'only' => [
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account',
+                    'confirm'
+                ],
                 'rules' => [
                     [
+                        'actions' => ['confirm'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'matchCallback' => function($rule, $action) {
+                            return Yii::$app->user->identity->is_email_confirmed;
+                        }
+                    ],
+                    [
+                        'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -275,15 +287,24 @@ class SiteController extends Controller
             $user->status = User::STATUS_ACTIVE;
 
             if ($user->save()) {
-                $rating = new Rating([
+                $commit = true;
+
+                $rating = Rating::findOne([
                     'user_id' => $user->id,
-                    'balance' => $user->rating +1,
-                    'amount' => 1,
                     'type' => Rating::CONFIRM_EMAIL,
                 ]);
-                
-                if ($rating->save()) {
-                    $commit = true;
+
+                if ($rating == null) {
+                    $rating = new Rating([
+                        'user_id' => $user->id,
+                        'balance' => $user->rating +1,
+                        'amount' => 1,
+                        'type' => Rating::CONFIRM_EMAIL,
+                    ]);
+
+                    if (!$rating->save()) {
+                        $commit = false;
+                    }
                 }
             }
         }
