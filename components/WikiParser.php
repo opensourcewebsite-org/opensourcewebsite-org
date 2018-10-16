@@ -128,11 +128,10 @@ class WikiParser extends BaseObject
                 $this->run();
             } else {
                 //Delete all pages of the current language that aren't in the userPagesId list
-                $languagePages = WikiPage::find()
+                $languagePagesId = WikiPage::find()
                     ->select('id')
                     ->where(['language_id' => $language->id])
-                    ->all();
-                $languagePagesId = \yii\helpers\ArrayHelper::getColumn($languagePages, 'id');
+                    ->column();
                 
                 UserWikiPage::deleteAll([
                     'and',
