@@ -168,8 +168,8 @@ class MoqupController extends Controller
 
             $maxSize = Yii::$app->user->identity->maxMoqupsSize;
             $currentSize = Yii::$app->user->identity->totalMoqupsSize;
-            $moqupLength = strlen($moqup->html);
-            $cssLength = strlen($css->css);
+            $moqupLength = Converter::byteToMega(strlen($moqup->html));
+            $cssLength = Converter::byteToMega(strlen($css->css));
 
             if ($maxSize < ($currentSize + $moqupLength + $cssLength)) {
                 $moqup->addError('title', 'You reach your maximum moqups total size.');

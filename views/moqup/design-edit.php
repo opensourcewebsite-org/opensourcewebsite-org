@@ -123,7 +123,7 @@ $this->registerJs('htmlEditor = ace.edit("html-editor");
     cssEditor.session.setMode("ace/mode/css");');
 
 //Set the AceEditor values to the model inputs
-$this->registerJs('$("#deign-edit-form").submit(function() {
+$this->registerJs('$("#deign-edit-form").on("beforeValidate", function(e) {
     $("#moqup-html").val(htmlEditor.getValue());
     $("#css-css").val(cssEditor.getValue());
 });');
