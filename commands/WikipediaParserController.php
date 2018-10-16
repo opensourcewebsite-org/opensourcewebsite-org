@@ -173,13 +173,13 @@ class WikipediaParserController extends Controller
                 'or',
                 ['updated_at' => null],
                 ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
-                [
+                /*[
                     'exists', (new Query())
                         ->select('*')
                         ->from('user')
                         ->where('user.id = user_wiki_token.user_id')
                         ->andWhere(['>', 'user_wiki_token.updated_at', time() - self::UPDATE_ACTIVE_USER_TIMEOUT]),
-                ],
+                ],*/
             ])
             ->all();
         $counter = count($tokens);
