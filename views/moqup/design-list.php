@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use app\components\Converter;
 
 $this->title = Yii::t('menu', 'Moqups');
 ?>
@@ -19,8 +20,8 @@ $this->title = Yii::t('menu', 'Moqups');
             <div class="alert alert-info" role="alert">
                 <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
                 (<?= $maxMoqupValue ?> per 1 User Rating), 
-                <b>Volume:</b> <?= Yii::$app->user->identity->totalMoqupsSize ?> MB/<?= Yii::$app->user->identity->maxMoqupsSize ?> MB. 
-                (<?= $sizeMoqupValue ?> MB per 1 User Rating)
+                <b>Volume:</b> <?= Converter::formatNumber(Yii::$app->user->identity->totalMoqupsSize) ?> MB/<?= Converter::formatNumber(Yii::$app->user->identity->maxMoqupsSize) ?> MB. 
+                (<?= Converter::formatNumber($sizeMoqupValue) ?> MB per 1 User Rating)
             </div>
         </div>
     <?php $this->endBlock(); ?>

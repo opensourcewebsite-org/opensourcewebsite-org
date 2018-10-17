@@ -22,7 +22,8 @@ class Converter extends BaseObject
      */
     public static function byteToMega($bytes)
     {
-        return self::formatNumber($bytes);
+        $megas = $bytes / 1024 / 1024;
+        return $megas;
     }
 
     /**
