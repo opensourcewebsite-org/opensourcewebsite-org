@@ -95,7 +95,6 @@ prevCont.html(currentCont);
 prevStyle.html(currentStyle);
 
 var prevHeight = $("#prev-frame").contents().height();
-console.log(prevHeight);
 $("#prev-frame").css("min-height", prevHeight + "px");
 
 $(".follow-page, .unfollow-page, .follow-user, .unfollow-user").on("click", function(event) {

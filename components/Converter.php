@@ -31,7 +31,7 @@ class Converter extends BaseObject
      * @param integer|double $total The amount that represents the 100%
      * @return string The number in percentage
      */
-    public function percentage($value, $total)
+    public static function percentage($value, $total)
     {
         $result = ($value * 100) / $total;
         return self::formatNumber($result);

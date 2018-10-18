@@ -68,6 +68,9 @@ $countTokens = $tokensDataProvider->count;
                     ],
                     [
                         'label' => 'All users pages',
+                        'headerOptions' => [
+                            'title' => 'List of titles of Wikipedia pages that our users watch.',
+                        ],
                         'format' => 'html',
                         'value' => function ($model) {
                             $count = UserWikiPage::find()->select('{{%wiki_page}}.id')->distinct()->joinWith('wikiPage')->where(['language_id' => $model->language->id])->count();
