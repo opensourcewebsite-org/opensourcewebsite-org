@@ -54,7 +54,7 @@ class UserWikiToken extends ActiveRecord
             'id' => 'ID',
             'user_id' => 'User ID',
             'language_id' => 'Language ID',
-            'token' => 'Token',
+            'token' => 'Watchlist Token',
             'wiki_username' => 'Wiki Username',
             'status' => 'Status',
             'updated_at' => 'Updated At',
