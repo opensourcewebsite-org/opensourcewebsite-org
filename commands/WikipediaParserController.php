@@ -26,7 +26,6 @@ class WikipediaParserController extends Controller
 
     const PARSE_INTERVAL = 60;
     const UPDATE_INTERVAL = 24 * 3600;
-    const UPDATE_ACTIVE_USER_TIMEOUT = 60 * 10;
     const PAGE_PARSE_RETRY_INTERVAL = 5;
     const PAGE_PARSE_RETRY_COUNT = 3;
 
@@ -44,8 +43,6 @@ class WikipediaParserController extends Controller
             $this->processPages();
             $this->log('Running languages parser...');
             $this->parse();
-            $this->log('Adding missing pages to users');
-            $this->addMissing();
             sleep(self::PARSE_INTERVAL);
         }
     }
@@ -176,13 +173,6 @@ class WikipediaParserController extends Controller
                 'or',
                 ['updated_at' => null],
                 ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
-                /*[
-                    'exists', (new Query())
-                        ->select('*')
-                        ->from('user')
-                        ->where('user.id = user_wiki_token.user_id')
-                        ->andWhere(['>', 'user_wiki_token.updated_at', time() - self::UPDATE_ACTIVE_USER_TIMEOUT]),
-                ],*/
             ])
             ->andWhere(['!=', 'status', UserWikiToken::STATUS_HAS_ERROR])
             ->all();
@@ -214,62 +204,6 @@ class WikipediaParserController extends Controller
         Yii::$app->db->createCommand()->update(
             '{{%user_wiki_token}}', ['updated_at' => time()], ['id' => $token->id]
         )->execute();
-    }
-
-    /**
-     * Adds the missing pages for each user
-     */
-    protected function addMissing()
-    {
-        //Search all the users with pages
-        $usersIds = UserWikiPage::find()
-            ->select('user_id')
-            ->distinct(true)
-            ->column();
-        
-        if (empty($usersIds)) {
-            return true;
-        }
-
-        foreach ($usersIds as $userId) {
-            //Search the user languages
-            $languagesIds = UserWikiPage::find()
-                ->joinWith('wikiPage')
-                ->select('language_id')
-                ->distinct()
-                ->where(['user_id' => $userId])
-                ->column();
-
-            //Search the users page groups
-            $pagesGroups = WikiPage::find()
-                ->joinWith('users')
-                ->select('group_id')
-                ->distinct()
-                ->where(['{{%user}}.id' => $userId])
-                ->column();
-            
-            //Search the missing pages for the current user
-            $pagesIds = WikiPage::find()
-                ->joinWith('users')
-                ->select('{{%wiki_page}}.id')
-                ->distinct()
-                ->where([
-                    'group_id' => $pagesGroups,
-                    'language_id' => $languagesIds,
-                    '{{%user}}.id' => NULL,
-                ])
-                ->column();
-            
-            if (!empty($pagesIds)) {
-                $this->log("Adding pages to user: $userId");
-                $uwp = new UserWikiPage(['user_id' => $userId]);
-
-                foreach ($pagesIds as $pagId) {
-                    $uwp->wiki_page_id = $pagId;
-                    $uwp->insert();
-                }
-            }
-        }
     }
 
     protected function log($message)
