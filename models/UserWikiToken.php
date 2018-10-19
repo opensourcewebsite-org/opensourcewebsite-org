@@ -166,4 +166,37 @@ class UserWikiToken extends ActiveRecord
     {
         return self::findOne(['user_id' => Yii::$app->user->id, 'language_id' => $id]);
     }
+
+    /**
+     * Gets the list of missing pages for tthe current language
+     */
+    public function getMissingPages()
+    {
+        $queryGroup = WikiPage::find()
+            ->joinWith('users')
+            ->select('group_id')
+            ->distinct()
+            ->where(['{{%user}}.id' => $this->user_id]);
+
+        $missingPages = WikiPage::find()
+            ->joinWith('users')
+            ->select('{{%wiki_page}}.id')
+            ->distinct()
+            ->where(['group_id' => $queryGroup])
+            ->andWhere([
+                'language_id' => $this->language_id,
+                'user_id' => null,
+            ])
+            ->all();
+
+        return $missingPages;
+    }
+
+    /**
+     * Count the list of missing pages
+     */
+    public function getCountMissingPages()
+    {
+        return count($this->missingPages);
+    }
 }
