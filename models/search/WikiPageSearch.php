@@ -87,4 +87,35 @@ class WikiPageSearch extends WikiPage
 
         return $dataProvider;
     }
+
+    public function searchMissing($params)
+    {
+        $userId = isset($params['userId']) ? $params['userId'] : 0;
+        $languageId = isset($params['languageId']) ? $params['languageId'] : 0;
+
+        $queryGroup = WikiPage::find()
+            ->joinWith('users')
+            ->select('group_id')
+            ->distinct()
+            ->where(['{{%user}}.id' => $userId]);
+
+        $queryMissingPages = WikiPage::find()
+            ->joinWith('users')
+            ->select('{{%wiki_page}}.*')
+            ->distinct()
+            ->where(['group_id' => $queryGroup])
+            ->andWhere([
+                'language_id' => $languageId,
+                'user_id' => null,
+            ]);
+
+        $queryMissingPages->andFilterWhere(['like', 'title', $this->title]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $queryMissingPages,
+            'sort' => false,
+        ]);
+
+        return $dataProvider;
+    }
 }

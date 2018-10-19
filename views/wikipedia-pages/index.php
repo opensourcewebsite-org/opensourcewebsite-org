@@ -59,10 +59,28 @@ $countTokens = $tokensDataProvider->count;
                         'title' => 'List of titles of Wikipedia pages that you watch.',
                         'label' => 'Your pages',
                         'value' => function ($model) use ($countTokens) {
+                            $response = '';
                             $count = count($model->wikiPagesIds);
+
                             if ($count > 0) {
-                                return Html::a($count, ['wikipedia-page/view/' . $model->language->code]);
+                                $response .= Html::a($count, ['wikipedia-page/view/' . $model->language->code]);
                             }
+                            
+                            $cantMissing = $model->countMissingPages;
+
+                            if ($cantMissing > 0) {
+                                $spanMissing = Html::tag('span', $cantMissing, [
+                                    'class' => 'fa badge label label-warning offset-5',
+                                    'title' => 'Missing pages',
+                                ]);
+                                $response .= Html::a($spanMissing, [
+                                    'wikipedia-pages/missing', 
+                                    'userId' => $model->user_id, 
+                                    'languageId' => $model->language_id
+                                ]);
+                            }
+
+                            return $response;
                         },
                         'format' => 'raw',
                     ],

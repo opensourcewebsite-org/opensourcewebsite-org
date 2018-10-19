@@ -25,7 +25,7 @@ class WikipediaPagesController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'view'],
+                        'actions' => ['index', 'view', 'missing'],
                         'roles' => ['@'],
                         'allow' => true,
                         'matchCallback' => function ($rule, $action) {
@@ -99,5 +99,30 @@ class WikipediaPagesController extends Controller
         }
 
         return $language;
+    }
+
+    /**
+     * List the missing pages
+     */
+    public function actionMissing($userId, $languageId)
+    {
+        $language = WikiLanguage::findOne($languageId);
+        $params = [];
+
+        if (isset(Yii::$app->request->queryParams['WikiPageSearch'])) {
+            $params = Yii::$app->request->queryParams['WikiPageSearch'];
+        }
+
+        $searchModel = new WikiPageSearch($params);
+        $dataProvider = $searchModel->searchMissing([
+            'userId' => $userId,
+            'languageId' => $languageId,
+        ]);
+
+        return $this->render('missing', [
+            'language' => $language,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
