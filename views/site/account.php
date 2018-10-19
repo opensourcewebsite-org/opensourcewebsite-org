@@ -30,7 +30,12 @@ $this->title = 'Account';
                         ->from(['max' => $maxQuery])
                         ->scalar();
 
-                    $percent = Converter::percentage($model->rating, $totalRating);
+                    if ($totalRating == null || $totalRating < 1) {
+                        $totalRating = 0;
+                        $percent = 0;
+                    } else {
+                        $percent = Converter::percentage($model->rating, $totalRating);
+                    }
 
                     return "<b>{$model->rating}</b>, {$percent}% of {$totalRating} (total system rating)";
                 },

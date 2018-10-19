@@ -12,6 +12,7 @@ use app\models\WikiLanguage;
 use yii\base\ErrorException;
 use yii\helpers\ArrayHelper;
 use app\models\UserWikiToken;
+use app\models\UserWikiPage;
 use app\components\WikiParser;
 use yii\web\ServerErrorHttpException;
 
@@ -25,7 +26,6 @@ class WikipediaParserController extends Controller
 
     const PARSE_INTERVAL = 60;
     const UPDATE_INTERVAL = 24 * 3600;
-    const UPDATE_ACTIVE_USER_TIMEOUT = 60 * 10;
     const PAGE_PARSE_RETRY_INTERVAL = 5;
     const PAGE_PARSE_RETRY_COUNT = 3;
 
@@ -171,20 +171,14 @@ class WikipediaParserController extends Controller
         $tokens = UserWikiToken::find()
             ->andWhere([
                 'or',
-                    ['updated_at' => null],
-                    ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
-                    [
-                    'exists', (new Query())
-                    ->select('*')
-                    ->from('user')
-                    ->where('user.id = user_wiki_token.user_id')
-                    ->andWhere(['>', 'user_wiki_token.updated_at', time() - self::UPDATE_ACTIVE_USER_TIMEOUT]),
-                ],
+                ['updated_at' => null],
+                ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
             ])
             ->andWhere(['!=', 'status', UserWikiToken::STATUS_HAS_ERROR])
             ->all();
         $counter = count($tokens);
         $this->log("Found $counter tokens to update");
+
         foreach ($tokens as $token) {
             $this->updatePages($token);
         }
@@ -200,7 +194,10 @@ class WikipediaParserController extends Controller
             $parser->run();
         } catch (ServerErrorHttpException $e) {
             Yii::$app->db->createCommand()->update(
-                '{{%user_wiki_token}}', ['status' => UserWikiToken::STATUS_HAS_ERROR], ['user_id' => $token->user_id, 'language_id' => $token->language_id]
+                '{{%user_wiki_token}}', [
+                    'updated_at' => time(),
+                    'status' => UserWikiToken::STATUS_HAS_ERROR,
+                ], ['user_id' => $token->user_id, 'language_id' => $token->language_id]
             )->execute();
         }
         $this->log("Updated token #{$token->id}");

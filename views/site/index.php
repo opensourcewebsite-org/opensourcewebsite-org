@@ -39,6 +39,9 @@ use yii\helpers\Html;
     <li><?= Html::a('Let\'s Encrypt', 'https://en.wikipedia.org/wiki/Let%27s_Encrypt') ?></li>
     <li><?= Html::a('Font Awesome 5', 'https://en.wikipedia.org/wiki/Font_Awesome') ?></li>
     <li><?= Html::a('Git', 'https://en.wikipedia.org/wiki/Git') ?></li>
+    <li><?= Html::a('HTTP/2', 'https://en.wikipedia.org/wiki/HTTP/2') ?></li>
+    <li><?= Html::a('Nginx', 'https://en.wikipedia.org/wiki/Nginx') ?></li>
+    <li><?= Html::a('Ubuntu', 'https://en.wikipedia.org/wiki/Ubuntu') ?></li>
 </ul>
 
 <h4>Web services</h4>

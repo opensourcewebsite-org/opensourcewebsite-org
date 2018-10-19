@@ -14,6 +14,8 @@ class WikiParser extends BaseObject
     public $user_id;
     public $language_id;
     public $token;
+    public $firstIteration = true;
+    public $userPagesId;
     private $_continue;
 
     public function init()
@@ -36,6 +38,10 @@ class WikiParser extends BaseObject
      */
     public function run($justValidateUser = false)
     {
+        if ($this->firstIteration) {
+            $this->userPagesId = [];
+        }
+
         $token = $this->token;
 
         $language = $token->language;
@@ -72,48 +78,67 @@ class WikiParser extends BaseObject
                 return true;
             }
 
-            /** @var UserWikiPage $page */
-            if (!$this->_continue) {
-                foreach (UserWikiPage::find()
-                    ->joinWith('wikiPage')
-                    ->where(['user_id' => $this->user_id, 'wiki_page.language_id' => $language->id])
-                    ->each() as $userPage) {
-                    $userPage->delete();
-                }
-            }
-
             foreach ($data->watchlistraw as $page) {
-                $model = new WikiPage([
-                    'ns' => $page->ns,
-                    'language_id' => $language->id,
-                    'title' => $page->title,
-                ]);
+                //Search if the page already exists
+                $wikiPage = WikiPage::find()
+                    ->where([
+                        'ns' => $page->ns,
+                        'title' => $page->title,
+                        'language_id' => $language->id
+                    ])
+                    ->one();
 
-                if ($model->validate()) {
-                    if (!WikiPage::find()->where(['title' => $model->title, 'language_id' => $language->id])->exists()) {
-                        $model->detachBehavior('timestamp');
-                        $model->save(false);
-                        $id = $model->id;
-                    } else {
-                        $id = WikiPage::find()
-                            ->select('id')
-                            ->where(['title' => $model->title, 'language_id' => $language->id])
-                            ->scalar();
-                    }
+                //If the page doesn't exist is created
+                if ($wikiPage == null) {
+                    $wikiPage = new WikiPage([
+                        'ns' => $page->ns,
+                        'language_id' => $language->id,
+                        'title' => $page->title,
+                    ]);
 
-                    if (!UserWikiPage::find()->where(['user_id' => $this->user_id, 'wiki_page_id' => $id])->exists()) {
-                        $link = new UserWikiPage([
-                            'user_id' => $this->user_id,
-                            'wiki_page_id' => $id,
-                        ]);
-                        $link->save();
+                    if (!$wikiPage->save()) {
+                        continue;
                     }
+                }
+
+                //The page id is added to the user list
+                $this->userPagesId[] = $wikiPage->id;
+
+                //If the page is not yet related to the user, is saved the relation
+                $relation = UserWikiPage::find()
+                    ->where([
+                        'user_id' => $this->user_id,
+                        'wiki_page_id' => $wikiPage->id
+                    ])
+                    ->one();
+
+                if ($relation == null) {
+                    $relation = new UserWikiPage([
+                        'user_id' => $this->user_id,
+                        'wiki_page_id' => $wikiPage->id
+                    ]);
+                    
+                    $relation->save();
                 }
             }
 
             if (isset($data->continue)) {
+                $this->firstIteration = false;
                 $this->_continue = $data->continue->wrcontinue;
                 $this->run();
+            } else {
+                //Delete all pages of the current language that aren't in the userPagesId list
+                $languagePagesId = WikiPage::find()
+                    ->select('id')
+                    ->where(['language_id' => $language->id])
+                    ->column();
+                
+                UserWikiPage::deleteAll([
+                    'and',
+                    ['user_id' => $this->user_id],
+                    ['not in', 'wiki_page_id', $this->userPagesId],
+                    ['in', 'wiki_page_id', $languagePagesId],
+                ]);
             }
         }
     }
