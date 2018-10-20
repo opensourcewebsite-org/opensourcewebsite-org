@@ -2,10 +2,10 @@
 
 namespace tests\models;
 
+use app\tests\fixtures\CssFixture;
 use app\tests\fixtures\MoqupFixture;
 use app\tests\fixtures\UserFixture;
 use app\tests\fixtures\UserMoqupFollowFixture;
-use app\tests\fixtures\CssFixture;
 
 class MoqupTest extends \Codeception\Test\Unit
 {
@@ -81,7 +81,7 @@ class MoqupTest extends \Codeception\Test\Unit
     public function testGetFollowersNumber()
     {
         $moqup = $this->tester->grabFixture('moqup', 0);
-        expect_that($followers = $moqup->getFollowersNumber());        
+        expect_that($followers = $moqup->getFollowersNumber());
         expect($followers)->equals(2);
 
         $moqup = $this->tester->grabFixture('moqup', 1);
@@ -92,14 +92,14 @@ class MoqupTest extends \Codeception\Test\Unit
     public function testGetOrigin()
     {
         $moqup = $this->tester->grabFixture('moqup', 0);
-        expect_that($origin = $moqup->getOrigin());        
-        expect_that($origin = $origin->one());        
+        expect_that($origin = $moqup->getOrigin());
+        expect_that($origin = $origin->one());
         expect($origin->id)->equals(3);
         expect($origin->title)->equals('test3');
 
         $moqup = $this->tester->grabFixture('moqup', 2);
-        expect_that($origin = $moqup->getOrigin());        
-        expect_that($origin = $origin->one());        
+        expect_that($origin = $moqup->getOrigin());
+        expect_that($origin = $origin->one());
         expect($origin->id)->equals(1);
         expect($origin->title)->equals('test1');
     }
@@ -107,16 +107,16 @@ class MoqupTest extends \Codeception\Test\Unit
     public function testGetForks()
     {
         $moqup = $this->tester->grabFixture('moqup', 2);
-        expect_that($forks = $moqup->getForks());        
-        expect_that($forks = $forks->asArray()->all());      
+        expect_that($forks = $moqup->getForks());
+        expect_that($forks = $forks->asArray()->all());
         expect_that($forks[1]);
-        expect($forks[1]['title'])->equals('test2');     
+        expect($forks[1]['title'])->equals('test2');
         expect_that($forks[0]);
         expect($forks[0]['title'])->equals('test1');
 
         $moqup = $this->tester->grabFixture('moqup', 0);
-        expect_that($forks = $moqup->getForks());        
-        expect_that($forks = $forks->asArray()->all());      
+        expect_that($forks = $moqup->getForks());
+        expect_that($forks = $forks->asArray()->all());
         expect_that($forks[0]);
         expect($forks[0]['title'])->equals('test3');
     }
@@ -124,14 +124,14 @@ class MoqupTest extends \Codeception\Test\Unit
     {
         $moqup = $this->tester->grabFixture('moqup', 0);
         expect_that($forks = $moqup->getForksNumber());
-        expect($forks)->equals(1);   
+        expect($forks)->equals(1);
 
         $moqup = $this->tester->grabFixture('moqup', 1);
         expect_not($forks = $moqup->getForksNumber());
-        expect($forks)->equals(0);   
+        expect($forks)->equals(0);
 
         $moqup = $this->tester->grabFixture('moqup', 2);
         expect_that($forks = $moqup->getForksNumber());
-        expect($forks)->equals(2);     
+        expect($forks)->equals(2);
     }
 }
