@@ -3,11 +3,41 @@
 namespace tests\models;
 
 use app\models\LoginForm;
+use app\tests\fixtures\CssFixture;
+use app\tests\fixtures\MoqupFixture;
+use app\tests\fixtures\UserFixture;
+use app\tests\fixtures\UserMoqupFollowFixture;
 
 class LoginFormTest extends \Codeception\Test\Unit
 {
     private $model;
-
+	
+	public function _fixtures()
+    {
+        return [
+            'user' => [
+                'class' => UserFixture::className(),
+                // fixture data located in tests/_data/user.php
+                'dataFile' => codecept_data_dir() . 'user.php',
+            ],
+            'moqup' => [
+                'class' => MoqupFixture::className(),
+                // fixture data located in tests/_data/moqup.php
+                'dataFile' => codecept_data_dir() . 'moqup.php',
+            ],
+            'user_moqup' => [
+                'class' => UserMoqupFollowFixture::className(),
+                // fixture data located in tests/_data/user_moqup_follow.php
+                'dataFile' => codecept_data_dir() . 'user_moqup_follow.php',
+            ],
+            'css' => [
+                'class' => CssFixture::className(),
+                // fixture data located in tests/_data/user_moqup_follow.php
+                'dataFile' => codecept_data_dir() . 'css.php',
+            ],
+        ];
+    }
+	
     public function testLoginNoUser()
     {
         $this->model = new LoginForm([
