@@ -18,12 +18,6 @@ use yii\helpers\Html;
     <?= Yii::t('app', 'We want the Web to be even better. We want more people using it for more things. We want it to continue to drive creativity, education and economic growth. And we want to empower people to help shape the Web as they move more of their lives online.') ?>
 </p>
 
-<p>
-    <?php if (!Yii::$app->user->isGuest && !Yii::$app->user->identity->is_email_confirmed) : ?>
-    <?php echo Html::a('Resend Confirmation Email', ['site/resend-confirmation-email'], ['class' => 'btn btn-primary']); ?>
-    <?php endif; ?>
-</p>
-
 <h4>Technologies</h4>
 
 <ul>

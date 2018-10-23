@@ -122,7 +122,7 @@ class SiteController extends Controller
             }
 
             if ($model->load($postData) && $model->login()) {
-                return $this->goBack();
+                return $this->redirect(['site/account']);
             }
         }
 
@@ -327,7 +327,7 @@ class SiteController extends Controller
             Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
         }
 
-        return $this->goHome();
+        return $this->redirect(['site/account']);
     }
 
     /**
