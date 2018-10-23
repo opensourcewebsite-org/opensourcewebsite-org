@@ -27,8 +27,7 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account',
-                    'confirm'
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm'
                 ],
                 'rules' => [
                     [
@@ -36,7 +35,7 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function($rule, $action) {
-                            return Yii::$app->user->identity->is_email_confirmed;
+                            return !Yii::$app->user->identity->is_email_confirmed;
                         }
                     ],
                     [
@@ -221,7 +220,7 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isPost) {
             parse_str(Yii::$app->request->post('data'), $postData);
-            
+
             if ($model->load($postData) && $model->validate()) {
                 if ($model->sendEmail()) {
                     Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
@@ -272,41 +271,25 @@ class SiteController extends Controller
         return $this->render('account', ['model' => $model]);
     }
 
-    public function actionConfirm($id, $auth_key)
+    /**
+     * Confirm user email.
+     *
+     * @param int $id the user id
+     * @param int $auth_key the user auth_key
+     *
+     * @return string
+     */
+    public function actionConfirm($id='', $auth_key='')
     {
-        $user = User::findOne([
-            'id' => $id,
-            'auth_key' => $auth_key,
-        ]);
-
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
 
+        $user = SignupForm::confirmEmail($id, $auth_key);
+
         if (!empty($user)) {
-            $user->is_email_confirmed = true;
-            $user->status = User::STATUS_ACTIVE;
 
-            if ($user->save()) {
-                $commit = true;
-
-                $rating = Rating::findOne([
-                    'user_id' => $user->id,
-                    'type' => Rating::CONFIRM_EMAIL,
-                ]);
-
-                if ($rating == null) {
-                    $rating = new Rating([
-                        'user_id' => $user->id,
-                        'balance' => $user->rating +1,
-                        'amount' => 1,
-                        'type' => Rating::CONFIRM_EMAIL,
-                    ]);
-
-                    if (!$rating->save()) {
-                        $commit = false;
-                    }
-                }
-            }
+            //Add user rating
+            $commit = $user->addRating();
         }
 
         if ($commit) {
