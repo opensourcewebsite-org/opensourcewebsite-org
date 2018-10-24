@@ -32,5 +32,4 @@ class UserTest extends \Codeception\Test\Unit
         expect_that($user->validatePassword('admin'));
         expect_not($user->validatePassword('123456'));
     }
-
 }
