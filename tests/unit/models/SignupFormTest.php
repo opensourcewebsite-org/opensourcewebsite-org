@@ -3,6 +3,7 @@
 namespace tests\models;
 
 use app\models\SignupForm;
+use app\models\User;
 use Codeception\Test\Unit;
 
 class SignupFormTest extends Unit
@@ -64,6 +65,36 @@ class SignupFormTest extends Unit
         $email = $this->tester->grabLastSentEmail();
         expect($email->getTo())->hasKey($user->email);
         expect($email->getSubject())->equals('Register for My Application');
+    }
+
+    public function testConfirmEmailWrongUserId()
+    {
+        expect_not(SignupForm::confirmEmail(101, 'test102key'));
+    }
+
+    public function testConfirmEmailWrongUserAuthKey()
+    {
+        expect_not(SignupForm::confirmEmail(102, 'test100key'));
+    }
+
+    public function testConfirmEmail()
+    {
+        expect($user = SignupForm::confirmEmail(102, 'test102key'))->notNull();
+        expect($user->is_email_confirmed)->equals(1);
+        expect($user->status)->equals(User::STATUS_ACTIVE);
+    }
+
+    /**
+     * @depends testConfirmEmail
+     */
+    public function testAddRating($user)
+    {
+        $user = User::findIdentity(102);
+        expect_that($user->addRating());
+        expect($user->getRating())->equals(1);
+
+        expect($user->addRating())->false();
+        expect($user->getRating())->notEquals(2);
     }
 
     protected function _after()

@@ -7,6 +7,8 @@ use app\tests\fixtures\CssFixture;
 use app\tests\fixtures\MoqupFixture;
 use app\tests\fixtures\UserFixture;
 use app\tests\fixtures\UserMoqupFollowFixture;
+use app\tests\fixtures\RatingFixture;
+
 
 class LoginFormTest extends \Codeception\Test\Unit
 {
@@ -19,6 +21,11 @@ class LoginFormTest extends \Codeception\Test\Unit
                 'class' => UserFixture::className(),
                 // fixture data located in tests/_data/user.php
                 'dataFile' => codecept_data_dir() . 'user.php',
+            ],
+            'rating' => [
+                'class' => RatingFixture::className(),
+                // fixture data located in tests/_data/moqup.php
+                'dataFile' => codecept_data_dir() . 'rating.php',
             ],
             'moqup' => [
                 'class' => MoqupFixture::className(),
