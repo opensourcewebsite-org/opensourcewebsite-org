@@ -33,5 +33,5 @@ return [
         'status' => 10,
         'created_at' => time(),
         'updated_at' => time(),
-    ],
+    ]
 ];
