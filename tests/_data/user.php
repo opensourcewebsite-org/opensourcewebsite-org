@@ -36,5 +36,5 @@ return [
         'referrer_id' => 100,
         'created_at' => time(),
         'updated_at' => time(),
-    ],
+    ]
 ];

@@ -178,7 +178,7 @@ class MoqupController extends Controller
             if (!$moqup->hasErrors() && $moqup->save()) {
                 $success = true;
 
-                if ($css->css != '') {
+                if (!$moqup->isNewRecord || $css->css != '') {
                     $css->moqup_id = $moqup->id;
 
                     if ($css->save()) {

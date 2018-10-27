@@ -9,6 +9,7 @@ use app\tests\fixtures\UserFixture;
 use app\tests\fixtures\UserMoqupFollowFixture;
 use app\tests\fixtures\RatingFixture;
 
+
 class LoginFormTest extends \Codeception\Test\Unit
 {
     private $model;
