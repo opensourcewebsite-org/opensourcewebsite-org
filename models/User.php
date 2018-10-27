@@ -425,37 +425,4 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
-
-
-    /**
-     * Add user rating
-     *
-     * @return bool true|false
-     */
-    public function addRating()
-    {
-        $signupRating = 1;
-        $id = $this->id;
-        $balance = $this->rating + $signupRating;
-
-        $commit = false;
-
-        $rating = Rating::findOne([
-            'user_id' => $id,
-            'type' => Rating::CONFIRM_EMAIL,
-        ]);
-        if ($rating == null) {
-            $rating = new Rating([
-                'user_id' => $id,
-                'balance' => $balance,
-                'amount' => $signupRating,
-                'type' => Rating::CONFIRM_EMAIL,
-            ]);
-
-            if ($rating->save()) {
-                $commit = true;
-            }
-        }
-        return $commit;
-    }
 }
