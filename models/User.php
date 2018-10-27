@@ -2,12 +2,12 @@
 
 namespace app\models;
 
+use app\components\Converter;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use app\components\Converter;
 
 /**
  * User model
@@ -27,7 +27,6 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
-
 
     /**
      * {@inheritdoc}
@@ -155,10 +154,10 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
 
-        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
         $expireTime = Yii::$app->params['user.passwordResetTokenExpire'];
 
-        return $timestamp +$expireTime >= time();
+        return $timestamp + $expireTime >= time();
     }
 
     /**
@@ -207,7 +206,7 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
-        /**
+    /**
      * {@inheritdoc}
      */
     public function attributeLabels()
@@ -352,33 +351,40 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $rating = Rating::find()->where(['user_id' => $this->id])->orderBy('id DESC')->one();
 
-        return ($rating != NULL) ? $rating->balance : 0;
+        return ($rating != null) ? $rating->balance : 0;
     }
-
 
     /**
      * Add user rating
      *
+     * @param int $ratingType integer value for rating type constants defined in Rating model
+     * @param int $ratingAmount rating amount to be added
+     * @param bool $existMultiple, false: given $ratingType can exist only once for a user
+     *
      * @return bool true|false
      */
-    public function addRating()
+    public function addRating($ratingType = Rating::CONFIRM_EMAIL, $ratingAmount = 1, $existMultiple = true)
     {
-        $signupRating = 1;
         $id = $this->id;
-        $balance = $this->rating + $signupRating;
+        $balance = $this->rating + $ratingAmount;
 
         $commit = false;
+        $rating = null;
 
-        $rating = Rating::findOne([
-            'user_id' => $id,
-            'type' => Rating::CONFIRM_EMAIL,
-        ]);
+        //If a rating can exist only once
+        if (!$existMultiple) {
+            $rating = Rating::findOne([
+                'user_id' => $id,
+                'type' => $ratingType,
+            ]);
+        }
+
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
                 'balance' => $balance,
-                'amount' => $signupRating,
-                'type' => Rating::CONFIRM_EMAIL,
+                'amount' => $ratingAmount,
+                'type' => $ratingType,
             ]);
 
             if ($rating->save()) {
@@ -386,5 +392,37 @@ class User extends ActiveRecord implements IdentityInterface
             }
         }
         return $commit;
+    }
+
+    /**
+     * Add rating for user's referrer if exists
+     *
+     * @return bool true|false
+     */
+    public function addReferrerBonus()
+    {
+        $user = $this->getReferrer()->one();
+
+        if ($user != null) {
+            return $user->addRating(Rating::REFERRAL_BONUS, 1);
+        }
+        return false;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReferrals(int $level = 1)
+    {
+        return $this->hasMany(User::class, ['referrer_id' => 'id']);
+
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReferrer()
+    {
+        return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
 }

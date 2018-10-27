@@ -117,3 +117,31 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.loyalty-count {
+    font-size: 20px;
+    margin-bottom: 0px;
+    line-height: 1;
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    right: 12px;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-align-content: stretch;
+    -ms-flex-line-pack: stretch;
+    align-content: stretch;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}

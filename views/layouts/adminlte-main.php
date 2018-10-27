@@ -106,6 +106,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                         ]
                     ],
                     [
+                        'label' => Yii::t('app', 'Loyalty program'),
+                        'url' => ['/referrals'],
+                        'linkOptions' => [
+                            'tabindex' => -1,
+                            'class' => 'dropdown-item ' . ((Yii::$app->controller->id . '/' . Yii::$app->controller->action->id == 'referrals/index') ? 'active' : ''),
+                        ]
+                    ],
+                    [
                         'label' => Yii::t('app', 'Logout'),
                         'url' => ['site/logout'],
                         'linkOptions' => [

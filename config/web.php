@@ -123,10 +123,12 @@ $config = [
             'rules' => [
                 '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
                 'wikipedia-pages' => 'wikipedia-pages/index',
+                'referrals' => 'referrals/index',
                 'wikipedia-page/view/<code>/<all>' => 'wikipedia-pages/view',
                 'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
                 'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
-//                '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
+                'invite/<id>' => 'site/invite',
+//              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],
         'i18n' => [

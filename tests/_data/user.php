@@ -9,6 +9,7 @@ return [
         'email' => 'admin@example.com',
         'is_email_confirmed' => 1,
         'status' => 10,
+        'referrer_id' => null,
         'created_at' => time(),
         'updated_at' => time(),
     ],
@@ -20,6 +21,7 @@ return [
         'email' => 'demo@example.com',
         'is_email_confirmed' => 1,
         'status' => 10,
+        'referrer_id' => 100,
         'created_at' => time(),
         'updated_at' => time(),
     ],
@@ -31,7 +33,8 @@ return [
         'email' => 'newuser@example.com',
         'is_email_confirmed' => 0,
         'status' => 10,
+        'referrer_id' => 100,
         'created_at' => time(),
         'updated_at' => time(),
-    ]
+    ],
 ];
