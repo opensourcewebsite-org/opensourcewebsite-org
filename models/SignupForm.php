@@ -2,8 +2,8 @@
 
 namespace app\models;
 
-use yii\base\Model;
 use app\components\helpers\ReferrerHelper;
+use yii\base\Model;
 
 /**
  * Signup form
@@ -49,7 +49,6 @@ class SignupForm extends Model
             return null;
         }
 
-
         $user = new User();
         $user->username = $this->email;
         $user->email = $this->email;
@@ -58,7 +57,7 @@ class SignupForm extends Model
 
         //If referrer exists then add referrer id in user table
         $referrerID = ReferrerHelper::getReferrerIdFromCookie();
-        if($referrerID != null) {
+        if ($referrerID != null) {
             $user->referrer_id = $referrerID;
         }
 
@@ -75,8 +74,7 @@ class SignupForm extends Model
      */
     public static function confirmEmail($id, $auth_key)
     {
-        if(!\Yii::$app->user->isGuest && \Yii::$app->user->id == $id)
-        {
+        if (!\Yii::$app->user->isGuest && \Yii::$app->user->id == $id) {
             $user = User::findOne(['id' => $id, 'is_email_confirmed' => 0]);
 
             if ($user && $user->validateAuthKey($auth_key)) {

@@ -39,18 +39,18 @@ class m181025_173637_add_referral_to_user_table extends Migration
         $this->dropColumn('{{%user}}', 'referrer_id');
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
+/*
+// Use up()/down() to run migration code without a transaction.
+public function up()
+{
 
-    }
+}
 
-    public function down()
-    {
-        echo "m181025_173637_add_referral_to_user_table cannot be reverted.\n";
+public function down()
+{
+echo "m181025_173637_add_referral_to_user_table cannot be reverted.\n";
 
-        return false;
-    }
-    */
+return false;
+}
+ */
 }

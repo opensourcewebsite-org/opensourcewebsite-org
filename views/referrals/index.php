@@ -57,7 +57,6 @@ $inviteLink = Url::toRoute([
 <?php
 $this->registerJs("new Clipboard('#copy-button');");
 
-
 $js = <<<'JS'
 
 $('#post-shortlink').keydown(function(e) {
@@ -67,7 +66,6 @@ $('#post-shortlink').keydown(function(e) {
 }).focus(function() {
   $(this).select();
 });
-
 
 JS;
 

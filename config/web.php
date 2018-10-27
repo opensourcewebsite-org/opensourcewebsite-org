@@ -128,7 +128,7 @@ $config = [
                 'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
                 'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
                 'invite/<id>' => 'site/invite',
-//                '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
+//              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],
         'i18n' => [

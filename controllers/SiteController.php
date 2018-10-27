@@ -2,20 +2,20 @@
 
 namespace app\controllers;
 
+use app\components\helpers\ReferrerHelper;
 use app\models\ContactForm;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
+use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
+use app\models\User;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use app\models\User;
-use app\models\Rating;
-use app\components\helpers\ReferrerHelper;
 
 class SiteController extends Controller
 {
@@ -28,16 +28,16 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm'
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm',
                 ],
                 'rules' => [
                     [
                         'actions' => ['confirm'],
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function($rule, $action) {
+                        'matchCallback' => function ($rule, $action) {
                             return !Yii::$app->user->identity->is_email_confirmed;
-                        }
+                        },
                     ],
                     [
                         'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
@@ -181,7 +181,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        if (!Yii::$app->request->isAjax){
+        if (!Yii::$app->request->isAjax) {
             throw new \yii\web\BadRequestHttpException();
         }
 
@@ -213,7 +213,7 @@ class SiteController extends Controller
      */
     public function actionRequestPasswordReset()
     {
-        if (!Yii::$app->request->isAjax){
+        if (!Yii::$app->request->isAjax) {
             throw new \yii\web\BadRequestHttpException();
         }
 
@@ -280,7 +280,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionConfirm($id='', $auth_key='')
+    public function actionConfirm($id = '', $auth_key = '')
     {
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
@@ -293,7 +293,7 @@ class SiteController extends Controller
             $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
 
             //Add referrer bonus as rating if referrer exists
-            if($user->referrer_id != null) {
+            if ($user->referrer_id != null) {
                 $user->addReferrerBonus();
             }
         }
@@ -328,7 +328,7 @@ class SiteController extends Controller
     {
         $language = \app\models\Language::find($lang)->one();
 
-        if ($language != NULL) {
+        if ($language != null) {
             $cookies = Yii::$app->response->cookies;
 
             $langCookie = new \yii\web\Cookie([

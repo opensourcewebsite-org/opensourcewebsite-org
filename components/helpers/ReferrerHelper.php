@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\components\helpers;
 
 use app\models\User;
@@ -47,5 +46,4 @@ class ReferrerHelper extends Component
         \Yii::$app->response->cookies->remove('referrer');
         self::addReferrer($user);
     }
-
 }

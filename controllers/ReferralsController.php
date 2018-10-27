@@ -1,8 +1,6 @@
 <?php
 
-
 namespace app\controllers;
-
 
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -26,7 +24,6 @@ class ReferralsController extends Controller
 
     public function actionIndex()
     {
-
         return $this->render('index');
     }
 }
