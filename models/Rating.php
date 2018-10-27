@@ -21,6 +21,7 @@ class Rating extends \yii\db\ActiveRecord
     const CONFIRM_EMAIL = 0;
     const TEAM = 1;
     const DONATE = 2;
+    const REFERRAL_BONUS = 3;
 
     /**
      * {@inheritdoc}

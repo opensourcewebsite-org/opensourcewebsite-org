@@ -2,6 +2,8 @@
 
 namespace tests\models;
 
+use app\models\LoginForm;
+use app\models\Rating;
 use app\models\SignupForm;
 use app\models\User;
 use Codeception\Test\Unit;
@@ -67,34 +69,92 @@ class SignupFormTest extends Unit
         expect($email->getSubject())->equals('Register for My Application');
     }
 
+    public function testConfirmEmailWithoutLogin()
+    {
+        expect_that(\Yii::$app->user->isGuest);
+        expect_not(SignupForm::confirmEmail(102, 'test102key'));
+    }
+
+    public function testConfirmEmailWithWrongLogin()
+    {
+        $this->model = new LoginForm([
+            'email' => 'demo@example.com',
+            'password' => 'webmaster',
+        ]);
+
+        expect_that($this->model->login());
+        expect_not(\Yii::$app->user->isGuest);
+        expect_not(SignupForm::confirmEmail(102, 'test102key'));
+    }
+
     public function testConfirmEmailWrongUserId()
     {
+        $this->model = new LoginForm([
+            'email' => 'newuser@example.com',
+            'password' => 'newuser',
+        ]);
+
+        expect_that($this->model->login());
+        expect_not(\Yii::$app->user->isGuest);
+
         expect_not(SignupForm::confirmEmail(101, 'test102key'));
     }
 
     public function testConfirmEmailWrongUserAuthKey()
     {
+        $this->model = new LoginForm([
+            'email' => 'newuser@example.com',
+            'password' => 'newuser',
+        ]);
+
+        expect_that($this->model->login());
+        expect_not(\Yii::$app->user->isGuest);
+
         expect_not(SignupForm::confirmEmail(102, 'test100key'));
     }
 
-    public function testConfirmEmail()
+    public function testConfirmEmailCorrect()
     {
+        $this->model = new LoginForm([
+            'email' => 'newuser@example.com',
+            'password' => 'newuser',
+        ]);
+
+        expect_that($this->model->login());
+        expect_not(\Yii::$app->user->isGuest);
+
         expect($user = SignupForm::confirmEmail(102, 'test102key'))->notNull();
         expect($user->is_email_confirmed)->equals(1);
         expect($user->status)->equals(User::STATUS_ACTIVE);
     }
 
     /**
-     * @depends testConfirmEmail
+     * @depends testConfirmEmailCorrect
      */
-    public function testAddRating($user)
+    public function testAddRatingConfirmEmail($user)
     {
         $user = User::findIdentity(102);
-        expect_that($user->addRating());
+        expect_that($user->addRating(Rating::CONFIRM_EMAIL, 1, false));
         expect($user->getRating())->equals(1);
 
-        expect($user->addRating())->false();
+        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->false();
         expect($user->getRating())->notEquals(2);
+    }
+
+    /**
+     * @depends testConfirmEmailCorrect
+     */
+    public function testAddRatingReferralBonus($user)
+    {
+        $user = User::findIdentity(102);
+        expect_that($referrer = $user->getReferrer()->one());
+        expect($referrer->getRating())->equals(1);
+        expect_that($user->addReferrerBonus());
+        expect($referrer->getRating())->equals(2);
+
+        $user = User::findIdentity(100);
+        expect_not($user->getReferrer()->one());
+        expect($user->addReferrerBonus())->false();
     }
 
     protected function _after()

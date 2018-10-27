@@ -41,3 +41,7 @@ body.sidebar-collapse .main-sidebar:hover .brand-abbr{
   display: block;
   z-index: 7;
 }
+.navbar-nav .dropdown-menu {
+  right: 0;
+  left: auto;
+}

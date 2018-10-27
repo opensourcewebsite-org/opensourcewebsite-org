@@ -15,6 +15,7 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use app\models\User;
 use app\models\Rating;
+use app\components\helpers\ReferrerHelper;
 
 class SiteController extends Controller
 {
@@ -288,8 +289,13 @@ class SiteController extends Controller
 
         if (!empty($user)) {
 
-            //Add user rating
-            $commit = $user->addRating();
+            //Add user rating for confirm email
+            $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+
+            //Add referrer bonus as rating if referrer exists
+            if($user->referrer_id != null) {
+                $user->addReferrerBonus();
+            }
         }
 
         if ($commit) {
@@ -367,5 +373,31 @@ class SiteController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Store Referrer ID in Cookies for future user
+     *
+     * @param $id
+     *
+     * @return Response
+     */
+    public function actionInvite($id)
+    {
+        /** @var User $user */
+        if (Yii::$app->user->isGuest) {
+            $referrer = ReferrerHelper::getReferrerFromCookie();
+            if ($user = User::findOne($id)) {
+                if ($referrer === null) {
+                    // first time
+                    ReferrerHelper::addReferrer($user);
+                } elseif ($referrer->value != $id) {
+                    // change refferer
+                    ReferrerHelper::changeReferrer($user);
+                }
+            }
+        }
+
+        return $this->redirect(['index']);
     }
 }
