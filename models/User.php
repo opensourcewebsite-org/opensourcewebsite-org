@@ -414,8 +414,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return $this->hasMany(User::class, ['referrer_id' => 'id']);
-
+        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed'=>1]);
     }
 
     /**

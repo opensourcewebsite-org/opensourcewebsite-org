@@ -26,7 +26,6 @@ class ReferrerHelper extends Component
 
     /**
      * @param User $user
-     * @param integer $referrer_id
      */
     public static function addReferrer(User $user)
     {
