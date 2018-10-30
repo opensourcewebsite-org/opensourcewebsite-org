@@ -9,7 +9,6 @@ use Yii;
  *
  * @property int $id
  * @property int $user_id
- * @property int $balance
  * @property int $amount
  * @property int $type
  * @property int $created_at
@@ -37,8 +36,8 @@ class Rating extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'balance', 'amount', 'type', 'created_at'], 'integer'],
-            [['balance', 'amount', 'type'], 'required'],
+            [['user_id', 'amount', 'type', 'created_at'], 'integer'],
+            [['amount', 'type'], 'required'],
             [['created_at'], 'default', 'value' => time()],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -52,7 +51,6 @@ class Rating extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'user_id' => Yii::t('app', 'User ID'),
-            'balance' => Yii::t('app', 'Balance'),
             'amount' => Yii::t('app', 'Amount'),
             'type' => Yii::t('app', 'Type'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -65,5 +63,14 @@ class Rating extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return integer The total rating in rating table
+     */
+    public static function getTotalRating()
+    {
+        $totalRating = static::find()->select('sum(amount)')->scalar();
+        return $totalRating != null ? $totalRating : 0;
     }
 }

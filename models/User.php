@@ -345,13 +345,21 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRatings()
+    {
+        return $this->hasMany(Rating::className(), ['user_id' => 'id']);
+    }
+
+    /**
      * @return integer The current rating of the user
      */
     public function getRating()
     {
-        $rating = Rating::find()->where(['user_id' => $this->id])->orderBy('id DESC')->one();
+        $balance = Rating::find()->select(['balance' => 'sum(amount)'])->where(['user_id' => $this->id])->groupBy('user_id')->scalar();
 
-        return ($rating != null) ? $rating->balance : 0;
+        return ($balance != null) ? $balance : 0;
     }
 
     /**
@@ -366,7 +374,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function addRating($ratingType = Rating::CONFIRM_EMAIL, $ratingAmount = 1, $existMultiple = true)
     {
         $id = $this->id;
-        $balance = $this->rating + $ratingAmount;
 
         $commit = false;
         $rating = null;
@@ -382,7 +389,6 @@ class User extends ActiveRecord implements IdentityInterface
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
-                'balance' => $balance,
                 'amount' => $ratingAmount,
                 'type' => $ratingType,
             ]);
@@ -414,7 +420,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed'=>1]);
+        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed' => 1]);
 
     }
 

@@ -2,7 +2,6 @@
 
 namespace app\components;
 
-use yii;
 use \yii\base\BaseObject;
 
 class Converter extends BaseObject
@@ -33,7 +32,10 @@ class Converter extends BaseObject
      */
     public static function percentage($value, $total)
     {
-        $result = ($value * 100) / $total;
+        $result = 0;
+        if ($total > 0) {
+            $result = ($value * 100) / $total;
+        }
         return self::formatNumber($result);
     }
 }

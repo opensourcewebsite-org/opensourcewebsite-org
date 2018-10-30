@@ -2,11 +2,11 @@
 
 namespace app\models\search;
 
+use app\models\Rating;
+use app\models\UserWikiPage;
+use app\models\WikiPage;
 use Yii;
 use yii\base\Model;
-use app\models\WikiPage;
-use app\models\UserWikiPage;
-use app\models\Rating;
 use yii\data\ActiveDataProvider;
 
 class WikiPageSearch extends WikiPage
@@ -50,7 +50,7 @@ class WikiPageSearch extends WikiPage
         $subQueryUsersId = Rating::find()
             ->select('user_id')
             ->distinct(true)
-            ->where(['>', 'balance', 0])
+            ->where(['>=', 'amount', 1])
             ->andWhere(['id' => $subQueryRatingId]);
 
         $query = WikiPage::find()
@@ -66,7 +66,7 @@ class WikiPageSearch extends WikiPage
         } elseif ($this->type == self::TYPE_RECOMMENDED) {
             $query->andWhere([
                 'not in', '{{%wiki_page}}.id',
-                    UserWikiPage::find()
+                UserWikiPage::find()
                     ->select('wiki_page_id')
                     ->where(['{{%user_wiki_page}}.user_id' => Yii::$app->user->id]),
             ]);
