@@ -21,6 +21,12 @@ if (!empty($moqup)):
                 </small>
             </h3>
             <div class="ml-auto p-2">
+                <?php if ((int)$moqup->user_id === Yii::$app->user->identity->id) : ?>
+                <?= Html::a('<i class="fas fa-edit"></i>', ['moqup/design-edit', 'id' => $moqup->id], [
+                    'class' => 'btn btn-light',
+                    'title' => 'Edit',
+                ]) ?>
+                <?php endif; ?>
                 <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-code-branch'])
                     . Html::tag('span', $moqup->forksNumber, ['class' => 'badge badge-light ml-1']),
                     ['moqup/design-edit', 'fork' => $moqup->id], [
