@@ -51,7 +51,7 @@ if (!empty($moqup)):
                     <?= Html::ul([
                         Html::a('View', '#view', ['class' => 'nav-link active', 'data-toggle' => 'tab']),
                         Html::a('HTML', '#html', ['class' => 'nav-link', 'data-toggle' => 'tab']),
-                        Html::a('Css', '#css', ['class' => 'nav-link', 'data-toggle' => 'tab', 'style' => ($css != null ? '' : 'display:none')]),
+                        Html::a('CSS', '#css', ['class' => 'nav-link', 'data-toggle' => 'tab', 'style' => ($css != null ? '' : 'display:none')]),
                     ], [
                         'class' => 'nav nav-tabs',
                         'encode' => false,
