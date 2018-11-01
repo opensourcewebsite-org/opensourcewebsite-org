@@ -9,6 +9,7 @@ $followed = in_array($moqup->id, Yii::$app->user->identity->followedMoqupsId);
 
 if (!empty($moqup)):
 ?>
+<style id="prev-style"></style>
     <div class="card">
         <div class="card-header d-flex p-0">
             <h3 class="card-title p-3">
@@ -63,7 +64,7 @@ if (!empty($moqup)):
                 <div class="col-md-12">
                     <div class="tab-content">
                         <div class="tab-pane active" id="view">
-                            <?= $moqup->html ?>
+                            <div id="prev-content"></div>
                         </div>
                         <div class="tab-pane" id="html">
                             <div id="html-editor" class="ace-editor"><?= Html::encode($moqup->html) ?></div>
@@ -90,9 +91,8 @@ cssEditor.setTheme("ace/theme/chrome");
 cssEditor.session.setMode("ace/mode/css");
 cssEditor.setReadOnly(true);
 
-var prevFrame = $("#prev-frame").contents();
-var prevCont = prevFrame.find("#prev-content");
-var prevStyle = prevFrame.find("#prev-style");
+var prevCont = $("#prev-content");
+var prevStyle = $("#prev-style");
 
 var currentCont = htmlEditor.getValue();
 var currentStyle = cssEditor.getValue();
@@ -100,8 +100,6 @@ var currentStyle = cssEditor.getValue();
 prevCont.html(currentCont);
 prevStyle.html(currentStyle);
 
-var prevHeight = $("#prev-frame").contents().height();
-$("#prev-frame").css("min-height", prevHeight + "px");
 
 $(".follow-page, .unfollow-page, .follow-user, .unfollow-user").on("click", function(event) {
     event.preventDefault();

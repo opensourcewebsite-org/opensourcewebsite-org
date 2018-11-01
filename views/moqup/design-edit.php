@@ -9,6 +9,7 @@ $this->beginBlock('content-header-data');
 $this->endBlock();
 \app\assets\AceEditorAsset::register($this);
 ?>
+<style id="prev-style"></style>
 <?php $form = ActiveForm::begin([
     'id' => 'deign-edit-form'
 ]); ?>
@@ -63,7 +64,7 @@ $this->endBlock();
                     </div>
                     <div class="tab-pane" id="preview">
                         <div class="row">
-                            <iframe id="prev-frame" src="<?= yii::$app->urlManager->createUrl(['moqup/design-preview']) ?>" frameborder="0" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-pointer-lock" class="col-md-12"></iframe>
+                            <div id="prev-content"></div>
                         </div>
                     </div>
                 </div>
@@ -96,21 +97,14 @@ ActiveForm::end();
 
 //Prepare the preview
 $this->registerjs('$("#toggle-prev").on("show.bs.tab", function() {
-    var prevFrame = $("#prev-frame").contents();
-    var prevCont = prevFrame.find("#prev-content");
-    var prevStyle = prevFrame.find("#prev-style");
+    var prevCont = $("#prev-content");
+    var prevStyle = $("#prev-style");
     
     var currentCont = htmlEditor.getValue();
     var currentStyle = cssEditor.getValue();
 
     prevCont.html(currentCont);
     prevStyle.html(currentStyle);
-})');
-
-//Fix the preview frame height when shown
-$this->registerjs('$("#toggle-prev").on("shown.bs.tab", function() {
-    var prevHeight = $("#prev-frame").contents().height();
-    $("#prev-frame").css("min-height", prevHeight + "px");
 })');
 
 //Activate the AceEditor
