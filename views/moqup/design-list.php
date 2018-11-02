@@ -82,7 +82,7 @@ $this->title = Yii::t('menu', 'Moqups');
                 ],
                 [
                     'attribute' => 'user_id',
-                    'contentOptions' => ['style' => 'width: 40%; white-space: normal'],
+                    'contentOptions' => ['style' => 'width: 30%; white-space: normal'],
                     'format' => 'html',
                     'value' => function($model) use ($viewFollowing) {
                         $response = $model->user->email;
@@ -128,8 +128,12 @@ $this->title = Yii::t('menu', 'Moqups');
                         }
                     ],
                     'visibleButtons' => [
-                        'update' => $viewYours,
-                        'delete' => $viewYours,
+                        'update' => function ($model) use ($viewYours) {
+                            return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
+                        },
+                        'delete' => function ($model) use ($viewYours) {
+                            return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
+                        },
                     ],
                 ],
             ],
