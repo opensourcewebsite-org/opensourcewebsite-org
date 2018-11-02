@@ -2,18 +2,16 @@
 
 namespace app\commands;
 
-use Yii;
-use yii\db\Query;
-use yii\helpers\Console;
-use app\models\WikiPage;
-use yii\httpclient\Client;
-use yii\console\Controller;
-use app\models\WikiLanguage;
-use yii\base\ErrorException;
-use yii\helpers\ArrayHelper;
-use app\models\UserWikiToken;
-use app\models\UserWikiPage;
 use app\components\WikiParser;
+use app\models\UserWikiToken;
+use app\models\WikiLanguage;
+use app\models\WikiPage;
+use Yii;
+use yii\base\ErrorException;
+use yii\console\Controller;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
+use yii\httpclient\Client;
 use yii\web\ServerErrorHttpException;
 
 /**
@@ -63,8 +61,8 @@ class WikipediaParserController extends Controller
             ->joinWith('users')
             ->where([
                 'or',
-                    ['wiki_page.updated_at' => null],
-                    ['<', 'wiki_page.updated_at', time() - self::UPDATE_INTERVAL],
+                ['wiki_page.updated_at' => null],
+                ['<', 'wiki_page.updated_at', time() - self::UPDATE_INTERVAL],
             ])
             ->andWhere(['is not', 'user.id', null])
             ->one()) {
@@ -72,14 +70,14 @@ class WikipediaParserController extends Controller
             for ($retry = 0; $retry <= self::PAGE_PARSE_RETRY_COUNT; $retry++) {
                 try {
                     $response = $client->get('api.php', [
-                            'action' => 'wbgetentities',
-                            'format' => 'json',
-                            'props' => 'sitelinks',
-                            'utf8' => 1,
-                            'normalize' => 1,
-                            'sites' => "{$page->language->code}wiki",
-                            'titles' => $page->title,
-                        ])->send();
+                        'action' => 'wbgetentities',
+                        'format' => 'json',
+                        'props' => 'sitelinks',
+                        'utf8' => 1,
+                        'normalize' => 1,
+                        'sites' => "{$page->language->code}wiki",
+                        'titles' => $page->title,
+                    ])->send();
                     break;
                 } catch (ErrorException $e) {
                     $this->log('Error parsing page ' . $page->title . ' - ' . $e->getMessage());
@@ -147,14 +145,14 @@ class WikipediaParserController extends Controller
             }
         }
         if (WikiPage::find()
-                ->joinWith('users')
-                ->where([
-                    'or',
-                        ['wiki_page.updated_at' => null],
-                        ['<', 'wiki_page.updated_at', time() - self::UPDATE_INTERVAL],
-                ])
-                ->andWhere(['is not', 'user.id', null])
-                ->exists()) {
+            ->joinWith('users')
+            ->where([
+                'or',
+                ['wiki_page.updated_at' => null],
+                ['<', 'wiki_page.updated_at', time() - self::UPDATE_INTERVAL],
+            ])
+            ->andWhere(['is not', 'user.id', null])
+            ->exists()) {
             $this->parse();
         } else {
             return true;
@@ -192,18 +190,22 @@ class WikipediaParserController extends Controller
         ]);
         try {
             $parser->run();
+            $this->log("Updated token #{$token->id}");
+            Yii::$app->db->createCommand()->update(
+                '{{%user_wiki_token}}', ['updated_at' => time()], ['id' => $token->id]
+            )->execute();
         } catch (ServerErrorHttpException $e) {
+            $this->log("Error updating token #{$token->id} " . $e->getMessage());
             Yii::$app->db->createCommand()->update(
                 '{{%user_wiki_token}}', [
                     'updated_at' => time(),
                     'status' => UserWikiToken::STATUS_HAS_ERROR,
                 ], ['user_id' => $token->user_id, 'language_id' => $token->language_id]
             )->execute();
+        } catch (\Exception $e) {
+            $this->log("Error updating token #{$token->id} " . $e->getMessage());
         }
-        $this->log("Updated token #{$token->id}");
-        Yii::$app->db->createCommand()->update(
-            '{{%user_wiki_token}}', ['updated_at' => time()], ['id' => $token->id]
-        )->execute();
+
     }
 
     protected function log($message)

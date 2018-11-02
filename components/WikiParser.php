@@ -2,10 +2,10 @@
 
 namespace app\components;
 
-use app\models\WikiPage;
-use yii\base\BaseObject;
 use app\models\UserWikiPage;
 use app\models\UserWikiToken;
+use app\models\WikiPage;
+use yii\base\BaseObject;
 use yii\web\ServerErrorHttpException;
 
 class WikiParser extends BaseObject
@@ -22,9 +22,9 @@ class WikiParser extends BaseObject
     {
         if (!$this->token) {
             if (!$token = UserWikiToken::findOne([
-                    'user_id' => $this->user_id,
-                    'language_id' => $this->language_id,
-                ])
+                'user_id' => $this->user_id,
+                'language_id' => $this->language_id,
+            ])
             ) {
                 throw new ServerErrorHttpException('Token not found');
             }
@@ -64,16 +64,20 @@ class WikiParser extends BaseObject
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            throw new \Exception(curl_error($ch));
+        }
         curl_close($ch);
 
         if ($data = json_decode($result)) {
             if (isset($data->error)) {
-                if ($data->error->info == 'Incorrect watchlist token provided. Please set a correct token in [[Special:Preferences]].') {
+                if ($data->error->code == 'bad_wltoken' && $data->error->info == 'Incorrect watchlist token provided. Please set a correct token in [[Special:Preferences]].') {
                     $error = "Incorrect watchlist token provided. <a href='https://{$language->code}.wikipedia.org/wiki/Special:ResetTokens' target='_blank'>Please set a correct token</a>";
+                    throw new ServerErrorHttpException($error);
                 } else {
                     $error = $data->error->info;
+                    throw new \Exception($error);
                 }
-                throw new ServerErrorHttpException($error);
             } elseif ($justValidateUser) {
                 return true;
             }
@@ -84,7 +88,7 @@ class WikiParser extends BaseObject
                     ->where([
                         'ns' => $page->ns,
                         'title' => $page->title,
-                        'language_id' => $language->id
+                        'language_id' => $language->id,
                     ])
                     ->one();
 
@@ -108,16 +112,16 @@ class WikiParser extends BaseObject
                 $relation = UserWikiPage::find()
                     ->where([
                         'user_id' => $this->user_id,
-                        'wiki_page_id' => $wikiPage->id
+                        'wiki_page_id' => $wikiPage->id,
                     ])
                     ->one();
 
                 if ($relation == null) {
                     $relation = new UserWikiPage([
                         'user_id' => $this->user_id,
-                        'wiki_page_id' => $wikiPage->id
+                        'wiki_page_id' => $wikiPage->id,
                     ]);
-                    
+
                     $relation->save();
                 }
             }
@@ -132,7 +136,7 @@ class WikiParser extends BaseObject
                     ->select('id')
                     ->where(['language_id' => $language->id])
                     ->column();
-                
+
                 UserWikiPage::deleteAll([
                     'and',
                     ['user_id' => $this->user_id],
