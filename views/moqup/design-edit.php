@@ -64,7 +64,7 @@ $this->endBlock();
                     </div>
                     <div class="tab-pane" id="preview">
                         <div class="row">
-                            <div id="prev-content"></div>
+                            <div id="prev-content" class="col-md-12"></div>
                         </div>
                     </div>
                 </div>
