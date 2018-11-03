@@ -268,8 +268,8 @@ class SiteController extends Controller
     public function actionAccount()
     {
         $model = Yii::$app->user->identity;
-
-        return $this->render('account', ['model' => $model]);
+        $totalRating = Rating::getTotalRating();
+        return $this->render('account', ['model' => $model, 'totalRating' => $totalRating]);
     }
 
     /**
