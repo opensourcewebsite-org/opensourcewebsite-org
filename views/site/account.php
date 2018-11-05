@@ -19,7 +19,21 @@ $this->title = 'Account';
                 'id',
                 'email',
                 [
-                    'label' => 'Rating',
+                    'label' => 'Active Rating',
+                    'format' => 'html',
+                    'value' => function ($model) use ($totalActiveRating) {
+
+                        if ($totalActiveRating < 1) {
+                            $percent = 0;
+                        } else {
+                            $percent = Converter::percentage($model->activeRating, $totalActiveRating);
+                        }
+
+                        return "<b>{$model->activeRating}</b>, {$percent}% of {$totalActiveRating} (total system active rating)";
+                    },
+                ],
+                [
+                    'label' => 'Overall Rating',
                     'format' => 'html',
                     'value' => function ($model) use ($totalRating) {
 
@@ -29,7 +43,7 @@ $this->title = 'Account';
                             $percent = Converter::percentage($model->rating, $totalRating);
                         }
 
-                        return "<b>{$model->rating}</b>, {$percent}% of {$totalRating} (total system rating)";
+                        return "<b>{$model->rating}</b>, {$percent}% of {$totalRating} (total system overall rating)";
                     },
                 ],
                 [

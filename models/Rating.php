@@ -73,4 +73,15 @@ class Rating extends \yii\db\ActiveRecord
         $totalRating = static::find()->select('sum(amount)')->scalar();
         return $totalRating != null ? $totalRating : 0;
     }
+
+    /**
+     * @return integer The total active rating in rating table
+     */
+    public static function getTotalActiveRating()
+    {
+        $fromDate = ((new \DateTime())->modify('-31 day'))->format('Y-m-d');
+        $toDate = (new \DateTime())->format('Y-m-d');
+        $totalActiveRating = static::find()->select('sum(amount)')->andWhere(['between', "DATE_FORMAT(FROM_UNIXTIME(created_at), '%Y-%m-%d')", $fromDate, $toDate])->scalar();
+        return $totalActiveRating != null ? $totalActiveRating : 0;
+    }
 }

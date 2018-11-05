@@ -269,7 +269,8 @@ class SiteController extends Controller
     {
         $model = Yii::$app->user->identity;
         $totalRating = Rating::getTotalRating();
-        return $this->render('account', ['model' => $model, 'totalRating' => $totalRating]);
+        $totalActiveRating = Rating::getTotalActiveRating();
+        return $this->render('account', ['model' => $model, 'totalRating' => $totalRating, 'totalActiveRating' => $totalActiveRating]);
     }
 
     /**
