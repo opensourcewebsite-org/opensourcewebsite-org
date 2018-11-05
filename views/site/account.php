@@ -21,15 +21,8 @@ $this->title = 'Account';
                 [
                     'label' => 'Active Rating',
                     'format' => 'html',
-                    'value' => function ($model) use ($totalActiveRating) {
-
-                        if ($totalActiveRating < 1) {
-                            $percent = 0;
-                        } else {
-                            $percent = Converter::percentage($model->activeRating, $totalActiveRating);
-                        }
-
-                        return "<b>{$model->activeRating}</b>, {$percent}% of {$totalActiveRating} (total system active rating)";
+                    'value' => function ($model) {
+                        return "<b>{$model->activeRating}</b>";
                     },
                 ],
                 [
