@@ -363,6 +363,18 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @return integer The active rating of the user
+     */
+    public function getActiveRating()
+    {
+        $fromDate = ((new \DateTime())->modify('-31 day'))->format('Y-m-d');
+        $toDate = (new \DateTime())->format('Y-m-d');
+        $balance = Rating::find()->select(['balance' => 'sum(amount)'])->andWhere(['between', "DATE_FORMAT(FROM_UNIXTIME(created_at), '%Y-%m-%d')", $fromDate, $toDate])->where(['user_id' => $this->id])->groupBy('user_id')->scalar();
+
+        return ($balance != null) ? $balance : 0;
+    }
+
+    /**
      * Add user rating
      *
      * @param int $ratingType integer value for rating type constants defined in Rating model
