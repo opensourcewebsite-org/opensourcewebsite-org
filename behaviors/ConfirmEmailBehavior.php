@@ -29,8 +29,7 @@ class ConfirmEmailBehavior extends Behavior
             return true;
         }
 
-        $user = User::findOne(Yii::$app->user->id);
-        if ($user->is_email_confirmed) {
+        if (Yii::$app->user->identity->is_email_confirmed) {
             return true;
         }
 
