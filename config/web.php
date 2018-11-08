@@ -141,6 +141,9 @@ $config = [
     ],
     'timeZone' => 'UTC',
     'params' => $params,
+    'as ConfirmEmail' => [
+        'class' => '\app\behaviors\ConfirmEmailBehavior',
+    ],
 ];
 
 if (YII_ENV_DEV) {

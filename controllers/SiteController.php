@@ -35,9 +35,6 @@ class SiteController extends Controller
                         'actions' => ['confirm'],
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return !Yii::$app->user->identity->is_email_confirmed;
-                        },
                     ],
                     [
                         'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
