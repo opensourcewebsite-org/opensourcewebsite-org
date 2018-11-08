@@ -28,11 +28,11 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm',
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm', 'resend-confirmation-email',
                 ],
                 'rules' => [
                     [
-                        'actions' => ['confirm'],
+                        'actions' => ['confirm', 'resend-confirmation-email'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
