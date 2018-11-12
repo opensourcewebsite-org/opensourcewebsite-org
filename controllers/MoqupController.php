@@ -62,6 +62,7 @@ class MoqupController extends Controller
      */
     public function actionDesignList($viewYours = false, $viewFollowing = false)
     {
+        $this->layout = 'moqup';
         $searchModel = new MoqupSearch();
         $params = Yii::$app->request->queryParams;
 
