@@ -29,9 +29,6 @@ class IssueController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return Yii::$app->user->identity->is_email_confirmed;
-                        },
                     ],
                 ],
             ],
