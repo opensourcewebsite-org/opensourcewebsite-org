@@ -363,6 +363,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @param bool $format whether to return formatted percent value or not
+     * @return mixed The number in percentage
+     */
+    public function getOverallRatingPercent($format = true)
+    {
+        $totalRating = Rating::getTotalRating();
+        return Converter::percentage($this->rating, $totalRating, $format);
+    }
+
+    /**
      * @return integer The active rating of the user
      */
     public function getActiveRating()
