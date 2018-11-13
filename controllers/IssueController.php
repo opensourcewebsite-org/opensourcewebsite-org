@@ -93,7 +93,14 @@ class IssueController extends Controller
         $issue = new Issue(['user_id' => Yii::$app->user->identity->id, 'created_at' => time()]);
 
         if ($this->saveIssue($issue)) {
-            $this->redirect(['index']);
+
+            //Set creator own vote to Yes
+            $issueVote = new UserIssueVote(['issue_id' => $issue->id, 'user_id' => Yii::$app->user->identity->id, 'created_at' => time(), 'vote_type' => UserIssueVote::YES]);
+
+            if (!$issueVote->hasErrors()) {
+                $issueVote->save();
+            }
+            $this->redirect(['issue/view', 'id' => $issue->id]);
         }
 
         return $this->render('create', [
@@ -112,7 +119,7 @@ class IssueController extends Controller
         $issue = $this->findModel($id);
 
         if ($this->saveIssue($issue)) {
-            $this->redirect(['index']);
+            $this->redirect(['issue/view', 'id' => $issue->id]);
         }
 
         return $this->render('update', [

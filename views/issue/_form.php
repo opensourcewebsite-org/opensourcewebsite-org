@@ -31,14 +31,14 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                        <?=Html::submitButton(Yii::t('app', 'Save issue'), ['class' => 'btn btn-success'])?>
+                        <?=Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success'])?>
                         <?=Html::a(Yii::t('app', 'Cancel'), ['/issue'], [
-                            'class' => 'btn btn-secondary float-right',
+                            'class' => 'btn btn-secondary',
                             'title' => Yii::t('app', 'Cancel'),
                         ]);?>
                         <?php if($issue->id != null):?>
                             <?=Html::a(Yii::t('app', 'Delete'), ['issue/delete/', 'id' => $issue->id], [
-                                'class' => 'btn btn-danger float-right mr-3',
+                                'class' => 'btn btn-danger float-right',
                                 'id' => 'delete-issue'
                             ])?>
                         <?php endif; ?>
