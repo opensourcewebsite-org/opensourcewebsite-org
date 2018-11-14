@@ -47,9 +47,6 @@ class IssueSearch extends Issue
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['created_at' => SORT_DESC]],
-            'pagination' => [
-                'pageSize' => 3,
-            ],
         ]);
 
         if (!empty($params['viewYours'])) {

@@ -10,20 +10,28 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'View Issue');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Issues'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = '#'.$model->id;
 ?>
 <div class="issue-view">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?=$model->title?></h3>
+                    <div class="row">
+                        <div class="col-11">
+                            <h3 class="card-title"><?=$model->title?></h3>
+                        </div>
+                        <div class="col-1 text-right">
+                            <?=Html::a('#'.$model->id, ['/issue/view', 'id'=>$model->id], [
+                                'title' => '#'.$model->id,
+                            ]);?>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6 d-flex">
                             <div class="mx-3 h5"><span class="badge badge-success">Open</span> </div>
-                            <div class="mx-3"><span class="text-secondary">ID:</span> <?=$model->id?></div>
                             <div class="mx-3"><span class="text-secondary">Created at:</span> <?=Converter::formatDate($model->created_at)?></div>
                         </div>
                         <div class="col-6">
@@ -38,10 +46,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?=Html::a(Yii::t('app', 'Back'), ['/issue'], [
-                        'class' => 'btn btn-primary',
-                        'title' => Yii::t('app', 'Back'),
-                    ]);?>
                     <div class="btn-group btn-group-toggle float-right ml-3" data-toggle="buttons">
                         <label class="btn btn-success">
                             <input type="radio" name="options" id="option1" value="<?=UserIssueVote::YES?>" autocomplete="off" <?=$model->getUserVoteSelected() == UserIssueVote::YES ? 'checked' : ''?>> Yes

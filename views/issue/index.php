@@ -116,7 +116,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         $content = '<i class="fas fa-external-link-alt"></i>';
                                         return Html::a($content, ['issue/view/', 'id' => $model->id], [
                                             'data-pjax' => 0,
-                                            'target' => '_blank',
                                             'class' => 'btn btn-sm btn-outline-primary',
                                             'title' => 'View',
                                         ]);
