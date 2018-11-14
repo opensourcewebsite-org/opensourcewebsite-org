@@ -93,11 +93,6 @@ class NavBar extends \yii\bootstrap\Widget
             }
             echo Html::beginTag('div', $this->innerContainerOptions);
         }
-        
-        Html::addCssClass($this->containerOptions, ['collapse' => 'collapse', 'widget' => 'navbar-collapse']);
-        $options = $this->containerOptions;
-        $tag = ArrayHelper::remove($options, 'tag', 'div');
-        echo Html::beginTag($tag, $options);
     }
 
     /**
