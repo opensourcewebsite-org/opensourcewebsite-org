@@ -17,11 +17,13 @@ $this->title = Yii::t('menu', 'Moqups');
             </div>
         </div>
         <div class="row mb-2">
-            <div class="alert alert-info" role="alert">
-                <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
-                (<?= $maxMoqupValue ?> per 1 User Rating), 
-                <b>Volume:</b> <?= Converter::formatNumber(Yii::$app->user->identity->totalMoqupsSize) ?> MB/<?= Converter::formatNumber(Yii::$app->user->identity->maxMoqupsSize) ?> MB. 
-                (<?= Converter::formatNumber($sizeMoqupValue) ?> MB per 1 User Rating)
+            <div class="col">
+                <div class="alert alert-info" role="alert">
+                    <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
+                    (<?= $maxMoqupValue ?> per 1 User Rating), 
+                    <b>Volume:</b> <?= Converter::formatNumber(Yii::$app->user->identity->totalMoqupsSize) ?> MB/<?= Converter::formatNumber(Yii::$app->user->identity->maxMoqupsSize) ?> MB. 
+                    (<?= Converter::formatNumber($sizeMoqupValue) ?> MB per 1 User Rating)
+                </div>
             </div>
         </div>
     <?php $this->endBlock(); ?>
@@ -135,6 +137,19 @@ $this->title = Yii::t('menu', 'Moqups');
                             return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
                         },
                     ],
+                ],
+            ],
+            'pager' => [
+                'linkContainerOptions' => [
+                    'class' => 'page-item',
+                ],
+                'linkOptions' => [
+                    'class' => 'page-link',
+                ],
+                'maxButtonCount' => 5,
+                'disabledListItemSubTagOptions' => [
+                    'tag' => 'a',
+                    'class' => 'page-link',
                 ],
             ],
         ]); ?>

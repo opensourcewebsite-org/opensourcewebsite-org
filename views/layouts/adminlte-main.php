@@ -72,6 +72,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
         <div class="wrapper">
             <?php
             NavBar::begin([
+                'renderInnerContainer' => false,
                 'options' => [
                     'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
                 ],
@@ -265,7 +266,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
             </div>
 
             <footer class="main-footer">
-                <div class="container">
                     <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
                     <?= Html::a(Yii::t('app', 'Contribution'), ['site/team']) ?> |
                     <?= Html::a(Yii::t('app', 'We\'re on GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
@@ -273,7 +273,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <?= Html::a(Yii::t('app', 'Contact us'), ['site/contact']) ?><br />
                     <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
                     <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
-                </div>
             </footer>
         </div>
         <?php $this->endBody() ?>
