@@ -46,3 +46,7 @@ body.sidebar-collapse .main-sidebar:hover .brand-abbr{
   right: 0;
   left: auto;
 }
+
+.wrapper {
+  overflow-x: visible;
+}
