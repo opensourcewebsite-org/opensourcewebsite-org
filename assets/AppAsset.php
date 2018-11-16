@@ -21,7 +21,7 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
-        'css/adminlte-fix.css',
+        'css/adminlte-fix.css?v=2',
     ];
     public $js = [
     ];
