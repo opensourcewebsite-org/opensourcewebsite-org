@@ -78,7 +78,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                 ],
             ]);
 
-            $menuItemsLeft[] = ['label' => '', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link fa fa-bars']];
+            $menuItemsLeft[] = ['label' => '<i class="fa fa-bars"></i>', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link'], 'encode' => false];
 
             $menuItemsRight[] = [
                 'label' => Html::tag('span', '<i class="fas fa-globe"></i>'),

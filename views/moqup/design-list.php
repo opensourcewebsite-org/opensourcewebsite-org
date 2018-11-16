@@ -139,7 +139,11 @@ $this->title = Yii::t('menu', 'Moqups');
                     ],
                 ],
             ],
+            'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
             'pager' => [
+                'options' => [
+                    'class' => 'pagination float-right',
+                ],
                 'linkContainerOptions' => [
                     'class' => 'page-item',
                 ],
