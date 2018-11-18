@@ -67,18 +67,32 @@ $this->title = 'Account';
             ],
         ]);
     ?>
-    <div class="card">
-        <div class="card-header d-flex p-0">
-            <h3 class="card-title p-3">
-                <?= $model->name ?? null; ?>
-            </h3>
-            <div class="ml-auto p-2">
-                <?= Html::a('<i class="fas fa-edit"></i>', ['user/profile'], [
-                    'class' => 'btn btn-light',
-                    'target' => '_blank',
-                    'title' => 'Edit',
-                ]) ?>
-            </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Profile</h1>
+        </div>
+        <div class="col-md-6">
+            <?= Html::a('<i class="fas fa-edit"></i>', ['user/profile'], [
+                'class' => 'btn btn-light',
+                'target' => '_blank',
+                'title' => 'Edit',
+                'style' => ['float' => 'right'],
+            ]); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <?php echo DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    [
+                        'label' => 'Name',
+                        'value' => function ($model) {
+                            return $model->name ?? $model->id;
+                        }
+                    ],
+                ],
+            ]); ?>
         </div>
     </div>
 </div>
