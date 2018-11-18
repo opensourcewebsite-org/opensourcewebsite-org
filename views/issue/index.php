@@ -120,31 +120,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'title' => 'View',
                                         ]);
                                     },
-                                    'update' => function ($url, $model, $key) {
-                                        $content = '<i class="fas fa-edit"></i>';
-                                        return Html::a($content, ['issue/edit/', 'id' => $model->id], [
-                                            'data-pjax' => 0,
-                                            'class' => 'btn btn-sm btn-outline-secondary',
-                                            'title' => 'Edit',
-                                        ]);
-                                    },
-                                    'delete' => function ($url, $model, $key) {
-                                        $content = '<i class="fas fa-trash-alt"></i>';
-                                        return Html::a($content, ['issue/delete/', 'id' => $model->id], [
-                                            'data-pjax' => 0,
-                                            'data-method' => 'post',
-                                            'class' => 'delete-issue-anchor btn btn-sm btn-outline-danger',
-                                            'title' => 'Delete',
-                                        ]);
-                                    },
-                                ],
-                                'visibleButtons' => [
-                                    'update' => function ($model) {
-                                        return (int) $model->user_id === Yii::$app->user->identity->id;
-                                    },
-                                    'delete' => function ($model) {
-                                        return (int) $model->user_id === Yii::$app->user->identity->id;
-                                    },
                                 ],
                             ],
                         ],

@@ -87,7 +87,7 @@ $this->title = Yii::t('menu', 'Moqups');
                     'contentOptions' => ['style' => 'width: 30%; white-space: normal'],
                     'format' => 'html',
                     'value' => function($model) use ($viewFollowing) {
-                        $response = $model->user->email;
+                        $response = $model->user->name ?? $model->user->id;
                         
                         return $response;
                     },
@@ -106,35 +106,9 @@ $this->title = Yii::t('menu', 'Moqups');
                             $content = '<i class="fas fa-external-link-alt"></i>';
                             return Html::a($content, ['moqup/design-view/', 'id' => $model->id], [
                                 'data-pjax' => 0,
-                                'target' => '_blank',
                                 'class' => 'btn btn-sm btn-outline-primary',
                                 'title' => 'View',
                             ]);
-                        },
-                        'update' => function ($url, $model, $key) {
-                            $content = '<i class="fas fa-edit"></i>';
-                            return Html::a($content, ['moqup/design-edit/', 'id' => $model->id], [
-                                'data-pjax' => 0,
-                                'class' => 'btn btn-sm btn-outline-secondary',
-                                'title' => 'Edit',
-                            ]);
-                        },
-                        'delete' => function ($url, $model, $key) {
-                            $content = '<i class="fas fa-trash-alt"></i>';
-                            return Html::a($content, ['moqup/design-delete/', 'id' => $model->id], [
-                                'data-pjax' => 0,
-                                'data-method' => 'post',
-                                'class' => 'delete-moqup-anchor btn btn-sm btn-outline-danger',
-                                'title' => 'Delete',
-                            ]);
-                        }
-                    ],
-                    'visibleButtons' => [
-                        'update' => function ($model) use ($viewYours) {
-                            return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
-                        },
-                        'delete' => function ($model) use ($viewYours) {
-                            return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
                         },
                     ],
                 ],

@@ -22,9 +22,12 @@ $this->params['breadcrumbs'][] = '#'.$model->id;
                             <h3 class="card-title"><?=$model->title?></h3>
                         </div>
                         <div class="col-1 text-right">
-                            <?=Html::a('#'.$model->id, ['/issue/view', 'id'=>$model->id], [
-                                'title' => '#'.$model->id,
-                            ]);?>
+                            <?php if ((int)$model->user_id === Yii::$app->user->identity->id) : ?>
+                            <?= Html::a('<i class="fas fa-edit"></i>', ['issue/edit', 'id' => $model->id], [
+                                'class' => 'btn btn-light',
+                                'title' => 'Edit',
+                            ]) ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

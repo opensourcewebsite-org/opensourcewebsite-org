@@ -98,4 +98,18 @@ class UserController extends Controller
         echo $withoutErrors;
         exit;
     }
+
+    public function actionProfile()
+    {
+        $model = Yii::$app->user->identity;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Updated successfully.');
+            return $this->redirect('/site/account');
+        }
+
+        return $this->render('profile', [
+            'model' => $model,
+        ]);
+    }
 }
