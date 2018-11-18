@@ -22,6 +22,7 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property string $name
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -55,6 +56,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'integer'],
+            ['name', 'string'],
         ];
     }
 

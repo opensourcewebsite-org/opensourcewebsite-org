@@ -67,6 +67,20 @@ $this->title = 'Account';
             ],
         ]);
     ?>
+    <div class="card">
+        <div class="card-header d-flex p-0">
+            <h3 class="card-title p-3">
+                <?= $model->name ?? null; ?>
+            </h3>
+            <div class="ml-auto p-2">
+                <?= Html::a('<i class="fas fa-edit"></i>', ['user/profile'], [
+                    'class' => 'btn btn-light',
+                    'target' => '_blank',
+                    'title' => 'Edit',
+                ]) ?>
+            </div>
+        </div>
+    </div>
 </div>
 <?php if (!Yii::$app->user->isGuest && !Yii::$app->user->identity->is_email_confirmed): ?>
     <?php echo Html::a('Resend Confirmation Email', ['site/resend-confirmation-email'], ['class' => 'btn btn-primary']); ?>
