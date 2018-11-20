@@ -60,11 +60,7 @@ $countTokens = $tokensDataProvider->count;
                         'label' => 'Your pages',
                         'value' => function ($model) use ($countTokens) {
                             $response = '';
-                            $count = count($model->wikiPagesIds);
-
-                            if ($count > 0) {
-                                $response .= Html::a($count, ['wikipedia-page/view/' . $model->language->code]);
-                            }
+                            $response .= Html::a('List', ['wikipedia-page/view/' . $model->language->code]);
                             
                             $cantMissing = $model->countMissingPages;
 
@@ -91,10 +87,7 @@ $countTokens = $tokensDataProvider->count;
                         ],
                         'format' => 'html',
                         'value' => function ($model) {
-                            $count = UserWikiPage::find()->select('{{%wiki_page}}.id')->distinct()->joinWith('wikiPage')->where(['language_id' => $model->language->id])->count();
-                            if ($count > 0) {
-                                return Html::a($count, Url::to(['wikipedia-pages/view', 'code' => $model->language->code, 'all' => true]));
-                            }
+                            return Html::a('List', Url::to(['wikipedia-pages/view', 'code' => $model->language->code, 'all' => true]));
                         }
                     ],
                     [
