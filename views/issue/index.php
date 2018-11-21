@@ -14,6 +14,23 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="issue-index">
     <div class="row">
         <div class="col-12">
+            <?php if ($viewYours): ?>
+                <?php $this->beginBlock('content-header-data'); ?>
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <div class="alert alert-info" role="alert">
+                                <b>Issues:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxIssuesNumber ?>. 
+                                (<?= $maxIssueValue ?> per 1 User Rating)
+                            </div>
+                        </div>
+                    </div>
+                <?php $this->endBlock(); ?>
+            <?php endif; ?>
             <div class="card">
                 <div class="card-header">
                     <div class="row">
