@@ -83,11 +83,8 @@ class MoqupController extends Controller
             ->count();
         $countAll = Moqup::find()->count();
 
-        $maxMoqupSetting = Setting::findOne(['key' => 'moqup_entries_limit']);
+        $maxMoqupSetting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
         $maxMoqupValue = $maxMoqupSetting->value;
-
-        $sizeMoqupSetting = Setting::findOne(['key' => 'moqup_bytes_limit']);
-        $sizeMoqupValue = Converter::byteToMega($sizeMoqupSetting->value);
         
         return $this->render('design-list', [
             'searchModel' => $searchModel,
@@ -98,7 +95,6 @@ class MoqupController extends Controller
             'countFollowing' => $countFollowing,
             'countAll' => $countAll,
             'maxMoqupValue' => $maxMoqupValue,
-            'sizeMoqupValue' => $sizeMoqupValue,
         ]);
     }
 

@@ -11,6 +11,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use app\models\Setting;
 
 /**
  * IssueController implements the CRUD actions for Issue model.
@@ -45,14 +46,21 @@ class IssueController extends Controller
      * Lists all Issue models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($viewYours = false)
     {
         $params = Yii::$app->request->queryParams;
         $searchModel = new IssueSearch();
         $dataProvider = $searchModel->search($params);
+        
+        if ($viewYours) {
+            $params['viewYours'] = true;
+        }
 
         $countYours = Issue::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
         $countNew = Issue::getNewIssuesCount();
+        
+        $maxIssueSetting = Setting::findOne(['key' => 'issue_quantity_value_per_one_rating']);
+        $maxIssueValue = $maxIssueSetting->value;
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -60,6 +68,8 @@ class IssueController extends Controller
             'countYours' => $countYours,
             'countNew' => $countNew,
             'params' => $params,
+            'viewYours' => $viewYours,
+            'maxIssueValue' => $maxIssueValue,
         ]);
     }
 
