@@ -293,7 +293,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxMoqupsNumber()
     {
-        $setting = Setting::findOne(['key' => 'moqup_entries_limit']);
+        $setting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
         $maxMoqup = ($setting != null) ? $setting->value : 1;
 
         return $maxMoqup * $this->rating;

@@ -20,9 +20,7 @@ $this->title = Yii::t('menu', 'Moqups');
             <div class="col">
                 <div class="alert alert-info" role="alert">
                     <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
-                    (<?= $maxMoqupValue ?> per 1 User Rating), 
-                    <b>Volume:</b> <?= Converter::formatNumber(Yii::$app->user->identity->totalMoqupsSize) ?> MB/<?= Converter::formatNumber(Yii::$app->user->identity->maxMoqupsSize) ?> MB. 
-                    (<?= Converter::formatNumber($sizeMoqupValue) ?> MB per 1 User Rating)
+                    (<?= $maxMoqupValue ?> per 1 User Rating)
                 </div>
             </div>
         </div>
