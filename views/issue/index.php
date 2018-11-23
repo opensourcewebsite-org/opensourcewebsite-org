@@ -105,12 +105,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             [
-                                'attribute' => 'id',
-                                'contentOptions' => ['style' => 'width: 5%; white-space: normal'],
-                            ],
-                            [
                                 'attribute' => 'title',
                                 'contentOptions' => ['style' => 'width: 45%; white-space: normal'],
+                                'value' => function ($model) {
+                                    return Html::a($model->title, ['/issue/view', 'id' => $model->id]);
+                                },
+                                'format' => 'html',
                             ],
                             [
                                 'attribute' => 'created_at',
@@ -124,20 +124,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return IssuesHelper::getVoteHTMl($model);
                                 },
-                            ],
-                    
-                            ['class' => 'yii\grid\ActionColumn',
-                                'contentOptions' => ['style' => 'width: 12%; white-space: normal'],
-                                'buttons' => [
-                                    'view' => function ($url, $model, $key) {
-                                        $content = '<i class="fas fa-external-link-alt"></i>';
-                                        return Html::a($content, ['issue/view/', 'id' => $model->id], [
-                                            'data-pjax' => 0,
-                                            'class' => 'btn btn-sm btn-outline-primary',
-                                            'title' => 'View',
-                                        ]);
-                                    },
-                                ],
                             ],
                         ],
                     ]);
