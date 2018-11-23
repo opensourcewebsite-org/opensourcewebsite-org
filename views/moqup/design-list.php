@@ -29,9 +29,6 @@ $this->title = Yii::t('menu', 'Moqups');
 
 <div class="card">
     <div class="card-header d-flex p-0">
-        <h3 class="card-title p-3">
-            Pages
-        </h3>
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
                 <?= Html::a('<i class="fa fa-plus"></i>',
@@ -77,7 +74,7 @@ $this->title = Yii::t('menu', 'Moqups');
                         $followed = in_array($model->id, Yii::$app->user->identity->followedMoqupsId);
                         $response = $model->title;
 
-                        return $response;
+                        return Html::a($response, ['/moqup/design-view', 'id' => $model->id]);
                     },
                 ],
                 [
@@ -96,19 +93,6 @@ $this->title = Yii::t('menu', 'Moqups');
                     'contentOptions' => ['style' => 'width: 20%; white-space: normal'],
                     'label' => 'Last update',
                     'format' => 'relativeTime',
-                ],
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'buttons' => [
-                        'view' => function ($url, $model, $key) {
-                            $content = '<i class="fas fa-external-link-alt"></i>';
-                            return Html::a($content, ['moqup/design-view/', 'id' => $model->id], [
-                                'data-pjax' => 0,
-                                'class' => 'btn btn-sm btn-outline-primary',
-                                'title' => 'View',
-                            ]);
-                        },
-                    ],
                 ],
             ],
             'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
