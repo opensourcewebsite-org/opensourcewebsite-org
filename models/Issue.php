@@ -136,4 +136,15 @@ class Issue extends \yii\db\ActiveRecord
         $userVoted = static::getIssuesUserVoted();
         return static::find()->alias('i')->where(['not in', 'id', $userVoted])->count();
     }
+
+    /**
+     * @return IssueVote votes of users other than the creator
+     */
+    public static function hasIssuesVoteOfOthers($issueId)
+    {
+        return UserIssueVote::find()
+            ->andWhere(['issue_id' => $issueId])
+            ->andWhere(['NOT IN', 'user_id', Yii::$app->user->identity->id])
+            ->exists();
+    }
 }

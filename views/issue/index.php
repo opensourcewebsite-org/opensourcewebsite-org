@@ -47,11 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ]); ?>
                                 </li>
                                 <li class="nav-item">
-                                <?= Html::a(Yii::t('app', 'Neutral'), ['/issue', 'viewNeutral' => 1], [
-                                    'class' => 'nav-link ' . (isset($params['viewNeutral']) && $params['viewNeutral'] == 1 ? ' active' : ''),
-                                ]); ?>
-                                </li>
-                                <li class="nav-item">
                                 <?= Html::a(Yii::t('app', 'No'), ['/issue', 'viewNo' => 1], [
                                     'class' => 'nav-link ' . (isset($params['viewNo']) && $params['viewNo'] == 1 ? ' active' : ''),
                                 ]); ?>
