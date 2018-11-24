@@ -36,7 +36,7 @@ use yii\widgets\ActiveForm;
                             'class' => 'btn btn-secondary',
                             'title' => Yii::t('app', 'Cancel'),
                         ]);?>
-                        <?php if($issue->id != null && $issue->hasIssuesVoteOfOthers($issue->id)):?>
+                        <?php if((int) $model->user_id === Yii::$app->user->identity->id || $issue->id != null && $issue->hasIssuesVoteOfOthers($issue->id)):?>
                             <?=Html::a(Yii::t('app', 'Delete'), ['issue/delete/', 'id' => $issue->id], [
                                 'class' => 'btn btn-danger float-right',
                                 'id' => 'delete-issue'
