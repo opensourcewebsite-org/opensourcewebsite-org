@@ -20,7 +20,6 @@ use Yii;
 class UserIssueVote extends \yii\db\ActiveRecord
 {
     const YES = 1;
-    const NEUTRAL = 2;
     const NO = 3;
 
     /**

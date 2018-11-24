@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = '#'.$model->id;
                             <h3 class="card-title"><?=$model->title?></h3>
                         </div>
                         <div class="col-1 text-right">
-                            <?php if ((int)$model->user_id === Yii::$app->user->identity->id) : ?>
+                            <?php if ($model->hasIssuesVoteOfOthers($model->id)) : ?>
                             <?= Html::a('<i class="fas fa-edit"></i>', ['issue/edit', 'id' => $model->id], [
                                 'class' => 'btn btn-light',
                                 'title' => 'Edit',
@@ -52,9 +52,6 @@ $this->params['breadcrumbs'][] = '#'.$model->id;
                     <div class="btn-group btn-group-toggle float-right ml-3" data-toggle="buttons">
                         <label class="btn btn-success">
                             <input type="radio" name="options" id="option1" value="<?=UserIssueVote::YES?>" autocomplete="off" <?=$model->getUserVoteSelected() == UserIssueVote::YES ? 'checked' : ''?>> Yes
-                        </label>
-                        <label class="btn btn-light">
-                            <input type="radio" name="options" id="option2" value="<?=UserIssueVote::NEUTRAL?>" autocomplete="off" <?=$model->getUserVoteSelected() == UserIssueVote::NEUTRAL ? 'checked' : ''?>> Neutral
                         </label>
                         <label class="btn btn-danger">
                             <input type="radio" name="options" id="option3" value="<?=UserIssueVote::NO?>" autocomplete="off" <?=$model->getUserVoteSelected() == UserIssueVote::NO ? 'checked' : ''?>> No
