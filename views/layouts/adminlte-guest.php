@@ -8,7 +8,7 @@ use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Modal;
-use yii\bootstrap\Nav;
+use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
@@ -91,6 +91,7 @@ Modal::end();
 <div class="wrapper">
     <?php
     NavBar::begin([
+        'renderInnerContainer' => false,
         'options' => [
             'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
         ],
@@ -166,7 +167,6 @@ Modal::end();
     </div>
 
     <footer class="main-footer">
-        <div class="container">
             <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
             <?= Html::a(Yii::t('app', 'Contribution'), ['site/team']) ?> |
             <?= Html::a(Yii::t('app', 'We\'re on GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
@@ -174,7 +174,6 @@ Modal::end();
             <?= Html::a(Yii::t('app', 'Contact us'), ['site/contact']) ?><br />
             <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
             <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
-        </div>
     </footer>
 </div>
 <?php $this->endBody() ?>

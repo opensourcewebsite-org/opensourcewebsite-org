@@ -22,6 +22,7 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property string $name
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -55,6 +56,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'integer'],
+            ['name', 'string'],
         ];
     }
 
@@ -262,6 +264,22 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return count($this->moqups);
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIssues()
+    {
+        return $this->hasMany(Issue::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of issues of the user
+     */
+    public function getIssuesCount()
+    {
+        return count($this->issues);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -291,10 +309,21 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxMoqupsNumber()
     {
-        $setting = Setting::findOne(['key' => 'moqup_entries_limit']);
+        $setting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
         $maxMoqup = ($setting != null) ? $setting->value : 1;
 
         return $maxMoqup * $this->rating;
+    }
+    
+    /**
+     * @return integer The max ammount of issues the user can have
+     */
+    public function getMaxIssuesNumber()
+    {
+        $setting = Setting::findOne(['key' => 'issue_quantity_value_per_one_rating']);
+        $maxIssue = ($setting != null) ? $setting->value : 1;
+
+        return $maxIssue * $this->rating;
     }
 
     /**
@@ -330,10 +359,21 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxMoqupsSize()
     {
-        $setting = Setting::findOne(['key' => 'moqup_bytes_limit']);
-        $maxLength = ($setting != null) ? $setting->value : 1;
+        $maxLength = $this->maxMoqupsHtmlSize + $this->maxMoqupsCssSize;
 
         return Converter::byteToMega($maxLength * $this->rating);
+    }
+
+    public function getMaxMoqupsHtmlSize()
+    {
+        $setting = Setting::findOne(['key' => 'moqup_html_field_max_value']);
+        return ($setting != null) ? $setting->value : 1;
+    }
+
+    public function getMaxMoqupsCssSize()
+    {
+        $setting = Setting::findOne(['key' => 'moqup_css_field_max_value']);
+        return ($setting != null) ? $setting->value : 1;
     }
 
     /**

@@ -14,6 +14,23 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="issue-index">
     <div class="row">
         <div class="col-12">
+            <?php if ($viewYours): ?>
+                <?php $this->beginBlock('content-header-data'); ?>
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <div class="alert alert-info" role="alert">
+                                <b>Issues:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxIssuesNumber ?>. 
+                                (<?= $maxIssueValue ?> per 1 User Rating)
+                            </div>
+                        </div>
+                    </div>
+                <?php $this->endBlock(); ?>
+            <?php endif; ?>
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -27,11 +44,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <li class="nav-item">
                                 <?= Html::a(Yii::t('app', 'Yes'), ['/issue', 'viewYes' => 1], [
                                     'class' => 'nav-link ' . (isset($params['viewYes']) && $params['viewYes'] == 1 ? ' active' : ''),
-                                ]); ?>
-                                </li>
-                                <li class="nav-item">
-                                <?= Html::a(Yii::t('app', 'Neutral'), ['/issue', 'viewNeutral' => 1], [
-                                    'class' => 'nav-link ' . (isset($params['viewNeutral']) && $params['viewNeutral'] == 1 ? ' active' : ''),
                                 ]); ?>
                                 </li>
                                 <li class="nav-item">
@@ -88,12 +100,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'columns' => [
                             [
-                                'attribute' => 'id',
-                                'contentOptions' => ['style' => 'width: 5%; white-space: normal'],
-                            ],
-                            [
                                 'attribute' => 'title',
                                 'contentOptions' => ['style' => 'width: 45%; white-space: normal'],
+                                'value' => function ($model) {
+                                    return Html::a($model->title, ['/issue/view', 'id' => $model->id]);
+                                },
+                                'format' => 'html',
                             ],
                             [
                                 'attribute' => 'created_at',
@@ -107,45 +119,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($model) {
                                     return IssuesHelper::getVoteHTMl($model);
                                 },
-                            ],
-                    
-                            ['class' => 'yii\grid\ActionColumn',
-                                'contentOptions' => ['style' => 'width: 12%; white-space: normal'],
-                                'buttons' => [
-                                    'view' => function ($url, $model, $key) {
-                                        $content = '<i class="fas fa-external-link-alt"></i>';
-                                        return Html::a($content, ['issue/view/', 'id' => $model->id], [
-                                            'data-pjax' => 0,
-                                            'class' => 'btn btn-sm btn-outline-primary',
-                                            'title' => 'View',
-                                        ]);
-                                    },
-                                    'update' => function ($url, $model, $key) {
-                                        $content = '<i class="fas fa-edit"></i>';
-                                        return Html::a($content, ['issue/edit/', 'id' => $model->id], [
-                                            'data-pjax' => 0,
-                                            'class' => 'btn btn-sm btn-outline-secondary',
-                                            'title' => 'Edit',
-                                        ]);
-                                    },
-                                    'delete' => function ($url, $model, $key) {
-                                        $content = '<i class="fas fa-trash-alt"></i>';
-                                        return Html::a($content, ['issue/delete/', 'id' => $model->id], [
-                                            'data-pjax' => 0,
-                                            'data-method' => 'post',
-                                            'class' => 'delete-issue-anchor btn btn-sm btn-outline-danger',
-                                            'title' => 'Delete',
-                                        ]);
-                                    },
-                                ],
-                                'visibleButtons' => [
-                                    'update' => function ($model) {
-                                        return (int) $model->user_id === Yii::$app->user->identity->id;
-                                    },
-                                    'delete' => function ($model) {
-                                        return (int) $model->user_id === Yii::$app->user->identity->id;
-                                    },
-                                ],
                             ],
                         ],
                     ]);
