@@ -195,7 +195,8 @@ class WikipediaParserController extends Controller
                 '{{%user_wiki_token}}', ['updated_at' => time()], ['id' => $token->id]
             )->execute();
         } catch (ServerErrorHttpException $e) {
-            $this->log("Error updating token #{$token->id} " . $e->getMessage());
+            $this->log("Error updating token #{$token->id} ServerErrorHttpException: ");
+            $this->log($e);
             Yii::$app->db->createCommand()->update(
                 '{{%user_wiki_token}}', [
                     'updated_at' => time(),
@@ -203,7 +204,8 @@ class WikipediaParserController extends Controller
                 ], ['user_id' => $token->user_id, 'language_id' => $token->language_id]
             )->execute();
         } catch (\Exception $e) {
-            $this->log("Error updating token #{$token->id} " . $e->getMessage());
+            $this->log("Error updating token #{$token->id} Exception: ");
+            $this->log($e);
         }
 
     }
