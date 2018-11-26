@@ -47,7 +47,7 @@ class WikiParser extends BaseObject
         $language = $token->language;
 
         $url = "https://{$language->code}.wikipedia.org/w/api.php?action=query&format=json&list=watchlistraw&wrtoken={$token->token}"
-            . "&wrnamespace=0|2|4|6|8|10|12|14";
+        . "&wrnamespace=" . urlencode('0|2|4|6|8|10|12|14');
 
         if ($username = $token->wiki_username) {
             $url .= "&wrowner=" . urlencode($username);
@@ -75,8 +75,7 @@ class WikiParser extends BaseObject
                     $error = "Incorrect watchlist token provided. <a href='https://{$language->code}.wikipedia.org/wiki/Special:ResetTokens' target='_blank'>Please set a correct token</a>";
                     throw new ServerErrorHttpException($error);
                 } else {
-                    $error = $data->error->info;
-                    throw new \Exception($error);
+                    throw new \Exception($result);
                 }
             } elseif ($justValidateUser) {
                 return true;
