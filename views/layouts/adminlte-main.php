@@ -222,7 +222,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                             <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/setting']) ? 'menu-open' : '' ?>">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['website-settings']) ?>" class="nav-link <?= in_array($currentUrl, ['data/setting']) ? 'active' : '' ?>">
                                     <i class="fa fa-microchip nav-icon"></i>
-                                    <p>Setting</p>
+                                    <p>Website settings</p>
                                 </a>
                             </li>
                         </ul>
