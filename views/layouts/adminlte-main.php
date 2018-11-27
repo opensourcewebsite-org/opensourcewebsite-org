@@ -175,8 +175,8 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                             </li>
                         </ul>
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language', 'data/setting']) ? 'menu-open' : '' ?>">
-                                <a href="#" class="nav-link <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language', 'data/setting']) ? 'active' : '' ?>">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language']) ? 'menu-open' : '' ?>">
+                                <a href="#" class="nav-link <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-edit"></i>
                                     <p>Data<i class="fa fa-angle-left right"></i></p>
                                 </a>
@@ -199,12 +199,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                             <p>Language</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a href="<?= Yii::$app->urlManager->createUrl(['data/setting']) ?>" class="nav-link <?= in_array($currentUrl, ['data/setting']) ? 'active' : '' ?>">
-                                            <i class="fa fa-microchip nav-icon"></i>
-                                            <p>Setting</p>
-                                        </a>
-                                    </li>
                                 </ul>
                             </li>
                         </ul>
@@ -221,6 +215,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 <a href="<?= Yii::$app->urlManager->createUrl(['issue']) ?>" class="nav-link <?= in_array($currentUrl, ['issue/index']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-edit"></i>
                                     <p>Issues</p>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/setting']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['website-settings']) ?>" class="nav-link <?= in_array($currentUrl, ['data/setting']) ? 'active' : '' ?>">
+                                    <i class="fa fa-microchip nav-icon"></i>
+                                    <p>Setting</p>
                                 </a>
                             </li>
                         </ul>

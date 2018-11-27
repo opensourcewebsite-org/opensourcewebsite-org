@@ -96,6 +96,7 @@ class DataController extends Controller
         $pages = new Pagination(['totalCount' => $countQuery->count()]);
         $models = $setting->offset($pages->offset)
             ->limit($pages->limit)
+            ->orderBy(['updated_at' => SORT_DESC])
             ->all();
 
         return $this->render('setting', [
