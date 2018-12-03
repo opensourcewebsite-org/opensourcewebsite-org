@@ -1,7 +1,6 @@
 <?php
 
 /* @var $this \yii\web\View */
-
 /* @var $content string */
 
 use app\assets\AdminLteAsset;
@@ -223,6 +222,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 <a href="<?= Yii::$app->urlManager->createUrl(['website-settings']) ?>" class="nav-link <?= in_array($currentUrl, ['data/setting']) ? 'active' : '' ?>">
                                     <i class="fa fa-microchip nav-icon"></i>
                                     <p>Website settings</p>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['support-groups/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['support-groups']) ?>" class="nav-link <?= in_array($currentUrl, ['support-groups/index']) ? 'active' : '' ?>">
+                                    <i class="fa fa-users nav-icon"></i>
+                                    <p>Support groups</p>
                                 </a>
                             </li>
                         </ul>
