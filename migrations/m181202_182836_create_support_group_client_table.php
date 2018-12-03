@@ -15,7 +15,7 @@ class m181202_182836_create_support_group_client_table extends Migration
         $this->createTable('support_group_client', [
             'id' => $this->primaryKey()->unsigned(),
             'support_group_id' => $this->integer()->unsigned()->notNull(),
-            'language_id' => $this->integer()->unsigned()->notNull(),
+            'language_code' => $this->string()->notNull(),
         ]);
 
         $this->createIndex(
@@ -33,20 +33,20 @@ class m181202_182836_create_support_group_client_table extends Migration
             'CASCADE'
         );
 
-        /*$this->createIndex(
-            'idx-support_group_client-language_id',
+        $this->createIndex(
+            'idx-support_group_client-language_code',
             'support_group_client',
-            'language_id'
+            'language_code'
         );
 
         $this->addForeignKey(
-            'fk-support_group_client-language_id',
+            'fk-support_group_client-language_code',
             'support_group_client',
-            'language_id',
+            'language_code',
             'language',
-            'id',
+            'code',
             'CASCADE'
-        );*/
+        );
     }
 
     /**
@@ -64,15 +64,15 @@ class m181202_182836_create_support_group_client_table extends Migration
             'support_group_client'
         );
 
-        /*$this->dropForeignKey(
-            'fk-support_group_client-language_id',
+        $this->dropForeignKey(
+            'fk-support_group_client-language_code',
             'support_group_client'
         );
 
         $this->dropIndex(
-            'idx-support_group_client-language_id',
+            'idx-support_group_client-language_code',
             'support_group_client'
-        );*/
+        );
 
         $this->dropTable('support_group_client');
     }
