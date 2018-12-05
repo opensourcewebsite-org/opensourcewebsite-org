@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "support_group_bot".
@@ -30,13 +31,26 @@ class SupportGroupBot extends \yii\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => false,
+            ],
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['support_group_id', 'title', 'token', 'updated_at', 'updated_by'], 'required'],
-            [['support_group_id', 'updated_at', 'updated_by'], 'integer'],
+            [['support_group_id', 'title', 'token'], 'required'],
+            [['support_group_id'], 'integer'],
             [['title', 'token'], 'string', 'max' => 255],
             [['support_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroup::className(), 'targetAttribute' => ['support_group_id' => 'id']],
         ];
@@ -87,5 +101,19 @@ class SupportGroupBot extends \yii\db\ActiveRecord
     public function getSupportGroupOutsideMessages()
     {
         return $this->hasMany(SupportGroupOutsideMessage::className(), ['support_group_bot_id' => 'id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->updated_by = Yii::$app->user->id;
+
+            return true;
+        }
+        return false;
     }
 }

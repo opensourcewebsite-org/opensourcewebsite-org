@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\SupportGroupBot;
 use Yii;
 use app\models\SupportGroupMember;
 use app\models\SupportGroup;
@@ -78,6 +79,38 @@ class SupportGroupsController extends Controller
         ]);
     }
 
+
+    /**
+     * Displays a single SupportGroupBot model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionBots($id)
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => SupportGroupBot::find()->where(['support_group_id' => intval($id)]),
+        ]);
+
+        $member = new SupportGroupBot();
+        $member->support_group_id = intval($id);
+
+        if (Yii::$app->request->isAjax && $member->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($member);
+        } else {
+            if ($member->load(Yii::$app->request->post())) {
+                $member->save();
+            }
+        }
+
+        return $this->render('bots', [
+            'model' => $this->findModel($id),
+            'member' => $member,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
     /**
      * Creates a new SupportGroup model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -117,6 +150,25 @@ class SupportGroupsController extends Controller
     }
 
     /**
+     * Updates an existing SupportGroupBot model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionBotsUpdate($id)
+    {
+        $model = SupportGroupBot::findOne($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['bots', 'id' => $model->support_group_id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
      * Deletes an existing SupportGroup model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
@@ -133,6 +185,22 @@ class SupportGroupsController extends Controller
     }
 
     /**
+     * Deletes an existing SupportGroupBot model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionBotsDelete($id)
+    {
+        $model = SupportGroupBot::findOne($id);
+        $model->delete();
+
+        return $this->redirect(['bots', 'id' => $model->support_group_id]);
+    }
+
+    /**
      * Deletes an existing SupportGroupMember model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
@@ -145,7 +213,7 @@ class SupportGroupsController extends Controller
         $members = SupportGroupMember::findOne($id);
         $members->delete();
 
-        return $this->redirect(['members', 'id' => $members->supportGroup->id]);
+        return $this->redirect(['members', 'id' => $members->support_group_id]);
     }
 
     /**

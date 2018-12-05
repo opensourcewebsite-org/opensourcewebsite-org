@@ -16,7 +16,7 @@ class m181202_095240_create_support_group_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'user_id' => $this->integer()->unsigned()->notNull(),
             'language_code' => $this->string()->notNull(),
-            'title' => $this->string(255)->notNull(),
+            'title' => $this->string(255)->unique()->notNull(),
             'updated_at' => $this->integer()->unsigned()->notNull(),
             'updated_by' => $this->integer()->unsigned()->notNull()
         ]);

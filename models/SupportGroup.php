@@ -51,6 +51,7 @@ class SupportGroup extends \yii\db\ActiveRecord
     {
         return [
             [['language_code', 'title'], 'required'],
+            [['title'], 'unique'],
             [['language_code', 'title'], 'string', 'max' => 255],
             [['language_code'], 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']],
         ];
