@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\SupportGroupBot;
+use app\models\SupportGroupCommand;
 use Yii;
 use app\models\SupportGroupMember;
 use app\models\SupportGroup;
@@ -92,21 +93,52 @@ class SupportGroupsController extends Controller
             'query' => SupportGroupBot::find()->where(['support_group_id' => intval($id)]),
         ]);
 
-        $member = new SupportGroupBot();
-        $member->support_group_id = intval($id);
+        $bot = new SupportGroupBot();
+        $bot->support_group_id = intval($id);
 
-        if (Yii::$app->request->isAjax && $member->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isAjax && $bot->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($member);
+            return ActiveForm::validate($bot);
         } else {
-            if ($member->load(Yii::$app->request->post())) {
-                $member->save();
+            if ($bot->load(Yii::$app->request->post())) {
+                $bot->save();
             }
         }
 
         return $this->render('bots', [
             'model' => $this->findModel($id),
-            'member' => $member,
+            'bot' => $bot,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Displays a single SupportGroupCommand model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionCommands($id)
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => SupportGroupCommand::find()->where(['support_group_id' => intval($id)]),
+        ]);
+
+        $command = new SupportGroupCommand();
+        $command->support_group_id = intval($id);
+
+        if (Yii::$app->request->isAjax && $command->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($command);
+        } else {
+            if ($command->load(Yii::$app->request->post())) {
+                $command->save();
+            }
+        }
+
+        return $this->render('commands', [
+            'model' => $this->findModel($id),
+            'command' => $command,
             'dataProvider' => $dataProvider,
         ]);
     }

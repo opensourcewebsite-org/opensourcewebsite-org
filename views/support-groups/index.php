@@ -44,7 +44,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     'linkOptions' => ['class' => 'dropdown-item']
                                                 ],
                                                 [
-                                                    'label' => Yii::t('app', 'Update'),
+                                                    'label' => Yii::t('app', 'Commands'),
+                                                    'url' => ['commands', 'id' => $key],
+                                                    'linkOptions' => ['class' => 'dropdown-item']
+                                                ],
+                                                [
+                                                    'label' => Yii::t('app', 'Edit'),
                                                     'url' => ['update', 'id' => $key],
                                                     'linkOptions' => ['class' => 'dropdown-item']
                                                 ],
@@ -53,7 +58,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'options' => [
                                             'class' => 'btn-default',   // btn-success, btn-info, et cetera
                                         ],
-                                        //'split' => true,    // if you want a split button
                                     ]);
                                 },
                             ],
