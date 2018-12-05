@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "support_group_member".
@@ -27,15 +28,29 @@ class SupportGroupMember extends \yii\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => false,
+            ],
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['support_group_id', 'user_id', 'updated_at', 'updated_by'], 'required'],
-            [['support_group_id', 'user_id', 'updated_at', 'updated_by'], 'integer'],
+            [['support_group_id', 'user_id'], 'required'],
+            [['support_group_id', 'user_id'], 'integer'],
             [['support_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroup::className(), 'targetAttribute' => ['support_group_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'unique', 'targetAttribute' => ['user_id', 'support_group_id']],
         ];
     }
 
@@ -67,5 +82,20 @@ class SupportGroupMember extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->updated_by = Yii::$app->user->id;
+
+            return true;
+        }
+        return false;
     }
 }

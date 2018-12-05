@@ -16,6 +16,7 @@ use yii\widgets\ActiveForm;
                     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
                     <p>Languages</p>
+                    <?= $form->field($model, 'language_code')->hiddenInput(['value' => 'en']) ?>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="option1" checked disabled>
                         <label class="form-check-label">English</label>
