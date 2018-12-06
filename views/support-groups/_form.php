@@ -17,23 +17,21 @@ use yii\widgets\ActiveForm;
             <?php $form = ActiveForm::begin(); ?>
             <div class="col-3 p-3">
                 <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-
-                <p>Languages</p>
-                <div class="form-check">
-                    <?= Html::checkbox('SupportGroupLanguage[' . (ArrayHelper::isIn('en',
-                            ArrayHelper::getColumn($langs, 'language_code')) ? array_search('en',
-                            ArrayHelper::getColumn($langs, 'language_code')) : '') . '][language_code]',
-                        ($model->isNewRecord ? true : ArrayHelper::isIn('en', ArrayHelper::getColumn($langs, 'language_code'))),
-                        ['value' => 'en', 'label' => 'English']) ?>
-                </div>
-                <div class="form-check">
-                    <?= Html::checkbox('SupportGroupLanguage[' . (ArrayHelper::isIn('ru',
-                            ArrayHelper::getColumn($langs, 'language_code')) ? array_search('ru',
-                            ArrayHelper::getColumn($langs, 'language_code')) : '') . '][language_code]',
-                        ($model->isNewRecord ? false : ArrayHelper::isIn('ru', ArrayHelper::getColumn($langs, 'language_code'))),
-                        ['value' => 'ru', 'label' => 'Russian']) ?>
-                </div>
             </div>
+
+            <div class="p-3">
+                <p>Languages</p>
+                <?= $form->field(new SupportGroupLanguage(), '[]language_code')->checkboxList(ArrayHelper::map($languages,'code','name_ascii'), [
+                    'item' => function($index, $label, $name, $checked, $value){
+                        $check = $checked ? ' checked="checked"' : '';
+                        $name = 'SupportGroupLanguage['. ($index + 1) .'][language_code]';
+                        return "<div class='col-3'><div class='form-check'><input type=\"checkbox\" class='form-check-input' name=\"$name\" value=\"$value\" id=\"$name$value\" $check><label for=\"$name$value\">$label</label></div></div>";
+                    },
+                    'class' => 'row',
+                    'value' => $model->isNewRecord ? 'en' : ArrayHelper::getColumn($langs, 'language_code')
+                ])->label(false); ?>
+            </div>
+
             <div class="card-footer">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
                 <a class="btn btn-secondary" href="/support-groups">Cancel</a>

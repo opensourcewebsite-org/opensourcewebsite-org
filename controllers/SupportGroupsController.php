@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Language;
 use app\models\SupportGroupBot;
 use app\models\SupportGroupCommand;
 use app\models\SupportGroupCommandText;
@@ -192,11 +193,15 @@ class SupportGroupsController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
             if (Model::loadMultiple($langs, Yii::$app->request->post()) && Model::validateMultiple($langs, ['language_code'])) {
-                foreach ($langs as $lang) {
-                    $lang->support_group_id = $model->id;
-                    $lang->save(false);
+                unset($langs[0]);
+                foreach (Yii::$app->request->post('SupportGroupLanguage') as $i => $lang) {
+                    if ($i != 0) {
+                        $model2 = new SupportGroupLanguage();
+                        $model2->support_group_id = $model->id;
+                        $model2->language_code = $lang['language_code'];
+                        $model2->save(false);
+                    }
                 }
             }
 
@@ -205,6 +210,8 @@ class SupportGroupsController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'langs' => $langs,
+            'languages' => Language::find()->all(),
         ]);
     }
 
@@ -214,8 +221,6 @@ class SupportGroupsController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
      */
     public function actionUpdate($id)
     {
@@ -226,26 +231,27 @@ class SupportGroupsController extends Controller
             $langs[] = new SupportGroupLanguage();
         }
 
+        $languages = Language::find()->all();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            /*if (Model::loadMultiple($langs, Yii::$app->request->post())) {
-                //SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
-                foreach(Yii::$app->request->post('SupportGroupLanguage') as $i => $lang){
-                    if($i == 0) {
-                        $model2 = new SupportGroupLanguage();
-                        $model2->language_code = $lang['language_code'];
-                        $model2->support_group_id = intval($id);
-                        $model2->save(false);
-                    } else {
-                        $langs[$i]->save(false);
-                    }
+            unset($_POST['SupportGroupLanguage'][0]);
+            SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
+            foreach(Yii::$app->request->post('SupportGroupLanguage') as $i => $lang){
+                if($i != 0) {
+                    $model2 = new SupportGroupLanguage();
+                    $model2->language_code = $lang['language_code'];
+                    $model2->support_group_id = intval($id);
+                    $model2->save(false);
                 }
-            }*/
+            }
+
             return $this->redirect(['index']);
         }
 
         return $this->render('update', [
             'model' => $model,
             'langs' => $langs,
+            'languages' => $languages,
         ]);
     }
 
