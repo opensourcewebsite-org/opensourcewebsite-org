@@ -12,8 +12,8 @@ use yii\bootstrap\ActiveForm;
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-left">
-                <?php echo $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-                <?php echo $form->field($model, 'token')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'token')->textInput(['maxlength' => true]) ?>
             </div>
             <div class="card-footer">
                 <button type="submit" class="btn btn-success">Save</button>

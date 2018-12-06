@@ -2,21 +2,21 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\SupportGroupBot;
 use app\models\SupportGroupCommand;
 use app\models\SupportGroupCommandText;
 use app\models\SupportGroupLanguage;
-use Yii;
 use app\models\SupportGroupMember;
 use app\models\SupportGroup;
 use yii\base\Model;
 use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\Response;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\Response;
+use yii\filters\AccessControl;
 
 /**
  * SupportGroupController implements the CRUD actions for SupportGroup model.
@@ -140,13 +140,11 @@ class SupportGroupsController extends Controller
         $command = new SupportGroupCommand();
         $command->support_group_id = intval($id);
 
-        if (Yii::$app->request->isAjax && $command->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($command);
-        } else {
-            if ($command->load(Yii::$app->request->post())) {
-                $command->save();
+        if ($command->load(Yii::$app->request->post())) {
+            if ($command->is_default) {
+                SupportGroupCommand::updateAll(['is_default' => 0], 'support_group_id = ' . intval($id));
             }
+            $command->save();
         }
 
         return $this->render('commands', [
@@ -164,8 +162,17 @@ class SupportGroupsController extends Controller
      */
     public function actionViewCommand($id)
     {
+        $model = SupportGroupCommand::findOne($id);
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->is_default) {
+                SupportGroupCommand::updateAll(['is_default' => 0], 'support_group_id = ' . $model->support_group_id);
+            }
+            $model->save();
+        }
+
         return $this->render('view-command', [
-            'model' => SupportGroupCommand::findOne($id),
+            'model' => $model,
             'text' => SupportGroupCommandText::findOne(['support_group_command_id' => $id]),
         ]);
     }
@@ -257,9 +264,7 @@ class SupportGroupsController extends Controller
             return $this->redirect(['bots', 'id' => $model->support_group_id]);
         }
 
-        return $this->render('bots', [
-            'model' => $model,
-        ]);
+        return $this->redirect(['bots', 'id' => $model->support_group_id]);
     }
 
     /**
@@ -308,6 +313,22 @@ class SupportGroupsController extends Controller
         $members->delete();
 
         return $this->redirect(['members', 'id' => $members->support_group_id]);
+    }
+
+    /**
+     * Deletes an existing SupportGroupCommand model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionCommandDelete($id)
+    {
+        $members = SupportGroupCommand::findOne($id);
+        $members->delete();
+
+        return $this->redirect(['commands', 'id' => $members->support_group_id]);
     }
 
     /**

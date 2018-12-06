@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="col-md-12">
     <div class="card">
         <div class="card-header text-right">
-            <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
+            <?php $form = ActiveForm::begin() ?>
             <a class="btn btn-success ml-3" href="#" title="Add command" data-toggle="modal" data-target="#exampleModalLong">New command</a>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -29,12 +29,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             </button>
                         </div>
                         <div class="modal-body text-left">
-                            <?php echo $form->field($command, 'command')->textInput(['maxlength' => true]) ?>
-                            <?php echo $form->field($command, 'is_default')->checkbox() ?>
+                            <?= $form->field($command, 'command')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($command, 'is_default')->checkbox() ?>
                         </div>
                         <div class="card-footer text-left">
                             <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
+                            <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal">Cancel</a>
                         </div>
                     </div>
                 </div>
