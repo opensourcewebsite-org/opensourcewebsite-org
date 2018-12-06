@@ -1,12 +1,8 @@
 <?php
 
 use yii\bootstrap\ActiveForm;
-use yii\bootstrap\ButtonDropdown;
-use yii\bootstrap\Modal;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
@@ -48,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'summary' => false,
+            'showHeader' => false,
             'tableOptions' => ['class' => 'table table-hover table-condensed'],
             'options' => ['class' => 'card-body p-0'],
             'columns' => [
@@ -57,7 +54,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a($model->command, 'view-command?id=' . $model->id);
                     }
                 ],
-                'is_default'
+                [
+                    'attribute' => 'is_default',
+                    'content' => function ($model) {
+                        return $model->is_default ? 'default' : '';
+                    }
+                ],
             ]
         ]); ?>
         <div class="card-footer clearfix">

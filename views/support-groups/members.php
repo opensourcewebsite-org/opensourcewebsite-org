@@ -1,12 +1,9 @@
 <?php
 
 use yii\bootstrap\ActiveForm;
-use yii\bootstrap\ButtonDropdown;
-use yii\bootstrap\Modal;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */

@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property int $id
  * @property int $user_id
- * @property string $language_code
  * @property string $title
  * @property int $updated_at
  * @property int $updated_by
@@ -50,10 +49,9 @@ class SupportGroup extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['language_code', 'title'], 'required'],
+            [['title'], 'required'],
             [['title'], 'unique'],
-            [['language_code', 'title'], 'string', 'max' => 255],
-            [['language_code'], 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']],
+            [['title'], 'string', 'max' => 255],
         ];
     }
 
@@ -65,19 +63,10 @@ class SupportGroup extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'language_code' => 'Language Code',
             'title' => 'Name',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getLanguageCode()
-    {
-        return $this->hasOne(Language::className(), ['code' => 'language_code']);
     }
 
     /**

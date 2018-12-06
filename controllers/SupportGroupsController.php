@@ -4,11 +4,15 @@ namespace app\controllers;
 
 use app\models\SupportGroupBot;
 use app\models\SupportGroupCommand;
+use app\models\SupportGroupCommandText;
+use app\models\SupportGroupLanguage;
 use Yii;
 use app\models\SupportGroupMember;
 use app\models\SupportGroup;
+use yii\base\Model;
 use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -25,6 +29,15 @@ class SupportGroupsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -144,6 +157,20 @@ class SupportGroupsController extends Controller
     }
 
     /**
+     * Displays a single SupportGroupCommand model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewCommand($id)
+    {
+        return $this->render('view-command', [
+            'model' => SupportGroupCommand::findOne($id),
+            'text' => SupportGroupCommandText::findOne(['support_group_command_id' => $id]),
+        ]);
+    }
+
+    /**
      * Creates a new SupportGroup model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -152,7 +179,21 @@ class SupportGroupsController extends Controller
     {
         $model = new SupportGroup();
 
+        $count = count(Yii::$app->request->post('SupportGroupLanguage', []));
+        $langs = [new SupportGroupLanguage()];
+        for($i = 1; $i < $count; $i++) {
+            $langs[] = new SupportGroupLanguage();
+        }
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            if (Model::loadMultiple($langs, Yii::$app->request->post()) && Model::validateMultiple($langs, ['language_code'])) {
+                foreach ($langs as $lang) {
+                    $lang->support_group_id = $model->id;
+                    $lang->save(false);
+                }
+            }
+
             return $this->redirect(['index']);
         }
 
@@ -167,17 +208,38 @@ class SupportGroupsController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
+        $langs = SupportGroupLanguage::find()->where(['support_group_id' => intval($id)])->indexBy('id')->all();
+        if(empty($langs)){
+            $langs[] = new SupportGroupLanguage();
+        }
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            /*if (Model::loadMultiple($langs, Yii::$app->request->post())) {
+                //SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
+                foreach(Yii::$app->request->post('SupportGroupLanguage') as $i => $lang){
+                    if($i == 0) {
+                        $model2 = new SupportGroupLanguage();
+                        $model2->language_code = $lang['language_code'];
+                        $model2->support_group_id = intval($id);
+                        $model2->save(false);
+                    } else {
+                        $langs[$i]->save(false);
+                    }
+                }
+            }*/
             return $this->redirect(['index']);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'langs' => $langs,
         ]);
     }
 
@@ -195,7 +257,7 @@ class SupportGroupsController extends Controller
             return $this->redirect(['bots', 'id' => $model->support_group_id]);
         }
 
-        return $this->render('update', [
+        return $this->render('bots', [
             'model' => $model,
         ]);
     }
