@@ -158,7 +158,6 @@ class SupportGroupsController extends Controller
      * Displays a single SupportGroupCommand model.
      * @param integer $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionViewCommand($id)
     {
@@ -173,7 +172,7 @@ class SupportGroupsController extends Controller
 
         return $this->render('view-command', [
             'model' => $model,
-            'text' => SupportGroupCommandText::findOne(['support_group_command_id' => $id]),
+            'text' => SupportGroupCommandText::find()->where(['support_group_command_id' => intval($id)])->indexBy('language_code')->all(),
         ]);
     }
 
@@ -265,6 +264,26 @@ class SupportGroupsController extends Controller
         }
 
         return $this->redirect(['bots', 'id' => $model->support_group_id]);
+    }
+
+    /**
+     * Updates an existing SupportGroupCommandText model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionTextUpdate($id)
+    {
+        $model = SupportGroupCommandText::findOne($id);
+        if(is_null($model)){
+            $model = new SupportGroupCommandText();
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view-command', 'id' => $model->support_group_command_id]);
+        }
+
+        return $this->redirect(['view-command', 'id' => $model->support_group_command_id]);
     }
 
     /**

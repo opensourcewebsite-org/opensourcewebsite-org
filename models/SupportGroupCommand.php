@@ -85,6 +85,34 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
         return $this->hasMany(SupportGroupCommandText::className(), ['support_group_command_id' => 'id']);
     }
 
+
+    public function getLanguage()
+    {
+        return SupportGroupLanguage::findAll(['support_group_id' => $this->support_group_id]);
+    }
+
+    /**
+     * @param $text
+     * @return array
+     */
+    public function getNavItems($text)
+    {
+        $navItems = [];
+
+        foreach ($this->getLanguage() as $lang) {
+            $navItems[] = [
+                'label' => $lang->languageCode->name_ascii,
+                'url' => '#tab_' . $lang->id,
+                'linkOptions' => [
+                    'data-toggle' => 'tab',
+                    'onclick' => !isset($text[$lang->language_code]) ? 'document.getElementById(\'bottonModal' . $lang->id . '\').click();' : ''
+                ]
+            ];
+        }
+
+        return $navItems;
+    }
+
     /**
      * @param bool $insert
      * @return bool
