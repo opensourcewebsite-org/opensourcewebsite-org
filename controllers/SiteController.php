@@ -104,8 +104,8 @@ class SiteController extends Controller
     public function actionSetHook()
     {
         try {
-            $telegram = new \Longman\TelegramBot\Telegram('763529968:AAFTSly2zhbWq5a9Z9NXEobDN0w3d6YVUWQ');
-            echo $telegram->setWebHook('https://' . (YII_DEBUG ? '276b4eec.ngrok.io' : 'opensourcewebsite.org') . '/site/hook');
+            $telegram = new \Longman\TelegramBot\Telegram(Yii::$app->params['api_key']);
+            echo $telegram->setWebHook(Yii::$app->params['urlWebHook'] . '/site/hook');
 
         } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
             echo $e->getMessage();
@@ -118,7 +118,7 @@ class SiteController extends Controller
     public function actionHook()
     {
         try {
-            $telegram = new \Longman\TelegramBot\Telegram('763529968:AAFTSly2zhbWq5a9Z9NXEobDN0w3d6YVUWQ', 'bot1');
+            $telegram = new \Longman\TelegramBot\Telegram(Yii::$app->params['api_key'], Yii::$app->params['bot_username']);
             $telegram->addCommandsPath(Yii::getAlias('@app/commands'));
             $telegram->handle();
         } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
