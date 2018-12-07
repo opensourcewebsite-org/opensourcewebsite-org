@@ -99,6 +99,34 @@ class SiteController extends Controller
     }
 
     /**
+     * @return string
+     */
+    public function actionSetHook()
+    {
+        try {
+            $telegram = new \Longman\TelegramBot\Telegram('763529968:AAFTSly2zhbWq5a9Z9NXEobDN0w3d6YVUWQ');
+            echo $telegram->setWebHook('https://' . (YII_DEBUG ? '276b4eec.ngrok.io' : 'opensourcewebsite.org') . '/site/hook');
+
+        } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function actionHook()
+    {
+        try {
+            $telegram = new \Longman\TelegramBot\Telegram('763529968:AAFTSly2zhbWq5a9Z9NXEobDN0w3d6YVUWQ', 'bot1');
+            $telegram->addCommandsPath(Yii::getAlias('@app/commands'));
+            $telegram->handle();
+        } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
      * Logs in a user.
      *
      * @return mixed
@@ -359,6 +387,10 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {
+        if (in_array($action->id, ['hook'])) {
+            $this->enableCsrfValidation = false;
+        }
+
         if (!parent::beforeAction($action)) {
             return false;
         }

@@ -31,7 +31,8 @@
         "brussens/yii2-maintenance-mode": "*",
         "kartik-v/yii2-widget-select2": "@dev",
         "npm-asset/ace-builds": "^1.4.1",
-        "yiisoft/yii2-httpclient": "~2.0.0"
+        "yiisoft/yii2-httpclient": "~2.0.0",
+        "longman/telegram-bot": "^0.54.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
