@@ -1,14 +1,12 @@
 <?php
 namespace app\controllers;
 
-use Yii;
-use yii\web\Controller;
 use app\models\Country;
-use app\models\Setting;
 use app\models\Currency;
 use app\models\Language;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
+use yii\web\Controller;
 
 class DataController extends Controller
 {
@@ -21,7 +19,7 @@ class DataController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['country', 'currency', 'language', 'setting'],
+                'only' => ['country', 'currency', 'language'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -84,22 +82,6 @@ class DataController extends Controller
             ->all();
 
         return $this->render('language', [
-            'models' => $models,
-            'pages' => $pages,
-        ]);
-    }
-
-    public function actionSetting()
-    {
-        $setting = Setting::find();
-        $countQuery = clone $setting;
-        $pages = new Pagination(['totalCount' => $countQuery->count()]);
-        $models = $setting->offset($pages->offset)
-            ->limit($pages->limit)
-            ->orderBy(['updated_at' => SORT_DESC])
-            ->all();
-
-        return $this->render('setting', [
             'models' => $models,
             'pages' => $pages,
         ]);
