@@ -3,6 +3,8 @@
 use yii\log\EmailTarget;
 
 $params = require __DIR__ . '/params.php';
+$settingValidations = require __DIR__ . '/setting_validations.php';
+$params = array_merge($params, $settingValidations);
 $db = require __DIR__ . '/db.php';
 
 $config = [
@@ -128,7 +130,7 @@ $config = [
                 'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
                 'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
                 'invite/<id>' => 'site/invite',
-                'website-settings' => 'data/setting',
+                'website-settings' => 'setting/index',
 //              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],
@@ -144,7 +146,7 @@ $config = [
     'params' => $params,
     'as ConfirmEmail' => [
         'class' => '\app\behaviors\ConfirmEmailBehavior',
-    ],
+    ]
 ];
 
 if (YII_ENV_DEV) {

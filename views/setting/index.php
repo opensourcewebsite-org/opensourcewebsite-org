@@ -1,4 +1,5 @@
 <?php
+use yii\helpers\Html;
 use app\components\Converter;
 use yii\widgets\LinkPager;
 
@@ -23,7 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <tbody>
                                     <?php foreach ($models as $key => $model): ?>
                                         <tr>
-                                            <td><a href="#"><?php echo $model->key ?? null; ?></a></td>
+                                            <td>
+                                            <?= Html::a($model->key, ['/setting/values', 'id' => $model->id]); 
+                                            ?>
+                                            </td>
                                             <td><?php echo $model->value ?? null; ?></td>
                                             <td><?php echo Converter::formatDate($model->updated_at); ?></td>
                                         </tr>
