@@ -156,6 +156,7 @@ class SettingController extends Controller
 
                     if ($threshHold <= $votePercent) {
                         $setting->value = $settingVote->settingValue->value;
+                        $setting->updated_at = time();
                         $setting->save();
 
                         //change the current value state in setting_value table
