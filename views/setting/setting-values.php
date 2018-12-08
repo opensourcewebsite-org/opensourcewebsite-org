@@ -6,10 +6,15 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\IssueSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Setting values');
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = Yii::t('app', 'View website setting').': '.$setting->key;
 ?>
-
+<?php $this->beginBlock('content-header-data'); ?>
+        <div class="row mb-2">
+			<div class="col-sm-12">
+				<h1 class="m-0 text-dark"><?= Html::encode($this->title) ?></h1>
+			</div>
+        </div>
+<?php $this->endBlock(); ?>
  <section class="content">
       <div class="row">
           <div class="col-md-12">

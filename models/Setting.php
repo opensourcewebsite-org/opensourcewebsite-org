@@ -103,7 +103,7 @@ class Setting extends ActiveRecord
         $values = $this->getSettingValuesByDefault();
         $votes = 0;
         foreach ($values as $value) {
-            $votes += $value->getUserVotesPercent();
+            $votes += $value->getUserVotesPercent(false);
         }
         if ($format) {
             $votes = Converter::formatNumber($votes);
