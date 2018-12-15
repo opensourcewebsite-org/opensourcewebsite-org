@@ -98,33 +98,6 @@ class SiteController extends Controller
         return $this->render('privacy-policy');
     }
 
-    /**
-     * @return string
-     */
-    public function actionSetHook()
-    {
-        try {
-            $telegram = new \Longman\TelegramBot\Telegram(Yii::$app->params['api_key']);
-            echo $telegram->setWebHook(Yii::$app->params['urlWebHook'] . '/site/hook');
-
-        } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
-            echo $e->getMessage();
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function actionHook()
-    {
-        try {
-            $telegram = new \Longman\TelegramBot\Telegram(Yii::$app->params['api_key'], Yii::$app->params['bot_username']);
-            $telegram->addCommandsPath(Yii::getAlias('@app/commands'));
-            $telegram->handle();
-        } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
-            echo $e->getMessage();
-        }
-    }
 
     /**
      * Logs in a user.
