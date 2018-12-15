@@ -25,7 +25,7 @@ use yii\widgets\ActiveForm;
                     'item' => function($index, $label, $name, $checked, $value){
                         $check = $checked ? ' checked="checked"' : '';
                         $name = 'SupportGroupLanguage['. ($index + 1) .'][language_code]';
-                        return "<div class='col-3'><div class='form-check'><input type=\"checkbox\" class='form-check-input' name=\"$name\" value=\"$value\" id=\"$name$value\" $check><label for=\"$name$value\">$label</label></div></div>";
+                        return "<div class='col-3'><div class='form-check'><input type=\"checkbox\" class='form-check-input' name=\"$name\" value=\"$value\" id=\"$name$value\" $check><label class='form-check-label' for=\"$name$value\">$label</label></div></div>";
                     },
                     'class' => 'row',
                     'value' => $model->isNewRecord ? 'en' : ArrayHelper::getColumn($langs, 'language_code')

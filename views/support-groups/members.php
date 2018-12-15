@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </button>
                         </div>
                         <div class="modal-body text-left">
-                            <?php echo $form->field($member, 'user_id')->textInput(['maxlength' => true]) ?>
+                            <?php echo $form->field($member, 'user_id')->textInput(['type' => 'number', 'maxlength' => true]) ?>
                         </div>
                         <div class="card-footer text-left">
                             <button type="submit" class="btn btn-success">Save</button>

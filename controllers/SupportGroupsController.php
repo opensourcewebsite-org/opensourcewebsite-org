@@ -64,13 +64,18 @@ class SupportGroupsController extends Controller
     }
 
     /**
-     * Displays a single SupportGroup model.
+     * Displays a single SupportGroupMember model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionMembers($id)
     {
+        $model = $this->findModel($id);
+        if ($model->user_id != Yii::$app->user->identity->id) {
+            $this->redirect('index');
+        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => SupportGroupMember::find()->where(['support_group_id' => intval($id)]),
         ]);
@@ -88,7 +93,7 @@ class SupportGroupsController extends Controller
         }
 
         return $this->render('members', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'member' => $member,
             'dataProvider' => $dataProvider,
         ]);
@@ -103,6 +108,11 @@ class SupportGroupsController extends Controller
      */
     public function actionBots($id)
     {
+        $model = $this->findModel($id);
+        if ($model->user_id != Yii::$app->user->identity->id) {
+            $this->redirect('index');
+        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => SupportGroupBot::find()->where(['support_group_id' => intval($id)]),
         ]);
@@ -120,7 +130,7 @@ class SupportGroupsController extends Controller
         }
 
         return $this->render('bots', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'bot' => $bot,
             'dataProvider' => $dataProvider,
         ]);
@@ -134,6 +144,11 @@ class SupportGroupsController extends Controller
      */
     public function actionCommands($id)
     {
+        $model = $this->findModel($id);
+        if ($model->user_id != Yii::$app->user->identity->id) {
+            $this->redirect('index');
+        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => SupportGroupCommand::find()->where(['support_group_id' => intval($id)]),
         ]);
@@ -149,7 +164,7 @@ class SupportGroupsController extends Controller
         }
 
         return $this->render('commands', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'command' => $command,
             'dataProvider' => $dataProvider,
         ]);
@@ -225,6 +240,9 @@ class SupportGroupsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if ($model->user_id != Yii::$app->user->identity->id) {
+            $this->redirect('index');
+        }
 
         $langs = SupportGroupLanguage::find()->where(['support_group_id' => intval($id)])->indexBy('id')->all();
         if(empty($langs)){
