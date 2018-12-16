@@ -25,9 +25,6 @@ class UserController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return Yii::$app->user->identity->is_email_confirmed;
-                        }
                     ],
                 ],
             ],
@@ -100,5 +97,19 @@ class UserController extends Controller
 
         echo $withoutErrors;
         exit;
+    }
+
+    public function actionProfile()
+    {
+        $model = Yii::$app->user->identity;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Updated successfully.');
+            return $this->redirect('/site/account');
+        }
+
+        return $this->render('profile', [
+            'model' => $model,
+        ]);
     }
 }

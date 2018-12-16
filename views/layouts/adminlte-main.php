@@ -8,7 +8,7 @@ use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\assets\AppAsset;
 use app\widgets\Alert;
-use yii\bootstrap\Nav;
+use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
@@ -72,12 +72,13 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
         <div class="wrapper">
             <?php
             NavBar::begin([
+                'renderInnerContainer' => false,
                 'options' => [
                     'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
                 ],
             ]);
 
-            $menuItemsLeft[] = ['label' => '', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link fa fa-bars']];
+            $menuItemsLeft[] = ['label' => '<i class="fa fa-bars"></i>', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link'], 'encode' => false];
 
             $menuItemsRight[] = [
                 'label' => Html::tag('span', '<i class="fas fa-globe"></i>'),
@@ -174,8 +175,8 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                             </li>
                         </ul>
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language', 'data/setting']) ? 'menu-open' : '' ?>">
-                                <a href="#" class="nav-link <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language', 'data/setting']) ? 'active' : '' ?>">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language']) ? 'menu-open' : '' ?>">
+                                <a href="#" class="nav-link <?= in_array($currentUrl, ['data/country', 'data/currency', 'data/language']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-edit"></i>
                                     <p>Data<i class="fa fa-angle-left right"></i></p>
                                 </a>
@@ -198,12 +199,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                             <p>Language</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a href="<?= Yii::$app->urlManager->createUrl(['data/setting']) ?>" class="nav-link <?= in_array($currentUrl, ['data/setting']) ? 'active' : '' ?>">
-                                            <i class="fa fa-microchip nav-icon"></i>
-                                            <p>Setting</p>
-                                        </a>
-                                    </li>
                                 </ul>
                             </li>
                         </ul>
@@ -212,6 +207,22 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 <a href="<?= Yii::$app->urlManager->createUrl(['wikipedia-pages']) ?>" class="nav-link <?= in_array($currentUrl, ['wikipedia-pages/index']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-book"></i>
                                     <p>Wikipedia Watchlists</p>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['issue/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['issue']) ?>" class="nav-link <?= in_array($currentUrl, ['issue/index']) ? 'active' : '' ?>">
+                                    <i class="nav-icon fa fa-edit"></i>
+                                    <p>Issues</p>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['setting/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['website-settings']) ?>" class="nav-link <?= in_array($currentUrl, ['setting/index']) ? 'active' : '' ?>">
+                                    <i class="fa fa-microchip nav-icon"></i>
+                                    <p>Website settings</p>
                                 </a>
                             </li>
                         </ul>
@@ -257,7 +268,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
             </div>
 
             <footer class="main-footer">
-                <div class="container">
                     <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
                     <?= Html::a(Yii::t('app', 'Contribution'), ['site/team']) ?> |
                     <?= Html::a(Yii::t('app', 'We\'re on GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
@@ -265,7 +275,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <?= Html::a(Yii::t('app', 'Contact us'), ['site/contact']) ?><br />
                     <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
                     <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
-                </div>
             </footer>
         </div>
         <?php $this->endBody() ?>
