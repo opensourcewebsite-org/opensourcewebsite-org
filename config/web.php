@@ -30,6 +30,7 @@ $config = [
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
                     'css' => ['plugins/bootstrap/css/bootstrap.css'],
+                    'js' => ['plugins/popper/umd/popper.min.js'],
                     'sourcePath' => '@vendor/almasaeed2010/adminlte',
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
