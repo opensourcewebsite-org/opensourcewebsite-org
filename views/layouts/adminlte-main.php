@@ -196,14 +196,16 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 </a>
                             </li>
                         </ul>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'menu-open' : '' ?>">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
-                                    <i class="far fa-circle nav-icon"></i>
+                                    <i class="nav-icon fa fa-edit"></i>
                                     <p>Moqups</p>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                        </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['user/display']) ? 'menu-open' : '' ?>">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['user/display']) ?>" class="nav-link <?= in_array($currentUrl, ['user/display']) ? 'active' : '' ?>">
                                     <i class="fa fa-users nav-icon"></i>
                                     <p>Users</p>
