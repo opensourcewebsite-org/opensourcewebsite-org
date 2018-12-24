@@ -417,9 +417,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getActiveRating()
     {
-        $fromDate = ((new \DateTime())->modify('-31 day'))->format('Y-m-d');
-        $toDate = (new \DateTime())->format('Y-m-d');
-        $balance = Rating::find()->select(['balance' => 'sum(amount)'])->andWhere(['between', "DATE_FORMAT(FROM_UNIXTIME(created_at), '%Y-%m-%d')", $fromDate, $toDate])->where(['user_id' => $this->id])->groupBy('user_id')->scalar();
+        $balance = Rating::find()
+            ->where(['>', 'created_at', time() - 3600 * 24 * 30])
+            ->andWhere(['user_id' => $this->id])
+            ->sum('amount');
 
         return ($balance != null) ? $balance : 0;
     }
