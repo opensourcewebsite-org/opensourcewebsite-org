@@ -7,12 +7,26 @@ use app\models\UserWikiToken;
 use app\models\WikiPage;
 use yii\base\BaseObject;
 use yii\web\ServerErrorHttpException;
+use yii\httpclient\Client;
 
+/**
+ * Class WikiParser
+ * @package app\components
+ *
+ * @property int $user_id
+ * @property int $language_id
+ * @property \app\models\WikiLanguage $language
+ * @property \app\models\UserWikiToken $token
+ * @property bool $firstIteration
+ * @property array $userPagesId
+ * @property string $_continue
+ */
 class WikiParser extends BaseObject
 {
 
     public $user_id;
     public $language_id;
+    public $language;
     public $token;
     public $firstIteration = true;
     public $userPagesId;
@@ -22,7 +36,7 @@ class WikiParser extends BaseObject
     {
         if (!$this->token) {
             if (!$token = UserWikiToken::findOne([
-                'user_id' => $this->user_id,
+                'user_id'     => $this->user_id,
                 'language_id' => $this->language_id,
             ])
             ) {
@@ -34,112 +48,138 @@ class WikiParser extends BaseObject
     }
 
     /**
+     * @param bool $justValidateUser
+     * @return bool
      * @throws ServerErrorHttpException
      */
     public function run($justValidateUser = false)
     {
+
         if ($this->firstIteration) {
             $this->userPagesId = [];
         }
 
         $token = $this->token;
 
-        $language = $token->language;
+        $this->language = $token->language;
 
-        $url = "https://{$language->code}.wikipedia.org/w/api.php?action=query&format=json&list=watchlistraw&wrtoken={$token->token}"
-        . "&wrnamespace=" . urlencode('0|2|4|6|8|10|12|14');
+        $client = new Client([
+            'baseUrl' => "https://{$this->language->code}.wikipedia.org/w/",
+        ]);
 
+        $params = [
+            'action'      => 'query',
+            'format'      => 'json',
+            'list'        => 'watchlistraw',
+            'wrtoken'     => $token->token,
+            'wrnamespace' => '0|2|4|6|8|10|12|14'
+        ];
+
+        // TODO check it out ? Is this condition needed?
         if ($username = $token->wiki_username) {
-            $url .= "&wrowner=" . urlencode($username);
+            $params['wrowner'] = urlencode($username);
         }
 
         if ($this->_continue) {
-            $url .= "&wrcontinue={$this->_continue}";
+            $params['wrcontinue'] = $this->_continue;
         }
 
         if ($justValidateUser) {
-            $url .= '&wrlimit=1';
+            $params['wrlimit'] = 1;
         }
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            throw new \Exception(curl_error($ch));
-        }
-        curl_close($ch);
+        $response = $client->get('api.php', $params)->send();
 
-        if ($data = json_decode($result)) {
-            if (isset($data->error)) {
-                if ($data->error->code == 'bad_wltoken' && $data->error->info == 'Incorrect watchlist token provided. Please set a correct token in [[Special:Preferences]].') {
-                    $error = "Incorrect watchlist token provided. <a href='https://{$language->code}.wikipedia.org/wiki/Special:ResetTokens' target='_blank'>Please set a correct token</a>";
-                    throw new ServerErrorHttpException($error);
-                } else {
-                    throw new \Exception($result);
+        if (isset($response)) {
+            $data = $response->data;
+
+            if (isset($data['error']['code'])) {
+
+                if (!$justValidateUser) {
+
+                    // User changed his token or username
+                    $token->status = 1;
+                    return $token->save(false);
                 }
-            } elseif ($justValidateUser) {
+
+                $error = "Incorrect watchlist token or username provided.";
+                $error .= " <a href='https://{$this->language->code}.wikipedia.org/wiki/Special:ResetTokens' target='_blank'>";
+                $error .= " Please set a correct token";
+                $error .= "</a>";
+
+                throw new ServerErrorHttpException($error);
+            }
+
+            if ($justValidateUser) {
                 return true;
             }
 
-            foreach ($data->watchlistraw as $page) {
-                //Search if the page already exists
-                $wikiPage = WikiPage::find()
-                    ->where([
-                        'ns' => $page->ns,
-                        'title' => $page->title,
-                        'language_id' => $language->id,
-                    ])
-                    ->one();
+            if (isset($data['watchlistraw']) && is_array($data['watchlistraw'])) {
 
-                //If the page doesn't exist is created
-                if ($wikiPage == null) {
-                    $wikiPage = new WikiPage([
-                        'ns' => $page->ns,
-                        'language_id' => $language->id,
-                        'title' => $page->title,
-                    ]);
+                foreach ($data['watchlistraw'] as $page) {
 
-                    if (!$wikiPage->save()) {
-                        continue;
+                    //Search if the page already exists
+                    $wikiPage = WikiPage::find()
+                        ->where([
+                            'ns'          => $page['ns'],
+                            'title'       => $page['title'],
+                            'language_id' => $this->language->id,
+                        ])
+                        ->one();
+
+                    //If the page doesn't exist is created
+                    if ($wikiPage == null) {
+                        $wikiPage = new WikiPage([
+                            'ns'          => $page['ns'],
+                            'language_id' => $this->language->id,
+                            'title'       => $page['title'],
+                        ]);
+
+                        if (!$wikiPage->save()) {
+                            continue;
+                        }
+                    }
+
+                    //The page id is added to the user list
+                    $this->userPagesId[] = $wikiPage->id;
+
+                    //If the page is not yet related to the user, is saved the relation
+                    $relation = UserWikiPage::find()
+                        ->where([
+                            'user_id'      => $this->user_id,
+                            'wiki_page_id' => $wikiPage->id,
+                        ])
+                        ->one();
+
+                    if ($relation == null) {
+                        $relation = new UserWikiPage([
+                            'user_id'      => $this->user_id,
+                            'wiki_page_id' => $wikiPage->id,
+                        ]);
+
+                        $relation->save();
                     }
                 }
-
-                //The page id is added to the user list
-                $this->userPagesId[] = $wikiPage->id;
-
-                //If the page is not yet related to the user, is saved the relation
-                $relation = UserWikiPage::find()
-                    ->where([
-                        'user_id' => $this->user_id,
-                        'wiki_page_id' => $wikiPage->id,
-                    ])
-                    ->one();
-
-                if ($relation == null) {
-                    $relation = new UserWikiPage([
-                        'user_id' => $this->user_id,
-                        'wiki_page_id' => $wikiPage->id,
-                    ]);
-
-                    $relation->save();
-                }
+            } else {
+                $error = "Couldn't get list of watchlist";
+                throw new ServerErrorHttpException($error);
             }
 
-            if (isset($data->continue)) {
+            if (isset($data['continue']['wrcontinue'])) {
                 $this->firstIteration = false;
-                $this->_continue = $data->continue->wrcontinue;
+                $this->_continue = $data['continue']['wrcontinue'];
                 $this->run();
             } else {
                 //Delete all pages of the current language that aren't in the userPagesId list
                 $pagesToDrop = WikiPage::find()
                     ->joinWith('users')
                     ->select('{{%wiki_page}}.id')
-                    ->where(['language_id' => $language->id])
+                    ->where(['language_id' => $this->language->id])
                     ->andWhere(['user_id' => $this->user_id])
                     ->andWhere(['not in', 'wiki_page_id', $this->userPagesId])
                     ->column();
 
-                if(count($pagesToDrop) > 0) {
+                if (count($pagesToDrop) > 0) {
                     UserWikiPage::deleteAll([
                         'and',
                         ['user_id' => $this->user_id],
@@ -147,6 +187,11 @@ class WikiParser extends BaseObject
                     ]);
                 }
             }
+
+            return true;
         }
+
+        $error = 'No response';
+        throw new ServerErrorHttpException($error);
     }
 }
