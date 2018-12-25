@@ -131,17 +131,21 @@ class WikiParser extends BaseObject
                 $this->run();
             } else {
                 //Delete all pages of the current language that aren't in the userPagesId list
-                $languagePagesId = WikiPage::find()
-                    ->select('id')
+                $pagesToDrop = WikiPage::find()
+                    ->joinWith('users')
+                    ->select('{{%wiki_page}}.id')
                     ->where(['language_id' => $language->id])
+                    ->andWhere(['user_id' => $this->user_id])
+                    ->andWhere(['not in', 'wiki_page_id', $this->userPagesId])
                     ->column();
 
-                UserWikiPage::deleteAll([
-                    'and',
-                    ['user_id' => $this->user_id],
-                    ['not in', 'wiki_page_id', $this->userPagesId],
-                    ['in', 'wiki_page_id', $languagePagesId],
-                ]);
+                if(count($pagesToDrop) > 0) {
+                    UserWikiPage::deleteAll([
+                        'and',
+                        ['user_id' => $this->user_id],
+                        ['IN', 'wiki_page_id', $pagesToDrop],
+                    ]);
+                }
             }
         }
     }
