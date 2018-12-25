@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\StringHelper;
 
 /**
  * This is the model class for table "cron_job_log".
@@ -70,5 +71,29 @@ class CronJobLog extends \yii\db\ActiveRecord
     public function getCronJob()
     {
         return $this->hasOne(CronJob::className(), ['id' => 'cron_job_id']);
+    }
+
+
+    /**
+     * Logging cron job
+     * @param string $message
+     * @param int $cronJobId
+     * @return bool
+     */
+    public static function log($message, $cronJobId)
+    {
+        $model = new static;
+
+        // restriction of database length 255
+        $model->message = StringHelper::truncate($message, 255);
+        $model->cron_job_id = $cronJobId;
+
+        if($model->validate() && $model->save()){
+            return true;
+        }
+
+        Yii::error($model->getErrors());
+
+        return false;
     }
 }

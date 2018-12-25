@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use app\components\WikiParser;
+use app\models\CronJobLog;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
 use app\models\WikiPage;
@@ -212,6 +213,8 @@ class WikipediaParserController extends Controller
 
     protected function log($message)
     {
+        CronJobLog::log($message, 1);
+
         if ($this->log) {
             Console::output($message, Console::FG_GREEN, Console::BOLD);
         }
