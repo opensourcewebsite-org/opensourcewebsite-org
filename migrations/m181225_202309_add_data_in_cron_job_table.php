@@ -1,7 +1,6 @@
 <?php
 
 use yii\db\Migration;
-use app\models\CronJob;
 
 /**
  * Class m181225_202309_add_data_in_cron_job_table
@@ -30,23 +29,7 @@ class m181225_202309_add_data_in_cron_job_table extends Migration
      */
     public function safeDown()
     {
-        echo "m181225_202309_add_data_in_cron_job_table cannot be reverted.\n";
-
-        return false;
+        $this->delete('{{%cron_job}}', ['id' => 1]);
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m181225_202309_add_data_in_cron_job_table cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }
