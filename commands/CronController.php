@@ -14,6 +14,7 @@ use yii\web\NotFoundHttpException;
  */
 class CronController extends Controller
 {
+    const INTERVAL = 60;
     const PREFIX = "app\\commands\\";
     const POSTFIX = 'Controller';
 
@@ -47,8 +48,6 @@ class CronController extends Controller
      */
     public function actionIndex()
     {
-        ini_set('xdebug.max_nesting_level', 1000);
-
         $jobs = $this->cronJobs->find()->select('name')->column();
 
         if(empty($jobs)){
@@ -78,7 +77,7 @@ class CronController extends Controller
             Console::output(Console::ansiFormat("[FINISH] session id: {$session}", [Console::FG_BLACK, Console::BG_YELLOW, Console::BOLD]));
 
             Console::output();
-            sleep(5);
+            sleep(static::INTERVAL);
         }
     }
 }

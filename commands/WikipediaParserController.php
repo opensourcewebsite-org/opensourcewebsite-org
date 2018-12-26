@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use app\components\WikiParser;
+use app\models\CronJob;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
 use app\models\WikiPage;
@@ -40,7 +41,6 @@ class WikipediaParserController extends Controller
             $this->processPages();
             $this->log('Running languages parser...');
             $this->parse();
-            
     }
 
     protected function parse()
