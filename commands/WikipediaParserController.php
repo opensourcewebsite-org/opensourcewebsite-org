@@ -36,13 +36,11 @@ class WikipediaParserController extends Controller
 
     public function actionIndex()
     {
-        while (true) {
             $this->log('Running watchlists parser...');
             $this->processPages();
             $this->log('Running languages parser...');
             $this->parse();
-            sleep(self::PARSE_INTERVAL);
-        }
+            
     }
 
     protected function parse()
