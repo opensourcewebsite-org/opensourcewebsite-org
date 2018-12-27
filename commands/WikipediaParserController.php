@@ -37,9 +37,21 @@ class WikipediaParserController extends Controller
 
     public function actionIndex()
     {
-        CustomConsole::output('Running watchlists parser...', $this->log);
+        CustomConsole::output(
+            'Running watchlists parser...',
+            [
+                'logs' => $this->log,
+                'jobName' => CustomConsole::convertName(self::class)
+            ]
+        );
         $this->processPages();
-        CustomConsole::output('Running languages parser...', $this->log);
+        CustomConsole::output(
+            'Running languages parser...',
+            [
+                'logs' => $this->log,
+                'jobName' => CustomConsole::convertName(self::class)
+            ]
+        );
         $this->parse();
     }
 
@@ -65,7 +77,13 @@ class WikipediaParserController extends Controller
             ->andWhere(['is not', 'user.id', null])
             ->one()
         ) {
-            CustomConsole::output("Parsing page: {$page->title}", $this->log);
+            CustomConsole::output(
+                "Parsing page: {$page->title}",
+                [
+                    'logs' => $this->log,
+                    'jobName' => CustomConsole::convertName(self::class)
+                ]
+            );
             for ($retry = 0; $retry <= self::PAGE_PARSE_RETRY_COUNT; $retry++) {
                 try {
                     $response = $client->get('api.php', [
@@ -79,7 +97,13 @@ class WikipediaParserController extends Controller
                     ])->send();
                     break;
                 } catch (ErrorException $e) {
-                    CustomConsole::output('Error parsing page ' . $page->title . ' - ' . $e->getMessage(), $this->log);
+                    CustomConsole::output(
+                        'Error parsing page ' . $page->title . ' - ' . $e->getMessage(),
+                        [
+                            'logs' => $this->log,
+                            'jobName' => CustomConsole::convertName(self::class)
+                        ]
+                    );
                     if ($retry == self::PAGE_PARSE_RETRY_COUNT) {
                         $page->updateAttributes(['group_id' => $this->getGroupId(), 'updated_at' => time()]);
                     } else {
@@ -177,7 +201,13 @@ class WikipediaParserController extends Controller
             ->andWhere(['!=', 'status', UserWikiToken::STATUS_HAS_ERROR])
             ->all();
         $counter = count($tokens);
-        CustomConsole::output("Found $counter tokens to update", $this->log);
+        CustomConsole::output(
+            "Found $counter tokens to update",
+            [
+                'logs' => $this->log,
+                'jobName' => CustomConsole::convertName(self::class)
+            ]
+        );
 
         foreach ($tokens as $token) {
             $this->updatePages($token);
@@ -194,7 +224,10 @@ class WikipediaParserController extends Controller
             $parser->run();
             CustomConsole::output(
                 "Updated token #{$token->id}",
-                $this->log
+                [
+                    'logs' => $this->log,
+                    'jobName' => CustomConsole::convertName(self::class)
+                ]
             );
 
             Yii::$app->db->createCommand()->update(
@@ -205,12 +238,18 @@ class WikipediaParserController extends Controller
         } catch (ServerErrorHttpException $e) {
             CustomConsole::output(
                 "Error updating token #{$token->id} ServerErrorHttpException: ",
-                $this->log
+                [
+                    'logs' => $this->log,
+                    'jobName' => CustomConsole::convertName(self::class)
+                ]
             );
 
             CustomConsole::output(
                 $e->getMessage(),
-                $this->log
+                [
+                    'logs' => $this->log,
+                    'jobName' => CustomConsole::convertName(self::class)
+                ]
             );
 
             Yii::$app->db->createCommand()->update(
@@ -224,12 +263,18 @@ class WikipediaParserController extends Controller
         } catch (\Exception $e) {
             CustomConsole::output(
                 "Error updating token #{$token->id} Exception: ",
-                $this->log
+                [
+                    'logs' => $this->log,
+                    'jobName' => CustomConsole::convertName(self::class)
+                ]
             );
 
             CustomConsole::output(
                 $e->getMessage(),
-                $this->log
+                [
+                    'logs' => $this->log,
+                    'jobName' => CustomConsole::convertName(self::class)
+                ]
             );
         }
     }

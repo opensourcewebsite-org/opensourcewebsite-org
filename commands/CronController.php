@@ -54,7 +54,7 @@ class CronController extends Controller
                     'LOGS MUTED (user param --log)',
                     [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
                 ),
-                true
+                ['logs' => true]
             );
         }
 
@@ -71,7 +71,7 @@ class CronController extends Controller
                     "[OPEN] session id: {$session}",
                     [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
                 ),
-                $this->log
+                ['logs' => $this->log]
             );
 
             foreach ($this->cronJobs as $script) {
@@ -86,7 +86,7 @@ class CronController extends Controller
                         "[PROCESS] Started script: {$script->name}",
                         [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
                     ),
-                    $this->log
+                    ['logs' => $this->log]
                 );
 
                 $controller = new $job(Yii::$app->controller->id, Yii::$app);
@@ -100,7 +100,7 @@ class CronController extends Controller
                         "[OK]script {$script->name} finished ",
                         [CustomConsole::FG_GREEN, CustomConsole::BOLD]
                     ),
-                    $this->log
+                    ['logs' => $this->log]
                 );
             }
 
@@ -109,12 +109,12 @@ class CronController extends Controller
                     "[CLOSED] session id: {$session}",
                     [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
                 ),
-                $this->log
+                ['logs' => $this->log]
             );
 
             CustomConsole::output(
                 '',
-                $this->log
+                ['logs' => $this->log]
             );
 
             sleep(static::INTERVAL);
