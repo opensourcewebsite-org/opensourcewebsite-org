@@ -15,7 +15,7 @@ use yii\web\NotFoundHttpException;
 class CronController extends Controller
 {
     const INTERVAL = 60;
-    const PREFIX = "app\\commands\\";
+    const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
 
     public $cronJobs;
@@ -48,34 +48,46 @@ class CronController extends Controller
      */
     public function actionIndex()
     {
-        if(!$this->log){
-            CustomConsole::output(CustomConsole::ansiFormat("LOGS MUTED (user param --log)",
-                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]), true);
+        if (!$this->log) {
+            CustomConsole::output(
+                CustomConsole::ansiFormat(
+                    'LOGS MUTED (user param --log)',
+                    [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
+                ),
+                true
+            );
         }
 
         $this->cronJobs = $this->cronJobs->find()->all();
 
-        if(empty($this->cronJobs)){
+        if (empty($this->cronJobs)) {
             throw new NotFoundHttpException;
         }
 
         while (true) {
-
             $session = Yii::$app->security->generateRandomString();
-            CustomConsole::output(CustomConsole::ansiFormat("[OPEN] session id: {$session}",
-                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]), $this->log);
+            CustomConsole::output(
+                CustomConsole::ansiFormat(
+                    "[OPEN] session id: {$session}",
+                    [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
+                ),
+                $this->log
+            );
 
-            foreach($this->cronJobs  as $script){
-
-                if($script->status !== 1){
+            foreach ($this->cronJobs as $script) {
+                if ($script->status !== 1) {
                     continue;
                 }
 
+                $job = static::PREFIX . $script->name . static::POSTFIX;
 
-                $job = static::PREFIX  . $script->name . static::POSTFIX;
-
-                CustomConsole::output(CustomConsole::ansiFormat("[PROCESS] Started script: {$script->name}",
-                    [CustomConsole::FG_YELLOW, CustomConsole::BOLD]), $this->log);
+                CustomConsole::output(
+                    CustomConsole::ansiFormat(
+                        "[PROCESS] Started script: {$script->name}",
+                        [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
+                    ),
+                    $this->log
+                );
 
                 $controller = new $job(Yii::$app->controller->id, Yii::$app);
                 $controller->log = $this->log;
@@ -83,17 +95,29 @@ class CronController extends Controller
 
                 CronJob::updateAll(['updated_at' => time()], ['name' => $script->name]);
 
-                CustomConsole::output(CustomConsole::ansiFormat("[OK]script {$script->name} finished ",
-                    [CustomConsole::FG_GREEN, CustomConsole::BOLD]), $this->log);
+                CustomConsole::output(
+                    CustomConsole::ansiFormat(
+                        "[OK]script {$script->name} finished ",
+                        [CustomConsole::FG_GREEN, CustomConsole::BOLD]
+                    ),
+                    $this->log
+                );
             }
 
-            CustomConsole::output(CustomConsole::ansiFormat("[CLOSED] session id: {$session}",
-                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]), $this->log);
+            CustomConsole::output(
+                CustomConsole::ansiFormat(
+                    "[CLOSED] session id: {$session}",
+                    [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
+                ),
+                $this->log
+            );
 
-            CustomConsole::output('', $this->log);
-            
+            CustomConsole::output(
+                '',
+                $this->log
+            );
+
             sleep(static::INTERVAL);
-            
         }
     }
 }
