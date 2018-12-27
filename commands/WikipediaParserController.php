@@ -2,7 +2,7 @@
 
 namespace app\commands;
 
-use app\components\WikiParser;
+use app\components\WikipediaParser;
 use app\models\CronJob;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
@@ -182,7 +182,7 @@ class WikipediaParserController extends Controller
 
     protected function updatePages(UserWikiToken $token)
     {
-        $parser = new WikiParser([
+        $parser = new WikipediaParser([
             'user_id' => $token->user_id,
             'language_id' => $token->language_id,
         ]);

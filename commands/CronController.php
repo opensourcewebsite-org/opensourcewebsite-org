@@ -3,7 +3,7 @@ namespace app\commands;
 
 use app\models\CronJob;
 use yii\console\Controller;
-use yii\helpers\Console;
+use app\components\CustomConsole;
 use Yii;
 use yii\web\NotFoundHttpException;
 
@@ -48,6 +48,11 @@ class CronController extends Controller
      */
     public function actionIndex()
     {
+        if(!$this->log){
+            CustomConsole::output(CustomConsole::ansiFormat("LOGS MUTED (user param --log)",
+                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]), true);
+        }
+
         $jobs = $this->cronJobs->find()->select('name')->column();
 
         if(empty($jobs)){
@@ -57,13 +62,15 @@ class CronController extends Controller
         while (true) {
 
             $session = Yii::$app->security->generateRandomString();
-            Console::output(Console::ansiFormat("[START] session id: {$session}", [Console::FG_BLACK, Console::BG_YELLOW, Console::BOLD]));
+            CustomConsole::output(CustomConsole::ansiFormat("[OPEN] session id: {$session}",
+                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]), $this->log);
 
             foreach($jobs as $script){
 
                 $job = static::PREFIX  . $script . static::POSTFIX;
 
-                Console::output(Console::ansiFormat("[PROCESS] Started script: {$script}", [Console::FG_YELLOW, Console::BOLD]));
+                CustomConsole::output(CustomConsole::ansiFormat("[PROCESS] Started script: {$script}",
+                    [CustomConsole::FG_YELLOW, CustomConsole::BOLD]), $this->log);
 
                 $controller = new $job(Yii::$app->controller->id, Yii::$app);
                 $controller->log = $this->log;
@@ -71,12 +78,14 @@ class CronController extends Controller
 
                 CronJob::updateAll(['updated_at' => time()], ['name' => $script]);
 
-                Console::output(Console::ansiFormat("[OK]script {$script} finished ", [Console::FG_GREEN, Console::BOLD]));
+                CustomConsole::output(CustomConsole::ansiFormat("[OK]script {$script} finished ",
+                    [CustomConsole::FG_GREEN, CustomConsole::BOLD]), $this->log);
             }
 
-            Console::output(Console::ansiFormat("[FINISH] session id: {$session}", [Console::FG_BLACK, Console::BG_YELLOW, Console::BOLD]));
+            CustomConsole::output(CustomConsole::ansiFormat("[CLOSED] session id: {$session}",
+                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]), $this->log);
 
-            Console::output();
+            CustomConsole::output('', $this->log);
             sleep(static::INTERVAL);
         }
     }

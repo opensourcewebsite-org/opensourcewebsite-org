@@ -14,8 +14,8 @@ class m181226_192728_create_cron_job_table extends Migration
     {
         $this->createTable('cron_job', [
             'id' => $this->primaryKey()->unsigned(),
-            'name' => $this->string(127)->notNull()->unique(),
-            'status' => $this->smallInteger()->notNull()->notNull(),
+            'name' => $this->string()->notNull()->unique(),
+            'status' => $this->tinyInteger()->notNull()->notNull()->unsigned(),
             'created_at' => $this->integer()->notNull()->unsigned(),
             'updated_at' => $this->integer()->notNull()->unsigned(),
         ]);
