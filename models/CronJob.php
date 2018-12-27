@@ -17,15 +17,15 @@ use yii\web\ServerErrorHttpException;
  * @property int $created_at
  * @property int $updated_at
  *
- * @property array $cronJobsFiles
- * @property array $cronJobsDb
+ * @property array $_cronJobsFiles
+ * @property array $_cronJobsDb
  */
 class CronJob extends ActiveRecord
 {
     const EXCLUDE = 'Cron';
 
-    private $cronJobsFiles = [];
-    private $cronJobsDb = [];
+    private $_cronJobsFiles = [];
+    private $_cronJobsDb = [];
 
     /**
      * {@inheritdoc}
@@ -74,9 +74,9 @@ class CronJob extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'name' => Yii::t('app', 'Name'),
-            'status' => Yii::t('app', 'Status'),
+            'id'         => Yii::t('app', 'ID'),
+            'name'       => Yii::t('app', 'Name'),
+            'status'     => Yii::t('app', 'Status'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
@@ -91,13 +91,13 @@ class CronJob extends ActiveRecord
     {
         $folder = FileHelper::findFiles('commands', [
             'recursive' => false,
-            'only' => ['*.php']
+            'only'      => ['*.php']
         ]);
 
-        if(count($folder) > 0){
-            foreach($folder as $file){
+        if (count($folder) > 0) {
+            foreach ($folder as $file) {
                 $start = mb_strpos($file, '/') + 1;
-                $this->cronJobsFiles[] = mb_substr($file, $start, -14);
+                $this->_cronJobsFiles[] = mb_substr($file, $start, -14);
             }
         }
     }
@@ -109,7 +109,7 @@ class CronJob extends ActiveRecord
      */
     protected function checkDatabase()
     {
-        $this->cronJobsDb = $this->find()->select('name')->column();
+        $this->_cronJobsDb = $this->find()->select('name')->column();
     }
 
     /**
@@ -118,19 +118,21 @@ class CronJob extends ActiveRecord
      */
     public function add()
     {
-        foreach($this->cronJobsFiles as $name){
-            if(static::EXCLUDE == $name)
+        foreach ($this->_cronJobsFiles as $name) {
+            if (static::EXCLUDE == $name) {
                 continue;
+            }
 
-            if(!$this->findOne(['name' => $name])){
+            if (!$this->findOne(['name' => $name])) {
                 $model = clone $this;
                 $model->setAttributes([
-                    'name' => $name,
+                    'name'   => $name,
                     'status' => 1
                 ]);
 
-                if($model->validate() && !$model->save())
-                    throw new ServerErrorHttpException(implode(', ',$model->getErrors()));
+                if ($model->validate() && !$model->save()) {
+                    throw new ServerErrorHttpException(implode(', ', $model->getErrors()));
+                }
             }
         }
 
@@ -142,7 +144,7 @@ class CronJob extends ActiveRecord
      */
     public function clear()
     {
-        $toDrop = array_diff($this->cronJobsDb, $this->cronJobsFiles);
+        $toDrop = array_diff($this->_cronJobsDb, $this->_cronJobsFiles);
 
         return $this->deleteAll(['IN', 'name', $toDrop]);
     }
