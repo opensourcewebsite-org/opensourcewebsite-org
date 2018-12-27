@@ -51,9 +51,52 @@ class SupportGroupBot extends \yii\db\ActiveRecord
         return [
             [['support_group_id', 'title', 'token'], 'required'],
             [['support_group_id'], 'integer'],
+            [['token'], 'validateToken'],
+            [['title'], 'validateMaxCount'],
             [['title', 'token'], 'string', 'max' => 255],
             [['support_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroup::className(), 'targetAttribute' => ['support_group_id' => 'id']],
         ];
+    }
+
+    /**
+     * Validates the max allowed bot count reached.
+     *
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validateMaxCount($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            if (Yii::$app->user->identity->botsCount >= Yii::$app->user->identity->maxBots) {
+                $this->addError($attribute, 'You are not allowed to add more bots.');
+            }
+        }
+    }
+
+    /**
+     * Validate bot token from telegram API
+     */
+    public function validateToken($attribute, $params, $validator)
+    {
+        $botApi = new \TelegramBot\Api\BotApi($this->$attribute);
+
+        try {
+            $botUser = $botApi->getMe();
+        } catch (\TelegramBot\Api\Exception $e) {
+            $this->addError($attribute, 'The token is not valid. Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * set webhook for bot token using telegram API
+     */
+    public function setWebhook()
+    {
+        $botApi = new \TelegramBot\Api\BotApi($this->token);
+
+        $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram/' . $this->token]);
+        $url = str_replace('http:', 'https:', $url);
+        return $botApi->setWebhook($url);
     }
 
     /**

@@ -52,7 +52,23 @@ class SupportGroup extends \yii\db\ActiveRecord
             [['title'], 'required'],
             [['title'], 'unique'],
             [['title'], 'string', 'max' => 255],
+            [['title'], 'validateMaxCount'],
         ];
+    }
+
+    /**
+     * Validates the max allowed group reached.
+     *
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validateMaxCount($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            if (Yii::$app->user->identity->supportGroupCount >= Yii::$app->user->identity->maxSupportGroup) {
+                $this->addError($attribute, 'You are not allowed to add more support groups.');
+            }
+        }
     }
 
     /**
@@ -100,7 +116,6 @@ class SupportGroup extends \yii\db\ActiveRecord
     {
         return $this->hasMany(SupportGroupMember::className(), ['support_group_id' => 'id']);
     }
-
 
     /**
      * @param bool $insert

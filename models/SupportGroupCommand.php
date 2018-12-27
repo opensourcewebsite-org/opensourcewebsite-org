@@ -49,6 +49,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
         return [
             [['support_group_id', 'command', 'is_default'], 'required'],
             [['support_group_id', 'is_default'], 'integer'],
+            [['command'], 'unique', 'targetAttribute' => ['support_group_id', 'command']],
             [['command'], 'string', 'max' => 255],
             [['support_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroup::className(), 'targetAttribute' => ['support_group_id' => 'id']],
         ];

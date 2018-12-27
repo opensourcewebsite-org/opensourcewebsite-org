@@ -264,7 +264,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return count($this->moqups);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -279,6 +279,62 @@ class User extends ActiveRecord implements IdentityInterface
     public function getIssuesCount()
     {
         return count($this->issues);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroup()
+    {
+        return $this->hasMany(SupportGroup::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of support group of the user
+     */
+    public function getSupportGroupCount()
+    {
+        return count($this->supportGroup);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupMember()
+    {
+        return $this->hasMany(SupportGroupMember::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupCommand()
+    {
+        return $this->hasMany(SupportGroupCommand::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupBot()
+    {
+        return $this->hasMany(SupportGroupBot::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of members of the support group
+     */
+    public function getSupportGroupMemberCount()
+    {
+        return count($this->supportGroupMember);
+    }
+
+    /**
+     * @return integer The number of bots of the support group
+     */
+    public function getBotsCount()
+    {
+        return count($this->supportGroupBot);
     }
 
     /**
@@ -314,7 +370,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $maxMoqup * $this->rating;
     }
-    
+
     /**
      * @return integer The max ammount of issues the user can have
      */
@@ -324,6 +380,39 @@ class User extends ActiveRecord implements IdentityInterface
         $maxIssue = ($setting != null) ? $setting->value : 1;
 
         return $maxIssue * $this->rating;
+    }
+
+    /**
+     * @return integer The max ammount of support groups the user can have
+     */
+    public function getMaxSupportGroup()
+    {
+        $setting = Setting::findOne(['key' => 'support_group_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+
+        return $settingQty * $this->rating;
+    }
+
+    /**
+     * @return integer The max ammount of support group members the user can have
+     */
+    public function getMaxSupportGroupMember()
+    {
+        $setting = Setting::findOne(['key' => 'support_group_member_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+
+        return $settingQty * $this->rating;
+    }
+
+    /**
+     * @return integer The max amount of bots the user can have
+     */
+    public function getMaxBots()
+    {
+        $setting = Setting::findOne(['key' => 'support_group_bot_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+
+        return $settingQty * $this->rating;
     }
 
     /**

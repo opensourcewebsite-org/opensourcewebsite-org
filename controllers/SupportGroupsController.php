@@ -2,22 +2,23 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\models\Language;
+use app\models\Setting;
+use app\models\SupportGroup;
 use app\models\SupportGroupBot;
 use app\models\SupportGroupCommand;
 use app\models\SupportGroupCommandText;
 use app\models\SupportGroupLanguage;
 use app\models\SupportGroupMember;
-use app\models\SupportGroup;
+use Yii;
 use yii\base\Model;
 use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
-use yii\web\Controller;
-use yii\web\Response;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * SupportGroupController implements the CRUD actions for SupportGroup model.
@@ -58,8 +59,12 @@ class SupportGroupsController extends Controller
             'query' => SupportGroup::find(),
         ]);
 
+        $setting = Setting::findOne(['key' => 'support_group_quantity_value_per_one_rating']);
+        $settingQty = $setting->value;
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'settingQty' => $settingQty,
         ]);
     }
 
@@ -80,6 +85,9 @@ class SupportGroupsController extends Controller
             'query' => SupportGroupMember::find()->where(['support_group_id' => intval($id)]),
         ]);
 
+        $setting = Setting::findOne(['key' => 'support_group_member_quantity_value_per_one_rating']);
+        $settingQty = $setting->value;
+
         $member = new SupportGroupMember();
         $member->support_group_id = intval($id);
 
@@ -89,6 +97,7 @@ class SupportGroupsController extends Controller
         } else {
             if ($member->load(Yii::$app->request->post())) {
                 $member->save();
+                return $this->redirect(['members', 'id' => $id]);
             }
         }
 
@@ -96,9 +105,9 @@ class SupportGroupsController extends Controller
             'model' => $model,
             'member' => $member,
             'dataProvider' => $dataProvider,
+            'settingQty' => $settingQty,
         ]);
     }
-
 
     /**
      * Displays a single SupportGroupBot model.
@@ -122,17 +131,31 @@ class SupportGroupsController extends Controller
 
         if (Yii::$app->request->isAjax && $bot->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+
             return ActiveForm::validate($bot);
         } else {
             if ($bot->load(Yii::$app->request->post())) {
-                $bot->save();
+                if ($bot->setWebhook()) {
+
+                    //delete bot if already exists
+                    $botexists = SupportGroupBot::find()->where(['token' => $bot->token])->one();
+                    if ($botexists) {
+                        $botexists->delete();
+                    }
+
+                    $bot->save();
+                    return $this->redirect(['bots', 'id' => $id]);
+                }
             }
         }
 
+        $setting = Setting::findOne(['key' => 'support_group_bot_quantity_value_per_one_rating']);
+        $settingQty = $setting->value;
         return $this->render('bots', [
             'model' => $model,
             'bot' => $bot,
             'dataProvider' => $dataProvider,
+            'settingQty' => $settingQty,
         ]);
     }
 
@@ -156,10 +179,15 @@ class SupportGroupsController extends Controller
         $command = new SupportGroupCommand();
         $command->support_group_id = intval($id);
 
-        if ($command->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isAjax && $command->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            return ActiveForm::validate($command);
+        } elseif ($command->load(Yii::$app->request->post())) {
             if ($command->is_default) {
                 SupportGroupCommand::updateAll(['is_default' => 0], 'support_group_id = ' . intval($id));
             }
+
             $command->save();
         }
 
@@ -203,7 +231,7 @@ class SupportGroupsController extends Controller
 
         $count = count(Yii::$app->request->post('SupportGroupLanguage', []));
         $langs = [new SupportGroupLanguage()];
-        for($i = 1; $i < $count; $i++) {
+        for ($i = 1; $i < $count; $i++) {
             $langs[] = new SupportGroupLanguage();
         }
 
@@ -245,7 +273,7 @@ class SupportGroupsController extends Controller
         }
 
         $langs = SupportGroupLanguage::find()->where(['support_group_id' => intval($id)])->indexBy('id')->all();
-        if(empty($langs)){
+        if (empty($langs)) {
             $langs[] = new SupportGroupLanguage();
         }
 
@@ -254,8 +282,8 @@ class SupportGroupsController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             unset($_POST['SupportGroupLanguage'][0]);
             SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
-            foreach(Yii::$app->request->post('SupportGroupLanguage') as $i => $lang){
-                if($i != 0) {
+            foreach (Yii::$app->request->post('SupportGroupLanguage') as $i => $lang) {
+                if ($i != 0) {
                     $model2 = new SupportGroupLanguage();
                     $model2->language_code = $lang['language_code'];
                     $model2->support_group_id = intval($id);
@@ -281,13 +309,28 @@ class SupportGroupsController extends Controller
      */
     public function actionBotsUpdate($id)
     {
-        $model = SupportGroupBot::findOne($id);
+        $bot = SupportGroupBot::findOne($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['bots', 'id' => $model->support_group_id]);
+        if (Yii::$app->request->isAjax && $bot->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            return ActiveForm::validate($bot);
+        } else {
+            if ($bot->load(Yii::$app->request->post())) {
+                if ($bot->setWebhook()) {
+
+                    //delete bot if already exists
+                    $botexists = SupportGroupBot::find()->where(['token' => $bot->token])->andWhere(['!=', 'id', $bot->id])->one();
+                    if ($botexists) {
+                        $botexists->delete();
+                    }
+                    $bot->save();
+                    return $this->redirect(['bots', 'id' => $bot->support_group_id]);
+                }
+            }
         }
 
-        return $this->redirect(['bots', 'id' => $model->support_group_id]);
+        return $this->redirect(['bots', 'id' => $bot->support_group_id]);
     }
 
     /**
@@ -299,7 +342,7 @@ class SupportGroupsController extends Controller
     public function actionTextUpdate($id)
     {
         $model = SupportGroupCommandText::findOne($id);
-        if(is_null($model)){
+        if (is_null($model)) {
             $model = new SupportGroupCommandText();
         }
 

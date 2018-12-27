@@ -50,8 +50,24 @@ class SupportGroupMember extends \yii\db\ActiveRecord
             [['support_group_id', 'user_id'], 'integer'],
             [['support_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroup::className(), 'targetAttribute' => ['support_group_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'validateMaxCount'],
             [['user_id'], 'unique', 'targetAttribute' => ['user_id', 'support_group_id']],
         ];
+    }
+
+     /**
+     * Validates the max allowed bot count reached.
+     *
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validateMaxCount($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            if (Yii::$app->user->identity->supportGroupMemberCount >= Yii::$app->user->identity->maxSupportGroupMember) {
+                $this->addError($attribute, 'You are not allowed to add more members.');
+            }
+        }
     }
 
     /**

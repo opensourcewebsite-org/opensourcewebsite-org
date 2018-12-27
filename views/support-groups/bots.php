@@ -19,6 +19,21 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="col-md-12">
+    <?php $this->beginBlock('content-header-data'); ?>
+        <div class="row mb-2">
+            <div class="col-sm-4">
+                <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col">
+                <div class="alert alert-info" role="alert">
+                    <b>Support Group Bots:</b> <?= Yii::$app->user->identity->botsCount ?>/<?= Yii::$app->user->identity->maxBots ?>. 
+                    (<?= $settingQty ?> per 1 User Rating)
+                </div>
+            </div>
+        </div>
+    <?php $this->endBlock(); ?>
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>

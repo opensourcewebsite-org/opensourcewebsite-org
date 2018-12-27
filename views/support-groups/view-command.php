@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </div>
                                 <div class="modal-body text-left">
                                     <?= $form->field($model, 'command')->textInput(['maxlength' => true]) ?>
-                                    <?= $form->field($model, 'is_default')->checkbox() ?>
+                                    <?= $form->field($model, 'is_default')->checkbox(['value' => 1, 'checked' => $model->is_default]) ?>
                                 </div>
                                 <div class="card-footer text-left">
                                     <button type="submit" class="btn btn-success">Save</button>
@@ -73,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <a class="btn btn-light" id="bottonModal<?= $lang->id ?>" href="#" title="Edit" data-toggle="modal"
                                                    data-target="#exampleModalLong<?= $lang->id ?>"><i class="fas fa-edit"></i></a>
                                             </div>
-                                            <?php $form = ActiveForm::begin(['action' => 'text-update?id=' . 2]) ?>
+                                            <?php $form = ActiveForm::begin(['action' => 'text-update?id=' . $lang->id, 'enableAjaxValidation' => true]) ?>
                                             <div class="modal fade" id="exampleModalLong<?= $lang->id ?>" tabindex="-1" role="dialog"
                                                  aria-labelledby="exampleModalLongTitle" style="display: none;" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
