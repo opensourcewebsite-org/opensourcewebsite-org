@@ -3,6 +3,10 @@ namespace app\components;
 
 use yii\helpers\Console;
 
+/**
+ * Class CustomConsole
+ * @package app\components
+ */
 class CustomConsole extends Console
 {
     /**
