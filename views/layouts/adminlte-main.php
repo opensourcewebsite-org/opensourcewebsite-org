@@ -220,6 +220,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 </a>
                             </li>
                         </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['cron-job/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['cron-job']) ?>" class="nav-link <?= in_array($currentUrl, ['cron-job/index']) ? 'active' : '' ?>">
+                                    <i class="nav-icon far fa-list-alt"></i>
+                                    <p><?= Yii::t('menu', 'Cron Job Log');?></p>
+                                </a>
+                            </li>
+                        </ul>
                     </nav><!-- /.sidebar-menu -->
                 </div><!-- /.sidebar -->
             </aside><!-- /.main-sidebar -->

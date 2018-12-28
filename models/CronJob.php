@@ -4,8 +4,7 @@ namespace app\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\helpers\FileHelper;
-use yii\web\ServerErrorHttpException;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "cron_job".
@@ -16,27 +15,9 @@ use yii\web\ServerErrorHttpException;
  * @property int $status
  * @property int $created_at
  * @property int $updated_at
- *
- * @property array $_cronJobsFiles
- * @property array $_cronJobsDb
  */
 class CronJob extends ActiveRecord
 {
-    const EXCLUDE = 'Cron';
-
-    private $_cronJobsFiles = [];
-    private $_cronJobsDb = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function init()
-    {
-        parent::init();
-        $this->checkFolder();
-        $this->checkDatabase();
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -53,7 +34,7 @@ class CronJob extends ActiveRecord
         return [
             [['name', 'status'], 'required'],
             [['status', 'created_at', 'updated_at', 'created_at', 'updated_at'], 'integer'],
-            [['name'], 'string', 'max' => 127],
+            [['name'], 'string'],
             [['name'], 'unique'],
         ];
     }
@@ -83,69 +64,34 @@ class CronJob extends ActiveRecord
     }
 
     /**
-     * Checking folder and collecting jobs data from files
+     * @param CronJob[] $factory
+     * @param int|null $id
      *
-     * @return void
+     * @return string
      */
-    protected function checkFolder()
+    public static function renderMenu(array $factory, $id = null)
     {
-        $folder = FileHelper::findFiles('commands', [
-            'recursive' => false,
-            'only'      => ['*.php']
-        ]);
+        $active = $id;
+        $html = Html::a(
+            'All',
+            ['index'],
+            [
+                'class' => 'btn btn-outline-primary mr-2' . ((is_null($active)) ? ' active' : ''),
+                'title' => 'All',
+            ]
+        );
 
-        if (count($folder) > 0) {
-            foreach ($folder as $file) {
-                $start = mb_strpos($file, '/') + 1;
-                $this->_cronJobsFiles[] = mb_substr($file, $start, -14);
-            }
-        }
-    }
-
-    /**
-     * collecting data from db
-     *
-     * @return void
-     */
-    protected function checkDatabase()
-    {
-        $this->_cronJobsDb = $this->find()->select('name')->column();
-    }
-
-    /**
-     * @return bool
-     * @throws ServerErrorHttpException
-     */
-    public function add()
-    {
-        foreach ($this->_cronJobsFiles as $name) {
-            if (static::EXCLUDE == $name) {
-                continue;
-            }
-
-            if (!$this->findOne(['name' => $name])) {
-                $model = clone $this;
-                $model->setAttributes([
-                    'name'   => $name,
-                    'status' => 1
-                ]);
-
-                if ($model->validate() && !$model->save()) {
-                    throw new ServerErrorHttpException(implode(', ', $model->getErrors()));
-                }
-            }
+        foreach ($factory as $job) {
+            $html .= Html::a(
+                $job->name,
+                ['view', 'id' => $job->id],
+                [
+                    'class' => 'btn btn-outline-primary mr-2' . (($active == $job->id) ? ' active' : ''),
+                    'title' => $job->name,
+                ]
+            );
         }
 
-        return true;
-    }
-
-    /**
-     * @return int number of rows deleted
-     */
-    public function clear()
-    {
-        $toDrop = array_diff($this->_cronJobsDb, $this->_cronJobsFiles);
-
-        return $this->deleteAll(['IN', 'name', $toDrop]);
+        return $html;
     }
 }
