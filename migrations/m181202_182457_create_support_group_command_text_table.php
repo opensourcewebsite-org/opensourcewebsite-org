@@ -15,7 +15,7 @@ class m181202_182457_create_support_group_command_text_table extends Migration
         $this->createTable('support_group_command_text', [
             'id' => $this->primaryKey()->unsigned(),
             'support_group_command_id' => $this->integer()->unsigned()->notNull(),
-            'language_code' => $this->string(255)->notNull(),
+            'language_code' => $this->string()->notNull(),
             'text' => $this->text()->notNull(),
         ]);
 
