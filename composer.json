@@ -24,7 +24,7 @@
         "yiisoft/yii2": "~2.0.14",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
-        "npm-asset/font-awesome" : "^5.2",
+        "npm-asset/font-awesome" : "5.2",
         "almasaeed2010/adminlte": "^3.0",
         "cebe/yii2-gravatar": "^1.1",
         "vlucas/phpdotenv": "^2.5",

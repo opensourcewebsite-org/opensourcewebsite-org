@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8223279f6d5f19175c1130e37785dc21",
+    "content-hash": "89a0327285d354b55dc80fa449083fca",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -461,16 +461,16 @@
         },
         {
             "name": "npm-asset/font-awesome",
-            "version": "5.6.3",
+            "version": "5.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:FortAwesome/Font-Awesome.git",
-                "reference": "34dff97269eb4d4142218af6a9dbc44024524ba2"
+                "reference": "03bcd4dc0831f0651a3b5a7cd41153e8129fccf3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/34dff97269eb4d4142218af6a9dbc44024524ba2",
-                "reference": "34dff97269eb4d4142218af6a9dbc44024524ba2",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/03bcd4dc0831f0651a3b5a7cd41153e8129fccf3",
+                "reference": "03bcd4dc0831f0651a3b5a7cd41153e8129fccf3",
                 "shasum": null
             },
             "type": "npm-asset"
