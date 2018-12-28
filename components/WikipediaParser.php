@@ -10,7 +10,7 @@ use yii\web\ServerErrorHttpException;
 use yii\httpclient\Client;
 
 /**
- * Class WikiParser
+ * Class WikipediaParser
  * @package app\components
  *
  * @property int $user_id
@@ -21,7 +21,7 @@ use yii\httpclient\Client;
  * @property array $userPagesId
  * @property string $_continue
  */
-class WikiParser extends BaseObject
+class WikipediaParser extends BaseObject
 {
 
     public $user_id;

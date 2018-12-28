@@ -4,7 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
-use app\components\WikiParser;
+use app\components\WikipediaParser;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 
@@ -87,7 +87,7 @@ class UserWikiToken extends ActiveRecord
         parent::afterValidate();
 
         if (!$this->hasErrors()) {
-            $parser = new WikiParser([
+            $parser = new WikipediaParser([
                 'token' => $this,
                 'user_id' => Yii::$app->user->id,
                 'language_id' => $this->language->id,
