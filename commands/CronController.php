@@ -2,6 +2,7 @@
 namespace app\commands;
 
 use app\models\CronJob;
+use app\models\CronJobConsole;
 use yii\console\Controller;
 use app\components\CustomConsole;
 use Yii;
@@ -26,7 +27,7 @@ class CronController extends Controller
      */
     public function beforeAction($action)
     {
-        $this->cronJobs = new CronJob();
+        $this->cronJobs = new CronJobConsole();
         $this->cronJobs->add();
         $this->cronJobs->clear();
 
