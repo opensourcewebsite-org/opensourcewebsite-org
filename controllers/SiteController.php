@@ -98,6 +98,7 @@ class SiteController extends Controller
         return $this->render('privacy-policy');
     }
 
+
     /**
      * Logs in a user.
      *
@@ -359,6 +360,10 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {
+        if (in_array($action->id, ['hook'])) {
+            $this->enableCsrfValidation = false;
+        }
+
         if (!parent::beforeAction($action)) {
             return false;
         }
