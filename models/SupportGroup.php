@@ -65,7 +65,7 @@ class SupportGroup extends \yii\db\ActiveRecord
     public function validateMaxCount($attribute, $params)
     {
         if (!$this->hasErrors()) {
-            if (Yii::$app->user->identity->supportGroupCount >= Yii::$app->user->identity->maxSupportGroup) {
+            if ($this->isNewRecord && Yii::$app->user->identity->supportGroupCount >= Yii::$app->user->identity->maxSupportGroup) {
                 $this->addError($attribute, 'You are not allowed to add more support groups.');
             }
         }
@@ -126,6 +126,7 @@ class SupportGroup extends \yii\db\ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($insert) {
                 $this->user_id = Yii::$app->user->id;
+                $this->updated_by = Yii::$app->user->id;
             } else {
                 $this->updated_by = Yii::$app->user->id;
             }
