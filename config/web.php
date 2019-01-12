@@ -30,6 +30,7 @@ $config = [
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
                     'css' => ['plugins/bootstrap/css/bootstrap.css'],
+                    'js' => ['plugins/popper/umd/popper.min.js'],
                     'sourcePath' => '@vendor/almasaeed2010/adminlte',
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
@@ -132,6 +133,7 @@ $config = [
                 'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
                 'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
                 'invite/<id>' => 'site/invite',
+                'webhook/telegram/<token>' => 'webhook/telegram',
                 'website-settings' => 'setting/index',
 //              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
@@ -148,7 +150,7 @@ $config = [
     'params' => $params,
     'as ConfirmEmail' => [
         'class' => '\app\behaviors\ConfirmEmailBehavior',
-    ]
+    ],
 ];
 
 if (YII_ENV_DEV) {

@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="row mb-2">
                         <div class="col">
                             <div class="alert alert-info" role="alert">
-                                <b>Issues:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxIssuesNumber ?>. 
+                                <b>Issues:</b> <?= Yii::$app->user->identity->issuesCount ?>/<?= Yii::$app->user->identity->maxIssuesNumber ?>. 
                                 (<?= $maxIssueValue ?> per 1 User Rating)
                             </div>
                         </div>
