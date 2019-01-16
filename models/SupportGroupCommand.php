@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "support_group_command".
@@ -14,12 +15,15 @@ use yii\behaviors\TimestampBehavior;
  * @property int $is_default
  * @property int $updated_at
  * @property int $updated_by
+ * @property SupportGroupCommandText[] $reIndexTexts
  *
  * @property SupportGroup $supportGroup
  * @property SupportGroupCommandText[] $supportGroupCommandTexts
  */
 class SupportGroupCommand extends \yii\db\ActiveRecord
 {
+    public $reIndexTexts;
+
     /**
      * {@inheritdoc}
      */
@@ -35,7 +39,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class'              => TimestampBehavior::className(),
                 'createdAtAttribute' => false,
             ],
         ];
@@ -51,7 +55,9 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
             [['support_group_id', 'is_default'], 'integer'],
             [['command'], 'unique', 'targetAttribute' => ['support_group_id', 'command']],
             [['command'], 'string', 'max' => 255],
-            [['support_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroup::className(), 'targetAttribute' => ['support_group_id' => 'id']],
+            [['support_group_id'], 'exist', 'skipOnError'     => true, 'targetClass' => SupportGroup::className(),
+                                            'targetAttribute' => ['support_group_id' => 'id'],
+            ],
         ];
     }
 
@@ -61,12 +67,12 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id'               => 'ID',
             'support_group_id' => 'Support Group ID',
-            'command' => 'Command',
-            'is_default' => 'Is Default',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
+            'command'          => 'Command',
+            'is_default'       => 'Is Default',
+            'updated_at'       => 'Updated At',
+            'updated_by'       => 'Updated By',
         ];
     }
 
@@ -76,6 +82,14 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     public function getSupportGroup()
     {
         return $this->hasOne(SupportGroup::className(), ['id' => 'support_group_id']);
+    }
+
+    /**
+     * @return void
+     */
+    public function setLanguagesIndexes()
+    {
+        $this->reIndexTexts = ArrayHelper::index($this->supportGroupCommandTexts, 'language_code');
     }
 
     /**
@@ -94,28 +108,33 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
         return $this->hasMany(SupportGroupCommandText::className(), ['support_group_command_id' => 'id']);
     }
 
-
-    public function getLanguage()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLanguages()
     {
-        return SupportGroupLanguage::findAll(['support_group_id' => $this->support_group_id]);
+        return $this->hasMany(SupportGroupLanguage::className(), ['support_group_id' => 'support_group_id']);
     }
 
     /**
-     * @param $text
      * @return array
      */
-    public function getNavItems($text)
+    public function getNavItems()
     {
         $navItems = [];
 
-        foreach ($this->getLanguage() as $lang) {
+        foreach ($this->languages as $lang) {
             $navItems[] = [
-                'label' => $lang->languageCode->name_ascii,
-                'url' => '#tab_' . $lang->id,
+                'label'       => $lang->languageCode->name_ascii,
+                'url'         => '#tab_' . $lang->id,
                 'linkOptions' => [
                     'data-toggle' => 'tab',
-                    'onclick' => !isset($text[$lang->language_code]) ? 'document.getElementById(\'bottonModal' . $lang->id . '\').click();' : ''
-                ]
+                    'onclick'     => !ArrayHelper::keyExists($lang->language_code, $this->reIndexTexts)
+                        ?
+                        '$(\'#modalLanguage' . $lang->id . '\').modal();'
+                        :
+                        '',
+                ],
             ];
         }
 
@@ -124,6 +143,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
 
     /**
      * @param bool $insert
+     *
      * @return bool
      */
     public function beforeSave($insert)
@@ -133,6 +153,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
 
             return true;
         }
+
         return false;
     }
 }
