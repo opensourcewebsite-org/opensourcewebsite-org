@@ -2,13 +2,13 @@
 
 namespace app\controllers;
 
-use TelegramBot\Api\BotApi;
+use app\models\BotHandler;
 use app\models\SupportGroupCommand;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 /**
  * Class WebhookController
+ *
  * @package app\controllers
  */
 class WebhookController extends Controller
@@ -20,11 +20,13 @@ class WebhookController extends Controller
     public function beforeAction($action)
     {
         $this->enableCsrfValidation = false;
+
         return parent::beforeAction($action);
     }
 
     /**
      * @param string $token the bot token
+     *
      * @return mixed
      */
     public function actionTelegram($token = '')
@@ -33,51 +35,47 @@ class WebhookController extends Controller
         if ($postdata) {
             $postdata = json_decode($postdata, true);
 
-            $chatID = $postdata["message"]["chat"]["id"];
-            $command = $postdata["message"]["text"];
-            $language = $postdata["message"]["from"]["language_code"];
-            $is_bot = $postdata["message"]["from"]["is_bot"];
+            $botApi = new BotHandler($token);
+            $botApi->chat_id = $postdata['message']['chat']['id'];
+            $botApi->language = $postdata['message']['from']['language_code'];
+            $botApi->is_bot = $postdata['message']['from']['is_bot'];
+            $botApi->command = $postdata['message']['text'];
 
-            if ($is_bot) {
+            # For Test in my country;
+            //$botApi->setProxy('156.67.84.75:60145');
+
+            if ($botApi->is_bot) {
                 return false;
             }
 
             $commands = SupportGroupCommand::find()
                 ->where(['token' => $token])
-                ->andWhere(['command' => $command])
+                ->andWhere(['command' => $botApi->command])
                 ->joinWith([
                     'supportGroupBot',
-                    'supportGroupCommandTexts'
+                    'supportGroupCommandTexts',
                 ])
                 ->one();
 
-            $botApi = new BotApi($token);
-
-            // For Test in my country;
-            // $botApi->setProxy('156.67.84.75:60145');
-
             if (!$commands) {
-                $botApi->sendMessage($chatID, 'command not existed');
+                $default = SupportGroupCommand::find()
+                    ->where(['token' => $token])
+                    ->andWhere(['is_default' => 1])
+                    ->joinWith([
+                        'supportGroupBot',
+                        'supportGroupCommandTexts',
+                    ])
+                    ->one();
 
-                return false;
+                    # there is no default commands, nothing is returned
+                    if (!$default) {
+                        return false;
+                    }
+
+                return $botApi->generateResponse($default->supportGroupCommandTexts);
             }
 
-            $getLanguage = ArrayHelper::map($commands->supportGroupCommandTexts, 'language_code', 'text');
-
-            if (ArrayHelper::keyExists($language, $getLanguage)) {
-                $output = $getLanguage[$language];
-
-                $botApi->sendMessage($chatID, $output);
-
-                return true;
-            }
-
-            // get first command from array;
-            $output = $commands->supportGroupCommandTexts[0];
-
-            $botApi->sendMessage($chatID, $output);
-
-            return true;
+            return $botApi->generateResponse($commands->supportGroupCommandTexts);
         }
 
         return false;
