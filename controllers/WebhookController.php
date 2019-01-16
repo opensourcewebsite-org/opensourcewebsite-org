@@ -43,7 +43,7 @@ class WebhookController extends Controller
             $botApi->command = $postdata['message']['text'];
 
             # For Test in my country;
-            $botApi->setProxy('156.67.84.75:60145');
+            // $botApi->setProxy('156.67.84.75:60145');
 
             if ($botApi->is_bot) {
                 return false;
