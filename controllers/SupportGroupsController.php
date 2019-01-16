@@ -178,6 +178,8 @@ class SupportGroupsController extends Controller
     public function actionCommands($id)
     {
         $model = $this->findModel($id);
+
+        //TODO bug for member users
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
