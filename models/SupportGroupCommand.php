@@ -81,6 +81,14 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getSupportGroupBot()
+    {
+        return $this->hasOne(SupportGroupBot::className(), ['support_group_id' => 'support_group_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSupportGroupCommandTexts()
     {
         return $this->hasMany(SupportGroupCommandText::className(), ['support_group_command_id' => 'id']);
