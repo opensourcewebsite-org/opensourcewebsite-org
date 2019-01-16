@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Language;
+use app\models\search\SupportGroupSearch;
 use app\models\Setting;
 use app\models\SupportGroup;
 use app\models\SupportGroupBot;
@@ -55,15 +56,14 @@ class SupportGroupsController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => SupportGroup::find(),
-        ]);
+        $dataProvider = new SupportGroupSearch();
+        $dataProvider->user_id = Yii::$app->user->id;
 
         $setting = Setting::findOne(['key' => 'support_group_quantity_value_per_one_rating']);
         $settingQty = $setting->value;
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider->search(),
             'settingQty' => $settingQty,
         ]);
     }
@@ -136,7 +136,6 @@ class SupportGroupsController extends Controller
         } else {
             if ($bot->load(Yii::$app->request->post())) {
                 if ($bot->setWebhook()) {
-
                     //delete bot if already exists
                     $botexists = SupportGroupBot::find()->where(['token' => $bot->token])->one();
                     if ($botexists) {
@@ -318,7 +317,6 @@ class SupportGroupsController extends Controller
         } else {
             if ($bot->load(Yii::$app->request->post())) {
                 if ($bot->setWebhook()) {
-
                     //delete bot if already exists
                     $botexists = SupportGroupBot::find()->where(['token' => $bot->token])->andWhere(['!=', 'id', $bot->id])->one();
                     if ($botexists) {
