@@ -5,7 +5,6 @@ namespace app\models;
 use TelegramBot\Api\BotApi;
 use Yii;
 use yii\helpers\ArrayHelper;
-use app\models\SupportGroupCommandText;
 
 /**
  * Class BotHandler
