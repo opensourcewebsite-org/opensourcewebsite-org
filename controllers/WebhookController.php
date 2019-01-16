@@ -31,6 +31,7 @@ class WebhookController extends Controller
      */
     public function actionTelegram($token = '')
     {
+
         $postdata = file_get_contents('php://input');
         if ($postdata) {
             $postdata = json_decode($postdata, true);
@@ -41,8 +42,13 @@ class WebhookController extends Controller
             $botApi->is_bot = $postdata['message']['from']['is_bot'];
             $botApi->command = $postdata['message']['text'];
 
+            # check if it's command
+            if (substr($botApi->command, 0, 1) != '/') {
+                return false;
+            }
+
             # For Test in my country;
-            //$botApi->setProxy('156.67.84.75:60145');
+            // $botApi->setProxy('156.67.84.75:60145');
 
             if ($botApi->is_bot) {
                 return false;
@@ -67,10 +73,10 @@ class WebhookController extends Controller
                     ])
                     ->one();
 
-                    # there is no default commands, nothing is returned
-                    if (!$default) {
-                        return false;
-                    }
+                # there is no default commands, nothing is returned
+                if (!$default) {
+                    return false;
+                }
 
                 return $botApi->generateResponse($default->supportGroupCommandTexts);
             }
@@ -78,8 +84,8 @@ class WebhookController extends Controller
             return $botApi->generateResponse($commands->supportGroupCommandTexts);
         }
 
-        return false;
+        // \Yii::warning($postdata);
 
-        //\Yii::warning($postdata);
+        return false;
     }
 }
