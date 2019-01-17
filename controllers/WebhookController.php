@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\BotHandler;
 use app\models\SupportGroupBot;
+use app\models\SupportGroupLanguage;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -51,7 +52,7 @@ class WebhookController extends Controller
             $botApi->user_name = $postdata['message']['from']['username'];
 
             # For Test in my country;
-            // $botApi->setProxy('156.67.84.75:60145');
+             $botApi->setProxy('156.67.84.75:60145');
 
             if ($botApi->is_bot) {
                 return false;
@@ -74,6 +75,16 @@ class WebhookController extends Controller
         // \Yii::warning($postdata);
 
         return false;
+    }
+
+    public function actionTest()
+    {
+        $baseLanguage = SupportGroupLanguage::find()
+            ->select('language_code')
+            ->andWhere(['support_group_id' => 8])
+            ->column();
+
+        var_dump($baseLanguage); exit;
     }
 
     /**

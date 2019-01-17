@@ -24,17 +24,56 @@ use yii\helpers\ArrayHelper;
  */
 class BotHandler extends BotApi
 {
-
+    /**
+     * Token bot telegram
+     */
     public $token;
+
+    /**
+     * Chat room ID
+     */
     public $chat_id;
+
+    /**
+     * Language from telegram chat
+     */
     public $language;
+
+    /**
+     * Is this user bot?
+     */
     public $is_bot;
+
+    /**
+     * Passed command
+     */
     public $command;
+
+    /**
+     * Inside support group ID
+     */
     public $support_group_id;
+
+    /**
+     * Inside support bot ID
+     */
     public $bot_id;
+
+    /**
+     * Telegram user ID
+     */
     public $user_id;
+
+    /**
+     * Telegram user name
+     */
     public $user_name;
+
+    /**
+     * Logic param for language detection
+     */
     protected $_language_code;
+
 
     /**
      * @param string $language
@@ -43,11 +82,16 @@ class BotHandler extends BotApi
      */
     protected function setLanguageCode($language)
     {
-        #default language
-        $this->_language_code = 'en';
+        $baseLanguage = SupportGroupLanguage::find()
+            ->select('language_code')
+            ->andWhere(['support_group_id' => $this->support_group_id])
+            ->column();
 
-        if ($baseLanguage = Language::findOne(['code' => $language])) {
-            $this->_language_code = $baseLanguage->code;
+        #default language (first language of group)
+        $this->_language_code = $baseLanguage[0];
+
+        if (in_array($language, $baseLanguage)) {
+            $this->_language_code = $language;
         }
 
         $userLanguage = SupportGroupBotClient::find()
@@ -55,7 +99,7 @@ class BotHandler extends BotApi
             ->with('supportGroupClient')
             ->one();
 
-        # if user used command /lang we override _language_code
+        # if user used command /lang used before, we override _language_code
         if ($userLanguage) {
             $this->_language_code = $userLanguage->supportGroupClient->language_code;
         }
