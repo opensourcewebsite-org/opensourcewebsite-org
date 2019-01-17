@@ -41,8 +41,8 @@ class SupportGroupsController extends Controller
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
+            'verbs'  => [
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -52,6 +52,7 @@ class SupportGroupsController extends Controller
 
     /**
      * Lists all SupportGroup models.
+     *
      * @return mixed
      */
     public function actionIndex()
@@ -70,7 +71,9 @@ class SupportGroupsController extends Controller
 
     /**
      * Displays a single SupportGroupMember model.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -93,25 +96,29 @@ class SupportGroupsController extends Controller
 
         if (Yii::$app->request->isAjax && $member->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+
             return ActiveForm::validate($member);
         } else {
             if ($member->load(Yii::$app->request->post())) {
                 $member->save();
+
                 return $this->redirect(['members', 'id' => $id]);
             }
         }
 
         return $this->render('members', [
-            'model' => $model,
-            'member' => $member,
+            'model'        => $model,
+            'member'       => $member,
             'dataProvider' => $dataProvider,
-            'settingQty' => $settingQty,
+            'settingQty'   => $settingQty,
         ]);
     }
 
     /**
      * Displays a single SupportGroupBot model.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -143,6 +150,7 @@ class SupportGroupsController extends Controller
                     }
 
                     $bot->save();
+
                     return $this->redirect(['bots', 'id' => $id]);
                 }
             }
@@ -150,23 +158,28 @@ class SupportGroupsController extends Controller
 
         $setting = Setting::findOne(['key' => 'support_group_bot_quantity_value_per_one_rating']);
         $settingQty = $setting->value;
+
         return $this->render('bots', [
-            'model' => $model,
-            'bot' => $bot,
+            'model'        => $model,
+            'bot'          => $bot,
             'dataProvider' => $dataProvider,
-            'settingQty' => $settingQty,
+            'settingQty'   => $settingQty,
         ]);
     }
 
     /**
      * Displays a single SupportGroupCommand model.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionCommands($id)
     {
         $model = $this->findModel($id);
+
+        //TODO bug for member users
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
@@ -191,20 +204,33 @@ class SupportGroupsController extends Controller
         }
 
         return $this->render('commands', [
-            'model' => $model,
-            'command' => $command,
+            'model'        => $model,
+            'command'      => $command,
             'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
      * Displays a single SupportGroupCommand model.
+     *
      * @param integer $id
+     *
      * @return mixed
+     *
+     * @throws NotFoundHttpException
      */
     public function actionViewCommand($id)
     {
-        $model = SupportGroupCommand::findOne($id);
+        $model = SupportGroupCommand::find()
+            ->where(['id' => $id])
+            ->with(['supportGroupCommandTexts', 'languages'])
+            ->one();
+
+        if (!$model) {
+            throw new NotFoundHttpException;
+        }
+
+        $model->setLanguagesIndexes();
 
         if ($model->load(Yii::$app->request->post())) {
             if ($model->is_default) {
@@ -215,13 +241,13 @@ class SupportGroupsController extends Controller
 
         return $this->render('view-command', [
             'model' => $model,
-            'text' => SupportGroupCommandText::find()->where(['support_group_command_id' => intval($id)])->indexBy('language_code')->all(),
         ]);
     }
 
     /**
      * Creates a new SupportGroup model.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     *
      * @return mixed
      */
     public function actionCreate()
@@ -251,8 +277,8 @@ class SupportGroupsController extends Controller
         }
 
         return $this->render('create', [
-            'model' => $model,
-            'langs' => $langs,
+            'model'     => $model,
+            'langs'     => $langs,
             'languages' => Language::find()->all(),
         ]);
     }
@@ -260,7 +286,9 @@ class SupportGroupsController extends Controller
     /**
      * Updates an existing SupportGroup model.
      * If update is successful, the browser will be redirected to the 'view' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -294,8 +322,8 @@ class SupportGroupsController extends Controller
         }
 
         return $this->render('update', [
-            'model' => $model,
-            'langs' => $langs,
+            'model'     => $model,
+            'langs'     => $langs,
             'languages' => $languages,
         ]);
     }
@@ -303,7 +331,9 @@ class SupportGroupsController extends Controller
     /**
      * Updates an existing SupportGroupBot model.
      * If update is successful, the browser will be redirected to the 'view' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      */
     public function actionBotsUpdate($id)
@@ -318,11 +348,14 @@ class SupportGroupsController extends Controller
             if ($bot->load(Yii::$app->request->post())) {
                 if ($bot->setWebhook()) {
                     //delete bot if already exists
-                    $botexists = SupportGroupBot::find()->where(['token' => $bot->token])->andWhere(['!=', 'id', $bot->id])->one();
+                    $botexists = SupportGroupBot::find()->where(['token' => $bot->token])->andWhere([
+                        '!=', 'id', $bot->id,
+                    ])->one();
                     if ($botexists) {
                         $botexists->delete();
                     }
                     $bot->save();
+
                     return $this->redirect(['bots', 'id' => $bot->support_group_id]);
                 }
             }
@@ -334,16 +367,19 @@ class SupportGroupsController extends Controller
     /**
      * Updates an existing SupportGroupCommandText model.
      * If update is successful, the browser will be redirected to the 'view' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      */
-    public function actionTextUpdate($id)
+    public function actionTextUpdate($id = null)
     {
         $model = SupportGroupCommandText::findOne($id);
         if (is_null($model)) {
             $model = new SupportGroupCommandText();
         }
 
+        // TODO for security reasons better to check owner and member
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view-command', 'id' => $model->support_group_command_id]);
         }
@@ -354,7 +390,9 @@ class SupportGroupsController extends Controller
     /**
      * Deletes an existing SupportGroup model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      * @throws \Throwable
@@ -370,7 +408,9 @@ class SupportGroupsController extends Controller
     /**
      * Deletes an existing SupportGroupBot model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -386,7 +426,9 @@ class SupportGroupsController extends Controller
     /**
      * Deletes an existing SupportGroupMember model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -402,7 +444,9 @@ class SupportGroupsController extends Controller
     /**
      * Deletes an existing SupportGroupCommand model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
+     *
      * @param integer $id
+     *
      * @return mixed
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -418,7 +462,9 @@ class SupportGroupsController extends Controller
     /**
      * Finds the SupportGroup model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
+     *
      * @param integer $id
+     *
      * @return SupportGroup the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
