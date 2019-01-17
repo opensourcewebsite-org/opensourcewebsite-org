@@ -74,7 +74,7 @@ class SupportGroupClient extends \yii\db\ActiveRecord
      */
     public function getSupportGroupClientBots()
     {
-        return $this->hasMany(SupportGroupClientBot::className(), ['support_group_client_id' => 'id']);
+        return $this->hasMany(SupportGroupBotClient::className(), ['support_group_client_id' => 'id']);
     }
 
     /**
