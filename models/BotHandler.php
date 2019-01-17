@@ -120,12 +120,14 @@ class BotHandler extends BotApi
      */
     public function executeLangCommand()
     {
-        if ($this->command == '/lang') {
-            $availableLanguages = SupportGroupLanguage::find()
-                ->select('language_code')
-                ->where(['support_group_id' => $this->support_group_id])
-                ->column();
+        $availableLanguages = SupportGroupLanguage::find()
+            ->select('language_code')
+            ->where(['support_group_id' => $this->support_group_id])
+            ->column();
 
+        $lang = substr($this->command, 1, mb_strlen($this->command));
+
+        if ($this->command == '/lang') {
             $output = "Choose your language.\n";
 
             $output .= '/' . implode("\n/", $availableLanguages);
@@ -133,18 +135,20 @@ class BotHandler extends BotApi
             $this->sendMessage($this->chat_id, $output);
 
             return true;
-        } elseif ($lang = Language::findOne(['code' => substr($this->command, 1, mb_strlen($this->command))])) {
-            // here we save $lang
+        } elseif (in_array($lang, $availableLanguages)) {
             $userLanguage = SupportGroupBotClient::find()
                 ->where(['provider_bot_user_id' => $this->user_id])
                 ->with('supportGroupClient')
                 ->one();
 
             $supportGroup = $userLanguage->supportGroupClient;
-            $supportGroup->language_code = $lang->code;
+            $supportGroup->language_code = $lang;
             $supportGroup->save();
 
             return $this->generateDefaultResponse();
+        } elseif (Language::findOne(['code' => $lang])) {
+            # If not existed language. Nothing happen and no code run
+            exit;
         }
 
         return false;
