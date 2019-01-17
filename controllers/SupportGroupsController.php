@@ -177,12 +177,7 @@ class SupportGroupsController extends Controller
      */
     public function actionCommands($id)
     {
-        $model = $this->findModel($id);
-
-        //TODO bug for member users
-        if ($model->user_id != Yii::$app->user->identity->id) {
-            $this->redirect('index');
-        }
+        $model = $this->accessFindModel($id);
 
         $dataProvider = new ActiveDataProvider([
             'query' => SupportGroupCommand::find()->where(['support_group_id' => intval($id)]),
@@ -475,5 +470,35 @@ class SupportGroupsController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Finds the SupportGroup model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     *
+     * @param integer $id
+     *
+     * @return SupportGroup the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function accessFindModel($id)
+    {
+        $supportGroup = SupportGroup::tableName();
+        $model = SupportGroup::find()
+            ->where([
+                $supportGroup . '.user_id' => Yii::$app->user->id,
+            ])
+            ->orWhere([
+                '{{%support_group_member}}.user_id' => Yii::$app->user->id,
+            ])
+            ->andWhere([$supportGroup . '.id' => intval($id)])
+            ->joinWith('supportGroupMembers')
+            ->one();
+
+        if (!$model) {
+            throw new NotFoundHttpException;
+        }
+
+        return $model;
     }
 }
