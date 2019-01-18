@@ -17,7 +17,6 @@ use yii\helpers\Url;
     </div>
 <?php $form = ActiveForm::begin([
     'action' => Url::to(['text-update', 'id' => (!$textModel) ? null : $textModel->id]),
-    'enableAjaxValidation' => true,
 ]) ?>
     <div class="modal fade" id="modalLanguage<?= $lang->id ?>" tabindex="-1" role="dialog"
          aria-labelledby="modalLanguageTitle" style="display: none;" aria-hidden="true">
