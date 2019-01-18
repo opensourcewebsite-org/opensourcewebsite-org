@@ -15,6 +15,9 @@ use yii\helpers\ArrayHelper;
  * @property array $_request
  * @property int $support_group_id
  * @property int $bot_id
+ * @property int $_longitude
+ * @property int $_latitude
+ * @property int $_location_at
  * @property string $_language_code
  */
 class BotHandler extends BotApi
@@ -39,6 +42,21 @@ class BotHandler extends BotApi
      */
     protected $_language_code;
 
+    /**
+     * users geo data Longitude
+     */
+    protected $_longitude = null;
+
+    /**
+     * users geo data Latitude
+     */
+    protected $_latitude = null;
+
+    /**
+     * Time when geo location set
+     */
+    protected $_location_at = null;
+
 
     /**
      * Constructor
@@ -52,8 +70,6 @@ class BotHandler extends BotApi
         parent::__construct($token, $trackerToken = null);
 
         $this->_request = $request;
-
-
     }
 
     /**
@@ -109,6 +125,18 @@ class BotHandler extends BotApi
             if (!$is_disabled) {
                 $this->_language_code = null;
             }
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function setGeoData()
+    {
+        if ($location = $this->getMessage()->getLocation()) {
+            $this->_longitude = $location->getLongitude();
+            $this->_latitude = $location->getLatitude();
+            $this->_location_at = time();
         }
     }
 
@@ -246,6 +274,8 @@ class BotHandler extends BotApi
      */
     public function saveClientInfo()
     {
+
+        $this->setGeoData();
         $this->setLanguageCode($this->getMessage()->getFrom()->getLanguageCode());
 
         if ($existedClient = SupportGroupBotClient::find()
@@ -253,12 +283,27 @@ class BotHandler extends BotApi
             ->with('supportGroupClient')
             ->one()
         ) {
+            $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
             # owner/member disabled his language
             if ($this->_language_code == null) {
                 $existedClientLanguage = $existedClient->supportGroupClient;
                 $existedClientLanguage->language_code = $this->_language_code;
-                $existedClientLanguage->save();
+                if (!$existedClientLanguage->save()) {
+                    $transaction->rollBack();
+                }
             }
+
+            # update geo position
+            if (!is_null($this->_longitude) && !is_null($this->_latitude) &&
+                ($existedClient->location_lon != $this->_longitude ||
+                    $existedClient->location_lat != $this->_latitude)
+            ) {
+                if (!$existedClient->save()) {
+                    $transaction->rollBack();
+                }
+            }
+
+            $transaction->commit();
 
             return false;
         }
@@ -278,6 +323,9 @@ class BotHandler extends BotApi
                 'support_group_client_id'   => $client->id,
                 'provider_bot_user_id'      => $this->getMessage()->getFrom()->getId(),
                 'provider_bot_user_name'    => $this->getMessage()->getFrom()->getUsername(),
+                'location_lon'              => $this->_longitude,
+                'location_lat'              => $this->_latitude,
+                'location_at'               => $this->_location_at,
                 'provider_bot_user_blocked' => 0,
             ]);
 
