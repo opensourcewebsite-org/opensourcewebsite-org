@@ -48,7 +48,7 @@ class WebhookController extends Controller
             $botApi->support_group_id = $botInfo->support_group_id;
             $botApi->bot_id = $botInfo->id;
             $botApi->user_id = $postdata['message']['from']['id'];
-            $botApi->user_name = $postdata['message']['from']['username'] ?? '';
+            $botApi->user_name = $postdata['message']['from']['username'] ?? null;
 
             # For Test in my country;
             // $botApi->setProxy('156.67.84.75:60145');
