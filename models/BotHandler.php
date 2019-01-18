@@ -82,16 +82,22 @@ class BotHandler extends BotApi
      */
     protected function setLanguageCode($language)
     {
-        $baseLanguage = SupportGroupLanguage::find()
-            ->select('language_code')
-            ->andWhere(['support_group_id' => $this->support_group_id])
-            ->column();
+        $this->_language_code = null;
 
-        #default language (first language of group)
-        $this->_language_code = $baseLanguage[0];
+        $baseLanguage = SupportGroupLanguage::findOne([
+            'language_code'    => $language,
+            'support_group_id' => $this->support_group_id,
+        ]);
 
-        if (in_array($language, $baseLanguage)) {
-            $this->_language_code = $language;
+        # case: when group has only 1 language
+        $all_languages = SupportGroupLanguage::findAll(['support_group_id' => $this->support_group_id]);
+        if (count($all_languages) == 1) {
+            $this->_language_code = $all_languages[0]->language_code;
+        }
+
+        #default language
+        if ($baseLanguage) {
+            $this->_language_code = $baseLanguage->language_code;
         }
 
         $userLanguage = SupportGroupBotClient::find()
@@ -102,6 +108,18 @@ class BotHandler extends BotApi
         # if user used command /lang used before, we override _language_code
         if ($userLanguage) {
             $this->_language_code = $userLanguage->supportGroupClient->language_code;
+        }
+
+        # if owner/member deleted user's language
+        if ($userLanguage && !is_null($userLanguage->supportGroupClient->language_code)) {
+            $is_disabled = SupportGroupLanguage::findOne([
+                'language_code'    => $userLanguage->supportGroupClient->language_code,
+                'support_group_id' => $this->support_group_id,
+            ]);
+
+            if (!$is_disabled) {
+                $this->_language_code = null;
+            }
         }
     }
 
@@ -132,7 +150,7 @@ class BotHandler extends BotApi
         # get first command from array;
         $output = $commands[0];
 
-        $this->sendMessage($this->chat_id, $output);
+        $this->sendMessage($this->chat_id, $output->text);
 
         return true;
     }
@@ -171,15 +189,8 @@ class BotHandler extends BotApi
 
         $lang = substr($this->command, 1, mb_strlen($this->command));
 
-        if ($this->command == '/lang') {
-            $output = "Choose your language.\n";
-
-            $output .= '/' . implode("\n/", $availableLanguages);
-
-            $this->sendMessage($this->chat_id, $output);
-
-            return true;
-        } elseif (in_array($lang, $availableLanguages)) {
+        # first we check if user tried to set up a language
+        if (in_array($lang, $availableLanguages)) {
             $userLanguage = SupportGroupBotClient::find()
                 ->where(['provider_bot_user_id' => $this->user_id])
                 ->with('supportGroupClient')
@@ -190,6 +201,14 @@ class BotHandler extends BotApi
             $supportGroup->save();
 
             return $this->generateDefaultResponse();
+        } elseif ($this->command == '/lang' || $this->_language_code == null) {
+            $output = "Choose your language.\n";
+
+            $output .= '/' . implode("\n/", $availableLanguages);
+
+            $this->sendMessage($this->chat_id, $output);
+
+            return true;
         } elseif (Language::findOne(['code' => $lang])) {
             # If not existed language. Nothing happen and no code run
             exit;
@@ -227,7 +246,18 @@ class BotHandler extends BotApi
     {
         $this->setLanguageCode($this->language);
 
-        if (SupportGroupBotClient::findOne(['provider_bot_user_id' => $this->user_id])) {
+        if ($existedClient = SupportGroupBotClient::find()
+            ->where(['provider_bot_user_id' => $this->user_id])
+            ->with('supportGroupClient')
+            ->one()
+        ) {
+            # owner/member disabled his language
+            if ($this->_language_code == null) {
+                $existedClientLanguage = $existedClient->supportGroupClient;
+                $existedClientLanguage->language_code = $this->_language_code;
+                $existedClientLanguage->save();
+            }
+
             return false;
         }
 
