@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 $textModel = $model->reIndexTexts[$lang->language_code];
                                             }
                                             ?>
-                                            <?= ($textModel) ? $textModel->text : '' ?>
+                                            <?= ($textModel) ? nl2br($textModel->text) : '' ?>
 
                                             <?= $this->render('commands/_edit_text', [
                                                     'lang'      => $lang,
