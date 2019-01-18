@@ -212,7 +212,7 @@ class BotHandler extends BotApi
             $availableLanguagesName = ArrayHelper::map(
                 $availableLanguagesName,
                 'language_code',
-                'languageCode.name_ascii'
+                'languageCode.name'
             );
 
             foreach ($availableLanguages as $languageShow) {
