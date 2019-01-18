@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "support_group_command_text".
@@ -11,6 +12,8 @@ use Yii;
  * @property int $support_group_command_id
  * @property string $language_code
  * @property string $text
+ * @property int $updated_by
+ * @property int $updated_at
  *
  * @property Language $languageCode
  * @property SupportGroupCommand $supportGroupCommand
@@ -23,6 +26,19 @@ class SupportGroupCommandText extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'support_group_command_text';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => false,
+            ],
+        ];
     }
 
     /**
@@ -67,5 +83,19 @@ class SupportGroupCommandText extends \yii\db\ActiveRecord
     public function getSupportGroupCommand()
     {
         return $this->hasOne(SupportGroupCommand::className(), ['id' => 'support_group_command_id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+                $this->updated_by = Yii::$app->user->id;
+
+            return true;
+        }
+        return false;
     }
 }

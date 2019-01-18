@@ -65,7 +65,7 @@ class SupportGroupsController extends Controller
 
         return $this->render('index', [
             'dataProvider' => $dataProvider->search(),
-            'settingQty' => $settingQty,
+            'settingQty'   => $settingQty,
         ]);
     }
 
@@ -366,17 +366,35 @@ class SupportGroupsController extends Controller
      * @param integer $id
      *
      * @return mixed
+     *
+     * @throws NotFoundHttpException
      */
     public function actionTextUpdate($id = null)
     {
-        $model = SupportGroupCommandText::findOne($id);
+        $model = SupportGroupCommandText::find()
+            ->with([
+                'supportGroupCommand',
+                'supportGroupCommand.supportGroup',
+            ])
+            ->where(['id' => $id])
+            ->one();
+
+        if ($model) {
+            $access = self::accessFindModel($model->supportGroupCommand->supportGroup->id);
+
+            if (!$access) {
+                throw new NotFoundHttpException;
+            }
+        }
+
         if (is_null($model)) {
             $model = new SupportGroupCommandText();
         }
 
-        // TODO for security reasons better to check owner and member
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view-command', 'id' => $model->support_group_command_id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate() && $model->save()) {
+                return $this->redirect(['view-command', 'id' => $model->support_group_command_id]);
+            }
         }
 
         return $this->redirect(['view-command', 'id' => $model->support_group_command_id]);
