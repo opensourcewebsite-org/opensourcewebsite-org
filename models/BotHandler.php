@@ -111,7 +111,8 @@ class BotHandler extends BotApi
             ->one();
 
         # if user used command /lang used before, we override _language_code
-        if ($userLanguage) {
+        if ($userLanguage &&
+            !is_null($userLanguage->supportGroupClient->language_code)) {
             $this->_language_code = $userLanguage->supportGroupClient->language_code;
         }
 
@@ -126,6 +127,7 @@ class BotHandler extends BotApi
                 $this->_language_code = null;
             }
         }
+
     }
 
     /**
