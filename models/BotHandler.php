@@ -3,6 +3,7 @@
 namespace app\models;
 
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Types\Message;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -11,43 +12,16 @@ use yii\helpers\ArrayHelper;
  *
  * @package app\models
  *
- * @property int $chat_id
- * @property int $bot_id
- * @property int $user_id
- * @property int $user_name
+ * @property array $_request
  * @property int $support_group_id
- * @property string $token
- * @property string $language
- * @property string $command
  * @property string $_language_code
- * @property bool is_bot
  */
 class BotHandler extends BotApi
 {
     /**
-     * Token bot telegram
+     * Telegram request
      */
-    public $token;
-
-    /**
-     * Chat room ID
-     */
-    public $chat_id;
-
-    /**
-     * Language from telegram chat
-     */
-    public $language;
-
-    /**
-     * Is this user bot?
-     */
-    public $is_bot;
-
-    /**
-     * Passed command
-     */
-    public $command;
+    protected $_request;
 
     /**
      * Inside support group ID
@@ -60,20 +34,34 @@ class BotHandler extends BotApi
     public $bot_id;
 
     /**
-     * Telegram user ID
-     */
-    public $user_id;
-
-    /**
-     * Telegram user name
-     */
-    public $user_name;
-
-    /**
      * Logic param for language detection
      */
     protected $_language_code;
 
+
+    /**
+     * Constructor
+     *
+     * @param string $token Telegram Bot API token
+     * @param string|null $trackerToken Yandex AppMetrica application api_key
+     * @param array $request
+     */
+    public function __construct($token, $request, $trackerToken = null)
+    {
+        parent::__construct($token, $trackerToken = null);
+
+        $this->_request = $request;
+
+
+    }
+
+    /**
+     * @return \TelegramBot\Api\Types\Message
+     */
+    public function getMessage()
+    {
+        return Message::fromResponse($this->_request['message']);
+    }
 
     /**
      * @param string $language
@@ -101,7 +89,7 @@ class BotHandler extends BotApi
         }
 
         $userLanguage = SupportGroupBotClient::find()
-            ->where(['provider_bot_user_id' => $this->user_id])
+            ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
             ->with('supportGroupClient')
             ->one();
 
@@ -135,14 +123,14 @@ class BotHandler extends BotApi
             return false;
         }
 
-        $this->setLanguageCode($this->language);
+        $this->setLanguageCode($this->getMessage()->getFrom()->getLanguageCode());
 
         $getLanguage = ArrayHelper::map($commands, 'language_code', 'text');
 
         if (ArrayHelper::keyExists($this->_language_code, $getLanguage)) {
             $output = $getLanguage[$this->_language_code];
 
-            $this->sendMessage($this->chat_id, $output);
+            $this->sendMessage($this->getMessage()->getChat()->getId(), $output);
 
             return true;
         }
@@ -150,7 +138,7 @@ class BotHandler extends BotApi
         # get first command from array;
         $output = $commands[0];
 
-        $this->sendMessage($this->chat_id, $output->text);
+        $this->sendMessage($this->getMessage()->getChat()->getId(), $output->text);
 
         return true;
     }
@@ -187,12 +175,12 @@ class BotHandler extends BotApi
             ->where(['support_group_id' => $this->support_group_id])
             ->column();
 
-        $lang = substr($this->command, 1, mb_strlen($this->command));
+        $lang = substr($this->getMessage()->getText(), 1, mb_strlen($this->getMessage()->getText()));
 
         # first we check if user tried to set up a language
         if (in_array($lang, $availableLanguages)) {
             $userLanguage = SupportGroupBotClient::find()
-                ->where(['provider_bot_user_id' => $this->user_id])
+                ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
                 ->with('supportGroupClient')
                 ->one();
 
@@ -201,7 +189,7 @@ class BotHandler extends BotApi
             $supportGroup->save();
 
             return $this->generateDefaultResponse();
-        } elseif ($this->command == '/lang' || $this->_language_code == null) {
+        } elseif ($this->getMessage()->getText() == '/lang' || $this->_language_code == null) {
             $output = "Choose your language.\n";
 
             $availableLanguagesName = SupportGroupLanguage::find()
@@ -219,7 +207,7 @@ class BotHandler extends BotApi
                 $output .= '/' . $languageShow . ' ' . $availableLanguagesName[$languageShow] . "\n";
             }
 
-            $this->sendMessage($this->chat_id, $output);
+            $this->sendMessage($this->getMessage()->getChat()->getId(), $output);
 
             return true;
         } elseif (Language::findOne(['code' => $lang])) {
@@ -237,7 +225,7 @@ class BotHandler extends BotApi
     {
         $commands = SupportGroupCommand::find()
             ->where(['token' => $this->token])
-            ->andWhere(['command' => $this->command])
+            ->andWhere(['command' => $this->getMessage()->getText()])
             ->joinWith([
                 'supportGroupBot',
                 'supportGroupCommandTexts',
@@ -257,10 +245,10 @@ class BotHandler extends BotApi
      */
     public function saveClientInfo()
     {
-        $this->setLanguageCode($this->language);
+        $this->setLanguageCode($this->getMessage()->getFrom()->getLanguageCode());
 
         if ($existedClient = SupportGroupBotClient::find()
-            ->where(['provider_bot_user_id' => $this->user_id])
+            ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
             ->with('supportGroupClient')
             ->one()
         ) {
@@ -287,8 +275,8 @@ class BotHandler extends BotApi
             $botClient->setAttributes([
                 'support_group_bot_id'      => $this->bot_id,
                 'support_group_client_id'   => $client->id,
-                'provider_bot_user_id'      => $this->user_id,
-                'provider_bot_user_name'    => $this->user_name,
+                'provider_bot_user_id'      => $this->getMessage()->getFrom()->getId(),
+                'provider_bot_user_name'    => $this->getMessage()->getFrom()->getUsername(),
                 'provider_bot_user_blocked' => 0,
             ]);
 

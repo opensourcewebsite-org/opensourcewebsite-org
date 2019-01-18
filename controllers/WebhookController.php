@@ -42,30 +42,24 @@ class WebhookController extends Controller
 
                 $botInfo = $this->findModel($token);
 
-                $botApi = new BotHandler($token);
-                $botApi->token = $token;
-                $botApi->chat_id = $postdata['message']['chat']['id'];
-                $botApi->language = $postdata['message']['from']['language_code'];
-                $botApi->is_bot = $postdata['message']['from']['is_bot'];
-                $botApi->command = $postdata['message']['text'];
+                $botApi = new BotHandler($token, $postdata);
+
                 $botApi->support_group_id = $botInfo->support_group_id;
                 $botApi->bot_id = $botInfo->id;
-                $botApi->user_id = $postdata['message']['from']['id'];
-                $botApi->user_name = $postdata['message']['from']['username'] ?? null;
 
                 # For Test in my country;
                 if (isset(Yii::$app->params['telegramProxy'])) {
                     $botApi->setProxy(Yii::$app->params['telegramProxy']);
                 }
 
-                if ($botApi->is_bot) {
+                if ($botApi->getMessage()->getFrom()->isBot()) {
                     return false;
                 }
 
                 $botApi->saveClientInfo();
 
                 # check if it's command
-                if (substr($botApi->command, 0, 1) != '/') {
+                if (substr($botApi->getMessage()->getText(), 0, 1) != '/') {
                     return false;
                 }
 
@@ -81,6 +75,7 @@ class WebhookController extends Controller
             return false;
         } catch (\Exception $ex) {
             \Yii::error($ex->getMessage());
+
             return false;
         }
     }
