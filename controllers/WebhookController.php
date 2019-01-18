@@ -39,6 +39,7 @@ class WebhookController extends Controller
             if ($postdata) {
                 $postdata = json_decode($postdata, true);
 
+                // \Yii::warning($postdata);
 
                 $botInfo = $this->findModel($token);
 
@@ -69,8 +70,6 @@ class WebhookController extends Controller
 
                 return $botApi->executeCommand();
             }
-
-            // \Yii::warning($postdata);
 
             return false;
         } catch (\Exception $ex) {

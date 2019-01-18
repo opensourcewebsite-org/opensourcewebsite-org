@@ -15,8 +15,8 @@ use yii\helpers\ArrayHelper;
  * @property array $_request
  * @property int $support_group_id
  * @property int $bot_id
- * @property int $_longitude
- * @property int $_latitude
+ * @property float $_longitude
+ * @property float $_latitude
  * @property int $_location_at
  * @property string $_language_code
  */
@@ -77,7 +77,13 @@ class BotHandler extends BotApi
      */
     public function getMessage()
     {
-        return Message::fromResponse($this->_request['message']);
+        if (isset($this->_request['message'])) {
+            $request = $this->_request['message'];
+        } else {
+            $request = $this->_request['edited_message'];
+        }
+
+        return Message::fromResponse($request);
     }
 
     /**
@@ -138,7 +144,7 @@ class BotHandler extends BotApi
         if ($location = $this->getMessage()->getLocation()) {
             $this->_longitude = $location->getLongitude();
             $this->_latitude = $location->getLatitude();
-            $this->_location_at = time();
+            $this->_location_at = intval($this->getMessage()->getDate());
         }
     }
 
@@ -285,6 +291,7 @@ class BotHandler extends BotApi
             ->with('supportGroupClient')
             ->one()
         ) {
+//            $location = clone $existedClient;
             $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
             # owner/member disabled his language
             if ($this->_language_code == null) {
@@ -295,11 +302,15 @@ class BotHandler extends BotApi
                 }
             }
 
-            # update geo position
-            if (!is_null($this->_longitude) && !is_null($this->_latitude) &&
-                ($existedClient->location_lon != $this->_longitude ||
-                    $existedClient->location_lat != $this->_latitude)
-            ) {
+            # update geo position (Live location)
+            if ($this->_longitude && $this->_latitude) {
+
+                $existedClient->location_lon = $this->_longitude;
+                $existedClient->location_lat = $this->_latitude;
+                $existedClient->location_at = $this->_location_at;
+
+                $existedClient->validate();
+
                 if (!$existedClient->save()) {
                     $transaction->rollBack();
                 }
@@ -332,10 +343,14 @@ class BotHandler extends BotApi
             ]);
 
             if ($botClient->save()) {
-                return $transaction->commit();
+                $transaction->commit();
+
+                return true;
             }
         }
 
-        return $transaction->rollBack();
+        $transaction->rollBack();
+
+        return false;
     }
 }
