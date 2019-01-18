@@ -15,6 +15,8 @@ use yii\helpers\ArrayHelper;
  * @property array $_request
  * @property int $support_group_id
  * @property int $bot_id
+ * @property int $bot_client_id
+ * @property int $type
  * @property float $_longitude
  * @property float $_latitude
  * @property int $_location_at
@@ -36,6 +38,20 @@ class BotHandler extends BotApi
      * Inside support bot ID
      */
     public $bot_id;
+
+    /**
+     * Inside support client ID
+     */
+    public $bot_client_id;
+
+    /**
+     * Message type
+     *
+     * available types:
+     *  - 1 : Ordinary text
+     *  - 2 : Command
+     */
+    public $type;
 
     /**
      * Logic param for language detection
@@ -212,7 +228,8 @@ class BotHandler extends BotApi
             ->where(['support_group_id' => $this->support_group_id])
             ->column();
 
-        $lang = substr($this->getMessage()->getText(), 1, mb_strlen($this->getMessage()->getText()));
+        $lang = substr(trim($this->getMessage()->getText()), 1,
+            mb_strlen(trim($this->getMessage()->getText())));
 
         # first we check if user tried to set up a language
         if (in_array($lang, $availableLanguages)) {
@@ -226,7 +243,7 @@ class BotHandler extends BotApi
             $supportGroup->save();
 
             return $this->generateDefaultResponse();
-        } elseif ($this->getMessage()->getText() == '/lang' || $this->_language_code == null) {
+        } elseif (trim($this->getMessage()->getText()) == '/lang' || $this->_language_code == null) {
             $output = "Choose your language.\n";
 
             $availableLanguagesName = SupportGroupLanguage::find()
@@ -262,7 +279,7 @@ class BotHandler extends BotApi
     {
         $commands = SupportGroupCommand::find()
             ->where(['token' => $this->token])
-            ->andWhere(['command' => $this->getMessage()->getText()])
+            ->andWhere(['command' => trim($this->getMessage()->getText())])
             ->joinWith([
                 'supportGroupBot',
                 'supportGroupCommandTexts',
@@ -277,7 +294,7 @@ class BotHandler extends BotApi
     }
 
     /**
-     * @return bool
+     * @return bool|int
      * @throws \yii\db\Exception
      */
     public function saveClientInfo()
@@ -299,6 +316,8 @@ class BotHandler extends BotApi
                 $existedClientLanguage->language_code = $this->_language_code;
                 if (!$existedClientLanguage->save()) {
                     $transaction->rollBack();
+
+                    return false;
                 }
             }
 
@@ -313,12 +332,14 @@ class BotHandler extends BotApi
 
                 if (!$existedClient->save()) {
                     $transaction->rollBack();
+
+                    return false;
                 }
             }
 
             $transaction->commit();
 
-            return false;
+            return $existedClient->id;
         }
 
         $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
@@ -345,7 +366,7 @@ class BotHandler extends BotApi
             if ($botClient->save()) {
                 $transaction->commit();
 
-                return true;
+                return $botClient->id;
             }
         }
 
@@ -353,4 +374,51 @@ class BotHandler extends BotApi
 
         return false;
     }
+
+    /**
+     * @return void|bool
+     */
+    public function saveOutsideMessage()
+    {
+
+        $text = $this->cleanEmoji(trim($this->getMessage()->getText()));
+
+        if (mb_strlen($text) == 0) {
+            return false;
+        }
+
+        $model = new SupportGroupOutsideMessage();
+        $model->setAttributes([
+            'support_group_bot_id' => $this->bot_id,
+            'support_group_bot_client_id' => $this->bot_client_id,
+            'type' => $this->type,
+            'provider_message_id' => $this->getMessage()->getMessageId(),
+            'message' => $text,
+        ]);
+
+        $model->save();
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    protected function cleanEmoji($text)
+    {
+        // Match Emoticons
+        $regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
+        $cleanText = preg_replace($regexEmoticons, '', $text);
+
+        // Match Miscellaneous Symbols and Pictographs
+        $regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
+        $cleanText = preg_replace($regexSymbols, '', $cleanText);
+
+        // Match Transport And Map Symbols
+        $regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
+        $cleanText = preg_replace($regexTransport, '', $cleanText);
+
+        return $cleanText;
+    }
+
+
 }

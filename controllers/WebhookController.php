@@ -57,12 +57,18 @@ class WebhookController extends Controller
                     return false;
                 }
 
-                $botApi->saveClientInfo();
+                $botApi->bot_client_id = $botApi->saveClientInfo();
 
                 # check if it's command
-                if (substr($botApi->getMessage()->getText(), 0, 1) != '/') {
+                if (substr(trim($botApi->getMessage()->getText()), 0, 1) != '/') {
+                    $botApi->type = 1;
+                    $botApi->saveOutsideMessage();
+
                     return false;
                 }
+
+                $botApi->type = 2;
+                $botApi->saveOutsideMessage();
 
                 if ($botApi->executeLangCommand()) {
                     return true;
