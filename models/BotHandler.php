@@ -204,7 +204,20 @@ class BotHandler extends BotApi
         } elseif ($this->command == '/lang' || $this->_language_code == null) {
             $output = "Choose your language.\n";
 
-            $output .= '/' . implode("\n/", $availableLanguages);
+            $availableLanguagesName = SupportGroupLanguage::find()
+                ->where(['support_group_id' => $this->support_group_id])
+                ->with('languageCode')
+                ->all();
+
+            $availableLanguagesName = ArrayHelper::map(
+                $availableLanguagesName,
+                'language_code',
+                'languageCode.name_ascii'
+            );
+
+            foreach ($availableLanguages as $languageShow) {
+                $output .= '/' . $languageShow . ' ' . $availableLanguagesName[$languageShow] . "\n";
+            }
 
             $this->sendMessage($this->chat_id, $output);
 
