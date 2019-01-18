@@ -14,6 +14,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property array $_request
  * @property int $support_group_id
+ * @property int $bot_id
  * @property string $_language_code
  */
 class BotHandler extends BotApi
