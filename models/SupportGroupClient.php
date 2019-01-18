@@ -33,7 +33,7 @@ class SupportGroupClient extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['support_group_id', 'language_code'], 'required'],
+            [['support_group_id'], 'required'],
             [['support_group_id'], 'integer'],
             [['language_code'], 'string', 'max' => 255],
             [['language_code'], 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']],
