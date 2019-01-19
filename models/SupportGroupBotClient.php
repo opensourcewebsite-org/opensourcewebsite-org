@@ -13,6 +13,9 @@ use Yii;
  * @property int $provider_bot_user_id
  * @property string $provider_bot_user_name
  * @property int $provider_bot_user_blocked
+ * @property float $location_lat
+ * @property float $location_lon
+ * @property int $location_at
  *
  * @property SupportGroupBot $supportGroupBot
  * @property SupportGroupClient $supportGroupClient
@@ -34,7 +37,9 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
     {
         return [
             [['support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id', 'provider_bot_user_blocked'], 'required'],
-            [['support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id', 'provider_bot_user_blocked'], 'integer'],
+            [['support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id',
+                'provider_bot_user_blocked', 'location_at'], 'integer'],
+            [['location_lat', 'location_lon'], 'number'],
             [['provider_bot_user_name'], 'string', 'max' => 255],
             [['support_group_bot_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupBot::className(), 'targetAttribute' => ['support_group_bot_id' => 'id']],
             [['support_group_client_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupClient::className(), 'targetAttribute' => ['support_group_client_id' => 'id']],
@@ -53,6 +58,9 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
             'provider_bot_user_id' => 'Provider Bot User ID',
             'provider_bot_user_name' => 'Provider Bot User Name',
             'provider_bot_user_blocked' => 'Provider Bot User Blocked',
+            'location_lat' => 'Location Lat',
+            'location_lon' => 'Location Lon',
+            'location_at' => 'Location At',
         ];
     }
 

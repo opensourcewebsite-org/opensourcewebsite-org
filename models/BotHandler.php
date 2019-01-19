@@ -3,6 +3,7 @@
 namespace app\models;
 
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Types\Message;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -11,43 +12,22 @@ use yii\helpers\ArrayHelper;
  *
  * @package app\models
  *
- * @property int $chat_id
- * @property int $bot_id
- * @property int $user_id
- * @property int $user_name
+ * @property array $_request
  * @property int $support_group_id
- * @property string $token
- * @property string $language
- * @property string $command
+ * @property int $bot_id
+ * @property int $bot_client_id
+ * @property int $type
+ * @property float $_longitude
+ * @property float $_latitude
+ * @property int $_location_at
  * @property string $_language_code
- * @property bool is_bot
  */
 class BotHandler extends BotApi
 {
     /**
-     * Token bot telegram
+     * Telegram request
      */
-    public $token;
-
-    /**
-     * Chat room ID
-     */
-    public $chat_id;
-
-    /**
-     * Language from telegram chat
-     */
-    public $language;
-
-    /**
-     * Is this user bot?
-     */
-    public $is_bot;
-
-    /**
-     * Passed command
-     */
-    public $command;
+    protected $_request;
 
     /**
      * Inside support group ID
@@ -60,20 +40,67 @@ class BotHandler extends BotApi
     public $bot_id;
 
     /**
-     * Telegram user ID
+     * Inside support client ID
      */
-    public $user_id;
+    public $bot_client_id;
 
     /**
-     * Telegram user name
+     * Message type
+     *
+     * available types:
+     *  - 1 : Ordinary text
+     *  - 2 : Command
      */
-    public $user_name;
+    public $type;
 
     /**
      * Logic param for language detection
      */
     protected $_language_code;
 
+    /**
+     * users geo data Longitude
+     */
+    protected $_longitude = null;
+
+    /**
+     * users geo data Latitude
+     */
+    protected $_latitude = null;
+
+    /**
+     * Time when geo location set
+     */
+    protected $_location_at = null;
+
+
+    /**
+     * Constructor
+     *
+     * @param string $token Telegram Bot API token
+     * @param string|null $trackerToken Yandex AppMetrica application api_key
+     * @param array $request
+     */
+    public function __construct($token, $request, $trackerToken = null)
+    {
+        parent::__construct($token, $trackerToken = null);
+
+        $this->_request = $request;
+    }
+
+    /**
+     * @return \TelegramBot\Api\Types\Message
+     */
+    public function getMessage()
+    {
+        if (isset($this->_request['message'])) {
+            $request = $this->_request['message'];
+        } else {
+            $request = $this->_request['edited_message'];
+        }
+
+        return Message::fromResponse($request);
+    }
 
     /**
      * @param string $language
@@ -85,7 +112,7 @@ class BotHandler extends BotApi
         $this->_language_code = null;
 
         $baseLanguage = SupportGroupLanguage::findOne([
-            'language_code'    => $language,
+            'language_code' => $language,
             'support_group_id' => $this->support_group_id,
         ]);
 
@@ -101,25 +128,39 @@ class BotHandler extends BotApi
         }
 
         $userLanguage = SupportGroupBotClient::find()
-            ->where(['provider_bot_user_id' => $this->user_id])
+            ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
             ->with('supportGroupClient')
             ->one();
 
         # if user used command /lang used before, we override _language_code
-        if ($userLanguage) {
+        if ($userLanguage &&
+            !is_null($userLanguage->supportGroupClient->language_code)
+        ) {
             $this->_language_code = $userLanguage->supportGroupClient->language_code;
         }
 
         # if owner/member deleted user's language
         if ($userLanguage && !is_null($userLanguage->supportGroupClient->language_code)) {
             $is_disabled = SupportGroupLanguage::findOne([
-                'language_code'    => $userLanguage->supportGroupClient->language_code,
+                'language_code' => $userLanguage->supportGroupClient->language_code,
                 'support_group_id' => $this->support_group_id,
             ]);
 
             if (!$is_disabled) {
                 $this->_language_code = null;
             }
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function setGeoData()
+    {
+        if ($location = $this->getMessage()->getLocation()) {
+            $this->_longitude = $location->getLongitude();
+            $this->_latitude = $location->getLatitude();
+            $this->_location_at = intval($this->getMessage()->getDate());
         }
     }
 
@@ -135,14 +176,14 @@ class BotHandler extends BotApi
             return false;
         }
 
-        $this->setLanguageCode($this->language);
+        $this->setLanguageCode($this->getMessage()->getFrom()->getLanguageCode());
 
         $getLanguage = ArrayHelper::map($commands, 'language_code', 'text');
 
         if (ArrayHelper::keyExists($this->_language_code, $getLanguage)) {
             $output = $getLanguage[$this->_language_code];
 
-            $this->sendMessage($this->chat_id, $output);
+            $this->sendMessage($this->getMessage()->getChat()->getId(), $output);
 
             return true;
         }
@@ -150,7 +191,7 @@ class BotHandler extends BotApi
         # get first command from array;
         $output = $commands[0];
 
-        $this->sendMessage($this->chat_id, $output->text);
+        $this->sendMessage($this->getMessage()->getChat()->getId(), $output->text);
 
         return true;
     }
@@ -187,12 +228,16 @@ class BotHandler extends BotApi
             ->where(['support_group_id' => $this->support_group_id])
             ->column();
 
-        $lang = substr($this->command, 1, mb_strlen($this->command));
+        $lang = substr(
+            trim($this->getMessage()->getText()),
+            1,
+            mb_strlen(trim($this->getMessage()->getText()))
+        );
 
         # first we check if user tried to set up a language
         if (in_array($lang, $availableLanguages)) {
             $userLanguage = SupportGroupBotClient::find()
-                ->where(['provider_bot_user_id' => $this->user_id])
+                ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
                 ->with('supportGroupClient')
                 ->one();
 
@@ -201,7 +246,7 @@ class BotHandler extends BotApi
             $supportGroup->save();
 
             return $this->generateDefaultResponse();
-        } elseif ($this->command == '/lang' || $this->_language_code == null) {
+        } elseif (trim($this->getMessage()->getText()) == '/lang' || $this->_language_code == null) {
             $output = "Choose your language.\n";
 
             $availableLanguagesName = SupportGroupLanguage::find()
@@ -219,7 +264,7 @@ class BotHandler extends BotApi
                 $output .= '/' . $languageShow . ' ' . $availableLanguagesName[$languageShow] . "\n";
             }
 
-            $this->sendMessage($this->chat_id, $output);
+            $this->sendMessage($this->getMessage()->getChat()->getId(), $output);
 
             return true;
         } elseif (Language::findOne(['code' => $lang])) {
@@ -237,7 +282,7 @@ class BotHandler extends BotApi
     {
         $commands = SupportGroupCommand::find()
             ->where(['token' => $this->token])
-            ->andWhere(['command' => $this->command])
+            ->andWhere(['command' => trim($this->getMessage()->getText())])
             ->joinWith([
                 'supportGroupBot',
                 'supportGroupCommandTexts',
@@ -252,26 +297,51 @@ class BotHandler extends BotApi
     }
 
     /**
-     * @return bool
+     * @return bool|int
      * @throws \yii\db\Exception
      */
     public function saveClientInfo()
     {
-        $this->setLanguageCode($this->language);
+
+        $this->setGeoData();
+        $this->setLanguageCode($this->getMessage()->getFrom()->getLanguageCode());
 
         if ($existedClient = SupportGroupBotClient::find()
-            ->where(['provider_bot_user_id' => $this->user_id])
+            ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
             ->with('supportGroupClient')
             ->one()
         ) {
+//            $location = clone $existedClient;
+            $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
             # owner/member disabled his language
             if ($this->_language_code == null) {
                 $existedClientLanguage = $existedClient->supportGroupClient;
                 $existedClientLanguage->language_code = $this->_language_code;
-                $existedClientLanguage->save();
+                if (!$existedClientLanguage->save()) {
+                    $transaction->rollBack();
+
+                    return false;
+                }
             }
 
-            return false;
+            # update geo position (Live location)
+            if ($this->_longitude && $this->_latitude) {
+                $existedClient->location_lon = $this->_longitude;
+                $existedClient->location_lat = $this->_latitude;
+                $existedClient->location_at = $this->_location_at;
+
+                $existedClient->validate();
+
+                if (!$existedClient->save()) {
+                    $transaction->rollBack();
+
+                    return false;
+                }
+            }
+
+            $transaction->commit();
+
+            return $existedClient->id;
         }
 
         $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
@@ -279,24 +349,76 @@ class BotHandler extends BotApi
         $client = new SupportGroupClient();
         $client->setAttributes([
             'support_group_id' => $this->support_group_id,
-            'language_code'    => $this->_language_code,
+            'language_code' => $this->_language_code,
         ]);
 
         if ($client->save()) {
             $botClient = new SupportGroupBotClient();
             $botClient->setAttributes([
-                'support_group_bot_id'      => $this->bot_id,
-                'support_group_client_id'   => $client->id,
-                'provider_bot_user_id'      => $this->user_id,
-                'provider_bot_user_name'    => $this->user_name,
+                'support_group_bot_id' => $this->bot_id,
+                'support_group_client_id' => $client->id,
+                'provider_bot_user_id' => $this->getMessage()->getFrom()->getId(),
+                'provider_bot_user_name' => $this->getMessage()->getFrom()->getUsername(),
+                'location_lon' => $this->_longitude,
+                'location_lat' => $this->_latitude,
+                'location_at' => $this->_location_at,
                 'provider_bot_user_blocked' => 0,
             ]);
 
             if ($botClient->save()) {
-                return $transaction->commit();
+                $transaction->commit();
+
+                return $botClient->id;
             }
         }
 
-        return $transaction->rollBack();
+        $transaction->rollBack();
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function saveOutsideMessage()
+    {
+
+        $text = $this->cleanEmoji(trim($this->getMessage()->getText()));
+
+        if (mb_strlen($text) == 0) {
+            return false;
+        }
+
+        $model = new SupportGroupOutsideMessage();
+        $model->setAttributes([
+            'support_group_bot_id' => $this->bot_id,
+            'support_group_bot_client_id' => $this->bot_client_id,
+            'type' => $this->type,
+            'provider_message_id' => $this->getMessage()->getMessageId(),
+            'message' => $text,
+        ]);
+
+        return $model->save();
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    protected function cleanEmoji($text)
+    {
+        // Match Emoticons
+        $regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
+        $cleanText = preg_replace($regexEmoticons, '', $text);
+
+        // Match Miscellaneous Symbols and Pictographs
+        $regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
+        $cleanText = preg_replace($regexSymbols, '', $cleanText);
+
+        // Match Transport And Map Symbols
+        $regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
+        $cleanText = preg_replace($regexTransport, '', $cleanText);
+
+        return $cleanText;
     }
 }

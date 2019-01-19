@@ -79,6 +79,9 @@ class SupportGroupBot extends \yii\db\ActiveRecord
     public function validateToken($attribute, $params, $validator)
     {
         $botApi = new \TelegramBot\Api\BotApi($this->$attribute);
+        if (isset(Yii::$app->params['telegramProxy'])) {
+            $botApi->setProxy(Yii::$app->params['telegramProxy']);
+        }
 
         try {
             $botUser = $botApi->getMe();
@@ -93,6 +96,9 @@ class SupportGroupBot extends \yii\db\ActiveRecord
     public function setWebhook()
     {
         $botApi = new \TelegramBot\Api\BotApi($this->token);
+        if (isset(Yii::$app->params['telegramProxy'])) {
+            $botApi->setProxy(Yii::$app->params['telegramProxy']);
+        }
 
         $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);

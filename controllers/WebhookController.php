@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\SupportGroupBotClient;
 use Yii;
 use app\models\BotHandler;
 use app\models\SupportGroupBot;
@@ -39,35 +40,40 @@ class WebhookController extends Controller
             if ($postdata) {
                 $postdata = json_decode($postdata, true);
 
+                // \Yii::warning($postdata);
 
                 $botInfo = $this->findModel($token);
 
-                $botApi = new BotHandler($token);
-                $botApi->token = $token;
-                $botApi->chat_id = $postdata['message']['chat']['id'];
-                $botApi->language = $postdata['message']['from']['language_code'];
-                $botApi->is_bot = $postdata['message']['from']['is_bot'];
-                $botApi->command = $postdata['message']['text'];
+                $botApi = new BotHandler($token, $postdata);
+
                 $botApi->support_group_id = $botInfo->support_group_id;
                 $botApi->bot_id = $botInfo->id;
-                $botApi->user_id = $postdata['message']['from']['id'];
-                $botApi->user_name = $postdata['message']['from']['username'] ?? null;
 
                 # For Test in my country;
                 if (isset(Yii::$app->params['telegramProxy'])) {
                     $botApi->setProxy(Yii::$app->params['telegramProxy']);
                 }
 
-                if ($botApi->is_bot) {
+                if ($this->isBlocked($botApi->getMessage()->getFrom()->getId())) {
                     return false;
                 }
 
-                $botApi->saveClientInfo();
+                if ($botApi->getMessage()->getFrom()->isBot()) {
+                    return false;
+                }
+
+                $botApi->bot_client_id = $botApi->saveClientInfo();
 
                 # check if it's command
-                if (substr($botApi->command, 0, 1) != '/') {
+                if (substr(trim($botApi->getMessage()->getText()), 0, 1) != '/') {
+                    $botApi->type = 1;
+                    $botApi->saveOutsideMessage();
+
                     return false;
                 }
+
+                $botApi->type = 2;
+                $botApi->saveOutsideMessage();
 
                 if ($botApi->executeLangCommand()) {
                     return true;
@@ -76,11 +82,10 @@ class WebhookController extends Controller
                 return $botApi->executeCommand();
             }
 
-            // \Yii::warning($postdata);
-
             return false;
         } catch (\Exception $ex) {
             \Yii::error($ex->getMessage());
+
             return false;
         }
     }
@@ -101,5 +106,17 @@ class WebhookController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * @param $user_id
+     * @return bool|int
+     */
+    protected function isBlocked($user_id)
+    {
+        if (($model = SupportGroupBotClient::findOne(['provider_bot_user_id' => $user_id])) !== null) {
+            return $model->provider_bot_user_blocked;
+        }
+        return false;
     }
 }
