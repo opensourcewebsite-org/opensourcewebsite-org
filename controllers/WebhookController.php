@@ -54,7 +54,7 @@ class WebhookController extends Controller
                     $botApi->setProxy(Yii::$app->params['telegramProxy']);
                 }
 
-                if($this->isBocked($botApi->getMessage()->getFrom()->getId())){
+                if ($this->isBocked($botApi->getMessage()->getFrom()->getId())) {
                     return false;
                 }
 
