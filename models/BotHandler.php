@@ -311,8 +311,18 @@ class BotHandler extends BotApi
             ->with('supportGroupClient')
             ->one()
         ) {
-//            $location = clone $existedClient;
             $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
+
+            $existedClient->provider_bot_user_name = $this->getMessage()->getFrom()->getUsername();
+            $existedClient->provider_bot_user_first_name = $this->getMessage()->getFrom()->getFirstName();
+            $existedClient->provider_bot_user_last_name = $this->getMessage()->getFrom()->getLastName();
+
+            if (!$existedClient->save()) {
+                $transaction->rollBack();
+
+                return false;
+            }
+
             # owner/member disabled his language
             if ($this->_language_code == null) {
                 $existedClientLanguage = $existedClient->supportGroupClient;
@@ -361,6 +371,8 @@ class BotHandler extends BotApi
                 'provider_bot_user_name' => $this->getMessage()->getFrom()->getUsername(),
                 'location_lon' => $this->_longitude,
                 'location_lat' => $this->_latitude,
+                'provider_bot_user_first_name' => $this->getMessage()->getFrom()->getFirstName(),
+                'provider_bot_user_last_name' => $this->getMessage()->getFrom()->getLastName(),
                 'location_at' => $this->_location_at,
                 'provider_bot_user_blocked' => 0,
             ]);
