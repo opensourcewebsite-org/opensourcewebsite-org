@@ -54,7 +54,7 @@ class WebhookController extends Controller
                     $botApi->setProxy(Yii::$app->params['telegramProxy']);
                 }
 
-                if ($this->isBocked($botApi->getMessage()->getFrom()->getId())) {
+                if ($this->isBlocked($botApi->getMessage()->getFrom()->getId())) {
                     return false;
                 }
 
@@ -112,7 +112,7 @@ class WebhookController extends Controller
      * @param $user_id
      * @return bool|int
      */
-    protected function isBocked($user_id)
+    protected function isBlocked($user_id)
     {
         if (($model = SupportGroupBotClient::findOne(['provider_bot_user_id' => $user_id])) !== null) {
             return $model->provider_bot_user_blocked;
