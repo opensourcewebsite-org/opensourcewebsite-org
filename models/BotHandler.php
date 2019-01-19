@@ -112,7 +112,7 @@ class BotHandler extends BotApi
         $this->_language_code = null;
 
         $baseLanguage = SupportGroupLanguage::findOne([
-            'language_code'    => $language,
+            'language_code' => $language,
             'support_group_id' => $this->support_group_id,
         ]);
 
@@ -134,14 +134,15 @@ class BotHandler extends BotApi
 
         # if user used command /lang used before, we override _language_code
         if ($userLanguage &&
-            !is_null($userLanguage->supportGroupClient->language_code)) {
+            !is_null($userLanguage->supportGroupClient->language_code)
+        ) {
             $this->_language_code = $userLanguage->supportGroupClient->language_code;
         }
 
         # if owner/member deleted user's language
         if ($userLanguage && !is_null($userLanguage->supportGroupClient->language_code)) {
             $is_disabled = SupportGroupLanguage::findOne([
-                'language_code'    => $userLanguage->supportGroupClient->language_code,
+                'language_code' => $userLanguage->supportGroupClient->language_code,
                 'support_group_id' => $this->support_group_id,
             ]);
 
@@ -149,7 +150,6 @@ class BotHandler extends BotApi
                 $this->_language_code = null;
             }
         }
-
     }
 
     /**
@@ -228,8 +228,11 @@ class BotHandler extends BotApi
             ->where(['support_group_id' => $this->support_group_id])
             ->column();
 
-        $lang = substr(trim($this->getMessage()->getText()), 1,
-            mb_strlen(trim($this->getMessage()->getText())));
+        $lang = substr(
+            trim($this->getMessage()->getText()),
+            1,
+            mb_strlen(trim($this->getMessage()->getText()))
+        );
 
         # first we check if user tried to set up a language
         if (in_array($lang, $availableLanguages)) {
@@ -323,7 +326,6 @@ class BotHandler extends BotApi
 
             # update geo position (Live location)
             if ($this->_longitude && $this->_latitude) {
-
                 $existedClient->location_lon = $this->_longitude;
                 $existedClient->location_lat = $this->_latitude;
                 $existedClient->location_at = $this->_location_at;
@@ -347,19 +349,19 @@ class BotHandler extends BotApi
         $client = new SupportGroupClient();
         $client->setAttributes([
             'support_group_id' => $this->support_group_id,
-            'language_code'    => $this->_language_code,
+            'language_code' => $this->_language_code,
         ]);
 
         if ($client->save()) {
             $botClient = new SupportGroupBotClient();
             $botClient->setAttributes([
-                'support_group_bot_id'      => $this->bot_id,
-                'support_group_client_id'   => $client->id,
-                'provider_bot_user_id'      => $this->getMessage()->getFrom()->getId(),
-                'provider_bot_user_name'    => $this->getMessage()->getFrom()->getUsername(),
-                'location_lon'              => $this->_longitude,
-                'location_lat'              => $this->_latitude,
-                'location_at'               => $this->_location_at,
+                'support_group_bot_id' => $this->bot_id,
+                'support_group_client_id' => $client->id,
+                'provider_bot_user_id' => $this->getMessage()->getFrom()->getId(),
+                'provider_bot_user_name' => $this->getMessage()->getFrom()->getUsername(),
+                'location_lon' => $this->_longitude,
+                'location_lat' => $this->_latitude,
+                'location_at' => $this->_location_at,
                 'provider_bot_user_blocked' => 0,
             ]);
 
@@ -376,7 +378,7 @@ class BotHandler extends BotApi
     }
 
     /**
-     * @return void|bool
+     * @return bool
      */
     public function saveOutsideMessage()
     {
@@ -396,7 +398,7 @@ class BotHandler extends BotApi
             'message' => $text,
         ]);
 
-        $model->save();
+        return $model->save();
     }
 
     /**
@@ -419,6 +421,4 @@ class BotHandler extends BotApi
 
         return $cleanText;
     }
-
-
 }

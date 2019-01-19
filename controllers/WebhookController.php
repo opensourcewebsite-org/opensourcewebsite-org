@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\SupportGroupBotClient;
 use Yii;
 use app\models\BotHandler;
 use app\models\SupportGroupBot;
@@ -53,6 +54,10 @@ class WebhookController extends Controller
                     $botApi->setProxy(Yii::$app->params['telegramProxy']);
                 }
 
+                if($this->isBocked($botApi->getMessage()->getFrom()->getId())){
+                    return false;
+                }
+
                 if ($botApi->getMessage()->getFrom()->isBot()) {
                     return false;
                 }
@@ -101,5 +106,17 @@ class WebhookController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * @param $user_id
+     * @return bool|int
+     */
+    protected function isBocked($user_id)
+    {
+        if (($model = SupportGroupBotClient::findOne(['provider_bot_user_id' => $user_id])) !== null) {
+            return $model->provider_bot_user_blocked;
+        }
+        return false;
     }
 }
