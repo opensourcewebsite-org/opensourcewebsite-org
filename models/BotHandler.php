@@ -313,9 +313,12 @@ class BotHandler extends BotApi
         ) {
             $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
 
-            $existedClient->provider_bot_user_name = $this->getMessage()->getFrom()->getUsername();
-            $existedClient->provider_bot_user_first_name = $this->getMessage()->getFrom()->getFirstName();
-            $existedClient->provider_bot_user_last_name = $this->getMessage()->getFrom()->getLastName();
+            $existedClient->setAttributes([
+                'provider_bot_user_blocked' => 0,
+                'provider_bot_user_name' => $this->getMessage()->getFrom()->getUsername(),
+                'provider_bot_user_first_name' => $this->getMessage()->getFrom()->getFirstName(),
+                'provider_bot_user_last_name' => $this->getMessage()->getFrom()->getLastName()
+            ]);
 
             if (!$existedClient->save()) {
                 $transaction->rollBack();
