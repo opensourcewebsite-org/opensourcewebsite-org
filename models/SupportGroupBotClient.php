@@ -40,7 +40,8 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
             [['support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id',
                 'provider_bot_user_blocked', 'location_at'], 'integer'],
             [['location_lat', 'location_lon'], 'number'],
-            [['provider_bot_user_name'], 'string', 'max' => 255],
+            [['provider_bot_user_name', 'provider_bot_user_first_name',
+                'provider_bot_user_last_name'], 'string', 'max' => 255],
             [['support_group_bot_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupBot::className(), 'targetAttribute' => ['support_group_bot_id' => 'id']],
             [['support_group_client_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupClient::className(), 'targetAttribute' => ['support_group_client_id' => 'id']],
         ];
@@ -58,6 +59,8 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
             'provider_bot_user_id' => 'Provider Bot User ID',
             'provider_bot_user_name' => 'Provider Bot User Name',
             'provider_bot_user_blocked' => 'Provider Bot User Blocked',
+            'provider_bot_user_first_name' => 'Provider Bot User First Name',
+            'provider_bot_user_last_name' => 'Provider Bot User Last Name',
             'location_lat' => 'Location Lat',
             'location_lon' => 'Location Lon',
             'location_at' => 'Location At',

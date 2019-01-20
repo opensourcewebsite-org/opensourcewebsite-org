@@ -54,10 +54,6 @@ class WebhookController extends Controller
                     $botApi->setProxy(Yii::$app->params['telegramProxy']);
                 }
 
-                if ($this->isBlocked($botApi->getMessage()->getFrom()->getId())) {
-                    return false;
-                }
-
                 if ($botApi->getMessage()->getFrom()->isBot()) {
                     return false;
                 }
@@ -106,17 +102,5 @@ class WebhookController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    /**
-     * @param $user_id
-     * @return bool|int
-     */
-    protected function isBlocked($user_id)
-    {
-        if (($model = SupportGroupBotClient::findOne(['provider_bot_user_id' => $user_id])) !== null) {
-            return $model->provider_bot_user_blocked;
-        }
-        return false;
     }
 }
