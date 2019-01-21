@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'content' => function ($model) {
                             if($model->user_id == Yii::$app->user->identity->id || in_array(Yii::$app->user->identity->id, ArrayHelper::getColumn($model->supportGroupMembers, 'user_id'))) {
-                                return Html::a('clients', ['clients', 'id' => $model->id]);
+                                return Html::a('clients', ['clients-languages', 'id' => $model->id]);
                             }
                         }
                     ],

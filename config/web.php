@@ -135,6 +135,9 @@ $config = [
                 'invite/<id>' => 'site/invite',
                 'webhook/telegram/<token>' => 'webhook/telegram',
                 'website-settings' => 'setting/index',
+                '<controller>/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',
+                '<controller>/clients-list/<language:[\w]+>' => 'support-groups/clients-list',
+                '<controller>/clients-view/<id:[\d]+>' => 'support-groups/clients-view'
 //              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],

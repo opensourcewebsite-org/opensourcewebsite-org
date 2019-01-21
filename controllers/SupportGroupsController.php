@@ -3,12 +3,16 @@
 namespace app\controllers;
 
 use app\models\Language;
+use app\models\search\SupportGroupBotClientSearch;
+use app\models\search\SupportGroupLanguageSearch;
 use app\models\search\SupportGroupSearch;
 use app\models\Setting;
 use app\models\SupportGroup;
 use app\models\SupportGroupBot;
+use app\models\SupportGroupBotClient;
 use app\models\SupportGroupCommand;
 use app\models\SupportGroupCommandText;
+use app\models\SupportGroupInsideMessage;
 use app\models\SupportGroupLanguage;
 use app\models\SupportGroupMember;
 use Yii;
@@ -164,6 +168,63 @@ class SupportGroupsController extends Controller
             'bot'          => $bot,
             'dataProvider' => $dataProvider,
             'settingQty'   => $settingQty,
+        ]);
+    }
+
+    /**
+     * @param integer $id
+     *
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionClientsLanguages($id)
+    {
+        $searchModel = new SupportGroupLanguageSearch();
+        $searchModel->support_group_id = $id;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('clients-languages', [
+            'dataProvider' => $dataProvider,
+            'searchModel'  => $searchModel,
+        ]);
+    }
+
+    /**
+     * @param string $language
+     *
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionClientsList($language)
+    {
+        $searchModel = new SupportGroupBotClientSearch();
+        $searchModel->language = $language;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('clients-list', [
+            'dataProvider' => $dataProvider,
+            'searchModel'  => $searchModel,
+        ]);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionClientsView($id)
+    {
+        $model = SupportGroupBotClient::find()
+            ->with(['supportGroupClient', 'supportGroupOutsideMessage'])
+            ->where($id)
+            ->one();
+
+        $sendMessage = new SupportGroupInsideMessage();
+
+        return $this->render('view-client', [
+            'model' => $model,
+            'sendMessage' => $sendMessage
         ]);
     }
 

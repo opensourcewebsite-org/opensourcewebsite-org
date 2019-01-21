@@ -85,4 +85,9 @@ class SupportGroupOutsideMessage extends \yii\db\ActiveRecord
     {
         return $this->hasOne(SupportGroupBot::className(), ['id' => 'support_group_bot_id']);
     }
+
+    public function getHtmlMessage()
+    {
+        return "<div>{$this->message}</div>";
+    }
 }
