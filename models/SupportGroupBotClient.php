@@ -16,6 +16,7 @@ use Yii;
  * @property float $location_lat
  * @property float $location_lon
  * @property int $location_at
+ * @property int $last_message_at
  *
  * @property SupportGroupBot $supportGroupBot
  * @property SupportGroupClient $supportGroupClient
@@ -36,14 +37,35 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id', 'provider_bot_user_blocked'], 'required'],
-            [['support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id',
-                'provider_bot_user_blocked', 'location_at'], 'integer'],
+            [
+                [
+                    'support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id',
+                    'provider_bot_user_blocked',
+                ], 'required',
+            ],
+            [
+                [
+                    'support_group_bot_id', 'support_group_client_id', 'provider_bot_user_id',
+                    'provider_bot_user_blocked', 'location_at', 'last_message_at',
+                ], 'integer',
+            ],
             [['location_lat', 'location_lon'], 'number'],
-            [['provider_bot_user_name', 'provider_bot_user_first_name',
-                'provider_bot_user_last_name'], 'string', 'max' => 255],
-            [['support_group_bot_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupBot::className(), 'targetAttribute' => ['support_group_bot_id' => 'id']],
-            [['support_group_client_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupClient::className(), 'targetAttribute' => ['support_group_client_id' => 'id']],
+            [
+                [
+                    'provider_bot_user_name', 'provider_bot_user_first_name',
+                    'provider_bot_user_last_name',
+                ], 'string', 'max' => 255,
+            ],
+            [
+                ['support_group_bot_id'], 'exist', 'skipOnError'     => true,
+                                                   'targetClass'     => SupportGroupBot::className(),
+                                                   'targetAttribute' => ['support_group_bot_id' => 'id'],
+            ],
+            [
+                ['support_group_client_id'], 'exist', 'skipOnError'     => true,
+                                                      'targetClass'     => SupportGroupClient::className(),
+                                                      'targetAttribute' => ['support_group_client_id' => 'id'],
+            ],
         ];
     }
 
@@ -53,17 +75,17 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'support_group_bot_id' => 'Support Group Bot ID',
-            'support_group_client_id' => 'Support Group Client ID',
-            'provider_bot_user_id' => 'Provider Bot User ID',
-            'provider_bot_user_name' => 'Provider Bot User Name',
-            'provider_bot_user_blocked' => 'Provider Bot User Blocked',
+            'id'                           => 'ID',
+            'support_group_bot_id'         => 'Support Group Bot ID',
+            'support_group_client_id'      => 'Support Group Client ID',
+            'provider_bot_user_id'         => 'Provider Bot User ID',
+            'provider_bot_user_name'       => 'Provider Bot User Name',
+            'provider_bot_user_blocked'    => 'Provider Bot User Blocked',
             'provider_bot_user_first_name' => 'Provider Bot User First Name',
-            'provider_bot_user_last_name' => 'Provider Bot User Last Name',
-            'location_lat' => 'Location Lat',
-            'location_lon' => 'Location Lon',
-            'location_at' => 'Location At',
+            'provider_bot_user_last_name'  => 'Provider Bot User Last Name',
+            'location_lat'                 => 'Location Lat',
+            'location_lon'                 => 'Location Lon',
+            'location_at'                  => 'Location At',
         ];
     }
 
@@ -81,5 +103,13 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
     public function getSupportGroupClient()
     {
         return $this->hasOne(SupportGroupClient::className(), ['id' => 'support_group_client_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupOutsideMessage()
+    {
+        return $this->hasMany(SupportGroupOutsideMessage::className(), ['support_group_bot_client_id' => 'id']);
     }
 }
