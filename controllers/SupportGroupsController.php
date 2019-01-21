@@ -183,6 +183,11 @@ class SupportGroupsController extends Controller
         $searchModel->support_group_id = $id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        if ($dataProvider->getTotalCount() == 1) {
+            $model = $dataProvider->getModels();
+            return $this->redirect(['clients-list', 'language' => $model[0]->language_code]);
+        }
+
         return $this->render('clients-languages', [
             'dataProvider' => $dataProvider,
             'searchModel'  => $searchModel,
@@ -217,7 +222,7 @@ class SupportGroupsController extends Controller
     {
         $model = SupportGroupBotClient::find()
             ->with(['supportGroupClient', 'supportGroupOutsideMessage'])
-            ->where($id)
+            ->where(['id' => $id])
             ->one();
 
         $sendMessage = new SupportGroupInsideMessage();
