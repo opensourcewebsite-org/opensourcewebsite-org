@@ -43,9 +43,6 @@ class SupportGroupBotClientSearch extends SupportGroupBotClient
 
         $dataProvider = new ActiveDataProvider([
             'query'      => $query,
-            'pagination' => [
-                'pageSize' => 25,
-            ],
             'sort'       => [
                 'defaultOrder' => [
                     'last_message_at' => SORT_DESC,

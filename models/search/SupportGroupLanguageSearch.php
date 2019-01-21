@@ -35,9 +35,6 @@ class SupportGroupLanguageSearch extends SupportGroupLanguage
 
         $dataProvider = new ActiveDataProvider([
             'query'      => $query,
-            'pagination' => [
-                'pageSize' => 25,
-            ],
         ]);
 
         $this->load($params);
