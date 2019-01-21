@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo 'No messages.';
                 } ?>
                 </div>
-                
+
                 <?php $form = ActiveForm::begin() ?>
 
                     <?= $form->field($sendMessage, 'message')->textarea() ?>
@@ -59,16 +59,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'last_message_at',
                         'visible'   => (empty($model->last_message_at)) ? false : true,
-                        'value'     => function ($model) {
-                            return $model->showAgo($model->last_message_at);
-                        },
+                        'format' => 'relativeTime',
                     ],
                     [
                         'attribute' => 'location_at',
                         'visible'   => (empty($model->location_at)) ? false : true,
-                        'value'     => function ($model) {
-                            return $model->showAgo($model->location_at);
-                        },
+                        'format' => 'relativeTime',
                     ],
                 ],
             ]) ?>

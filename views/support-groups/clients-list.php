@@ -51,9 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'supportGroupBot.title',
                 [
                     'attribute' => 'last_message_at',
-                    'content' => function ($model) {
-                        return $model->showAgo($model->last_message_at);
-                    }
+                    'format' => 'relativeTime',
                 ],
             ],
         ]); ?>
