@@ -2,19 +2,19 @@
 
 namespace app\models\search;
 
+use app\models\SupportGroupOutsideMessage;
 use Yii;
-use app\models\SupportGroupBotClient;
 use yii\data\ActiveDataProvider;
 
 /**
- * Class SupportGroupSearch
+ * Class SupportGroupOutsideMessageSearch
  * @package app\models\search
  *
  * @property string $language
  * @property int $support_group_id
  *
  */
-class SupportGroupBotClientSearch extends SupportGroupBotClient
+class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
 {
     public $language;
     public $support_group_id;
@@ -37,19 +37,10 @@ class SupportGroupBotClientSearch extends SupportGroupBotClient
     public function search($params)
     {
 
-        $query = self::find()
-            ->joinWith([
-                'supportGroupClient',
-                'supportGroupBot'
-            ]);
+        $query = self::find()->with('supportGroupBotClient');
 
         $dataProvider = new ActiveDataProvider([
             'query'      => $query,
-            'sort'       => [
-                'defaultOrder' => [
-                    'last_message_at' => SORT_DESC,
-                ],
-            ],
         ]);
 
         $this->load($params);
@@ -59,8 +50,7 @@ class SupportGroupBotClientSearch extends SupportGroupBotClient
         }
 
         $query->andFilterWhere([
-            'support_group_client.language_code' => $this->language,
-            'support_group_client.support_group_id' => $this->support_group_id,
+            'support_group_bot_client_id' => $this->support_group_bot_client_id,
         ]);
 
         return $dataProvider;

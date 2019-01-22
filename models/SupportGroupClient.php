@@ -49,7 +49,7 @@ class SupportGroupClient extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'support_group_id' => 'Support Group ID',
-            'language_code' => 'Language Code',
+            'language_code' => 'Language',
         ];
     }
 

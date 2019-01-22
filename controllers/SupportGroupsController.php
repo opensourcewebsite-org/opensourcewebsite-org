@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Language;
 use app\models\search\SupportGroupBotClientSearch;
 use app\models\search\SupportGroupLanguageSearch;
+use app\models\search\SupportGroupOutsideMessageSearch;
 use app\models\search\SupportGroupSearch;
 use app\models\Setting;
 use app\models\SupportGroup;
@@ -179,13 +180,20 @@ class SupportGroupsController extends Controller
      */
     public function actionClientsLanguages($id)
     {
+
+        $access = self::accessFindModel($id);
+
+        if (!$access) {
+            throw new NotFoundHttpException;
+        }
+
         $searchModel = new SupportGroupLanguageSearch();
         $searchModel->support_group_id = $id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         if ($dataProvider->getTotalCount() == 1) {
             $model = $dataProvider->getModels();
-            return $this->redirect(['clients-list', 'language' => $model[0]->language_code]);
+            return $this->redirect(['clients-list', 'id' => $searchModel->support_group_id, 'language' => $model[0]->language_code]);
         }
 
         return $this->render('clients-languages', [
@@ -195,15 +203,23 @@ class SupportGroupsController extends Controller
     }
 
     /**
+     * @param int $id
      * @param string $language
      *
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionClientsList($language)
+    public function actionClientsList($id, $language)
     {
+        $access = self::accessFindModel($id);
+
+        if (!$access) {
+            throw new NotFoundHttpException;
+        }
+
         $searchModel = new SupportGroupBotClientSearch();
         $searchModel->language = $language;
+        $searchModel->support_group_id = $id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('clients-list', [
@@ -221,15 +237,32 @@ class SupportGroupsController extends Controller
     public function actionClientsView($id)
     {
         $model = SupportGroupBotClient::find()
-            ->with(['supportGroupClient', 'supportGroupOutsideMessage'])
+            ->with('supportGroupClient')
             ->where(['id' => $id])
             ->one();
+
+        $access = self::accessFindModel($model->supportGroupClient->support_group_id);
+
+        if (!$access) {
+            throw new NotFoundHttpException;
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Description changed'));
+            return $this->refresh();
+        }
+
+        $searchModel = new SupportGroupOutsideMessageSearch();
+        $searchModel->support_group_bot_client_id = $model->id;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $sendMessage = new SupportGroupInsideMessage();
 
         return $this->render('view-client', [
             'model' => $model,
-            'sendMessage' => $sendMessage
+            'sendMessage' => $sendMessage,
+            'dataProvider' => $dataProvider,
+            'searchModel'  => $searchModel,
         ]);
     }
 

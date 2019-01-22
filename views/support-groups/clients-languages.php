@@ -4,7 +4,7 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
-/* @var $searchModel app\models\search\CronJobSearch */
+/* @var $searchModel app\models\search\SupportGroupLanguageSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Languages';
@@ -39,10 +39,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'languageCode.name_ascii',
                     'format' => 'raw',
-                    'content' => function ($model) {
+                    'content' => function ($model) use ($searchModel) {
                         return Html::a(
                             $model->languageCode->name_ascii,
-                            ['clients-list', 'language' => $model->language_code]
+                            ['clients-list', 'id' => $searchModel->support_group_id, 'language' => $model->language_code]
                         );
                     }
                 ],
