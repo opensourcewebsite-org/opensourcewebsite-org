@@ -119,7 +119,7 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
     public function showUserName()
     {
         if (!empty($this->provider_bot_user_first_name) || !empty($this->provider_bot_user_last_name)) {
-            return trim($this->provider_bot_user_last_name . ' ' . $this->provider_bot_user_first_name);
+            return trim($this->provider_bot_user_first_name . ' ' . $this->provider_bot_user_last_name);
         } elseif (!empty($this->provider_bot_user_name)) {
             return $this->provider_bot_user_name;
         } else {

@@ -74,7 +74,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'options'    => [
                         'tag' => 'ul',
                     ],
-                    'template'   => '<li>{label}: {value}</li>',
+                    'template'   => function ($attribute) {
+                        if ($attribute['attribute'] == 'location_at') {
+                            return "<li>{$attribute['value']}</li>";
+                        }
+                        return "<li>{$attribute['label']}: {$attribute['value']}</li>";
+                    },
                     'attributes' => [
                         'supportGroupClient.language_code',
                         [
@@ -96,10 +101,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         [
                             'attribute' => 'location_at',
-                            'format'    => 'html',
+                            'format'    => 'raw',
                             'visible'   => (empty($model->location_at)) ? false : true,
                             'value'     => function ($model) {
-                                return Html::a('(' . Yii::$app->formatter->asRelativeTime($model->location_at) . ')', '#');
+                                return Html::a('Location (' . Yii::$app->formatter->asRelativeTime($model->location_at) . ')',
+                                    "https://www.openstreetmap.org/search?query={$model->location_lat},{$model->location_lon}",
+                                    ['target' => '_blank']
+                                );
                             },
                         ],
                     ],
