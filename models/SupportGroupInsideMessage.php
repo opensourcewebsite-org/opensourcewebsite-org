@@ -29,12 +29,15 @@ class SupportGroupInsideMessage extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
+            ],
         ];
     }
 
@@ -44,7 +47,7 @@ class SupportGroupInsideMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['support_group_bot_id', 'support_group_bot_client_id', 'message', 'created_at', 'created_by'], 'required'],
+            [['support_group_bot_id', 'support_group_bot_client_id', 'message'], 'required'],
             [['support_group_bot_id', 'support_group_bot_client_id', 'created_at', 'created_by'], 'integer'],
             [['message'], 'string'],
             [['support_group_bot_client_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupBotClient::className(), 'targetAttribute' => ['support_group_bot_client_id' => 'id']],
@@ -81,5 +84,22 @@ class SupportGroupInsideMessage extends \yii\db\ActiveRecord
     public function getSupportGroupBot()
     {
         return $this->hasOne(SupportGroupBot::className(), ['id' => 'support_group_bot_id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($insert) {
+                $this->created_by = Yii::$app->user->id;
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

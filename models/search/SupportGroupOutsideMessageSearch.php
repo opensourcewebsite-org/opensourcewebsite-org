@@ -2,9 +2,12 @@
 
 namespace app\models\search;
 
+use app\models\SupportGroupInsideMessage;
 use app\models\SupportGroupOutsideMessage;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * Class SupportGroupOutsideMessageSearch
@@ -12,12 +15,14 @@ use yii\data\ActiveDataProvider;
  *
  * @property string $language
  * @property int $support_group_id
+ * @property int $created_by
  *
  */
 class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
 {
     public $language;
     public $support_group_id;
+    public $created_by;
 
     /**
      * {@inheritdoc}
@@ -37,7 +42,26 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
     public function search($params)
     {
 
+        $unionQuery = self::find()
+            ->select([
+                'message',
+                'created_at',
+                'support_group_bot_client_id',
+                new Expression('null as `created_by`')
+            ])
+            ->union(
+                SupportGroupInsideMessage::find()
+                ->select([
+                    'message',
+                    'created_at',
+                    'support_group_bot_client_id',
+                    'created_by'
+                ]),
+                true
+            )->orderBy('created_at ASC');
+
         $query = self::find()->with('supportGroupBotClient');
+        $query->from(['a' => $unionQuery])->orderBy(['created_at'=>SORT_ASC]);
 
         $dataProvider = new ActiveDataProvider([
             'query'      => $query,
@@ -54,5 +78,17 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
         ]);
 
         return $dataProvider;
+    }
+
+    /**
+     * string
+     */
+    public function showChatName()
+    {
+        if ($this->created_by) {
+            return 'Member ' . $this->created_by;
+        }
+
+        return 'Client ' . $this->supportGroupBotClient->provider_bot_user_id;
     }
 }

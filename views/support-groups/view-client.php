@@ -97,14 +97,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute' => 'last_message_at',
                             'visible'   => (empty($model->last_message_at)) ? false : true,
-                            'format'    => 'relativeTime',
+                            'format'    => 'raw',
+                            'value'     => function ($model) {
+                                return Yii::$app->formatter->asRelativeTime($model->last_message_at);
+                            }
                         ],
                         [
                             'attribute' => 'location_at',
                             'format'    => 'raw',
                             'visible'   => (empty($model->location_at)) ? false : true,
                             'value'     => function ($model) {
-                                return Html::a('Location (' . Yii::$app->formatter->asRelativeTime($model->location_at) . ')',
+                                return Html::a(
+                                    'Location (' . Yii::$app->formatter->asRelativeTime($model->location_at) . ')',
                                     "https://www.openstreetmap.org/search?query={$model->location_lat},{$model->location_lon}",
                                     ['target' => '_blank']
                                 );
