@@ -4,12 +4,15 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
-/* @var $searchModel app\models\search\CronJobSearch */
+/* @var $searchModel app\models\search\SupportGroupBotClientSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Clients List';
 $this->params['breadcrumbs'][] = ['label' => 'Support Groups', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Languages', 'url' => ['clients-languages', 'id' => $searchModel->support_group_id]];
 $this->params['breadcrumbs'][] = $this->title;
+
+
 ?>
 
 
@@ -41,17 +44,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     'enableSorting' => false,
                     'content'   => function ($model) {
                         return Html::a(
-                            ((!empty($model->provider_bot_user_name)) ?
-                                $model->provider_bot_user_name . ' ' : '') .
-                            $model->provider_bot_user_id,
-                            ['clients-view', 'id' => $model->id]
+                            $model->showUserName(),
+                            [
+                                'clients-view',
+                                'id' => $model->id,
+                                'page' => \app\models\SupportGroupOutsideMessage::getLastPage($model->id)
+                            ]
                         );
                     },
                 ],
-                'supportGroupBot.title',
+                [
+                    'attribute' => 'supportGroupBot.title',
+                    'label' => 'Bot',
+                ],
                 [
                     'attribute' => 'last_message_at',
                     'format' => 'relativeTime',
+                    'label' => 'Last update',
                 ],
             ],
         ]); ?>

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\search\SupportGroupOutsideMessageSearch;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
@@ -89,5 +90,15 @@ class SupportGroupOutsideMessage extends \yii\db\ActiveRecord
     public function getHtmlMessage()
     {
         return "<div>{$this->message}</div>";
+    }
+    
+    public static function getLastPage($id)
+    {
+        $searchModel = new SupportGroupOutsideMessageSearch();
+
+        $searchModel->support_group_bot_client_id = $id;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return ceil($dataProvider->totalCount/$dataProvider->pagination->pageSize);
     }
 }

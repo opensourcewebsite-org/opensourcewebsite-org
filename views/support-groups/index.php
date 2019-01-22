@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $this->beginBlock('content-header-data'); ?>
         <div class="row mb-2">
             <div class="col-sm-4">
-                <h1 class="text-dark mt-4"><?= Html::encode($this->title) ?></h1>
+                <h1 class="text-dark"><?= Html::encode($this->title) ?></h1>
             </div>
         </div>
         <div class="row mb-2">

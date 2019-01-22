@@ -11,7 +11,10 @@ use Yii;
  * @property int $support_group_bot_id
  * @property int $support_group_client_id
  * @property int $provider_bot_user_id
+ * @property string $description
  * @property string $provider_bot_user_name
+ * @property string $provider_bot_user_first_name
+ * @property string $provider_bot_user_last_name
  * @property int $provider_bot_user_blocked
  * @property float $location_lat
  * @property float $location_lon
@@ -23,6 +26,8 @@ use Yii;
  */
 class SupportGroupBotClient extends \yii\db\ActiveRecord
 {
+    const LIMIT_MESSAGES = 200;
+
     /**
      * {@inheritdoc}
      */
@@ -56,6 +61,7 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
                     'provider_bot_user_last_name',
                 ], 'string', 'max' => 255,
             ],
+            [['description'], 'string'],
             [
                 ['support_group_bot_id'], 'exist', 'skipOnError'     => true,
                                                    'targetClass'     => SupportGroupBot::className(),
@@ -79,13 +85,15 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
             'support_group_bot_id'         => 'Support Group Bot ID',
             'support_group_client_id'      => 'Support Group Client ID',
             'provider_bot_user_id'         => 'Provider Bot User ID',
-            'provider_bot_user_name'       => 'Provider Bot User Name',
+            'provider_bot_user_name'       => 'Username',
             'provider_bot_user_blocked'    => 'Provider Bot User Blocked',
-            'provider_bot_user_first_name' => 'Provider Bot User First Name',
-            'provider_bot_user_last_name'  => 'Provider Bot User Last Name',
+            'provider_bot_user_first_name' => 'First name',
+            'provider_bot_user_last_name'  => 'Last name',
+            'last_message_at'              => 'Last activity',
             'location_lat'                 => 'Location Lat',
             'location_lon'                 => 'Location Lon',
-            'location_at'                  => 'Location At',
+            'location_at'                  => 'Location',
+            'description'                  => 'Description',
         ];
     }
 
@@ -106,10 +114,16 @@ class SupportGroupBotClient extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return int|string
      */
-    public function getSupportGroupOutsideMessage()
+    public function showUserName()
     {
-        return $this->hasMany(SupportGroupOutsideMessage::className(), ['support_group_bot_client_id' => 'id']);
+        if (!empty($this->provider_bot_user_first_name) || !empty($this->provider_bot_user_last_name)) {
+            return trim($this->provider_bot_user_last_name . ' ' . $this->provider_bot_user_first_name);
+        } elseif (!empty($this->provider_bot_user_name)) {
+            return $this->provider_bot_user_name;
+        } else {
+            return $this->provider_bot_user_id;
+        }
     }
 }
