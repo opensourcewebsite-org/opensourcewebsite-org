@@ -16,6 +16,7 @@ use app\models\SupportGroupCommandText;
 use app\models\SupportGroupInsideMessage;
 use app\models\SupportGroupLanguage;
 use app\models\SupportGroupMember;
+use TelegramBot\Api\BotApi;
 use Yii;
 use yii\base\Model;
 use yii\bootstrap\ActiveForm;
@@ -237,7 +238,7 @@ class SupportGroupsController extends Controller
     public function actionClientsView($id)
     {
         $model = SupportGroupBotClient::find()
-            ->with('supportGroupClient')
+            ->with(['supportGroupClient', 'supportGroupBot'])
             ->where(['id' => $id])
             ->one();
 
@@ -257,6 +258,26 @@ class SupportGroupsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $sendMessage = new SupportGroupInsideMessage();
+
+        if ($sendMessage->load(Yii::$app->request->post())) {
+            $botApi = new BotApi($model->supportGroupBot->token);
+
+            # For Test in my country;
+            if (isset(Yii::$app->params['telegramProxy'])) {
+                $botApi->setProxy(Yii::$app->params['telegramProxy']);
+            }
+            $botApi->sendMessage($model->provider_bot_user_id, $sendMessage->message);
+
+            $sendMessage->setAttributes([
+                'support_group_bot_id' => $model->supportGroupBot->id,
+                'support_group_bot_client_id' => $model->id
+            ]);
+
+            if ($sendMessage->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Message delivered!'));
+                return $this->refresh();
+            }
+        }
 
         return $this->render('view-client', [
             'model' => $model,
