@@ -65,7 +65,8 @@ class WebhookController extends Controller
                     $botApi->type = 1;
                     $botApi->saveOutsideMessage();
 
-                    return false;
+                    $botApi->executeLangCommand(false);
+                    return true;
                 }
 
                 $botApi->type = 2;

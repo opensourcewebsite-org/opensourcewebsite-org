@@ -219,9 +219,11 @@ class BotHandler extends BotApi
     }
 
     /**
-     * @return bool
+     * @param bool $default_response
+     *
+     * @return bool|string
      */
-    public function executeLangCommand()
+    public function executeLangCommand($default_response = true)
     {
         $availableLanguages = SupportGroupLanguage::find()
             ->select('language_code')
@@ -245,9 +247,9 @@ class BotHandler extends BotApi
             $supportGroup->language_code = $lang;
             $supportGroup->save();
 
-            return $this->generateDefaultResponse();
+            return $default_response ? $this->generateDefaultResponse() : true;
         } elseif (trim($this->getMessage()->getText()) == '/lang' || $this->_language_code == null) {
-            $output = "Choose your language.\n";
+            $output = '';
 
             $availableLanguagesName = SupportGroupLanguage::find()
                 ->where(['support_group_id' => $this->support_group_id])
