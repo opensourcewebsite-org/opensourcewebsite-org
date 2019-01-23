@@ -2,6 +2,7 @@
 
 use yii\grid\GridView;
 use yii\helpers\Html;
+use app\models\SupportGroupOutsideMessage;
 
 /* @var $this \yii\web\View */
 /* @var $searchModel app\models\search\SupportGroupBotClientSearch */
@@ -48,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'clients-view',
                                 'id' => $model->id,
-                                'page' => \app\models\SupportGroupOutsideMessage::getLastPage($model->id)
+                                'page' => SupportGroupOutsideMessage::getLastPage($model->id)
                             ]
                         );
                     },

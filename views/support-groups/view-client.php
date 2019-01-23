@@ -10,7 +10,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\search\SupportGroupOutsideMessageSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "Client $model->provider_bot_user_id";
+$this->title = $model->showUserName();
 $this->params['breadcrumbs'][] = ['label' => 'Support Groups', 'url' => ['index']];
 $this->params['breadcrumbs'][] = [
     'label' => 'Languages',
@@ -56,12 +56,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php \yii\widgets\Pjax::end() ?>
                 </div>
 
-                <?php $form = ActiveForm::begin() ?>
+                <?php
+                if ($model->provider_bot_user_blocked == 0) {
+                    $form = ActiveForm::begin();
+                        echo $form->field($sendMessage, 'message')->textarea();
+                        echo Html::submitButton(
+                            Yii::t('app', 'Save'),
+                            ['class' => 'btn btn-success float-right']
+                        );
 
-                <?= $form->field($sendMessage, 'message')->textarea() ?>
-                <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success float-right']) ?>
-
-                <?php ActiveForm::end(); ?>
+                    ActiveForm::end();
+                }
+                ?>
             </div>
         </div>
     </div>

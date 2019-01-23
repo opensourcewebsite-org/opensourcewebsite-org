@@ -89,6 +89,6 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
             return 'Member ' . $this->created_by;
         }
 
-        return 'Client ' . $this->supportGroupBotClient->provider_bot_user_id;
+        return $this->supportGroupBotClient->showUserName();
     }
 }

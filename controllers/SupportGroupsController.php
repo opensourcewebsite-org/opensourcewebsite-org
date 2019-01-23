@@ -17,6 +17,7 @@ use app\models\SupportGroupInsideMessage;
 use app\models\SupportGroupLanguage;
 use app\models\SupportGroupMember;
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\HttpException;
 use Yii;
 use yii\base\Model;
 use yii\bootstrap\ActiveForm;
@@ -26,6 +27,7 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use app\models\SupportGroupOutsideMessage;
 
 /**
  * SupportGroupController implements the CRUD actions for SupportGroup model.
@@ -266,8 +268,18 @@ class SupportGroupsController extends Controller
             if (isset(Yii::$app->params['telegramProxy'])) {
                 $botApi->setProxy(Yii::$app->params['telegramProxy']);
             }
-            $botApi->sendMessage($model->provider_bot_user_id, $sendMessage->message);
 
+            try {
+                $botApi->sendMessage($model->provider_bot_user_id, $sendMessage->message);
+            } catch (HttpException $e) {
+                # we consider here that user blocked bot
+                if ($e->getMessage() === 'Forbidden: bot was blocked by the user') {
+                    $model->provider_bot_user_blocked = true;
+                    Yii::$app->session->setFlash('danger', Yii::t('app', $e->getMessage()));
+                    $model->save();
+                    return $this->refresh();
+                }
+            }
             $sendMessage->setAttributes([
                 'support_group_bot_id' => $model->supportGroupBot->id,
                 'support_group_bot_client_id' => $model->id
@@ -275,7 +287,11 @@ class SupportGroupsController extends Controller
 
             if ($sendMessage->save()) {
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Message delivered!'));
-                return $this->refresh();
+                return $this->redirect([
+                    'clients-view',
+                    'id' => $id,
+                    'page' => SupportGroupOutsideMessage::getLastPage($model->id)
+                ]);
             }
         }
 
