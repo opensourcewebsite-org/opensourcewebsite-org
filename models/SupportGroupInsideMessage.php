@@ -87,6 +87,14 @@ class SupportGroupInsideMessage extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
+    }
+
+    /**
      * @param bool $insert
      * @return bool
      */

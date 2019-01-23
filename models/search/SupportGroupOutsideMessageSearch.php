@@ -16,6 +16,7 @@ use yii\db\Query;
  * @property string $language
  * @property int $support_group_id
  * @property int $created_by
+ * @property string $member_name
  *
  */
 class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
@@ -23,6 +24,7 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
     public $language;
     public $support_group_id;
     public $created_by;
+    public $member_name;
 
     /**
      * {@inheritdoc}
@@ -45,23 +47,26 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
         $unionQuery = self::find()
             ->select([
                 'message',
-                'created_at',
+                'support_group_outside_message.created_at',
                 'support_group_bot_client_id',
-                new Expression('null as `created_by`')
+                new Expression('null as `created_by`'),
+                new Expression('null as `member_name`'),
             ])
             ->union(
                 SupportGroupInsideMessage::find()
                 ->select([
                     'message',
-                    'created_at',
+                    'support_group_inside_message.created_at',
                     'support_group_bot_client_id',
-                    'created_by'
-                ]),
+                    'created_by',
+                    new Expression('user.name as `member_name`')
+                ])->joinWith('user'),
                 true
-            )->orderBy('created_at ASC');
+            );
 
         $query = self::find()->with('supportGroupBotClient');
-        $query->from(['a' => $unionQuery])->orderBy(['created_at'=>SORT_ASC]);
+        $query->from(['a' => $unionQuery])
+            ->orderBy(['created_at'=>SORT_ASC]);
 
         $dataProvider = new ActiveDataProvider([
             'query'      => $query,
@@ -86,6 +91,9 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
     public function showChatName()
     {
         if ($this->created_by) {
+            if (!empty($this->member_name)) {
+                return $this->member_name;
+            }
             return 'Member ' . $this->created_by;
         }
 
