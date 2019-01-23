@@ -15,14 +15,14 @@ use yii\web\ServerErrorHttpException;
  * @property int $created_at
  * @property int $updated_at
  *
- * @property array $_cronJobsFiles
+ * @property array $_cronJobs
  * @property array $_cronJobsDb
  */
 class CronJobConsole extends CronJob
 {
     const EXCLUDE = 'Cron';
 
-    private $_cronJobsFiles = [];
+    private $_cronJobs = [];
     private $_cronJobsDb = [];
 
     /**
@@ -31,28 +31,12 @@ class CronJobConsole extends CronJob
     public function init()
     {
         parent::init();
-        $this->checkFolder();
         $this->checkDatabase();
     }
-    
-    /**
-     * Checking folder and collecting jobs data from files
-     *
-     * @return void
-     */
-    protected function checkFolder()
-    {
-        $folder = FileHelper::findFiles('commands', [
-            'recursive' => false,
-            'only'      => ['*.php']
-        ]);
 
-        if (count($folder) > 0) {
-            foreach ($folder as $file) {
-                $start = mb_strpos($file, '/') + 1;
-                $this->_cronJobsFiles[] = mb_substr($file, $start, -14);
-            }
-        }
+    public function setCronJobs($jobs)
+    {
+        $this->_cronJobs = $jobs;
     }
 
     /**
@@ -71,7 +55,7 @@ class CronJobConsole extends CronJob
      */
     public function add()
     {
-        foreach ($this->_cronJobsFiles as $name) {
+        foreach ($this->_cronJobs as $name) {
             if (static::EXCLUDE == $name) {
                 continue;
             }
@@ -97,7 +81,7 @@ class CronJobConsole extends CronJob
      */
     public function clear()
     {
-        $toDrop = array_diff($this->_cronJobsDb, $this->_cronJobsFiles);
+        $toDrop = array_diff($this->_cronJobsDb, $this->_cronJobs);
 
         return $this->deleteAll(['IN', 'name', $toDrop]);
     }

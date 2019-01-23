@@ -10,7 +10,7 @@ use yii\web\NotFoundHttpException;
 
 /**
  *
- * @property \app\models\CronJob $cronJobs
+ * @property array $map
  * @property bool $log
  */
 class CronController extends Controller
@@ -19,17 +19,28 @@ class CronController extends Controller
     const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
 
-    public $cronJobs;
     public $log = false;
+
+    private $_cronJobs;
+
+    /**
+     * Map of input data
+     *
+     * @var array
+     */
+    static protected $map = [
+        'WikipediaParser',
+    ];
 
     /**
      * {@inheritdoc}
      */
     public function beforeAction($action)
     {
-        $this->cronJobs = new CronJobConsole();
-        $this->cronJobs->add();
-        $this->cronJobs->clear();
+        $this->_cronJobs = new CronJobConsole();
+        $this->_cronJobs->setCronJobs(static::$map);
+        $this->_cronJobs->add();
+        $this->_cronJobs->clear();
 
         return parent::beforeAction($action);
     }
@@ -59,9 +70,9 @@ class CronController extends Controller
             );
         }
 
-        $this->cronJobs = $this->cronJobs->find()->all();
+        $this->_cronJobs = $this->_cronJobs->find()->all();
 
-        if (empty($this->cronJobs)) {
+        if (empty($this->_cronJobs)) {
             throw new NotFoundHttpException;
         }
 
@@ -75,7 +86,7 @@ class CronController extends Controller
                 ['logs' => $this->log]
             );
 
-            foreach ($this->cronJobs as $script) {
+            foreach ($this->_cronJobs as $script) {
                 if ($script->status !== 1) {
                     continue;
                 }
