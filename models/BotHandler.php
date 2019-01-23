@@ -338,14 +338,12 @@ class BotHandler extends BotApi
             }
 
             # owner/member disabled his language
-            if ($this->_language_code == null) {
-                $existedClientLanguage = $existedClient->supportGroupClient;
-                $existedClientLanguage->language_code = $this->_language_code;
-                if (!$existedClientLanguage->save()) {
-                    $transaction->rollBack();
+            $existedClientLanguage = $existedClient->supportGroupClient;
+            $existedClientLanguage->language_code = $this->_language_code;
+            if (!$existedClientLanguage->save()) {
+                $transaction->rollBack();
 
-                    return false;
-                }
+                return false;
             }
 
             # update geo position (Live location)
