@@ -2,6 +2,8 @@
 /* @var $this \yii\web\View */
 
 use yii\helpers\Html;
+use app\modules\comment\models\MoqupComment;
+use app\modules\comment\Comment;
 
 $this->title = Yii::t('menu', 'View design');
 \app\assets\AceEditorAsset::register($this);
@@ -78,6 +80,14 @@ if (!empty($moqup)):
         </div>
     </div>
 <?php endif; ?>
+
+<?= Comment::widget([
+    'model' => MoqupComment::class,
+    'material' => 2,
+    'related' => 'moqup_id',
+]);
+
+?>
 
 <?php
 //Activate the AceEditor
