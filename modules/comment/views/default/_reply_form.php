@@ -1,17 +1,37 @@
 <?php
 
 use yii\helpers\Html;
+use \yii\widgets\Pjax;
 
 /**
- * @var $model
+ * @var $modelClass
  * @var $parent int
+ * @var $related string
+ * @var $material string
  */
 
-$shortName = $model->formName();
-$model->message = '';
+$container = '#comments';
+if ($parent) {
+    $container = '#insideComments' . $parent;
+}
+
+$options = [
+    'id' => 'replyForm' . $parent,
+    'enablePushState' => false,
+    'timeout' => 999999999 * 999999,
+    'clientOptions' => ['container' => $container]
+];
+
+Pjax::begin($options);
+
+$modelInst = new $modelClass;
+$shortName = $modelInst->formName();
 
 echo
-    Html::beginForm() .
+    Html::beginForm(['/comment/default/handler'], 'post', ['data-pjax' => true]) .
+    Html::hiddenInput('related', $related) .
+    Html::hiddenInput('model', $modelClass) .
+    Html::hiddenInput('material', $material) .
     Html::hiddenInput($shortName . '[parent_id]', $parent) .
     Html::img(
         'https://secure.gravatar.com/avatar/b4284e48ee666373b3e7adee3cbd0958?r=g&amp;s=20',
@@ -20,7 +40,7 @@ echo
     Html::tag(
         'div',
         Html::activeTextarea(
-            $model,
+            $modelInst,
             'message',
             [
                 'rows'        => 3,
@@ -37,3 +57,5 @@ echo
         ['class' => 'img-push']
     ) .
     Html::endForm();
+
+Pjax::end();

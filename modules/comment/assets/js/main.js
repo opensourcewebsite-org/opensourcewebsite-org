@@ -1,4 +1,4 @@
-$(document).on('click', '.show-reply', showReply);
+/*$(document).on('click', '.show-reply', showReply);
 
 function showReply(e) {
     var button = $(e.target);
@@ -17,4 +17,4 @@ function showReply(e) {
             $(block).html(data);
         }
     });
-}
+}*/

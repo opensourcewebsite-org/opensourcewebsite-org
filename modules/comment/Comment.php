@@ -1,15 +1,10 @@
 <?php
 namespace app\modules\comment;
 
-use app\modules\comment\models\MoqupComment;
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\helpers\ArrayHelper;
-use yii\helpers\BaseHtml;
 use yii\helpers\Html;
 use yii\bootstrap\Widget;
 use yii\bootstrap\BootstrapAsset;
-use yii\helpers\Url;
 use app\modules\comment\assets\CommentsAsset;
 
 /**
@@ -41,12 +36,6 @@ class Comment extends Widget
         BootstrapAsset::register($this->getView());
         CommentsAsset::register($this->getView());
 
-        if ($this->postHandler()) {
-            Yii::$app->session->setFlash('success', 'Saved!');
-            $this->view->context->refresh();
-            Yii::$app->end();
-        }
-
         $this->setItems();
 
         return
@@ -60,29 +49,10 @@ class Comment extends Widget
                 Html::tag(
                     'div',
                     $this->renderItems(),
-                    ['class' => 'card-body card-comments']
+                    ['class' => 'card-body card-comments', 'id' => 'comments']
                 ),
                 ['id' => 'accordion', 'class' => 'card card-widget']
             );
-    }
-
-    /**
-     * @return bool
-     */
-    public function postHandler()
-    {
-        $model = new $this->model;
-        $related = $this->related;
-
-        if ($model->load(Yii::$app->request->post())) {
-            $model->$related = $this->material;
-            if ($model->validate() && $model->save()) {
-                return true;
-            }
-            Yii::$app->session->setFlash('danger', BaseHtml::errorSummary($model));
-        }
-
-        return false;
     }
 
     /**
@@ -90,11 +60,11 @@ class Comment extends Widget
      */
     public function renderMainForm()
     {
-        $model = new $this->model;
-
         return $this->render('/../modules/comment/views/default/_reply_form', [
             'parent' => null,
-            'model'  => $model,
+            'modelClass'  => $this->model,
+            'related' => $this->related,
+            'material' => $this->material,
         ]);
     }
 
@@ -103,19 +73,7 @@ class Comment extends Widget
      */
     public function setItems()
     {
-        $model = $this->model;
-
-        $subQueryCount = $model::find()
-            ->select('COUNT(`s`.`id`)')
-            ->from($model::tableName() . ' s')
-            ->where('s.parent_id=`m`.`id`');
-
-        $this->items = $model::find()
-            ->select(['*', 'count' => $subQueryCount])
-            ->with('user')
-            ->from($model::tableName() . ' m')
-            ->where(['m.moqup_id' => $this->material, 'parent_id' => null])
-            ->all();
+        $this->items = static::baseQuery($this->model, $this->material);
     }
 
     /**
@@ -135,5 +93,37 @@ class Comment extends Widget
         }
 
         return implode("\n", $items);
+    }
+
+
+    /**
+     * @param string $model
+     * @param int $material
+     * @param string|null $related
+     * @param null|int $parent
+     *
+     * @return mixed
+     */
+    public static function baseQuery($model, $material, $related = null, $parent = null)
+    {
+        if ($parent) {
+            return $model::find()->where([
+                'parent_id' => $parent,
+                $related    => $material,
+            ])->with('user')->all();
+        } else {
+            $subQueryCount = $model::find()
+                ->select('COUNT(`s`.`id`)')
+                ->from($model::tableName() . ' s')
+                ->where('s.parent_id=`m`.`id`');
+
+            return $model::find()
+                ->select(['*', 'count' => $subQueryCount])
+                ->with('user')
+                ->from($model::tableName() . ' m')
+                ->where(['m.moqup_id' => $material, 'parent_id' => null])
+                ->orderBy(['m.created_at' => SORT_DESC])
+                ->all();
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use app\modules\comment\models\MoqupComment;
-use yii\helpers\Url;
 
 /**
  * @var $model
@@ -23,10 +22,19 @@ $user = Html::tag(
     ['class' => 'username']
 );
 
-$label = Html::encode($item->message);
+$label = Html::tag('div', Html::encode($item->message), ['id' => 'textMessage' . $item->id]) ;
 
-if ($level < 2) {
-    $showReplies = Html::tag(
+//if ($level < 2) {
+
+    $showReplies = $this->render('_show_replies', [
+        'related' => $related,
+        'inside' => $item->id,
+        'model' => $model,
+        'material' => $material,
+        'count' => $item->count,
+    ]);
+
+    /*$showReplies = Html::tag(
         'a',
         "replies ({$item->count})",
         [
@@ -39,8 +47,35 @@ if ($level < 2) {
             'data-material' => $material,
             'href'          => '#collapseReply' . $item->id,
         ]
-    ) . Html::tag('div', '', ['id' => 'collapseReply' . $item->id]);
+    ) . Html::tag('div', '', ['id' => 'collapseReply' . $item->id]);*/
+//}
+
+$showControlBtns = '';
+if (Yii::$app->user->id == $item->user_id) {
+    $showControlBtns =
+        Html::tag('span',
+            Html::tag('a', '<i class="fas fa-edit mx-1"></i>',
+                [
+                    'href' => '',
+                    'data-toggle' => 'modal',
+                    'data-target' => '#updateModal' . $item->id
+                ]
+            ) .
+            $this->render('_drop_btn', [
+                'model' => $model,
+                'item' => $item,
+                'material'  => $material,
+                'related'  => $related,
+            ]),
+            ['class' => 'float-right']
+        ) . $this->render('_update_form', [
+            'model'  => $item,
+            'related'  => $related,
+            'modelClass'  => $model,
+            'material'  => $material,
+        ]);
 }
+
 
 $replyBtn = Html::tag(
     'a',
@@ -53,23 +88,19 @@ $replyBtn = Html::tag(
     ]
 );
 
-$template = $user . $label . '<br />' .
+$template = $user . $showControlBtns . $label .
     ($level < 2 ? $replyBtn : '') .
-    ($level < 2 ? Html::tag('div', $this->render('_reply_form', [
+    ($level < 2 ? Html::tag('div', '<br />' . $this->render('_reply_form', [
             'parent' => $item->id,
-            'model'  => $item,
+            'related'  => $related,
+            'modelClass'  => $model,
+            'material'  => $material,
         ]), [
             'id'          => 'collapse' . $item->id,
             'class'       => 'collapse',
             'data-parent' => '#accordion',
         ]) . '<br />' : '') .
-    (
-    ($item->count > 0)
-        ?
-        $showReplies
-        :
-        ''
-    );
+    $showReplies;
 
 echo Html::tag(
     'div',
@@ -83,6 +114,7 @@ echo Html::tag(
         ['class' => 'comment-text']
     ),
     [
+        'id' => 'comment' . $item->id,
         'class' => 'card-comment',
     ]
 );

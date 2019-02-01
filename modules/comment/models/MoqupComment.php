@@ -53,7 +53,7 @@ class MoqupComment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['parent_id', 'moqup_id', 'user_id', 'created_at', 'updated_at'], 'integer'],
+            [['id','parent_id', 'moqup_id', 'user_id', 'created_at', 'updated_at'], 'integer'],
             ['parent_id', 'checkLevel'],
             [['message', 'moqup_id', 'user_id'], 'required'],
             [['message'], 'string'],
