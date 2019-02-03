@@ -1,7 +1,9 @@
 <?php
 namespace app\modules\comment;
 
+use app\modules\comment\models\MoqupComment;
 use Yii;
+use yii\data\Pagination;
 use yii\helpers\Html;
 use yii\bootstrap\Widget;
 use yii\bootstrap\BootstrapAsset;
@@ -28,6 +30,8 @@ class Comment extends Widget
     public $material;
     public $related;
 
+    const PAGE_SIZE = 2;
+
     /**
      * Renders the widget.
      */
@@ -37,6 +41,21 @@ class Comment extends Widget
         CommentsAsset::register($this->getView());
 
         $this->setItems();
+
+
+        $pagination = new Pagination([
+            'totalCount' => MoqupComment::find()->where(['parent_id' => null])->count(),
+            'pageSize' => static::PAGE_SIZE,
+        ]);
+
+        $nextPages = '';
+        $pageSize= 1;
+
+        do {
+            $pageSize++;
+
+            $nextPages .= '<div id="next-page'.$pageSize.'"></div>';
+        } while ($pageSize < $pagination->getPageCount());
 
         return
             Html::tag(
@@ -48,7 +67,7 @@ class Comment extends Widget
                 ) .
                 Html::tag(
                     'div',
-                    $this->renderItems(),
+                    $this->renderItems() . $nextPages,
                     ['class' => 'card-body card-comments', 'id' => 'comments']
                 ),
                 ['id' => 'accordion', 'class' => 'card card-widget']
@@ -73,7 +92,7 @@ class Comment extends Widget
      */
     public function setItems()
     {
-        $this->items = static::baseQuery($this->model, $this->material);
+        $this->items = static::baseQuery($this->model, $this->material, $this->related);
     }
 
     /**
@@ -81,18 +100,20 @@ class Comment extends Widget
      */
     public function renderItems()
     {
-        $items = [];
-        foreach ($this->items as $item) {
-            $items[] = $this->view->render('/../modules/comment/views/default/_comment_template', [
-                'item'     => $item,
-                'model'    => $this->model,
-                'related'  => $this->related,
-                'material' => $this->material,
-                'level'    => 1,
-            ]);
-        }
-
-        return implode("\n", $items);
+        return $this->render('/../modules/comment/views/default/comment_wrapper', [
+            'items' => $this->items,
+            'model'    => $this->model,
+            'related'  => $this->related,
+            'material' => $this->material,
+            'level'    => 1,
+        ]);
+//        foreach ($this->items as $item) {
+//            $items[] = $this->view->render('/../modules/comment/views/default/_comment_template', [
+//                'item'     => $item,
+//            ]);
+//        }
+//
+//        return implode("\n", $items);
     }
 
 
@@ -106,6 +127,11 @@ class Comment extends Widget
      */
     public static function baseQuery($model, $material, $related = null, $parent = null)
     {
+        $pagination = new Pagination([
+            'totalCount' => $model::find()->count(),
+            'pageSize' => static::PAGE_SIZE,
+        ]);
+
         if ($parent) {
             return $model::find()->where([
                 'parent_id' => $parent,
@@ -121,8 +147,10 @@ class Comment extends Widget
                 ->select(['*', 'count' => $subQueryCount])
                 ->with('user')
                 ->from($model::tableName() . ' m')
-                ->where(['m.moqup_id' => $material, 'parent_id' => null])
+                ->where(['m.' . $related => $material, 'parent_id' => null])
                 ->orderBy(['m.created_at' => SORT_DESC])
+                ->limit($pagination->getLimit())
+                ->offset($pagination->getOffset())
                 ->all();
         }
     }

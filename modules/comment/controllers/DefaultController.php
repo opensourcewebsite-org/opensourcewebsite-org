@@ -3,6 +3,7 @@
 namespace app\modules\comment\controllers;
 
 use app\modules\comment\Comment;
+use yii\data\Pagination;
 use yii\web\Controller;
 use yii\helpers\Html;
 use Yii;
@@ -81,6 +82,22 @@ class DefaultController extends Controller
         }
 
         return $html;
+    }
+
+    public function actionPager()
+    {
+        $model = Yii::$app->request->get('model');
+        $related = Yii::$app->request->get('related');
+        $material = Yii::$app->request->get('material');
+        $items = Comment::baseQuery($model, $material, $related);
+
+        return $this->renderAjax('comment_wrapper', [
+            'items' => $items,
+            'model'    => $model,
+            'related'  => $related,
+            'material' => $material,
+            'level'    => 1,
+        ]);
     }
 
     /**
@@ -203,7 +220,7 @@ class DefaultController extends Controller
 
             $transaction->commit();
 
-            $itemsQuery = Comment::baseQuery($model, $material);
+            $itemsQuery = Comment::baseQuery($model, $material, $related);
 
             $items = [];
             foreach ($itemsQuery as $item) {
