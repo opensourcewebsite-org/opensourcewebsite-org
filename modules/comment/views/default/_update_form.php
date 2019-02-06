@@ -42,6 +42,7 @@ $form = ActiveForm::begin([
             'rows'        => 3,
             'class'       => 'form-control',
             'placeholder' => 'Add a public comment...',
+            'maxlength' => true
         ])->label(false) ?>
         <div class="mt-2 float-right">
             <?= Html::button(

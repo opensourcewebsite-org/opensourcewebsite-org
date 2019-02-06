@@ -61,6 +61,7 @@ class MoqupComment extends \yii\db\ActiveRecord
             [['moqup_id'], 'exist', 'skipOnError'     => true, 'targetClass' => Moqup::className(),
                                     'targetAttribute' => ['moqup_id' => 'id'],
             ],
+            [['message'], 'string', 'max' => 500],
             [['user_id'], 'exist', 'skipOnError'     => true, 'targetClass' => User::className(),
                                    'targetAttribute' => ['user_id' => 'id'],
             ],

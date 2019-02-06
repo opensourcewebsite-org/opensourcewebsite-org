@@ -55,6 +55,7 @@ Html::hiddenInput($shortName . '[parent_id]', $parent) ?>
             'rows'        => 3,
             'class'       => 'form-control',
             'placeholder' => 'Add a public comment...',
+            'maxlength' => true
         ])->label(false) ?>
         <div class="mt-2 float-right">
             <?= ($mainForm

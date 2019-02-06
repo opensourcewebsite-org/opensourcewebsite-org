@@ -3,6 +3,7 @@
 namespace app\modules\comment\controllers;
 
 use app\modules\comment\Comment;
+use yii\helpers\BaseHtml;
 use yii\web\Controller;
 use yii\helpers\Html;
 use Yii;
@@ -230,6 +231,7 @@ class DefaultController extends Controller
                     }
                 }
             }
+            return BaseHtml::errorSummary($model);
         }
 
         return ' ';
@@ -253,6 +255,7 @@ class DefaultController extends Controller
                     return $model->message;
                 }
             }
+            return BaseHtml::errorSummary($model);
         }
     }
 
