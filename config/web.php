@@ -22,6 +22,11 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'comment' => [
+            'class' => 'app\modules\comment\Module'
+        ],
+    ],
     'components' => [
         'assetManager' => [
             'class' => 'app\components\AssetManager',
