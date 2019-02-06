@@ -22,6 +22,7 @@ foreach ($items as $step => $item) {
         'related'  => $related,
         'material' => $material,
         'level'    => 1,
+        'mainForm' => false,
     ];
 
     $comment[] = $this->render('_comment_template', $options);

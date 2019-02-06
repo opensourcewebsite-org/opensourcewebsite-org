@@ -6,10 +6,10 @@ use app\modules\comment\Comment;
 use yii\web\Controller;
 use yii\helpers\Html;
 use Yii;
-use yii\helpers\BaseHtml;
 use yii\helpers\Url;
 use yii\filters\AccessControl;
 use yii\web\ServerErrorHttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * Default controller for the `admin` module
@@ -59,7 +59,6 @@ class DefaultController extends Controller
 
         $modelClass = $model;
 
-        //TODO check access
         $items = $model::find()->where([
             'parent_id' => (int)$parent_id,
             $related    => $material,
@@ -90,6 +89,7 @@ class DefaultController extends Controller
                 'material' => $material,
                 'model'    => $modelClass,
                 'level'    => 2,
+                'mainForm' => false,
             ]);
         }
 
@@ -107,6 +107,17 @@ class DefaultController extends Controller
 
         $query = Comment::baseQuery($model, $material, $related);
         $items = $query['query'];
+
+        /**
+         * @var $pagination \yii\data\Pagination
+         */
+        $pagination = $query['pagination'];
+
+        # Small bug fixed: if user deleted his message
+        # pagination works incorrect (FIXED)
+        if ($pagination->totalCount == $pagination->pageSize) {
+            array_shift($items);
+        }
 
         //TODO THINK OVER LEVEL PARAM
         return $this->renderAjax('comment_wrapper', [
@@ -137,7 +148,6 @@ class DefaultController extends Controller
             $model->$related = $material;
 
             if ($model->validate()) {
-                //TODO check Access
                 if ($q = $model::findOne(['id' => $model->id])) {
                     $model = $q;
                     $model->setAttributes([
@@ -153,7 +163,6 @@ class DefaultController extends Controller
                         $parent = null;
                     }
 
-                    //TODO check access
                     $query = Comment::baseQuery($model, $material, $related, $parent);
                     $items = $query['query'];
 
@@ -172,6 +181,7 @@ class DefaultController extends Controller
                             'related'  => $related,
                             'material' => $material,
                             'level'    => 1,
+                            'mainForm' => $mainForm,
                         ];
 
                         return $this->renderAjax(
@@ -202,6 +212,7 @@ class DefaultController extends Controller
                             'related'  => $related,
                             'material' => $material,
                             'level'    => 1,
+                            'mainForm' => $mainForm,
                         ];
 
                         if ($parent) {
@@ -219,7 +230,6 @@ class DefaultController extends Controller
                     }
                 }
             }
-            Yii::$app->session->setFlash('danger', BaseHtml::errorSummary($model));
         }
 
         return ' ';
@@ -232,10 +242,10 @@ class DefaultController extends Controller
      */
     public function actionUpdate($id)
     {
-        //TODO check access
         $modelName = Yii::$app->request->post('model', null);
 
         $model = $modelName::findOne(['id' => $id]);
+        $this->checkAccess($model->id, $modelName);
 
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
@@ -244,7 +254,6 @@ class DefaultController extends Controller
                 }
             }
         }
-        Yii::$app->session->setFlash('danger', BaseHtml::errorSummary($model));
     }
 
     /**
@@ -258,7 +267,8 @@ class DefaultController extends Controller
      */
     public function actionDelete($model, $id, $material, $related, $level)
     {
-        //TODO check access
+        $this->checkAccess($id, $model);
+
         if ($main = $model::findOne(['id' => (int)$id])) {
             $transaction = Yii::$app->db->beginTransaction('SERIALIZABLE');
 
@@ -290,15 +300,19 @@ class DefaultController extends Controller
 
             $count = count($itemsQuery);
 
-            $html = Html::tag(
-                'span',
-                "replies ({$count})",
-                [
-                    'class' => 'text-muted show-reply',
-                ]
-            );
+            if ($count > 0) {
+                $html = Html::tag(
+                    'span',
+                    "replies ({$count})",
+                    [
+                        'class' => 'text-muted show-reply',
+                    ]
+                );
 
-            $html .= '<br /><br />';
+                $html .= '<br /><br />';
+            } else {
+                $html = ' ';
+            }
 
             foreach ($itemsQuery as $item) {
                 $items[] = $this->renderPartial('_comment_template', [
@@ -307,6 +321,7 @@ class DefaultController extends Controller
                     'related'  => $related,
                     'material' => $material,
                     'level'    => 2,
+                    'mainForm' => false,
                 ]);
             }
 
@@ -318,5 +333,24 @@ class DefaultController extends Controller
         }
 
         return ' ';
+    }
+
+    /**
+     * @param int $id
+     * @param string $model
+     *
+     * @return void
+     * @throws NotFoundHttpException
+     */
+    protected function checkAccess($id, $model)
+    {
+        $access = $model::findOne([
+            'user_id' => Yii::$app->user->id,
+            'id'      => $id,
+        ]);
+
+        if (!$access) {
+            throw new NotFoundHttpException;
+        }
     }
 }

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\Modal;
 use yii\widgets\Pjax;
+use yii\widgets\ActiveForm;
 
 /**
  * @var $modelClass
@@ -19,32 +20,43 @@ Modal::begin([
     'toggleButton' => false,
 ]);
 
-    Pjax::begin(['id' => 'updateForm' . $model->id, 'enablePushState' => false,
-        'clientOptions' => ['container' => '#textMessage' . $model->id]]);
+Pjax::begin([
+    'id'            => 'updateForm' . $model->id, 'enablePushState' => false,
+    'clientOptions' => ['container' => '#textMessage' . $model->id],
+]);
 
-    echo
-        Html::beginForm(['/comment/default/update', 'id' => $model->id], 'post', ['data-pjax' => true]) .
-        Html::hiddenInput('model', $modelClass) .
-        Html::tag(
-            'div',
-            Html::activeTextarea(
-                $model,
-                'message',
+
+$form = ActiveForm::begin([
+    'action'  => ['/comment/default/update', 'id' => $model->id],
+    'options' => [
+        'id' => 'activeUpdateForm' . $model->id,
+        'data-pjax' => true,
+    ],
+]);
+?>
+
+<?= Html::hiddenInput('model', $modelClass) ?>
+
+    <div class="img-push">
+        <?= $form->field($model, 'message')->textarea([
+            'rows'        => 3,
+            'class'       => 'form-control',
+            'placeholder' => 'Add a public comment...',
+        ])->label(false) ?>
+        <div class="mt-2 float-right">
+            <?= Html::button(
+                'CANCEL',
                 [
-                    'rows'        => 3,
-                    'class'       => 'form-control',
-                    'placeholder' => 'Add a public comment...',
+                    'class'       => 'btn btn-light mr-2',
+                    'data-toggle' => 'modal',
+                    'data-target' => '#updateModal' . $model->id,
                 ]
             ) .
-            Html::tag(
-                'div',
-                Html::button('CANCEL', ['class' => 'btn btn-light mr-2']) .
-                Html::submitButton('UPDATE', ['class' => 'btn btn-secondary']),
-                ['class' => 'mt-2 float-right']
-            ),
-            ['class' => 'img-push']
-        ) .
-        Html::endForm();
+            Html::submitButton('COMMENT', ['class' => 'btn btn-secondary']) ?>
+        </div>
+    </div>
 
-    Pjax::end();
-    Modal::end();
+<?php
+ActiveForm::end();
+Pjax::end();
+Modal::end();

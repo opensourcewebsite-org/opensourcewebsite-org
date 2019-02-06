@@ -83,7 +83,7 @@ if (!empty($moqup)):
 
 <?= Comment::widget([
     'model' => MoqupComment::class,
-    'material' => 2,
+    'material' => $moqup->id,
     'related' => 'moqup_id',
 ]);
 

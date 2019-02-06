@@ -1,7 +1,6 @@
 <?php
 namespace app\modules\comment;
 
-use app\modules\comment\models\MoqupComment;
 use Yii;
 use yii\data\Pagination;
 use yii\helpers\Html;
@@ -30,7 +29,7 @@ class Comment extends Widget
     public $material;
     public $related;
 
-    const PAGE_SIZE = 2;
+    const PAGE_SIZE = 25;
 
     /**
      * Renders the widget.
@@ -38,7 +37,7 @@ class Comment extends Widget
     public function run()
     {
         BootstrapAsset::register($this->getView());
-        CommentsAsset::register($this->getView());
+        //CommentsAsset::register($this->getView());
 
         $this->setItems();
         $this->setClientScripts();
@@ -156,7 +155,10 @@ class Comment extends Widget
     public static function baseQuery($model, $material, $related = null, $parent = null)
     {
         $pagination = new Pagination([
-            'totalCount' => $model::find()->where(['parent_id' => null])->count(),
+            'totalCount' => $model::find()
+                ->where(['parent_id' => null])
+                ->andWhere([$related => $material])
+                ->count(),
             'pageSize'   => static::PAGE_SIZE,
         ]);
 

@@ -9,6 +9,7 @@ use app\modules\comment\models\MoqupComment;
  * @var $level int
  * @var $related string
  * @var $material string
+ * @var $mainForm bool
  */
 
 $user = Html::tag(
@@ -75,21 +76,26 @@ $replyBtn = Html::tag(
     ]
 );
 
+$optionReplyForm = [
+    'parent'     => $item->id,
+    'related'    => $related,
+    'modelClass' => $model,
+    'material'   => $material,
+    'mainForm'   => false,
+];
+
 $template = $user . $showControlBtns . $label .
     ($level < 2 ? $replyBtn : '') .
     ($level < 2 ? Html::tag(
         'div',
         '<br />' .
-        $this->render(
+        (($mainForm) ? $this->renderAjax(
             '_reply_form',
-            [
-                'parent'     => $item->id,
-                'related'    => $related,
-                'modelClass' => $model,
-                'material'   => $material,
-                'mainForm'   => false,
-            ]
-        ),
+            $optionReplyForm
+        ) : $this->render(
+            '_reply_form',
+            $optionReplyForm
+        )),
         [
             'id'          => 'collapse' . $item->id,
             'class'       => 'collapse',
