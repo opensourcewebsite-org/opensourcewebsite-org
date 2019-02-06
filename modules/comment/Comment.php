@@ -41,32 +41,28 @@ class Comment extends Widget
         CommentsAsset::register($this->getView());
 
         $this->setItems();
-
-
-        $pagination = new Pagination([
-            'totalCount' => MoqupComment::find()->where(['parent_id' => null])->count(),
-            'pageSize' => static::PAGE_SIZE,
-        ]);
+        $this->setClientScripts();
 
         $nextPages = '';
-        $pageSize= 1;
+        $pageSize = 1;
 
         do {
             $pageSize++;
 
-            $nextPages .= '<div id="next-page'.$pageSize.'"></div>';
-        } while ($pageSize < $pagination->getPageCount());
+            $nextPages .= '<div id="next-page' . $pageSize . '"></div>';
+        } while ($pageSize < $this->items['pagination']->getPageCount());
 
         return
             Html::tag(
                 'div',
+                $this->renderMainForm() .
                 Html::tag(
                     'div',
-                    $this->renderMainForm(),
-                    ['class' => 'card-header']
-                ) .
-                Html::tag(
-                    'div',
+                    Html::tag(
+                        'div',
+                        '',
+                        ['id' => 'main-response']
+                    ) .
                     $this->renderItems() . $nextPages,
                     ['class' => 'card-body card-comments', 'id' => 'comments']
                 ),
@@ -75,16 +71,51 @@ class Comment extends Widget
     }
 
     /**
+     * @return void
+     */
+    public function setClientScripts()
+    {
+        $className = mb_strtolower(\yii\helpers\StringHelper::basename(get_class(new $this->model)));
+
+        $this->view->registerJs('$(document).on(\'pjax:complete\', function(event) {
+            $(\'form.formReplies #' . $className . '-message\').val(\'\');
+            
+            $(\'.modal\').modal(\'hide\');
+        });
+        $(\'#main-response\').on(\'pjax:end\', function(event) {
+            $(\'#replyForm\').remove();
+            $(\'#accordion .card-header\').remove();
+        });
+        ');
+    }
+
+    /**
      * @return string
      */
     public function renderMainForm()
     {
-        return $this->render('/../modules/comment/views/default/_reply_form', [
-            'parent' => null,
-            'modelClass'  => $this->model,
-            'related' => $this->related,
-            'material' => $this->material,
-        ]);
+        $model = $this->model;
+        if ($model::findOne([
+            'user_id'      => Yii::$app->user->id,
+            'parent_id'    => null,
+            $this->related => $this->material,
+        ])
+        ) {
+            return '';
+        }
+
+        return
+            Html::tag(
+                'div',
+                $this->render('/../modules/comment/views/default/_reply_form', [
+                    'parent'     => null,
+                    'modelClass' => $this->model,
+                    'related'    => $this->related,
+                    'material'   => $this->material,
+                    'mainForm'   => true,
+                ]),
+                ['class' => 'card-header']
+            );
     }
 
     /**
@@ -92,7 +123,10 @@ class Comment extends Widget
      */
     public function setItems()
     {
-        $this->items = static::baseQuery($this->model, $this->material, $this->related);
+
+        $query = static::baseQuery($this->model, $this->material, $this->related);
+
+        $this->items = $query;
     }
 
     /**
@@ -101,19 +135,13 @@ class Comment extends Widget
     public function renderItems()
     {
         return $this->render('/../modules/comment/views/default/comment_wrapper', [
-            'items' => $this->items,
-            'model'    => $this->model,
-            'related'  => $this->related,
-            'material' => $this->material,
-            'level'    => 1,
+            'items'      => $this->items['query'],
+            'model'      => $this->model,
+            'related'    => $this->related,
+            'material'   => $this->material,
+            'pagination' => $this->items['pagination'],
+            'level'      => 1,
         ]);
-//        foreach ($this->items as $item) {
-//            $items[] = $this->view->render('/../modules/comment/views/default/_comment_template', [
-//                'item'     => $item,
-//            ]);
-//        }
-//
-//        return implode("\n", $items);
     }
 
 
@@ -128,30 +156,42 @@ class Comment extends Widget
     public static function baseQuery($model, $material, $related = null, $parent = null)
     {
         $pagination = new Pagination([
-            'totalCount' => $model::find()->count(),
-            'pageSize' => static::PAGE_SIZE,
+            'totalCount' => $model::find()->where(['parent_id' => null])->count(),
+            'pageSize'   => static::PAGE_SIZE,
         ]);
 
         if ($parent) {
-            return $model::find()->where([
+            $query = $model::find()->where([
                 'parent_id' => $parent,
                 $related    => $material,
             ])->with('user')->all();
+
+
+            return [
+                'pagination' => $pagination,
+                'query'      => $query,
+            ];
         } else {
             $subQueryCount = $model::find()
                 ->select('COUNT(`s`.`id`)')
                 ->from($model::tableName() . ' s')
                 ->where('s.parent_id=`m`.`id`');
 
-            return $model::find()
+            $query = $model::find()
                 ->select(['*', 'count' => $subQueryCount])
                 ->with('user')
                 ->from($model::tableName() . ' m')
-                ->where(['m.' . $related => $material, 'parent_id' => null])
+                ->where(['m.' . $related => $material])
+                ->andWhere(['parent_id' => null])
                 ->orderBy(['m.created_at' => SORT_DESC])
                 ->limit($pagination->getLimit())
                 ->offset($pagination->getOffset())
                 ->all();
+
+            return [
+                'pagination' => $pagination,
+                'query'      => $query,
+            ];
         }
     }
 }

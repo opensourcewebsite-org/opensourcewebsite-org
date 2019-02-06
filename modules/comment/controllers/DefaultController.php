@@ -3,13 +3,13 @@
 namespace app\modules\comment\controllers;
 
 use app\modules\comment\Comment;
-use yii\data\Pagination;
 use yii\web\Controller;
 use yii\helpers\Html;
 use Yii;
 use yii\helpers\BaseHtml;
 use yii\helpers\Url;
 use yii\filters\AccessControl;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Default controller for the `admin` module
@@ -35,6 +35,18 @@ class DefaultController extends Controller
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function beforeAction($action)
+    {
+        if (!Yii::$app->request->isAjax) {
+            throw new ServerErrorHttpException('Wrong type request');
+        }
+
+        return parent::beforeAction($action);
+    }
+
+    /**
      * @param int $parent_id
      * @param int $material
      * @param string $related
@@ -56,7 +68,7 @@ class DefaultController extends Controller
         $count = count($items);
 
         $html = Html::tag(
-            'a',
+            'span',
             "replies ({$count})",
             [
                 'class' => 'text-muted show-reply',
@@ -84,19 +96,26 @@ class DefaultController extends Controller
         return $html;
     }
 
+    /**
+     * @return string
+     */
     public function actionPager()
     {
         $model = Yii::$app->request->get('model');
         $related = Yii::$app->request->get('related');
         $material = Yii::$app->request->get('material');
-        $items = Comment::baseQuery($model, $material, $related);
 
+        $query = Comment::baseQuery($model, $material, $related);
+        $items = $query['query'];
+
+        //TODO THINK OVER LEVEL PARAM
         return $this->renderAjax('comment_wrapper', [
-            'items' => $items,
-            'model'    => $model,
-            'related'  => $related,
-            'material' => $material,
-            'level'    => 1,
+            'items'      => $items,
+            'model'      => $model,
+            'related'    => $related,
+            'material'   => $material,
+            'pagination' => $query['pagination'],
+            'level'      => 1,
         ]);
     }
 
@@ -109,6 +128,7 @@ class DefaultController extends Controller
 
         $material = Yii::$app->request->post('material');
         $related = Yii::$app->request->post('related');
+        $mainForm = Yii::$app->request->post('mainForm', false);
 
         $model = new $modelName;
         if ($model->load(Yii::$app->request->post())) {
@@ -134,8 +154,45 @@ class DefaultController extends Controller
                     }
 
                     //TODO check access
+                    $query = Comment::baseQuery($model, $material, $related, $parent);
+                    $items = $query['query'];
 
-                    $items = Comment::baseQuery($model, $material, $related, $parent);
+                    if (!$parent && $mainForm) {
+                        $nextPages = '';
+                        $pageSize = 1;
+
+                        do {
+                            $pageSize++;
+
+                            $nextPages .= '<div id="next-page' . $pageSize . '"></div>';
+                        } while ($pageSize < $query['pagination']->getPageCount());
+
+                        $options = [
+                            'model'    => $modelName,
+                            'related'  => $related,
+                            'material' => $material,
+                            'level'    => 1,
+                        ];
+
+                        return $this->renderAjax(
+                            '_comment_template',
+                            array_merge($options, ['item' => array_shift($items)])
+                        );
+                    }
+
+                    if ($parent) {
+                        $count = count($items);
+
+                        $html = Html::tag(
+                            'span',
+                            "replies ({$count})",
+                            [
+                                'class' => 'text-muted show-reply',
+                            ]
+                        );
+
+                        $html .= '<br /><br />';
+                    }
 
                     $Mitems = [];
                     foreach ($items as $step => $item) {
@@ -147,23 +204,24 @@ class DefaultController extends Controller
                             'level'    => 1,
                         ];
 
-                        if (!$parent && $step == 0) {
+                        if ($parent) {
+                            $options['level'] = 2;
                             $Mitems[] = $this->renderAjax('_comment_template', $options);
                         } else {
-                            if ($parent) {
-                                $options['level'] = 2;
-                                $Mitems[] = $this->renderAjax('_comment_template', $options);
-                            } else {
-                                $Mitems[] = $this->renderPartial('_comment_template', $options);
-                            }
+                            $Mitems[] = $this->renderPartial('_comment_template', $options);
                         }
                     }
 
-                    return implode("\n", $Mitems);
+                    if ($parent) {
+                        return $html . implode("\n", $Mitems);
+                    } else {
+                        return implode("\n", $Mitems);
+                    }
                 }
             }
             Yii::$app->session->setFlash('danger', BaseHtml::errorSummary($model));
         }
+
         return ' ';
     }
 
@@ -198,7 +256,7 @@ class DefaultController extends Controller
      * @return bool|string
      * @throws \yii\db\Exception
      */
-    public function actionDelete($model, $id, $material, $related)
+    public function actionDelete($model, $id, $material, $related, $level)
     {
         //TODO check access
         if ($main = $model::findOne(['id' => (int)$id])) {
@@ -220,20 +278,43 @@ class DefaultController extends Controller
 
             $transaction->commit();
 
-            $itemsQuery = Comment::baseQuery($model, $material, $related);
+            $parent = null;
+            if ($main->parent_id) {
+                $parent = $main->parent_id;
+            }
+
+            $query = Comment::baseQuery($model, $material, $related, $parent);
+            $itemsQuery = $query['query'];
 
             $items = [];
+
+            $count = count($itemsQuery);
+
+            $html = Html::tag(
+                'span',
+                "replies ({$count})",
+                [
+                    'class' => 'text-muted show-reply',
+                ]
+            );
+
+            $html .= '<br /><br />';
+
             foreach ($itemsQuery as $item) {
                 $items[] = $this->renderPartial('_comment_template', [
                     'item'     => $item,
                     'model'    => $model,
                     'related'  => $related,
                     'material' => $material,
-                    'level'    => 1,
+                    'level'    => 2,
                 ]);
             }
 
-            return implode("\n", $items);
+            if ($level == 1) {
+                return ' ';
+            } else {
+                return $html . implode("\n", $items);
+            }
         }
 
         return ' ';

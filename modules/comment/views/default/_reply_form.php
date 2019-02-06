@@ -8,9 +8,10 @@ use \yii\widgets\Pjax;
  * @var $parent int
  * @var $related string
  * @var $material string
+ * @var $mainForm bool
  */
 
-$container = '#comments';
+$container = '#main-response';
 if ($parent) {
     $container = '#insideComments' . $parent;
 }
@@ -18,7 +19,7 @@ if ($parent) {
 $options = [
     'id' => 'replyForm' . $parent,
     'enablePushState' => false,
-    'timeout' => 999999999 * 999999,
+    'timeout' => 99999999,
     'clientOptions' => ['container' => $container]
 ];
 
@@ -28,10 +29,11 @@ $modelInst = new $modelClass;
 $shortName = $modelInst->formName();
 
 echo
-    Html::beginForm(['/comment/default/handler'], 'post', ['data-pjax' => true]) .
+    Html::beginForm(['/comment/default/handler'], 'post', ['data-pjax' => true, 'class' => 'formReplies']) .
     Html::hiddenInput('related', $related) .
     Html::hiddenInput('model', $modelClass) .
     Html::hiddenInput('material', $material) .
+    Html::hiddenInput('mainForm', $mainForm) .
     Html::hiddenInput($shortName . '[parent_id]', $parent) .
     Html::img(
         'https://secure.gravatar.com/avatar/b4284e48ee666373b3e7adee3cbd0958?r=g&amp;s=20',
@@ -50,7 +52,16 @@ echo
         ) .
         Html::tag(
             'div',
-            Html::button('CANCEL', ['class' => 'btn btn-light mr-2']) .
+            ($mainForm ? '' :
+                Html::button(
+                    'CANCEL',
+                    [
+                        'class' => 'btn btn-light mr-2',
+                        'data-toggle' => 'collapse',
+                        'data-target' => '#collapse' . $parent,
+                    ]
+                )
+            ) .
             Html::submitButton('COMMENT', ['class' => 'btn btn-secondary']),
             ['class' => 'mt-2 float-right']
         ),

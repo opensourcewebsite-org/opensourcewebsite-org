@@ -15,9 +15,9 @@ use yii\widgets\Pjax;
 Pjax::begin([
     'id' => 'insideComments' . $inside,
     'enablePushState' => false,
-    'timeout' => 999999999 * 999999,
+    'timeout' => 99999999,
     'formSelector' => false,
-//    'clientOptions' => ['container' => '#collapseReply' . $inside]
+    'linkSelector' => '#repliesLink' . $inside
 ]);
 
 echo (($count > 0) ? Html::tag(
@@ -26,6 +26,7 @@ echo (($count > 0) ? Html::tag(
     [
         'class'         => 'text-muted show-reply',
         'href'          => Url::to(['/comment/default/index', 'parent_id' => $inside, 'material' => $material, 'related' => $related, 'model' => $model]),
+        'id' => 'repliesLink' . $inside
     ]
 ) : '') . Html::tag('div', '', ['id' => 'collapseReply' . $inside]);
 
