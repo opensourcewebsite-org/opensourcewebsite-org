@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\EditProfileForm;
 use Yii;
 use app\models\Moqup;
 use app\models\User;
@@ -20,7 +21,7 @@ class UserController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['display', 'follow-moqup', 'unfollow-moqup', 'follow-user', 'unfollow-user'],
+                'only' => ['edit-profile', 'display', 'follow-moqup', 'unfollow-moqup', 'follow-user', 'unfollow-user'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -101,7 +102,7 @@ class UserController extends Controller
 
     public function actionEditProfile()
     {
-        $model = Yii::$app->user->identity;
+        $model = new EditProfileForm(Yii::$app->user->identity);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', 'Updated successfully.');

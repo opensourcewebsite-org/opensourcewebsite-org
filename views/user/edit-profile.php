@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $issue app\models\User */
+/* @var $issue \app\models\EditProfileForm */
 /* @var $form yii\widgets\ActiveForm */
 
 ?>
@@ -21,7 +21,12 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => $model->id])->label('Name (optional)'); ?>
+                            <?= $form->field($model, 'username')->textInput(['maxlength' => true]); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
                         </div>
                     </div>
                 </div>

@@ -85,9 +85,15 @@ $this->title = 'Account';
                 'model' => $model,
                 'attributes' => [
                     [
+                        'label' => 'Username',
+                        'value' => function ($model) {
+                            return $model->username ?? 'Not defined';
+                        }
+                    ],
+                    [
                         'label' => 'Name',
                         'value' => function ($model) {
-                            return $model->name ?? $model->id;
+                            return $model->name ?? 'Not defined';
                         }
                     ],
                 ],
