@@ -74,8 +74,14 @@ $this->title = 'Account';
         <div class="col-md-6">
             <?= Html::a('<i class="fas fa-edit"></i>', ['user/profile'], [
                 'class' => 'btn btn-light',
-                'target' => '_blank',
                 'title' => 'Edit',
+                'style' => ['float' => 'right'],
+            ]); ?>
+            
+            <?= Html::a('<i class="fas fa-eye"></i>', ['user/view', 'id' => $model->id], [
+                'class' => 'btn btn-light',
+                'title' => 'Edit',
+                'target' => '_blank',
                 'style' => ['float' => 'right'],
             ]); ?>
         </div>
@@ -89,6 +95,12 @@ $this->title = 'Account';
                         'label' => 'Name',
                         'value' => function ($model) {
                             return $model->name ?? $model->id;
+                        }
+                    ],
+                    [
+                        'label' => 'Username',
+                        'value' => function ($model) {
+                            return $model->username ?? $model->id;
                         }
                     ],
                 ],
