@@ -56,7 +56,13 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'integer'],
-            ['name', 'string'],
+            [['name', 'username'], 'string'],
+            ['username', 'unique'],
+            [
+            'username',
+            'match', 'not' => true, 'pattern' => '/[^a-zA-Z0-9_]/',
+            'message' => "Only use letters, numbers and '-'",
+            ],
         ];
     }
 
