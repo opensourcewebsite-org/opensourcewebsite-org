@@ -99,7 +99,7 @@ class UserController extends Controller
         exit;
     }
 
-    public function actionProfile()
+    public function actionEditProfile()
     {
         $model = Yii::$app->user->identity;
 
@@ -108,7 +108,7 @@ class UserController extends Controller
             return $this->redirect('/site/account');
         }
 
-        return $this->render('profile', [
+        return $this->render('edit-profile', [
             'model' => $model,
         ]);
     }
