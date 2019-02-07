@@ -99,17 +99,54 @@ class UserController extends Controller
         exit;
     }
 
+    /**
+     * Profile section for the account page
+     * 
+     */
+
     public function actionProfile()
     {
         $model = Yii::$app->user->identity;
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', 'Updated successfully.');
-            return $this->redirect('/site/account');
+        
+        if($model){
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Yii::$app->session->setFlash('success', 'Updated successfully.');
+                return $this->redirect('/site/account');
+            }
+            
+            return $this->render('profile', [
+                'model' => $model,
+            ]);
         }
-
-        return $this->render('profile', [
-            'model' => $model,
-        ]);
+        
+    }
+    
+    
+    /**
+     * View profile page for the user
+     * 
+     */
+    
+    public function actionView( $id ){
+        $model = Yii::$app->user->identity;
+        
+        if($model){
+            return $this->render('view', [
+                'model' => $model,
+            ]);
+        }else{
+            
+            $referrer = ReferrerHelper::getReferrerFromCookie();
+            if ($user = User::findOne($id)) {
+                if ($referrer === null) {
+                    // first time
+                    ReferrerHelper::addReferrer($user);
+                } elseif ($referrer->value != $id) {
+                    // change refferer
+                    ReferrerHelper::changeReferrer($user);
+                }
+            }
+            return $this->redirect('/site/error');
+        }
     }
 }
