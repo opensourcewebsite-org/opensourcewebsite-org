@@ -49,7 +49,7 @@ class EditProfileForm extends Model
         }
 
         if (is_numeric($this->username)) {
-            $this->addError('username', 'User name can\' be number');
+            $this->addError('username', 'User name can\'t be number');
             return;
         }
 
@@ -66,7 +66,7 @@ class EditProfileForm extends Model
         }
 
         if (is_numeric($this->name)) {
-            $this->addError('name', 'Name can\' be number');
+            $this->addError('name', 'Name can\'t be number');
         }
     }
 
