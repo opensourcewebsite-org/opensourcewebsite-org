@@ -6,6 +6,10 @@ return [
             'type' => 'fractional',
             'validation' => ['sign' => 'positive'],
         ],
+        'days_count_to_calculate_active_rating' => [
+            'type' => 'fractional',
+            'validation' => ['sign' => 'positive'],
+        ],
         'moqup_quantity_value_per_one_rating' => [
             'type' => 'fractional',
             'validation' => ['sign' => 'positive'],

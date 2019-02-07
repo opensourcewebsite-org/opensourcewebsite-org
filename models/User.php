@@ -506,8 +506,11 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getActiveRating()
     {
+        $setting = Setting::findOne(['key' => 'days_count_to_calculate_active_rating']);
+        $daysActiveRating = intval($setting->value);
+
         $balance = Rating::find()
-            ->where(['>', 'created_at', time() - 3600 * 24 * 30])
+            ->where(['>', 'created_at', time() - 3600 * 24 * $daysActiveRating])
             ->andWhere(['user_id' => $this->id])
             ->sum('amount');
 
