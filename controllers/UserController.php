@@ -2,12 +2,16 @@
 
 namespace app\controllers;
 
+use app\components\helpers\ReferrerHelper;
+use app\models\EditProfileForm;
+use app\models\Rating;
 use Yii;
 use app\models\Moqup;
 use app\models\User;
 use app\models\UserMoqupFollow;
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 class UserController extends Controller
 {
@@ -20,7 +24,7 @@ class UserController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['display', 'follow-moqup', 'unfollow-moqup', 'follow-user', 'unfollow-user'],
+                'only' => ['edit-profile', 'display', 'follow-moqup', 'unfollow-moqup', 'follow-user', 'unfollow-user'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -101,14 +105,49 @@ class UserController extends Controller
 
     public function actionProfile()
     {
-        $model = Yii::$app->user->identity;
+        $userId = \Yii::$app->request->get('id');
+        if (!$userId) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var User $user */
+        $user = User::find()->where(['or', ['id' => $userId], ['username' => $userId]])->one();
+        if (!$user) {
+            throw new NotFoundHttpException();
+        }
+
+        $currentUser = Yii::$app->getUser();
+
+        if ($currentUser->getIsGuest()) {
+            $referrer = ReferrerHelper::getReferrerFromCookie();
+            if ($referrer === null) {
+                ReferrerHelper::addReferrer($user);
+            } elseif ($referrer->value != $user->id) {
+                ReferrerHelper::changeReferrer($user);
+            }
+
+            $currentUser->loginRequired();
+            return;
+        }
+
+        if ($userId == $user->id && $user->username) {
+            $this->redirect(['user/profile', 'id' => $user->username]);
+            return;
+        }
+
+        return $this->render('profile', ['model' => $user]);
+    }
+
+    public function actionEditProfile()
+    {
+        $model = new EditProfileForm(Yii::$app->user->identity);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', 'Updated successfully.');
             return $this->redirect('/site/account');
         }
 
-        return $this->render('profile', [
+        return $this->render('edit-profile', [
             'model' => $model,
         ]);
     }

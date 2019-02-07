@@ -72,9 +72,8 @@ $this->title = 'Account';
             <h1>Profile</h1>
         </div>
         <div class="col-md-6">
-            <?= Html::a('<i class="fas fa-edit"></i>', ['user/profile'], [
+            <?= Html::a('<i class="fas fa-edit"></i>', ['user/edit-profile'], [
                 'class' => 'btn btn-light',
-                'target' => '_blank',
                 'title' => 'Edit',
                 'style' => ['float' => 'right'],
             ]); ?>
@@ -85,6 +84,11 @@ $this->title = 'Account';
             <?php echo DetailView::widget([
                 'model' => $model,
                 'attributes' => [
+                    [
+                        'label' => 'Username',
+                        'value' => $model->username,
+                        'visible' => (bool)$model->username
+                    ],
                     [
                         'label' => 'Name',
                         'value' => function ($model) {
