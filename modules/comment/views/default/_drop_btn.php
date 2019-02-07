@@ -15,7 +15,7 @@ if ($level > 1) {
     $parent = $getParent->parent_id;
 }
 
-
+//TODO Optimization
 if ($parent) {
     Pjax::begin([
         'id'              => 'dropbtn' . $item->id,
@@ -60,6 +60,7 @@ echo Html::tag(
             'related'  => $related,
             'level'    => $level,
         ]),
+        'onclick'=> 'var r = confirm(\'Are you sure?\'); if (r == true) {return true;} else {return false;}'
     ]
 );
 
