@@ -24,6 +24,12 @@ use yii\widgets\ActiveForm;
                             <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => $model->id])->label('Name (optional)'); ?>
                         </div>
                     </div>
+                    
+                     <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'placeholder' => $model->id])->label('Username (optional)'); ?>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
