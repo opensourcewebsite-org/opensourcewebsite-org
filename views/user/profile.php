@@ -26,7 +26,7 @@ use yii\widgets\ActiveForm;
                     </div>
                     
                      <div class="row">
-                        <div class="col">
+                        <div  class="col">
                             <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'placeholder' => $model->id])->label('Username (optional)'); ?>
                         </div>
                     </div>
