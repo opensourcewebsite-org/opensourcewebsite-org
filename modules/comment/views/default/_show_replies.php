@@ -22,7 +22,7 @@ Pjax::begin([
 
 echo (($count > 0) ? Html::tag(
     'a',
-    "replies ({$count})",
+    "View replies ({$count})",
     [
         'class'         => 'text-muted show-reply',
         'href'          => Url::to(['/comment/default/index', 'parent_id' => $inside, 'material' => $material, 'related' => $related, 'model' => $model]),

@@ -37,14 +37,14 @@ class DefaultController extends Controller
     /**
      * {@inheritdoc}
      */
-    /*public function beforeAction($action)
+    public function beforeAction($action)
     {
         if (!Yii::$app->request->isAjax) {
             throw new ServerErrorHttpException('Wrong type request');
         }
 
         return parent::beforeAction($action);
-    }*/
+    }
 
     /**
      * @param int $parent_id
@@ -79,7 +79,7 @@ class DefaultController extends Controller
 
         $html = Html::tag(
             'span',
-            "replies ({$count})",
+            "View replies ({$count})",
             [
                 'class' => 'text-muted show-reply',
                 'href'  => Url::to([
@@ -265,7 +265,7 @@ class DefaultController extends Controller
 
                         $html = Html::tag(
                             'span',
-                            "replies ({$count})",
+                            "View replies ({$count})",
                             [
                                 'class' => 'text-muted show-reply',
                             ]
@@ -365,7 +365,7 @@ class DefaultController extends Controller
 
                 $html = Html::tag(
                     'span',
-                    "replies ({$count})",
+                    "View replies ({$count})",
                     [
                         'class' => 'text-muted show-reply',
                     ]
@@ -468,7 +468,7 @@ class DefaultController extends Controller
             if ($count > 0) {
                 $html = Html::tag(
                     'span',
-                    "replies ({$count})",
+                    "View replies ({$count})",
                     [
                         'class' => 'text-muted show-reply',
                     ]

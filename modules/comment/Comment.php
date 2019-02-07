@@ -37,7 +37,7 @@ class Comment extends Widget
     public function run()
     {
         BootstrapAsset::register($this->getView());
-        //CommentsAsset::register($this->getView());
+        CommentsAsset::register($this->getView());
 
         $this->setItems();
         $this->setClientScripts();
