@@ -12,7 +12,7 @@ class m190207_115309_set_optional_username_field_user_table extends Migration
      */
     public function safeUp()
     {
-        $this->alterColumn('user', 'username', $this->string(255));
+        $this->alterColumn('user', 'username', $this->string());
     }
 
     /**
@@ -20,6 +20,6 @@ class m190207_115309_set_optional_username_field_user_table extends Migration
      */
     public function safeDown()
     {
-        $this->alterColumn('user', 'username', $this->string(255)->notNull());
+        $this->alterColumn('user', 'username', $this->string()->notNull());
     }
 }

@@ -86,14 +86,13 @@ $this->title = 'Account';
                 'attributes' => [
                     [
                         'label' => 'Username',
-                        'value' => function ($model) {
-                            return $model->username ?? 'Not defined';
-                        }
+                        'value' => $model->username,
+                        'visible' => (bool)$model->username
                     ],
                     [
                         'label' => 'Name',
                         'value' => function ($model) {
-                            return $model->name ?? 'Not defined';
+                            return $model->name ?? $model->id;
                         }
                     ],
                 ],

@@ -135,8 +135,7 @@ class UserController extends Controller
             return;
         }
 
-        $totalRating = Rating::getTotalRating();
-        return $this->render('profile', ['model' => $user, 'totalRating' => $totalRating]);
+        return $this->render('profile', ['model' => $user]);
     }
 
     public function actionEditProfile()

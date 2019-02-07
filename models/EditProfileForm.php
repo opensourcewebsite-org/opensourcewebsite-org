@@ -37,7 +37,8 @@ class EditProfileForm extends Model
         return [
             [['name', 'username'], 'trim'],
             ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/i', 'message' => 'Username must contain letters, numbers and _'],
-            ['username', 'validateUsernameUnique']
+            ['username', 'validateUsernameUnique'],
+            ['name', 'validateNameString'],
         ];
     }
 
@@ -58,12 +59,28 @@ class EditProfileForm extends Model
         }
     }
 
+    public function validateNameString()
+    {
+        if ($this->name == $this->_user->name) {
+            return;
+        }
+
+        if (is_numeric($this->name)) {
+            $this->addError('name', 'Name can\' be number');
+        }
+    }
+
     public function attributeLabels()
     {
         return [
             'username' => 'User name (optional)',
             'name' => 'Name (optional)',
         ];
+    }
+
+    public function getUserId()
+    {
+        return $this->_user->id;
     }
 
     public function save()

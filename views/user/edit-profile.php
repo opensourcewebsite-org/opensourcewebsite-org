@@ -26,7 +26,7 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
+                            <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => $model->getUserId()]); ?>
                         </div>
                     </div>
                 </div>
