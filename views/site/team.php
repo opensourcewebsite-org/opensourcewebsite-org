@@ -16,8 +16,8 @@ We accepts volunteers and interns who demonstrate appropriate skills and express
 </p>
 
 <ul>
-    <li>Open data</li>
     <li>Open source development</li>
+    <li>Open data</li>
     <li>Editorial and/or translation work</li>
     <li>UI/UX web design</li>
     <li>Social media and communications</li>
