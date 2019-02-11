@@ -7,7 +7,7 @@ use yii\helpers\Html;
 $this->title = 'Technologies and Web services We Use';
 ?>
 <div class="site-contact">
-    <h4>Technologies We Use</h4>
+    <h4>Technologies</h4>
 
     <ul>
         <li><?= Html::a('PHP 7', 'https://en.wikipedia.org/wiki/PHP') ?></li>
@@ -27,7 +27,7 @@ $this->title = 'Technologies and Web services We Use';
         <li><?= Html::a('Ubuntu', 'https://en.wikipedia.org/wiki/Ubuntu') ?></li>
     </ul>
 
-    <h4>Web services We Use</h4>
+    <h4>Web services</h4>
 
     <ul>
         <li><?= Html::a('GitHub.com', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?></li>

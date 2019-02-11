@@ -24,6 +24,16 @@ We accepts volunteers and interns who demonstrate appropriate skills and express
 </ul>
 
 <p>
+Read more about it
+</p>
+
+<ul>
+    <li><?= Html::a('Code of Conduct', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md') ?></li>
+    <li><?= Html::a('Contributing Guidelines', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md') ?></li>
+    <li><?= Html::a('Developer and User Wiki', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/wiki') ?></li>
+</ul>
+
+<p>
 If you are interested in volunteering for OSW, please <a href="/contact">contact</a> us or send a cover letter and your resume to:  team@opensourcewebsite.org.  Your cover letter should describe your areas of interest, your objective in seeking a volunteer experience, and your availability.
 </p>
 

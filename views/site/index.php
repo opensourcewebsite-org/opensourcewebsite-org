@@ -33,6 +33,7 @@ use yii\helpers\Html;
     <li><?= Html::a('Participatory monitoring', 'https://en.wikipedia.org/wiki/Participatory_monitoring') ?></li>
     <li><?= Html::a('Crowdsensing', 'https://en.wikipedia.org/wiki/Crowdsensing') ?></li>
     <li><?= Html::a('Internet activism', 'https://en.wikipedia.org/wiki/Internet_activism') ?></li>
+    <li><?= Html::a('Active citizenship', 'https://en.wikipedia.org/wiki/Active_citizenship') ?></li>
     <li><?= Html::a('Radical transparency', 'https://en.wikipedia.org/wiki/Radical_transparency') ?></li>
     <li><?= Html::a('Reputation system', 'https://en.wikipedia.org/wiki/Reputation_system') ?></li>
     <li><?= Html::a('Public participation', 'https://en.wikipedia.org/wiki/Public_participation') ?></li>
