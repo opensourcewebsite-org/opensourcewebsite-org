@@ -98,6 +98,16 @@ class SiteController extends Controller
         return $this->render('privacy-policy');
     }
 
+    public function actionRoadMap()
+    {
+        return $this->render('road-map');
+    }
+
+    public function actionTechnologies()
+    {
+        return $this->render('technologies');
+    }
+
 
     /**
      * Logs in a user.

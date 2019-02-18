@@ -76,6 +76,36 @@ $replyBtn = Html::tag(
     ]
 );
 
+$replyBtnInside = '';
+if ($level > 1) {
+    $replyBtnInside = Html::tag(
+        'a',
+        'REPLY',
+        [
+            'href'           => '',
+            'class'          => 'replyBtnInside text-secondary',
+            'data-parent_id' => $item->parent_id,
+            'data-id'        => $item->id,
+            'data-toggle'    => 'collapse',
+            'data-target'    => '#collapse' . $item->id,
+        ]
+    ) . Html::tag(
+        'div',
+        '<br />' . Html::tag(
+            'div',
+            '',
+            [
+                'id' => 'replyBtnInside_' . $item->parent_id . '_' . $item->id,
+            ]
+        ),
+        [
+            'id'          => 'collapse' . $item->id,
+            'class'       => 'collapse',
+            'data-parent' => '#accordion',
+        ]
+    );
+}
+
 $optionReplyForm = [
     'parent'     => $item->id,
     'related'    => $related,
@@ -85,17 +115,19 @@ $optionReplyForm = [
 ];
 
 $template = $user . $showControlBtns . $label .
-    ($level < 2 ? $replyBtn : '') .
+    ($level < 2 ? $replyBtn : '') . $replyBtnInside .
     ($level < 2 ? Html::tag(
         'div',
         '<br />' .
-        (($mainForm) ? $this->renderAjax(
-            '_reply_form',
-            $optionReplyForm
-        ) : $this->render(
-            '_reply_form',
-            $optionReplyForm
-        )),
+        (($mainForm)
+            ? $this->renderAjax(
+                '_reply_form',
+                $optionReplyForm
+            )
+            : $this->render(
+                '_reply_form',
+                $optionReplyForm
+            )),
         [
             'id'          => 'collapse' . $item->id,
             'class'       => 'collapse',

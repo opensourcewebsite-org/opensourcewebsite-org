@@ -4,6 +4,8 @@ use app\components\Converter;
 use app\components\helpers\IssuesHelper;
 use app\models\UserIssueVote;
 use yii\helpers\Html;
+use app\modules\comment\models\IssueComment;
+use app\modules\comment\Comment;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Issue */
@@ -63,6 +65,12 @@ $this->params['breadcrumbs'][] = '#'.$model->id;
         </div>
     </div>
 </div>
+
+<?= Comment::widget([
+    'model' => IssueComment::class,
+    'material' => $model->id,
+    'related' => 'issue_id',
+]); ?>
 
 
 <?php

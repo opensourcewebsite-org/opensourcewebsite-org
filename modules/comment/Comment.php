@@ -9,12 +9,12 @@ use yii\bootstrap\BootstrapAsset;
 use app\modules\comment\assets\CommentsAsset;
 
 /**
- * Component renders list of HTML comments.
+ * Component renders comments module.
  *
  * For example:
  *
  * ```php
- * echo Nav::widget([
+ * echo Comment::widget([
  *       'model' => MoqupComment::class,
  *       'material' => 2,
  *       'related' => 'moqup_id',
@@ -29,7 +29,7 @@ class Comment extends Widget
     public $material;
     public $related;
 
-    const PAGE_SIZE = 25;
+    const PAGE_SIZE = 20;
 
     /**
      * Renders the widget.
@@ -37,7 +37,7 @@ class Comment extends Widget
     public function run()
     {
         BootstrapAsset::register($this->getView());
-        //CommentsAsset::register($this->getView());
+        CommentsAsset::register($this->getView());
 
         $this->setItems();
         $this->setClientScripts();
@@ -156,18 +156,23 @@ class Comment extends Widget
     {
         $pagination = new Pagination([
             'totalCount' => $model::find()
-                ->where(['parent_id' => null])
+                ->where(['parent_id' => $parent])
                 ->andWhere([$related => $material])
                 ->count(),
             'pageSize'   => static::PAGE_SIZE,
         ]);
 
         if ($parent) {
-            $query = $model::find()->where([
-                'parent_id' => $parent,
-                $related    => $material,
-            ])->with('user')->all();
-
+            $query = $model::find()
+                ->where([
+                    'parent_id' => $parent,
+                    $related    => $material,
+                ])
+                ->with('user')
+                ->limit($pagination->getLimit())
+                ->offset($pagination->getOffset())
+                ->orderBy(['created_at' => SORT_DESC])
+                ->all();
 
             return [
                 'pagination' => $pagination,

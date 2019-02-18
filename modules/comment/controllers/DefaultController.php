@@ -3,7 +3,6 @@
 namespace app\modules\comment\controllers;
 
 use app\modules\comment\Comment;
-use yii\helpers\BaseHtml;
 use yii\web\Controller;
 use yii\helpers\Html;
 use Yii;
@@ -59,17 +58,28 @@ class DefaultController extends Controller
     {
 
         $modelClass = $model;
+        $nextPage = Yii::$app->request->get('page', 1) + 1;
 
-        $items = $model::find()->where([
-            'parent_id' => (int)$parent_id,
-            $related    => $material,
-        ])->with('user')->all();
+        $query = Comment::baseQuery($model, $material, $related, $parent_id);
 
-        $count = count($items);
+        $items = $query['query'];
+
+        $items = array_reverse($items);
+
+        $count = $query['pagination']->totalCount;
+
+        $nextPages = '';
+        $pageSize = $query['pagination']->pageCount + 1;
+
+        do {
+            $pageSize--;
+
+            $nextPages .= '<div id="inside-next-page_' . $parent_id . '_' . $pageSize . '"></div>';
+        } while ($pageSize > 1);
 
         $html = Html::tag(
             'span',
-            "replies ({$count})",
+            "View replies ({$count})",
             [
                 'class' => 'text-muted show-reply',
                 'href'  => Url::to([
@@ -82,13 +92,72 @@ class DefaultController extends Controller
             ]
         );
 
-        $html .= '<br /><br />';
+        $moreComments = '';
+
+
+        if ($query['pagination']->pageCount > 1) {
+            $moreComments = $this->renderAjax('_show_more', [
+                'related'   => $related,
+                'material'  => $material,
+                'model'     => $modelClass,
+                'inside'    => $nextPage,
+                'parent_id' => $parent_id,
+            ]);
+        }
+
+        $html .= '<br /><br />' . $nextPages . $moreComments;
         foreach ($items as $item) {
             $html .= $this->renderAjax('_comment_template', [
                 'item'     => $item,
                 'related'  => $related,
                 'material' => $material,
                 'model'    => $modelClass,
+                'level'    => 2,
+                'mainForm' => false,
+            ]);
+        }
+
+        return $html;
+    }
+
+    /**
+     * @return string
+     */
+    public function actionInsidePager()
+    {
+        $model = Yii::$app->request->get('model');
+        $related = Yii::$app->request->get('related');
+        $material = Yii::$app->request->get('material');
+        $parent_id = Yii::$app->request->get('parent_id');
+
+        $query = Comment::baseQuery($model, $material, $related, $parent_id);
+        $items = $query['query'];
+
+        $items = array_reverse($items);
+
+        $html = '';
+
+        $nextPage = Yii::$app->request->get('page', 1) + 1;
+
+        $moreComments = '';
+        if ($query['pagination']->pageCount != 0 && Yii::$app->request->get('page', 1) < $query['pagination']->pageCount) {
+            $moreComments = $this->renderAjax('_show_more', [
+                'related'   => $related,
+                'material'  => $material,
+                'model'     => $model,
+                'inside'    => $nextPage,
+                'parent_id' => $parent_id,
+            ]);
+        }
+
+        $html .= $moreComments;
+
+        foreach ($items as $item) {
+            $html .= $this->renderAjax('_comment_template', [
+                'item'     => $item,
+                'related'  => $related,
+                'material' => $material,
+                'model'    => $model,
                 'level'    => 2,
                 'mainForm' => false,
             ]);
@@ -192,18 +261,41 @@ class DefaultController extends Controller
                     }
 
                     if ($parent) {
-                        $count = count($items);
+                        $count = $query['pagination']->totalCount;
 
                         $html = Html::tag(
                             'span',
-                            "replies ({$count})",
+                            "View replies ({$count})",
                             [
                                 'class' => 'text-muted show-reply',
                             ]
                         );
 
-                        $html .= '<br /><br />';
+                        $moreComments = '';
+                        if ($query['pagination']->pageCount > 1) {
+                            $moreComments = $this->renderAjax('_show_more', [
+                                'related'   => $related,
+                                'material'  => $material,
+                                'model'     => $modelName,
+                                'inside'    => 2,
+                                'parent_id' => $parent,
+                            ]);
+                        }
+
+                        $pageSize = $query['pagination']->pageCount + 1;
+
+                        $nextPages = '';
+                        do {
+                            $pageSize--;
+
+                            $nextPages .= '<div id="inside-next-page_' . $parent . '_' . $pageSize . '"></div>';
+                        } while ($pageSize > 1);
+
+                        $html .= '<br /><br />' . $nextPages . $moreComments;
+
+                        $items = array_reverse($items);
                     }
+
 
                     $Mitems = [];
                     foreach ($items as $step => $item) {
@@ -231,7 +323,75 @@ class DefaultController extends Controller
                     }
                 }
             }
-            return BaseHtml::errorSummary($model);
+
+            //TODO optimization
+            # NEED FOR OPTIMIZATION
+            # FIXES BUG
+            if ($model->parent_id) {
+                $parent = $model->parent_id;
+            } else {
+                $parent = null;
+            }
+
+
+            $query = Comment::baseQuery($model, $material, $related, $parent);
+            $items = $query['query'];
+
+            $html = '';
+            if ($parent) {
+                $count = $query['pagination']->totalCount;
+
+                $items = array_reverse($items);
+
+                $moreComments = '';
+                if ($query['pagination']->pageCount > 1) {
+                    $moreComments = $this->renderAjax('_show_more', [
+                        'related'   => $related,
+                        'material'  => $material,
+                        'model'     => $modelName,
+                        'inside'    => 2,
+                        'parent_id' => $parent,
+                    ]);
+                }
+
+                $pageSize = $query['pagination']->pageCount + 1;
+
+                $nextPages = '';
+                do {
+                    $pageSize--;
+
+                    $nextPages .= '<div id="inside-next-page_' . $parent . '_' . $pageSize . '"></div>';
+                } while ($pageSize > 1);
+
+                $html = Html::tag(
+                    'span',
+                    "View replies ({$count})",
+                    [
+                        'class' => 'text-muted show-reply',
+                    ]
+                );
+
+                $html .= '<br /><br />' . $nextPages . $moreComments;
+            }
+
+            $Mitems = [];
+            foreach ($items as $step => $item) {
+                $options = [
+                    'item'     => $item,
+                    'model'    => $modelName,
+                    'related'  => $related,
+                    'material' => $material,
+                    'level'    => 1,
+                    'mainForm' => $mainForm,
+                ];
+
+                if ($parent) {
+                    $options['level'] = 2;
+                    $Mitems[] = $this->renderAjax('_comment_template', $options);
+                }
+            }
+
+            return $html . implode("\n", $Mitems);
         }
 
         return ' ';
@@ -247,6 +407,7 @@ class DefaultController extends Controller
         $modelName = Yii::$app->request->post('model', null);
 
         $model = $modelName::findOne(['id' => $id]);
+        $message = $model->message;
         $this->checkAccess($model->id, $modelName);
 
         if ($model->load(Yii::$app->request->post())) {
@@ -255,7 +416,8 @@ class DefaultController extends Controller
                     return $model->message;
                 }
             }
-            return BaseHtml::errorSummary($model);
+
+            return $message;
         }
     }
 
@@ -301,18 +463,40 @@ class DefaultController extends Controller
 
             $items = [];
 
-            $count = count($itemsQuery);
+            $count = $query['pagination']->totalCount;
 
             if ($count > 0) {
                 $html = Html::tag(
                     'span',
-                    "replies ({$count})",
+                    "View replies ({$count})",
                     [
                         'class' => 'text-muted show-reply',
                     ]
                 );
 
-                $html .= '<br /><br />';
+                $moreComments = '';
+                $nextPages = '';
+                if ($parent) {
+                    if ($query['pagination']->pageCount > 1) {
+                        $moreComments = $this->renderAjax('_show_more', [
+                            'related'   => $related,
+                            'material'  => $material,
+                            'model'     => $model,
+                            'inside'    => 2,
+                            'parent_id' => $parent,
+                        ]);
+                    }
+
+                    $pageSize = $query['pagination']->pageCount + 1;
+
+                    do {
+                        $pageSize--;
+
+                        $nextPages .= '<div id="inside-next-page_' . $parent . '_' . $pageSize . '"></div>';
+                    } while ($pageSize > 1);
+                }
+
+                $html .= '<br /><br />' . $nextPages . $moreComments;
             } else {
                 $html = ' ';
             }
