@@ -20,9 +20,7 @@ use yii\helpers\Html;
 
         <?php else: ?>
 
-            Sorry for the inconvenience but we’re performing some maintenance at the moment.
-            If you need to you can always <?= Html::mailto('contact us', (\Yii::$app->params['adminEmail'] ? \Yii::$app->params['adminEmail'] : '#')) ?>,
-            otherwise we’ll be back online shortly!
+            Sorry for the inconvenience but we’re performing some maintenance at the moment, we’ll be back online shortly!
 
         <?php endif; ?>
     </p>

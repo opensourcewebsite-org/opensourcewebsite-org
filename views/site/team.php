@@ -34,7 +34,7 @@ $this->title = 'Careers and volunteering';
 </ul>
 
 <p>
-    If you are interested in volunteering for OSW, please <a href="/contact">contact</a> us or send a cover letter and your resume to:  team@opensourcewebsite.org.  Your cover letter should describe your areas of interest, your objective in seeking a volunteer experience, and your availability.
+    If you are interested in volunteering for OSW, please send a cover letter and your resume to: <a href="mailto:hello@opensourcewebsite.org">hello@opensourcewebsite.org</a>.  Your cover letter should describe your areas of interest, your objective in seeking a volunteer experience, and your availability.
 </p>
 
 <p>

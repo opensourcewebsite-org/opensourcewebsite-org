@@ -285,7 +285,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <?= Html::a(Yii::t('app', 'We\'re on GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
                     <?= Html::a(Yii::t('app', 'Join us on Gitter'), 'https://gitter.im/opensourcewebsite-org/community') ?> |
                     <?= Html::a(Yii::t('app', 'Join us on Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE') ?> |
-                    <?= Html::a(Yii::t('app', 'Contact us'), ['site/contact']) ?><br />
                     <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
                     <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
             </footer>
