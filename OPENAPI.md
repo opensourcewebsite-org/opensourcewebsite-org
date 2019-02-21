@@ -1,7 +1,9 @@
 # OpenAPI Specification
 
 https://www.openapis.org
+
 https://github.com/OAI/OpenAPI-Specification
+
 https://swagger.io/docs/specification/about/
 
 ## Our OpenAPI Specification
