@@ -25,6 +25,7 @@ $this->title = 'Technologies and Web services We Use';
         <li><?= Html::a('HTTP/2', 'https://en.wikipedia.org/wiki/HTTP/2') ?></li>
         <li><?= Html::a('Nginx', 'https://en.wikipedia.org/wiki/Nginx') ?></li>
         <li><?= Html::a('Ubuntu', 'https://en.wikipedia.org/wiki/Ubuntu') ?></li>
+        <li><?= Html::a('OpenAPI', 'https://en.wikipedia.org/wiki/OpenAPI_Specification') ?></li>
     </ul>
 
     <h4>Web services</h4>

@@ -26,6 +26,10 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 Please read through our [contributing guidelines](CONTRIBUTING.md).
 
+## OpenAPI
+
+Please read through our [OpenAPI Specification](OPENAPI.md).
+
 ## License
 
 The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).

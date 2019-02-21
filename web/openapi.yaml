@@ -1905,37 +1905,6 @@ paths:
       responses:
         '200':
           description: OK
-  /contact:
-    post:
-      summary: Send contact
-      tags:
-        - Site
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                subject:
-                  type: string
-                body:
-                  type: string
-                verify_code:
-                  type: string
-              required:
-                - name
-                - email
-                - subject
-                - body
-                - verify_code
-      responses:
-        '200':
-          description: OK
 components:
   parameters:
     tokenParam:
