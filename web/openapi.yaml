@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: OpenSourceWebsite
-  description: OpenSourceWebsite API
+  title: OpenSourceWebsite API Documentation
+  description: OpenSourceWebsite API Documentation
   version: "1.0"
 servers:
   - url: https://opensourcewebsite.org/api/v1.0/
