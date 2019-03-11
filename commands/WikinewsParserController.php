@@ -2,6 +2,7 @@
 namespace app\controllers;
 
 use app\models\WikiNews;
+use Yii;
 use yii\console\Controller;
 use yii\httpclient\Client;
 
@@ -9,10 +10,14 @@ class WikinewsParserController extends Controller
 {
     public function actionIndex()
     {
-        $needParse = WikiNews::findAll(['pageid' => null]);
+        $needParse = WikiNews::find()
+            ->where(['pageid' => null])
+            ->andWhere(['last_parse' => null])
+            ->all();
+        $timeParse = Yii::$app->formatter->asDate(time(), 'yyyy-MM-dd H:i:s');
         /** @var object $news */
         foreach ($needParse as $news){
-            $group_id  = WikiNews::find()
+            $group_id = WikiNews::find()
                 ->where(['is not', 'group_id', null])
                 ->orderBy(['id' => SORT_DESC])
                 ->select('group_id')
@@ -21,31 +26,39 @@ class WikinewsParserController extends Controller
             $group_id = $group_id ? $group_id+1 : 1;
 
             $data = $this->api($news->lang, $news->title);
-            foreach ($data['langlinks'] as $check){
-                $exist = WikiNews::findOne(['title' => $check['*']]);
-                if($exist){
-                    $group_id = $exist->group_id;
-                    break;
+            if($data){
+                foreach ($data['langlinks'] as $check){
+                    $exist = WikiNews::findOne(['title' => $check['*']]);
+                    if($exist){
+                        $group_id = $exist->group_id;
+                        break;
+                    }
                 }
-            }
-            /** @var object $langlink */
-            foreach($data['langlinks'] as $langlink){
-                $dataLink = $this->api($langlink['lang'], $langlink['*']);
+                /** @var object $langlink */
+                foreach($data['langlinks'] as $langlink){
+                    $dataLink = $this->api($langlink['lang'], $langlink['*']);
 
-                $exist = WikiNews::findOne(['title' => $langlink['*']]);
-                if(!$exist){
-                    /** @var object $newsAnotherLang */
-                    $newsAnotherLang = new WikiNews();
-                    $newsAnotherLang->lang = $langlink['lang'];
-                    $newsAnotherLang->title = $dataLink['title'];
-                    $newsAnotherLang->group_id = $group_id;
-                    $newsAnotherLang->pageid = $dataLink['pageid'];
-                    $newsAnotherLang->save();
+                    $exist = WikiNews::findOne(['title' => $langlink['*']]);
+                    if(!$exist){
+                        /** @var object $newsAnotherLang */
+                        $newsAnotherLang = new WikiNews();
+                        $newsAnotherLang->lang = $langlink['lang'];
+                        $newsAnotherLang->title = $dataLink['title'];
+                        $newsAnotherLang->group_id = $group_id;
+                        $newsAnotherLang->pageid = $dataLink['pageid'];
+                        $newsAnotherLang->last_parse = $timeParse;
+                        $newsAnotherLang->save();
+                    }
                 }
+                $news->group_id = $group_id;
+                $news->pageid = $data['pageid'];
+                $news->last_parse = $timeParse;
+                $news->save();
             }
-            $news->group_id = $group_id;
-            $news->pageid = $data['pageid'];
-            $news->save();
+            else{
+                $news->last_parse = $timeParse;
+                $news->save();
+            }
         }
     }
 
