@@ -17,6 +17,7 @@ use yii\db\ActiveRecord;
  * @property int $created_by
  * @property int $created_at
  * @property int $parsed_at
+ * @property object $language
  */
 class WikinewsPage extends ActiveRecord
 {
