@@ -35,8 +35,7 @@ class WikinewsPage extends ActiveRecord
         return [
             [['language_id', 'title'], 'required'],
             [['title'], 'string', 'max' => 255],
-            [['language_id', 'group_id', 'pageid', 'created_by',
-                'created_at', 'parsed_at'], 'integer'],
+            [['language_id', 'group_id', 'pageid', 'created_by', 'created_at', 'parsed_at'], 'integer'],
         ];
     }
 
