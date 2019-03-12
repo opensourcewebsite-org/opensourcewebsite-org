@@ -29,7 +29,7 @@ class WikinewsParserController extends Controller
         $needParse = WikinewsPage::findAll(['parsed_at' => null]);
         /** @var object $news */
         foreach ($needParse as $news) {
-            $group_id = $news->group_id ? $news->group_id : $news->id;
+            $group_id = !empty($news->group_id) ? $news->group_id : $news->id;
             $identity = !$news->pageid ? $news->title : $news->pageid;
             $data = $this->api($news->language->code, $identity);
             if ($data) {
@@ -52,7 +52,7 @@ class WikinewsParserController extends Controller
                         ->where(['group_id' => $group_id])
                         ->andWhere(['<>', 'pageid', $news->pageid])
                         ->all();
-                    $identity = $newsTranslate[$key]->pageid ? $newsTranslate[$key]->pageid : $langlink['*'];
+                    $identity = !empty($newsTranslate[$key]->pageid) ? $newsTranslate[$key]->pageid : $langlink['*'];
                     $dataLink = $this->api($langlink['lang'], $identity);
                     CustomConsole::output(
                         "Parsing by language link: {$dataLink['title']}",
@@ -61,7 +61,7 @@ class WikinewsParserController extends Controller
                             'jobName' => CustomConsole::convertName(self::class),
                         ]
                     );
-                    $newsAnotherLang = $newsTranslate[$key] ? $newsTranslate[$key] : new WikinewsPage();
+                    $newsAnotherLang = !empty($newsTranslate[$key]) ? $newsTranslate[$key] : new WikinewsPage();
                     $newsAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $langlink['lang']])->id;
                     $newsAnotherLang->title = $dataLink['title'];
                     $newsAnotherLang->group_id = $group_id;
