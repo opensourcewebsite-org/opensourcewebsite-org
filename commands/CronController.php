@@ -30,6 +30,7 @@ class CronController extends Controller
      */
     static protected $map = [
         'WikipediaParser',
+        'WikinewsParser',
     ];
 
     /**
