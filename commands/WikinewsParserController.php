@@ -18,7 +18,7 @@ class WikinewsParserController extends Controller
             'Running wikinews parser...',
             [
                 'logs' => $this->log,
-                'jobName' => CustomConsole::convertName(self::class)
+                'jobName' => CustomConsole::convertName(self::class),
             ]
         );
         $this->parse();
@@ -28,36 +28,36 @@ class WikinewsParserController extends Controller
     {
         $needParse = WikinewsPage::findAll(['parsed_at' => null]);
         /** @var object $news */
-        foreach ($needParse as $news){
-            if(!$news->group_id){
+        foreach ($needParse as $news) {
+            if (!$news->group_id) {
                 $group_id = WikinewsPage::find()
                     ->where(['is not', 'group_id', null])
                     ->orderBy(['id' => SORT_DESC])
                     ->select('group_id')
                     ->one();
                 $group_id = $group_id['group_id'];
-                $group_id = $group_id ? $group_id+1 : 1;
-            }else{
+                $group_id = $group_id ? $group_id + 1 : 1;
+            } else {
                 $group_id = $news->group_id;
             }
             $identity = !$news->pageid ? $news->title : $news->pageid;
             $data = $this->api($news->language->code, $identity);
-            if($data){
+            if ($data) {
                 CustomConsole::output(
                     "Parsing page: {$news->title}",
                     [
                         'logs' => $this->log,
-                        'jobName' => CustomConsole::convertName(self::class)
+                        'jobName' => CustomConsole::convertName(self::class),
                     ]
                 );
-                foreach ($data['langlinks'] as $check){
+                foreach ($data['langlinks'] as $check) {
                     $exist = WikinewsPage::findOne(['title' => $check['*']]);
-                    if($exist){
+                    if ($exist) {
                         $group_id = $exist->group_id;
                         break;
                     }
                 }
-                foreach($data['langlinks'] as $key => $langlink){
+                foreach ($data['langlinks'] as $key => $langlink) {
                     $newsTranslate = WikinewsPage::find()
                         ->where(['group_id' => $group_id])
                         ->andWhere(['<>', 'pageid', $news->pageid])
@@ -68,7 +68,7 @@ class WikinewsParserController extends Controller
                         "Parsing by language link: {$dataLink['title']}",
                         [
                             'logs' => $this->log,
-                            'jobName' => CustomConsole::convertName(self::class)
+                            'jobName' => CustomConsole::convertName(self::class),
                         ]
                     );
                     $newsAnotherLang = $newsTranslate[$key] ? $newsTranslate[$key] : new WikinewsPage();
@@ -83,34 +83,32 @@ class WikinewsParserController extends Controller
                 $news->pageid = $data['pageid'];
                 $news->parsed_at = time();
                 $news->save();
-            }
-            else{
+            } else {
                 CustomConsole::output(
                     "Page is not exist: {$news->title}",
                     [
                         'logs' => $this->log,
-                        'jobName' => CustomConsole::convertName(self::class)
+                        'jobName' => CustomConsole::convertName(self::class),
                     ]
                 );
                 $news->parsed_at = time();
                 $news->save();
             }
         }
-        if($needParse){
+        if ($needParse) {
             CustomConsole::output(
                 "Parsing is done.",
                 [
                     'logs' => $this->log,
-                    'jobName' => CustomConsole::convertName(self::class)
+                    'jobName' => CustomConsole::convertName(self::class),
                 ]
             );
-        }
-        else{
+        } else {
             CustomConsole::output(
                 "No page for parsing.",
                 [
                     'logs' => $this->log,
-                    'jobName' => CustomConsole::convertName(self::class)
+                    'jobName' => CustomConsole::convertName(self::class),
                 ]
             );
         }
@@ -119,14 +117,14 @@ class WikinewsParserController extends Controller
     protected function api($language, $identity)
     {
         $searchMethod = is_string($identity) ? 'page' : 'pageid';
-        $baseUrl = 'https://'.$language.'.wikinews.org';
+        $baseUrl = 'https://' . $language . '.wikinews.org';
         $client = new Client([
-            'baseUrl' => $baseUrl.'/w',
+            'baseUrl' => $baseUrl . '/w',
         ]);
         $response = $client->get('api.php', [
             'action' => 'parse',
             'format' => 'json',
-            'prop'   => 'langlinks',
+            'prop' => 'langlinks',
             $searchMethod => $identity,
         ])->send();
 

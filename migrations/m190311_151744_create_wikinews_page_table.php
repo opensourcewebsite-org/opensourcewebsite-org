@@ -18,8 +18,6 @@ class m190311_151744_create_wikinews_page_table extends Migration
             'title' => $this->string()->notNull(),
             'group_id' => $this->integer()->unsigned(),
             'pageid' => $this->integer()->unsigned(),
-            'source_created_at' => $this->integer()->unsigned(),
-            'source_updated_at' => $this->integer()->unsigned(),
             'created_by' => $this->integer()->unsigned(),
             'created_at' => $this->integer()->unsigned(),
             'parsed_at' => $this->integer()->unsigned(),
