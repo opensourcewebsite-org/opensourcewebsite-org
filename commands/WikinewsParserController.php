@@ -29,17 +29,7 @@ class WikinewsParserController extends Controller
         $needParse = WikinewsPage::findAll(['parsed_at' => null]);
         /** @var object $news */
         foreach ($needParse as $news) {
-            if (!$news->group_id) {
-                $group_id = WikinewsPage::find()
-                    ->where(['is not', 'group_id', null])
-                    ->orderBy(['id' => SORT_DESC])
-                    ->select('group_id')
-                    ->one();
-                $group_id = $group_id['group_id'];
-                $group_id = $group_id ? $group_id + 1 : 1;
-            } else {
-                $group_id = $news->group_id;
-            }
+            $group_id = $news->group_id ? $news->group_id : $news->id;
             $identity = !$news->pageid ? $news->title : $news->pageid;
             $data = $this->api($news->language->code, $identity);
             if ($data) {
