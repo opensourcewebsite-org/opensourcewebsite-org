@@ -12,8 +12,6 @@ use yii\db\ActiveRecord;
  * @property string $title
  * @property int $group_id
  * @property int $pageid
- * @property int $source_created_at
- * @property int $source_updated_at
  * @property int $created_by
  * @property int $created_at
  * @property int $parsed_at
@@ -37,7 +35,7 @@ class WikinewsPage extends ActiveRecord
         return [
             [['language_id', 'title'], 'required'],
             [['title'], 'string', 'max' => 255],
-            [['language_id', 'group_id', 'pageid', 'source_created_at', 'source_updated_at', 'created_by',
+            [['language_id', 'group_id', 'pageid', 'created_by',
                 'created_at', 'parsed_at'], 'integer'],
         ];
     }
@@ -53,8 +51,6 @@ class WikinewsPage extends ActiveRecord
             'title' => 'Title',
             'group_id' => 'Group ID',
             'pageid' => 'Page ID',
-            'source_created_at' => 'Source created at',
-            'source_updated_at' => 'Source updated at',
             'created_by' => 'Created by',
             'created_at' => 'Created at',
             'parsed_at' => 'Parsed at',
