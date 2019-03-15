@@ -51,6 +51,7 @@ class WikinewsPagesController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $model = new WikinewsPage();
+        
         $language_arr= ArrayHelper::map(WikinewsLanguage::find()->all(),'id','name');
 
         return $this->render('index', [

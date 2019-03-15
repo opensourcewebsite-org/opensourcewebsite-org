@@ -145,3 +145,8 @@ a.desc:after {
     -ms-flex-align: center;
     align-items: center;
 }
+
+
+.has-error .help-block{
+    color:red;
+}

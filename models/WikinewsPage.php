@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -33,10 +34,26 @@ class WikinewsPage extends ActiveRecord
     public function rules()
     {
         return [
-            [['language_id', 'title'], 'required'],
+            [['language_id', 'title','wikinews_page_url'], 'required'],
+            [['title'], 'match','pattern' => '/^[a-zA-Z][a-zA-Z\s@#$%&*().,;\-\/]*$/'],
             [['title'], 'string', 'max' => 255],
-            [['language_id', 'group_id', 'pageid', 'created_by', 'created_at', 'parsed_at'], 'integer'],
+            [['wikinews_page_url'], 'url'],
         ];
+    }
+
+    /**
+     * Make some changes before the record is saved
+     */
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+        if(empty($this->id)){
+            $this->created_at=time();
+            $this->created_by=Yii::$app->user->identity->id;
+        }
+        return true;
     }
 
     /**
@@ -46,8 +63,9 @@ class WikinewsPage extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'language_id' => 'Language ID',
+            'language_id' => 'Language',
             'title' => 'Title',
+            'wikinews_page_url' => 'Wikinews Page Url',
             'group_id' => 'Group ID',
             'pageid' => 'Page ID',
             'created_by' => 'Created by',
