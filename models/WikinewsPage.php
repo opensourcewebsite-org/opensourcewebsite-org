@@ -1,7 +1,7 @@
 <?php
 
 namespace app\models;
-
+use app\models\WikinewsLanguage;
 use yii\db\ActiveRecord;
 
 /**
@@ -32,13 +32,43 @@ class WikinewsPage extends ActiveRecord
      */
     public function rules()
     {
+		
         return [
             [['language_id', 'title'], 'required'],
-            [['title'], 'string', 'max' => 255],
+            [['title'], 'checkDateFormat'],
+			 ['title', 'unique', 'targetAttribute' => 'title'],
+			  ['title', 'match', 'pattern' => '/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'(([0-9]{1,5})?\\/.*)?$/i'],
             [['language_id', 'group_id', 'pageid', 'created_by', 'created_at', 'parsed_at'], 'integer'],
         ];
     }
+function checkDateFormat($attribute, $params){
 
+	$model = WikinewsLanguage::find()->all();
+	   
+	 foreach($model as $key=>$val){
+		$languageArrCustom[] = $val->code;
+	} 
+	
+	 $titleArr =explode("//",$this->title);
+	 
+	 if(isset($titleArr[1])){
+		 $titleNextArr =explode(".",$titleArr[1]);
+		 
+		 if (!in_array($titleNextArr[0], $languageArrCustom)) {
+		     $this->addError('title','Please Enter Valid WikiNews URL');      
+		  
+		 }
+		 
+	 }
+	 if (strpos($titleArr[1], ':') !== false or strpos($titleArr[1], '@') !== false or strpos($titleArr[1], '!') !== false  or strpos($titleArr[1], '#') !== false or strpos($titleArr[1], '$') !== false or strpos($titleArr[1], '%') !== false or strpos($titleArr[1], '^') !== false or strpos($titleArr[1], '&') !== false or strpos($titleArr[1], '*') !== false or strpos($titleArr[1], '(') !== false or strpos($titleArr[1], ')') !== false or strpos($titleArr[1], '.com') !== false or strpos($titleArr[1], '.org/wiki') == false) {
+	
+		 $this->addError('title','Please Enter Valid WikiNews URL');
+			return;
+	  }
+	  
+	  
+
+}
     /**
      * {@inheritdoc}
      */

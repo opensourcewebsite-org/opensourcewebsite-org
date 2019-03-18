@@ -196,6 +196,9 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 </a>
                             </li>
                         </ul>
+				
+						
+						
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <li class="nav-item has-treeview  <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'menu-open' : '' ?>">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="nav-link <?= in_array($currentUrl, ['moqup/design-list', 'moqup/design-add', 'moqup/design-view', 'moqup/design-edit']) ? 'active' : '' ?>">
@@ -217,6 +220,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 <a href="<?= Yii::$app->urlManager->createUrl(['wikipedia-pages']) ?>" class="nav-link <?= in_array($currentUrl, ['wikipedia-pages/index']) ? 'active' : '' ?>">
                                     <i class="nav-icon fa fa-book"></i>
                                     <p>Wikipedia Watchlists</p>
+                                </a>
+                            </li>
+                        </ul>
+						<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['wikinews-pages/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['wikinews-pages']) ?>" class="nav-link <?= in_array($currentUrl, ['wikinews-pages/index']) ? 'active' : '' ?>">
+                                    <i class="fa fa-microchip nav-icon"></i>
+                                    <p>Wikinews pages</p>
                                 </a>
                             </li>
                         </ul>
