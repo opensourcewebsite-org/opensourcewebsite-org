@@ -60,4 +60,36 @@ class WikinewsPage extends ActiveRecord
     {
         return $this->hasOne(WikinewsLanguage::class, ['id' => 'language_id']);
     }
+	
+
+    /**
+     * @return the records which have "pageid"
+     */
+	 
+    public function getWikiNews()
+	{
+        $wikiNews = (new \yii\db\Query())
+            ->select(['n.id','l.name','n.title'])			
+            ->from(WikinewsPage::tableName(). " AS n")
+            ->join('LEFT JOIN', WikinewsLanguage::tableName() . " AS l", 'n.language_id = l.id')			
+			->where(["OR",['!=','n.pageid',''],['IS NOT','n.pageid',NULL]])
+			->orderBy('n.id')
+			->all();
+		return $wikiNews;
+	}	
+
+    /**
+     * @return the count of total records which have "pageid"
+     */
+	 
+    public function getWikiNewsCount()
+	{
+        $wikiNewsCount = (new \yii\db\Query())	
+            ->from(WikinewsPage::tableName(). " AS n")
+            ->join('LEFT JOIN', WikinewsLanguage::tableName() . " AS l", 'n.language_id = l.id')			
+			->where(["OR",['!=','n.pageid',''],['IS NOT','n.pageid',NULL]])
+			->count();
+
+		return $wikiNewsCount;
+	}
 }

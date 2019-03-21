@@ -144,6 +144,7 @@ $config = [
                 'support-groups/clients-list/<id:[\d]+>/<language:[\w]+>' => 'support-groups/clients-list',
                 'support-groups/clients-view/<id:[\d]+>' => 'support-groups/clients-view',
                 'u/<id>' => 'user/profile',
+                'wikinews-pages' => 'wikinews-pages/index',				
 //              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],

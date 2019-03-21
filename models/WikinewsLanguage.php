@@ -43,4 +43,18 @@ class WikinewsLanguage extends ActiveRecord
             'name' => 'Name',
         ];
     }
+	
+    /**
+     * @return all available languages
+     */
+	 
+    public function getAllLangs()
+	{
+		$allLangs = [];
+		$langs = WikinewsLanguage::find()->select(['id', 'code'])->all();
+  		foreach ($langs as $langsObj){
+			$allLangs[$langsObj->code] = $langsObj->id;
+		}
+		return $allLangs;
+	}		
 }
