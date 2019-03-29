@@ -4,7 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
-use app\components\WikiParser;
+use app\components\WikipediaParser;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 
@@ -87,7 +87,7 @@ class UserWikiToken extends ActiveRecord
         parent::afterValidate();
 
         if (!$this->hasErrors()) {
-            $parser = new WikiParser([
+            $parser = new WikipediaParser([
                 'token' => $this,
                 'user_id' => Yii::$app->user->id,
                 'language_id' => $this->language->id,
@@ -137,59 +137,9 @@ class UserWikiToken extends ActiveRecord
         return ArrayHelper::getColumn($ids, 'wiki_page_id');
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMissingWikiPagesForUser()
-    {
-        $allUserWikiPages = UserWikiPage::find()
-            ->select('wiki_page_id')
-            ->where([
-            'user_id' => $this->user_id,
-        ]);
-        $userWikiPagesGroups = WikiPage::find()
-            ->select('group_id')
-            ->distinct()
-            ->where([
-            '{{%wiki_page}}.id' => $allUserWikiPages,
-        ]);
-
-        return WikiPage::find()
-                ->where(['not in', '{{%wiki_page}}.id', $allUserWikiPages])
-                ->andWhere([
-                    'language_id' => $this->language_id,
-                    'group_id' => $userWikiPagesGroups,
-        ]);
-    }
-
     public static function findByLanguage($id)
     {
         return self::findOne(['user_id' => Yii::$app->user->id, 'language_id' => $id]);
-    }
-
-    /**
-     * Gets the list of missing pages for tthe current language
-     */
-    public function getMissingPages()
-    {
-        $queryGroup = WikiPage::find()
-            ->joinWith('users')
-            ->select('group_id')
-            ->distinct()
-            ->where(['{{%user}}.id' => $this->user_id]);
-
-        $missingPages = WikiPage::find()
-            ->joinWith('users')
-            ->select('{{%wiki_page}}.id')
-            ->distinct()
-            ->where(['group_id' => $queryGroup])
-            ->andWhere([
-                'language_id' => $this->language_id,
-                'user_id' => null,
-            ])
-            ->all();
-
-        return $missingPages;
     }
 
     /**
@@ -197,6 +147,42 @@ class UserWikiToken extends ActiveRecord
      */
     public function getCountMissingPages()
     {
-        return count($this->missingPages);
+        $missingPages = $this->instanceMissingPages();
+        return $missingPages->count();
+    }
+
+
+    /**
+     * Creating base query to get missing user's pages
+     * @return \yii\db\Query
+     */
+    public function instanceMissingPages()
+    {
+
+        // Getting IDs from current language
+        $queryExcludeCurrent = WikiPage::find()
+            ->joinWith('users')
+            ->select('group_id')
+            ->distinct()
+            ->where(['{{%user}}.id' => $this->user_id])
+            ->andWhere(['language_id' => $this->language_id]);
+
+        // Getting all IDs excluding currents for users from all other languages
+        $queryAllIds = WikiPage::find()
+            ->joinWith('users')
+            ->select('group_id')
+            ->distinct()
+            ->where(['NOT IN','group_id', $queryExcludeCurrent])
+            ->andWhere(['{{%user}}.id' => $this->user_id]);
+
+        $queryMissingPages = WikiPage::find()
+            ->joinWith('users')
+            ->select(['DISTINCT(`group_id`)', 'title', 'language_id'])
+            ->where(['group_id' => $queryAllIds])
+            ->andWhere([
+                'language_id' => $this->language_id,
+            ]);
+
+        return $queryMissingPages;
     }
 }

@@ -28,9 +28,6 @@ class WikipediaPagesController extends Controller
                         'actions' => ['index', 'view', 'missing'],
                         'roles' => ['@'],
                         'allow' => true,
-                        'matchCallback' => function ($rule, $action) {
-                            return Yii::$app->user->identity->is_email_confirmed;
-                        }
                     ],
                 ],
             ],

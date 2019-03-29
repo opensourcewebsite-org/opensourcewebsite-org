@@ -33,7 +33,7 @@ $this->title = 'Donate';
 </p>
 
 <p>
-    For questions and suggestions, please <a href="/contact">contact</a> us.
+    For questions and suggestions, please mail to <a href="mailto:hello@opensourcewebsite.org">hello@opensourcewebsite.org</a>.
 </p>
 
 </div>

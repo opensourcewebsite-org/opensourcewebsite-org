@@ -1,0 +1,1917 @@
+openapi: 3.0.0
+info:
+  title: OpenSourceWebsite API Documentation
+  description: OpenSourceWebsite API Documentation
+  version: "1.0"
+servers:
+  - url: https://opensourcewebsite.org/api/v1.0/
+paths:
+  /cron-jobs:
+    get:
+      summary: Get cron jobs list
+      tags:
+        - Cron job
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Cron job name
+                  required:
+                    - id
+                    - title
+  /cron-job-log:
+    get:
+      summary: Get cron job log
+      tags:
+        - Cron job
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    created_at:
+                      type: string
+                      description: Format\:YYYY-MM-DD HH\:mm\:ss
+                      example: '2019-02-18 08:29:09'
+                    message:
+                      type: string
+                      example: Running languages parser...
+                    cron_job_name:
+                      type: string
+                      example: WikipediaParser
+                  required:
+                    - created_at
+                    - message
+                    - cron_job_name
+  /cron-job-log/{cronJobId}:
+    get:
+      summary: Get log for given cron job
+      tags:
+        - Cron job
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: cronJobId
+          schema:
+            type: integer
+          required: true
+          description: Cron job id
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    created_at:
+                      type: string
+                      description: Format\:YYYY-MM-DD HH\:mm\:ss
+                      example: '2019-02-18 08:29:09'
+                    message:
+                      type: string
+                      example: Running languages parser...
+                  required:
+                    - created_at
+                    - message
+  /countries:
+    get:
+      summary: Get country list
+      tags:
+        - Data
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Pagination page
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Afghanistan
+                    code:
+                     type: string
+                     minLength: 2
+                     maxLength: 2
+                     example: AF
+                    slug:
+                      type: string
+                      example: afghanistan
+                    wikipedia:
+                      type: string
+                      example: https://en.wikipedia.org/wiki/Afghanistan
+                  required:
+                    - id
+                    - name
+                    - code
+                    - slug
+  /currencies:
+    get:
+      summary: Get currency list
+      tags:
+        - Data
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Pagination page
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    code:
+                      type: string
+                      minLength: 3
+                      maxLength: 3
+                      example:   ALL
+                    name:
+                      type: string
+                      example: Albania Lek
+                    symbol:
+                      type: string
+                      example:   Lek
+                  required:
+                    - id
+                    - code
+                    - name
+  /languages:
+    get:
+      summary: Get language list
+      tags:
+        - Data
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Pagination page
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Afaraf
+                    code:
+                      type: string
+                      minLength: 2
+                      maxLength: 2
+                      example: aa
+                    name_ascii:
+                      type: string
+                      example: Afar
+                  required:
+                    - id
+                    - name
+                    - code
+                    - name_ascii
+  /issues:
+    get:
+      summary: Get issue list
+      tags:
+        - Issue
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Pagination page
+        - in: query
+          name: viewNew
+          schema:
+            type: integer
+          description: Filter only new issues (user not voted). Value - 1
+        - in: query
+          name: viewYes
+          schema:
+            type: integer
+          description: Filter only positive vote issues (user vote yes). Value - 1
+        - in: query
+          name: viewNo
+          schema:
+            type: integer
+          description: Filter only negative vote issues (user vote no). Value - 1
+        - in: query
+          name: viewYours
+          schema:
+            type: integer
+          description: Filter only created issue. Value - 1
+        - in: query
+          name: table_search
+          schema:
+            type: string
+          description: Filter by title or description.
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                      example: Issue title
+                    created_at:
+                      type: string
+                      description: Format\:YYYY-MM-DD HH\:mm\:ss
+                      example: '2019-02-18 08:29:09'
+                    votes:
+                      type: object
+                      properties:
+                        yes:
+                          type: integer
+                          example: 3
+                        no:
+                          type: integer
+                          example: 1
+                  required:
+                    - id
+                    - title
+    post:
+      summary: Create new issue
+      tags:
+        - Issue
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: integer
+              required:
+                - title
+                - description
+      responses:
+        '200':
+          description: OK
+  /issues/{issueId}:
+    get:
+      summary: Get issue details
+      tags:
+        - Issue
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: issueId
+          schema:
+            type: integer
+          required: true
+          description: Issue id
+      responses:
+        '200':
+          description: Issue details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: Issue title
+                  description:
+                    type: string
+                    example: Issue description
+                  created_at:
+                    type: string
+                    description: Format\:YYYY-MM-DD HH\:mm\:ss
+                    example: '2019-02-18 08:29:09'
+                  votes:
+                    type: object
+                    properties:
+                      yes:
+                        type: integer
+                        example: 3
+                      no:
+                        type: integer
+                        example: 1
+                  weightage:
+                    type: integer
+                    description: User weightage
+                required:
+                  - id
+                  - title
+                  - description
+    post:
+      summary: Edit exist issue
+      tags:
+        - Issue
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: issueId
+          schema:
+            type: integer
+          required: true
+          description: Issue id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: integer
+              required:
+                - title
+                - description
+      responses:
+        '200':
+          description: OK
+  /mockups:
+    get:
+      summary: Get mockups list
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Pagination page
+        - in: query
+          name: viewFollowing
+          schema:
+            type: integer
+          description: Filter only user following mockups. Value - 1
+        - in: query
+          name: viewYours
+          schema:
+            type: integer
+          description: Filter only created mockups. Value - 1
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      example: View Issue
+                    user:
+                      type: string
+                      description: User id or user id if defined. Not return to viewYours.
+                      example: Alex
+                    updated_at:
+                      type: string
+                      description: Format\:YYYY-MM-DD HH\:mm\:ss
+                      example: '2019-02-18 08:29:09'
+                  required:
+                    - title
+                    - updated_at
+    post:
+      summary: Add new mockup
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Mockup title
+                html:
+                  type: string
+                  description: Mockup html
+                css:
+                  type: string
+                  description: Mockup css
+                fork_id:
+                  type: string
+                  description: Fork mockup id
+              required:
+                - title
+                - html
+      responses:
+        '200':
+          description: OK
+  /mockups/{mockupId}:
+    get:
+      summary: Get mockup details
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: mockupId
+          schema:
+            type: integer
+          required: true
+          description: Mockup id
+      responses:
+        '200':
+          description: Mockup details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Mockup title
+                    example: View Issue
+                  username:
+                    type: string
+                    description: Owner username
+                    example: Alex
+                  fork:
+                    type: object
+                    description: Fork details if defined
+                    properties:
+                      id:
+                        type: integer
+                        description: Fork id
+                        example: 1
+                      title:
+                        type: string
+                        description: Fork title
+                        example: Site issue
+                    required:
+                      - id
+                      - title
+                  forks_amount:
+                    type: integer
+                    description: Mockup fork amount
+                    example: 5
+                  followers_amount:
+                    type: integer
+                    description: Mockup followers amount
+                    example: 3
+                  html:
+                    type: string
+                    description: Mockup html
+                    example: '<div class="card-header"><h3 class="card-title">Lorem ipsum dolo sit amet</h3></div>'
+                  css:
+                    type: string
+                    description: Mockup css
+                    example: '.card-title { text-align: 14px }'
+                required:
+                  - title
+                  - username
+                  - html
+                  - css
+    post:
+      summary: Edit mockup
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: mockupId
+          schema:
+            type: integer
+          required: true
+          description: Mockup id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Mockup title
+                html:
+                  type: string
+                  description: Mockup html
+                css:
+                  type: string
+                  description: Mockup css
+              required:
+                - title
+                - html
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete mockup
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: mockupId
+          schema:
+            type: integer
+          required: true
+          description: Mockup id
+      responses:
+        '200':
+          description: OK
+  /mockups/{mockupId}/follow:
+    post:
+      summary: add moqup to user follow
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: mockupId
+          schema:
+            type: integer
+          required: true
+          description: Mockup id
+      responses:
+        '200':
+          description: OK
+  /mockups/{mockupId}/unfollow:
+    post:
+      summary: Remove moqup from user follow
+      tags:
+        - Mockup
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: mockupId
+          schema:
+            type: integer
+          required: true
+          description: Mockup id
+      responses:
+        '200':
+          description: OK
+  /settings:
+    get:
+      summary: Get settings list
+      tags:
+        - Settings
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                      example: days_count_to_calculate_active_rating
+                    value:
+                      type: string
+                      example: 31
+                    updated_at:
+                      type: string
+                      description: Format\:YYYY-MM-DD HH\:mm\:ss
+                      example: '2019-02-18 08:29:09'
+                  required:
+                    - key
+                    - value
+                    - updated_at
+  /settings/{settingId}:
+    get:
+      summary: Get setting values
+      tags:
+        - Settings
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: settingId
+          schema:
+            type: integer
+          required: true
+          description: Setting id
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    value:
+                      type: string
+                      example: 31
+                    is_current:
+                      type: boolean
+                      example: false
+                    votes:
+                      type: integer
+                      example: 4
+                      description: Percent voted for setting
+                    user_voted:
+                      type: boolean
+                      example: false
+                  required:
+                    - id
+                    - value
+                    - is_current
+                    - votes
+    post:
+      summary: Add new value
+      tags:
+        - Settings
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: settingId
+          schema:
+            type: integer
+          required: true
+          description: Setting id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                new_value:
+                  type: string
+              required:
+                - new_value
+      responses:
+        '200':
+          description: OK
+  /settings/{settingId}/vote:
+    post:
+      summary: Vote for settings
+      tags:
+        - Settings
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: settingId
+          schema:
+            type: integer
+          required: true
+          description: Setting id
+      responses:
+        '200':
+          description: OK
+  /support-groups:
+    get:
+      summary: Get support groups list
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Support group id
+                      example: 1
+                    title:
+                      type: string
+                      description: Support group title
+                      example: Errors
+                    message:
+                      type: string
+                      example: Running languages parser...
+                    cron_job_name:
+                      type: string
+                      example: WikipediaParser
+                  required:
+                    - id
+                    - title
+    post:
+      summary: Add new support group
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                language_codes:
+                  type: array
+                  description: List of language codes
+                  items:
+                    type: string
+              required:
+                - title
+                - description
+      responses:
+        '200':
+          description: OK
+  /support-groups/{supportGroupId}:
+    post:
+      summary: Edit exist support group
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                language_codes:
+                  type: array
+                  description: List of language codes
+                  items:
+                    type: string
+              required:
+                - title
+                - description
+      responses:
+        '200':
+          description: OK
+  /support-groups/{supportGroupId}/members:
+    get:
+      summary: Get support groups member list
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      description: User id
+                      example: 1
+                  required:
+                    - user_id
+    post:
+      summary: Add new user
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+              required:
+                - user_id
+      responses:
+        '200':
+          description: OK
+  /member/{memberId}:
+    delete:
+      summary: Remove member from support groups
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: memberId
+          schema:
+            type: integer
+          required: true
+          description: Support group member id
+      responses:
+        '200':
+          description: OK
+  /support-groups/{supportGroupId}/bots:
+    get:
+      summary: Get support group bots
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Bot id
+                      example: 1
+                    title:
+                      type: string
+                      example: Issue title
+                  required:
+                    - id
+                    - title
+    post:
+      summary: Add new bot
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: news bot
+                token:
+                  type: string
+                  example: SZjUqlWff3EdcUSHk6MBH
+              required:
+                - title
+                - token
+      responses:
+        '200':
+          description: OK
+  /bots/{botId}:
+    post:
+      summary: Edit exist bot
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: botId
+          schema:
+            type: integer
+          required: true
+          description: Bot Id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: news bot
+                token:
+                  type: string
+                  example: SZjUqlWff3EdcUSHk6MBH
+              required:
+                - title
+                - token
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Remove bot
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: botId
+          schema:
+            type: integer
+          required: true
+          description: Bot id
+      responses:
+        '200':
+          description: OK
+  /support-groups/{supportGroupId}/commands:
+    get:
+      summary: Get support group commands
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Pagination page
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Command id
+                      example: 1
+                    command:
+                      type: string
+                      example: show
+                  required:
+                    - id
+                    - command
+    post:
+      summary: Add new command
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: supportGroupId
+          schema:
+            type: integer
+          required: true
+          description: Support group id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+                is_default:
+                  type: boolean
+              required:
+                - command
+                - is_default
+      responses:
+        '200':
+          description: OK
+  /commands/{commandId}:
+    post:
+      summary: Edit exist command
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: commandId
+          schema:
+            type: integer
+          required: true
+          description: Command Id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+                is_default:
+                  type: boolean
+              required:
+                - command
+                - is_default
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Remove command
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: commandId
+          schema:
+            type: integer
+          required: true
+          description: Command id
+      responses:
+        '200':
+          description: OK
+  /commands/{commandId}/text:
+    post:
+      summary: Edit command text for lang
+      tags:
+        - Support groups
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: commandId
+          schema:
+            type: integer
+          required: true
+          description: Command Id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                language_code:
+                  type: string
+                  example: en
+                text:
+                  type: string
+                  example: english command
+              required:
+                - language_code
+                - text
+      responses:
+        '200':
+          description: OK
+  /wiki-pages:
+    get:
+      summary: Wiki pages list
+      tags:
+        - Wiki pages
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                    language_code:
+                      type: string
+                      example: en
+                  required:
+                    - id
+                    - name
+  /wiki-pages/{code}:
+    get:
+      summary: View wiki pages
+      tags:
+        - Wiki pages
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: code
+          schema:
+            type: string
+          required: true
+          description: Language code
+          example: en
+        - in: query
+          name: viewYours
+          schema:
+            type: integer
+          description: Filter only user wiki pages. Value - 1
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: Filter by title
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                    rating:
+                      type: integer
+                  required:
+                    - id
+                    - title
+                    - rating
+  /wiki-pages/{code}/missing:
+    get:
+      summary: Missing wiki pages
+      tags:
+        - Wiki pages
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: code
+          schema:
+            type: string
+          required: true
+          description: Language code
+          example: en
+        - in: query
+          name: viewYours
+          schema:
+            type: integer
+          description: Filter only user wiki pages. Value - 1
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: Filter by title
+      responses:
+        '200':
+          description: List
+          headers:
+            X-Pagination-Total-Count:
+              schema:
+                type: integer
+              description: Total items amount
+            X-Pagination-Page-Count:
+              schema:
+                type: integer
+              description: Pages amount
+            X-Pagination-Current-Page:
+              schema:
+                type: integer
+              description: Current page number
+            X-Pagination-Per-Page:
+              schema:
+                type: integer
+              description: Items amount per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                    rating:
+                      type: integer
+                  required:
+                    - id
+                    - title
+                    - rating
+  /wiki-tokens:
+    post:
+      summary: Add new wiki token
+      tags:
+        - Wiki pages
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                language_id:
+                  type: integer
+                token:
+                  type: string
+                wiki_username:
+                  type: string
+              required:
+                - language_id
+                - token
+                - wiki_username
+      responses:
+        '200':
+          description: OK
+  /wiki-tokens/{tokenId}:
+    post:
+      summary: Edit exist wiki token
+      tags:
+        - Wiki pages
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: tokenId
+          schema:
+            type: integer
+          required: true
+          description: Token id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                language_id:
+                  type: integer
+                token:
+                  type: string
+                wiki_username:
+                  type: string
+              required:
+                - language_id
+                - token
+                - wiki_username
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete token
+      tags:
+        - Wiki pages
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: tokenId
+          schema:
+            type: integer
+          required: true
+          description: Token id
+      responses:
+        '200':
+          description: OK
+  /users:
+    get:
+      summary: Get users information
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: Users information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  confirmed_user_amount:
+                    type: integer
+                    description: Confirmed user amount
+                    example: 10
+                required:
+                  - confirmed_user_amount
+  /users/account:
+    get:
+      summary: Get current user information
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: User id
+                    example: 10
+                  email:
+                    type: string
+                    description: User email
+                    example: alex@gmail.com
+                  name:
+                    type: string
+                    description: Name
+                    example: Alex Sokolov
+                  username:
+                    type: string
+                    description: Name
+                    example: Alex
+                  rating:
+                    type: integer
+                    description: Active rating
+                    example: 1
+                  total_rating:
+                    type: integer
+                    description: Overall Rating
+                    example: 20747
+                  rank:
+                    type: integer
+                    description: Rank
+                    example: 10
+                  total_rank:
+                    type: integer
+                    description: Total rank
+                    example: 50
+                required:
+                  - id
+                  - name
+  /users/{userId}:
+    get:
+      summary: Get user information
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: User id or user name if defined
+      responses:
+        '200':
+          description: Users information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: User id
+                    example: 10
+                  name:
+                    type: string
+                    description: Name
+                    example: Alex Sokolov
+                  username:
+                    type: string
+                    description: Name
+                    example: Alex
+                required:
+                  - id
+                  - name
+    post:
+      summary: Edit user information
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/tokenParam'
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: User id or user name if defined
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+              required:
+                - name
+      responses:
+        '200':
+          description: OK
+  /login:
+    post:
+      summary: Login user
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Access token for API
+                    example: WAoFyEFswfRMepG53WGp
+                required:
+                  - access_token
+  /logout:
+    post:
+      summary: Logout user
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+  /signup:
+    post:
+      summary: Sign up user
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: OK
+  /request-password-reset:
+    post:
+      summary: Send request password reset
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        '200':
+          description: OK
+  /reset-password:
+    post:
+      summary: Update password
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+      responses:
+        '200':
+          description: OK
+  /confirm:
+    post:
+      summary: Confirm email
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: User id
+                auth_key:
+                  type: string
+              required:
+                - user_id
+                - auth_key
+      responses:
+        '200':
+          description: OK
+  /resend-confirmation-email:
+    post:
+      summary: Send confirmation email
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+  /change-language:
+    post:
+      summary: Change language
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                language_code:
+                  type: string
+                  description: Language code
+              required:
+                - language_code
+      responses:
+        '200':
+          description: OK
+  /invite:
+    post:
+      summary: Store invite
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+              required:
+                - user_id
+      responses:
+        '200':
+          description: OK
+components:
+  parameters:
+    tokenParam:
+      in: header
+      name: X-Access-Token
+      schema:
+        type: string
+        format: string
+      description: Access token for API
+      required: true

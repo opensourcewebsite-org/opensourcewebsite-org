@@ -1,0 +1,101 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+use yii\behaviors\TimestampBehavior;
+
+/**
+ * This is the model class for table "support_group_command_text".
+ *
+ * @property int $id
+ * @property int $support_group_command_id
+ * @property string $language_code
+ * @property string $text
+ * @property int $updated_by
+ * @property int $updated_at
+ *
+ * @property Language $languageCode
+ * @property SupportGroupCommand $supportGroupCommand
+ */
+class SupportGroupCommandText extends \yii\db\ActiveRecord
+{
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'support_group_command_text';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => false,
+            ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['support_group_command_id', 'language_code', 'text'], 'required'],
+            [['support_group_command_id'], 'integer'],
+            [['text'], 'string'],
+            [['language_code'], 'string', 'max' => 255],
+            [['language_code'], 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']],
+            [['support_group_command_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupCommand::className(), 'targetAttribute' => ['support_group_command_id' => 'id']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'support_group_command_id' => 'Support Group Command ID',
+            'language_code' => 'Language Code',
+            'text' => 'Text',
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLanguageCode()
+    {
+        return $this->hasOne(Language::className(), ['code' => 'language_code']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupCommand()
+    {
+        return $this->hasOne(SupportGroupCommand::className(), ['id' => 'support_group_command_id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+                $this->updated_by = Yii::$app->user->id;
+
+            return true;
+        }
+        return false;
+    }
+}

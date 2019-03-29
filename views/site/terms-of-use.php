@@ -147,7 +147,7 @@ These TOS are in the English language only, which language shall be controlling 
 <h4>Notification Of Possible Copyright Infringement</h4>
 
 <p>
-In the event you believe that material or content published on the Website may infringe on your copyright or that of another, please <a href="/contact">contact</a> us.
+In the event you believe that material or content published on the Website may infringe on your copyright or that of another, please mail to <a href="mailto:hello@opensourcewebsite.org">hello@opensourcewebsite.org</a>.
 </p>
 
 </div>

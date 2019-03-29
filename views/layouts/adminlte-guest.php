@@ -8,7 +8,7 @@ use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Modal;
-use yii\bootstrap\Nav;
+use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
@@ -91,6 +91,7 @@ Modal::end();
 <div class="wrapper">
     <?php
     NavBar::begin([
+        'renderInnerContainer' => false,
         'options' => [
             'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
         ],
@@ -166,15 +167,15 @@ Modal::end();
     </div>
 
     <footer class="main-footer">
-        <div class="container">
+            <?= Html::a(Yii::t('app', 'Road map'), ['site/road-map']) ?> |
             <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
             <?= Html::a(Yii::t('app', 'Contribution'), ['site/team']) ?> |
+            <?= Html::a(Yii::t('app', 'Technologies'), ['site/technologies']) ?> |
             <?= Html::a(Yii::t('app', 'We\'re on GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
+            <?= Html::a(Yii::t('app', 'Join us on Gitter'), 'https://gitter.im/opensourcewebsite-org/community') ?> |
             <?= Html::a(Yii::t('app', 'Join us on Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE') ?> |
-            <?= Html::a(Yii::t('app', 'Contact us'), ['site/contact']) ?><br />
             <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
             <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
-        </div>
     </footer>
 </div>
 <?php $this->endBody() ?>

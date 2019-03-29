@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\components\helpers\ReferrerHelper;
-use app\models\ContactForm;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\Rating;
@@ -28,16 +27,13 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm',
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm', 'resend-confirmation-email',
                 ],
                 'rules' => [
                     [
-                        'actions' => ['confirm'],
+                        'actions' => ['confirm', 'resend-confirmation-email'],
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return !Yii::$app->user->identity->is_email_confirmed;
-                        },
                     ],
                     [
                         'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
@@ -101,6 +97,17 @@ class SiteController extends Controller
         return $this->render('privacy-policy');
     }
 
+    public function actionRoadMap()
+    {
+        return $this->render('road-map');
+    }
+
+    public function actionTechnologies()
+    {
+        return $this->render('technologies');
+    }
+
+
     /**
      * Logs in a user.
      *
@@ -149,29 +156,6 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return mixed
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
-
-            return $this->refresh();
-        }
-
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -362,6 +346,10 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {
+        if (in_array($action->id, ['hook'])) {
+            $this->enableCsrfValidation = false;
+        }
+
         if (!parent::beforeAction($action)) {
             return false;
         }

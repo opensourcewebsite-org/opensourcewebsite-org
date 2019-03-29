@@ -160,7 +160,7 @@ From time to time OSW may email you electronic newsletters, announcements, surve
 </p>
 
 <p>
-If you have questions regarding this Privacy Policy, please <a href="/contact">contact</a> us.
+If you have questions regarding this Privacy Policy, please mail to <a href="mailto:hello@opensourcewebsite.org">hello@opensourcewebsite.org</a>.
 </p>
 
 </div>

@@ -17,11 +17,11 @@ $this->title = Yii::t('menu', 'Moqups');
             </div>
         </div>
         <div class="row mb-2">
-            <div class="alert alert-info" role="alert">
-                <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
-                (<?= $maxMoqupValue ?> per 1 User Rating), 
-                <b>Volume:</b> <?= Converter::formatNumber(Yii::$app->user->identity->totalMoqupsSize) ?> MB/<?= Converter::formatNumber(Yii::$app->user->identity->maxMoqupsSize) ?> MB. 
-                (<?= Converter::formatNumber($sizeMoqupValue) ?> MB per 1 User Rating)
+            <div class="col">
+                <div class="alert alert-info" role="alert">
+                    <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
+                    (<?= $maxMoqupValue ?> per 1 User Rating)
+                </div>
             </div>
         </div>
     <?php $this->endBlock(); ?>
@@ -29,9 +29,6 @@ $this->title = Yii::t('menu', 'Moqups');
 
 <div class="card">
     <div class="card-header d-flex p-0">
-        <h3 class="card-title p-3">
-            Pages
-        </h3>
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
                 <?= Html::a('<i class="fa fa-plus"></i>',
@@ -77,7 +74,7 @@ $this->title = Yii::t('menu', 'Moqups');
                         $followed = in_array($model->id, Yii::$app->user->identity->followedMoqupsId);
                         $response = $model->title;
 
-                        return $response;
+                        return Html::a($response, ['/moqup/design-view', 'id' => $model->id]);
                     },
                 ],
                 [
@@ -85,7 +82,7 @@ $this->title = Yii::t('menu', 'Moqups');
                     'contentOptions' => ['style' => 'width: 30%; white-space: normal'],
                     'format' => 'html',
                     'value' => function($model) use ($viewFollowing) {
-                        $response = $model->user->email;
+                        $response = $model->user->name ?? $model->user->id;
                         
                         return $response;
                     },
@@ -97,44 +94,22 @@ $this->title = Yii::t('menu', 'Moqups');
                     'label' => 'Last update',
                     'format' => 'relativeTime',
                 ],
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'buttons' => [
-                        'view' => function ($url, $model, $key) {
-                            $content = '<i class="fas fa-external-link-alt"></i>';
-                            return Html::a($content, ['moqup/design-view/', 'id' => $model->id], [
-                                'data-pjax' => 0,
-                                'target' => '_blank',
-                                'class' => 'btn btn-sm btn-outline-primary',
-                                'title' => 'View',
-                            ]);
-                        },
-                        'update' => function ($url, $model, $key) {
-                            $content = '<i class="fas fa-edit"></i>';
-                            return Html::a($content, ['moqup/design-edit/', 'id' => $model->id], [
-                                'data-pjax' => 0,
-                                'class' => 'btn btn-sm btn-outline-secondary',
-                                'title' => 'Edit',
-                            ]);
-                        },
-                        'delete' => function ($url, $model, $key) {
-                            $content = '<i class="fas fa-trash-alt"></i>';
-                            return Html::a($content, ['moqup/design-delete/', 'id' => $model->id], [
-                                'data-pjax' => 0,
-                                'data-method' => 'post',
-                                'class' => 'delete-moqup-anchor btn btn-sm btn-outline-danger',
-                                'title' => 'Delete',
-                            ]);
-                        }
-                    ],
-                    'visibleButtons' => [
-                        'update' => function ($model) use ($viewYours) {
-                            return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
-                        },
-                        'delete' => function ($model) use ($viewYours) {
-                            return $viewYours || (int)$model->user_id === Yii::$app->user->identity->id;
-                        },
-                    ],
+            ],
+            'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
+            'pager' => [
+                'options' => [
+                    'class' => 'pagination float-right',
+                ],
+                'linkContainerOptions' => [
+                    'class' => 'page-item',
+                ],
+                'linkOptions' => [
+                    'class' => 'page-link',
+                ],
+                'maxButtonCount' => 5,
+                'disabledListItemSubTagOptions' => [
+                    'tag' => 'a',
+                    'class' => 'page-link',
                 ],
             ],
         ]); ?>

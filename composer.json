@@ -21,25 +21,26 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.0",
-        "yiisoft/yii2": "~2.0.14",
+        "yiisoft/yii2": "~2.0.16",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
-        "npm-asset/font-awesome" : "^5.2",
+        "npm-asset/font-awesome" : "5.2",
         "almasaeed2010/adminlte": "^3.0",
         "cebe/yii2-gravatar": "^1.1",
         "vlucas/phpdotenv": "^2.5",
         "brussens/yii2-maintenance-mode": "*",
         "kartik-v/yii2-widget-select2": "@dev",
         "npm-asset/ace-builds": "^1.4.1",
-        "yiisoft/yii2-httpclient": "~2.0.0"
+        "yiisoft/yii2-httpclient": "~2.0.0",
+        "telegram-bot/api": "^2.3"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
         "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1",
-        "codeception/specify": "~0.4.3"
+        "codeception/verify": "~1.0.0",
+        "codeception/specify": "~0.4.6"
     },
     "config": {
         "process-timeout": 1800,

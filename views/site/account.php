@@ -19,7 +19,14 @@ $this->title = 'Account';
                 'id',
                 'email',
                 [
-                    'label' => 'Rating',
+                    'label' => 'Active Rating',
+                    'format' => 'html',
+                    'value' => function ($model) {
+                        return "<b>{$model->activeRating}</b>";
+                    },
+                ],
+                [
+                    'label' => 'Overall Rating',
                     'format' => 'html',
                     'value' => function ($model) use ($totalRating) {
 
@@ -29,7 +36,7 @@ $this->title = 'Account';
                             $percent = Converter::percentage($model->rating, $totalRating);
                         }
 
-                        return "<b>{$model->rating}</b>, {$percent}% of {$totalRating} (total system rating)";
+                        return "<b>{$model->rating}</b>, {$percent}% of {$totalRating} (total system overall rating)";
                     },
                 ],
                 [
@@ -60,6 +67,38 @@ $this->title = 'Account';
             ],
         ]);
     ?>
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Profile</h1>
+        </div>
+        <div class="col-md-6">
+            <?= Html::a('<i class="fas fa-edit"></i>', ['user/edit-profile'], [
+                'class' => 'btn btn-light',
+                'title' => 'Edit',
+                'style' => ['float' => 'right'],
+            ]); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <?php echo DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    [
+                        'label' => 'Username',
+                        'value' => $model->username,
+                        'visible' => (bool)$model->username
+                    ],
+                    [
+                        'label' => 'Name',
+                        'value' => function ($model) {
+                            return $model->name ?? $model->id;
+                        }
+                    ],
+                ],
+            ]); ?>
+        </div>
+    </div>
 </div>
 <?php if (!Yii::$app->user->isGuest && !Yii::$app->user->identity->is_email_confirmed): ?>
     <?php echo Html::a('Resend Confirmation Email', ['site/resend-confirmation-email'], ['class' => 'btn btn-primary']); ?>

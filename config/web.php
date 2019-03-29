@@ -3,6 +3,8 @@
 use yii\log\EmailTarget;
 
 $params = require __DIR__ . '/params.php';
+$settingValidations = require __DIR__ . '/setting_validations.php';
+$params = array_merge($params, $settingValidations);
 $db = require __DIR__ . '/db.php';
 
 $config = [
@@ -20,6 +22,11 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'comment' => [
+            'class' => 'app\modules\comment\Module'
+        ],
+    ],
     'components' => [
         'assetManager' => [
             'class' => 'app\components\AssetManager',
@@ -28,6 +35,7 @@ $config = [
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
                     'css' => ['plugins/bootstrap/css/bootstrap.css'],
+                    'js' => ['plugins/popper/umd/popper.min.js'],
                     'sourcePath' => '@vendor/almasaeed2010/adminlte',
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
@@ -121,13 +129,21 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<action:(signup|login|contact|donate|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
+                '<action:(signup|login|donate|road-map|team|terms-of-use|privacy-policy|account)>' => 'site/<action>',
                 'wikipedia-pages' => 'wikipedia-pages/index',
+                'cron-job' => 'cron-job/index',
+                'cron-job/view/<id:[\d]+>' => 'cron-job/view',
                 'referrals' => 'referrals/index',
                 'wikipedia-page/view/<code>/<all>' => 'wikipedia-pages/view',
                 'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
                 'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
                 'invite/<id>' => 'site/invite',
+                'webhook/telegram/<token>' => 'webhook/telegram',
+                'website-settings' => 'setting/index',
+                'support-groups/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',
+                'support-groups/clients-list/<id:[\d]+>/<language:[\w]+>' => 'support-groups/clients-list',
+                'support-groups/clients-view/<id:[\d]+>' => 'support-groups/clients-view',
+                'u/<id>' => 'user/profile',
 //              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
             ],
         ],
@@ -141,6 +157,9 @@ $config = [
     ],
     'timeZone' => 'UTC',
     'params' => $params,
+    'as ConfirmEmail' => [
+        'class' => '\app\behaviors\ConfirmEmailBehavior',
+    ],
 ];
 
 if (YII_ENV_DEV) {

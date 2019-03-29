@@ -4,6 +4,7 @@ namespace app\models\search;
 
 use app\models\Rating;
 use app\models\UserWikiPage;
+use app\models\UserWikiToken;
 use app\models\WikiPage;
 use Yii;
 use yii\base\Model;
@@ -88,27 +89,23 @@ class WikiPageSearch extends WikiPage
         return $dataProvider;
     }
 
+    /**
+     * @param array $params
+     * @return \yii\data\ActiveDataProvider
+     */
     public function searchMissing($params)
     {
         $userId = isset($params['userId']) ? $params['userId'] : 0;
         $languageId = isset($params['languageId']) ? $params['languageId'] : 0;
 
-        $queryGroup = WikiPage::find()
-            ->joinWith('users')
-            ->select('group_id')
-            ->distinct()
-            ->where(['{{%user}}.id' => $userId]);
+        $queryMissingPages = new UserWikiToken();
+        $queryMissingPages->setAttributes([
+            'user_id' => $userId,
+            'language_id' => $languageId,
+        ]);
 
-        $queryMissingPages = WikiPage::find()
-            ->joinWith('users')
-            ->select('{{%wiki_page}}.*')
-            ->distinct()
-            ->where(['group_id' => $queryGroup])
-            ->andWhere([
-                'language_id' => $languageId,
-                'user_id' => null,
-            ]);
-
+        $queryMissingPages = $queryMissingPages->instanceMissingPages();
+        
         $queryMissingPages->andFilterWhere(['like', 'title', $this->title]);
 
         $dataProvider = new ActiveDataProvider([
@@ -118,4 +115,7 @@ class WikiPageSearch extends WikiPage
 
         return $dataProvider;
     }
+
+
+    
 }

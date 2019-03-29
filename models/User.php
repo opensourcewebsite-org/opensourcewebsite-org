@@ -22,6 +22,7 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property string $name
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -55,6 +56,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'integer'],
+            ['name', 'string'],
         ];
     }
 
@@ -266,6 +268,78 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getIssues()
+    {
+        return $this->hasMany(Issue::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of issues of the user
+     */
+    public function getIssuesCount()
+    {
+        return count($this->issues);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroup()
+    {
+        return $this->hasMany(SupportGroup::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of support group of the user
+     */
+    public function getSupportGroupCount()
+    {
+        return count($this->supportGroup);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupMember()
+    {
+        return $this->hasMany(SupportGroupMember::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupCommand()
+    {
+        return $this->hasMany(SupportGroupCommand::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupBot()
+    {
+        return $this->hasMany(SupportGroupBot::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return integer The number of members of the support group
+     */
+    public function getSupportGroupMemberCount()
+    {
+        return count($this->supportGroupMember);
+    }
+
+    /**
+     * @return integer The number of bots of the support group
+     */
+    public function getBotsCount()
+    {
+        return count($this->supportGroupBot);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getFollowedMoqups()
     {
         return $this->hasMany(Moqup::className(), ['id' => 'moqup_id'])->viaTable('user_moqup_follow', ['user_id' => 'id']);
@@ -291,10 +365,54 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxMoqupsNumber()
     {
-        $setting = Setting::findOne(['key' => 'moqup_entries_limit']);
+        $setting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
         $maxMoqup = ($setting != null) ? $setting->value : 1;
 
         return $maxMoqup * $this->rating;
+    }
+
+    /**
+     * @return integer The max ammount of issues the user can have
+     */
+    public function getMaxIssuesNumber()
+    {
+        $setting = Setting::findOne(['key' => 'issue_quantity_value_per_one_rating']);
+        $maxIssue = ($setting != null) ? $setting->value : 1;
+
+        return $maxIssue * $this->rating;
+    }
+
+    /**
+     * @return integer The max ammount of support groups the user can have
+     */
+    public function getMaxSupportGroup()
+    {
+        $setting = Setting::findOne(['key' => 'support_group_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+
+        return $settingQty * $this->rating;
+    }
+
+    /**
+     * @return integer The max ammount of support group members the user can have
+     */
+    public function getMaxSupportGroupMember()
+    {
+        $setting = Setting::findOne(['key' => 'support_group_member_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+
+        return $settingQty * $this->rating;
+    }
+
+    /**
+     * @return integer The max amount of bots the user can have
+     */
+    public function getMaxBots()
+    {
+        $setting = Setting::findOne(['key' => 'support_group_bot_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+
+        return $settingQty * $this->rating;
     }
 
     /**
@@ -330,10 +448,21 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxMoqupsSize()
     {
-        $setting = Setting::findOne(['key' => 'moqup_bytes_limit']);
-        $maxLength = ($setting != null) ? $setting->value : 1;
+        $maxLength = $this->maxMoqupsHtmlSize + $this->maxMoqupsCssSize;
 
         return Converter::byteToMega($maxLength * $this->rating);
+    }
+
+    public function getMaxMoqupsHtmlSize()
+    {
+        $setting = Setting::findOne(['key' => 'moqup_html_field_max_value']);
+        return ($setting != null) ? $setting->value : 1;
+    }
+
+    public function getMaxMoqupsCssSize()
+    {
+        $setting = Setting::findOne(['key' => 'moqup_css_field_max_value']);
+        return ($setting != null) ? $setting->value : 1;
     }
 
     /**
@@ -358,6 +487,32 @@ class User extends ActiveRecord implements IdentityInterface
     public function getRating()
     {
         $balance = Rating::find()->select(['balance' => 'sum(amount)'])->where(['user_id' => $this->id])->groupBy('user_id')->scalar();
+
+        return ($balance != null) ? $balance : 0;
+    }
+
+    /**
+     * @param bool $format whether to return formatted percent value or not
+     * @return mixed The number in percentage
+     */
+    public function getOverallRatingPercent($format = true)
+    {
+        $totalRating = Rating::getTotalRating();
+        return Converter::percentage($this->rating, $totalRating, $format);
+    }
+
+    /**
+     * @return integer The active rating of the user
+     */
+    public function getActiveRating()
+    {
+        $setting = Setting::findOne(['key' => 'days_count_to_calculate_active_rating']);
+        $daysActiveRating = intval($setting->value);
+
+        $balance = Rating::find()
+            ->where(['>', 'created_at', time() - 3600 * 24 * $daysActiveRating])
+            ->andWhere(['user_id' => $this->id])
+            ->sum('amount');
 
         return ($balance != null) ? $balance : 0;
     }
