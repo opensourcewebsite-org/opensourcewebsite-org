@@ -49,7 +49,7 @@ class WikinewsPagesController extends Controller
         ]);
     }
 	
-	public function actionCreate()
+    public function actionCreate()
     {
         $model = new WikinewsPage([
             'created_by' => Yii::$app->user->id,
