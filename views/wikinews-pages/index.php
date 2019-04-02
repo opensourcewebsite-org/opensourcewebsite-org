@@ -10,8 +10,6 @@ use app\components\TitleColumn;
 /* @var $this \yii\web\View */
 
 $this->title = Yii::t('menu', 'Wikinews pages');
-$countTokens = count($dataProvider);
-
 ?>
 <div class="card">
     <div class="card-header d-flex p-0">
@@ -30,7 +28,6 @@ $countTokens = count($dataProvider);
         </ul>
     </div>
     <div class="card-body p-0">
-        <?php if ($countTokens): ?>
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'summary' => false,
@@ -71,6 +68,5 @@ $countTokens = count($dataProvider);
                     ]
                 ],
             ]); ?>
-        <?php endif ?>
     </div>
 </div>
