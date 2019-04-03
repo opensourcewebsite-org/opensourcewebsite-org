@@ -50,7 +50,6 @@ class WikinewsParserController extends Controller
                 foreach ($data['langlinks'] as $key => $langlink) {
                     $newsTranslate = WikinewsPage::find()
                         ->where(['group_id' => $group_id])
-                        ->andWhere(['<>', 'pageid', $news->pageid])
                         ->all();
                     $identity = !empty($newsTranslate[$key]->pageid) ? $newsTranslate[$key]->pageid : $langlink['*'];
                     $dataLink = $this->api($langlink['lang'], $identity);
