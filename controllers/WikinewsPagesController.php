@@ -65,7 +65,7 @@ class WikinewsPagesController extends Controller
 					$model->language_id = WikinewsLanguage::find()->select('id')->where(['code'=>$matches[1]])->scalar();
 				}
 				if (isset($matches[2])) {
-					$model->title = trim($matches[2]);
+					$model->title = str_replace('_', ' ', trim($matches[2]));
 				}
 				$wikiNewsPage = WikinewsPage::find()->where(['language_id'=>$model->language_id, 'title'=>$model->title])->one();
 				if ($wikiNewsPage) {
