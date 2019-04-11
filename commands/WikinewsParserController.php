@@ -42,17 +42,31 @@ class WikinewsParserController extends Controller
                 );
                 foreach ($data['langlinks'] as $check) {
                     $exist = WikinewsPage::findOne(['title' => $check['*']]);
+                    if (empty($exist)) {
+                        $exist = $this->api($check['lang'], $check['*']);
+                        $exist = WikinewsPage::findOne(['pageid' => $exist['pageid']]);
+                    }
                     if ($exist) {
                         $group_id = $exist->group_id;
                         break;
                     }
                 }
+                $news->group_id = $group_id;
+                $news->pageid = $data['pageid'];
+                $news->parsed_at = time();
+                $news->save();
                 foreach ($data['langlinks'] as $key => $langlink) {
                     $newsTranslate = WikinewsPage::find()
                         ->where(['group_id' => $group_id])
                         ->all();
-                    $identity = !empty($newsTranslate[$key]->pageid) ? $newsTranslate[$key]->pageid : $langlink['*'];
-                    $dataLink = $this->api($langlink['lang'], $identity);
+                    if (!empty($newsTranslate[$key]->pageid)) {
+                        $identity = $newsTranslate[$key]->pageid;
+                        $lang = $newsTranslate[$key]->language->code;
+                    } else {
+                        $identity = $langlink['*'];
+                        $lang = $langlink['lang'];
+                    }
+                    $dataLink = $this->api($lang, $identity);
                     CustomConsole::output(
                         "Parsing by language link: {$dataLink['title']}",
                         [
@@ -61,17 +75,13 @@ class WikinewsParserController extends Controller
                         ]
                     );
                     $newsAnotherLang = !empty($newsTranslate[$key]) ? $newsTranslate[$key] : new WikinewsPage();
-                    $newsAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $langlink['lang']])->id;
+                    $newsAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $lang])->id;
                     $newsAnotherLang->title = $dataLink['title'];
                     $newsAnotherLang->group_id = $group_id;
                     $newsAnotherLang->pageid = $dataLink['pageid'];
                     $newsAnotherLang->parsed_at = time();
                     $newsAnotherLang->save();
                 }
-                $news->group_id = $group_id;
-                $news->pageid = $data['pageid'];
-                $news->parsed_at = time();
-                $news->save();
             } else {
                 CustomConsole::output(
                     "Page is not exist: {$news->title}",
