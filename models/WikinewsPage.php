@@ -20,8 +20,6 @@ use yii\db\ActiveRecord;
 class WikinewsPage extends ActiveRecord
 {
 	
-	public $url;
-	
     /**
      * {@inheritdoc}
      */
@@ -36,10 +34,9 @@ class WikinewsPage extends ActiveRecord
     public function rules()
     {
         return [
-            [['url'], 'required'],
+            [['title'], 'required'],
             [['title'], 'string', 'max' => 255],
             [['language_id', 'group_id', 'pageid', 'created_by', 'created_at', 'parsed_at'], 'integer'],
-            ['url', 'validateUrl'],
         ];
     }
 	
@@ -50,12 +47,12 @@ class WikinewsPage extends ActiveRecord
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
-	public function validateUrl($attribute, $params) 
+	public function validateUrl($attribute)
 	{
 		$valid = true;
 		$attr = $this->$attribute;
-		$validateUrl = preg_match("#https://([a-z]{2}).wikinews.org/wiki/[A-Za-z0-9,_.-]+$#", $attr, $matches);
-		if (!$validateUrl) {
+		$validateUrl = preg_match("/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА-Яа-я0-9%,_.-]+)/ui", $attr, $matches);
+        if (!$validateUrl) {
 			$valid = false;
 		}
 		elseif ($matches[1]) {
@@ -82,7 +79,6 @@ class WikinewsPage extends ActiveRecord
             'id' => 'ID',
             'language_id' => 'Language ID',
             'title' => 'Title',
-            'url' => 'Wikinews page url',
             'group_id' => 'Group ID',
             'pageid' => 'Page ID',
             'created_by' => 'Created by',

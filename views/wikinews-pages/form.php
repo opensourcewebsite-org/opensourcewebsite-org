@@ -15,7 +15,7 @@ use yii\bootstrap\ActiveForm;
         ]); ?>
         <div class="card-body">
             <div class="form-group">
-                <?= $form->field($model, 'url') ?>
+                <?= $form->field($model, 'title') ?>
             </div>
             <div class="form-group">
                 <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>

@@ -59,23 +59,25 @@ class WikinewsPagesController extends Controller
         $languageArray = WikinewsLanguage::find()->all();
 
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
-            if ($model->load(Yii::$app->request->get()) && $model->validate()) {				
-				preg_match("#https://([a-z]{2}).wikinews.org/wiki/([A-Za-z0-9,_.-]+)$#", $model->url, $matches);
-				if (isset($matches[1])) {
-					$model->language_id = WikinewsLanguage::find()->select('id')->where(['code'=>$matches[1]])->scalar();
-				}
-				if (isset($matches[2])) {
-					$model->title = str_replace('_', ' ', trim($matches[2]));
-				}
-				$wikiNewsPage = WikinewsPage::find()->where(['language_id'=>$model->language_id, 'title'=>$model->title])->one();
-				if ($wikiNewsPage) {
-					$wikiNewsPage->parsed_at = NULL;
-					$wikiNewsPage->url = $model->url;
-					$model = $wikiNewsPage;
-				}
-				if($model->save()){
-					return $this->redirect(['wikinews-pages/index']);
-				}                
+            if ($model->load(Yii::$app->request->get()) && $model->validate()) {
+                $model->validateUrl('title');
+                if (!$model->hasErrors()) {
+                    preg_match("/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА-Яа-я0-9%,_.-]+)/ui", $model->title, $matches);
+                    if (isset($matches[1])) {
+                        $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $matches[1]])->scalar();
+                    }
+                    if (isset($matches[2])) {
+                        $model->title = str_replace('_', ' ', trim($matches[2]));
+                    }
+                    $wikiNewsPage = WikinewsPage::find()->where(['language_id' => $model->language_id, 'title' => $model->title])->one();
+                    if ($wikiNewsPage) {
+                        $wikiNewsPage->parsed_at = NULL;
+                        $model = $wikiNewsPage;
+                    }
+                    if ($model->save()) {
+                        return $this->redirect(['wikinews-pages/index']);
+                    }
+                }
             }
         }
         
