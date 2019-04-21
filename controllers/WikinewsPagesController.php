@@ -13,6 +13,7 @@ use yii\web\NotFoundHttpException;
 use app\models\search\WikinewsSearch;
 use app\models\WikinewsPage;
 use app\models\WikinewsLanguage;
+use app\models\WikiUrlForm;
 
 /**
  * WikipediaPagesController implements the CRUD actions for WikiPage model.
@@ -48,41 +49,38 @@ class WikinewsPagesController extends Controller
             'dataProvider' => $dataProvider
         ]);
     }
-	
+
     public function actionCreate()
     {
-        $model = new WikinewsPage([
-            'created_by' => Yii::$app->user->id,
-            'created_at' => time()
-        ]);
-
+        $form = new WikiUrlForm();
         $languageArray = WikinewsLanguage::find()->all();
-
         if (Yii::$app->request->isGet && Yii::$app->request->isAjax) {
-            if ($model->load(Yii::$app->request->get()) && $model->validate()) {
-                $model->validateUrl('title');
-                if (!$model->hasErrors()) {
-                    preg_match("/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА-Яа-я0-9%,_.-]+)/ui", $model->title, $matches);
-                    if (isset($matches[1])) {
-                        $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $matches[1]])->scalar();
-                    }
-                    if (isset($matches[2])) {
-                        $model->title = str_replace('_', ' ', trim($matches[2]));
-                    }
-                    $wikiNewsPage = WikinewsPage::find()->where(['language_id' => $model->language_id, 'title' => $model->title])->one();
-                    if ($wikiNewsPage) {
-                        $wikiNewsPage->parsed_at = NULL;
-                        $model = $wikiNewsPage;
-                    }
-                    if ($model->save()) {
-                        return $this->redirect(['wikinews-pages/index']);
-                    }
+            if ($form->load(Yii::$app->request->get()) && $form->validate()) {
+                $model = new WikinewsPage([
+                    'created_by' => Yii::$app->user->id,
+                    'created_at' => time()
+                ]);
+                preg_match("/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА-Яа-я0-9%0x00E1,_.-]+)/ui", $form->url, $matches);
+                $url = explode('/', explode('wiki/', $form->url)[1])[0];
+                if (isset($matches[1])) {
+                    $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $matches[1]])->scalar();
+                }
+                if (isset($url)) {
+                    $model->title = $url;
+                }
+                $wikiNewsPage = WikinewsPage::find()->where(['language_id' => $model->language_id, 'title' => $model->title])->one();
+                if ($wikiNewsPage) {
+                    $wikiNewsPage->parsed_at = NULL;
+                    $model = $wikiNewsPage;
+                }
+                if ($model->save()) {
+                    return $this->redirect(['wikinews-pages/index']);
                 }
             }
         }
-        
+
         return $this->renderAjax('form', [
-            'model' => $model,
+            'model' => $form,
             'languageArray' => $languageArray,
         ]);
     }
