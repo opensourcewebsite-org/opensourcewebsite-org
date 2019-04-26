@@ -32,6 +32,7 @@ class WikinewsParserController extends Controller
             $group_id = !empty($news->group_id) ? $news->group_id : $news->id;
             $identity = !$news->pageid ? $news->title : $news->pageid;
             $data = $this->api($news->language->code, $identity);
+            $news->title = str_replace('_', ' ', $news->title);
             if ($data) {
                 CustomConsole::output(
                     "Parsing page: {$news->title}",
