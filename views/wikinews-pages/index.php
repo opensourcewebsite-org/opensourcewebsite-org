@@ -62,6 +62,7 @@ $this->title = Yii::t('menu', 'Wikinews pages');
                         'label' => 'Title',
                         'value' => function ($model) {
                             $link = "https://{$model->language->code}.wikinews.org/?curid=".$model->pageid;//wiki/".$model->title;
+                            $model->title = str_replace('_', ' ', $model->title);
                             return Html::a($model->title, $link, ['target' => '_blank']);
                         },
                         'format' => 'raw',

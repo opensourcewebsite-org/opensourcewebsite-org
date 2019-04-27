@@ -52,6 +52,7 @@ class WikinewsParserController extends Controller
                         break;
                     }
                 }
+                $news->title = str_replace(' ', '_', $news->title);
                 $news->group_id = $group_id;
                 $news->pageid = $data['pageid'];
                 $news->parsed_at = time();
@@ -68,7 +69,7 @@ class WikinewsParserController extends Controller
                     );
                     $newsAnotherLang = !empty($newsTranslate) ? $newsTranslate : new WikinewsPage();
                     $newsAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $langlink['lang']])->id;
-                    $newsAnotherLang->title = $dataLink['title'];
+                    $newsAnotherLang->title = str_replace(' ', '_', $dataLink['title']);
                     $newsAnotherLang->group_id = $group_id;
                     $newsAnotherLang->pageid = $dataLink['pageid'];
                     $newsAnotherLang->parsed_at = time();
