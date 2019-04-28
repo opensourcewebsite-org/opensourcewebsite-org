@@ -62,11 +62,11 @@ class WikinewsPagesController extends Controller
                 ]);
                 preg_match("/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА-Яа-я0-9%0x00E1,_.-]+)/ui", $form->url, $matches);
                 $url = explode('/', explode('wiki/', $form->url)[1])[0];
-                $url = str_replace('_', ' ', $url);
                 if (isset($matches[1])) {
                     $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $matches[1]])->scalar();
                 }
                 if (isset($url)) {
+                    $url = str_replace('_', ' ', $url);
                     $model->title = $url;
                 }
                 $wikiNewsPage = WikinewsPage::find()->where(['language_id' => $model->language_id, 'title' => $model->title])->one();
