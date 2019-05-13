@@ -36,7 +36,7 @@ class WikinewsSearch extends WikinewsPage
     {
         $query = WikinewsPage::find()
             ->joinWith('language')
-            ->where('pageid IS NOT NULL')
+            //->where('pageid IS NOT NULL')
             ->groupBy('{{%wikinews_page}}.id')
             ->orderBy(['title' => SORT_ASC]);
 
