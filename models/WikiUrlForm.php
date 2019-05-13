@@ -32,13 +32,13 @@ class WikiUrlForm extends Model
     {
         $valid = true;
         $atr = $this->$attribute;
-        $validateUrl = preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9%,_.-]+)/ui', $atr, $matches);
+        $validateUrl = preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9%,_.-]+)/ui', $atr, $match);
 
         if (!$validateUrl) {
             $valid = false;
         }
-        elseif ($matches[1]) {
-            $langCode = $matches[1];
+        elseif ($match[1]) {
+            $langCode = $match[1];
             $langValid = WikinewsLanguage::find()->where(['code'=>$langCode])->count();
             if(!$langValid) {
                 $valid = false;
