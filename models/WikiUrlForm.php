@@ -31,8 +31,8 @@ class WikiUrlForm extends Model
     public function validateUrl($attribute, $params)
     {
         $valid = true;
-        $attr = $this->$attribute;
-        $validateUrl = preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9%,_.-]+)/ui', $attr, $matches);
+        $atr = $this->$attribute;
+        $validateUrl = preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9%,_.-]+)/ui', $atr, $matches);
         if (!$validateUrl) {
             $valid = false;
         }
