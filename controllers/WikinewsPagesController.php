@@ -61,10 +61,10 @@ class WikinewsPagesController extends Controller
                     'created_at' => time()
                 ]);
                 $atr = $form->url;
-                preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9,_.-]+)/ui', $atr, $match);
+                preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9,_.-]+)/ui', $atr, $mch);
                 $url = explode('/', explode('wiki/', $form->url)[1])[0];
-                if (isset($match[1])) {
-                    $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $match[1]])->scalar();
+                if (isset($mch[1])) {
+                    $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $mch[1]])->scalar();
                 }
                 if (isset($url)) {
                     $url = str_replace('_', ' ', $url);
