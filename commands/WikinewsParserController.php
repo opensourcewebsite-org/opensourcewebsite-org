@@ -30,7 +30,7 @@ class WikinewsParserController extends Controller
         /** @var object $news */
         foreach ($needParse as $news) {
             $group_id = !empty($news->group_id) ? $news->group_id : $news->id;
-            $identity = !$news->pageid ? $news->title : $news->pageid;
+            $identity = !$news->pageid ? urldecode($news->title) : $news->pageid;
             $data = $this->api($news->language->code, $identity);
             $news->title = str_replace('_', ' ', $news->title);
             if ($data) {
