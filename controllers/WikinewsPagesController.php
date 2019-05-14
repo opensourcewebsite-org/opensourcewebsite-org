@@ -60,10 +60,11 @@ class WikinewsPagesController extends Controller
                     'created_by' => Yii::$app->user->id,
                     'created_at' => time()
                 ]);
-                preg_match("/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9,_.-]+)/ui", $form->url, $matches);
+                $atr = $form->url;
+                preg_match('/^https:\/\/([a-z]{2}).wikinews.org\/wiki\/([A-Za-zА0-9,_.-]+)/ui', $atr, $match);
                 $url = explode('/', explode('wiki/', $form->url)[1])[0];
                 if (isset($matches[1])) {
-                    $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $matches[1]])->scalar();
+                    $model->language_id = WikinewsLanguage::find()->select('id')->where(['code' => $atr[1]])->scalar();
                 }
                 if (isset($url)) {
                     $url = str_replace('_', ' ', $url);
