@@ -117,7 +117,7 @@ class BotHandler extends BotApi
         ]);
 
         # case: when group has only 1 language
-        $languages = $this->getLanguages();
+        $languages = $this->getLanguagesByGroup();
         if (count($languages) == 1) {
             $this->_language_code = $languages[0]->language_code;
         }
@@ -250,7 +250,7 @@ class BotHandler extends BotApi
             return $default_response ? $this->generateDefaultResponse() : true;
         } elseif (trim($this->getMessage()->getText()) == '/lang' || $this->_language_code == null) {               
             # when group has only 1 language
-            $languages = $this->getLanguages();
+            $languages = $this->getLanguagesByGroup();
             if (count($languages) == 1) {
                 #if command /land setting  send our response  
                 $commands = $this->executeCommand();  
@@ -444,7 +444,7 @@ class BotHandler extends BotApi
      /**
      * @return array
      */
-    public function getLanguages()
+    public function getLanguagesByGroup()
     {
         return SupportGroupLanguage::findAll(['support_group_id' => $this->support_group_id]);
     }
