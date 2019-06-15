@@ -117,9 +117,9 @@ class BotHandler extends BotApi
         ]);
 
         # case: when group has only 1 language
-        $all_languages = SupportGroupLanguage::findAll(['support_group_id' => $this->support_group_id]);
-        if (count($all_languages) == 1) {
-            $this->_language_code = $all_languages[0]->language_code;
+        $languages = $this->getLanguagesByGroup();
+        if (count($languages) == 1) {
+            $this->_language_code = $languages[0]->language_code;
         }
 
         #default language
@@ -249,6 +249,18 @@ class BotHandler extends BotApi
 
             return $default_response ? $this->generateDefaultResponse() : true;
         } elseif (trim($this->getMessage()->getText()) == '/lang' || $this->_language_code == null) {
+            # when group has only 1 language
+            $languages = $this->getLanguagesByGroup();
+            if (count($languages) == 1)  {
+                #if command /land setting  send our response
+                $commands = $this->executeCommand();
+                if ($commands->command == '/lang') {
+                   return $this->generateResponse($commands->supportGroupCommandTexts);
+                }
+                #if command /land not setting  send defult response
+                return $this->generateDefaultResponse();
+            }
+
             $output = '';
 
             $availableLanguagesName = SupportGroupLanguage::find()
@@ -293,6 +305,10 @@ class BotHandler extends BotApi
 
         if (!$commands) {
             return $this->generateDefaultResponse();
+        }
+
+        if ($commands->command === '/lang') {
+            return $commands;
         }
 
         return $this->generateResponse($commands->supportGroupCommandTexts);
@@ -423,6 +439,14 @@ class BotHandler extends BotApi
         ]);
 
         return $model->save();
+    }
+
+     /**
+     * @return array
+     */
+    public function getLanguagesByGroup()
+    {
+        return SupportGroupLanguage::findAll(['support_group_id' => $this->support_group_id]);
     }
 
     /**
