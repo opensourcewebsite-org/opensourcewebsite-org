@@ -29,7 +29,7 @@ use yii\bootstrap\ActiveForm;
                             <?= $form->field($model, 'command')->textInput(['maxlength' => true]) ?>
                             <?= $form->field($model, 'is_default')->checkbox([
                                 'value'   => 1,
-                                'checked' => $model->is_default,
+                                //'checked' => $model->is_default,
                             ]) ?>
                         </div>
                         <div class="card-footer text-left">
