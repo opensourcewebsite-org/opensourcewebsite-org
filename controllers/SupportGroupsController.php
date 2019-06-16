@@ -196,7 +196,7 @@ class SupportGroupsController extends Controller
 
         if ($dataProvider->getTotalCount() == 1) {
             $model = $dataProvider->getModels();
-            return $this->redirect(['clients-list', 'id' => $searchModel->support_group_id, 'language' => $model[0]->language_code]);
+            return $this->redirect(['clients-list', 'id' => $searchModel->support_group_id]);
         }
 
         return $this->render('clients-languages', [
@@ -212,7 +212,7 @@ class SupportGroupsController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionClientsList($id, $language)
+    public function actionClientsList($id, $language = null)
     {
         $access = self::accessFindModel($id);
 
