@@ -108,6 +108,8 @@ To help our CI servers you should add `[ci skip]` to your documentation commit m
 - When only changing documentation, include `[ci skip]` in the commit title
 - When there is a issue, include issue number in the commit title (for example: #234 YOUR_COMMIT_NAME).
 
+#### Documentation Styleguide
+
 #### JavaScript Styleguide
 
 All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com).
@@ -132,4 +134,39 @@ All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com
 
 All PHP must adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards).
 
-#### Documentation Styleguide
+Recommended IDE - [JetBrains PhpStorm](https://www.jetbrains.com/phpstorm/)
+
+Yii2 code styles for import to PhpStorm - [download](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml). Save the file and import to "Settings > Editor > Code Style > PHP" (for PhpStorm):
+
+![](http://i.imgur.com/i5C928j.png)
+
+Recommended spell checker - SonarLint
+  - [Setup for PhpStorm](https://www.sonarlint.org/intellij)
+  - [Setup for Eclipse](https://www.sonarlint.org/eclipse)
+  - [Setup for Atom](https://www.sonarlint.org/atom)
+
+To automatically check a code style and formatting, you need to enable settings in the commit window (for PhpStorm):
+
+![](http://i.imgur.com/Wsvzx3C.png)
+
+#### Composer
+
+If you update `composer.json`, then there should be two files in the commit: `composer.json` and `composer.lock`.
+
+#### Yii 2 migration files
+
+Before to create a migrations files use [wwwsqldesigner](https://github.com/ondras/wwwsqldesigner) to prototype your changes for the database.
+
+To upgrade data in the database, create a migration whose name starts with `upgrade_`. To upgrade the data in the migration, the `safeUp()` method is used, it is forbidden to use data access through the models, only through DAO (yii\db\Command). Use of such migrations is necessary for existing databases, and for all new such migrations will be deleted. In `down()` and `safeDown()`, only deletion of objects of the database structure (tables, fields, keys, indexes) is allowed.
+
+Do not use variables like `$tableName` and `$tableOptions`.
+
+To specify a primary key, use `$this->primaryKey()->unsigned()`. Be sure to use `unsigned()` for those columns where possible.
+
+To add a column with integer values between 0-255, use `$this->tinyInteger()->unsigned()`.
+
+To add a column with integer values in the range 0-65535, use `$this->smallInteger()->unsigned()`.
+
+To add a column with date values in most cases, you need to use the data type `$this->integer()->unsigned()`. Exceptions - if the column will be actively used in mysql requests as a date.
+
+Usually, database tables are named in the singular for listing any objects. For example `user`, but not `users`.

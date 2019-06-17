@@ -1,4 +1,4 @@
-###General setup
+### General setup
 
 - Copy file `.env.dist` to `.env` in the root directory
 - Set correct values in `.env` for your environment
