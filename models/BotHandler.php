@@ -321,7 +321,8 @@ class BotHandler extends BotApi
         $this->setLanguageCode($this->getMessage()->getFrom()->getLanguageCode());
 
         if ($existedClient = SupportGroupBotClient::find()
-            ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId(), 'support_group_bot_id' => $this->support_group_id])
+            ->where(['provider_bot_user_id' => $this->getMessage()->getFrom()->getId()])
+            ->andWhere(['support_group_bot_id' => $this->bot_id])
             ->with('supportGroupClient')
             ->one()
         ) {
