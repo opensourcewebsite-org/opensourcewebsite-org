@@ -7,7 +7,7 @@ use yii\helpers\Html;
 ?>
 
 <p>
-    OpenSourceWebsite (OSW) <?= Yii::t('app', 'is an open source website for the world\'s largest online social community. The Website is managed by users. The Website will look like and what functions it will have depends on users\' decisions. The Website is updated after each code change. So everyone can influence how the Website works.') ?>
+    OpenSourceWebsite (OSW) <?= Yii::t('app', 'is an open source website for global online social community. The Website is managed by users. The Website will look like and what functions it will have depends on users\' decisions. The Website is updated after each code change. So everyone can influence how the Website works.') ?>
 </p>
 
 <p>
