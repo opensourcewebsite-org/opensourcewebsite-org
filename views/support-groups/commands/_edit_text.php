@@ -9,6 +9,8 @@ use yii\helpers\Url;
 /* @var $model app\models\SupportGroupCommand */
 /* @var $lang app\models\SupportGroupLanguage */
 
+$this->registerCssFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.css');
+$this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1/emojionearea.min.js');
 ?>
 
     <div class="text-right">
@@ -49,3 +51,10 @@ use yii\helpers\Url;
         </div>
     </div>
 <?php ActiveForm::end(); ?>
+<script>
+  $(document).ready(function() {
+    $("#supportgroupcommandtext-text").emojioneArea({
+        pickerPosition: 'left'
+    });
+  });
+</script>

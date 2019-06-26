@@ -1,5 +1,6 @@
 <?php
 
+use yii\web\View;
 use yii\log\EmailTarget;
 
 $params = require __DIR__ . '/params.php';
@@ -44,6 +45,10 @@ $config = [
                 'yii\bootstrap\BootstrapPluginAsset' => [
                     'js' => ['plugins/bootstrap/js/bootstrap.js'],
                     'sourcePath' => '@vendor/almasaeed2010/adminlte',
+                ],
+                'yii\web\JqueryAsset' => [
+                    'js' => ['//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'],
+                    'jsOptions' => ['position' => View::POS_HEAD],
                 ],
             ],
         ],
