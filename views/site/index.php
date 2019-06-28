@@ -47,6 +47,7 @@ use yii\helpers\Html;
     <li><?= Html::a('Digital nomad', 'https://en.wikipedia.org/wiki/Digital_nomad') ?></li>
     <li><?= Html::a('Global nomad', 'https://en.wikipedia.org/wiki/Global_nomad') ?></li>
     <li><?= Html::a('Transhumanism', 'https://en.wikipedia.org/wiki/Transhumanism') ?></li>
+    <li><?= Html::a('Global citizenship', 'https://en.wikipedia.org/wiki/Global_citizenship') ?></li>    
 </ul>
 
 <p>
