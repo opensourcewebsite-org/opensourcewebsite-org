@@ -138,7 +138,7 @@ $this->title = 'Road Map';
     Job search, exchange of opinions and reviews about travels, public working environments.
 </p>
 
-<h4>Global catalog for commercial companies, non-profit companies, for charitable foundations.
+<h4>Global catalog for commercial companies, non-profit companies, for charitable foundations.</h4>
 <p>
     Create a representative webpage for your company, organization or foundation. Let users quickly find information about your company and compare it with other companies. Do not lost time on creating a company website.
 </p>
