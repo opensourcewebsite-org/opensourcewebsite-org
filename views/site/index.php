@@ -44,6 +44,9 @@ use yii\helpers\Html;
     <li><?= Html::a('Crowdcasting', 'https://en.wikipedia.org/wiki/Crowdcasting') ?></li>
     <li><?= Html::a('Open research', 'https://en.wikipedia.org/wiki/Open_research') ?></li>
     <li><?= Html::a('Crowdfixing', 'https://en.wikipedia.org/wiki/Crowdfixing') ?></li>
+    <li><?= Html::a('Digital nomad', 'https://en.wikipedia.org/wiki/Digital_nomad') ?></li>
+    <li><?= Html::a('Global nomad', 'https://en.wikipedia.org/wiki/Global_nomad') ?></li>
+    <li><?= Html::a('Transhumanism', 'https://en.wikipedia.org/wiki/Transhumanism') ?></li>
 </ul>
 
 <p>

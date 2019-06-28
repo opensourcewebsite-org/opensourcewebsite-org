@@ -52,6 +52,11 @@ $this->title = 'Road Map';
     Take a look at the best currencies trends right now, whether if is in your place or abroad.
 </p>
 
+<h4>Local exchange of fiat and electronic currencies</h4>
+<p>
+    Find in your city the best offer on the exchange of any currency.
+</p>
+
 <h3>Personal interests and hobbies</h3>
 
 <h4>Dates and Love</h4>
@@ -108,19 +113,34 @@ $this->title = 'Road Map';
 
 <h4>Open Data Aggregator</h4>
 <p>
-    
+    Global catalog of websites and web services that provide Open Data
 </p>
 
-<h3>For the users</h3>
+<h4>API directory</h4>
+<p>
+    Global catalog of websites and web services that provide API
+</p>
+
+<h3>Social</h3>
 
 <h4>Blogs</h4>
 <p>
     Users can freely use blogs to communicate, discuss, stay informed about the various topics of the website.
 </p>
 
-<h4>Public and private Forums</h4>
+<h4>Public and private forums</h4>
 <p>
     Join public or private forums in order to get and stay in touch with other passionates just like you. Create threads, answer to questions and compare your knowledge with the knowledge of others. But remember, the first condition of a correct dialogue and discussion, is the reciprocal respect of the differents ideas.
+</p>
+
+<h4>Services for digital nomads</h4>
+<p>
+    Job search, exchange of opinions and reviews about travels, public working environments.
+</p>
+
+<h4>Global catalog for commercial companies, non-profit companies, for charitable foundations.
+<p>
+    Create a representative webpage for your company, organization or foundation. Let users quickly find information about your company and compare it with other companies. Do not lost time on creating a company website.
 </p>
 
 </div>
