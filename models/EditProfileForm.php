@@ -73,7 +73,7 @@ class EditProfileForm extends Model
     public function attributeLabels()
     {
         return [
-            'username' => 'User name (optional)',
+            'username' => 'Username (optional)',
             'name' => 'Name (optional)',
         ];
     }
