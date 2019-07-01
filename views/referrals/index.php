@@ -21,13 +21,21 @@ $inviteLink = Url::toRoute([
     <div class="site-referrals pb-2">
         <div class="card bg-light">
             <div class="card-body">
-              <p><?= Yii::t('app', 'All new users, who have joined our website through your referral link, become your referrals. You will get 1 rating for each new referral. In the future, the loyalty program will be significantly increased and new bonuses will be added.') ?></p>
+              <p><?= Yii::t('app', 'All new users, who have joined the Website through your referral link, become your referrals.') ?> <?= Yii::t('app', 'You will get 1 rating for each new referral.') ?> <?= Yii::t('app', 'In the future, the loyalty program will be significantly increased and new bonuses will be added.') ?></p>
+              <p><?= Yii::t('app', 'Soon:') ?></p>
+              <p>
+                  <ul>
+                      <li><?= Yii::t('app', 'Multi-level loyalty program, you will receive rewards not only from first level of referrals, but also from next levels.') ?></li>
+                      <li><?= Yii::t('app', 'You will receive rewards from your referrals for upgrading  their User ratings, purchases on the Website and websites of our partner companies.') ?></li>
+                      <li><?= Yii::t('app', 'User community of the Website decides what conditions will be in loyalty program. You can participate in discuss process and vote for the conditions.') ?></li>
+                  </ul>
+              </p>
             </div>
         </div>
         <div class="card bg-light">
             <div class="card-header"><h2><?= Yii::t('app', 'Personal referral link') ?></h2></div>
             <div class="card-body">
-                <p><?= Yii::t('app', 'Share your personal referral link with your friends and followers.') ?></p>
+                <p><?= Yii::t('app', 'Share your personal referral link with your friends and followers, and start earning now.') ?></p>
                 <div class="input-group">
                     <input id="post-shortlink" class="form-control" value="<?= $inviteLink ?>">
                     <span class="input-group-btn">
@@ -46,7 +54,7 @@ $inviteLink = Url::toRoute([
             <div class="card-body">
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <h4 class="text-uppercase"><?= Yii::t('app', 'Referrals (1 level)') ?></h4><?= Yii::t('app', 'People who have signed up using your link.') ?>
+                        <h4 class="text-uppercase"><?= Yii::t('app', 'Referrals (Level 1)') ?></h4><?= Yii::t('app', 'People who have signed up using your link.') ?>
                         <p class="loyalty-count"><?= $user->getReferrals()->count() ?></p>
                     </li>
                 </ul>
