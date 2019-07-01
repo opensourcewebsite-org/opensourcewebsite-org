@@ -244,6 +244,14 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                                 </a>
                             </li>
                         </ul>
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li class="nav-item has-treeview  <?= in_array($currentUrl, ['contact/index']) ? 'menu-open' : '' ?>">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['contact']) ?>" class="nav-link <?= in_array($currentUrl, ['contact/index']) ? 'active' : '' ?>">
+                                    <i class="fa fa-address-card nav-icon"></i>
+                                    <p>Contacts</p>
+                                </a>
+                            </li>
+                        </ul>
                     </nav><!-- /.sidebar-menu -->
                 </div><!-- /.sidebar -->
             </aside><!-- /.main-sidebar -->

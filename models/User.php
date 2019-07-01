@@ -585,4 +585,12 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContact()
+    {
+        return $this->hasOne(Contact::class, ['user_id' => 'id']);
+    }
 }
