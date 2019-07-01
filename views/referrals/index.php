@@ -21,7 +21,7 @@ $inviteLink = Url::toRoute([
     <div class="site-referrals pb-2">
         <div class="card bg-light">
             <div class="card-body">
-              <p><?= Yii::t('app', 'All new users, who have joined the Website through your referral link, become your referrals.') ?> <?= Yii::t('app', 'You will get 1 rating for each new referral.') ?> <?= Yii::t('app', 'In the future, the loyalty program will be significantly increased and new bonuses will be added.') ?></p>
+              <p><?= Yii::t('app', 'All new users, who have joined the Website through your referral link, become your referrals.') ?> <?= Yii::t('app', 'You will get 1 User Rating for each new referral.') ?> <?= Yii::t('app', 'In the future, the loyalty program will be significantly increased and new bonuses will be added.') ?></p>
               <p><?= Yii::t('app', 'Soon:') ?></p>
               <p>
                   <ul>
