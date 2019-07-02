@@ -19,11 +19,13 @@ use yii\helpers\Html;
 <ul>
     <li><?= Html::a('Electronic voting', 'https://en.wikipedia.org/wiki/Electronic_voting') ?></li>
     <li><?= Html::a('E-democracy', 'https://en.wikipedia.org/wiki/E-democracy') ?></li>
+    <li><?= Html::a('Direct democracy', 'https://en.wikipedia.org/wiki/Direct_democracy') ?></li>
     <li><?= Html::a('Collaborative e-democracy', 'https://en.wikipedia.org/wiki/Collaborative_e-democracy') ?></li>
     <li><?= Html::a('Participatory democracy', 'https://en.wikipedia.org/wiki/Participatory_democracy') ?></li>
     <li><?= Html::a('E-government', 'https://en.wikipedia.org/wiki/E-government') ?></li>
     <li><?= Html::a('Open-source governance', 'https://en.wikipedia.org/wiki/Open-source_governance') ?></li>
     <li><?= Html::a('Open government', 'https://en.wikipedia.org/wiki/Open_government') ?></li>
+    <li><?= Html::a('Self-governance', 'https://en.wikipedia.org/wiki/Self-governance') ?></li>
     <li><?= Html::a('E-participation', 'https://en.wikipedia.org/wiki/E-participation') ?></li>
     <li><?= Html::a('Mass collaboration', 'https://en.wikipedia.org/wiki/Mass_collaboration') ?></li>
     <li><?= Html::a('Digital collaboration', 'https://en.wikipedia.org/wiki/Digital_collaboration') ?></li>
@@ -47,7 +49,7 @@ use yii\helpers\Html;
     <li><?= Html::a('Digital nomad', 'https://en.wikipedia.org/wiki/Digital_nomad') ?></li>
     <li><?= Html::a('Global nomad', 'https://en.wikipedia.org/wiki/Global_nomad') ?></li>
     <li><?= Html::a('Transhumanism', 'https://en.wikipedia.org/wiki/Transhumanism') ?></li>
-    <li><?= Html::a('Global citizenship', 'https://en.wikipedia.org/wiki/Global_citizenship') ?></li>    
+    <li><?= Html::a('Global citizenship', 'https://en.wikipedia.org/wiki/Global_citizenship') ?></li>
 </ul>
 
 <p>
