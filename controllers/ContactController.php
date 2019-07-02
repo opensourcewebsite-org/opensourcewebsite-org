@@ -26,7 +26,7 @@ class ContactController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                        [
+                    [
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -87,7 +87,9 @@ class ContactController extends Controller
                 ])
                 ->one();
             if (!empty($user->contact)) {
-                $user->contact->delete();
+                $contact = $user->contact;
+                $contact->link_user_id = null;
+                $contact->save(false);
             }
             $model->user_id = $user->id;
             $model->link_user_id = $user->id;
@@ -120,6 +122,11 @@ class ContactController extends Controller
                     ['username' => $model->userIdOrName]
                 ])
                 ->one();
+            if (!empty($user->contact)) {
+                $contact = $user->contact;
+                $contact->link_user_id = null;
+                $contact->save(false);
+            }
             $model->user_id = $user->id;
             $model->link_user_id = $user->id;
             $model->save(false);
