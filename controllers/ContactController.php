@@ -135,6 +135,8 @@ class ContactController extends Controller
                     $contact->save(false);
                 }
                 $model->link_user_id = $user->id;
+            } else {
+                $model->link_user_id = null;
             }
             $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);

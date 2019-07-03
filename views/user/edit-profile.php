@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'username', [
-                                'template' => '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text">@</span></div>{input}</div>'
+                                'template' => '{label}<div class="input-group"><div class="input-group-prepend"><span class="input-group-text">@</span></div>{input}</div>{hint}{error}'
                             ])->textInput(['maxlength' => true, 'autocomplete' => 'off']); ?>
                         </div>
                     </div>
