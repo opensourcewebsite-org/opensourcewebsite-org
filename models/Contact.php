@@ -33,13 +33,12 @@ class Contact extends ActiveRecord
     {
         return [
             ['userIdOrName', 'string'],
-            ['userIdOrName', 'required'],
             ['userIdOrName', 'validateUserExistence'],
             [['user_id', 'link_user_id'], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required', 'when' => function ($model) {
-                return empty($model->userIdOrName);
-            }, 'whenClient' => "function (attribute, value) {
+                    return empty($model->userIdOrName);
+                }, 'whenClient' => "function (attribute, value) {
                 return $('#contact-useridorname').val() == '';
             }"],
         ];
@@ -69,8 +68,8 @@ class Contact extends ActiveRecord
         $user = User::find()
             ->andWhere([
                 'OR',
-                    ['id' => $this->userIdOrName],
-                    ['username' => $this->userIdOrName]
+                ['id' => $this->userIdOrName],
+                ['username' => $this->userIdOrName]
             ])
             ->one();
         if (empty($user)) {
@@ -78,22 +77,24 @@ class Contact extends ActiveRecord
         }
     }
 
-    public function getUser()
+    public function getLinkedUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'link_user_id']);
     }
 
     public function getContactName()
     {
         if (!empty($this->name)) {
-            if (!empty($this->user->username)) {
-                $contactName = $this->name . ' (' . $this->user->username . ')';
-            } else {
-                $contactName = $this->name . ' (#' . $this->user->id . ')';
+            $contactName = $this->name;
+            if (!empty($this->linkedUser)) {
+                $contactName = $this->name . ' (#' . $this->linkedUser->id . ')';
+                if (!empty($this->linkedUser->username)) {
+                    $contactName = $this->name . ' (@' . $this->linkedUser->username . ')';
+                }
             }
         } else {
-            if (!empty($this->user)) {
-                $contactName = !empty($this->user->username) ? $this->user->username : '#' . $this->user->id;
+            if (!empty($this->linkedUser)) {
+                $contactName = !empty($this->linkedUser->username) ? '@' . $this->linkedUser->username : '#' . $this->linkedUser->id;
             }
         }
         return $contactName;

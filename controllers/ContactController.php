@@ -79,21 +79,24 @@ class ContactController extends Controller
         $model = new Contact();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $user = User::find()
-                ->andWhere([
-                    'OR',
-                    ['id' => $model->userIdOrName],
-                    ['username' => $model->userIdOrName]
-                ])
-                ->one();
-            if (!empty($user->contact)) {
-                $contact = $user->contact;
-                $contact->link_user_id = null;
-                $contact->save(false);
+            $model->user_id = Yii::$app->user->id;
+            if (!empty($model->userIdOrName)) {
+                $user = User::find()
+                    ->andWhere([
+                        'OR',
+                        ['id' => $model->userIdOrName],
+                        ['username' => $model->userIdOrName]
+                    ])
+                    ->one();
+                if (!empty($user->contact)) {
+                    $contact = $user->contact;
+                    $contact->link_user_id = null;
+                    $contact->save(false);
+                }
+                $model->link_user_id = $user->id;
             }
-            $model->user_id = $user->id;
-            $model->link_user_id = $user->id;
             $model->save(false);
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -112,23 +115,27 @@ class ContactController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->userIdOrName = !empty($model->user->username) ? $model->user->username : $model->user->id;
+        if (!empty($model->linkedUser)) {
+            $model->userIdOrName = !empty($model->linkedUser->username) ? $model->linkedUser->username : $model->linkedUser->id;
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $user = User::find()
-                ->andWhere([
-                    'OR',
-                    ['id' => $model->userIdOrName],
-                    ['username' => $model->userIdOrName]
-                ])
-                ->one();
-            if (!empty($user->contact)) {
-                $contact = $user->contact;
-                $contact->link_user_id = null;
-                $contact->save(false);
+            $model->user_id = Yii::$app->user->id;
+            if (!empty($model->userIdOrName)) {
+                $user = User::find()
+                    ->andWhere([
+                        'OR',
+                        ['id' => $model->userIdOrName],
+                        ['username' => $model->userIdOrName]
+                    ])
+                    ->one();
+                if (!empty($user->contact)) {
+                    $contact = $user->contact;
+                    $contact->link_user_id = null;
+                    $contact->save(false);
+                }
+                $model->link_user_id = $user->id;
             }
-            $model->user_id = $user->id;
-            $model->link_user_id = $user->id;
             $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
         }
