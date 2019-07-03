@@ -44,12 +44,26 @@ use yii\helpers\Html;
     <li><?= Html::a('Social collaboration', 'https://en.wikipedia.org/wiki/Social_collaboration') ?></li>
     <li><?= Html::a('Collaborative innovation network', 'https://en.wikipedia.org/wiki/Collaborative_innovation_network') ?></li>
     <li><?= Html::a('Crowdcasting', 'https://en.wikipedia.org/wiki/Crowdcasting') ?></li>
-    <li><?= Html::a('Open research', 'https://en.wikipedia.org/wiki/Open_research') ?></li>
     <li><?= Html::a('Crowdfixing', 'https://en.wikipedia.org/wiki/Crowdfixing') ?></li>
     <li><?= Html::a('Digital nomad', 'https://en.wikipedia.org/wiki/Digital_nomad') ?></li>
     <li><?= Html::a('Global nomad', 'https://en.wikipedia.org/wiki/Global_nomad') ?></li>
     <li><?= Html::a('Transhumanism', 'https://en.wikipedia.org/wiki/Transhumanism') ?></li>
     <li><?= Html::a('Global citizenship', 'https://en.wikipedia.org/wiki/Global_citizenship') ?></li>
+    <li><?= Html::a('Open innovation', 'https://en.wikipedia.org/wiki/Open_innovation') ?></li>
+    <li><?= Html::a('Open source', 'https://en.wikipedia.org/wiki/Open_source') ?></li>
+    <li><?= Html::a('Open knowledge', 'https://en.wikipedia.org/wiki/Open_knowledge') ?></li>
+    <li><?= Html::a('Open data', 'https://en.wikipedia.org/wiki/Open_data') ?></li>
+    <li><?= Html::a('Open content', 'https://en.wikipedia.org/wiki/Open_content') ?></li>
+    <li><?= Html::a('Open access', 'https://en.wikipedia.org/wiki/Open_access') ?></li>
+    <li><?= Html::a('Open research', 'https://en.wikipedia.org/wiki/Open_research') ?></li>
+    <li><?= Html::a('Open science', 'https://en.wikipedia.org/wiki/Open_science') ?></li>
+    <li><?= Html::a('Open science data', 'https://en.wikipedia.org/wiki/Open_science_data') ?></li>
+    <li><?= Html::a('Open education', 'https://en.wikipedia.org/wiki/Open_education') ?></li>
+    <li><?= Html::a('Open educational resources', 'https://en.wikipedia.org/wiki/Open_educational_resources') ?></li>
+    <li><?= Html::a('Open-source-software movement', 'https://en.wikipedia.org/wiki/Open-source-software_movement') ?></li>
+    <li><?= Html::a('Free software movement', 'https://en.wikipedia.org/wiki/Free_software_movement') ?></li>
+    <li><?= Html::a('Open-source hardware', 'https://en.wikipedia.org/wiki/Open-source_hardware') ?></li>
+    <li><?= Html::a('Open-source appropriate technology', 'https://en.wikipedia.org/wiki/Open-source_appropriate_technology') ?></li>
 </ul>
 
 <p>
