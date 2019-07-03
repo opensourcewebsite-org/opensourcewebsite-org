@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'username')->textInput(['maxlength' => true]); ?>
+                            <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'autocomplete' => 'off']); ?>
                         </div>
                     </div>
                     <div class="row">

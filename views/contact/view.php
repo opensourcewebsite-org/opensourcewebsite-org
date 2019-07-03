@@ -29,9 +29,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <?= DetailView::widget([
                         'model' => $model,
                         'attributes' => [
-                                [
+                            [
                                 'label' => 'User ID / Username',
-                                'value' => !empty($model->user->username) ? $model->user->username : '#' . $model->user->id,
+                                'value' => function ($model) {
+                                    if (!empty($model->linkedUser)) {
+                                        return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
+                                    }
+                                }
                             ],
                             'name',
                         ],

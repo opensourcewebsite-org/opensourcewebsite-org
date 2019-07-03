@@ -86,7 +86,7 @@ $this->title = 'Account';
                 'attributes' => [
                     [
                         'label' => 'Username',
-                        'value' => $model->username,
+                        'value' => '@' . $model->username,
                         'visible' => (bool)$model->username
                     ],
                     [

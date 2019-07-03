@@ -143,7 +143,6 @@ class UserController extends Controller
         $model = new EditProfileForm(Yii::$app->user->identity);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', 'Updated successfully.');
             return $this->redirect('/site/account');
         }
 
