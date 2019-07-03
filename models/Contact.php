@@ -84,6 +84,7 @@ class Contact extends ActiveRecord
 
     public function getContactName()
     {
+        $contactName = $this->id;
         if (!empty($this->name)) {
             $contactName = $this->name;
             if (!empty($this->linkedUser)) {
