@@ -44,7 +44,7 @@ class EditProfileForm extends Model
 
     public function validateUsernameUnique()
     {
-        if ($this->username == $this->_user->username) {
+        if (!strcasecmp($this->username, $this->_user->username)) {
             return;
         }
 
