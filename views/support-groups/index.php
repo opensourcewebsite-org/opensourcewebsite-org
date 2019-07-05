@@ -37,6 +37,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'summary' => false,
                 'showHeader' => false,
                 'tableOptions' => ['class' => 'table table-hover table-condensed'],
+                'options' => [
+                    'id' => 'support-group-grid',
+                ],
                 'columns' => [
                     'title',
                     [
@@ -91,6 +94,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'class' => 'btn-default',   // btn-success, btn-info, et cetera
                                         ],
                                     ]);
+                                } else {
+                                    return ButtonDropdown::widget([
+                                        'encodeLabel' => false,
+                                        'label' => '<i class="fas fa-cog"></i>',
+                                        'dropdown' => [
+                                            'items' => [
+                                                [
+                                                    'label' => Yii::t('app', 'Leave'),
+                                                    'url' => ['leave', 'id' => $key],
+                                                    'linkOptions' => ['id' => 'leave-button', 'class' => 'dropdown-item']
+                                                ],
+                                            ],
+                                        ],
+                                        'options' => [
+                                            'class' => 'btn-default',
+                                        ],
+                                    ]);
                                 }
                             },
                         ],
@@ -102,3 +122,28 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+<script>
+ $(document).ready(function () {
+    $(document).on('click', '#leave-button', function () {
+        var url = $(this).attr('href');
+        bootbox.confirm({
+            message: "Are you sure you want to leave this support group?",
+            callback: function (result) {
+                if (result) {
+                    $('.bootbox').modal('hide');
+                    $.ajax({
+                        url: url,
+                        type: 'get',
+                        success: function (response)
+                        {
+                        }
+                    });
+                    return false;
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
