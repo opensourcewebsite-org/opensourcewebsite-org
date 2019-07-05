@@ -40,6 +40,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     'title',
                     [
+                        'content' => function ($model) {
+                            if($model->user_id == Yii::$app->user->identity->id || in_array(Yii::$app->user->identity->id, ArrayHelper::getColumn($model->supportGroupMembers, 'user_id'))) {
+                                return Html::a('commands', ['commands', 'id' => $model->id]);
+                            }
+                        }
+                    ],
+                    [
+                        'content' => function ($model) {
+                            if($model->user_id == Yii::$app->user->identity->id || in_array(Yii::$app->user->identity->id, ArrayHelper::getColumn($model->supportGroupMembers, 'user_id'))) {
+                                return Html::a('clients', ['clients-languages', 'id' => $model->id]);
+                            }
+                        }
+                    ],
+                    [
                         'class' => 'yii\grid\ActionColumn',
                         'template' => '{all}',
                         'buttons' => [
@@ -80,20 +94,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
                             },
                         ],
-                    ],
-                    [
-                        'content' => function ($model) {
-                            if($model->user_id == Yii::$app->user->identity->id || in_array(Yii::$app->user->identity->id, ArrayHelper::getColumn($model->supportGroupMembers, 'user_id'))) {
-                                return Html::a('commands', ['commands', 'id' => $model->id]);
-                            }
-                        }
-                    ],
-                    [
-                        'content' => function ($model) {
-                            if($model->user_id == Yii::$app->user->identity->id || in_array(Yii::$app->user->identity->id, ArrayHelper::getColumn($model->supportGroupMembers, 'user_id'))) {
-                                return Html::a('clients', ['clients-languages', 'id' => $model->id]);
-                            }
-                        }
                     ],
                 ],
             ]); ?>
