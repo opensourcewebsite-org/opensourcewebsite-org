@@ -655,4 +655,23 @@ class SupportGroupsController extends Controller
 
         return $model;
     }
+    
+    /**
+     * Leave an existing SupportGroupMember model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     *
+     * @param integer $id
+     */
+    public function actionLeave($id)
+    {
+        $member = SupportGroupMember::find()
+            ->andWhere([
+                'support_group_id' => $id,
+                'user_id' => Yii::$app->user->id,
+            ])
+            ->one();
+        $member->delete();
+
+        return $this->redirect(['index']);
+    }
 }
