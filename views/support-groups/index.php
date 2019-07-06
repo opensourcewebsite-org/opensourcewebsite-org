@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 [
                                                     'label' => Yii::t('app', 'Leave'),
                                                     'url' => ['leave', 'id' => $key],
-                                                    'linkOptions' => ['id' => 'leave-button', 'class' => 'dropdown-item']
+                                                    'linkOptions' => ['id' => 'leave-group', 'class' => 'dropdown-item']
                                                 ],
                                             ],
                                         ],
@@ -122,28 +122,20 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
-<script>
- $(document).ready(function () {
-    $(document).on('click', '#leave-button', function () {
-        var url = $(this).attr('href');
-        bootbox.confirm({
-            message: "Are you sure you want to leave this support group?",
-            callback: function (result) {
-                if (result) {
-                    $('.bootbox').modal('hide');
-                    $.ajax({
-                        url: url,
-                        type: 'get',
-                        success: function (response)
-                        {
-                        }
-                    });
-                    return false;
-                }
+<?php $this->registerJs('$("#leave-group").on("click", function(event) {
+    event.preventDefault();
+    var url = $(this).attr("href");
+
+    if (confirm("' . Yii::t('app', 'Are you sure you want to leave this group?') . '")) {
+        $.get(url, {}, function(result) {
+            if (result == "1") {
+                location.href = "' . Yii::$app->urlManager->createUrl(['/support-groups']) . '";
+            }
+            else {
+                alert("' . Yii::t('app', 'Sorry, there was an error while trying to leave this group.') . '");
             }
         });
-        return false;
-    });
-});
-</script>
+    }
+    
+    return false;
+});'); ?>
