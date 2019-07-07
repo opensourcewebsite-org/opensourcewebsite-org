@@ -43,7 +43,7 @@ class DebtController extends Controller
         ]);
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+                'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -53,10 +53,26 @@ class DebtController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView($id, $currencyId)
     {
+        $userId = Yii::$app->user->id;
+        $depositDataProvider = new ActiveDataProvider([
+            'query' => Debt::find()->andWhere([
+                'to_user_id' => $userId,
+                'currency_id' => $currencyId,
+            ]),
+        ]);
+        $creditDataProvider = new ActiveDataProvider([
+            'query' => Debt::find()->andWhere([
+                'from_user_id' => $userId,
+                'currency_id' => $currencyId,
+            ]),
+        ]);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'depositDataProvider' => $depositDataProvider,
+            'creditDataProvider' => $creditDataProvider,
         ]);
     }
 

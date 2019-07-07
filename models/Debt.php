@@ -106,12 +106,32 @@ class Debt extends ActiveRecord
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
 
+    public function getDepositAmount()
+    {
+        $amount = 0;
+        if ($this->to_user_id === Yii::$app->user->id) {
+            $amount = $this->amount;
+        }
+
+        return $amount;
+    }
+
+    public function getCreditAmount()
+    {
+        $amount = 0;
+        if ($this->from_user_id === Yii::$app->user->id) {
+            $amount = $this->amount;
+        }
+
+        return $amount;
+    }
+
     public function beforeSave($insert)
     {
         $this->from_user_id = Yii::$app->user->id;
         $this->to_user_id = $this->user;
 
-        if ($this->direction === self::DIRECTION_DEPOSIT) {
+        if ((int) $this->direction === self::DIRECTION_DEPOSIT) {
             $this->from_user_id = $this->user;
             $this->to_user_id = Yii::$app->user->id;
         }

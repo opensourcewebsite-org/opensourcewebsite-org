@@ -1,55 +1,48 @@
 <?php
 
-use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Debts');
-$this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="debt-index">
+<div class="debt-deposit-index">
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item align-self-center mr-4">
-                            <?= Html::a('<i class="fa fa-plus"></i>', ['debt/create'], [
-                                'class' => 'btn btn-outline-success',
-                                'title' => Yii::t('app', 'New Debt'),
-                            ]); ?>
-                        </li>
-                    </ul>
-                </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
+                        'dataProvider' => $depositDataProvider,
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             [
-                                'label' => 'Currency',
+                                'label' => 'User',
                                 'value' => function ($data) {
-                                    return $data->currency->code ?? null;
+                                    return $data->fromUser->name ?? null;
                                 },
                                 'format' => 'html',
                             ],
                             [
-                                'label' => 'Deposit',
+                                'label' => 'Amount',
                                 'value' => function ($data) {
-                                    return Html::a($data->getDepositAmount(), ['/debt/view', 'id' => $data->id, 'currencyId' => $data->currency_id]);
+                                    return $data->getDepositAmount();
                                 },
                                 'format' => 'html',
                             ],
                             [
-                                'label' => 'Credit',
+                                'label' => 'Created At',
                                 'value' => function ($data) {
-                                    return Html::a($data->getCreditAmount(), ['/debt/view', 'id' => $data->id, 'currencyId' => $data->currency_id]);
+                                    return $data->created_at ?? null;
                                 },
-                                'format' => 'html',
+                                'format' => 'relativeTime',
+                            ],
+                            [
+                                'label' => 'Valid',
+                                'value' => function ($data) {
+                                    return $data->valid_from_date ?? null;
+                                },
+                                'format' => 'relativeTime',
                             ],
                         ],
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
