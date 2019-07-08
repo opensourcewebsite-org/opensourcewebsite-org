@@ -23,7 +23,7 @@ use janisto\timepicker\TimePicker;
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'user')->widget(Select2::class, [
-                                'data' => ArrayHelper::map($user, 'id', 'email'),
+                                'data' => ArrayHelper::map($user, 'id', 'displayName'),
                                 'options' => [
                                     'prompt' => '',
                                 ],
@@ -60,12 +60,12 @@ use janisto\timepicker\TimePicker;
                                     'autoclose' => true,
                                     'format' => 'mm/dd/yyyy',
                                 ],
-                            ]); ?>
+                            ])->label('Valid From Date (optional)'); ?>
                         </div>
                         <div class="col">
                             <?= $form->field($model, 'valid_from_time')->widget(TimePicker::classname(), [
                                 'mode' => 'time',
-                            ]); ?>
+                            ])->label('Valid From Time (optional)'); ?>
                         </div>
                     </div>
                 </div>

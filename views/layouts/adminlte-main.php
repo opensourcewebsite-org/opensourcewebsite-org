@@ -256,7 +256,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                             <li class="nav-item has-treeview  <?= in_array($currentUrl, ['debt/index']) ? 'menu-open' : '' ?>">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['debt']) ?>" class="nav-link <?= in_array($currentUrl, ['debt/index']) ? 'active' : '' ?>">
                                     <i class="fa fa-credit-card nav-icon"></i>
-                                    <p>Debt</p>
+                                    <p>Debts</p>
                                 </a>
                             </li>
                         </ul>
