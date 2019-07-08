@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Debt;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -43,6 +44,16 @@ use yii\grid\GridView;
                                     return $data->valid_from_date ?? null;
                                 },
                                 'format' => 'relativeTime',
+                            ],
+                            [
+                                'value' => function ($data) {
+                                    $status = '<span class="badge badge-warning">Pending</span>';
+                                    if ((int) $data->status === Debt::STATUS_CONFIRM) {
+                                        $status = '<span class="badge badge-success">Confirm</span>';
+                                    }
+                                    return $status;
+                                },
+                                'format' => 'html',
                             ],
                         ],
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
