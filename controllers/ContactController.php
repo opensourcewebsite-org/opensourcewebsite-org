@@ -48,7 +48,7 @@ class ContactController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Contact::find(),
+            'query' => Contact::find()->andWhere(['user_id' => Yii::$app->user->id]),
         ]);
 
         return $this->render('index', [
