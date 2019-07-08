@@ -84,6 +84,11 @@ class DebtController extends Controller
     public function actionCreate()
     {
         $model = new Debt();
+        $user = User::find()
+            ->joinWith('contact')
+            ->andWhere(['status' => User::STATUS_ACTIVE])
+            ->andWhere(['NOT', ['link_user_id' => null]])
+            ->all();
 
         if ($model->load(Yii::$app->request->post())) {
             $model->status = Debt::STATUS_PENDING;
@@ -93,7 +98,7 @@ class DebtController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'user' => User::find()->andWhere(['status' => User::STATUS_ACTIVE])->all(),
+            'user' => $user,
             'currency' => Currency::find()->all(),
         ]);
     }
@@ -110,6 +115,11 @@ class DebtController extends Controller
         $model = $this->findModel($id);
         $model->valid_from_date = (new \DateTime($model->valid_from_date))->format('m/d/Y');
         $model->valid_from_time = (new \DateTime($model->valid_from_time))->format('H:i');
+        $user = User::find()
+            ->joinWith('contact')
+            ->andWhere(['status' => User::STATUS_ACTIVE])
+            ->andWhere(['NOT', ['link_user_id' => null]])
+            ->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -117,7 +127,7 @@ class DebtController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'user' => User::find()->andWhere(['status' => User::STATUS_ACTIVE])->all(),
+            'user' => $user,
             'currency' => Currency::find()->all(),
         ]);
     }
