@@ -1,4 +1,6 @@
-### General setup
+# Installing
+
+## General setup
 
 - Copy file `.env.dist` to `.env` in the root directory
 - Set correct values in `.env` for your environment
@@ -6,6 +8,7 @@
 - Copy `config/web-local.dist.php` to `config/web-local.php`
 
 #### Using Docker
+
 - set `DB_HOST=db` in `.env` file
 - run `docker-compose up -d` from root directory
 - run `docker-compose exec php composer install`

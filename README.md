@@ -30,6 +30,10 @@ Please read through our [contributing guidelines](CONTRIBUTING.md).
 
 Please read through our [OpenAPI Specification](OPENAPI.md).
 
+## Installing
+
+Please read through our [installing instructions](INSTALL.md).
+
 ## License
 
 The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).
