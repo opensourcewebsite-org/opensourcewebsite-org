@@ -49,6 +49,7 @@ use yii\helpers\Html;
     <li><?= Html::a('Global nomad', 'https://en.wikipedia.org/wiki/Global_nomad') ?></li>
     <li><?= Html::a('Transhumanism', 'https://en.wikipedia.org/wiki/Transhumanism') ?></li>
     <li><?= Html::a('Global citizenship', 'https://en.wikipedia.org/wiki/Global_citizenship') ?></li>
+    <li><?= Html::a('Openness', 'https://en.wikipedia.org/wiki/Openness') ?></li>
     <li><?= Html::a('Open innovation', 'https://en.wikipedia.org/wiki/Open_innovation') ?></li>
     <li><?= Html::a('Open source', 'https://en.wikipedia.org/wiki/Open_source') ?></li>
     <li><?= Html::a('Open knowledge', 'https://en.wikipedia.org/wiki/Open_knowledge') ?></li>
@@ -64,6 +65,10 @@ use yii\helpers\Html;
     <li><?= Html::a('Free software movement', 'https://en.wikipedia.org/wiki/Free_software_movement') ?></li>
     <li><?= Html::a('Open-source hardware', 'https://en.wikipedia.org/wiki/Open-source_hardware') ?></li>
     <li><?= Html::a('Open-source appropriate technology', 'https://en.wikipedia.org/wiki/Open-source_appropriate_technology') ?></li>
+    <li><?= Html::a('Freedom of information', 'https://en.wikipedia.org/wiki/Freedom_of_information') ?></li>
+    <li><?= Html::a('Access to public information', 'https://en.wikipedia.org/wiki/Access_to_public_information') ?></li>
+    <li><?= Html::a('Transparency', 'https://en.wikipedia.org/wiki/Transparency_(behavior)') ?></li>
+    <li><?= Html::a('Libertarianism', 'https://en.wikipedia.org/wiki/Libertarianism') ?></li>
 </ul>
 
 <p>
