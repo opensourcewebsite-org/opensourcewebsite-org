@@ -591,6 +591,6 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getContact()
     {
-        return $this->hasOne(Contact::class, ['link_user_id' => 'id']);
+        return $this->hasOne(Contact::class, ['user_id' => 'id']);
     }
 }
