@@ -10,7 +10,7 @@
 
 # OpenSourceWebsite
 
-OpenSourceWebsite (OSW) is an open source website for global online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
+OpenSourceWebsite (OSW) is open source website for global online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
 
 ## Minimum technical requirements
 
