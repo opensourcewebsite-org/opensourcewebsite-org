@@ -170,7 +170,7 @@ class ContactController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Contact::findOne($id)) !== null) {
+        if (($model = Contact::find()->andWhere(['id' => $id, 'user_id' => Yii::$app->user->id])->one()) !== null) {
             return $model;
         }
 
