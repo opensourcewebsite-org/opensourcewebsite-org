@@ -591,7 +591,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getContact()
     {
-        return $this->hasOne(Contact::class, ['link_user_id' => 'id']);
+        return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
+            ->onCondition(['user_id' => Yii::$app->user->id]);
     }
     
     public function getDisplayName()
