@@ -32,7 +32,7 @@ use yii\widgets\ActiveForm;
                         'class' => 'btn btn-secondary',
                         'title' => Yii::t('app', 'Cancel'),
                     ]); ?>
-                    <?php if (!$model->isNewRecord) : ?>
+                    <?php if (!$model->isNewRecord && $model->user_id === Yii::$app->user->id) : ?>
                         <?= Html::a(Yii::t('app', 'Delete'), ['contact/delete/', 'id' => $model->id], [
                             'class' => 'btn btn-danger float-right',
                             'id' => 'delete-contact'
