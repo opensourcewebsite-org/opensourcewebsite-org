@@ -129,7 +129,7 @@ class ContactController extends Controller
                         ['username' => $model->userIdOrName]
                     ])
                     ->one();
-                if (!empty($user->contact) && $user->id !== $user->contact->link_user_id) {
+                if (!empty($user->contact) && ((int) $user->contact->id !== (int) $id)) {
                     $contact = $user->contact;
                     $contact->link_user_id = null;
                     $contact->save(false);
