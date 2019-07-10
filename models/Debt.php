@@ -136,8 +136,10 @@ class Debt extends ActiveRecord
             $this->to_user_id = Yii::$app->user->id;
         }
 
-        $validFromDate = \DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
-        $this->valid_from_date = $validFromDate->format('Y-m-d');
+        if (!empty($this->valid_from_date)) {
+            $validFromDate = \DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
+            $this->valid_from_date = $validFromDate->format('Y-m-d');
+        }
 
         return parent::beforeSave($insert);
     }
