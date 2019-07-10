@@ -93,7 +93,7 @@ class DebtController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->status = Debt::STATUS_PENDING;
             $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->id, 'currencyId' => $model->currency_id]);
         }
 
         return $this->render('create', [
