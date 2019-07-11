@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row mb-2">
             <div class="col">
                 <div class="alert alert-info" role="alert">
-                    <b>Support Groups:</b> <?= Yii::$app->user->identity->supportGroupCount ?>/<?= Yii::$app->user->identity->maxSupportGroup ?>. 
+                    <b>Support Groups:</b> <?= Yii::$app->user->identity->supportGroupCount ?>/<?= Yii::$app->user->identity->maxSupportGroup ?>.
                     (<?= $settingQty ?> per 1 User Rating)
                 </div>
             </div>
@@ -29,7 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $this->endBlock(); ?>
     <div class="card">
         <div class="card-header text-right">
-            <?= Html::a('New Support Group', ['create'], ['class' => 'btn btn-success ml-3']) ?>
+            <?= Html::a('<i class="fa fa-plus"></i>', ['create'], [
+                'class' => 'btn btn-outline-success',
+                'title' => Yii::t('app', 'New Support Group'),
+            ]) ?>
         </div>
         <div class="card-body p-0">
             <?= GridView::widget([
@@ -136,6 +139,6 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         });
     }
-    
+
     return false;
 });'); ?>

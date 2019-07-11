@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="row mb-2">
                         <div class="col">
                             <div class="alert alert-info" role="alert">
-                                <b>Issues:</b> <?= Yii::$app->user->identity->issuesCount ?>/<?= Yii::$app->user->identity->maxIssuesNumber ?>. 
+                                <b>Issues:</b> <?= Yii::$app->user->identity->issuesCount ?>/<?= Yii::$app->user->identity->maxIssuesNumber ?>.
                                 (<?= $maxIssueValue ?> per 1 User Rating)
                             </div>
                         </div>
@@ -64,11 +64,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="input-group-btn">
                                     <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 </div>
-                                <?= Html::a(Yii::t('app', 'New Issue'), ['issue/create'], [
-                                    'class' => 'btn btn-success ml-3',
+                                <?= Html::a('<i class="fa fa-plus"></i>', ['issue/create'], [
+                                    'class' => 'btn btn-outline-success',
                                     'title' => Yii::t('app', 'New Issue'),
                                 ]); ?>
-                                
+
                             </form>
                         </div>
                     </div>
@@ -84,13 +84,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tableOptions' => ['class' => 'table table-condensed table-hover'],
                         'pager' => [
                             'hideOnSinglePage' => false,
-                    
+
                             // Customzing options for pager container tag
                             'options' => [
                                 'tag' => 'ul',
                                 'class' => 'pagination float-right',
                             ],
-                    
+
                             // Customzing CSS class for pager link
                             'linkOptions' => ['class' => 'page-link'],
                             'linkContainerOptions' => ['class' => 'page-item'],
@@ -123,9 +123,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 ?>
-                    
+
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 

@@ -7,14 +7,14 @@ use yii\helpers\Html;
 ?>
 
 <p>
-    OpenSourceWebsite (OSW) <?= Yii::t('app', 'is an open source website for global online social community. The Website is managed by users. The Website will look like and what functions it will have depends on users\' decisions. The Website is updated after each code change. So everyone can influence how the Website works.') ?>
+    OpenSourceWebsite (OSW) <?= Yii::t('app', 'is open source website for global online social community. The Website is managed by users. The Website will look like and what functions it will have depends on users\' decisions. The Website is updated after each code change. So everyone can influence how the Website works.') ?>
 </p>
 
 <p>
     <?= Yii::t('app', 'We want the Web to be even better. We want more people using it for more things. We want it to continue to drive creativity, education and economic growth. And we want to empower people to help shape the Web as they move more of their lives online.') ?>
 </p>
 
-<h4>Our vision and mission</h4>
+<h4><?= Yii::t('app', 'Our Vision and Mission') ?></h4>
 
 <ul>
     <li><?= Html::a('Electronic voting', 'https://en.wikipedia.org/wiki/Electronic_voting') ?></li>
@@ -72,5 +72,5 @@ use yii\helpers\Html;
 </ul>
 
 <p>
-    <b>Join to us!</b>
+    <b><?= Yii::t('app', 'Join to us') ?></b>
 </p>
