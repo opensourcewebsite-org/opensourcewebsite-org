@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($data) {
                                     $credit = $data->credit;
                                     if (!empty($data->credit)) {
-                                        $credit = Html::a($data->deposit, ['/debt/view', 'id' => $data->id, 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
+                                        $credit = Html::a($data->credit, ['/debt/view', 'id' => $data->id, 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                     }
                                     return $credit;
                                 },

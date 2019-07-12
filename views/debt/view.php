@@ -3,6 +3,7 @@
 use app\models\Debt;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Debt */
@@ -72,6 +73,15 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                         },
                         'format' => 'html',
                     ],
+                    [
+                        'class' => ActionColumn::class,
+                        'template' => '{delete}',
+                        'buttons' => [
+                            'delete' => function ($url) {
+                                return Html::a('Cancel', $url, ['id' => 'delete-debt', 'class' => 'btn btn-outline-danger',]);
+                            },
+                        ],
+                    ],
                 ],
                 'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
                 'pager' => [
@@ -94,3 +104,20 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         </div>
     </div>
 </div>
+<?php $this->registerJs('$("#delete-debt").on("click", function(event) {
+    event.preventDefault();
+    var url = $(this).attr("href");
+
+    if (confirm("' . Yii::t('app', 'Are you sure you want to cancel this debt?') . '")) {
+        $.post(url, {}, function(result) {
+            if (result == "1") {
+                location.href = "' . Yii::$app->urlManager->createUrl(['/debt']) . '";
+            }
+            else {
+                alert("' . Yii::t('app', 'Sorry, there was an error while trying to cancel the debt.') . '");
+            }
+        });
+    }
+    
+    return false;
+});'); ?>
