@@ -45,13 +45,20 @@ class ContactController extends Controller
      * Lists all Contact models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($view)
     {
+        $query = Contact::find()->andWhere(['user_id' => Yii::$app->user->id]);
+        if ((int) $view === Contact::VIEW_USER) {
+            $query->andWhere(['NOT', ['link_user_id' => null]]);
+        } else {
+            $query->andWhere(['link_user_id' => null]);
+        }
         $dataProvider = new ActiveDataProvider([
-            'query' => Contact::find()->andWhere(['user_id' => Yii::$app->user->id]),
+            'query' => $query,
         ]);
 
         return $this->render('index', [
+            'view' => $view,
             'dataProvider' => $dataProvider,
         ]);
     }

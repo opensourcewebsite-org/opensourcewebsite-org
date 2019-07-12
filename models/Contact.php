@@ -16,6 +16,9 @@ use yii\db\ActiveRecord;
 class Contact extends ActiveRecord
 {
 
+    const VIEW_USER = 1;
+    const VIEW_VIRTUALS = 2;
+    
     public $userIdOrName;
 
     /**

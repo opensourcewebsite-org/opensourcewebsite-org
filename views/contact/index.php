@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\models\Contact;
 use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
@@ -21,6 +22,16 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= Html::a('<i class="fa fa-plus"></i>', ['contact/create'], [
                                 'class' => 'btn btn-outline-success',
                                 'title' => Yii::t('app', 'New Contact'),
+                            ]); ?>
+                        </li>
+                        <li class="nav-item">
+                            <?= Html::a(Yii::t('app', 'Users'), ['contact/index', 'view' => Contact::VIEW_USER], [
+                                'class' => 'nav-link show ' . ((int) $view === Contact::VIEW_USER ? 'active' : ''),
+                            ]); ?>
+                        </li>
+                        <li class="nav-item">
+                            <?= Html::a(Yii::t('app', 'Virtuals'), ['contact/index', 'view' => Contact::VIEW_VIRTUALS], [
+                                'class' => 'nav-link show ' . ((int) $view === Contact::VIEW_VIRTUALS ? 'active' : ''),
                             ]); ?>
                         </li>
                     </ul>
