@@ -38,12 +38,34 @@ class DebtController extends Controller
      */
     public function actionIndex()
     {
+        $userId = Yii::$app->user->id;
+        $debtData = Debt::find()
+            ->select([
+                'id',
+                'currency_id',
+                'depositAmount' => 'IF(to_user_id = ' . $userId . ', SUM(amount), 0)',
+                'creditAmount' => 'IF(from_user_id = ' . $userId . ', SUM(amount), 0)',
+            ])
+            ->andWhere([
+                'OR',
+                ['from_user_id' => $userId],
+                ['to_user_id' => $userId]
+            ])
+            ->groupBy(['currency_id', 'from_user_id']);
         $dataProvider = new ActiveDataProvider([
-            'query' => Debt::find(),
+            'query' => Debt::find()
+                ->from(['debtData' => $debtData])
+                ->select([
+                    'id' => 'debtData.id',
+                    'currency_id' => 'debtData.currency_id',
+                    'deposit' => 'SUM(debtData.depositAmount)',
+                    'credit' => 'SUM(debtData.creditAmount)',
+                ])
+                ->groupBy(['debtData.currency_id']),
         ]);
 
         return $this->render('index', [
-                'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -53,26 +75,25 @@ class DebtController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id, $currencyId)
+    public function actionView($id, $direction, $currencyId)
     {
         $userId = Yii::$app->user->id;
-        $depositDataProvider = new ActiveDataProvider([
-            'query' => Debt::find()->andWhere([
-                'to_user_id' => $userId,
-                'currency_id' => $currencyId,
-            ]),
-        ]);
-        $creditDataProvider = new ActiveDataProvider([
-            'query' => Debt::find()->andWhere([
-                'from_user_id' => $userId,
-                'currency_id' => $currencyId,
-            ]),
+        $query = Debt::find()
+            ->andWhere(['currency_id' => $currencyId]);
+        if ((int) $direction === Debt::DIRECTION_DEPOSIT) {
+            $query->andWhere(['to_user_id' => $userId]);
+        } else {
+            $query->andWhere(['from_user_id' => $userId]);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
         ]);
 
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'depositDataProvider' => $depositDataProvider,
-            'creditDataProvider' => $creditDataProvider,
+            'direction' => $direction,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -93,7 +114,8 @@ class DebtController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->status = Debt::STATUS_PENDING;
             $model->save();
-            return $this->redirect(['view', 'id' => $model->id, 'currencyId' => $model->currency_id]);
+            $direction = ($model->to_user_id === Yii::$app->user->id) ? Debt::DIRECTION_DEPOSIT : Debt::DIRECTION_CREDIT;
+            return $this->redirect(['view', 'id' => $model->id, 'direction' => $direction, 'currencyId' => $model->currency_id]);
         }
 
         return $this->render('create', [
