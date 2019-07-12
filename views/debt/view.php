@@ -81,6 +81,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 return Html::a('Cancel', $url, ['id' => 'delete-debt', 'class' => 'btn btn-outline-danger',]);
                             },
                         ],
+                        'visibleButtons' => [
+                            'delete' => function ($data) {
+                                return ((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id);
+                            },
+                        ],
                     ],
                 ],
                 'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
