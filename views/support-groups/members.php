@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
-            <a class="btn btn-success ml-3" href="#" title="New Member"  data-toggle="modal" data-target="#exampleModalLong">New Member</a>
+            <a class="btn btn-outline-success ml-3" href="#" title="New Member"  data-toggle="modal" data-target="#exampleModalLong"><i class="fa fa-plus"></i></a>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
