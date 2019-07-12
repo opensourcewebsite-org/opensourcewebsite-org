@@ -1,13 +1,14 @@
 <?php
 
 use yii\helpers\Html;
+use app\models\Contact;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
 
 $this->title = Yii::t('app', 'View Contact');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>

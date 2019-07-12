@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use app\models\Contact;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
@@ -8,7 +9,7 @@ use yii\helpers\Html;
 $this->title = Yii::t('app', 'Update Contact: ' . $model->getContactName(), [
         'nameAttribute' => '' . $model->getContactName(),
     ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
 $this->params['breadcrumbs'][] = ['label' => $model->getContactName(), 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
