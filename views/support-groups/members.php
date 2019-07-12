@@ -4,6 +4,8 @@ use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\bootstrap\ButtonDropdown;
 
 /* @var $this yii\web\View */
@@ -46,7 +48,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             </button>
                         </div>
                         <div class="modal-body text-left">
-                            <?php echo $form->field($member, 'user_id')->textInput(['type' => 'number', 'maxlength' => true]) ?>
+                            <?php echo $form->field($member, 'user_id')->widget(Select2::class, [
+                                'data' => ArrayHelper::map($user, 'id', 'displayName'),
+                                'options' => [
+                                    'prompt' => '',
+                                ],
+                            ])->label('User'); ?>
                         </div>
                         <div class="card-footer text-left">
                             <button type="submit" class="btn btn-success">Save</button>
@@ -63,7 +70,17 @@ $this->params['breadcrumbs'][] = $this->title;
             'tableOptions' => ['class' => 'table table-hover'],
             'options' => ['class' => 'card-body p-0'],
             'columns' => [
-                'user_id',
+                [
+                    'label' => 'User',
+                    'attribute' => 'user_id',
+                    'value' => function ($data) {
+                        $name = $data->user_id;
+                        if (!empty($data->user->contact)) {
+                            $name = $data->user->getDisplayName();
+                        }
+                        return $name;
+                    },
+                ],
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{delete}',

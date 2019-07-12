@@ -28,6 +28,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use app\models\SupportGroupOutsideMessage;
+use app\models\User;
 
 /**
  * SupportGroupController implements the CRUD actions for SupportGroup model.
@@ -91,6 +92,12 @@ class SupportGroupsController extends Controller
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
+        
+        $user = User::find()
+            ->joinWith('contact')
+            ->andWhere(['status' => User::STATUS_ACTIVE])
+            ->andWhere(['NOT', ['link_user_id' => null]])
+            ->all();
 
         $dataProvider = new ActiveDataProvider([
             'query' => SupportGroupMember::find()->where(['support_group_id' => intval($id)]),
@@ -116,6 +123,7 @@ class SupportGroupsController extends Controller
 
         return $this->render('members', [
             'model'        => $model,
+            'user'         => $user,
             'member'       => $member,
             'dataProvider' => $dataProvider,
             'settingQty'   => $settingQty,
