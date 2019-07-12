@@ -4,6 +4,7 @@ use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\bootstrap\ButtonDropdown;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
@@ -65,12 +66,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 'user_id',
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'contentOptions' => ['class' => 'text-right'],
                     'template' => '{delete}',
                     'buttons' => [
                         'delete' => function ($url, $model, $key) {
-                            $url = Url::to(['members-delete', 'id' => $model->id]);
-                            return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn trash btn-default']);
+                            return ButtonDropdown::widget([
+                                'encodeLabel' => false,
+                                'label' => '<i class="fas fa-cog"></i>',
+                                'dropdown' => [
+                                    'items' => [
+                                        [
+                                            'label' => Yii::t('app', 'Remove'),
+                                            'url' => ['members-delete', 'id' => $key],
+                                            'linkOptions' => ['class' => 'dropdown-item']
+                                        ],
+                                    ],
+                                ],
+                                'options' => [
+                                    'class' => 'btn-default',
+                                ],
+                            ]);
                         },
                     ],
                 ],
