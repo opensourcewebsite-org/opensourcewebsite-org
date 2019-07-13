@@ -30,6 +30,7 @@ class Debt extends ActiveRecord
     const STATUS_CONFIRM = 1;
     const DIRECTION_DEPOSIT = 1;
     const DIRECTION_CREDIT = 2;
+    const SCENARIO_STATUS_CONFIRM = 'status-confirm';
 
     public $user;
     public $direction;
@@ -50,7 +51,8 @@ class Debt extends ActiveRecord
     public function rules()
     {
         return [
-            [['user', 'currency_id', 'amount', 'direction'], 'required'],
+            [['currency_id', 'amount'], 'required'],
+            [['user', 'direction'], 'required', 'on' => 'default'],
             [['from_user_id', 'to_user_id', 'currency_id', 'amount', 'status'], 'integer'],
             [['valid_from_date', 'valid_from_time', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
         ];
@@ -92,6 +94,13 @@ class Debt extends ActiveRecord
             ],
         ];
     }
+    
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_STATUS_CONFIRM] = [];
+        return $scenarios;
+    }
 
     public function getFromUser()
     {
@@ -126,17 +135,19 @@ class Debt extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        $this->from_user_id = Yii::$app->user->id;
-        $this->to_user_id = $this->user;
+        if ($insert) {
+            $this->from_user_id = Yii::$app->user->id;
+            $this->to_user_id = $this->user;
 
-        if ((int) $this->direction === self::DIRECTION_DEPOSIT) {
-            $this->from_user_id = $this->user;
-            $this->to_user_id = Yii::$app->user->id;
-        }
+            if ((int) $this->direction === self::DIRECTION_DEPOSIT) {
+                $this->from_user_id = $this->user;
+                $this->to_user_id = Yii::$app->user->id;
+            }
 
-        if (!empty($this->valid_from_date)) {
-            $validFromDate = \DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
-            $this->valid_from_date = $validFromDate->format('Y-m-d');
+            if (!empty($this->valid_from_date)) {
+                $validFromDate = \DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
+                $this->valid_from_date = $validFromDate->format('Y-m-d');
+            }
         }
 
         return parent::beforeSave($insert);

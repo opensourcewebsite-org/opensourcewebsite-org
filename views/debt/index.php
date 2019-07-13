@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($data) {
                                     $deposit = $data->deposit;
                                     if (!empty($data->deposit)) {
-                                        $deposit = Html::a($data->deposit, ['/debt/view', 'id' => $data->id, 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
+                                        $deposit = Html::a($data->deposit, ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
                                     }
                                     return $deposit;
                                 },
@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function ($data) {
                                     $credit = $data->credit;
                                     if (!empty($data->credit)) {
-                                        $credit = Html::a($data->credit, ['/debt/view', 'id' => $data->id, 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
+                                        $credit = Html::a($data->credit, ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                     }
                                     return $credit;
                                 },
