@@ -33,6 +33,8 @@ class Debt extends ActiveRecord
 
     public $user;
     public $direction;
+    public $deposit;
+    public $credit;
 
     /**
      * {@inheritdoc}
@@ -106,24 +108,20 @@ class Debt extends ActiveRecord
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
 
-    public function getDepositAmount()
+    public function getUserDisplayName($direction)
     {
-        $amount = 0;
-        if ($this->to_user_id === Yii::$app->user->id) {
-            $amount = $this->amount;
+        $name = $this->fromUser->name;
+        if (!empty($this->fromUser->contact)) {
+            $name = $this->fromUser->getDisplayName();
+        }
+        if ((int) $direction === self::DIRECTION_CREDIT) {
+            $name = $this->toUser->name;
+            if (!empty($this->toUser->contact)) {
+                $name = $this->toUser->getDisplayName();
+            }
         }
 
-        return $amount;
-    }
-
-    public function getCreditAmount()
-    {
-        $amount = 0;
-        if ($this->from_user_id === Yii::$app->user->id) {
-            $amount = $this->amount;
-        }
-
-        return $amount;
+        return $name;
     }
 
     public function beforeSave($insert)

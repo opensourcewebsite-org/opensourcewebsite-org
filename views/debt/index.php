@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Debt;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -40,14 +41,22 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => 'Deposit',
                                 'value' => function ($data) {
-                                    return Html::a($data->getDepositAmount(), ['/debt/view', 'id' => $data->id, 'currencyId' => $data->currency_id]);
+                                    $deposit = $data->deposit;
+                                    if (!empty($data->deposit)) {
+                                        $deposit = Html::a($data->deposit, ['/debt/view', 'id' => $data->id, 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
+                                    }
+                                    return $deposit;
                                 },
                                 'format' => 'html',
                             ],
                             [
                                 'label' => 'Credit',
                                 'value' => function ($data) {
-                                    return Html::a($data->getCreditAmount(), ['/debt/view', 'id' => $data->id, 'currencyId' => $data->currency_id]);
+                                    $credit = $data->credit;
+                                    if (!empty($data->credit)) {
+                                        $credit = Html::a($data->credit, ['/debt/view', 'id' => $data->id, 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
+                                    }
+                                    return $credit;
                                 },
                                 'format' => 'html',
                             ],
