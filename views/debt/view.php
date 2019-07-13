@@ -3,14 +3,15 @@
 use app\models\Debt;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\models\Currency;
 use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Debt */
 
-$this->title = Yii::t('app', $model->currency->code);
+$currency = Currency::findOne($currencyId);
+$this->title = Yii::t('app', $currency->code);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Debts'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = '#' . $model->id;
+$this->params['breadcrumbs'][] = '#' . $currencyId;
 
 ?>
 <div class="debt-view">
@@ -18,12 +19,12 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills ml-auto p-2">
                 <li class="nav-item">
-                    <?= Html::a(Yii::t('app', 'Deposits'), ['debt/view', 'id' => $model->id, 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $model->currency_id], [
+                    <?= Html::a(Yii::t('app', 'Deposits'), ['debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $currencyId], [
                         'class' => 'nav-link show ' . ((int) $direction === Debt::DIRECTION_DEPOSIT ? 'active' : ''),
                     ]); ?>
                 </li>
                 <li class="nav-item">
-                    <?= Html::a(Yii::t('app', 'Credits'), ['debt/view', 'id' => $model->id, 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $model->currency_id], [
+                    <?= Html::a(Yii::t('app', 'Credits'), ['debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $currencyId], [
                         'class' => 'nav-link show ' . ((int) $direction === Debt::DIRECTION_CREDIT ? 'active' : ''),
                     ]); ?>
                 </li>
@@ -75,13 +76,19 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     ],
                     [
                         'class' => ActionColumn::class,
-                        'template' => '{delete}',
+                        'template' => '{confirm} {delete}',
                         'buttons' => [
+                            'confirm' => function ($url, $data) use ($direction, $currencyId) {
+                                return Html::a('Confirm', ['debt/confirm', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-success',]);
+                            },
                             'delete' => function ($url) {
                                 return Html::a('Cancel', $url, ['id' => 'delete-debt', 'class' => 'btn btn-outline-danger',]);
                             },
                         ],
                         'visibleButtons' => [
+                            'confirm' => function ($data) {
+                                return ((int) $data->status === Debt::STATUS_PENDING) && (((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id));
+                            },
                             'delete' => function ($data) {
                                 return ((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id);
                             },

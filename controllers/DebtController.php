@@ -75,7 +75,7 @@ class DebtController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id, $direction, $currencyId)
+    public function actionView($direction, $currencyId)
     {
         $userId = Yii::$app->user->id;
         $query = Debt::find()
@@ -91,8 +91,8 @@ class DebtController extends Controller
         ]);
 
         return $this->render('view', [
-            'model' => $this->findModel($id),
             'direction' => $direction,
+            'currencyId' => $currencyId,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -115,7 +115,7 @@ class DebtController extends Controller
             $model->status = Debt::STATUS_PENDING;
             $model->save();
             $direction = ($model->to_user_id === Yii::$app->user->id) ? Debt::DIRECTION_DEPOSIT : Debt::DIRECTION_CREDIT;
-            return $this->redirect(['view', 'id' => $model->id, 'direction' => $direction, 'currencyId' => $model->currency_id]);
+            return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $model->currency_id]);
         }
 
         return $this->render('create', [
@@ -182,5 +182,15 @@ class DebtController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    
+    public function actionConfirm($id, $direction, $currencyId)
+    {
+        $model = $this->findModel($id);
+        $model->scenario = Debt::SCENARIO_STATUS_CONFIRM;
+        $model->status = Debt::STATUS_CONFIRM;
+        $model->save();
+
+        return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
     }
 }
