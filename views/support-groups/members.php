@@ -4,6 +4,9 @@ use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
+use yii\bootstrap\ButtonDropdown;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
@@ -34,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
-            <a class="btn btn-success ml-3" href="#" title="New Member"  data-toggle="modal" data-target="#exampleModalLong">New Member</a>
+            <a class="btn btn-outline-success ml-3" href="#" title="New Member"  data-toggle="modal" data-target="#exampleModalLong"><i class="fa fa-plus"></i></a>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -45,7 +48,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             </button>
                         </div>
                         <div class="modal-body text-left">
-                            <?php echo $form->field($member, 'user_id')->textInput(['type' => 'number', 'maxlength' => true]) ?>
+                            <?php echo $form->field($member, 'user_id')->widget(Select2::class, [
+                                'data' => ArrayHelper::map($user, 'id', 'displayName'),
+                                'options' => [
+                                    'prompt' => '',
+                                ],
+                            ])->label('User'); ?>
                         </div>
                         <div class="card-footer text-left">
                             <button type="submit" class="btn btn-success">Save</button>
@@ -62,15 +70,38 @@ $this->params['breadcrumbs'][] = $this->title;
             'tableOptions' => ['class' => 'table table-hover'],
             'options' => ['class' => 'card-body p-0'],
             'columns' => [
-                'user_id',
+                [
+                    'label' => 'User',
+                    'attribute' => 'user_id',
+                    'value' => function ($data) {
+                        $name = $data->user_id;
+                        if (!empty($data->user->contact)) {
+                            $name = $data->user->getDisplayName();
+                        }
+                        return $name;
+                    },
+                ],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'contentOptions' => ['class' => 'text-right'],
                     'template' => '{delete}',
                     'buttons' => [
                         'delete' => function ($url, $model, $key) {
-                            $url = Url::to(['members-delete', 'id' => $model->id]);
-                            return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn trash btn-default']);
+                            return ButtonDropdown::widget([
+                                'encodeLabel' => false,
+                                'label' => '<i class="fas fa-cog"></i>',
+                                'dropdown' => [
+                                    'items' => [
+                                        [
+                                            'label' => Yii::t('app', 'Remove'),
+                                            'url' => ['members-delete', 'id' => $key],
+                                            'linkOptions' => ['class' => 'dropdown-item']
+                                        ],
+                                    ],
+                                ],
+                                'options' => [
+                                    'class' => 'btn-default',
+                                ],
+                            ]);
                         },
                     ],
                 ],
