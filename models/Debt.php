@@ -34,8 +34,10 @@ class Debt extends ActiveRecord
 
     public $user;
     public $direction;
-    public $deposit;
-    public $credit;
+    public $depositPending;
+    public $creditPending;
+    public $depositConfirmed;
+    public $creditConfirmed;
 
     /**
      * {@inheritdoc}
@@ -131,6 +133,16 @@ class Debt extends ActiveRecord
         }
 
         return $name;
+    }
+    
+    public function getDepositAmount()
+    {
+        return $this->depositConfirmed . ' (' . $this->depositPending . ')';
+    }
+    
+    public function getCreditAmount()
+    {
+        return $this->creditConfirmed . ' (' . $this->creditPending . ')';
     }
     
     public function canConfirmDebt($direction)

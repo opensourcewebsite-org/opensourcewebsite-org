@@ -43,8 +43,10 @@ class DebtController extends Controller
             ->select([
                 'id',
                 'currency_id',
-                'depositAmount' => 'IF(to_user_id = ' . $userId . ', SUM(amount), 0)',
-                'creditAmount' => 'IF(from_user_id = ' . $userId . ', SUM(amount), 0)',
+                'depositPendingAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), SUM(amount), 0)',
+                'creditPendingAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), SUM(amount), 0)',
+                'depositConfirmedAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), SUM(amount), 0)',
+                'creditConfirmedAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), SUM(amount), 0)',
             ])
             ->andWhere([
                 'OR',
@@ -58,8 +60,10 @@ class DebtController extends Controller
                 ->select([
                     'id' => 'debtData.id',
                     'currency_id' => 'debtData.currency_id',
-                    'deposit' => 'SUM(debtData.depositAmount)',
-                    'credit' => 'SUM(debtData.creditAmount)',
+                    'depositPending' => 'SUM(debtData.depositPendingAmount)',
+                    'creditPending' => 'SUM(debtData.creditPendingAmount)',
+                    'depositConfirmed' => 'SUM(debtData.depositConfirmedAmount)',
+                    'creditConfirmed' => 'SUM(debtData.creditConfirmedAmount)',
                 ])
                 ->groupBy(['debtData.currency_id']),
         ]);
