@@ -132,6 +132,16 @@ class Debt extends ActiveRecord
 
         return $name;
     }
+    
+    public function canConfirmDebt($direction)
+    {
+        $canConfirmDebt = ((int) $this->status === Debt::STATUS_PENDING) && ((int) $this->created_by !== (int) $this->from_user_id);
+        if ((int) $direction === self::DIRECTION_DEPOSIT) {
+            $canConfirmDebt = ((int) $this->status === Debt::STATUS_PENDING) && ((int) $this->created_by !== (int) $this->to_user_id);
+        }
+
+        return $canConfirmDebt;
+    }
 
     public function beforeSave($insert)
     {
