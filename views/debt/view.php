@@ -86,8 +86,8 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                             },
                         ],
                         'visibleButtons' => [
-                            'confirm' => function ($data) {
-                                return ((int) $data->status === Debt::STATUS_PENDING) && (((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id));
+                            'confirm' => function ($data) use ($direction) {
+                                return $data->canConfirmDebt($direction);
                             },
                             'delete' => function ($data) {
                                 return ((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id);
