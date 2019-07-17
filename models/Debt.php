@@ -154,6 +154,11 @@ class Debt extends ActiveRecord
 
         return $canConfirmDebt;
     }
+    
+    public function canCancelDebt()
+    {
+        return ((int) $this->status === Debt::STATUS_PENDING && (((int) $this->from_user_id === Yii::$app->user->id) || ((int) $this->to_user_id === Yii::$app->user->id)));
+    }
 
     public function beforeSave($insert)
     {

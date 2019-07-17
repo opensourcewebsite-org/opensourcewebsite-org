@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                                 return $data->canConfirmDebt($direction);
                             },
                             'delete' => function ($data) {
-                                return ((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id);
+                                return $data->canCancelDebt();
                             },
                         ],
                     ],
