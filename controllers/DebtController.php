@@ -194,4 +194,14 @@ class DebtController extends Controller
 
         return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
     }
+    
+    public function actionCancel($id, $direction, $currencyId)
+    {
+        $model = $this->findModel($id);
+        if ($model->canCancelDebt()) {
+            $model->delete();
+        }
+
+        return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
+    }
 }

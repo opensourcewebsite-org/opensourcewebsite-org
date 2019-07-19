@@ -3,6 +3,7 @@
 use app\models\Debt;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\components\helpers\DebtHelper;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -41,14 +42,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => 'Deposit',
                                 'value' => function ($data) {
-                                    return Html::a($data->getDepositAmount(), ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
+                                    return Html::a(DebtHelper::getDepositAmount($data->depositPending, $data->depositConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
                             ],
                             [
                                 'label' => 'Credit',
                                 'value' => function ($data) {
-                                    return Html::a($data->getCreditAmount(), ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
+                                    return Html::a(DebtHelper::getCreditAmount($data->creditPending, $data->creditConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
                             ],
