@@ -135,16 +135,6 @@ class Debt extends ActiveRecord
         return $name;
     }
     
-    public function getDepositAmount()
-    {
-        return $this->depositConfirmed . ' (' . $this->depositPending . ')';
-    }
-    
-    public function getCreditAmount()
-    {
-        return $this->creditConfirmed . ' (' . $this->creditPending . ')';
-    }
-    
     public function canConfirmDebt($direction)
     {
         $canConfirmDebt = ((int) $this->status === Debt::STATUS_PENDING) && ((int) $this->created_by !== (int) $this->from_user_id);
@@ -153,6 +143,11 @@ class Debt extends ActiveRecord
         }
 
         return $canConfirmDebt;
+    }
+    
+    public function canCancelDebt()
+    {
+        return ((int) $this->status === Debt::STATUS_PENDING && (((int) $this->from_user_id === Yii::$app->user->id) || ((int) $this->to_user_id === Yii::$app->user->id)));
     }
 
     public function beforeSave($insert)

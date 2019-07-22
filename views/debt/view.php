@@ -76,21 +76,21 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                     ],
                     [
                         'class' => ActionColumn::class,
-                        'template' => '{confirm} {delete}',
+                        'template' => '{confirm} {cancel}',
                         'buttons' => [
                             'confirm' => function ($url, $data) use ($direction, $currencyId) {
-                                return Html::a('Confirm', ['debt/confirm', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-success',]);
+                                return Html::a('Confirm', ['debt/confirm', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-success']);
                             },
-                            'delete' => function ($url) {
-                                return Html::a('Cancel', $url, ['id' => 'delete-debt', 'class' => 'btn btn-outline-danger',]);
+                            'cancel' => function ($url, $data) use ($direction, $currencyId) {
+                                return Html::a('Cancel', ['debt/cancel', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-danger']);
                             },
                         ],
                         'visibleButtons' => [
                             'confirm' => function ($data) use ($direction) {
                                 return $data->canConfirmDebt($direction);
                             },
-                            'delete' => function ($data) {
-                                return ((int) $data->from_user_id === Yii::$app->user->id) || ((int) $data->to_user_id === Yii::$app->user->id);
+                            'cancel' => function ($data) {
+                                return $data->canCancelDebt();
                             },
                         ],
                     ],
@@ -116,20 +116,3 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
         </div>
     </div>
 </div>
-<?php $this->registerJs('$("#delete-debt").on("click", function(event) {
-    event.preventDefault();
-    var url = $(this).attr("href");
-
-    if (confirm("' . Yii::t('app', 'Are you sure you want to cancel this debt?') . '")) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.href = "' . Yii::$app->urlManager->createUrl(['/debt']) . '";
-            }
-            else {
-                alert("' . Yii::t('app', 'Sorry, there was an error while trying to cancel the debt.') . '");
-            }
-        });
-    }
-    
-    return false;
-});'); ?>

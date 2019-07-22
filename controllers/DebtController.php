@@ -41,31 +41,28 @@ class DebtController extends Controller
         $userId = Yii::$app->user->id;
         $debtData = Debt::find()
             ->select([
-                'id',
                 'currency_id',
-                'depositPendingAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), SUM(amount), 0)',
-                'creditPendingAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), SUM(amount), 0)',
-                'depositConfirmedAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), SUM(amount), 0)',
-                'creditConfirmedAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), SUM(amount), 0)',
+                'depositPendingAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), amount, 0)',
+                'creditPendingAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), amount, 0)',
+                'depositConfirmedAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), amount, 0)',
+                'creditConfirmedAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), amount, 0)',
             ])
             ->andWhere([
                 'OR',
                 ['from_user_id' => $userId],
                 ['to_user_id' => $userId]
-            ])
-            ->groupBy(['currency_id', 'from_user_id']);
+            ]);
         $dataProvider = new ActiveDataProvider([
             'query' => Debt::find()
                 ->from(['debtData' => $debtData])
                 ->select([
-                    'id' => 'debtData.id',
-                    'currency_id' => 'debtData.currency_id',
+                    'currency_id',
                     'depositPending' => 'SUM(debtData.depositPendingAmount)',
                     'creditPending' => 'SUM(debtData.creditPendingAmount)',
                     'depositConfirmed' => 'SUM(debtData.depositConfirmedAmount)',
                     'creditConfirmed' => 'SUM(debtData.creditConfirmedAmount)',
                 ])
-                ->groupBy(['debtData.currency_id']),
+                ->groupBy(['currency_id']),
         ]);
 
         return $this->render('index', [
@@ -194,6 +191,16 @@ class DebtController extends Controller
         $model->scenario = Debt::SCENARIO_STATUS_CONFIRM;
         $model->status = Debt::STATUS_CONFIRM;
         $model->save();
+
+        return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
+    }
+    
+    public function actionCancel($id, $direction, $currencyId)
+    {
+        $model = $this->findModel($id);
+        if ($model->canCancelDebt()) {
+            $model->delete();
+        }
 
         return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
     }
