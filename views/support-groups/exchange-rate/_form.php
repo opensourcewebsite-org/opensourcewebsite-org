@@ -43,7 +43,7 @@ use yii\widgets\ActiveForm;
                 </div>
                 <div class="card-footer">
                     <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']); ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/support-group-exchange-rate'], [
+                    <?= Html::a(Yii::t('app', 'Cancel'), ['index', 'supportGroupId' => $supportGroupId], [
                         'class' => 'btn btn-secondary',
                         'title' => Yii::t('app', 'Cancel'),
                     ]); ?>

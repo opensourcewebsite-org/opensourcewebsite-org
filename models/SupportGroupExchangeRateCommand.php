@@ -22,6 +22,9 @@ use yii\behaviors\TimestampBehavior;
 class SupportGroupExchangeRateCommand extends ActiveRecord
 {
 
+    const TYPE_BUYING_COMMAND = 1;
+    const TYPE_SELLING_COMMAND = 2;
+
     /**
      * {@inheritdoc}
      */
@@ -36,7 +39,7 @@ class SupportGroupExchangeRateCommand extends ActiveRecord
     public function rules()
     {
         return [
-            [['support_group_exchange_rate_id', 'command', 'type'], 'required'],
+            [['command'], 'required'],
             [['support_group_exchange_rate_id', 'type'], 'integer'],
             [['command'], 'string', 'max' => 255],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],

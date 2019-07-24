@@ -3,11 +3,13 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\bootstrap\ButtonDropdown;
+use app\models\SupportGroupExchangeRateCommand;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Support Group Exchange Rates');
+$this->title = Yii::t('app', 'Exchange Rates');
+$this->params['breadcrumbs'][] = ['label' => 'Support Groups', 'url' => ['support-groups/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -77,12 +79,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'items' => [
                                                     [
                                                         'label' => Yii::t('app', 'Buying Commands'),
-                                                        'url' => ['support-group-exchange-rate/index', 'id' => $key],
+                                                        'url' => ['support-group-exchange-rate-command/index', 'supportGroupExchangeRateId' => $key, 'type' => SupportGroupExchangeRateCommand::TYPE_BUYING_COMMAND],
                                                         'linkOptions' => ['class' => 'dropdown-item'],
                                                     ],
                                                     [
                                                         'label' => Yii::t('app', 'Selling Commands'),
-                                                        'url' => ['support-group-exchange-rate/index', 'id' => $key],
+                                                        'url' => ['support-group-exchange-rate-command/index', 'supportGroupExchangeRateId' => $key, 'type' => SupportGroupExchangeRateCommand::TYPE_SELLING_COMMAND],
                                                         'linkOptions' => ['class' => 'dropdown-item'],
                                                     ],
                                                     [

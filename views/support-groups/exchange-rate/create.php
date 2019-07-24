@@ -6,8 +6,6 @@ use yii\helpers\Html;
 /* @var $model app\models\SupportGroupExchangeRate */
 
 $this->title = Yii::t('app', 'Create Exchange Rate');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Exchange Rates'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="support-group-exchange-rate-create">
