@@ -15,6 +15,7 @@ class m190717_170933_create_support_group_exchange_rate_table extends Migration
     {
         $this->createTable('{{%support_group_exchange_rate}}', [
             'id' => $this->primaryKey()->unsigned(),
+            'support_group_id' => $this->integer()->unsigned()->notNull(),
             'code' => $this->string()->notNull(),
             'name' => $this->string(),
             'buying_rate' => $this->decimal(),

@@ -15,6 +15,7 @@ class m190717_170950_create_support_group_exchange_rate_command_table extends Mi
     {
         $this->createTable('{{%support_group_exchange_rate_command}}', [
             'id' => $this->primaryKey()->unsigned(),
+            'support_group_exchange_rate_id' => $this->integer()->unsigned()->notNull(),
             'command' => $this->string()->notNull(),
             'type' => $this->tinyInteger()->unsigned()->notNull(),
             'created_at' => $this->integer()->unsigned()->notNull(),
