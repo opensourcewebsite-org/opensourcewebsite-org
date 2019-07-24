@@ -104,6 +104,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'dropdown' => [
                                             'items' => [
                                                 [
+                                                    'label' => Yii::t('app', 'Exchange Rates'),
+                                                    'url' => ['support-group-exchange-rate/index', 'supportGroupId' => $key],
+                                                    'linkOptions' => ['class' => 'dropdown-item']
+                                                ],
+                                                [
                                                     'label' => Yii::t('app', 'Leave'),
                                                     'url' => ['leave', 'id' => $key],
                                                     'linkOptions' => ['id' => 'leave-group', 'class' => 'dropdown-item']

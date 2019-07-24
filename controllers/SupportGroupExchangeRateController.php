@@ -3,17 +3,27 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\SupportGroupExchangeRate;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use yii\web\NotFoundHttpException;
+use yii\base\ViewContextInterface;
+use app\models\SupportGroupExchangeRate;
 
 /**
  * SupportGroupExchangeRateController implements the CRUD actions for SupportGroupExchangeRate model.
  */
-class SupportGroupExchangeRateController extends Controller
+class SupportGroupExchangeRateController extends Controller implements ViewContextInterface
 {
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getViewPath()
+    {
+        return Yii::getAlias('@app/views/support-groups/exchange-rate');
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -33,14 +43,16 @@ class SupportGroupExchangeRateController extends Controller
      * Lists all SupportGroupExchangeRate models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($supportGroupId)
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => SupportGroupExchangeRate::find(),
+            'query' => SupportGroupExchangeRate::find()
+                ->andWhere(['support_group_id' => $supportGroupId]),
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'supportGroupId' => $supportGroupId,
         ]);
     }
 
@@ -62,16 +74,18 @@ class SupportGroupExchangeRateController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($supportGroupId)
     {
         $model = new SupportGroupExchangeRate();
+        $model->support_group_id = $supportGroupId;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index', 'supportGroupId' => $supportGroupId]);
         }
 
         return $this->render('create', [
             'model' => $model,
+            'supportGroupId' => $supportGroupId,
         ]);
     }
 
@@ -82,16 +96,17 @@ class SupportGroupExchangeRateController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $supportGroupId)
     {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index', 'supportGroupId' => $supportGroupId]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'supportGroupId' => $supportGroupId,
         ]);
     }
 
@@ -102,11 +117,11 @@ class SupportGroupExchangeRateController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $supportGroupId)
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 'supportGroupId' => $supportGroupId]);
     }
 
     /**

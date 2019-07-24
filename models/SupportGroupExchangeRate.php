@@ -39,7 +39,7 @@ class SupportGroupExchangeRate extends ActiveRecord
     public function rules()
     {
         return [
-            [['support_group_id', 'code', 'is_default'], 'required'],
+            [['code', 'is_default'], 'required'],
             [['support_group_id', 'is_default'], 'integer'],
             [['buying_rate', 'selling_rate'], 'number'],
             [['code', 'name'], 'string', 'max' => 255],
