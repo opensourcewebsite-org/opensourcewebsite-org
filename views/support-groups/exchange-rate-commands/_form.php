@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'command')->textInput(['maxlength' => true]); ?>
+                            <?= $form->field($model, 'command')->textInput(['maxlength' => true])->hint('Use "??" for an amount from a user.'); ?>
                         </div>
                     </div>
                 </div>
