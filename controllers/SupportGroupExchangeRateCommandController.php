@@ -124,11 +124,11 @@ class SupportGroupExchangeRateCommandController extends Controller implements Vi
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $supportGroupExchangeRateId, $type)
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type]);
     }
 
     /**

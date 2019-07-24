@@ -10,7 +10,6 @@ use app\components\helpers\SupportGroupHelper;
 
 $this->title = Yii::t('app', SupportGroupHelper::getExchangeRateCommandType($type));
 $this->params['breadcrumbs'][] = ['label' => 'Support Groups', 'url' => ['support-groups/index']];
-$this->params['breadcrumbs'][] = ['label' => 'Exchange Rates', 'url' => ['support-group-exchange-rate/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
