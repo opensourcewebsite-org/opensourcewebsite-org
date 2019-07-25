@@ -72,6 +72,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                             //'encodeLabels' => false, // if you're going to use html on the items' labels
                                             'items' => [
                                                 [
+                                                    'label' => Yii::t('app', 'Exchange Rates'),
+                                                    'url' => ['support-group-exchange-rate/index', 'supportGroupId' => $key],
+                                                    'linkOptions' => ['class' => 'dropdown-item']
+                                                ],
+                                                [
                                                     'label' => Yii::t('app', 'Members'),
                                                     'url' => ['members', 'id' => $key],
                                                     'linkOptions' => ['class' => 'dropdown-item']
@@ -103,11 +108,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'label' => '<i class="fas fa-cog"></i>',
                                         'dropdown' => [
                                             'items' => [
-                                                [
-                                                    'label' => Yii::t('app', 'Exchange Rates'),
-                                                    'url' => ['support-group-exchange-rate/index', 'supportGroupId' => $key],
-                                                    'linkOptions' => ['class' => 'dropdown-item']
-                                                ],
                                                 [
                                                     'label' => Yii::t('app', 'Leave'),
                                                     'url' => ['leave', 'id' => $key],
