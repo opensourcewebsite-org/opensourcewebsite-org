@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             //'encodeLabels' => false, // if you're going to use html on the items' labels
                                             'items' => [
                                                 [
-                                                    'label' => Yii::t('app', 'Exchange Rates'),
+                                                    'label' => Yii::t('app', 'Exchange rates'),
                                                     'url' => ['support-group-exchange-rate/index', 'supportGroupId' => $key],
                                                     'linkOptions' => ['class' => 'dropdown-item']
                                                 ],
