@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <li class="nav-item align-self-center mr-4">
                             <?= Html::a('<i class="fa fa-plus"></i>', ['support-group-exchange-rate-command/create', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type], [
                                 'class' => 'btn btn-outline-success',
-                                'title' => Yii::t('app', 'New Exchange Rate Command'),
+                                'title' => $this->title,
                             ]); ?>
                         </li>
                     </ul>

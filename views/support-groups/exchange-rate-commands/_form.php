@@ -27,12 +27,10 @@ use yii\widgets\ActiveForm;
                         'class' => 'btn btn-secondary',
                         'title' => Yii::t('app', 'Cancel'),
                     ]); ?>
-                    <?php if (!$model->isNewRecord && $model->created_by === Yii::$app->user->id) : ?>
-                        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id, 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type], [
-                            'class' => 'btn btn-danger float-right',
-                            'id' => 'delete-exchange-rate-command'
-                        ]); ?>
-                    <?php endif; ?>
+                    <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id, 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type], [
+                        'class' => 'btn btn-danger float-right',
+                        'id' => 'delete-exchange-rate-command'
+                    ]); ?>
                 </div>
             </div>
         </div>
