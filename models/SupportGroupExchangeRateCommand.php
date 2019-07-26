@@ -43,17 +43,7 @@ class SupportGroupExchangeRateCommand extends ActiveRecord
             [['support_group_exchange_rate_id', 'type'], 'integer'],
             [['command'], 'string', 'max' => 255],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
-            ['command', function ($attribute) {
-                $isCommandAlreadyExists = self::find()
-                    ->andWhere([
-                        'support_group_exchange_rate_id' => $this->support_group_exchange_rate_id,
-                        'command' => $this->command,
-                    ])
-                    ->exists();
-                if ($isCommandAlreadyExists) {
-                    $this->addError($attribute, 'Command is unique per support group');
-                }
-            }],
+            [['command'], 'unique', 'targetAttribute' => ['support_group_exchange_rate_id', 'command']],
         ];
     }
 

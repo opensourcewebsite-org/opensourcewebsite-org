@@ -44,28 +44,11 @@ class SupportGroupExchangeRate extends ActiveRecord
             [['buying_rate', 'selling_rate'], 'number'],
             [['code', 'name'], 'string', 'max' => 255],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
-            ['code', function ($attribute) {
-                $isCodeAlreadyExists = self::find()
-                    ->andWhere([
-                        'support_group_id' => $this->support_group_id,
-                        'code' => $this->code,
-                    ])
-                    ->exists();
-                if ($isCodeAlreadyExists) {
-                    $this->addError($attribute, 'Code is unique per support group');
-                }
-            }],
+            [['code'], 'unique', 'targetAttribute' => ['support_group_id', 'code']],
             ['code', 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/'],
-            ['is_default', function ($attribute) {
-                $isDefaultAlreadyExists = self::find()
-                    ->andWhere([
-                        'support_group_id' => $this->support_group_id,
-                        'is_default' => $this->is_default,
-                    ])
-                    ->exists();
-                if ($isDefaultAlreadyExists) {
-                    $this->addError($attribute, 'Is default is unique per support group');
-                }
+            [['buying_rate', 'selling_rate'], 'match', 'pattern' => '/^[0-9]+(\.[0-9]{1,8})?$/'],
+            [['is_default'], 'unique', 'targetAttribute' => ['support_group_id', 'is_default'], 'filter' => function ($query) {
+                return $query->andWhere(['is_default' => true]);
             }],
         ];
     }
