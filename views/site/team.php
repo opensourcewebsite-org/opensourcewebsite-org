@@ -4,7 +4,7 @@
 
 use yii\helpers\Html;
 
-$this->title = 'Careers and volunteering';
+$this->title = 'Contribution';
 ?>
 <div class="site-contact">
 <p>
@@ -18,17 +18,17 @@ $this->title = 'Careers and volunteering';
 <ul>
     <li>Open source development</li>
     <li>Open data</li>
-    <li>Editorial and/or translation work</li>
+    <li>Editorial and translation work</li>
     <li>UI/UX web design</li>
     <li>Social media and communications</li>
 </ul>
 
 <p>
-    Read more about it:
+    Read more:
 </p>
 
 <ul>
-    <li><?= Html::a('Code of Conduct', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md') ?></li>
+    <li><?= Html::a('How to Contribute', 'https://opensource.guide/how-to-contribute/') ?></li>
     <li><?= Html::a('Contributing Guidelines', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md') ?></li>
 </ul>
 

@@ -1,10 +1,8 @@
-# Contributing to OpenSourceWebsite
+# Contributing Guidelines
 
 First off, thanks for taking the time to contribute!
 
 The following is a set of guidelines for contributing to OpenSourceWebsite, which are hosted in the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
-
-## Code of conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [hello@opensourcewebsite.org](mailto:hello@opensourcewebsite.org).
 
