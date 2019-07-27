@@ -78,12 +78,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'dropdown' => [
                                                 'items' => [
                                                     [
-                                                        'label' => Yii::t('app', 'Buying Commands'),
+                                                        'label' => Yii::t('app', 'Buying commands'),
                                                         'url' => ['support-group-exchange-rate-command/index', 'supportGroupExchangeRateId' => $key, 'type' => SupportGroupExchangeRateCommand::TYPE_BUYING_COMMAND],
                                                         'linkOptions' => ['class' => 'dropdown-item'],
                                                     ],
                                                     [
-                                                        'label' => Yii::t('app', 'Selling Commands'),
+                                                        'label' => Yii::t('app', 'Selling commands'),
                                                         'url' => ['support-group-exchange-rate-command/index', 'supportGroupExchangeRateId' => $key, 'type' => SupportGroupExchangeRateCommand::TYPE_SELLING_COMMAND],
                                                         'linkOptions' => ['class' => 'dropdown-item'],
                                                     ],

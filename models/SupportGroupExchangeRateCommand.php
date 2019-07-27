@@ -43,6 +43,7 @@ class SupportGroupExchangeRateCommand extends ActiveRecord
             [['support_group_exchange_rate_id', 'type'], 'integer'],
             [['command'], 'string', 'max' => 255],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+            [['command'], 'unique', 'targetAttribute' => ['support_group_exchange_rate_id', 'command']],
         ];
     }
 
