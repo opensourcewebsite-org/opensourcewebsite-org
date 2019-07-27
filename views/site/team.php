@@ -12,7 +12,7 @@ $this->title = 'Careers and volunteering';
 </p>
 
 <p>
-    We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas:
+    Your contribution increase your User Rating on this Website. We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas:
 </p>
 
 <ul>
@@ -24,13 +24,12 @@ $this->title = 'Careers and volunteering';
 </ul>
 
 <p>
-    Read more about it
+    Read more about it:
 </p>
 
 <ul>
     <li><?= Html::a('Code of Conduct', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md') ?></li>
     <li><?= Html::a('Contributing Guidelines', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md') ?></li>
-    <li><?= Html::a('Developer and User Wiki', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/wiki') ?></li>
 </ul>
 
 <p>
@@ -39,6 +38,10 @@ $this->title = 'Careers and volunteering';
 
 <p>
     OSW non-discrimination policy: OSW does not promote or discriminate against any person, population group, or organization with regard to categories protected by international law, as well as other categories identified by the OSW in alignment with our own Human Resources policies. These include, but are not limited to race, color, ancestry, religion, sex, sexual orientation, gender expression, physical appearance, citizenship, marital status, language, education background, national origin, age, disability, and veteran status. We also consider qualified applicants regardless of criminal histories, consistent with legal requirements.
+</p>
+
+<p>
+    For questions and suggestions, please mail to <a href="mailto:hello@opensourcewebsite.org">hello@opensourcewebsite.org</a>.
 </p>
 
 </div>

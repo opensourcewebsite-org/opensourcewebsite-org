@@ -556,21 +556,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Add rating for user's referrer if exists
-     *
-     * @return bool true|false
-     */
-    public function addReferrerBonus()
-    {
-        $user = $this->getReferrer()->one();
-
-        if ($user != null) {
-            return $user->addRating(Rating::REFERRAL_BONUS, 1);
-        }
-        return false;
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getReferrals(int $level = 1)
@@ -585,7 +570,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -594,7 +579,7 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
     }
-    
+
     public function getDisplayName()
     {
         return $this->contact->getContactName();

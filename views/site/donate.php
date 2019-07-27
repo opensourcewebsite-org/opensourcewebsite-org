@@ -4,15 +4,15 @@
 
 use yii\helpers\Html;
 
-$this->title = 'Donate';
+$this->title = 'Donate and crowdfunding';
 ?>
 <div class="site-contact">
 <p>
-    OpenSourceWebsite is entirely supported by the general public.
+    OpenSourceWebsite (OSW) is entirely supported by the general public.
 </p>
 
 <p>
-    Your donations increase your social rating on this Website. Your donations pay for staff, servers, bandwidth, maintenance, development and protective infrastructure.
+    Your donations increase your User Rating on this Website. Your donations pay for staff, servers, bandwidth, maintenance, development and protective infrastructure.
 </p>
 
 <h4>PayPal and credit cards</h4>

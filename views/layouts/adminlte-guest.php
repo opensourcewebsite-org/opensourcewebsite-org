@@ -168,6 +168,7 @@ Modal::end();
 
     <footer class="main-footer">
             <?= Html::a(Yii::t('app', 'Road map'), ['site/road-map']) ?> |
+            <?= Html::a(Yii::t('app', 'Participation'), ['site/participation']) ?> |
             <?= Html::a(Yii::t('app', 'Donate'), ['site/donate']) ?> |
             <?= Html::a(Yii::t('app', 'Contribution'), ['site/team']) ?> |
             <?= Html::a(Yii::t('app', 'Technologies'), ['site/technologies']) ?> |

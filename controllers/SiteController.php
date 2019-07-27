@@ -77,6 +77,11 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+    public function actionParticipation()
+    {
+        return $this->render('participation');
+    }
+
     public function actionDonate()
     {
         return $this->render('donate');
@@ -275,11 +280,6 @@ class SiteController extends Controller
 
             //Add user rating for confirm email
             $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
-
-            //Add referrer bonus as rating if referrer exists
-            if ($user->referrer_id != null) {
-                $user->addReferrerBonus();
-            }
         }
 
         if ($commit) {

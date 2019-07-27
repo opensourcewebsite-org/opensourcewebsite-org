@@ -141,22 +141,6 @@ class SignupFormTest extends Unit
         expect($user->getRating())->notEquals(2);
     }
 
-    /**
-     * @depends testConfirmEmailCorrect
-     */
-    public function testAddRatingReferralBonus($user)
-    {
-        $user = User::findIdentity(102);
-        expect_that($referrer = $user->getReferrer()->one());
-        expect($referrer->getRating())->equals(1);
-        expect_that($user->addReferrerBonus());
-        expect($referrer->getRating())->equals(2);
-
-        $user = User::findIdentity(100);
-        expect_not($user->getReferrer()->one());
-        expect($user->addReferrerBonus())->false();
-    }
-
     protected function _after()
     {
         \Yii::$app->user->logout();

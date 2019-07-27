@@ -21,15 +21,15 @@ $inviteLink = Url::toRoute([
     <div class="site-referrals pb-2">
         <div class="card bg-light">
             <div class="card-body">
-              <p><?= Yii::t('app', 'All new users, who have joined the Website through your referral link, become your referrals.') ?> <?= Yii::t('app', 'You will get 1 User Rating for each new referral.') ?> <?= Yii::t('app', 'In the future, the loyalty program will be significantly increased and new bonuses will be added.') ?></p>
-              <p><?= Yii::t('app', 'Soon:') ?></p>
+              <p><?= Yii::t('app', 'All new users, who have joined the Website through your referral link, become your referrals.') ?></p>
               <p>
                   <ul>
-                      <li><?= Yii::t('app', 'Multi-level loyalty program, you will receive rewards not only from first level of referrals, but also from next levels.') ?></li>
-                      <li><?= Yii::t('app', 'You will receive rewards from your referrals for upgrading  their User ratings, purchases on the Website and websites of our partner companies.') ?></li>
+                      <li><?= Yii::t('app', 'You get rewards from your referrals for their purchases on the Website and websites of our partner companies, and from offline partners using a discount card.') ?></li>
+                      <li><?= Yii::t('app', 'Multi-level loyalty program, you get rewards from multiple referral levels, not only from first level.') ?></li>
                       <li><?= Yii::t('app', 'User community of the Website decides what conditions will be in loyalty program. You can participate in discuss process and vote for the conditions.') ?></li>
                   </ul>
               </p>
+              <p><?= Yii::t('app', 'Soon the loyalty program will be significantly increased and new bonuses will be added.') ?></p>
             </div>
         </div>
         <div class="card bg-light">
