@@ -11,10 +11,6 @@ $this->title = 'Participation';
     OpenSourceWebsite (OSW) is free to use for everyone.
 </p>
 
-<p>
-    Your donations increase your User Rating on this Website. Your donations pay for staff, servers, bandwidth, maintenance, development and protective infrastructure.
-</p>
-
 <h4>Membership</h4>
 
 <p>Your User Rating gives you:</p>
