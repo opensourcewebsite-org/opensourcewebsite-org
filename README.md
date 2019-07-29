@@ -1,5 +1,5 @@
-[![Website](https://img.shields.io/website/https/opensourcewebsite.org)]
-[![License](https://img.shields.io/github/license/opensourcewebsite-org/opensourcewebsite-org)]
+![Website](https://img.shields.io/website/https/opensourcewebsite.org)
+![License](https://img.shields.io/github/license/opensourcewebsite-org/opensourcewebsite-org)
 [![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com)
 [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
 
