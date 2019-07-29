@@ -14,7 +14,7 @@
 
 # OpenSourceWebsite
 
-OpenSourceWebsite (OSW) is open source website for global online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
+OpenSourceWebsite (OSW) is open source website for global online social community, and is available for free on [Live Website](https://opensourcewebsite.org).
 
 ## Code of conduct
 
@@ -41,3 +41,7 @@ Please read through our [Installing Instructions](INSTALL.md).
 ## License
 
 The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).
+
+## Questions and suggestions
+
+Join [our Gitter](https://gitter.im/opensourcewebsite-org), [our Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE) or [email support](mailto:hello@opensourcewebsite.org).
