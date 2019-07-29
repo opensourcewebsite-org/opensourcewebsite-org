@@ -1,22 +1,20 @@
+[![Website](https://img.shields.io/website/https/opensourcewebsite.org)]
+[![License](https://img.shields.io/github/license/opensourcewebsite-org/opensourcewebsite-org)]
 [![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com)
 [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
 
 [![Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org)
 [![Maintainability](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/maintainability)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/test_coverage)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/test_coverage)
-[![codebeat badge](https://codebeat.co/badges/c69e6f2a-e6f6-4a50-b5aa-9003cdae23c2)](https://codebeat.co/projects/github-com-opensourcewebsite-org-opensourcewebsite-org-master)
+[![Codebeat Badge](https://codebeat.co/badges/c69e6f2a-e6f6-4a50-b5aa-9003cdae23c2)](https://codebeat.co/projects/github-com-opensourcewebsite-org-opensourcewebsite-org-master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/57dd3bf9231140b0becfd702b84e8483)](https://www.codacy.com/app/opensourcewebsite-org/opensourcewebsite-org)
 [![Coverage Status](https://coveralls.io/repos/github/opensourcewebsite-org/opensourcewebsite-org/badge.svg?branch=master)](https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org?branch=master)
+
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=OpenSourceWebsite%20(OSW)%20is%20open%20source%20website%20for%20global%20online%20social%20community&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource)
 
 # OpenSourceWebsite
 
 OpenSourceWebsite (OSW) is open source website for global online social community, and is available for free on [Live Website](https://opensourcewebsite.org)
-
-## Minimum technical requirements
-
-- ![PHP 7](https://img.shields.io/badge/Powered_by-PHP-green.svg?style=flat) - PHP 7
-- ![Yii 2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat) - Yii 2
-- ![MySQL 5](https://img.shields.io/badge/Powered_by-MySQL-green.svg?style=flat) - MySQL 5
 
 ## Code of conduct
 
@@ -24,7 +22,7 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ## Contributing
 
-Please read through our [contributing guidelines](CONTRIBUTING.md).
+Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## OpenAPI
 
@@ -32,7 +30,13 @@ Please read through our [OpenAPI Specification](OPENAPI.md).
 
 ## Installing
 
-Please read through our [installing instructions](INSTALL.md).
+#### Minimum technical requirements
+
+- [PHP 7.0](https://en.wikipedia.org/wiki/PHP)
+- [Yii 2](https://en.wikipedia.org/wiki/Yii)
+- [MySQL 5.7](https://en.wikipedia.org/wiki/MySQL)
+
+Please read through our [Installing Instructions](INSTALL.md).
 
 ## License
 
