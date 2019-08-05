@@ -12,13 +12,17 @@
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=OpenSourceWebsite%20(OSW)%20is%20open%20source%20website%20for%20global%20online%20social%20community&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource)
 
-# OpenSourceWebsite
+<h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) is open source website for global online social community, and is available for free on [Live Website](https://opensourcewebsite.org).
+OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on [Live Website](https://opensourcewebsite.org).
+
+## Roadmap
+
+The future plans, high priority features and enhancements can be found in the [ROADMAP](ROADMAP.md).
 
 ## Code of conduct
 
-This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [hello@opensourcewebsite.org](mailto:hello@opensourcewebsite.org).
+This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Contributing
 
@@ -28,7 +32,7 @@ Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 Please read through our [OpenAPI Specification](OPENAPI.md).
 
-## Installing
+## Installation
 
 #### Minimum technical requirements
 
@@ -36,12 +40,12 @@ Please read through our [OpenAPI Specification](OPENAPI.md).
 - [Yii 2](https://en.wikipedia.org/wiki/Yii)
 - [MySQL 5.7](https://en.wikipedia.org/wiki/MySQL)
 
-Please read through our [Installing Instructions](INSTALL.md).
+Please read through our [Installation Instructions](INSTALL.md).
 
 ## License
 
-The code is Open Source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).
+This project is open source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).
 
-## Questions and suggestions
+## Questions and Suggestions
 
 Join [our Gitter](https://gitter.im/opensourcewebsite-org), [our Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE) or [email support](mailto:hello@opensourcewebsite.org).

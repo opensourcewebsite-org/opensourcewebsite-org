@@ -1,4 +1,4 @@
-# Installing
+# Installation
 
 ## General setup
 
