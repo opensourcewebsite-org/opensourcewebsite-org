@@ -44,12 +44,12 @@ class SupportGroupExchangeRate extends ActiveRecord
             [['buying_rate', 'selling_rate'], 'number'],
             [['code', 'name'], 'string', 'max' => 255],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
-            [['code'], 'unique', 'targetAttribute' => ['support_group_id', 'code']],
-            ['code', 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/'],
-            [['buying_rate', 'selling_rate'], 'match', 'pattern' => '/^[0-9]+(\.[0-9]{1,8})?$/'],
+            [['code'], 'unique', 'targetAttribute' => ['support_group_id', 'code'], 'message' => 'Code is unique per support group.'],
+            ['code', 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/', 'message' => 'Code is insensitive. Allowed only [a-z,A-Z,0-9,_].'],
+            [['buying_rate', 'selling_rate'], 'match', 'pattern' => '/^[0-9]+(\.[0-9]{1,8})?$/', 'message' => 'Rates may contain max 8 decimals.'],
             [['is_default'], 'unique', 'targetAttribute' => ['support_group_id', 'is_default'], 'filter' => function ($query) {
                 return $query->andWhere(['is_default' => true]);
-            }],
+            }, 'message' => 'Is Default is only 1 per support group.'],
         ];
     }
 
