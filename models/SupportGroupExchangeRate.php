@@ -88,4 +88,12 @@ class SupportGroupExchangeRate extends ActiveRecord
             ],
         ];
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupportGroupBot()
+    {
+        return $this->hasOne(SupportGroupBot::className(), ['support_group_id' => 'support_group_id']);
+    }
 }

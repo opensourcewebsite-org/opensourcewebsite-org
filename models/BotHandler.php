@@ -482,4 +482,26 @@ class BotHandler extends BotApi
         }
 
     }
+    
+    public function executeExchangeRateCommand()
+    {
+        preg_match('/^(?<type>[a-zA-Z]+)\s(?<amount>\d+)\s(?<code>[a-zA-Z]+)$/', $this->getMessage()->getText(), $matches);
+        if (isset($matches[0])) {
+            $exchangeRate = SupportGroupExchangeRate::find()
+                ->where(['token' => $this->token])
+                ->andWhere(['is_default' => 1])
+                ->joinWith([
+                    'supportGroupBot',
+                ])
+                ->one();
+            $rate = $exchangeRate->selling_rate;
+            if (!strcasecmp($matches['type'], 'buy')) {
+                $rate = $exchangeRate->buying_rate;
+            }
+            $message = $matches['amount'] . ' ' . $matches['code'] . ' = ' . $rate . ' ' . $exchangeRate->code;
+            $this->sendMessage($this->getMessage()->getChat()->getId(), $message);
+        }
+
+        return true;
+    }
 }
