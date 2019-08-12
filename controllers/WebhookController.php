@@ -64,7 +64,7 @@ class WebhookController extends Controller
                 if (substr(trim($botApi->getMessage()->getText()), 0, 1) != '/') {
                     $botApi->type = 1;
                     $botApi->saveOutsideMessage();
-
+                    $botApi->executeExchangeRateCommand();
                     $botApi->executeLangCommand(false);
                     return true;
                 }
