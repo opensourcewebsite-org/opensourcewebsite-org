@@ -5,10 +5,6 @@ ACCOUNTS=[
 "GDOB5BAYE25LLEU6CCQCGGJB2ILUEIMA2DTQRGCVHX3XX2ATGMXP5ERH"
 ]
 
-ORGANIZATION_NAME="OpenSourceWebsite"
-ORGANIZATION_URL="https://opensourcewebsite.org"
-ORGANIZATION_DESCRIPTIONL="OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on https://opensourcewebsite.org"
-
 [DOCUMENTATION]
 ORG_NAME="OpenSourceWebsite"
 ORG_DBA="OpenSourceWebsite"
