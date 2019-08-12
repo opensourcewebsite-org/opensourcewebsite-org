@@ -14,7 +14,7 @@
 
 <h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on [Live Website](https://opensourcewebsite.org).
+OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on https://opensourcewebsite.org
 
 ## Roadmap
 
