@@ -1,9 +1,3 @@
-<!--
-
-Have you read Code of Conduct? By filing an Issue, you are expected to comply with it, including treating everyone with respect: https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md
-
--->
-
 ### Description
 
 [Description of the issue]
