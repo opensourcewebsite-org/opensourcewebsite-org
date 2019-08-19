@@ -83,6 +83,7 @@ class SettingController extends Controller
         }
 
         return $this->redirect('site/error');
+
     }
 
     /**
