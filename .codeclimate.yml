@@ -1,0 +1,57 @@
+version: "2"
+checks:
+  file-lines:
+    enabled: false
+  method-complexity:
+    enabled: false
+  method-lines:
+    enabled: false
+plugins:
+  csslint:
+    enabled: true
+  fixme:
+    enabled: true
+  eslint:
+    enabled: true
+    channel: "eslint-4"
+    config:
+      config: .eslintrc
+  git-legal:
+    enabled: true
+  markdownlint:
+    enabled: true
+  phan:
+    enabled: true
+    config:
+      file_extensions: "php"
+    checks:
+      PhanUndeclaredClassMethod:
+        enabled: false
+      PhanUndeclaredProperty:
+        enabled: false
+  phpcodesniffer:
+    enabled: true
+    config:
+      file_extensions: "php"
+      standard: "PSR1,PSR2,Yii2"
+      encoding: utf-8
+  phpmd:
+    enabled: true
+    config:
+      file_extensions:
+        - php
+  sonar-php:
+    enabled: true
+    config:
+      minimum_severity: critical
+  stylelint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+exclude_patterns:
+  - "/vendor/"
+  - "/yii/"
