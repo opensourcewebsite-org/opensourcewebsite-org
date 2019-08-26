@@ -8,6 +8,7 @@ use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class SettingController extends Controller
 {
@@ -73,6 +74,10 @@ class SettingController extends Controller
 
         $settingValues = SettingValue::find()->where(['setting_id' => $id, 'is_current' => 0])->all();
         $setting = Setting::find()->where(['id' => $id])->one();
+
+        if(empty($setting) || empty($settingValues)){
+            throw new NotFoundHttpException();
+        }
 
         return $this->render('setting-values', [
             'settingValues' => $settingValues,
