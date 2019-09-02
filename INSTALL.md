@@ -9,15 +9,17 @@
 
 #### Using Docker
 
-- set `DB_HOST=db` in `.env` file
-- run `docker-compose up -d` from root directory
-- run `docker-compose exec php composer install`
-- run `docker-compose exec php ./yii migrate`
+- Set `DB_HOST=db` in `.env` file
+- Run `docker-compose up -d` from root directory
+- Run `docker-compose exec php composer install`
+- Run `docker-compose exec php ./yii migrate`
 
 Web-server can be accessed at http://localhost:8000
 
 #### Without docker
-- setup your web-server root folder to `web`
-- install php and composer
-- run `php composer.phar install`
-- run `php yii migrate`
+
+- Create a new MySQL database with an "utf8mb4_unicode_ci" collation
+- Setup your web-server root folder to `web`
+- Install php and composer
+- Run `php composer.phar install`
+- Run `php yii migrate`

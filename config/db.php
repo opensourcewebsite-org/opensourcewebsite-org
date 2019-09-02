@@ -5,13 +5,14 @@ $password = getenv('DB_PASSWORD') ?: '';
 $name = getenv('DB_NAME');
 $host = getenv('DB_HOST') ?: 'localhost';
 $port = getenv('DB_PORT') ?: '3306';
+$charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
 return [
     'class' => 'yii\db\Connection',
     'dsn' => "mysql:host=$host;port=$port;dbname=$name",
     'username' => $username,
     'password' => $password,
-    'charset' => 'utf8mb4',
+    'charset' => $charset,
 
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,
