@@ -11,7 +11,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
-      DB_CHARSET: {DB_CHARSET}
+      DB_CHARSET: ${DB_CHARSET}
 
   db:
     image: mysql:5.7
