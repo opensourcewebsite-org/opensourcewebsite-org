@@ -122,6 +122,10 @@ $config = [
             'dateFormat' => 'php:Y-m-d',
             'sizeFormatBase' => 1000,
         ],
+        'session' => [
+            'class' => 'yii\web\Session',
+            'gCProbability' => 1,
+        ],
         'maintenanceMode' => [
             'class' => '\brussens\maintenance\MaintenanceMode',
             'layoutPath' => 'maintenance',

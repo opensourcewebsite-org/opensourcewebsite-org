@@ -32,7 +32,7 @@ $this->title = 'Technologies and Web services We Use';
 
     <ul>
         <li><?= Html::a('GitHub.com', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?></li>
-        <li><?= Html::a('Moqups.com', 'https://app.moqups.com/opensourcewebsite/LMtjCISodJ') ?></li>
+        <li><?= Html::a('Moqups.com', 'https://app.moqups.com/LMtjCISodJ/view/page/ad2542407') ?></li>
         <li><?= Html::a('Cloudflare.com', 'https://cloudflare.com') ?></li>
         <li><?= Html::a('DigitalOcean.com', 'https://m.do.co/c/4d16b1d56809') ?></li>
         <li><?= Html::a('SonarCloud.io', 'https://sonarcloud.io/dashboard?id=opensourcewebsite-org') ?></li>

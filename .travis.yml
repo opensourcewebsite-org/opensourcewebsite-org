@@ -1,3 +1,5 @@
+# https://travis-ci.org
+
 env:
   global:
     - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
@@ -43,7 +45,7 @@ install:
 before_script:
   - pip install --user codecov
   - mysql --version
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test CHARACTER SET utf8 COLLATE utf8_general_ci;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
