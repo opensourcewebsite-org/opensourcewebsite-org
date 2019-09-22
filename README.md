@@ -28,9 +28,9 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
-## OpenAPI
+## API Documentation
 
-Please read through our [OpenAPI Specification](OPENAPI.md).
+Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
 
 ## Installation
 
