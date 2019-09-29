@@ -20,7 +20,7 @@ OpenSourceWebsite (OSW) is open source website for global online social communit
 
 The future plans, high priority features and enhancements can be found in the [ROADMAP](ROADMAP.md).
 
-## Code of conduct
+## Code of Conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -44,7 +44,7 @@ Please read through our [Installation Instructions](INSTALL.md).
 
 ## License
 
-This project is open source and available freely under the [MIT license](LICENSE.md), powered by [an excellent community](https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors).
+This project is open source and available freely under the [MIT license](LICENSE.md).
 
 ## Questions and Suggestions
 
