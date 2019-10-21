@@ -22,7 +22,7 @@ use yii\helpers\ArrayHelper;
  * @property int $_location_at
  * @property string $_language_code
  */
-class BotHandler extends BotApi
+class SupportGroupBotHandler extends BotApi
 {
     /**
      * Telegram request
@@ -83,7 +83,7 @@ class BotHandler extends BotApi
      */
     public function __construct($token, $request, $trackerToken = null)
     {
-        parent::__construct($token, $trackerToken = null);
+        parent::__construct($token, $trackerToken);
 
         $this->_request = $request;
     }
@@ -168,6 +168,8 @@ class BotHandler extends BotApi
      * @param \app\models\SupportGroupCommandText[] $commands
      *
      * @return bool
+     * @throws \TelegramBot\Api\Exception
+     * @throws \TelegramBot\Api\InvalidArgumentException
      */
     protected function generateResponse($commands)
     {
@@ -302,11 +304,6 @@ class BotHandler extends BotApi
 
         return $this->generateResponse($commands->supportGroupCommandTexts);
     }
-
-
-
-
-
 
     /**
      * @return bool|int
@@ -482,7 +479,12 @@ class BotHandler extends BotApi
         }
 
     }
-    
+
+    /**
+     * @return bool
+     * @throws \TelegramBot\Api\Exception
+     * @throws \TelegramBot\Api\InvalidArgumentException
+     */
     public function executeExchangeRateCommand()
     {
         preg_match('/^(?<type>[a-zA-Z]+)\s(?<amount>\d+)\s(?<code>[a-zA-Z]+)$/', $this->getMessage()->getText(), $matches);
