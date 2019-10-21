@@ -45,6 +45,12 @@ $config = [
             ],
         ],
         'db' => $db,
+        'urlManager' => [
+            'baseUrl' => $params['baseUrl'],
+            'scriptUrl' => $params['baseUrl'],
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+        ],
     ],
     'params' => $params,
     'controllerMap' => [
