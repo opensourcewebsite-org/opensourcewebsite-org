@@ -35,7 +35,6 @@ class BotClient extends \yii\db\ActiveRecord
             [
                 [
                     'provider_user_id',
-                    'provider_user_first_name',
                 ],
                 'required',
             ],

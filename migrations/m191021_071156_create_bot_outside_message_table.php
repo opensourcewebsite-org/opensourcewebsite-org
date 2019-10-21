@@ -19,7 +19,7 @@ class m191021_071156_create_bot_outside_message_table extends Migration
             'provider_message_id' => $this->integer()->unsigned()->notNull(),
             'provider_chat_id' => $this->bigInteger()->unsigned(),
             'message' => $this->text()->notNull(),
-            'type' => $this->tinyInteger(2)
+            'type' => $this->tinyInteger()
                 ->unsigned()
                 ->notNull()
                 ->defaultValue(\app\models\BotOutsideMessage::TYPE_ORDINARY_TEXT),

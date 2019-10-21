@@ -16,7 +16,7 @@ class m191021_071112_create_bot_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'name' => $this->string(255)->notNull(),
             'token' => $this->string(255)->notNull(),
-            'status' => $this->smallInteger(1)->unsigned()->defaultValue(0)->notNull(),
+            'status' => $this->smallInteger()->unsigned()->defaultValue(0)->notNull(),
         ]);
     }
 
