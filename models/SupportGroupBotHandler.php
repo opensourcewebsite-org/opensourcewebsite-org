@@ -89,17 +89,18 @@ class SupportGroupBotHandler extends BotApi
     }
 
     /**
-     * @return \TelegramBot\Api\Types\Message
+     * @return \TelegramBot\Api\Types\Message|null
      */
     public function getMessage()
     {
+        $request = null;
         if (isset($this->_request['message'])) {
             $request = $this->_request['message'];
-        } else {
+        } elseif (isset($this->_request['edited_message'])) {
             $request = $this->_request['edited_message'];
         }
 
-        return Message::fromResponse($request);
+        return $request ? Message::fromResponse($request) : null;
     }
 
     /**

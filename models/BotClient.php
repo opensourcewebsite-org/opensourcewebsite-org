@@ -15,6 +15,7 @@ namespace app\models;
  * @property string $location_lon
  * @property int $location_at
  * @property int $last_message_at
+ * @property string $language_code
  */
 class BotClient extends \yii\db\ActiveRecord
 {
@@ -57,6 +58,8 @@ class BotClient extends \yii\db\ActiveRecord
                 'string',
                 'max' => 255,
             ],
+            [['language_code'], 'string', 'max' => 32],
+            [['language_code'], 'default', 'value' => 'en'],
         ];
     }
 

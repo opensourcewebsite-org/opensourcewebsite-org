@@ -78,17 +78,18 @@ class TelegramBotHandler extends BotApi
     }
 
     /**
-     * @return \TelegramBot\Api\Types\Message
+     * @return \TelegramBot\Api\Types\Message|null
      */
     public function getMessage()
     {
+        $request = null;
         if (isset($this->_request['message'])) {
             $request = $this->_request['message'];
-        } else {
+        } elseif (isset($this->_request['edited_message'])) {
             $request = $this->_request['edited_message'];
         }
 
-        return Message::fromResponse($request);
+        return $request ? Message::fromResponse($request) : null;
     }
 
     /**
@@ -113,29 +114,25 @@ class TelegramBotHandler extends BotApi
 
         $this->setGeoData();
 
+        $clientData = $this->getMessage()->getFrom();
+
         $botClient = BotClient::find()
-            ->where(['provider_user_id' => $this->getMessage()->getFrom()->getId()])
+            ->where(['provider_user_id' => $clientData->getId()])
             ->one();
 
         if (is_null($botClient)) {
             $botClient = new BotClient();
-
-            $botClient->setAttributes([
-                'provider_user_id' => $this->getMessage()->getFrom()->getId(),
-            ]);
+            $botClient->provider_user_id = $clientData->getId();
         }
 
         $botClient->setAttributes([
-            'provider_user_name' => $this->getMessage()->getFrom()->getUsername(),
-            'provider_user_first_name' => $this->getMessage()->getFrom()->getFirstName(),
-            'provider_user_last_name' => $this->getMessage()->getFrom()->getLastName(),
+            'provider_user_name' => $clientData->getUsername(),
+            'provider_user_first_name' => $clientData->getFirstName(),
+            'provider_user_last_name' => $clientData->getLastName(),
+            'language_code' => $clientData->getLanguageCode(),
             'provider_bot_user_blocked' => 0,
+            'last_message_at' => time(),
         ]);
-
-        if (substr(trim($this->getMessage()->getText()), 0, 1) != '/' &&
-            !$this->getMessage()->getLocation()) {
-            $botClient->last_message_at = time();
-        }
 
         # update geo position (Live location)
         if ($this->_longitude && $this->_latitude) {
