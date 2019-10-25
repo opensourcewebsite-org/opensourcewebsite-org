@@ -111,6 +111,7 @@ class WebhookController extends Controller
      */
     protected function handleBot($botInfo, $postdata)
     {
+        $result = false;
         $botApi = new TelegramBotHandler($botInfo->token, $postdata);
         $botApi->bot_id = $botInfo->id;
 
@@ -118,16 +119,18 @@ class WebhookController extends Controller
             $botApi->setProxy(Yii::$app->params['telegramProxy']);
         }
 
-        if (!$botApi->getMessage() || $botApi->getMessage()->getFrom()->isBot()) {
-            return false;
+        if ($botApi->getMessage() && !$botApi->getMessage()->getFrom()->isBot()) {
+            $isCommand = (substr(trim($botApi->getMessage()->getText()), 0, 1) === '/');
+
+            $botApi->bot_client_id = $botApi->saveClientInfo();
+            $botApi->type = $isCommand ? BotOutsideMessage::TYPE_COMMAND
+                : BotOutsideMessage::TYPE_ORDINARY_TEXT;
+
+            if ($botApi->saveOutsideMessage()) {
+                $result = $botApi->dispatchCommand();
+            }
         }
 
-        $isCommand = (substr(trim($botApi->getMessage()->getText()), 0, 1) === '/');
-
-        $botApi->bot_client_id = $botApi->saveClientInfo();
-        $botApi->type = $isCommand ? BotOutsideMessage::TYPE_COMMAND
-            : BotOutsideMessage::TYPE_ORDINARY_TEXT;
-
-        return $botApi->saveOutsideMessage();
+        return $result;
     }
 }

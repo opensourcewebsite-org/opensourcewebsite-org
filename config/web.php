@@ -166,6 +166,9 @@ $config = [
                 ],
             ],
         ],
+        'telegramCommandRouter' => [
+            'class' => 'app\components\BotCommandRouter',
+        ],
     ],
     'timeZone' => 'UTC',
     'params' => $params,
