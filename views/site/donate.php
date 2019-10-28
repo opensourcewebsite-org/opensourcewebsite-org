@@ -15,7 +15,15 @@ $this->title = 'Donate and crowdfunding';
     Your donations increase your User Rating on this Website. Your donations pay for staff, servers, bandwidth, maintenance, development and protective infrastructure.
 </p>
 
-<h4>PayPal and credit cards</h4>
+<h4>Open Collective</h4>
+
+<p>
+    <ul>
+        <li>Processing with <?= Html::a('Open Collective', 'https://opencollective.com/opensourcewebsite') ?></li>
+    </ul>
+</p>
+
+<h4>Credit cards and PayPal</h4>
 
 <p>
     <ul>
