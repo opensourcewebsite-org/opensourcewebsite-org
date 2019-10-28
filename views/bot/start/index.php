@@ -1,20 +1,22 @@
-<?= \Yii::t('bot', 'Greetings!'); ?>
+<?= Yii::t('bot', 'Welcome'); ?>!
 
-Я - бесплатный виртуальный персональный ассистент. Поддерживаю множество языков и доступен в любой точке планеты где есть интернет. Я гарантирую полную приватность и конфиденциальность ваших данных. Список моих возможностей и услуг постоянно расширяется, как и качество обслуживания.
+<?= Yii::t('bot', 'I am a free virtual personal assistant, multilingual and available everywhere where there is internet. I adhere to a privacy policy that guarantees 100% confidentiality for your data. The list of my features and services is constantly expanding, along with the service improvement.'); ?>
 
-Мой код находится в открытом доступе и развивается в рамках глобального социального онлайн сообщества https://opensourcewebsite.org. Вы можете помочь проекту, участвуя в разработке и поддерживая пожертвованиями.
+<?= Yii::t('bot', 'My code is open source and is part of a global social online community OpenSourceWebsite. You can help the project by participating in its development or supporting it with donations.'); ?> <?= Yii::t('bot', 'More information'); ?>: https://opensourcewebsite.org
 
-Доступные возможности (бета тестирование):
-- Работа. Поиск работы и сотрудников по разным критериям и локациям в автоматическом режиме.
-- Объявления. Покупка, продажа, аренда, услуги по разным критериям и локациям в автотическом режиме.
+<?= Yii::t('bot', 'Available features (beta testing)'); ?>:
+- <?= Yii::t('bot', 'Jobs. Automatic job and employee search based on different criteria and locations in automatic mode.'); ?>
+- <?= Yii::t('bot', 'Ads. Buying, selling, renting, services by different criteria and locations in automatic mode.'); ?>
 
-Скоро (в разработке):
-- Недвижимость. Покупка, продажа, аренда.
-- Знакомства. Поиск знакомств по разным критериям и локациям.
-- P2P обмен валют/криптовалют между пользователями.
-- Платные опросы от компаний для пользователей.
-- Персонализированная реклама/предложения от компаний для пользователей.
-- Споры на деньги между пользователями.
-- Клубы по интересам. Поиск единомышленников по разным критериям и локациям.
-- Совместные путешествия. Поиск попутчиков.
-- Информирование о важных событиях и интересных мероприятиях.
+<?= Yii::t('bot', 'Coming soon (under development)'); ?>:
+- <?= Yii::t('bot', 'Real estates. Buying, selling, renting.'); ?>
+- <?= Yii::t('bot', 'Dating. Search for new contacts based on different criteria and locations.'); ?>
+- <?= Yii::t('bot', 'P2P currency/cryptocurrency exchange between users.'); ?>
+- <?= Yii::t('bot', 'Paid surveys from companies for users.'); ?>
+- <?= Yii::t('bot', 'Personalized news.'); ?>
+- <?= Yii::t('bot', 'Personalized advertising/offers from companies for users.'); ?>
+- <?= Yii::t('bot', 'Money bets between users.'); ?>
+- <?= Yii::t('bot', 'Anonymous lotteries.'); ?>
+- <?= Yii::t('bot', 'Hobby clubs. Search for like-minded people by different criteria and locations.'); ?>
+- <?= Yii::t('bot', 'Traveling together. Search for fellow travelers.'); ?>
+- <?= Yii::t('bot', 'Informing about important events and interesting events.'); ?>.
