@@ -17,7 +17,6 @@ class HelpController extends BotCommandController
      */
     public function actionIndex()
     {
-
-        return "Bot commands:\n/start\n/help\n";
+        return $this->render('index');
     }
 }

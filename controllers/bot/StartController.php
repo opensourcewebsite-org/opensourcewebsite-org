@@ -3,7 +3,6 @@
 namespace app\controllers\bot;
 
 use app\components\BotCommandController;
-use TelegramBot\Api\Types\Message;
 
 /**
  * Class StartController
@@ -13,14 +12,11 @@ use TelegramBot\Api\Types\Message;
 class StartController extends BotCommandController
 {
 
-    /** @var Message */
-    public $requestMessage = null;
-
     /**
      * @return string
      */
     public function actionIndex()
     {
-        return 'Hi ' . $this->requestMessage->getFrom()->getFirstName();
+        return $this->render('index');
     }
 }

@@ -61,6 +61,7 @@ class BotCommandRouter extends Component
         $commandString = substr($commandString, 1);
         $stringParts = explode(' ', $commandString);
         $controllerID = array_shift($stringParts);
+        $parts['id'] = $controllerID;
         $controllerID = implode('', array_map('ucfirst', explode('-', $controllerID)));
         $controllerID .= 'Controller';
 
@@ -79,11 +80,11 @@ class BotCommandRouter extends Component
     public function createController($commandString)
     {
         $parts = $this->parseRoute($commandString);
-        $controllerID = $parts['controller'];
+        $controllerID = $parts['id'];
         if (isset($this->controllerMap[$controllerID])) {
             $parts['controller'] = \Yii::createObject($this->controllerMap[$controllerID], [$controllerID, \Yii::$app]);
         } else {
-            $controllerClass = $this->controllerNamespace . '\\' . $controllerID;
+            $controllerClass = $this->controllerNamespace . '\\' . $parts['controller'];
             if ($this->isCorrectClassName($controllerClass)) {
                 $parts['controller'] = \Yii::createObject($controllerClass, [$controllerID, \Yii::$app]);
             }
