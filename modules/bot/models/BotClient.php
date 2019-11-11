@@ -1,6 +1,8 @@
 <?php
 
-namespace app\models;
+namespace app\modules\bot\models;
+
+use app\modules\bot\Module;
 
 /**
  * This is the model class for table "support_group_bot_client".
@@ -16,6 +18,7 @@ namespace app\models;
  * @property int $location_at
  * @property int $last_message_at
  * @property string $language_code
+ * @property string $currency_code
  */
 class BotClient extends \yii\db\ActiveRecord
 {
@@ -54,12 +57,14 @@ class BotClient extends \yii\db\ActiveRecord
                     'provider_user_name',
                     'provider_user_first_name',
                     'provider_user_last_name',
+                    'language_code',
+                    'currency_code',
                 ],
                 'string',
                 'max' => 255,
             ],
-            [['language_code'], 'string', 'max' => 32],
             [['language_code'], 'default', 'value' => 'en'],
+            [['currency_code'], 'default', 'value' => 'USD'],
         ];
     }
 
@@ -94,5 +99,27 @@ class BotClient extends \yii\db\ActiveRecord
         } else {
             return $this->provider_user_first_name;
         }
+    }
+
+    /**
+     * @return null|BotOutsideMessage
+     */
+    public function getLastOutsideMessage()
+    {
+        return BotOutsideMessage::find()
+            ->where(['bot_client_id' => $this->id, 'bot_id' => Module::getInstance()->botApi->bot_id])
+            ->orderBy('created_at DESC')
+            ->one();
+    }
+
+    /**
+     * @return null|BotInsideMessage
+     */
+    public function getLastInsideMessage()
+    {
+        return BotInsideMessage::find()
+            ->where(['bot_client_id' => $this->id, 'bot_id' => Module::getInstance()->botApi->bot_id])
+            ->orderBy('created_at DESC')
+            ->one();
     }
 }

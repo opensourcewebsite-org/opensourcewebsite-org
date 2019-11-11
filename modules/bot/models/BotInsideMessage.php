@@ -1,7 +1,10 @@
 <?php
 
-namespace app\models;
+namespace app\modules\bot\models;
 
+use app\modules\bot\Module;
+use app\modules\bot\telegram\BotApiClient;
+use TelegramBot\Api\Types\Message;
 use yii\behaviors\TimestampBehavior;
 
 /**
@@ -48,7 +51,7 @@ class BotInsideMessage extends \yii\db\ActiveRecord
     {
         return [
             [['bot_id', 'bot_client_id', 'message'], 'required'],
-            [['bot_id', 'bot_client_id', 'created_at', 'updated_at', 'provider_chat_id'], 'integer'],
+            [['bot_id', 'bot_client_id', 'created_at', 'provider_chat_id'], 'integer'],
             [['message'], 'string'],
             [
                 ['bot_client_id'],
@@ -94,8 +97,27 @@ class BotInsideMessage extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSupportGroupBot()
+    public function getBot()
     {
         return $this->hasOne(Bot::className(), ['id' => 'bot_id']);
+    }
+
+    /**
+     * @param $message \app\modules\bot\telegram\Message
+     * @param $chatId int
+     *
+     * @return bool
+     */
+    public static function saveMessage($message, $chatId)
+    {
+        $model = new self();
+        $model->setAttributes([
+            'bot_id' => Module::getInstance()->botApi->bot_id,
+            'bot_client_id' => Module::getInstance()->botApi->bot_client_id,
+            'provider_chat_id' => $chatId,
+            'message' => BotApiClient::cleanEmoji(trim($message->getText())),
+        ]);
+
+        return $model->save();
     }
 }

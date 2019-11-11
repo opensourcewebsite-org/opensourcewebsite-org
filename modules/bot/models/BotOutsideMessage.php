@@ -1,7 +1,9 @@
 <?php
 
-namespace app\models;
+namespace app\modules\bot\models;
 
+use app\modules\bot\telegram\BotApiClient;
+use phpDocumentor\Reflection\Types\Self_;
 use yii\behaviors\TimestampBehavior;
 
 /**
@@ -103,8 +105,32 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
         return $this->hasOne(Bot::className(), ['id' => 'bot_id']);
     }
 
-    public function getHtmlMessage()
+    /**
+     * @param $botApi BotApiClient
+     *
+     * @return bool
+     */
+    public static function saveMessage($botApi)
     {
-        return "<div>{$this->message}</div>";
+        if (!$botApi->getMessage()) {
+            return false;
+        }
+
+        $text = BotApiClient::cleanEmoji(trim($botApi->getMessage()->getText()));
+
+        if (mb_strlen($text) == 0) {
+            return false;
+        }
+
+        $model = new self();
+        $model->setAttributes([
+            'bot_id' => $botApi->bot_id,
+            'bot_client_id' => $botApi->bot_client_id,
+            'type' => $botApi->type,
+            'provider_message_id' => $botApi->getMessage()->getMessageId(),
+            'message' => $text,
+        ]);
+
+        return $model->save();
     }
 }
