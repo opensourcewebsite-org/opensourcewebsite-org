@@ -1,15 +1,15 @@
 <?php
 
-namespace app\controllers\bot;
+namespace app\modules\bot\controllers;
 
-use app\components\BotCommandController;
+use app\modules\bot\CommandController;
 
 /**
- * Class HelpController
+ * Class StartController
  *
  * @package app\controllers\bot
  */
-class HelpController extends BotCommandController
+class StartController extends CommandController
 {
 
     /**
