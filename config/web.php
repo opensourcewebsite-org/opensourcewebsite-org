@@ -27,6 +27,9 @@ $config = [
         'comment' => [
             'class' => 'app\modules\comment\Module'
         ],
+        'bot' => [
+            'class' => 'app\modules\bot\Module'
+        ],
     ],
     'components' => [
         'assetManager' => [
@@ -150,6 +153,7 @@ $config = [
                 'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
                 'invite/<id>' => 'site/invite',
                 'webhook/telegram/<token>' => 'webhook/telegram',
+                'webhook/telegram-bot/<token>' => 'webhook/telegram-bot',
                 'website-settings' => 'setting/index',
                 'support-groups/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',
                 'support-groups/clients-list/<id:[\d]+>/<language:[\w]+>' => 'support-groups/clients-list',

@@ -1,23 +1,35 @@
-<?= \Yii::t('bot', 'Greetings!'); ?><br/>
+<?= Yii::t('bot', 'Welcome'); ?>!<br/>
 <br/>
-Я - бесплатный виртуальный персональный ассистент. Поддерживаю множество языков и доступен в любой точке планеты
-где есть интернет. Я гарантирую полную приватность и конфиденциальность ваших данных. Список моих возможностей
-и услуг постоянно расширяется, как и качество обслуживания.<br/>
+<?= Yii::t('bot', 'I am a free virtual personal assistant, multilingual and available everywhere where there is internet. I adhere to a privacy policy that guarantees 100% confidentiality for your data. The list of my features and services is constantly expanding, along with the service improvement.'); ?><br/>
 <br/>
-Мой код находится в открытом доступе и развивается в рамках глобального социального онлайн сообщества
-https://opensourcewebsite.org. Вы можете помочь проекту, участвуя в разработке и поддерживая пожертвованиями.<br/>
 <br/>
-Доступные возможности (бета тестирование):<br/>
-- Работа. Поиск работы и сотрудников по разным критериям и локациям в автоматическом режиме.<br/>
-- Объявления. Покупка, продажа, аренда, услуги по разным критериям и локациям в автотическом режиме.<br/>
+<?= Yii::t('bot', 'My code is open source and is part of a global social online community OpenSourceWebsite. You can help the project by participating in its development or supporting it with donations.'); ?> <?= Yii::t('bot', 'More information'); ?>: https://opensourcewebsite.org<br/>
 <br/>
-Скоро (в разработке):<br/>
-- Недвижимость. Покупка, продажа, аренда.<br/>
-- Знакомства. Поиск знакомств по разным критериям и локациям.<br/>
-- P2P обмен валют/криптовалют между пользователями.<br/>
-- Платные опросы от компаний для пользователей.<br/>
-- Персонализированная реклама/предложения от компаний для пользователей.<br/>
-- Споры на деньги между пользователями.<br/>
-- Клубы по интересам. Поиск единомышленников по разным критериям и локациям.<br/>
-- Совместные путешествия. Поиск попутчиков.<br/>
-- Информирование о важных событиях и интересных мероприятиях.<br/>
+<?= Yii::t('bot', 'Available features (beta testing)'); ?>:<br/>
+- <?= Yii::t('bot', 'Jobs. Automatic job and employee search based on different criteria and locations in automatic mode.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Ads. Buying, selling, renting, services by different criteria and locations in automatic mode.'); ?><br/>
+<br/>
+<br/>
+<?= Yii::t('bot', 'Coming soon (under development)'); ?>:<br/>
+- <?= Yii::t('bot', 'Real estates. Buying, selling, renting.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Dating. Search for new contacts based on different criteria and locations.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'P2P currency/cryptocurrency exchange between users.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Paid surveys from companies for users.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Personalized news.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Personalized advertising/offers from companies for users.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Money bets between users.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Anonymous lotteries.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Hobby clubs. Search for like-minded people by different criteria and locations.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Traveling together. Search for fellow travelers.'); ?><br/>
+<br/>
+- <?= Yii::t('bot', 'Informing about important events and interesting events.'); ?>.<br/>
