@@ -22,7 +22,7 @@ class m191021_071156_create_bot_outside_message_table extends Migration
             'type' => $this->tinyInteger()
                 ->unsigned()
                 ->notNull()
-                ->defaultValue(\app\models\BotOutsideMessage::TYPE_ORDINARY_TEXT),
+                ->defaultValue(\app\modules\bot\models\BotOutsideMessage::TYPE_ORDINARY_TEXT),
             'created_at' => $this->integer()->unsigned()->notNull(),
             'updated_at' => $this->integer()->unsigned(),
         ]);
