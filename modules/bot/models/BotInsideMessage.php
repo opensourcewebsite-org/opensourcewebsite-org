@@ -1,45 +1,46 @@
 <?php
 
-namespace app\models;
+namespace app\modules\bot\models;
 
+use app\modules\bot\Module;
+use app\modules\bot\telegram\BotApiClient;
+use TelegramBot\Api\Types\Message;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "support_group_outside_message".
+ * This is the model class for table "support_group_inside_message".
  *
  * @property int $id
  * @property int $bot_id
- * @property int $client_id
- * @property int $provider_message_id
+ * @property int $bot_client_id
  * @property int $provider_chat_id
  * @property string $message
- * @property int $type
  * @property int $created_at
- * @property int $updated_at
+ * @property int $created_by
  *
  * @property BotClient $botClient
  * @property Bot $bot
  */
-class BotOutsideMessage extends \yii\db\ActiveRecord
+class BotInsideMessage extends \yii\db\ActiveRecord
 {
-    const TYPE_ORDINARY_TEXT = 1;
-    const TYPE_COMMAND = 2;
-
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bot_outside_message';
+        return 'bot_inside_message';
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
+            ],
         ];
     }
 
@@ -49,8 +50,8 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['bot_id', 'bot_client_id', 'message', 'type'], 'required'],
-            [['bot_id', 'bot_client_id', 'provider_message_id', 'created_at', 'updated_at', 'type'], 'integer'],
+            [['bot_id', 'bot_client_id', 'message'], 'required'],
+            [['bot_id', 'bot_client_id', 'created_at', 'provider_chat_id'], 'integer'],
             [['message'], 'string'],
             [
                 ['bot_client_id'],
@@ -77,13 +78,11 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'bot_id' => 'Bot ID',
-            'bot_client_id' => 'Bot Client ID',
-            'provider_message_id' => 'Provider Message ID',
+            'bot_client_id' => 'Client ID',
             'provider_chat_id' => 'Provider Chat ID',
             'message' => 'Message',
-            'type' => 'Type',
             'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+
         ];
     }
 
@@ -103,8 +102,22 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
         return $this->hasOne(Bot::className(), ['id' => 'bot_id']);
     }
 
-    public function getHtmlMessage()
+    /**
+     * @param $message \app\modules\bot\telegram\Message
+     * @param $chatId int
+     *
+     * @return bool
+     */
+    public static function saveMessage($message, $chatId)
     {
-        return "<div>{$this->message}</div>";
+        $model = new self();
+        $model->setAttributes([
+            'bot_id' => Module::getInstance()->botApi->bot_id,
+            'bot_client_id' => Module::getInstance()->botApi->bot_client_id,
+            'provider_chat_id' => $chatId,
+            'message' => BotApiClient::cleanEmoji(trim($message->getText())),
+        ]);
+
+        return $model->save();
     }
 }

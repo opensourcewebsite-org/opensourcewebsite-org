@@ -3,7 +3,7 @@
 namespace app\commands;
 
 use yii\console\Controller;
-use app\models\Bot;
+use app\modules\bot\models\Bot;
 
 /**
  * Class BotController
@@ -14,6 +14,10 @@ class BotController extends Controller
 {
     /**
      * Enable all inactive bots
+     *
+     * @throws \TelegramBot\Api\Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionEnableAll()
     {
@@ -27,6 +31,21 @@ class BotController extends Controller
             }
         } else {
             echo "No inactive bots found.\n";
+        }
+    }
+
+    public function actionDisableAll()
+    {
+        /** @var null|Bot[] $bots */
+        $bots = Bot::find()->where(['status' => Bot::BOT_STATUS_ENABLED])->all();
+        if ($bots) {
+            foreach ($bots as $bot) {
+                if ($bot->deleteWebhook()) {
+                    echo "The bot {$bot->name} has been disabled\n";
+                }
+            }
+        } else {
+            echo "No active bots found.\n";
         }
     }
 

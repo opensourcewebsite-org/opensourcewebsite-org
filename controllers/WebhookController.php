@@ -2,14 +2,12 @@
 
 namespace app\controllers;
 
-use app\models\Bot;
-use app\models\BotOutsideMessage;
-use app\models\TelegramBotHandler;
 use Yii;
 use app\models\SupportGroupBotHandler;
 use app\models\SupportGroupBot;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use app\modules\bot\WebHookAction;
 
 /**
  * Class WebhookController
@@ -27,6 +25,13 @@ class WebhookController extends Controller
         $this->enableCsrfValidation = false;
 
         return parent::beforeAction($action);
+    }
+
+    public function actions()
+    {
+        return [
+            'telegram-bot' => WebHookAction::className(),
+        ];
     }
 
     /**
@@ -100,37 +105,5 @@ class WebhookController extends Controller
         }
 
         return $botApi->executeCommand();
-    }
-
-    /**
-     * @param Bot $botInfo
-     * @param array $postdata
-     *
-     * @return bool
-     * @throws \yii\db\Exception
-     */
-    protected function handleBot($botInfo, $postdata)
-    {
-        $result = false;
-        $botApi = new TelegramBotHandler($botInfo->token, $postdata);
-        $botApi->bot_id = $botInfo->id;
-
-        if (isset(Yii::$app->params['telegramProxy'])) {
-            $botApi->setProxy(Yii::$app->params['telegramProxy']);
-        }
-
-        if ($botApi->getMessage() && !$botApi->getMessage()->getFrom()->isBot()) {
-            $isCommand = (substr(trim($botApi->getMessage()->getText()), 0, 1) === '/');
-
-            $botApi->bot_client_id = $botApi->saveClientInfo();
-            $botApi->type = $isCommand ? BotOutsideMessage::TYPE_COMMAND
-                : BotOutsideMessage::TYPE_ORDINARY_TEXT;
-
-            if ($botApi->saveOutsideMessage()) {
-                $result = $botApi->dispatchCommand();
-            }
-        }
-
-        return $result;
     }
 }

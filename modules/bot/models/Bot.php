@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace app\modules\bot\models;
 
 use Yii;
 
@@ -78,11 +78,34 @@ class Bot extends \yii\db\ActiveRecord
             $botApi->setProxy(Yii::$app->params['telegramProxy']);
         }
 
-        $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram/' . $this->token]);
+        $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram-bot/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);
         $response = $botApi->setWebhook($url);
         if ($response) {
             $this->status = self::BOT_STATUS_ENABLED;
+            $this->update(false, ['status']);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     * @throws \TelegramBot\Api\Exception
+     * @throws \TelegramBot\Api\HttpException
+     * @throws \TelegramBot\Api\InvalidJsonException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function deleteWebhook()
+    {
+        $botApi = new \TelegramBot\Api\BotApi($this->token);
+        if (isset(Yii::$app->params['telegramProxy'])) {
+            $botApi->setProxy(Yii::$app->params['telegramProxy']);
+        }
+        $response = $botApi->call('deleteWebhook');
+        if ($response) {
+            $this->status = self::BOT_STATUS_DISABLED;
             $this->update(false, ['status']);
         }
 

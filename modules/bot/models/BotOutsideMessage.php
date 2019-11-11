@@ -1,43 +1,47 @@
 <?php
 
-namespace app\models;
+namespace app\modules\bot\models;
 
+use app\modules\bot\telegram\BotApiClient;
+use phpDocumentor\Reflection\Types\Self_;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "support_group_inside_message".
+ * This is the model class for table "support_group_outside_message".
  *
  * @property int $id
  * @property int $bot_id
- * @property int $bot_client_id
+ * @property int $client_id
+ * @property int $provider_message_id
  * @property int $provider_chat_id
  * @property string $message
+ * @property int $type
  * @property int $created_at
- * @property int $created_by
+ * @property int $updated_at
  *
  * @property BotClient $botClient
  * @property Bot $bot
  */
-class BotInsideMessage extends \yii\db\ActiveRecord
+class BotOutsideMessage extends \yii\db\ActiveRecord
 {
+    const TYPE_ORDINARY_TEXT = 1;
+    const TYPE_COMMAND = 2;
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bot_inside_message';
+        return 'bot_outside_message';
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function behaviors()
     {
         return [
-            'timestamp' => [
-                'class' => TimestampBehavior::className(),
-                'updatedAtAttribute' => false,
-            ],
+            TimestampBehavior::className(),
         ];
     }
 
@@ -47,8 +51,8 @@ class BotInsideMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['bot_id', 'bot_client_id', 'message'], 'required'],
-            [['bot_id', 'bot_client_id', 'created_at', 'updated_at', 'provider_chat_id'], 'integer'],
+            [['bot_id', 'bot_client_id', 'message', 'type'], 'required'],
+            [['bot_id', 'bot_client_id', 'provider_message_id', 'created_at', 'updated_at', 'type'], 'integer'],
             [['message'], 'string'],
             [
                 ['bot_client_id'],
@@ -75,11 +79,13 @@ class BotInsideMessage extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'bot_id' => 'Bot ID',
-            'bot_client_id' => 'Client ID',
+            'bot_client_id' => 'Bot Client ID',
+            'provider_message_id' => 'Provider Message ID',
             'provider_chat_id' => 'Provider Chat ID',
             'message' => 'Message',
+            'type' => 'Type',
             'created_at' => 'Created At',
-
+            'updated_at' => 'Updated At',
         ];
     }
 
@@ -94,8 +100,37 @@ class BotInsideMessage extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSupportGroupBot()
+    public function getBot()
     {
         return $this->hasOne(Bot::className(), ['id' => 'bot_id']);
+    }
+
+    /**
+     * @param $botApi BotApiClient
+     *
+     * @return bool
+     */
+    public static function saveMessage($botApi)
+    {
+        if (!$botApi->getMessage()) {
+            return false;
+        }
+
+        $text = BotApiClient::cleanEmoji(trim($botApi->getMessage()->getText()));
+
+        if (mb_strlen($text) == 0) {
+            return false;
+        }
+
+        $model = new self();
+        $model->setAttributes([
+            'bot_id' => $botApi->bot_id,
+            'bot_client_id' => $botApi->bot_client_id,
+            'type' => $botApi->type,
+            'provider_message_id' => $botApi->getMessage()->getMessageId(),
+            'message' => $text,
+        ]);
+
+        return $model->save();
     }
 }
