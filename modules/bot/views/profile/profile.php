@@ -1,3 +1,4 @@
+<b><?= \Yii::t('bot', 'Your profile') ?></b><br/><br/>
 <?php
 /** @var \TelegramBot\Api\Types\User $profile */
 if (!empty($profile->getFirstName())) {

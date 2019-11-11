@@ -4,9 +4,8 @@
 /** @var string $currentName */
 
 if ($languageModel) { ?>
-    <?= \Yii::t('bot', $languageModel->hasErrors() ? 'Sorry, it looks like something went wrong.'
-        : 'Language has been changed successfully') ?><br/>
+    <?= $languageModel->hasErrors() ? \Yii::t('bot', 'Sorry, it looks like something went wrong.') : NULL ?><br/>
 <?php } ?>
 
-<b><?= \Yii::t('bot', 'Language is now installed') ?></b><br/>
+<b><?= \Yii::t('bot', 'Your language') ?>:</b><br/>
 <?= $currentName ?> (<?= strtoupper($currentCode) ?>)
