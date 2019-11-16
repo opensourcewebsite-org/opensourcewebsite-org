@@ -49,7 +49,7 @@ class WebhookController extends Controller
 
                 $botInfo = SupportGroupBot::findOne(['token' => $token]);
                 if ($botInfo) {
-                    $result = $this->handleBot($botInfo, $postdata);
+                    $result = WebHookAction::handleBot($botInfo, $postdata);
                 } elseif ($botInfo = SupportGroupBot::findOne(['token' => $token])) {
                     $result = $this->handleSupportGroupBot($botInfo, $postdata);
                 } else {
