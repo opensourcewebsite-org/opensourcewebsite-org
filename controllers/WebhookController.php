@@ -49,8 +49,6 @@ class WebhookController extends Controller
 
                 $botInfo = SupportGroupBot::findOne(['token' => $token]);
                 if ($botInfo) {
-                    $result = WebHookAction::handleBot($botInfo, $postdata);
-                } elseif ($botInfo = SupportGroupBot::findOne(['token' => $token])) {
                     $result = $this->handleSupportGroupBot($botInfo, $postdata);
                 } else {
                     throw new NotFoundHttpException('The requested page does not exist.');
