@@ -47,7 +47,7 @@ class WebhookController extends Controller
             if ($postdata) {
                 $postdata = json_decode($postdata, true);
 
-                $botInfo = Bot::findOne(['token' => $token]);
+                $botInfo = SupportGroupBot::findOne(['token' => $token]);
                 if ($botInfo) {
                     $result = $this->handleBot($botInfo, $postdata);
                 } elseif ($botInfo = SupportGroupBot::findOne(['token' => $token])) {
