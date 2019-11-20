@@ -20,7 +20,7 @@ return [
     'Available features (beta testing)' => 'Доступные возможности (бета тестирование)',
     'Jobs. Automatic job and employee search based on different criteria and locations in automatic mode.' => 'Работа. Поиск работы и сотрудников по разным критериям и локациям в автоматическом режиме.',
     'Ads. Buying, selling, renting, services by different criteria and locations in automatic mode.' => 'Объявления. Покупка, продажа, аренда, услуги по разным критериям и локациям в автоматическом режиме.',
-    'Comig soon (under development)' => 'Скоро будет (в разработке)',
+    'Coming soon (under development)' => 'Скоро будет (в разработке)',
     'Real estates. Buying, selling, renting.' => 'Недвижимость. Покупка, продажа, аренда.',
     'Dating. Search for new contacts based on different criteria and locations.' => 'Знакомства. Поиск знакомств по разным критериям и локациям.',
     'P2P currency/cryptocurrency exchange between users.' => 'P2P обмен валют/криптовалют между пользователями.',
