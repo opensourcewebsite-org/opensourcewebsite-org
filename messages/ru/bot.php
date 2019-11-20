@@ -40,6 +40,8 @@ return [
     'Your Rating' => 'Ваш рейтинг',
     'Language' => 'Язык',
     'Your Language' => 'Ваш язык',
+    'Change Language' => 'Изменить язык',
     'Currency' => 'Валюта',
     'Your Currency' => 'Ваша валюта',
+    'Change Currency' => 'Изменить валюту',
 ];
