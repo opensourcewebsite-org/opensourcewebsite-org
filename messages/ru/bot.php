@@ -47,6 +47,6 @@ return [
     'Currency' => 'Валюта',
     'Your Currency' => 'Ваша валюта',
     'Change Currency' => 'Изменить валюту',
-    'How does your User Rating work?' => 'Как ваш пользовательский рейтинг работает?',
+    'How does your User Rating work?' => 'Как работает ваш пользовательский рейтинг?',
     'How to increase your User Rating?' => 'Как увеличить ваш пользовательский рейтинг?',
 ];
