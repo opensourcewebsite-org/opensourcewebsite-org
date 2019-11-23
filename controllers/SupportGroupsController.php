@@ -411,6 +411,11 @@ class SupportGroupsController extends Controller
                     }
                 }
             }
+            $command = new SupportGroupCommand();
+			$command->support_group_id = intval($model->id);
+			$command->command = '/start';
+			$command->is_default = 1;
+			$command->save(false);
 
             return $this->redirect(['index']);
         }
