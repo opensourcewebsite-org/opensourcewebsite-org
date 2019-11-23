@@ -52,9 +52,12 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
     </div>
 <?php ActiveForm::end(); ?>
 <script>
-  $(document).ready(function() {
+ $(document).ready(function() {
     $("#supportgroupcommandtext-text").emojioneArea({
-        pickerPosition: 'left'
+        pickerPosition: 'left',
+		 attributes: {
+		style: "resize: both;"
+    }
     });
   });
 </script>
