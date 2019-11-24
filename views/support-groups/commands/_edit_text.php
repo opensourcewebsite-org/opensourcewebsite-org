@@ -57,7 +57,7 @@ $(document).ready(function() {
     $(".supportgroupcommandtext-text").emojioneArea({
         pickerPosition: 'left',
 		attributes: {
-			style: "resize: both;"
+			style: "resize: vertical;"
 			}
     });
   });
