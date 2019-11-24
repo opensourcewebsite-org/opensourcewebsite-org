@@ -34,7 +34,7 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
                 </div>
                 <div class="modal-body text-left">
                     <?= $form->field(new SupportGroupCommandText(), 'text')->textarea([
-                        'value' => (!$textModel) ? '' : $textModel->text, 'rows' => 3,
+                        'value' => (!$textModel) ? '' : $textModel->text, 'rows' => 3, 'class' => 'supportgroupcommandtext-text'
                     ]) ?>
                     <?= $form->field(new SupportGroupCommandText(), 'language_code')
                         ->hiddenInput(['value' => $lang->language_code])
@@ -52,12 +52,15 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
     </div>
 <?php ActiveForm::end(); ?>
 <script>
+  $(document).ready(function() {
+    $(".supportgroupcommandtext-text").emojioneArea({
+        pickerPosition: 'left'
  $(document).ready(function() {
     $("#supportgroupcommandtext-text").emojioneArea({
         pickerPosition: 'left',
-		 attributes: {
-		style: "resize: both;"
-    }
+      attributes: {
+			style: "resize: both;"
+			}
     });
   });
 </script>
