@@ -92,7 +92,7 @@ class SupportGroupsController extends Controller
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
-        
+
         $user = User::find()
             ->joinWith('contact')
             ->andWhere(['status' => User::STATUS_ACTIVE])
@@ -400,12 +400,12 @@ class SupportGroupsController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-		/*Save commands*/
-			$command = new SupportGroupCommand();
-		    $command->support_group_id = intval($model->id);
-		    $command->command = '/start';
-		    $command->is_default = 1;
-		    $command->save(false);
+			      $command = new SupportGroupCommand();
+    		    $command->support_group_id = intval($model->id);
+    		    $command->command = '/start';
+    		    $command->is_default = 1;
+    		    $command->save(false);
+
             if (Model::loadMultiple($langs, Yii::$app->request->post()) && Model::validateMultiple($langs, ['language_code'])) {
                 unset($langs[0]);
                 foreach (Yii::$app->request->post('SupportGroupLanguage') as $i => $lang) {
@@ -414,12 +414,13 @@ class SupportGroupsController extends Controller
                         $model2->support_group_id = $model->id;
                         $model2->language_code = $lang['language_code'];
                         $model2->save(false);
-			/*Save welcome meassage */
-			$command_text = new SupportGroupCommandText();
-			$command_text->support_group_command_id = $command->id;
-			$command_text->language_code = $lang['language_code'];
-			$command_text->text = 'Welcome!';
-			$command_text->save(false);
+
+			                  /*Save welcome meassage */
+                  			$command_text = new SupportGroupCommandText();
+                  			$command_text->support_group_command_id = $command->id;
+                  			$command_text->language_code = $lang['language_code'];
+                  			$command_text->text = Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!';
+                  			$command_text->save(false);
                     }
                 }
             }
@@ -674,7 +675,7 @@ class SupportGroupsController extends Controller
 
         return $model;
     }
-    
+
     /**
      * Leave an existing SupportGroupMember model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
