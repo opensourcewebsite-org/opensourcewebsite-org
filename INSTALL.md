@@ -23,3 +23,19 @@ Web-server can be accessed at http://localhost:8000
 - Install php and composer
 - Run `php composer.phar install`
 - Run `php yii migrate`
+
+## Fixtures
+
+Fixtures are used to load pre-prepared data into the database.
+
+Attention! When loading fixtures, all current records from the database will be deleted!
+
+Loading fixtures:
+```
+php yii fixture/load "*"
+```
+
+Unloading fixtures:
+```
+php yii fixture/unload "*"
+```
