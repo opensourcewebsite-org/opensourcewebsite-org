@@ -28,20 +28,6 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
-## API Documentation
-
-Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
-
-## Installation
-
-#### Minimum technical requirements
-
-- [PHP 7.0](https://en.wikipedia.org/wiki/PHP)
-- [Yii 2](https://en.wikipedia.org/wiki/Yii)
-- [MySQL 5.7](https://en.wikipedia.org/wiki/MySQL)
-
-Please read through our [Installation Instructions](INSTALL.md).
-
 ## Contributors
 
 ### Code Contributors
@@ -71,6 +57,14 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/opensourcewebsite/organization/7/website"><img src="https://opencollective.com/opensourcewebsite/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/opensourcewebsite/organization/8/website"><img src="https://opencollective.com/opensourcewebsite/organization/8/avatar.svg"></a>
 <a href="https://opencollective.com/opensourcewebsite/organization/9/website"><img src="https://opencollective.com/opensourcewebsite/organization/9/avatar.svg"></a>
+
+## API Documentation
+
+Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
+
+## Installation
+
+Please read through our [Installation Instructions](INSTALL.md).
 
 ## License
 

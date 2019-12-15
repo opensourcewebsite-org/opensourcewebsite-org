@@ -1,5 +1,11 @@
 # Installation
 
+## Minimum technical requirements
+
+- [PHP 7.2](https://en.wikipedia.org/wiki/PHP)
+- [Yii 2](https://en.wikipedia.org/wiki/Yii)
+- [MySQL 5.7](https://en.wikipedia.org/wiki/MySQL)
+
 ## General setup
 
 - Copy file `.env.dist` to `.env` in the root directory
@@ -16,7 +22,7 @@
 
 Web-server can be accessed at http://localhost:8000
 
-#### Without docker
+#### Without Docker
 
 - Create a new MySQL database with an "utf8mb4_unicode_ci" collation
 - Setup your web-server root folder to `web`
@@ -26,7 +32,9 @@ Web-server can be accessed at http://localhost:8000
 
 ## Fixtures
 
-Fixtures are used to load pre-prepared data into the database.
+Fixtures are used to load a "fake" set of data into a database that can then be used for testing or to help give you some interesting data while you're developing your application.
+
+After loading fixtures, will be available [user login credentials](tests/fixtures/data/user.php).
 
 Attention! When loading fixtures, all current records from the database will be deleted!
 
