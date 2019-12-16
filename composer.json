@@ -1,41 +1,38 @@
 {
-    "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Project Template",
+    "name": "opensourcewebsite-org",
+    "description": "OpenSourceWebsite Core",
     "keywords": [
+        "osw",
+        "opensourcewebsite",
         "yii2",
-        "framework",
-        "basic",
-        "project template"
+        "php"
     ],
-    "homepage": "http://www.yiiframework.com/",
+    "homepage": "https://opensourcewebsite.org",
     "type": "project",
-    "license": "BSD-3-Clause",
+    "license": "MIT",
     "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
+        "issues": "https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?state=open",
+        "source": "https://github.com/opensourcewebsite-org/opensourcewebsite-org"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.2",
         "ext-json": "*",
-        "yiisoft/yii2": "~2.0.16",
+        "yiisoft/yii2": "~2.0.30",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "npm-asset/font-awesome" : "5.2",
-        "almasaeed2010/adminlte": "^3.0",
+        "almasaeed2010/adminlte": "^3.0.1",
         "cebe/yii2-gravatar": "^1.1",
         "vlucas/phpdotenv": "^2.5",
-        "brussens/yii2-maintenance-mode": "*",
-        "kartik-v/yii2-widget-select2": "@dev",
+        "brussens/yii2-maintenance-mode": "^0.2",
+        "kartik-v/yii2-widget-select2": "^2.1",
         "npm-asset/ace-builds": "^1.4.1",
         "yiisoft/yii2-httpclient": "~2.0.0",
         "telegram-bot/api": "^2.3",
-        "kartik-v/yii2-widget-datepicker": "@dev",
-        "janisto/yii2-timepicker": "*"
+        "kartik-v/yii2-widget-datepicker": "^1.4",
+        "janisto/yii2-timepicker": "^1.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
