@@ -77,21 +77,6 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-    public function actionParticipation()
-    {
-        return $this->render('participation');
-    }
-
-    public function actionDonate()
-    {
-        return $this->render('donate');
-    }
-
-    public function actionTeam()
-    {
-        return $this->render('team');
-    }
-
     public function actionTermsOfUse()
     {
         return $this->render('terms-of-use');
@@ -106,12 +91,6 @@ class SiteController extends Controller
     {
         return $this->render('road-map');
     }
-
-    public function actionTechnologies()
-    {
-        return $this->render('technologies');
-    }
-
 
     /**
      * Logs in a user.

@@ -144,6 +144,12 @@ These TOS supersede all previous agreements, understandings, and arrangements be
 These TOS are in the English language only, which language shall be controlling in all respects, and all versions of this Agreement in any other language shall be for accommodation only and shall not be binding.
 </p>
 
+<h4>Non-discrimination Policy</h4>
+
+<p>
+OSW does not promote or discriminate against any person, population group, or organization with regard to categories protected by international law, as well as other categories identified by OSW in alignment with our own Human Resources policies. These include, but are not limited to race, color, ancestry, religion, sex, sexual orientation, gender expression, physical appearance, citizenship, marital status, language, education background, national origin, age, disability, and veteran status. We also consider qualified applicants regardless of criminal histories, consistent with legal requirements.
+</p>
+
 <h4>Notification Of Possible Copyright Infringement</h4>
 
 <p>
