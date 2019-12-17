@@ -143,8 +143,9 @@ use yii\helpers\Html;
 
 <h4><?= Yii::t('app', 'Technologies We Use') ?></h4>
 <p>
-    <?= Html::a('AdminLTE Control Panel Template', 'https://adminlte.io') ?>,
+    <?= Html::a('AdminLTE 3 Admin Dashboard Template', 'https://github.com/ColorlibHQ/AdminLTE') ?>,
     <?= Html::a('Bootstrap 4', 'https://en.wikipedia.org/wiki/Bootstrap_(front-end_framework)') ?>,
+    <?= Html::a('Composer', 'https://en.wikipedia.org/wiki/Composer_(software)') ?>,
     <?= Html::a('CSS 3', 'https://en.wikipedia.org/wiki/Cascading_Style_Sheets') ?>,
     <?= Html::a('Font Awesome 5', 'https://en.wikipedia.org/wiki/Font_Awesome') ?>,
     <?= Html::a('Git', 'https://en.wikipedia.org/wiki/Git') ?>,
@@ -156,9 +157,10 @@ use yii\helpers\Html;
     <?= Html::a('Nginx', 'https://en.wikipedia.org/wiki/Nginx') ?>,
     <?= Html::a('OpenAPI', 'https://en.wikipedia.org/wiki/OpenAPI_Specification') ?>,
     <?= Html::a('PHP 7', 'https://en.wikipedia.org/wiki/PHP') ?>,
-    <?= Html::a('Yii 2 PHP Framework', 'https://en.wikipedia.org/wiki/Yii') ?>,
+    <?= Html::a('React.js JavaScript Framework', 'https://en.wikipedia.org/wiki/React_(web_framework)') ?>,
+    <?= Html::a('Ubuntu', 'https://en.wikipedia.org/wiki/Ubuntu') ?>,
     <?= Html::a('Vue.js 2 JavaScript Framework', 'https://en.wikipedia.org/wiki/Vue.js') ?>,
-    <?= Html::a('Ubuntu', 'https://en.wikipedia.org/wiki/Ubuntu') ?>.
+    <?= Html::a('Yii 2 PHP Framework', 'https://en.wikipedia.org/wiki/Yii') ?>.
 </p>
 
 <h4><?= Yii::t('app', 'Web Services We Use') ?></h4>
