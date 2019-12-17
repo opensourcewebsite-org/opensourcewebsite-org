@@ -83,6 +83,14 @@ use yii\helpers\Html;
     <?= Html::a('Wisdom of the crowd', 'https://en.wikipedia.org/wiki/Wisdom_of_the_crowd') ?>.
 </p>
 
+<h4><?= Yii::t('app', 'Our Plans') ?></h4>
+<p>
+    <ul>
+        <li><?= Html::a(Yii::t('app', 'Road Map'), ['site/road-map']) ?></li>
+    </ul>
+</p>
+
+
 <h4><?= Yii::t('app', 'Membership & Loyalty Program') ?></h4>
 <p><?= Yii::t('app', 'User Rating provides') ?>:</p>
 <p>
@@ -115,6 +123,7 @@ use yii\helpers\Html;
     <ul>
         <li><?= Html::a('How to Contribute', 'https://opensource.guide/how-to-contribute/') ?></li>
         <li><?= Html::a('Contributing Guidelines', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md') ?></li>
+        <li><?= Html::a('Code of Conduct', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md') ?></li>
     </ul>
 </p>
 
