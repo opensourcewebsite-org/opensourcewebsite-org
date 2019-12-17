@@ -135,6 +135,7 @@ use yii\helpers\Html;
 <p>
     <ul>
         <li>Processing with <?= Html::a('Open Collective', 'https://opencollective.com/opensourcewebsite') ?>.</li>
+        <li>Processing with <?= Html::a('Yandex.Money', 'https://money.yandex.ru/to/4100111248401133') ?>.</li>
         <li>Processing credit cards and PayPal with <?= Html::a('PayPal.Me', 'https://paypal.me/opensourcewebsite') ?>.</li>
         <li>Processing 50+ cryptocurrencies with <?= Html::a('CoinGate.com', 'https://coingate.com/pay/opensourcewebsite') ?>.</li>
         <li>Processing 4 cryptocurrencies with <?= Html::a('Coinbase.com', 'https://commerce.coinbase.com/checkout/e89005ec-c8c2-47c1-9ca4-b1deb9992794') ?>.<//li>
