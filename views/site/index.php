@@ -69,6 +69,7 @@ use yii\helpers\Html;
     <?= Html::a('Openness', 'https://en.wikipedia.org/wiki/Openness') ?>,
     <?= Html::a('Participatory democracy', 'https://en.wikipedia.org/wiki/Participatory_democracy') ?>,
     <?= Html::a('Participatory monitoring', 'https://en.wikipedia.org/wiki/Participatory_monitoring') ?>,
+    <?= Html::a('Posthumanism', 'https://en.wikipedia.org/wiki/Posthumanism') ?>,
     <?= Html::a('Public participation', 'https://en.wikipedia.org/wiki/Public_participation') ?>,
     <?= Html::a('Privacy', 'https://en.wikipedia.org/wiki/Privacy') ?>,
     <?= Html::a('Radical transparency', 'https://en.wikipedia.org/wiki/Radical_transparency') ?>,

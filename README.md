@@ -1,5 +1,6 @@
-[![Financial Contributors on Open Collective](https://opencollective.com/opensourcewebsite/all/badge.svg?label=financial+contributors)](https://opencollective.com/opensourcewebsite) ![Website](https://img.shields.io/website/https/opensourcewebsite.org)
-![License](https://img.shields.io/github/license/opensourcewebsite-org/opensourcewebsite-org)
+[![Home](https://img.shields.io/badge/home-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
+[![Telegram Bot](https://img.shields.io/badge/telegram-bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
+![License](https://img.shields.io/github/license/opensourcewebsite-org/opensourcewebsite-org?style=flat-square)
 [![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com)
 [![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
 
@@ -11,6 +12,10 @@
 [![Coverage Status](https://coveralls.io/repos/github/opensourcewebsite-org/opensourcewebsite-org/badge.svg?branch=master)](https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org?branch=master)
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=OpenSourceWebsite%20(OSW)%20is%20open%20source%20website%20for%20global%20online%20social%20community&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource)
+[![Chat on Slack](https://img.shields.io/badge/slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
+[![Chat on Gitter](https://img.shields.io/badge/gitter-chat-CC2B5E.svg?style=flat-square&logo=gitter)](https://gitter.im/opensourcewebsite-org)
+
+[![Financial Contributors on Open Collective](https://opencollective.com/opensourcewebsite/all/badge.svg?label=financial+contributors)](https://opencollective.com/opensourcewebsite)
 
 <h1 align="center">OpenSourceWebsite</h1>
 
