@@ -1,7 +1,7 @@
 version: '2'
 services:
   php:
-    image: yiisoftware/yii2-php:7.1-apache
+    image: yiisoftware/yii2-php:7.2-apache
     volumes:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       - ./:/app:delegated
