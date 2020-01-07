@@ -188,7 +188,7 @@ use yii\helpers\Html;
 </p>
 
 <p>
-    <?= Yii::t('app', 'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas') ?>: open source development, open data, editorial and translation work, UI/UX web design, social media and communications. <?= Yii::t('app', 'Read more') ?>:
+    <?= Yii::t('app', 'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas') ?>: open source development, open data, editorial and translation work, UI/UX web design, social media and communications.
 </p>
 <p>
     <ul>
