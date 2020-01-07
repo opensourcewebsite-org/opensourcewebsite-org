@@ -21,10 +21,6 @@
 
 OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on https://opensourcewebsite.org
 
-## Roadmap
-
-The future plans, high priority features and enhancements can be found in the [ROADMAP](ROADMAP.md).
-
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).

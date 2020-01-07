@@ -6,13 +6,20 @@ use yii\helpers\Html;
 
 ?>
 
-<h4><?= Yii::t('app', 'Who We Are') ?></h4>
+<h1 align="center">OpenSourceWebsite</h1>
+<h2 align="center"><?= Yii::t('app', 'online community') ?></h2>
+
+<h4><?= Yii::t('app', 'How It Works') ?></h4>
 <p>
-    OpenSourceWebsite (OSW) <?= Yii::t('app', 'is open source website for global online social community') ?>. <?= Yii::t('app', 'The Website is free to use for everyone') ?>. <?= Yii::t('app', 'The Website is managed by users') ?>. <?= Yii::t('app', 'The Website will look like and what functions it will have depends on users’ decisions') ?>. <?= Yii::t('app', 'The Website is updated after each code change') ?>. <?= Yii::t('app', 'So everyone can influence how the Website works') ?>.
+  OpenSourceWebsite (OSW) <?= Yii::t('app', 'means that the users are the protagonists of the entire Website') ?>.
 </p>
 
 <p>
-  <?= Yii::t('app', 'The Website exists and succeeds because of the commitments and contributions of our community') ?>. <?= Yii::t('app', 'We would like to thank everyone who participates in the development and growth of this Website') ?>. <?= Yii::t('app', 'We had greatly appreciate input from the community on this') ?>.
+  <?= Yii::t('app', 'The Website is totally free, and it gives to everyone the possibility to influence in a lot of different ways its development') ?>. <?= Yii::t('app', 'Through the use of e-Vote system, each user has the possibility to vote electronically for the features of the Website, with high levels of anonymity, safety and the congruity of personal preferences') ?>.
+</p>
+
+<p>
+  <?= Yii::t('app', 'The Website exists and succeeds because of the commitments and contributions of our community') ?>. <?= Yii::t('app', 'We would like to thank everyone who participates in the development and growth of the Website') ?>. <?= Yii::t('app', 'We had greatly appreciate input from the community on this') ?>.
 </p>
 
 <h4><?= Yii::t('app', 'Our Mission & Vision') ?></h4>
@@ -84,21 +91,69 @@ use yii\helpers\Html;
     <?= Html::a('Wisdom of the crowd', 'https://en.wikipedia.org/wiki/Wisdom_of_the_crowd') ?>.
 </p>
 
-<h4><?= Yii::t('app', 'Our Plans') ?></h4>
+<h4><?= Yii::t('app', 'Features & Plans') ?></h4>
 <p>
+    <b>Economics</b>
     <ul>
-        <li><?= Html::a(Yii::t('app', 'Road Map'), ['site/road-map']) ?></li>
+        <li>International money transfers</li>
+        <li>Crowdfunding</li>
+        <li>Work and personnel search</li>
+        <li>Freelance marketplace</li>
+        <li>Sharing and collaborative consumption</li>
+        <li>Real-estate marketplace</li>
+        <li>Advertising platform</li>
+        <li>Currencies monitoring</li>
+        <li>Local exchange of fiat and electronic currencies</li>
     </ul>
 </p>
 
+<p>
+    <b>Personal interests and hobbies</b>
+    <ul>
+        <li>Genealogy and genealogical tree</li>
+        <li>Food delivery</li>
+        <li>Hotel, Hospitality and B&B</li>
+        <li>Medicine and Health</li>
+        <li>Sport and Fitness</li>
+        <li>Inventory and reviews of books and films</li>
+    </ul>
+</p>
+
+<p>
+    <b>Technical</b>
+    <ul>
+        <li>Custom database and storage</li>
+        <li>OAuth</li>
+        <li>API documentation service</li>
+        <li>Open Data Aggregator</li>
+        <li>API services directory</li>
+        <li>Medicine and Health</li>
+        <li>Sport and Fitness</li>
+        <li>Inventory and reviews of books and films</li>
+        <li>Local exchange of fiat and electronic currencies</li>
+        <li>Crowdfunding</li>
+    </ul>
+</p>
+
+<p>
+    <b>Social</b>
+    <ul>
+        <li>Social networking</li>
+        <li>Dating</li>
+        <li>Blogs</li>
+        <li>Forums</li>
+        <li>Services for digital nomads</li>
+        <li>Global catalog for commercial companies, non-profit companies, for charitable foundations.</li>
+    </ul>
+</p>
 
 <h4><?= Yii::t('app', 'Membership & Loyalty Program') ?></h4>
 <p><?= Yii::t('app', 'User Rating provides') ?>:</p>
 <p>
     <ul>
-        <li><?= Yii::t('app', 'The power of user vote when voting for new features or changing existing features of this Website') ?>.</li>
-        <li><?= Yii::t('app', 'More opportunities and removing limits when user uses of this Website') ?>.</li>
-        <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of this Website, which is distributed proportionally among all users in accordance with the value of their User Ratings') ?>.</li>
+        <li><?= Yii::t('app', 'The power of user vote when voting for new features or changing existing features of the Website') ?>.</li>
+        <li><?= Yii::t('app', 'More opportunities and removing limits when user uses of the Website') ?>.</li>
+        <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of the Website, which is distributed proportionally among all users in accordance with the value of their User Ratings') ?>.</li>
     </ul>
 </p>
 
@@ -112,9 +167,24 @@ use yii\helpers\Html;
 </p>
 <p><?= Yii::t('app', 'Soon the loyalty program will be significantly increased and new bonuses will be added') ?>.</p>
 
+<h4><?= Yii::t('app', 'Donate & Crowdfunding') ?></h4>
+<p>
+    <?= Yii::t('app', 'Your donations increase your User Rating on the Website') ?>.
+</p>
+
+<p>
+    <ul>
+        <li>Processing with <?= Html::a('Open Collective', 'https://opencollective.com/opensourcewebsite') ?>.</li>
+        <li>Processing with <?= Html::a('Yandex.Money', 'https://money.yandex.ru/to/4100111248401133') ?>.</li>
+        <li>Processing credit cards and PayPal with <?= Html::a('PayPal.Me', 'https://paypal.me/opensourcewebsite') ?>.</li>
+        <li>Processing 50+ cryptocurrencies with <?= Html::a('CoinGate.com', 'https://coingate.com/pay/opensourcewebsite') ?>.</li>
+        <li>Processing 4 cryptocurrencies with <?= Html::a('Coinbase.com', 'https://commerce.coinbase.com/checkout/e89005ec-c8c2-47c1-9ca4-b1deb9992794') ?>.<//li>
+    </ul>
+</p>
+
 <h4><?= Yii::t('app', 'Contribution') ?></h4>
 <p>
-    <?= Yii::t('app', 'Your contribution increase your User Rating on this Website') ?>.
+    <?= Yii::t('app', 'Your contributions increase your User Rating on the Website') ?>.
 </p>
 
 <p>
@@ -125,21 +195,6 @@ use yii\helpers\Html;
         <li><?= Html::a('How to Contribute', 'https://opensource.guide/how-to-contribute/') ?></li>
         <li><?= Html::a('Contributing Guidelines', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md') ?></li>
         <li><?= Html::a('Code of Conduct', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md') ?></li>
-    </ul>
-</p>
-
-<h4><?= Yii::t('app', 'Donate & Crowdfunding') ?></h4>
-<p>
-    <?= Yii::t('app', 'Your donations increase your User Rating on this Website') ?>.
-</p>
-
-<p>
-    <ul>
-        <li>Processing with <?= Html::a('Open Collective', 'https://opencollective.com/opensourcewebsite') ?>.</li>
-        <li>Processing with <?= Html::a('Yandex.Money', 'https://money.yandex.ru/to/4100111248401133') ?>.</li>
-        <li>Processing credit cards and PayPal with <?= Html::a('PayPal.Me', 'https://paypal.me/opensourcewebsite') ?>.</li>
-        <li>Processing 50+ cryptocurrencies with <?= Html::a('CoinGate.com', 'https://coingate.com/pay/opensourcewebsite') ?>.</li>
-        <li>Processing 4 cryptocurrencies with <?= Html::a('Coinbase.com', 'https://commerce.coinbase.com/checkout/e89005ec-c8c2-47c1-9ca4-b1deb9992794') ?>.<//li>
     </ul>
 </p>
 
@@ -172,7 +227,7 @@ use yii\helpers\Html;
     <?= Html::a('CodeClimate.com', 'https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org') ?>,
     <?= Html::a('Codecov.io', 'https://codecov.io/gh/opensourcewebsite-org/opensourcewebsite-org') ?>,
     <?= Html::a('Cloudflare.com', 'https://cloudflare.com') ?>,
-    <?= Html::a('Coveralls.io', 'https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org') ?>
+    <?= Html::a('Coveralls.io', 'https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org') ?>,
     <?= Html::a('DigitalOcean.com', 'https://m.do.co/c/4d16b1d56809') ?>,
     <?= Html::a('GitHub.com', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>,
     <?= Html::a('Moqups.com', 'https://app.moqups.com/LMtjCISodJ/view/page/ad2542407') ?>,
@@ -181,6 +236,6 @@ use yii\helpers\Html;
     <?= Html::a('Travis-CI.org', 'https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org') ?>.
 </p>
 
-<p>
+<p align="center">
     <b><?= Yii::t('app', 'Join to Us') ?>!</b>
 </p>
