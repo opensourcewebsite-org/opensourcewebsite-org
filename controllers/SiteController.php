@@ -54,6 +54,28 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
+    public function beforeAction($action)
+    {
+        if (in_array($action->id, ['hook'])) {
+            $this->enableCsrfValidation = false;
+        }
+
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        if (Yii::$app->user->isGuest) {
+            $this->layout = 'adminlte-guest';
+        } else {
+            $this->layout = 'adminlte-main';
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function actions()
     {
         return [
@@ -124,7 +146,7 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->redirect(['site/login']);
     }
 
     /**
@@ -149,7 +171,7 @@ class SiteController extends Controller
                         $user->sendConfirmationEmail($user);
                         Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
 
-                        return $this->goHome();
+                        return $this->redirect(['site/account']);
                     }
                 }
             }
@@ -176,7 +198,7 @@ class SiteController extends Controller
                 if ($model->sendEmail()) {
                     Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
 
-                    return $this->goHome();
+                    return $this->redirect(['site/login']);
                 }
 
                 $model->addError('email', 'Sorry, we are unable to reset password for the provided email address.');
@@ -207,7 +229,7 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
             Yii::$app->session->setFlash('success', 'New password saved.');
 
-            return $this->goHome();
+            return $this->redirect(['site/login']);
         }
 
         return $this->render('resetPassword', [
@@ -219,6 +241,7 @@ class SiteController extends Controller
     {
         $model = Yii::$app->user->identity;
         $totalRating = Rating::getTotalRating();
+
         return $this->render('account', ['model' => $model, 'totalRating' => $totalRating]);
     }
 
@@ -251,7 +274,7 @@ class SiteController extends Controller
             Yii::$app->session->setFlash('warning', 'There was an error validating your email, please try again.');
         }
 
-        return $this->goHome();
+        return $this->redirect(['site/login']);
     }
 
     public function actionResendConfirmationEmail()
@@ -303,28 +326,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Do tasks before the action is executed
-     */
-    public function beforeAction($action)
-    {
-        if (in_array($action->id, ['hook'])) {
-            $this->enableCsrfValidation = false;
-        }
-
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-
-        if (Yii::$app->user->isGuest) {
-            $this->layout = 'adminlte-guest';
-        } else {
-            $this->layout = 'adminlte-main';
-        }
-
-        return true;
-    }
-
-    /**
      * Store Referrer ID in Cookies for future user
      *
      * @param $id
@@ -347,6 +348,6 @@ class SiteController extends Controller
             }
         }
 
-        return $this->redirect(['index']);
+        return $this->goHome();
     }
 }
