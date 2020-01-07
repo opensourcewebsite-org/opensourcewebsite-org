@@ -57,36 +57,6 @@ $currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
 <body class="sidebar-collapse">
 <?php
 $this->beginBody();
-Modal::begin([
-    'id' => 'main-modal',
-    'size' => Modal::SIZE_LARGE,
-    'closeButton' => false,
-    'clientEvents' => [
-        'show.bs.modal' => 'function (e) {
-            $("#main-modal").addClass("show");
-        }',
-        'hide.bs.modal' => 'function (e) {
-            $("#main-modal").removeClass("show");
-        }',
-    ],
-    'footer' => Html::button(Yii::t('app', 'Close'), [
-        'class' => 'btn btn-default',
-        'data-dismiss' => 'modal',
-    ])
-    . Html::button(Yii::t('app', 'Submit'), [
-        'class' => 'btn btn-primary',
-        'onclick' => 'var data = $("#main-modal-body").find("form").serialize();'
-            . 'var target = $("#main-modal-header").data("target");'
-            . '$.post(target, {"data":data}, function (result){
-                $("#main-modal-body").html(result);
-            })'
-    ]),
-    'options' => ['class' => 'card-primary'],
-    'header' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
-    'headerOptions' => ['class' => 'card-header'],
-    'bodyOptions' => ['id' => 'main-modal-body'],
-]);
-Modal::end();
 ?>
 <div class="wrapper">
     <?php
@@ -98,22 +68,16 @@ Modal::end();
     ]);
 
     $menuItemsLeft[] = ['label' => 'OpenSourceWebsite', 'url' => Yii::$app->homeUrl, 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
-    $menuItemsRight[] = ['label' => 'Signup', 'url' => '#', 'options'=>['class'=>'nav-item'], 'linkOptions'=>[
-        'class'=>'nav-link',
-        'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['site/signup']) .'", {}, function (result){
-            $("#main-modal-body").html(result);
-            $("#main-modal-header").html("' . Yii::t('app', 'Signup') . '").data("target", "' . Yii::$app->urlManager->createUrl(['site/signup']) . '");
-            $("#main-modal").modal("show");
-        })',
-    ]];
-    $menuItemsRight[] = ['label' => 'Login', 'url' => '#', 'options'=>['class'=>'nav-item'], 'linkOptions'=>[
-        'class'=>'nav-link',
-        'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['site/login']) .'", {}, function (result){
-            $("#main-modal-body").html(result);
-            $("#main-modal-header").html("' . Yii::t('app', 'Login') . '").data("target", "' . Yii::$app->urlManager->createUrl(['site/login']) . '");
-            $("#main-modal").modal("show");
-        })',
-    ]];
+
+    $menuItemsRight[] = [
+        'label' => Html::tag('span', '<i class="fas fa-globe"></i>'),
+        'items' => $langOpt,
+        'encode' => FALSE,
+        'dropDownOptions' => ['id' => 'lang-menu'],
+        'options' => ['class' => 'nav-item'],
+        'linkOptions' => ['class' => 'nav-link'],
+    ];
+    $menuItemsRight[] = ['label' => 'Account', 'url' => Yii::$app->urlManager->createUrl(['site/login']), 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link',]];
 
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
@@ -172,8 +136,8 @@ Modal::end();
             <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
             <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
             <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-            <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
-            <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
+            <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use'], ['target' => '_blank']) ?> |
+            <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy'], ['target' => '_blank']) ?>
     </footer>
 </div>
 <?php $this->endBody() ?>

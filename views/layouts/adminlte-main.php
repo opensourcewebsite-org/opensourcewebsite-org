@@ -308,8 +308,8 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
                     <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
                     <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-                    <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use']) ?> |
-                    <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy']) ?>
+                    <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use'], ['target' => '_blank']) ?> |
+                    <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy'], ['target' => '_blank']) ?>
             </footer>
         </div>
         <?php $this->endBody() ?>

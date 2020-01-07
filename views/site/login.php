@@ -22,25 +22,23 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
             <div class="card-body">
-                <p>Please fill out the following fields to login:</p>
                 <div class="form-group">
                     <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
                 </div>
                 <div class="form-group">
                     <?= $form->field($model, 'password')->passwordInput() ?>
                 </div>
-                <div class="form-group">
-                    <?= $form->field($model, 'rememberMe')->checkbox() ?>
-                </div>
 
-                <div style="color:#999;margin:1em 0">
-                    If you forgot your password you can <?= Html::a('reset it', '#', [
-                    'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['site/request-password-reset']) .'", {}, function (result){
-                        $("#main-modal-body").html(result);
-                        $("#main-modal-header").html("' . Yii::t('app', 'Request password reset') . '").data("target", "' . Yii::$app->urlManager->createUrl(['site/request-password-reset']) . '");
-                        $("#main-modal").modal("show");
-                    })'
-                ]) ?>.
+                <div>
+                    <p>
+                        If you forgot your password you can <?= Html::a(Yii::t('app', 'Restore password'), ['site/request-password-reset']) ?>.
+                    </p>
+                    <p>
+                        If you dont have an account you can <?= Html::a(Yii::t('app', 'Signup'), ['site/signup']) ?>.
+                    </p>
+                    <p>
+                        By continuing, you agree to our <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use'], ['target' => '_blank']) ?> and <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy'], ['target' => '_blank']) ?>.
+                    </p>
                 </div>
             </div>
 
