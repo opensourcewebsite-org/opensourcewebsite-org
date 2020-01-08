@@ -34,19 +34,16 @@ if (!empty($languages)) {
     foreach ($languages as $lang) {
         //Check if the language is the active
         $active = ($lang->code == Yii::$app->language) ? 'active' : '';
-        $langOpt[] = ['label'=>Yii::t('language', $lang->name_ascii), 'url'=>['site/change-language', 'lang'=>$lang->code], 'options'=>['class'=>$active]];
+        $langOpt[] = ['label'=>Yii::t('language', $lang->name_ascii), 'url'=>Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]), 'options'=>['class'=>$active]];
     }
 }
 
-$currentUrl = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
+$currentUrl = Yii::$app->controller->id.'/' . Yii::$app->controller->action->id;
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" style="font-size: 14px">
 <head>
-    <?php if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'analytics.php')) {
-        echo $this->render('analytics');
-    } ?>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -70,7 +67,7 @@ $this->beginBody();
     $menuItemsLeft[] = ['label' => 'OpenSourceWebsite', 'url' => Yii::$app->homeUrl, 'options'=>['class'=>'nav-item'], 'linkOptions'=>['class'=>'nav-link']];
 
     $menuItemsRight[] = [
-        'label' => Html::tag('span', '<i class="fas fa-globe"></i>'),
+        'label' => Html::tag('span', strtoupper(Yii::$app->language)),
         'items' => $langOpt,
         'encode' => FALSE,
         'dropDownOptions' => ['id' => 'lang-menu'],
@@ -135,9 +132,7 @@ $this->beginBody();
             <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
             <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
             <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
-            <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-            <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use'], ['target' => '_blank']) ?> |
-            <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy'], ['target' => '_blank']) ?>
+            <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
     </footer>
 </div>
 <?php $this->endBody() ?>

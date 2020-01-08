@@ -19,7 +19,6 @@ use yii\db\Query;
 
 class MoqupController extends Controller
 {
-
     /**
      * {@inheritdoc}
      */
@@ -56,7 +55,7 @@ class MoqupController extends Controller
             ],
         ];
     }
-    
+
     /**
      * Shows a list of the registered moqups
      */
@@ -85,7 +84,7 @@ class MoqupController extends Controller
 
         $maxMoqupSetting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
         $maxMoqupValue = $maxMoqupSetting->value;
-        
+
         return $this->render('design-list', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -105,9 +104,9 @@ class MoqupController extends Controller
         if ($moqup == null) {
             return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
         }
-        
+
         $css = $moqup->css;
-        
+
         return $this->render('design-view', ['moqup' => $moqup, 'css' => $css]);
     }
 
@@ -126,7 +125,7 @@ class MoqupController extends Controller
             $css = new Css;
         } else if ($id == null && $fork != null) {
             $origin = Moqup::findOne($fork);
-            
+
             if ($origin == null || Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
                 return $this->redirect(Yii::$app->request->referrer ?: ['moqup/design-list']);
             }
@@ -244,10 +243,9 @@ class MoqupController extends Controller
         if (Yii::$app->user->isGuest) {
             $this->layout = 'adminlte-guest';
         } else {
-            $this->layout = 'adminlte-main';
+            $this->layout = 'adminlte-user';
         }
 
         return true;
     }
-
 }

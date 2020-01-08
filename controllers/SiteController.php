@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-use app\components\helpers\ReferrerHelper;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\Rating;
@@ -67,7 +66,7 @@ class SiteController extends Controller
         if (Yii::$app->user->isGuest) {
             $this->layout = 'adminlte-guest';
         } else {
-            $this->layout = 'adminlte-main';
+            $this->layout = 'adminlte-user';
         }
 
         return true;
@@ -90,26 +89,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
-
-    public function actionTermsOfUse()
-    {
-        return $this->render('terms-of-use');
-    }
-
-    public function actionPrivacyPolicy()
-    {
-        return $this->render('privacy-policy');
-    }
-
-    /**
      * Logs in a user.
      *
      * @return mixed
@@ -117,7 +96,7 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['site/account']);
         }
 
         $model = new LoginForm();
@@ -157,7 +136,7 @@ class SiteController extends Controller
     public function actionSignup()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['site/account']);
         }
 
         $model = new SignupForm();
@@ -171,7 +150,7 @@ class SiteController extends Controller
                         $user->sendConfirmationEmail($user);
                         Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
 
-                        return $this->redirect(['site/account']);
+                        return $this->redirect(['site/login']);
                     }
                 }
             }
@@ -277,16 +256,6 @@ class SiteController extends Controller
         return $this->redirect(['site/login']);
     }
 
-    public function actionResendConfirmationEmail()
-    {
-        $user = Yii::$app->user->identity;
-        if ($user->sendConfirmationEmail($user)) {
-            Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
-        }
-
-        return $this->redirect(['site/account']);
-    }
-
     /**
      * Change the actual language, saving it on a cookie
      * @param $lang String The language to be set
@@ -323,31 +292,5 @@ class SiteController extends Controller
     public function actionDesignEdit()
     {
         return $this->render('design-edit');
-    }
-
-    /**
-     * Store Referrer ID in Cookies for future user
-     *
-     * @param $id
-     *
-     * @return Response
-     */
-    public function actionInvite($id)
-    {
-        /** @var User $user */
-        if (Yii::$app->user->isGuest) {
-            $referrer = ReferrerHelper::getReferrerFromCookie();
-            if ($user = User::findOne($id)) {
-                if ($referrer === null) {
-                    // first time
-                    ReferrerHelper::addReferrer($user);
-                } elseif ($referrer->value != $id) {
-                    // change refferer
-                    ReferrerHelper::changeReferrer($user);
-                }
-            }
-        }
-
-        return $this->goHome();
     }
 }

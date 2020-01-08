@@ -1,0 +1,143 @@
+a {
+  color: #007bff;
+}
+
+a:hover {
+  color: #007bff;
+}
+
+/* Language dropdown styles */
+
+.dropbtn {
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  width: max-content;
+  height: auto;
+  max-height: 300px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  overflow-y: auto;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd
+}
+
+.dropdown-content .active {
+  font-weight: bold;
+}
+
+.show {
+  display:block;
+}
+
+@media (max-width: 992px) {
+  .dropbtn {
+    margin-right: 20px;
+  }
+}
+
+.dropdown-content input[type=text] {
+  padding: 6px;
+  border: none;
+  margin-top: 8px;
+  font-size: 17px;
+  margin-left: 5px;
+}
+
+.dropdown-content .search-container {
+  margin-bottom: 10px;
+}
+
+.dropdown-content .search-container button {
+  float: right;
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 5px;
+  background: #d7d7d7;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 1024px) {
+  .dropdown-content {
+    right: 0;
+  }
+}
+
+@media screen and (max-width: 415px) {
+  .header-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-direction: column !important;
+  }
+}
+
+.text-muted {
+  text-align: left;
+}
+
+.navbar-nav {
+  flex-direction: row;
+}
+
+header.masthead {
+  text-align: center;
+  color: white;
+  background-image: url(../images/map-image.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #212529;
+}
+
+.intro-heading {
+  margin-bottom: 25px !important;
+}
+
+.intro-lead-in {
+  margin-bottom: 70px !important;
+}
+
+.site-contact {
+  padding: 20px 50px 0px 50px;
+}
+
+.color-block {
+  height: 110px;
+  background-color: #000;
+}
+
+@media (max-width: 768px) {
+  .color-block {
+    display: none;
+  }
+
+  .site-contact {
+    padding: 80px 20px 0px 20px;
+  }
+}
+
+@media (max-width: 415px) {
+  .site-contact {
+    padding-top: 120px;
+  }
+}

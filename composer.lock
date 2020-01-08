@@ -1301,7 +1301,7 @@
             "version": "v0.11.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twitter/typeahead.js.git",
+                "url": "https://github.com/twitter/typeahead.js.git",
                 "reference": "588440f66559714280628a4f9799f0c4eb880a4a"
             },
             "dist": {
@@ -1406,16 +1406,16 @@
         },
         {
             "name": "codeception/phpunit-wrapper",
-            "version": "7.7.2",
+            "version": "7.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/phpunit-wrapper.git",
-                "reference": "4ed12e8022f960e34fd78129e5dac34ce5b3a0ef"
+                "reference": "bc847bd4f8f6d09012543e2a856f19fe4ecdcf3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/phpunit-wrapper/zipball/4ed12e8022f960e34fd78129e5dac34ce5b3a0ef",
-                "reference": "4ed12e8022f960e34fd78129e5dac34ce5b3a0ef",
+                "url": "https://api.github.com/repos/Codeception/phpunit-wrapper/zipball/bc847bd4f8f6d09012543e2a856f19fe4ecdcf3a",
+                "reference": "bc847bd4f8f6d09012543e2a856f19fe4ecdcf3a",
                 "shasum": ""
             },
             "require": {
@@ -1445,7 +1445,7 @@
                 }
             ],
             "description": "PHPUnit classes used by Codeception",
-            "time": "2019-11-23T18:21:46+00:00"
+            "time": "2019-12-23T06:55:58+00:00"
         },
         {
             "name": "codeception/specify",
@@ -1938,16 +1938,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "4.3.3",
+            "version": "4.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "2ecaa9fef01634c83bfa8dc1fe35fb5cef223a62"
+                "reference": "da3fd972d6bafd628114f7e7e036f45944b62e9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/2ecaa9fef01634c83bfa8dc1fe35fb5cef223a62",
-                "reference": "2ecaa9fef01634c83bfa8dc1fe35fb5cef223a62",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/da3fd972d6bafd628114f7e7e036f45944b62e9c",
+                "reference": "da3fd972d6bafd628114f7e7e036f45944b62e9c",
                 "shasum": ""
             },
             "require": {
@@ -1959,6 +1959,7 @@
             "require-dev": {
                 "doctrine/instantiator": "^1.0.5",
                 "mockery/mockery": "^1.0",
+                "phpdocumentor/type-resolver": "0.4.*",
                 "phpunit/phpunit": "^6.4"
             },
             "type": "library",
@@ -1985,7 +1986,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2019-12-20T13:40:23+00:00"
+            "time": "2019-12-28T18:55:12+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -2389,16 +2390,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.18",
+            "version": "7.5.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "fcf6c4bfafaadc07785528b06385cce88935474d"
+                "reference": "9467db479d1b0487c99733bb1e7944d32deded2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fcf6c4bfafaadc07785528b06385cce88935474d",
-                "reference": "fcf6c4bfafaadc07785528b06385cce88935474d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9467db479d1b0487c99733bb1e7944d32deded2c",
+                "reference": "9467db479d1b0487c99733bb1e7944d32deded2c",
                 "shasum": ""
             },
             "require": {
@@ -2469,7 +2470,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-12-06T05:14:37+00:00"
+            "time": "2020-01-08T08:45:45+00:00"
         },
         {
             "name": "psr/container",

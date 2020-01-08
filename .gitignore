@@ -37,4 +37,4 @@ tests/_support/_generated
 /config/web-local.php
 /config/params.php
 
-/views/layouts/analytics.php
+*views/layouts/analytics.php
