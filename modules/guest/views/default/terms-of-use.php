@@ -6,6 +6,7 @@ use yii\helpers\Html;
 
 $this->title = 'Terms of Service';
 ?>
+<div class="color-block"></div>
 <div class="site-contact">
 <p>
 OpenSourceWebSite ("OSW") provide this web site (the "Website") as a public service to our users.
