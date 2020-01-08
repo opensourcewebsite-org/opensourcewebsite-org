@@ -2,6 +2,10 @@ a {
   color: #007bff;
 }
 
+a:hover {
+  color: #007bff;
+}
+
 /* Language dropdown styles */
 
 .dropbtn {
@@ -111,4 +115,29 @@ header.masthead {
 
 .intro-lead-in {
   margin-bottom: 70px !important;
+}
+
+.site-contact {
+  padding: 20px 50px 0px 50px;
+}
+
+.color-block {
+  height: 110px;
+  background-color: #000;
+}
+
+@media (max-width: 768px) {
+  .color-block {
+    display: none;
+  }
+
+  .site-contact {
+    padding: 80px 20px 0px 20px;
+  }
+}
+
+@media (max-width: 415px) {
+  .site-contact {
+    padding-top: 120px;
+  }
 }
