@@ -355,7 +355,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p align="center"><b><?= Html::a(Yii::t('app', 'Join to Us') . '!', Yii::$app->urlManager->createUrl(['site/login'])) ?></b></p>
+        <p align="center"><?= Html::a(Yii::t('app', 'Join to Us') . '!', Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
       </div>
     </div>
   </div>
