@@ -19,7 +19,7 @@
 
 <h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on https://opensourcewebsite.org
+OpenSourceWebsite (OSW) - online community. Welcome to https://opensourcewebsite.org
 
 ## Code of Conduct
 
@@ -61,7 +61,7 @@ Support this project with your organization. Your logo will show up here with a 
 
 ## Continuous Integration
 
-Any commit pushed to master gets deployed to [opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).
+Any commit pushed to a branch `master` gets deployed to [opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).
 
 ## API Documentation
 

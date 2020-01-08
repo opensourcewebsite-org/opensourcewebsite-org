@@ -6,7 +6,7 @@
 
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
-use app\assets\AppAsset;
+use app\assets\AdminLteUserAsset;
 use app\widgets\Alert;
 use yii\bootstrap\Nav;
 use app\widgets\NavBar;
@@ -16,7 +16,7 @@ use cebe\gravatar\Gravatar;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
-AppAsset::register($this);
+AdminLteUserAsset::register($this);
 
 $this->registerCss('.content-wrapper{
     margin-left: 0;

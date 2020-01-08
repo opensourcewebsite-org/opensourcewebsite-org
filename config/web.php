@@ -11,7 +11,8 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'name' => 'OpenSourceWebsite',
-    'layout' => 'adminlte-main',
+    'defaultRoute' => 'guest/default',
+    'layout' => 'adminlte-user',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
         'log',
@@ -24,6 +25,9 @@ $config = [
         '@npm' => '@vendor/npm-asset',
     ],
     'modules' => [
+        'guest' => [
+            'class' => 'app\modules\guest\Module',
+        ],
         'comment' => [
             'class' => 'app\modules\comment\Module'
         ],
@@ -38,19 +42,23 @@ $config = [
             'appendTimestamp' => true,
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
-                    'css' => ['plugins/bootstrap/css/bootstrap.css'],
-                    'js' => ['plugins/popper/umd/popper.min.js'],
-                    'sourcePath' => '@vendor/almasaeed2010/adminlte',
+                    'css' => ['//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css'],
+                    'js' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js'
+                    ],
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
                     'css' => [],
                 ],
                 'yii\bootstrap\BootstrapPluginAsset' => [
-                    'js' => ['plugins/bootstrap/js/bootstrap.js'],
-                    'sourcePath' => '@vendor/almasaeed2010/adminlte',
+                    'js' => ['//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js'],
                 ],
                 'yii\web\JqueryAsset' => [
-                    'js' => ['//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'],
+                    'js' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js'
+                    ],
                     'jsOptions' => ['position' => View::POS_HEAD],
                 ],
             ],
@@ -140,28 +148,7 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-                '<action:(signup|login|terms-of-use|privacy-policy|account)>' => 'site/<action>',
-                'wikipedia-pages' => 'wikipedia-pages/index',
-                'wikinews-pages' => 'wikinews-pages/index',
-                'wikinews-pages/create' => 'wikinews-pages/create',
-                'cron-job' => 'cron-job/index',
-                'cron-job/view/<id:[\d]+>' => 'cron-job/view',
-                'referrals' => 'referrals/index',
-                'wikipedia-page/view/<code>/<all>' => 'wikipedia-pages/view',
-                'wikipedia-page/view/<code>' => 'wikipedia-pages/view',
-                'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
-                'invite/<id>' => 'site/invite',
-                'webhook/telegram/<token>' => 'webhook/telegram',
-                'webhook/telegram-bot/<token>' => 'webhook/telegram-bot',
-                'website-settings' => 'setting/index',
-                'support-groups/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',
-                'support-groups/clients-list/<id:[\d]+>/<language:[\w]+>' => 'support-groups/clients-list',
-                'support-groups/clients-list/<id:[\d]+>' => 'support-groups/clients-list',
-                'support-groups/clients-view/<id:[\d]+>' => 'support-groups/clients-view',
-                'u/<id>' => 'user/profile',
-//              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
-            ],
+            'rules' => require(__DIR__ . '/routes.php'),
         ],
         'i18n' => [
             'translations' => [

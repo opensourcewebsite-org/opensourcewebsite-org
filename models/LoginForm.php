@@ -15,7 +15,6 @@ class LoginForm extends Model
 
     private $_user;
 
-
     /**
      * {@inheritdoc}
      */
@@ -26,6 +25,7 @@ class LoginForm extends Model
             [['email', 'password'], 'required'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
+            ['email', 'validateEmailConfirmation'],
         ];
     }
 
@@ -46,6 +46,19 @@ class LoginForm extends Model
         }
     }
 
+    public function validateEmailConfirmation($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $user = $this->getUser();
+            if (!$user || !$user->is_email_confirmed) {
+                $this->addError($attribute, 'Please confirm your email.');
+
+                if ($user->sendConfirmationEmail($user)) {
+                    Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
+                }
+            }
+        }
+    }
     /**
      * Logs in a user using the provided email and password.
      *
@@ -54,7 +67,9 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), 3600 * 24 * 30);
+            $user = $this->getUser();
+
+            return Yii::$app->user->login($user, 3600 * 24 * 30);
         }
 
         return false;

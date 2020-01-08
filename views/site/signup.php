@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         If you have an account you can <?= Html::a(Yii::t('app', 'Login'), ['site/login']) ?>.
                     </p>
                     <p>
-                        By continuing, you agree to our <?= Html::a(Yii::t('app', 'Terms of Use') and ['site/terms-of-use'], ['target' => '_blank']) ?>, <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy'], ['target' => '_blank']) ?>.
+                        By continuing, you agree to our <?= Html::a(Yii::t('app', 'Terms of Use'), ['guest/default/terms-of-use'], ['target' => '_blank']) ?> and <?= Html::a(Yii::t('app', 'Privacy Policy'), ['guest/default/privacy-policy'], ['target' => '_blank']) ?>.
                     </p>
                 </div>
             </div>

@@ -4,12 +4,12 @@
 
 /* @var $content string */
 
-use app\assets\AppAsset;
+use app\assets\AdminLteUserAsset;
 use yii\helpers\Html;
 
-AppAsset::register($this);
+AdminLteUserAsset::register($this);
 
-$this->title = 'OpenSourceWebsite';
+$this->title = 'OpenSourceWebsite Maintenance';
 
 ?>
 <?php $this->beginPage() ?>

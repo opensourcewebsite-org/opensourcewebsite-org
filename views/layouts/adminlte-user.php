@@ -6,7 +6,7 @@
 
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
-use app\assets\AppAsset;
+use app\assets\AdminLteUserAsset;
 use app\widgets\Alert;
 use app\widgets\Nav;
 use app\widgets\NavBar;
@@ -18,7 +18,7 @@ use app\models\Contact;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
-AppAsset::register($this);
+AdminLteUserAsset::register($this);
 
 $this->registerCss('#lang-menu{
     overflow: auto;
@@ -33,7 +33,7 @@ if (!empty($languages)) {
     foreach ($languages as $lang) {
         //Check if the language is the active
         $active = ($lang->code == Yii::$app->language) ? 'active' : '';
-        $langOpt[] = ['label' => Yii::t('language', $lang->name_ascii), 'url' => ['site/change-language', 'lang' => $lang->code], 'linkOptions' => ['class' => "dropdown-item $active"]];
+        $langOpt[] = ['label' => Yii::t('language', $lang->name_ascii), 'url'=>Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]), 'linkOptions' => ['class' => "dropdown-item $active"]];
     }
 }
 
@@ -82,7 +82,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
             $menuItemsLeft[] = ['label' => '<i class="fa fa-bars"></i>', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link'], 'encode' => false];
 
             $menuItemsRight[] = [
-                'label' => Html::tag('span', '<i class="fas fa-globe"></i>'),
+                'label' => Html::tag('span', strtoupper(Yii::$app->language)),
                 'items' => $langOpt,
                 'encode' => FALSE,
                 'dropDownOptions' => ['id' => 'lang-menu'],
@@ -147,7 +147,6 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                 <!-- Brand Logo -->
                 <a href="<?= Yii::$app->homeUrl ?>" class="brand-link">
                     <span class="brand-abbr font-weight-light">OSW</span>
-                    <span class="brand-text font-weight-light">OSW</span>
                 </a>
 
                 <div class="sidebar">
@@ -307,9 +306,7 @@ $currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->i
                     <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
                     <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
                     <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
-                    <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?> |
-                    <?= Html::a(Yii::t('app', 'Terms of Use'), ['site/terms-of-use'], ['target' => '_blank']) ?> |
-                    <?= Html::a(Yii::t('app', 'Privacy Policy'), ['site/privacy-policy'], ['target' => '_blank']) ?>
+                    <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
             </footer>
         </div>
         <?php $this->endBody() ?>
