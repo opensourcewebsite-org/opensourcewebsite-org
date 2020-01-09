@@ -64,12 +64,13 @@ a:hover {
   border: none;
   margin-top: 8px;
   font-size: 17px;
-  margin-left: 5px;
+  margin-left: 16px;
+  width: 100%;
 }
 
 .dropdown-menu .search-container {
   margin-bottom: 10px;
-  text-align: center;
+  display: flex;
 }
 
 .dropdown-menu .search-container button {
