@@ -48,25 +48,34 @@ $this->beginBody();
     <div class="">
       <ul class="navbar-nav text-uppercase ml-auto">
         <li class="nav-item">
-          <a onclick="myFunction()" class="nav-link dropbtn"><?= strtoupper(Yii::$app->language) ?> <i class="fas fa-angle-down drop-btn-icon"></i></a>
-          <div id="myDropdown" class="dropdown-content">
-            <div class="search-container">
-              <input type="text" placeholder="Search..">
-              <button type="button"><i class="fa fa-search"></i></button>
-            </div>
-            <?php
-                //List of language options
-                $languages = \app\models\Language::find()->all();
+          <div class="dropdown">
+            <a class="nav-link dropbtn" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <?= strtoupper(Yii::$app->language) ?> <i class="fas fa-angle-down drop-btn-icon"></i>
+            </a>
 
-                if (!empty($languages)) {
-                    foreach ($languages as $language) {
-                        //Check if the language is the active
-                        $active = ($language->code == Yii::$app->language) ? 'active' : '';
-                        echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$language->code]), ['options'=>['class'=>$active]]);
-                    }
-                }
-            ?>
+            <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <div class="search-container">
+                <input type="text" placeholder="Search..">
+                <button type="button"><i class="fa fa-search"></i></button>
+              </div>
+
+              <?php
+                  //List of language options
+                  $languages = \app\models\Language::find()->all();
+
+                  if (!empty($languages)) {
+                      foreach ($languages as $language) {
+                          //Check if the language is the active
+                          $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
+                          echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$language->code]), ['class'=>['dropdown-item', $active]]);
+                      }
+                  }
+              ?>
+
+            </div>
           </div>
+        </li>
+
         </li>
         <li class="nav-item">
           <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['site/login']) ?>">Account</a>
