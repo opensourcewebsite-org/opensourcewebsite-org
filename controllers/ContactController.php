@@ -45,7 +45,7 @@ class ContactController extends Controller
      * Lists all Contact models.
      * @return mixed
      */
-    public function actionIndex($view)
+    public function actionIndex($view = Contact::VIEW_USER)
     {
         $query = Contact::find()->andWhere(['user_id' => Yii::$app->user->id]);
         if ((int) $view === Contact::VIEW_USER) {
