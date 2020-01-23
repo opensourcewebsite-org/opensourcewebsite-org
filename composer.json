@@ -1,5 +1,5 @@
 {
-    "name": "opensourcewebsite-org",
+    "name": "opensourcewebsite",
     "description": "OpenSourceWebsite Core",
     "keywords": [
         "osw",
@@ -19,7 +19,7 @@
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
-        "yiisoft/yii2": "~2.0.31",
+        "yiisoft/yii2": "~2.0.32",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "npm-asset/font-awesome" : "5.2",
