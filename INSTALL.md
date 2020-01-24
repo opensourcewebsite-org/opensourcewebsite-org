@@ -47,3 +47,19 @@ Unloading fixtures:
 ```
 php yii fixture/unload "*"
 ```
+
+## Telegram bots
+
+We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
+
+- Create a new records in `bot` table in MySQL database, with `status` = 0
+
+Enable Telegram webhooks for all bots with `status` = 0:
+```
+php yii bot/enable-all
+```
+
+Disable Telegram webhooks for all bots with `status` = 1:
+```
+php yii bot/disable-all
+```
