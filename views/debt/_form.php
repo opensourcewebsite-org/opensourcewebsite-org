@@ -42,14 +42,18 @@ use janisto\timepicker\TimePicker;
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'amount')->textInput(); ?>
+                            <?= $form->field($model, 'amount', [
+									'inputOptions' => [
+										'autocomplete' => 'off'
+									]
+								])->textInput(); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'direction')->dropDownList([
-                                Debt::DIRECTION_DEPOSIT => 'Deposit',
-                                Debt::DIRECTION_CREDIT => 'Credit',
+                                Debt::DIRECTION_DEPOSIT => 'My Deposit',
+                                Debt::DIRECTION_CREDIT => 'My Credit',
                             ]); ?>
                         </div>
                     </div>

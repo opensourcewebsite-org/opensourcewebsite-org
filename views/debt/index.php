@@ -40,14 +40,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'html',
                             ],
                             [
-                                'label' => 'Deposit',
+                                'label' => 'My Deposits',
                                 'value' => function ($data) {
                                     return Html::a(DebtHelper::getDepositAmount($data->depositPending, $data->depositConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
                             ],
                             [
-                                'label' => 'Credit',
+                                'label' => 'My Credits',
                                 'value' => function ($data) {
                                     return Html::a(DebtHelper::getCreditAmount($data->creditPending, $data->creditConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                 },

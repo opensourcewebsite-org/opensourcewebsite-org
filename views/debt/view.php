@@ -19,12 +19,12 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills ml-auto p-2">
                 <li class="nav-item">
-                    <?= Html::a(Yii::t('app', 'Deposits'), ['debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $currencyId], [
+                    <?= Html::a(Yii::t('app', 'My Deposits'), ['debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $currencyId], [
                         'class' => 'nav-link show ' . ((int) $direction === Debt::DIRECTION_DEPOSIT ? 'active' : ''),
                     ]); ?>
                 </li>
                 <li class="nav-item">
-                    <?= Html::a(Yii::t('app', 'Credits'), ['debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $currencyId], [
+                    <?= Html::a(Yii::t('app', 'My Credits'), ['debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $currencyId], [
                         'class' => 'nav-link show ' . ((int) $direction === Debt::DIRECTION_CREDIT ? 'active' : ''),
                     ]); ?>
                 </li>
@@ -66,9 +66,9 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                     ],
                     [
                         'value' => function ($data) {
-                            $status = '<span class="badge badge-warning">Pending</span>';
-                            if ((int) $data->status === Debt::STATUS_CONFIRM) {
-                                $status = '<span class="badge badge-success">Confirm</span>';
+                            $status = '';
+                            if ((int) $data->status === Debt::STATUS_PENDING) {
+                                $status = '<span class="badge badge-warning">Pending</span>';
                             }
                             return $status;
                         },
