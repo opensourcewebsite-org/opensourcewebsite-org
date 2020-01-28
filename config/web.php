@@ -91,8 +91,6 @@ $config = [
                     'logFile' => '@runtime/logs/web.log',
                     'levels' => ['error', 'warning'],
                     'logVars' => ['_GET', '_POST', '_FILES'],
-                    'maxFileSize' => 1024,
-                    'maxLogFiles' => 10,
                     'except' => [
                         'yii\web\HttpException:400',
                         'yii\web\HttpException:403',
