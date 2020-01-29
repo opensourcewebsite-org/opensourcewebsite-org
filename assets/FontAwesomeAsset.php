@@ -9,8 +9,7 @@ use yii\web\AssetBundle;
  */
 class FontAwesomeAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/npm-asset/font-awesome/web-fonts-with-css';
-    public $css = [
-        'css/fontawesome-all.min.css',
+	public $css = [
+        '//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css',
     ];
 }
