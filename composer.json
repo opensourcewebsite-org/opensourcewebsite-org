@@ -61,6 +61,9 @@
             "setPermission": [
                 {
                     "runtime": "0777",
+					"runtime/logs": "0777",
+					"runtime/debug": "0777",
+					"runtime/mail": "0777",
                     "web/assets": "0777",
                     "yii": "0755"
                 }
