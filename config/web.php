@@ -1,7 +1,6 @@
 <?php
 
 use yii\web\View;
-use yii\log\EmailTarget;
 
 $params = require __DIR__ . '/params.php';
 $settingValidations = require __DIR__ . '/setting_validations.php';
@@ -84,12 +83,14 @@ $config = [
             'useFileTransport' => YII_ENV_DEV,
         ],
         'log' => [
+			'flushInterval' => 1,
             'targets' => [
                 'file' => [
                     'class' => 'yii\log\FileTarget',
+					'exportInterval' => 1,
                     'logFile' => '@runtime/logs/web.log',
-                    'levels' => ['error', 'warning'],
-                    'logVars' => ['_GET', '_POST', '_FILES'],
+                    'levels' => ['error'],
+                    'logVars' => [],
                     'except' => [
                         'yii\web\HttpException:400',
                         'yii\web\HttpException:403',
@@ -100,14 +101,17 @@ $config = [
                 ],
                 'bad-requests' => [
                     'class' => 'yii\log\FileTarget',
+					'exportInterval' => 1,
                     'categories' => ['yii\web\HttpException:400'],
                     'logFile' => '@runtime/logs/bad-requests.log',
+					'logVars' => [],
                 ],
                 'mail' => [
-                    'class' => EmailTarget::class,
+                    'class' => 'yii\log\EmailTarget',
+					'exportInterval' => 1,
                     'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
                     'levels' => ['error'],
-                    'logVars' => ['_GET', '_POST', '_FILES'],
+                    'logVars' => [],
                     'message' => [
                         'from' => $params['adminEmail'],
                         'subject' => 'OpenSourceWebsite bug log',

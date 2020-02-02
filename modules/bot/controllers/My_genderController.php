@@ -5,11 +5,11 @@ namespace app\modules\bot\controllers;
 use app\modules\bot\components\CommandController as Controller;
 
 /**
- * Class StartController
+ * Class My_genderController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers
  */
-class StartController extends Controller
+class My_genderController extends Controller
 {
     /**
      * @return string

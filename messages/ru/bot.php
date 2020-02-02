@@ -49,4 +49,11 @@ return [
     'Change Currency' => 'Изменить валюту',
     'How does your User Rating work?' => 'Как работает ваш пользовательский рейтинг?',
     'How to increase your User Rating?' => 'Как увеличить ваш пользовательский рейтинг?',
+	'Gender' => 'Пол',
+	'Your Gender' => 'Ваш пол',
+	'Birthday' => 'Дата рождения',
+	'Your Birthday' => 'Ваш день рождения',
+	'Location' => 'Местонахождение',
+	'Your Location' => 'Ваше местонахождение',
+	'Your Email' => 'Ваш Email',
 ];

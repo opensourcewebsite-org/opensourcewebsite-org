@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot;
+namespace app\modules\bot\components;
 
 use yii\base\Controller;
 use yii\base\InlineAction;
@@ -12,7 +12,8 @@ use yii\web\BadRequestHttpException;
  *
  * @package app\modules\bot
  */
-class CommandController extends Controller {
+class CommandController extends Controller
+{
     /**
      * @var bool
      */

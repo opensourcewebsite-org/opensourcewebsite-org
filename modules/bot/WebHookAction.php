@@ -14,7 +14,6 @@ use Yii;
  */
 class WebHookAction extends Action
 {
-
     /**
      * @param string $token
      *

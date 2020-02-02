@@ -2,16 +2,15 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\CommandController;
+use app\modules\bot\components\CommandController as Controller;
 
 /**
  * Class HelpController
  *
  * @package app\controllers\bot
  */
-class HelpController extends CommandController
+class HelpController extends Controller
 {
-
     /**
      * @return string
      */

@@ -5,17 +5,17 @@ namespace app\modules\bot\controllers;
 use app\modules\bot\components\CommandController as Controller;
 
 /**
- * Class StartController
+ * Class CommandNotFoundController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers
  */
-class StartController extends Controller
+class CommandNotFoundController extends Controller
 {
     /**
      * @return string
      */
     public function actionIndex()
-    {
-        return $this->render('index');
+	{
+		return $this->render('index');
     }
 }

@@ -27,12 +27,14 @@ $config = [
             'statusCode' => 503,
         ],
         'log' => [
+			'flushInterval' => 1,
             'targets' => [
                 'file' => [
                     'class' => 'yii\log\FileTarget',
+					'exportInterval' => 1,
                     'logFile' => '@runtime/logs/console.log',
-                    'levels' => ['error', 'warning'],
-                    'logVars' => ['_GET', '_POST', '_FILES'],
+                    'levels' => ['error'],
+                    'logVars' => [],
                     'except' => [
                         'yii\web\HttpException:400',
                         'yii\web\HttpException:403',
