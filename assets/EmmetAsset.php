@@ -6,12 +6,11 @@ use yii\web\AssetBundle;
 
 /**
  * Emmet.js Asset
+ * @link https://cdnjs.com/libraries/html.js
  */
 class EmmetAsset extends AssetBundle
 {
-    public $basePath = '@webroot';
-    public $baseUrl = '@web';
     public $js = [
-        'js/emmet-core/emmet.js',
+        '//cdnjs.cloudflare.com/ajax/libs/html.js/0.12.1/HTML.emmet.min.js',//js/emmet-core/emmet.js',
     ];
 }

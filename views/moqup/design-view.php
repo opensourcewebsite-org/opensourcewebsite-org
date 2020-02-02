@@ -4,10 +4,12 @@
 use yii\helpers\Html;
 use app\modules\comment\models\MoqupComment;
 use app\modules\comment\Comment;
+use app\assets\AceEditorAsset;
 
 $this->title = Yii::t('menu', 'View design');
-\app\assets\AceEditorAsset::register($this);
 $followed = in_array($moqup->id, Yii::$app->user->identity->followedMoqupsId);
+
+AceEditorAsset::register($this);
 
 if (!empty($moqup)):
 ?>

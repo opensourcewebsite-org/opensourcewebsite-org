@@ -11,12 +11,18 @@ class AdminLteUserAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
+
     public $css = [
         'css/site.css',
         'css/adminlte-fix.css',
     ];
+
     public $js = [
     ];
-    public $depends = [
+
+	public $depends = [
+        'yii\web\YiiAsset',
+        'yii\bootstrap\BootstrapAsset',
+		'yii\bootstrap\BootstrapPluginAsset',
     ];
 }

@@ -11,7 +11,8 @@ class AceEditorStyleAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
+
     public $css = [
-        'css/ace-editor.css',
+        'css/ace-editor-fix.css',
     ];
 }

@@ -6,18 +6,23 @@ use yii\web\AssetBundle;
 
 /**
  * Agency asset bundle.
+ * @link https://startbootstrap.com/template-overviews/agency
+ * @link https://cdnjs.com/libraries/startbootstrap-agency
  */
 class AgencyAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
+
     public $css = [
-        'css/agency.css',
+        '//cdnjs.cloudflare.com/ajax/libs/startbootstrap-agency/5.2.2/css/agency.min.css',
         'css/agency-fix.css',
     ];
+
     public $js = [
-        'js/agency.js',
+        '//cdnjs.cloudflare.com/ajax/libs/startbootstrap-agency/5.2.2/js/agency.min.js',
     ];
+
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',

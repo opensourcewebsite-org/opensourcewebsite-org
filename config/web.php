@@ -43,16 +43,15 @@ $config = [
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [
                     'css' => ['//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css'],
-                    'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js',
-                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
-                    ],
                 ],
                 'yii\bootstrap\BootstrapThemeAsset' => [
                     'css' => [],
                 ],
                 'yii\bootstrap\BootstrapPluginAsset' => [
-                    'js' => [],
+					'js' => [
+						'//cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js',
+						'//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
+					],
                 ],
                 'yii\web\JqueryAsset' => [
                     'js' => [

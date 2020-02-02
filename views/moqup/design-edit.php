@@ -3,11 +3,13 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\assets\AceEditorAsset;
 
 $this->title = Yii::t('menu', ($moqup->isNewRecord) ? 'Add design' : 'Edit design');
 $this->beginBlock('content-header-data');
 $this->endBlock();
-\app\assets\AceEditorAsset::register($this);
+
+AceEditorAsset::register($this);
 ?>
 <style id="prev-style"></style>
 <?php $form = ActiveForm::begin([
@@ -20,7 +22,7 @@ $this->endBlock();
         </h3>
     </div>
     <div class="card-body">
-        
+
         <div class="alert alert-info">
             <h5><i class="icon fa fa-info"></i> Important!</h5>
             Use UI elements from <?= Html::a('AdminLTE 3', 'https://adminlte.io/themes/dev/AdminLTE/index3.html') ?>, <?= Html::a('Bootstrap 4', 'https://getbootstrap.com/docs/4.1/getting-started/introduction/') ?> and <?= Html::a('Font Awesome 5', 'https://fontawesome.com/icons') ?> examples.
@@ -74,7 +76,7 @@ $this->endBlock();
     <div class="card-footer">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
         <?= Html::a(Yii::t('app', 'Cancel'), ['moqup/design-list'], ['class' => 'btn btn-secondary']) ?>
-        
+
         <?php if (!$moqup->isNewRecord): ?>
             <?= Html::a(Yii::t('app', 'Delete'), '#', [
                 'class' => 'btn btn-danger float-right',
@@ -92,14 +94,14 @@ $this->endBlock();
         <?php endif; ?>
     </div>
 </div>
-<?php 
+<?php
 ActiveForm::end();
 
 //Prepare the preview
 $this->registerjs('$("#toggle-prev").on("show.bs.tab", function() {
     var prevCont = $("#prev-content");
     var prevStyle = $("#prev-style");
-    
+
     var currentCont = htmlEditor.getValue();
     var currentStyle = cssEditor.getValue();
 
