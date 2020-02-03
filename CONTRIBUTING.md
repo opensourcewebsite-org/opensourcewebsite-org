@@ -154,7 +154,7 @@ If you update `composer.json`, then there should be two files in the commit: `co
 
 #### Yii 2 migration files
 
-Before to create a migrations files use [wwwsqldesigner](https://github.com/ondras/wwwsqldesigner) to prototype your changes for the database.
+Before to create a migration files use [wwwsqldesigner](https://github.com/ondras/wwwsqldesigner) to prototype your changes for the database. For example you can use https://ondras.zarovi.cz/sql/demo/?keyword=default with any keyword and share the link with other contributors.
 
 To upgrade data in the database, create a migration whose name starts with `upgrade_`. To upgrade the data in the migration, the `safeUp()` method is used, it is forbidden to use data access through the models, only through DAO (yii\db\Command). Use of such migrations is necessary for existing databases, and for all new such migrations will be deleted. In `down()` and `safeDown()`, only deletion of objects of the database structure (tables, fields, keys, indexes) is allowed.
 
