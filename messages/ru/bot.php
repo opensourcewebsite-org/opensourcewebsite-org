@@ -16,7 +16,7 @@ return [
     'Welcome' => 'Добро пожаловать',
     'I am a free virtual personal assistant, multilingual and available everywhere where there is internet. I adhere to a privacy policy that guarantees 100% confidentiality for your data. The list of my features and services is constantly expanding, along with the service improvement.' => 'Я - бесплатный виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших данных. Список моих возможностей и услуг постоянно расширяется, как и качество обслуживания.',
     'My code is open source and is part of a global social online community OpenSourceWebsite. You can help the project by participating in its development or supporting it with donations.' => 'Мой код находится в открытом доступе и является частью глобального социального онлайн сообщества OpenSourceWebsite. Вы можете помочь проекту, участвуя в разработке и поддерживая пожертвованиями.',
-    'More information' => 'Больше инфомации',
+    'More information' => 'Больше информации',
     'Available features (beta testing)' => 'Доступные возможности (бета тестирование)',
     'Jobs. Automatic job and employee search based on different criteria and locations in automatic mode.' => 'Работа. Поиск работы и сотрудников по разным критериям и локациям в автоматическом режиме.',
     'Ads. Buying, selling, renting, services by different criteria and locations in automatic mode.' => 'Объявления. Покупка, продажа, аренда, услуги по разным критериям и локациям в автоматическом режиме.',
@@ -56,4 +56,7 @@ return [
 	'Location' => 'Местонахождение',
 	'Your Location' => 'Ваше местонахождение',
 	'Your Email' => 'Ваш Email',
+	'of' => 'из',
+	'Read more' => 'Подробнее',
+	'The command does not exist yet, but you can create it' => 'Такая команда не существует, но вы можете ее создать'
 ];
