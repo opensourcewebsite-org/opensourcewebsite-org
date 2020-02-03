@@ -8,7 +8,7 @@ use app\models\SupportGroupBot;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use app\modules\bot\WebHookAction;
-use app\modules\bot\GroupWebHookAction;
+use app\modules\group_bot\GroupWebHookAction;
 
 /**
  * Class WebhookController
