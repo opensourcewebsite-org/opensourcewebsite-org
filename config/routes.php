@@ -15,6 +15,7 @@ return [
     'wikipedia-page/recommended/<code>' => 'wikipedia-pages/recommended',
     'webhook/telegram/<token>' => 'webhook/telegram',
     'webhook/telegram-bot/<token>' => 'webhook/telegram-bot',
+    'webhook/group-telegram-bot/<token>' => 'webhook/group-telegram-bot',
     'website-settings' => 'setting/index',
     'support-groups/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',
     'support-groups/clients-list/<id:[\d]+>/<language:[\w]+>' => 'support-groups/clients-list',
