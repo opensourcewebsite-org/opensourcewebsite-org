@@ -52,7 +52,7 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
     {
         return [
             [['bot_id', 'bot_client_id', 'message', 'type'], 'required'],
-            [['bot_id', 'bot_client_id', 'provider_message_id', 'created_at', 'updated_at', 'type'], 'integer'],
+            [['bot_id', 'bot_client_id', 'provider_message_id', 'provider_chat_id', 'created_at', 'updated_at', 'type'], 'integer'],
             [['message'], 'string'],
             [
                 ['bot_client_id'],
@@ -117,6 +117,7 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
         }
 
         $text = BotApiClient::cleanEmoji(trim($botApi->getMessage()->getText()));
+        $chatId = \Yii::$app->requestMessage->getChat()->getId();
 
         if (mb_strlen($text) == 0) {
             return false;
@@ -128,6 +129,7 @@ class BotOutsideMessage extends \yii\db\ActiveRecord
             'bot_client_id' => $botApi->bot_client_id,
             'type' => $botApi->type,
             'provider_message_id' => $botApi->getMessage()->getMessageId(),
+            'provider_chat_id' => $botApi->getMessage()->getChat()->getId(),
             'message' => $text,
         ]);
 
