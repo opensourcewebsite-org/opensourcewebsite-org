@@ -26,7 +26,7 @@ Web-server can be accessed at http://localhost:8000
 
 - Create a new MySQL database with an "utf8mb4_unicode_ci" collation
 - Setup your web-server root folder to `web`
-- Install php and composer
+- Install [PHP +7.2.X](https://www.php.net) and [Composer](https://getcomposer.org)
 - Run `php composer.phar install`
 - Run `php yii migrate`
 
@@ -34,7 +34,7 @@ Web-server can be accessed at http://localhost:8000
 
 Fixtures are used to load a "fake" set of data into a database that can then be used for testing or to help give you some interesting data while you're developing your application.
 
-After loading fixtures, will be available [user login credentials](tests/fixtures/data/user.php).
+After loading fixtures, will be available this [user login credentials](tests/fixtures/data/user.php).
 
 Attention! When loading fixtures, all current records from the database will be deleted!
 
@@ -50,7 +50,7 @@ php yii fixture/unload "*"
 
 ## Telegram bots
 
-We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
+We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
 
 - Set `baseUrl` in `params.php` for your ngrok https url.
 - Create a new record in `bot` table in MySQL database, with `status` = 0, or use console command to add new bot:
