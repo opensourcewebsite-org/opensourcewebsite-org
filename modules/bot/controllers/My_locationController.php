@@ -17,9 +17,6 @@ class My_locationController extends Controller
      */
     public function actionIndex()
     {
-    	
-
-    	$userId = \Yii::$app->requestMessage->getChat()->getId();
     	$botClient = \Yii::$app->botClient->getModel();	
 
     	\Yii::$app->responseMessage->setKeyboard(new \TelegramBot\Api\Types\ReplyKeyboardMarkup([
@@ -29,7 +26,7 @@ class My_locationController extends Controller
     				'request_location' => true
     			]
     		]
-    	]));
+    	], true, true));
 
         return $this->render('index', [
         	'longtitude' => $botClient->location_lon,
