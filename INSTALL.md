@@ -1,11 +1,5 @@
 # Installation
 
-## Minimum technical requirements
-
-- [PHP 7.2](https://en.wikipedia.org/wiki/PHP)
-- [Yii 2](https://en.wikipedia.org/wiki/Yii)
-- [MySQL 5.7](https://en.wikipedia.org/wiki/MySQL)
-
 ## General setup
 
 - Copy file `.env.dist` to `.env` in the root directory
@@ -24,9 +18,11 @@ Web-server can be accessed at http://localhost:8000
 
 #### Without Docker
 
+- Install [MySQL +5.7.X](https://www.mysql.com)
 - Create a new MySQL database with an "utf8mb4_unicode_ci" collation
-- Setup your web-server root folder to `web`
-- Install [PHP +7.2.X](https://www.php.net) and [Composer](https://getcomposer.org)
+- Setup your web-server root folder to `web`    
+- Install [PHP +7.2.X](https://www.php.net)
+- Install [Composer](https://getcomposer.org)
 - Run `php composer.phar install`
 - Run `php yii migrate`
 
