@@ -122,7 +122,7 @@ Recommended IDE:
 	* [Atom package for PHP Linter](https://atom.io/packages/linter-php)
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
     * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window "Before commit > Perform SonarLint analysis".
-	* Yii2 code styles for import to PhpStorm - [download](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml). Save the file and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
+	* Yii 2 code styles for import to PhpStorm - [download](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml). Save the file and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
   * [Eclipse](https://www.eclipse.org)
 	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
 
@@ -133,6 +133,7 @@ All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com
 Recommended IDE:
   * [Atom](https://atom.io)
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
+  * [Eclipse](https://www.eclipse.org)
 
 - Prefer the object spread operator (`{...anotherObj}`) to `Object.assign()`
 - Inline `export`s with expressions whenever possible
@@ -152,7 +153,7 @@ Recommended IDE:
 
 #### Composer
 
-If you update `composer.json`, then there should be two files in the commit: `composer.json` and `composer.lock`.
+In any case when `composer.json` file is updated, add `composer.json` and `composer.lock` files to the same commit.
 
 #### Yii 2 migration files
 
