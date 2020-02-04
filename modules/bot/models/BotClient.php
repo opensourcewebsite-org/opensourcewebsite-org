@@ -44,6 +44,7 @@ class BotClient extends \yii\db\ActiveRecord
             ],
             [
                 [
+                    'user_id',
                     'provider_user_id',
                     'provider_user_blocked',
                     'location_at',
@@ -65,6 +66,7 @@ class BotClient extends \yii\db\ActiveRecord
             ],
             [['language_code'], 'default', 'value' => 'en'],
             [['currency_code'], 'default', 'value' => 'USD'],
+            [['state'], 'string']
         ];
     }
 
