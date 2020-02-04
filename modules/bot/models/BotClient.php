@@ -100,26 +100,4 @@ class BotClient extends \yii\db\ActiveRecord
             return $this->provider_user_first_name;
         }
     }
-
-    /**
-     * @return null|BotOutsideMessage
-     */
-    public function getLastOutsideMessage()
-    {
-        return BotOutsideMessage::find()
-            ->where(['bot_client_id' => $this->id, 'bot_id' => Module::getInstance()->botApi->bot_id])
-            ->orderBy('created_at DESC')
-            ->one();
-    }
-
-    /**
-     * @return null|BotInsideMessage
-     */
-    public function getLastInsideMessage()
-    {
-        return BotInsideMessage::find()
-            ->where(['bot_client_id' => $this->id, 'bot_id' => Module::getInstance()->botApi->bot_id])
-            ->orderBy('created_at DESC')
-            ->one();
-    }
 }

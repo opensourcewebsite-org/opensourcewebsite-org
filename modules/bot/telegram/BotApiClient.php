@@ -16,7 +16,6 @@ use app\modules\bot\models\BotOutsideMessage;
  * @property int $support_group_id
  * @property int $bot_id
  * @property int $bot_client_id
- * @property int $type
  * @property float $_longitude
  * @property float $_latitude
  * @property int $_location_at
@@ -38,15 +37,6 @@ class BotApiClient extends BotApi
      * Inside support client ID
      */
     public $bot_client_id;
-
-    /**
-     * Message type
-     *
-     * available types:
-     *  - 1 : Ordinary text
-     *  - 2 : Command
-     */
-    public $type;
 
     /**
      * users geo data Longitude

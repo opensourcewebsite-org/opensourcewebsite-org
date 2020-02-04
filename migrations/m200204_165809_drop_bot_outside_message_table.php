@@ -3,14 +3,22 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%bot_outside_message}}`.
+ * Handles the dropping of table `{{%bot_outside_message}}`.
  */
-class m191021_071156_create_bot_outside_message_table extends Migration
+class m200204_165809_drop_bot_outside_message_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
+    {
+        $this->dropTable('{{%bot_outside_message}}');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function safeDown()
     {
         $this->createTable('{{%bot_outside_message}}', [
             'id' => $this->primaryKey(),
@@ -31,13 +39,5 @@ class m191021_071156_create_bot_outside_message_table extends Migration
             'bot_id', '{{%bot}}', 'id', 'CASCADE');
         $this->addForeignKey('{{%fk-bot_outside_message-bot_client}}', '{{%bot_outside_message}}',
             'bot_client_id', '{{%bot_client}}', 'id', 'CASCADE');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function safeDown()
-    {
-        $this->dropTable('{{%bot_outside_message}}');
     }
 }

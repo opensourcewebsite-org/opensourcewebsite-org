@@ -7,8 +7,6 @@ use app\modules\bot\telegram\BotApiClient;
 use app\modules\bot\telegram\Message;
 use yii\base\InvalidRouteException;
 use yii\base\InvalidConfigException;
-use app\modules\bot\models\BotInsideMessage;
-use app\modules\bot\models\BotOutsideMessage;
 
 /**
  * admin module definition class
@@ -39,10 +37,6 @@ class Module extends \yii\base\Module
         if ($botApi->getMessage() && !$botApi->getMessage()->getFrom()->isBot()) {
             /** @var Module $botModule */
             $botApi->bot_client_id = $botApi->saveClientInfo();
-            $botApi->type = $botApi->getMessage()->isBotCommand() ? BotOutsideMessage::TYPE_COMMAND
-                : BotOutsideMessage::TYPE_ORDINARY_TEXT;
-
-            BotOutsideMessage::saveMessage($botApi);
         }
 
         /** @var BotClient $botClient */
@@ -87,8 +81,6 @@ class Module extends \yii\base\Module
                     \Yii::$app->responseMessage->getKeyboard()
                 );
             }
-
-            BotInsideMessage::saveMessage($sentMessage, $chatId);
 
             $result = true;
         }
