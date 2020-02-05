@@ -163,6 +163,22 @@ class User extends ActiveRecord implements IdentityInterface
         return $timestamp + $expireTime >= time();
     }
 
+    public static function genereateUserWithRandomPassword()
+    {
+        $length = 126;
+        $chars = array_merge(range(0, 9), range('a', 'z'), range('A', 'Z'));
+                var_dump($chars);
+        shuffle($chars);
+        $password = implode(array_slice($chars, 0, $length));
+        $user = new User();
+        $user->password = $password;
+        $user->generateAuthKey();
+        if ($user->save())
+        {
+            return $user;
+        }
+    }
+
     /**
      * Validates password
      *

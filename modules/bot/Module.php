@@ -8,6 +8,7 @@ use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\BotClient;
 use yii\base\InvalidRouteException;
+use app\models\User;
 
 /**
  * admin module definition class
@@ -79,49 +80,61 @@ class Module extends \yii\base\Module
     {
         if ($update->getMessage())
         {
-            $user = $update->getMessage()->getFrom();
+            $from = $update->getMessage()->getFrom();
             $this->chat = $update->getMessage()->getChat();
             $this->requestId = $update->getMessage()->getMessageId();
         }
         else if ($update->getCallbackQuery())
         {
-            $user = $update->getCallbackQuery()->getFrom();
+            $from = $update->getCallbackQuery()->getFrom();
             $this->chat = $update->getCallbackQuery()->getMessage()->getChat();
             $this->requestId = $update->getCallbackQuery()->getId();
         }
 
-        if ($user)
+        if ($from)
         {
-            $botClient = BotClient::findOne(['provider_user_id' => $user->getId()]);
+            $botClient = BotClient::findOne(['provider_user_id' => $from->getId()]);
             if (!isset($botClient))
             {
                 $botClient = new BotClient();
                 $botClient->setAttributes([
-                    'provider_user_id' => $user->getId(),
-                    'language_code' => $user->getLanguageCode(),
+                    'provider_user_id' => $from->getId(),
+                    'language_code' => $from->getLanguageCode(),
                 ]);   
             }
 
-            if ($update->getMessage() && $location = $update->getMessage()->getLocation())
+            if (!isset($botClient->user_id))
             {
-                $botClient->setAttributes([
-                    'location_lon' => $location->getLongitude(),
-                    'location_lat' => $location->getLatitude(),
-                    'location_at' => time(),
-                ]);            
+                $user = User::genereateUserWithRandomPassword();
+                if ($user)
+                {
+                    $botClient->user_id = $user->id;
+                }
             }
 
-            $botClient->setAttributes([
-                'provider_user_name' => $user->getUsername(),
-                'provider_user_first_name' => $user->getFirstName(),
-                'provider_user_last_name' => $user->getLastName(),
-                'provider_bot_user_blocked' => 0,
-                'last_message_at' => time(),
-            ]);
-
-            if (!$botClient->save())
+            if (isset($botClient->user_id))
             {
-                unset($botClient);
+                if ($update->getMessage() && $location = $update->getMessage()->getLocation())
+                {
+                    $botClient->setAttributes([
+                        'location_lon' => $location->getLongitude(),
+                        'location_lat' => $location->getLatitude(),
+                        'location_at' => time(),
+                    ]);            
+                }
+
+                $botClient->setAttributes([
+                    'provider_user_name' => $from->getUsername(),
+                    'provider_user_first_name' => $from->getFirstName(),
+                    'provider_user_last_name' => $from->getLastName(),
+                    'provider_bot_user_blocked' => 0,
+                    'last_message_at' => time(),
+                ]);
+
+                if (!$botClient->save())
+                {
+                    unset($botClient);
+                }
             }
         }
         
