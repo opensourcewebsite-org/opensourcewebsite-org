@@ -20,8 +20,8 @@ class BotHandler {
 	private $_token;
 	private $_botApi;
 
-	const BACK = "◀️ Back";
-	const MAIN = "⏪ To main menu";
+	const BACK = "Back";
+	const MAIN = "To main menu";
 	const START_COMMAND = "/start";
 	const CHAT_PRIVATE = "private";
 	const ENABLE_COMMAND = "/enable@group_ro_bot";
@@ -69,8 +69,6 @@ class BotHandler {
 
 		$this->configure($id);
 
-		$this->_botApi->sendMessage($id, \Yii::t('bot', 'Greeting'));
-
 		if ($text == self::START_COMMAND) {
 			$this->start($id, $text);
 			return;
@@ -79,7 +77,8 @@ class BotHandler {
 		if ($type != self::CHAT_PRIVATE) {
 
 			if ($text == self::ENABLE_COMMAND) {
-				if (GroupChat::find([GroupChat::TG_ID_KEY => $id])->exists()) {
+
+				if (GroupChat::find()->where([GroupChat::TG_ID_KEY => $id])->exists()) {
 					$groupChat = GroupChat::find()->where([GroupChat::TG_ID_KEY => $id])->one();
 					$groupChat->setEnabled(true);
 
@@ -358,8 +357,8 @@ class BotHandler {
      */
 	private function mainReply()
 	{
-		return \Yii::t('bot', 'Hello! ✋
-I am bot, who filter messages in groups!');
+		return \Yii::t('bot', 'Hello') . '! ✋
+' . \Yii::t('bot', 'I am bot, who filter messages in groups!');
 	}
 
 	/**
@@ -374,8 +373,8 @@ I am bot, who filter messages in groups!');
 		$languageCode = GroupUser::find($id)->one()->getLanguageCode();
 
 		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
-			[['text' => \Yii::t('bot', '🚀 Groups'), 'callback_data' => 'go_to_chats']],
-			[['text' => \Yii::t('bot', '📕 Instruction'), 'callback_data' => "go_to_instruction"]],
+			[['text' => '🚀 ' . \Yii::t('bot', 'Groups'), 'callback_data' => 'go_to_chats']],
+			[['text' => '📕 ' . \Yii::t('bot', 'Instruction'), 'callback_data' => "go_to_instruction"]],
 			[['text' => ($languageCode == GroupUser::LANGUAGE_CODE_RUS ? "🇬🇧 EN" : "🇷🇺 RU"), 'callback_data' => 'switch_language_code']],
 		]);
 	}
@@ -419,7 +418,7 @@ I am bot, who filter messages in groups!');
 1) ' . \Yii::t('bot', 'Add bot to the group') . '
 2) ' . \Yii::t('bot', 'Make bot an admin') . '
 3) ' . \Yii::t('bot', 'Type a command in the group') . ' ' . self::ENABLE_COMMAND . '
-4) ' . \Yii::t('bot', 'Configure bot in menu') . ' ' . '"' . \Yii::t('bot', '🚀 Groups') . '"
+4) ' . \Yii::t('bot', 'Configure bot in menu') . ' ' . '"' . '🚀 ' . \Yii::t('bot', 'Groups') . '"
 
 ❗️ ' . \Yii::t('bot', 'To stop bot type a command') . ' ' . self::DISABLE_COMMAND;
 	}
@@ -430,7 +429,7 @@ I am bot, who filter messages in groups!');
 	private function instructionButtons()
 	{
 		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
-			[['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_main"]],
+			[['text' => '◀️ ' . \Yii::t('bot', self::BACK), "callback_data" => "go_to_main"]],
 		]);
 	}
 
@@ -448,7 +447,7 @@ I am bot, who filter messages in groups!');
      */
 	private function chatsReply()
 	{
-		return \Yii::t('bot', '<b>🚀 Groups</b>');
+		return '🚀 <b>' . \Yii::t('bot', 'Groups') . '</b>';
 	}
 
 	/**
@@ -463,11 +462,11 @@ I am bot, who filter messages in groups!');
 		foreach ($chats as $chat) {
 			$buttons[] = [
 				['text' => "⚡️ " . $chat->getTitle(), 'callback_data' => 'go_to_chat:' . $chat->getId()],
-				['text' => \Yii::t('bot', '❌ Remove'), 'callback_data' => 'remove_chat:' . $chat->getId()],
+				['text' => '❌ ' . \Yii::t('bot', 'Remove'), 'callback_data' => 'remove_chat:' . $chat->getId()],
 			];
 		}
 
-		$buttons[] = [['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_main"]];
+		$buttons[] = [['text' => '◀️ ' . \Yii::t('bot', self::BACK), "callback_data" => "go_to_main"]];
 
 		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup($buttons);
 	}
@@ -497,7 +496,7 @@ I am bot, who filter messages in groups!');
 	private function addGowordButtons($chatId)
 	{
 		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
-			[['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_chat:$chatId"]],
+			[['text' => '◀️ ' . \Yii::t('bot', self::BACK), "callback_data" => "go_to_chat:$chatId"]],
 		]);
 	}
 
@@ -532,7 +531,7 @@ I am bot, who filter messages in groups!');
 	private function addStopwordButtons($chatId)
 	{
 		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
-			[['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_chat:$chatId"]],
+			[['text' => '◀️ ' . \Yii::t('bot', self::BACK), "callback_data" => "go_to_chat:$chatId"]],
 		]);
 	}
 
@@ -624,8 +623,8 @@ I am bot, who filter messages in groups!');
 		$callbackData = $mode == GroupChat::MODE_GO ? "go_to_add_goword:$chatId" : "go_to_add_stopword:$chatId";
 
 		$buttons[] = [['text' => '✅ ' . \Yii::t('bot', 'Add phrase'), 'callback_data' => $callbackData]];
-		$buttons[] = [['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_chats"],
-					['text' => \Yii::t('bot', self::MAIN), "callback_data" => "go_to_main"]];
+		$buttons[] = [['text' => '◀️ ' . \Yii::t('bot', self::BACK), "callback_data" => "go_to_chats"],
+					['text' => '⏪ ' . \Yii::t('bot', self::MAIN), "callback_data" => "go_to_main"]];
 
 		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup($buttons);
 	}

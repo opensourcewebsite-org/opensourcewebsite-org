@@ -59,22 +59,19 @@ return [
 
     // Group Bot message
 
-    '🚀 Groups' => '🚀 Группы',
-    '📕 Instruction' => '📕 Инструкция',
-    'Hello! ✋
-I am bot, who filter messages in groups!' => 'Привет! ✋
-Я бот, который фильтрует сообщения в группах!',
-    '<b>🚀 Groups</b>' => '<b>🚀 Группы</b>',
-    '❌ Remove' => '❌ Удалить',
+    'Groups' => 'Группы',
+    'Hello' => 'Привет',
+    'I am bot, who filter messages in groups!' => 'Я бот, который фильтрует сообщения в группах!',
+    'Remove' => 'Удалить',
     'Mode' => 'Режим',
-    'Go phrases' => 'Пропускные фразы',
+    'Go phrases' => 'Пропускающие фразы',
     'Stop phrases' => 'Стоп фразы',
     'Launched' => 'Запущен',
     'Paused' => 'Приостановлен',
     'Add phrase' => 'Добавить фразу',
     'Type a phrase' => 'Введите фразу',
-    '◀️ Back' => '◀️ Назад',
-    '⏪ To main menu' => '⏪ В главное меню',
+    'Back' => 'Назад',
+    'To main menu' => 'В главное меню',
     'Instruction' => 'Инструкция',
     'To activate bot in group' => 'Для активации бота в канале',
     'Add bot to the group' => 'Добавьте бота в группу',
