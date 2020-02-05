@@ -39,13 +39,13 @@ class CommandRouter extends Component
     /**
      * Check rules and if route is founded execute route action
      *
-     * @param BotApiClient $botApi
+     * @param TelegramBot\Api\BotApi $botApi
      *
      * @return bool
      * @throws \yii\base\InvalidRouteException
      * @throws \yii\base\InvalidConfigException
      */
-    public function dispatchRoute($botApi)
+    public function dispatchRoute($update)
     {
         $status = false;
         $route = null;
@@ -53,17 +53,17 @@ class CommandRouter extends Component
         $response = null;
         $notFound = false;
 
-        $isCallbackQuery = false;
         $isBotCommand = false;
 
-        if ($botApi->getMessage() && $botApi->getMessage()->isBotCommand()) {
-            $parts = $this->resolveCommandRoute($botApi->getMessage()->getText());
+        if ($update->getMessage() && $this->isBotCommand($update->getMessage()->getText())) {
+            $parts = $this->resolveCommandRoute($update->getMessage()->getText());
             list($route, $params) = $parts;
             $isBotCommand = true;
-        } elseif ($callbackQuery = $botApi->getCallbackQuery()) {
-            $isCallbackQuery = true;
+        } elseif ($callbackQuery = $update->getCallbackQuery()) {
             $parts = $this->resolveCallbackRoute($callbackQuery);
             list($route, $params) = $parts;
+        } else {
+            list($route, $params) = $this->resolveRouteByState(Module::getInstance()->botClient->getState());
         }
 
         if ($route) {
@@ -82,17 +82,12 @@ class CommandRouter extends Component
             $response = Module::getInstance()->runAction($this->invalidRouteRedirect);
         }
 
-        if ($isCallbackQuery) {
-            // skip telegram clock on pressed button
-            $botApi->answerCallbackQuery($callbackQuery['id']);
-        }
+        return $response;
+    }
 
-        if ($response) {
-            \Yii::$app->responseMessage->setText($response);
-            $status = true;
-        }
-
-        return $status;
+    public function isBotCommand($text)
+    {
+        return substr(trim($text), 0, 1) === '/';
     }
 
     /**
@@ -138,7 +133,7 @@ class CommandRouter extends Component
         $route = null;
         $params = [];
 
-        $callbackText = '@' . $callbackQuery['data'];
+        $callbackText = '@' . $callbackQuery->getData();
 
         foreach ($this->rules as $pattern => $targetRoute) {
             if ('@' !== substr($pattern, 0, 1)) {
@@ -157,6 +152,19 @@ class CommandRouter extends Component
         }
 
         return [$route, $params];
+    }
+
+    /**
+     * Resolve route depending on state
+     *
+     * @param $state
+     *
+     * @return array
+     */
+    public function resolveRouteByState($state)
+    {
+        list($route, $params) = $this->resolveCommandRoute($state->state);
+        return [ $route, [] ];
     }
 
     /**

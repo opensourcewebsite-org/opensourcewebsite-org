@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers;
 
 use app\models\Currency;
-use app\modules\bot\components\CommandController as Controller;
 use app\modules\bot\helpers\PaginationButtons;
 use app\modules\bot\telegram\Message;
 use yii\data\Pagination;
@@ -46,7 +45,13 @@ class My_currencyController extends Controller
         $currentCode = $botClient->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
-        return $this->render('index', compact('currencyModel', 'currentCode', 'currentName'));
+
+        return [
+            [
+                'type' => 'message',
+                'text' => $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
+            ]
+        ];
     }
 
     /**
@@ -80,6 +85,11 @@ class My_currencyController extends Controller
         $responseMessage = \Yii::$app->responseMessage;
         $responseMessage->setMessageId(\Yii::$app->requestMessage->getMessageId());
 
-        return $this->render('currency-list', compact('currencies', 'pagination'));
+        return [
+            [
+                'type' => 'message',
+                'text' => $this->render('currency-list', compact('currencies', 'pagination')),
+            ]
+        ];
     }
 }

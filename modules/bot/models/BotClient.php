@@ -102,4 +102,14 @@ class BotClient extends \yii\db\ActiveRecord
             return $this->provider_user_first_name;
         }
     }
+
+    public function getState()
+    {
+        return (object)json_decode($this->state, TRUE);
+    }
+
+    public function setState($state = NULL)
+    {
+        $this->state = isset($state) ? json_encode($state) : NULL;
+    }
 }

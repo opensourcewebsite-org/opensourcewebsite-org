@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers;
 
 use app\models\Language;
-use app\modules\bot\components\CommandController as Controller;
 use app\modules\bot\helpers\PaginationButtons;
 use app\modules\bot\telegram\Message;
 use yii\data\Pagination;

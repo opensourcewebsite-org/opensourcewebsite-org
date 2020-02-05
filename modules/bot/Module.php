@@ -2,90 +2,195 @@
 
 namespace app\modules\bot;
 
+use Yii;
+use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Types\Update;
+use app\modules\bot\models\Bot;
 use app\modules\bot\models\BotClient;
-use app\modules\bot\telegram\BotApiClient;
-use app\modules\bot\telegram\Message;
 use yii\base\InvalidRouteException;
-use yii\base\InvalidConfigException;
 
 /**
  * admin module definition class
  */
 class Module extends \yii\base\Module
 {
-    /** @var BotApiClient */
+    /** 
+     * @var TelegramBot\Api\BotApi
+     */
     public $botApi;
 
     /**
-     * @param BotApiClient $botApi
+     * @var app\modules\bot\models\BotClient
      */
-    public function initBotComponents($botApi)
+    public $botClient;
+
+    /**
+     * @var \TelegramBot\Api\Types\Update
+     */
+    public $update;
+
+    /**
+     * @var \TelegramBot\Api\Types\Chat
+     */
+    private $chat;
+
+    private $requestId;
+
+    public function init()
     {
-        $this->botApi = $botApi;
+        parent::init();
 
-        $botConfig = require(\Yii::getAlias('@app/modules/bot/config') . '/bot.php');
-        \Yii::configure(\Yii::$app, $botConfig);
+        Yii::configure($this, require __DIR__ . '/config.php');
+    }
 
-        if ($botApi->getMessage()) {
-            \Yii::$app->requestMessage->setMessage($botApi->getMessage());
-        } elseif ($callbackQuery = $botApi->getCallbackQuery()) {
-            $messageData = $callbackQuery['message'];
-            $messageData['from'] = $callbackQuery['from'];
-            \Yii::$app->requestMessage->map($messageData);
+    public function handleInput($input, $token)
+    {
+        $updateArray = json_decode($input, TRUE);
+        $this->update = Update::fromResponse($updateArray);
+        $botInfo = Bot::findOne(['token' => $token]);
+        if ($botInfo) {
+            $this->botApi = new BotApi($botInfo->token);
+
+            if (isset(Yii::$app->params['telegramProxy'])) {
+                $this->botApi->setProxy(Yii::$app->params['telegramProxy']);
+            }
+
+            $this->botClient = $this->resolveBotClient($this->update);
+            if (isset($this->botClient))
+            {
+                Yii::$app->language = $this->botClient->language_code;
+
+                $result = $this->dispatchRoute($this->update);
+            }
+            else
+            {
+                $result = false;
+            }
         }
-
-        if ($botApi->getMessage() && !$botApi->getMessage()->getFrom()->isBot()) {
-            /** @var Module $botModule */
-            $botApi->bot_client_id = $botApi->saveClientInfo();
-        }
-
-        /** @var BotClient $botClient */
-        if ($botClient = \Yii::$app->botClient->getModel()) {
-            \Yii::$app->language = $botClient->language_code;
-        }
+        return $result;
     }
 
     /**
+     * @param $update \TelegramBot\Api\Types\Update
+     *
+     * @return \app\modules\bot\models\BotClient
+     */
+    private function resolveBotClient($update)
+    {
+        if ($update->getMessage())
+        {
+            $user = $update->getMessage()->getFrom();
+            $this->chat = $update->getMessage()->getChat();
+            $this->requestId = $update->getMessage()->getMessageId();
+        }
+        else if ($update->getCallbackQuery())
+        {
+            $user = $update->getCallbackQuery()->getFrom();
+            $this->chat = $update->getCallbackQuery()->getMessage()->getChat();
+            $this->requestId = $update->getCallbackQuery()->getId();
+        }
+
+        if ($user)
+        {
+            $botClient = BotClient::findOne(['provider_user_id' => $user->getId()]);
+            if (!isset($botClient))
+            {
+                $botClient = new BotClient();
+                $botClient->setAttributes([
+                    'provider_user_id' => $user->getId(),
+                    'language_code' => $user->getLanguageCode(),
+                ]);   
+            }
+
+            if ($update->getMessage() && $location = $update->getMessage()->getLocation())
+            {
+                $botClient->setAttributes([
+                    'location_lon' => $location->getLongitude(),
+                    'location_lat' => $location->getLatitude(),
+                    'location_at' => time(),
+                ]);            
+            }
+
+            $botClient->setAttributes([
+                'provider_user_name' => $user->getUsername(),
+                'provider_user_first_name' => $user->getFirstName(),
+                'provider_user_last_name' => $user->getLastName(),
+                'provider_bot_user_blocked' => 0,
+                'last_message_at' => time(),
+            ]);
+
+            if (!$botClient->save())
+            {
+                unset($botClient);
+            }
+        }
+        
+        return $botClient;
+    }
+
+    /**
+     * @param $update \TelegramBot\Api\Types\Update
+     *
      * @return bool
      * @throws \TelegramBot\Api\Exception
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
-    public function dispatchRoute()
+    public function dispatchRoute($update)
     {
         $result = false;
 
-        if (\Yii::$app->commandRouter->dispatchRoute($this->botApi)) {
-            /** @var Message $responseMessage */
-            $responseMessage = \Yii::$app->responseMessage;
-            $id = $responseMessage->getMessageId();
-            $text = Message::prepareText($responseMessage->getText());
-
-            $sentMessage = null;
-            $chatId = \Yii::$app->requestMessage->getChat()->getId();
-            if ($id) {
-                $sentMessage = $this->botApi->editMessageText(
-                    $chatId,
-                    $id,
-                    $text,
-                    'html',
-                    null,
-                    \Yii::$app->responseMessage->getKeyboard()
-                );
-            } else {
-                $sentMessage = $this->botApi->sendMessage(
-                    $chatId,
-                    $text,
-                    'html',
-                    null,
-                    null,
-                    \Yii::$app->responseMessage->getKeyboard()
-                );
+        $responses = $this->commandRouter->dispatchRoute($update);
+        if (is_array($responses))
+        {
+            $chatId = $this->chat->getId();
+            foreach ($responses as $response) {
+                $response = (object)$response;
+                $type = $response->type;
+                if ($type == 'message')
+                {
+                    $this->botApi->sendMessage(
+                        $chatId,
+                        $this->prepareText($response->text),
+                        'html',
+                        FALSE,
+                        NULL,
+                        $response->replyMarkup
+                    );
+                }
+                elseif ($type == 'location')
+                {
+                    $this->botApi->sendLocation(
+                        $chatId,
+                        $response->latitude,
+                        $response->longtitude,
+                        NULL,
+                        $response->replyMarkup
+                    );
+                }
+                elseif ($type == 'callback')
+                {
+                    $this->botApi->answerCallbackQuery(
+                        $this->requestId
+                    );
+                }
             }
 
             $result = true;
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public static function prepareText($text)
+    {
+        $text = str_replace(["\n", "\r\n"], '', $text);
+
+        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
     }
 
     /**

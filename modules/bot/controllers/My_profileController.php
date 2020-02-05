@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\CommandController as Controller;
 use app\modules\bot\telegram\Message;
 
 /**

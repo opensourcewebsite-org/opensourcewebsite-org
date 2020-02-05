@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\CommandController as Controller;
 use app\modules\bot\components\BotClient;
+use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 
 /**
  * Class My_locationController
@@ -17,21 +17,22 @@ class My_locationController extends Controller
      */
     public function actionIndex()
     {
-    	$botClient = \Yii::$app->botClient->getModel();	
-
-    	\Yii::$app->responseMessage->setKeyboard(new \TelegramBot\Api\Types\ReplyKeyboardMarkup([
-    		[
-    			[
-    				'text' => \Yii::t('bot', 'Send Location'),
-    				'request_location' => true
-    			]
-    		]
-    	], true, true));
-
-        return $this->render('index', [
-        	'longtitude' => $botClient->location_lon,
-        	'latitude' => $botClient->location_lat,
-        	'lastUpdate' => $botClient->location_at,
-        ]);
+    	$botClient = $this->module->botClient;
+        
+        return [
+            [
+                'type' => 'location',
+                'longtitude' => $botClient->location_lon,
+                'latitude' => $botClient->location_lat,
+                'replyMarkup' => new ReplyKeyboardMarkup([
+                                [
+                                    [
+                                        'text' => \Yii::t('bot', 'Send Location'),
+                                        'request_location' => true
+                                    ]
+                                ]
+                            ], true, true),
+            ]
+        ];
     }
 }

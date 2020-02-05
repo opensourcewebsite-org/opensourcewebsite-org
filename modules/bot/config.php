@@ -1,9 +1,6 @@
 <?php
 
 use app\modules\bot\components\CommandRouter;
-use app\modules\bot\components\RequestMessage;
-use app\modules\bot\components\ResponseMessage;
-use app\modules\bot\components\BotClient;
 
 return [
     'components' => [
@@ -19,17 +16,11 @@ return [
                 '@currency_list' => 'my_currency/currency-list',
                 '@currency_list_<page:\d+>' => 'my_currency/currency-list',
 
+                '/set_email' => 'my_email/create',
+                '@change_email' => 'my_email/update',
+
 				'/<controller:\w+>' => '<controller>/index',
             ],
-        ],
-        'requestMessage' => [
-            'class' => RequestMessage::className(),
-        ],
-        'responseMessage' => [
-            'class' => ResponseMessage::className(),
-        ],
-        'botClient' => [
-            'class' => BotClient::className(),
         ],
     ],
 ];

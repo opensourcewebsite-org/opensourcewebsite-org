@@ -2,8 +2,6 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\CommandController as Controller;
-
 /**
  * Class My_birthdayController
  *
@@ -16,6 +14,25 @@ class My_birthdayController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+    	// $botClient = \Yii::$app->botClient->getModel();
+     //    $text = \Yii::$app->requestMessage->getText();
+    	// $success = $this->validateDate($text, 'd.m.Y');
+     //    if ($success)
+     //    {
+     //        $botClient->setState();
+     //    }
+
+        return [
+            [
+                'type' => 'message',
+                'text' => $this->render('index'),
+            ]
+        ];
+    }
+
+    private function validateDate($date, $format)
+    {
+        $dateObject = \DateTime::createFromFormat($format, $date);
+        return $dateObject && $dateObject->format($format) === $date;
     }
 }

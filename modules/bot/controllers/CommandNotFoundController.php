@@ -2,8 +2,6 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\CommandController as Controller;
-
 /**
  * Class CommandNotFoundController
  *
@@ -16,6 +14,11 @@ class CommandNotFoundController extends Controller
      */
     public function actionIndex()
 	{
-		return $this->render('index');
+		return [
+			[
+				'type' => 'message',
+				'text' => $this->render('index'),
+			]
+		];
     }
 }
