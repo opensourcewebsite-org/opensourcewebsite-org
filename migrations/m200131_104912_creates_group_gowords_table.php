@@ -12,17 +12,17 @@ class m200131_104912_creates_group_gowords_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('group_gowords', [
+        $this->createTable('{{%group_goword}}', [
             '_id' => $this->primaryKey()->unsigned(),
-            'chat_id' => $this->integer()->notNull(),
+            'chat_id' => $this->integer()->unsigned()->notNull(),
             'text' => $this->string()->notNull(),
         ]);
 
         $this->addForeignKey(
-            'fk-gowords-chat_id-to-chats',
-            'group_gowords',
+            'fk-goword-chat_id-to-chat',
+            '{{%group_goword}}',
             'chat_id',
-            'group_chats',
+            '{{%group_chat}}',
             '_id',
             'CASCADE'
         );
@@ -33,11 +33,10 @@ class m200131_104912_creates_group_gowords_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('group_gowords');
 
-        $this->dropForeignKey('fk-gowords-chat_id-to-chats', 'group_gowords');
-
-        return false;
+        $this->dropForeignKey('fk-goword-chat_id-to-chat', '{{%group_goword}}');
+        
+        $this->dropTable('{{%group_goword}}');
     }
 
     /*

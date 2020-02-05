@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m200202_033318_alter_text_column_stopword_table
+ * Class m200204_235021_add_column_language_code_to_users
  */
-class m200202_033318_alter_text_column_stopword_table extends Migration
+class m200204_235021_add_column_language_code_to_users extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->alterColumn('group_stopwords', 'text', 'string');
+        $this->addColumn('{{%group_user}}', 'language_code', $this->string());
     }
 
     /**
@@ -20,7 +20,7 @@ class m200202_033318_alter_text_column_stopword_table extends Migration
      */
     public function safeDown()
     {
-        $this->alterColumn('group_stopwords', 'text', 'integer');
+        $this->dropColumn('{{%group_user}}', 'language_code');
     }
 
     /*
@@ -32,7 +32,7 @@ class m200202_033318_alter_text_column_stopword_table extends Migration
 
     public function down()
     {
-        echo "m200202_033318_alter_text_column_stopword_table cannot be reverted.\n";
+        echo "m200204_235021_add_column_language_code_to_users cannot be reverted.\n";
 
         return false;
     }

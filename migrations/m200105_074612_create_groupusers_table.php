@@ -12,10 +12,10 @@ class m200105_074612_create_groupusers_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%groupusers}}', [
-            'id' => $this->primaryKey(),
+        $this->createTable('{{%group_user}}', [
+            'id' => $this->primaryKey()->unsigned(),
             'username' => $this->string(),
-            'flag' => $this->integer()->notNull(),
+            'flag' => $this->integer()->unsigned()->notNull(),
         ]);
     }
 
@@ -24,6 +24,6 @@ class m200105_074612_create_groupusers_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%groupusers}}');
+        $this->dropTable('{{%group_user}}');
     }
 }

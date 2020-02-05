@@ -12,17 +12,17 @@ class m200131_104940_creates_group_stopwords_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('group_stopwords', [
+        $this->createTable('{{%group_stopword}}', [
             '_id' => $this->primaryKey()->unsigned(),
-            'chat_id' => $this->integer()->notNull(),
-            'text' => $this->integer()->notNull(),
+            'chat_id' => $this->integer()->unsigned()->notNull(),
+            'text' => $this->string()->notNull(),
         ]);
 
         $this->addForeignKey(
-            'fk-stopwords-chat_id-to-chats',
-            'group_stopwords',
+            'fk-stopword-chat_id-to-chat',
+            '{{%group_stopword}}',
             'chat_id',
-            'group_chats',
+            '{{%group_chat}}',
             '_id',
             'CASCADE'
         );
@@ -33,11 +33,10 @@ class m200131_104940_creates_group_stopwords_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('group_stopwords');
 
-        $this->dropForeignKey('fk-stopwords-chat_id-to-chats', 'group_stopwords');
+        $this->dropForeignKey('fk-stopword-chat_id-to-chat', '{{%group_stopword}}');
 
-        return false;
+        $this->dropTable('{{%group_stopword}}');
     }
 
     /*

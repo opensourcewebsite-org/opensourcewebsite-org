@@ -20,7 +20,7 @@ class GroupStopword extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'group_stopwords';
+        return 'group_stopword';
     }
 
     /**

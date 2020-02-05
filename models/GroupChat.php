@@ -17,13 +17,16 @@ use yii\db\ActiveRecord;
  */
 class GroupChat extends ActiveRecord
 {
+    const MODE_GO = 0;
+    const MODE_STOP = 1;
+    const TG_ID_KEY = 'tg_id';
 
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'group_chats';
+        return 'group_chat';
     }
 
     /**
@@ -47,7 +50,7 @@ class GroupChat extends ActiveRecord
             'tg_id' => 'TGID',
             'title' => 'Title',
             'mode' => 'Mode',
-            'enabled' => 'Enbaled',
+            'enabled' => 'Enabled',
         ];
     }
 
@@ -59,12 +62,24 @@ class GroupChat extends ActiveRecord
         return $this->owner_id;
     }
 
+    public function setOwnerid($ownerId) {
+        $this->owner_id = $ownerId;
+    }
+
     public function getTgId() {
         return $this->tg_id;
     }
 
+    public function setTgId($tgId) {
+        $this->tg_id = $tgId;
+    }
+
     public function getTitle() {
         return $this->title;
+    }
+
+    public function setTitle($title) {
+        $this->title = $title;
     }
 
     public function getMode() {

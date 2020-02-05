@@ -13,8 +13,10 @@ use yii\db\ActiveRecord;
  * @property int $flag
  * @property int $chat_id
  */
-class Groupuser extends ActiveRecord
+class GroupUser extends ActiveRecord
 {
+    const LANGUAGE_CODE_RUS = 'ru_RU';
+    const LANGUAGE_CODE_ENG = 'en_EN';
     
     public $userIdOrName;
 
@@ -23,7 +25,7 @@ class Groupuser extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'groupusers';
+        return 'group_user';
     }
 
     /**
@@ -46,6 +48,7 @@ class Groupuser extends ActiveRecord
             'username' => 'Username',
             'flag' => 'Flag',
             'chat_id' => "ChatID",
+            'language_code' => 'Language Code',
         ];
     }
 
@@ -91,5 +94,13 @@ class Groupuser extends ActiveRecord
 
     public function setChatId($chat_id) {
         $this->chat_id = $chat_id;
+    }
+
+    public function getLanguageCode() {
+        return $this->language_code;
+    }
+
+    public function setLanguageCode($languageCode) {
+        $this->language_code = $languageCode;
     }
 }

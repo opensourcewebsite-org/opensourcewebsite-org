@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m200202_035412_alter_text_column_tg_id_group_chats_table
+ * Class m200204_122933_add_column_chat_id_to_group_user
  */
-class m200202_035412_alter_text_column_tg_id_group_chats_table extends Migration
+class m200204_122933_add_column_chat_id_to_group_user extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->alterColumn('group_chats', 'tg_id', 'string');
+        $this->addColumn('{{%group_user}}', 'chat_id', $this->integer()->unsigned());
     }
 
     /**
@@ -20,7 +20,7 @@ class m200202_035412_alter_text_column_tg_id_group_chats_table extends Migration
      */
     public function safeDown()
     {
-        $this->alterColumn('group_chats', 'tg_id', 'integer');
+        $this->dropColumn('{{%group_user}}', 'chat_id');
     }
 
     /*
@@ -32,7 +32,7 @@ class m200202_035412_alter_text_column_tg_id_group_chats_table extends Migration
 
     public function down()
     {
-        echo "m200202_035412_alter_text_column_tg_id_group_chats_table cannot be reverted.\n";
+        echo "m200204_122933_add_column_chat_id_to_group_user cannot be reverted.\n";
 
         return false;
     }

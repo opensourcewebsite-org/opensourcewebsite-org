@@ -2,43 +2,76 @@
 
 namespace app\modules\group_bot;
 
-use app\models\Groupuser;
+use app\models\GroupUser;
 use app\models\GroupChat;
 use app\models\GroupGoword;
 use app\models\GroupStopword;
 use app\modules\group_bot\models\CallbackQuery;
 use app\modules\group_bot\models\InputMessage;
-use app\modules\group_bot\telegram\TG;
+use Yii;
 
+/**
+ * Class BotHandler
+ *
+ * @package app\modules\group_bot
+ */
 class BotHandler {
-	private $output;
+	private $_output;
+	private $_token;
+	private $_botApi;
 
-	const BACK = "◀️ Назад";
-	const MAIN = "⏪ В главное меню";
-
-	const MODE_GO = 0;
-	const MODE_STOP = 1;
-
+	const BACK = "◀️ Back";
+	const MAIN = "⏪ To main menu";
+	const START_COMMAND = "/start";
 	const CHAT_PRIVATE = "private";
-
 	const ENABLE_COMMAND = "/enable@group_ro_bot";
 	const DISABLE_COMMAND = "/disable@group_ro_bot";
-
 	const ME = 295605654;
+	const TG_ID_KEY = 'tg_id';
+	const ID_KEY = 'id';
+	const HTML = 'html';
 
-	function __construct($output) {
-		$this->output = $output;
+	/**
+     * @param array $output
+     * @param string $token
+     */
+	public function __construct($output, $token)
+	{
+		$this->_token = $token;
+		$this->_output = $output;
+
+		$this->_botApi = new \TelegramBot\Api\BotApi($token);
+
+        if (isset(Yii::$app->params['telegramProxy'])) {
+            $this->_botApi->setProxy(Yii::$app->params['telegramProxy']);
+        }
 	}
 
-	function handleInputMessage() {
-		$input_message = new InputMessage($this->output);
+	private function configure($id) {
+		$groupUser = GroupUser::find($id)->one();
 
-		$id = $input_message->get_chat_id();
-		$mid = $input_message->get_message_id();
-		$text = $input_message->get_text();
-		$type = $input_message->get_chat_type();
+		if ($groupUser->getLanguageCode() !== null) {
+			\Yii::$app->language = $groupUser->getLanguageCode();
+		}
+	}
 
-		if ($text == '/start') {
+	/**
+	* Handle Telegram Request Message
+	*/
+	public function handleInputMessage()
+	{
+		$inputMessage = new InputMessage($this->_output);
+
+		$id = $inputMessage->getChatId();
+		$mid = $inputMessage->getMessageId();
+		$text = $inputMessage->getText();
+		$type = $inputMessage->getChatType();
+
+		$this->configure($id);
+
+		$this->_botApi->sendMessage($id, \Yii::t('bot', 'Greeting'));
+
+		if ($text == self::START_COMMAND) {
 			$this->start($id, $text);
 			return;
 		}
@@ -46,104 +79,113 @@ class BotHandler {
 		if ($type != self::CHAT_PRIVATE) {
 
 			if ($text == self::ENABLE_COMMAND) {
+				if (GroupChat::find([GroupChat::TG_ID_KEY => $id])->exists()) {
+					$groupChat = GroupChat::find()->where([GroupChat::TG_ID_KEY => $id])->one();
+					$groupChat->setEnabled(true);
 
-				if (Groupchat::find(['tg_id' => $id])->exists()) {
-					$groupchat = Groupchat::find()->where(['tg_id' => $id])->one();
-					$groupchat->setEnabled(TRUE);
-
-					$groupchat->save();
+					$groupChat->save();
 				} else {
 
-					$owner_id = $input_message->get_from_id();
-					$tg_id = $id;
-					$title = $input_message->get_chat_title();
-					$mode = self::MODE_GO;
-					$enabled = 1;
+					$ownerId = $inputMessage->getFromId();
+					$tgId = $id;
+					$title = $inputMessage->getChatTitle();
+					$mode = GroupChat::MODE_GO;
+					$enabled = true;
 
-					$group_chat = new GroupChat();
+					$groupChat = new GroupChat();
 
-					$group_chat->owner_id = $owner_id;
-					$group_chat->tg_id = $id;
-					$group_chat->title = $title;
-					$group_chat->mode = $mode;
-					$group_chat->enabled = $enabled;
+					$groupChat->setOwnerId($ownerId);
+					$groupChat->setTgId($id);
+					$groupChat->setTitle($title);
+					$groupChat->setMode($mode);
+					$groupChat->setEnabled($enabled);
 
-					$group_chat->save();	
+					$groupChat->save();	
 				}
 
-				TG::sendMessageHTML($id, "Бот активирован ✅");
+				$this->_botApi->sendMessage($id, "Бот активирован ✅", self::HTML);
 				return;
 			}
 
 			if ($text == self::DISABLE_COMMAND) {
-				if (Groupchat::find(['tg_id' => $id])->exists()) {
-					$groupchat = Groupchat::find()->where(['tg_id' => $id])->one();
-					$groupchat->setEnabled(FALSE);
+				if (GroupChat::find([GroupChat::TG_ID_KEY => $id])->exists()) {
+					$groupChat = GroupChat::find()->where([GroupChat::TG_ID_KEY => $id])->one();
+					$groupChat->setEnabled(false);
 
-					$groupchat->save();
+					$groupChat->save();
 				}
 
-				TG::sendMessageHTML($id, "Бот остановлен ✅");
+				$this->_botApi->sendMessage($id, "Бот остановлен ✅", self::HTML);
+				return;
 			}
 
-			if (Groupchat::find()->where(['tg_id' => $id])->exists() && $text !== null) {
-				$this->process_group_message($id, $mid, $text);
-			}
-			
 
-			return;
+
+			if (GroupChat::find()->where([GroupChat::TG_ID_KEY => $id])->exists() && $text !== null) {
+				$groupChat = GroupChat::find()->where([GroupChat::TG_ID_KEY => $id])->one();
+
+				if ($groupChat->getEnabled()) {
+					$this->processGroupMessage($id, $mid, $text);
+				}
+			}
 		}
 
-		$user = Groupuser::find()->where(['id' => $id])->one();
+		$user = GroupUser::find()->where([self::ID_KEY => $id])->one();
 		$flag = $user->getFlag();
 		
 		if ($flag == 1) {
-			$chat_id = $user->getChatId();
+			$chatId = $user->getChatId();
 
-			$goword_text = $text;
+			$gowordText = $text;
 
 			$goword = new GroupGoword();
-			$goword->setChatId($chat_id);
-			$goword->setText($goword_text);
+			$goword->setChatId($chatId);
+			$goword->setText($gowordText);
 
 			$goword->save();
 
-			TG::deleteMessage($id, $mid);
+			$this->_botApi->deleteMessage($id, $mid);
 
 			$user->setFlag(0);
-			$this->send_chat($id, $chat_id);
+			$this->sendChat($id, $chatId);
 			$user->save();
 		}
 
 		if ($flag == 2) {
-			$chat_id = $user->getChatId();
+			$chatId = $user->getChatId();
 
 			$stopword_text = $text;
 
 			$stopword = new GroupStopword();
-			$stopword->setChatId($chat_id);
-			$stopword->setText($stopword_text);
+			$stopword->setChatId($chatId);
+			$stopword->setText($stopwordText);
 
 			$stopword->save();
 
-			TG::deleteMessage($id, $mid);
+			$this->_botApi->deleteMessage($id, $mid);
 
 			$user->setFlag(0);
 			$user->save();
 
-			$this->send_chat($id, $chat_id);
+			$this->sendChat($id, $chatId);
 		}
 	}
 
-	private function process_group_message($id, $mid, $text) {
+	/**
+     * @param int $id
+     * @param int $mid
+     * @param string $text
+     */
+	private function processGroupMessage($id, $mid, $text)
+	{
 
-		$chat = Groupchat::find()->where(['tg_id' => $id])->one();
+		$chat = Groupchat::find()->where([GroupChat::TG_ID_KEY => $id])->one();
 
-		$chat_id = $chat->getId();
+		$chatId = $chat->getId();
 		$mode = $chat->getMode();
 
-		if ($mode == self::MODE_GO) {
-			$gowords = GroupGoword::find()->where(['chat_id' => $chat_id])->all();
+		if ($mode == GroupChat::MODE_GO) {
+			$gowords = GroupGoword::find()->where(['chat_id' => $chatId])->all();
 
 			$go = false;
 			foreach ($gowords as $goword) {
@@ -154,10 +196,10 @@ class BotHandler {
 			}
 
 			if (!$go) {
-				TG::deleteMessage($id, $mid);
+				$this->_botApi->deleteMessage($id, $mid);
 			}
 		} else {
-			$stopwords = GroupStopword::find()->where(['chat_id' => $chat_id])->all();
+			$stopwords = GroupStopword::find()->where(['chat_id' => $chatId])->all();
 
 			$stop = false;
 			foreach ($stopwords as $stopword) {
@@ -168,284 +210,438 @@ class BotHandler {
 			}
 
 			if ($stop) {
-				TG::deleteMessage($id, $mid);
+				$this->_botApi->deleteMessage($id, $mid);
 			}
 		}
 	}
 
-	function handleCallbackQuery() {
-		$callback_query = new CallbackQuery($this->output);
+	/**
+	* Handle Telegram Request CallbackQuery
+	*/
+	public function handleCallbackQuery()
+	{
+		$callbackQuery = new CallbackQuery($this->_output);
 
-		$id = $callback_query->get_chat_id();
-		$mid = $callback_query->get_mid();
-		$data = $callback_query->get_data();
+		$id = $callbackQuery->getChatId();
+		$mid = $callbackQuery->getMid();
+		$data = $callbackQuery->getData();
+
+		$this->configure($id);
+
+		if (preg_match('/^switch_language_code$/', $data)) {
+			$groupUser = GroupUser::find($id)->one();
+
+			$groupUser->setLanguageCode($groupUser->getLanguageCode() == GroupUser::LANGUAGE_CODE_RUS ? GroupUser::LANGUAGE_CODE_ENG : GroupUser::LANGUAGE_CODE_RUS);
+			$groupUser->save();
+
+			$this->configure($id);
+
+			$this->sendMain($id, $mid);
+		}
+
+		if (preg_match('/^choose_language/', $data)) {
+			$slices = explode(":", $data);
+
+			$languageCode = $slices[1];
+
+			$groupUser = GroupUser::find($id)->one();
+			$groupUser->setLanguageCode($languageCode);
+			$groupUser->save();
+
+			$this->sendMain($id, $mid);
+		}
+
+		if (preg_match('/^remove_chat/', $data)) {
+			$slices = explode(":", $data);
+
+			$chatId = $slices[1];
+
+			GroupChat::find($chatId)->one()->delete();
+
+			$this->sendChats($id, $mid);
+		}
 
 		if (preg_match('/^go_to_instruction$/', $data)) {
-			$this->send_instruction($id, $mid);
+			$this->sendInstruction($id, $mid);
 		}
 
 		if (preg_match('/^remove_stopword/', $data)) {
 			$slices = explode(":", $data);
 
-			$stopword_id = $slices[1];
-			$chat_id = $slices[2];
+			$stopwordId = $slices[1];
+			$chatId = $slices[2];
 
-			GroupStopword::find($stopword_id)->one()->delete();
+			GroupStopword::find($stopwordId)->one()->delete();
 
-			$this->send_chat($id, $chat_id, $mid);
+			$this->sendChat($id, $chatId, $mid);
 		}
 
 		if (preg_match('/^remove_goword/', $data)) {
 			$slices = explode(":", $data);
 
-			$goword_id = $slices[1];
-			$chat_id = $slices[2];
+			$gowordId = $slices[1];
+			$chatId = $slices[2];
 
-			GroupGoword::find($goword_id)->one()->delete();
+			GroupGoword::find($gowordId)->one()->delete();
 
-			$this->send_chat($id, $chat_id, $mid);
+			$this->sendChat($id, $chatId, $mid);
 		}
 
 		if (preg_match('/^go_to_add_stopword/', $data)) {
 			$slices = explode(":", $data);
 
-			$chat_id = $slices[1];
+			$chatId = $slices[1];
 
-			$this->send_add_stopword($id, $chat_id, $mid);
+			$this->sendAddStopword($id, $chatId, $mid);
 		}
 
 		if (preg_match('/^go_to_add_goword/', $data)) {
 			$slices = explode(":", $data);
 
-			$chat_id = $slices[1];
+			$chatId = $slices[1];
 
-			$this->send_add_goword($id, $chat_id, $mid);
+			$this->sendAddGoword($id, $chatId, $mid);
 		}
 
 		if (preg_match('/^manage_mode/', $data)) {
 			$slices = explode(":", $data);
 
 			$mode = $slices[1];
-			$chat_id = $slices[2];
+			$chatId = $slices[2];
 
-			$chat = GroupChat::find()->where(['_id' => $chat_id])->one();
+			$chat = GroupChat::find()->where(['_id' => $chatId])->one();
 
 			if ($chat->getMode() != $mode) {
 				$chat->setMode($mode);
 				$chat->save();
 
-				$this->send_chat($id, $chat_id, $mid);
+				$this->sendChat($id, $chatId, $mid);
 			}
 		}
 
 		if (preg_match('/^go_to_chats$/', $data)) {
-			$this->send_chats($id, $mid);
+			$this->sendChats($id, $mid);
 			exit();
 		}
 
 		if (preg_match('/^go_to_chat/', $data)) {
 			$slices = explode(":", $data);
 
-			$chat_id = $slices[1];
+			$chatId = $slices[1];
 
-			$this->send_chat($id, $chat_id, $mid);
+			$this->sendChat($id, $chatId, $mid);
 		}
 
 		if (preg_match('/^go_to_main$/', $data)) {
-			$this->send_main($id, $mid);
+			$this->sendMain($id, $mid);
 		}
 	}
 
-	function start($id, $text) {
-		if (!Groupuser::find()->where(['id' => $id])->exists()) {
-			$groupuser = new Groupuser();
+	/**
+     * @param int $id
+     * @param string $text
+     */
+	public function start($id, $text)
+	{
+		if (!GroupUser::find()->where([self::ID_KEY => $id])->exists()) {
+			$groupUser = new GroupUser();
 
-			$groupuser->id = $id;
-			$groupuser->save();
+			$groupUser->id = $id;
+			$groupUser->save();
 		}
 
-		$this->send_main($id);
+		$this->sendMain($id);
 	}
 
-	private function main_reply() {
-		return urlencode("Привет! ✋
-Я бот, который фильтрует сообщения в группах!");
+	/**
+     * @return string
+     */
+	private function mainReply()
+	{
+		return \Yii::t('bot', 'Hello! ✋
+I am bot, who filter messages in groups!');
 	}
 
-	private function main_buttons() {
-		return $this->get_inline_keyboard([
-			[['text' => "🚀 Группы", 'callback_data' => 'go_to_chats']],
-			[['text' => '📕 Инструкция', 'callback_data' => "go_to_instruction"]],
+	/**
+     * @param int $id
+     * @param int $mid
+     * @param string $text
+     *
+     * @return InlineKeyboardMarkup
+     */
+	private function mainButtons($id)
+	{
+		$languageCode = GroupUser::find($id)->one()->getLanguageCode();
+
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
+			[['text' => \Yii::t('bot', '🚀 Groups'), 'callback_data' => 'go_to_chats']],
+			[['text' => \Yii::t('bot', '📕 Instruction'), 'callback_data' => "go_to_instruction"]],
+			[['text' => ($languageCode == GroupUser::LANGUAGE_CODE_RUS ? "🇬🇧 EN" : "🇷🇺 RU"), 'callback_data' => 'switch_language_code']],
 		]);
 	}
 
-	private function send_main($id, $mid = null) {
-		$reply = $this->main_reply() . $this->main_buttons();
-
-		TG::send_or_edit_messageHTML($id, $mid, $reply);
+	/**
+     * @param int $id
+     * @param int $mid
+     */
+	private function sendMain($id, $mid = null)
+	{
+		if (GroupUser::find($id)->one()->getLanguageCode() === null) {
+			$this->sendLanguageChoice($id, $mid);
+		} else {
+			$this->sendOrEditMessageHTML($id, $mid, $this->mainReply(), $this->mainButtons($id));
+		}
 	}
 
-	private function instruction_reply() {
-		return urlencode("<b>📕 Инструкция</b>
-
-Чтобы активировать бота в канале
-1) Добавьте бота в группу
-2) Назначьте его админом
-3) Отправьте в группу команду " . self::ENABLE_COMMAND . "
-4) Настройте бота в разделе \"🚀 Группы\"
-
-❗️ Для остановки работы бота отправьте команду " . self::DISABLE_COMMAND);
+	private function languageChoiceReply() {
+		return "Выберите язык / Choose language";
 	}
 
-	private function instruction_buttons() {
-		return $this->get_inline_keyboard([
-			[['text' => self::BACK, "callback_data" => "go_to_main"]],
+	private function languageChoiceButtons() {
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
+			[['text' => '🇷🇺 Русский', 'callback_data' => 'choose_language:' . GroupUser::LANGUAGE_CODE_RUS],
+			['text' => '🇬🇧 English', 'callback_data' => 'choose_language:' . GroupUser::LANGUAGE_CODE_ENG]],
 		]);
 	}
 
-	private function send_instruction($id, $mid = null) {
-		$reply = $this->instruction_reply() . $this->instruction_buttons();
-
-		TG::send_or_edit_messageHTML($id, $mid, $reply);
+	private function sendLanguageChoice($id, $mid = null) {
+		$this->sendOrEditMessageHTML($id, $mid, $this->languageChoiceReply(), $this->languageChoiceButtons());
 	}
 
-	private function chats_reply() {
-		return "<b>🚀 Группы</b>";
+	/**
+     * @return string
+     */
+	private function instructionReply()
+	{
+		return '<b>📕 ' . \Yii::t('bot', 'Instruction') . '</b>
+
+' . \Yii::t('bot', 'To activate bot in group') . '
+1) ' . \Yii::t('bot', 'Add bot to the group') . '
+2) ' . \Yii::t('bot', 'Make bot an admin') . '
+3) ' . \Yii::t('bot', 'Type a command in the group') . ' ' . self::ENABLE_COMMAND . '
+4) ' . \Yii::t('bot', 'Configure bot in menu') . ' ' . '"' . \Yii::t('bot', '🚀 Groups') . '"
+
+❗️ ' . \Yii::t('bot', 'To stop bot type a command') . ' ' . self::DISABLE_COMMAND;
 	}
 
-	private function chats_buttons($id) {
+	/**
+     * @return InlineKeyboardMarkup
+     */
+	private function instructionButtons()
+	{
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
+			[['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_main"]],
+		]);
+	}
+
+	/**
+     * @param int $id
+     * @param int $mid
+     */
+	private function sendInstruction($id, $mid = null)
+	{
+		$this->sendOrEditMessageHTML($id, $mid, $this->instructionReply(), $this->instructionButtons());
+	}
+
+	/**
+     * @return string
+     */
+	private function chatsReply()
+	{
+		return \Yii::t('bot', '<b>🚀 Groups</b>');
+	}
+
+	/**
+     * @param int $id
+     *
+     * @return InlineKeyboardMarkup
+     */
+	private function chatsButtons($id)
+	{
 		$chats = GroupChat::find()->where(['owner_id' => $id])->all();
 
 		foreach ($chats as $chat) {
-			$buttons[] = [['text' => "⚡️ " . $chat->getTitle(), 'callback_data' => 'go_to_chat:' . $chat->getId()]];
+			$buttons[] = [
+				['text' => "⚡️ " . $chat->getTitle(), 'callback_data' => 'go_to_chat:' . $chat->getId()],
+				['text' => \Yii::t('bot', '❌ Remove'), 'callback_data' => 'remove_chat:' . $chat->getId()],
+			];
 		}
 
-		$buttons[] = [['text' => self::BACK, "callback_data" => "go_to_main"]];
+		$buttons[] = [['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_main"]];
 
-		return $this->get_inline_keyboard($buttons);
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup($buttons);
 	}
 
-	private function send_chats($id, $mid = null) {
-		$reply = $this->chats_reply() . $this->chats_buttons($id);
-
-		TG::send_or_edit_messageHTML($id, $mid, $reply);
+	/**
+     * @param int $id
+     * @param int $mid
+     */
+	private function sendChats($id, $mid = null)
+	{
+		$this->sendOrEditMessageHTML($id, $mid, $this->chatsReply(), $this->chatsButtons($id));
 	}
 
-	private function add_goword_reply() {
-		return "Отправьте фразу";
+	/**
+     * @return string
+     */
+	private function addGowordReply()
+	{
+		return \Yii::t('bot', 'Type a phrase');
 	}
 
-	private function add_goword_buttons($chat_id) {
-		return $this->get_inline_keyboard([
-			[['text' => self::BACK, "callback_data" => "go_to_chat:$chat_id"]],
+	/**
+     * @param int $chatId
+     *
+     * @return InlineKeyboardMarkup
+     */
+	private function addGowordButtons($chatId)
+	{
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
+			[['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_chat:$chatId"]],
 		]);
 	}
 
-	private function send_add_goword($id, $chat_id, $mid = null) {
-		$reply = $this->add_goword_reply() . $this->add_goword_buttons($chat_id);
-
-		$user = Groupuser::find()->where(['id' => $id])->one();
-		$user->setChatId($chat_id);
+	/**
+     * @param int $id
+     * @param int $chatId
+     * @param int $mid
+     */
+	private function sendAddGoword($id, $chatId, $mid = null)
+	{
+		$user = GroupUser::find()->where([self::ID_KEY => $id])->one();
+		$user->setChatId($chatId);
 		$user->setFlag(1);
 		$user->save();
 
-		TG::send_or_edit_messageHTML($id, $mid, $reply, TRUE);
+		$this->sendOrEditMessageHTML($id, $mid, $this->addGowordReply(), $this->addGowordButtons($chatId), true);
 	}
 
-	private function add_stopword_reply() {
+	/**
+     * @return string
+     */
+	private function addStopwordReply()
+	{
 		return "Отправьте фразу";
 	}
 
-	private function add_stopword_buttons($chat_id) {
-		return $this->get_inline_keyboard([
-			[['text' => self::BACK, "callback_data" => "go_to_chat:$chat_id"]],
+	/**
+     * @param int $chatId
+     *
+     * @return InlineKeyboardMarkup
+     */
+	private function addStopwordButtons($chatId)
+	{
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup([
+			[['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_chat:$chatId"]],
 		]);
 	}
 
-	private function send_add_stopword($id, $chat_id, $mid = null) {
-		$reply = $this->add_stopword_reply() . $this->add_stopword_buttons($chat_id);
-
-		$user = Groupuser::find()->where(['id' => $id])->one();
-		$user->setChatId($chat_id);
+	/**
+     * @param int $id
+     * @param int $chatId
+     * @param int $mid
+     */
+	private function sendAddStopword($id, $chatId, $mid = null)
+	{
+		$user = GroupUser::find()->where([self::ID_KEY => $id])->one();
+		$user->setChatId($chatId);
 		$user->setFlag(2);
 		$user->save();
 
-		TG::send_or_edit_messageHTML($id, $mid, $reply, TRUE);
+		$this->sendOrEditMessageHTML($id, $mid, $this->addStopwordReply(), $this->addStopwordButtons($chatId), true);
 	}
 
-	private function chat_reply($chat_id) {
-		$chat = GroupChat::find($chat_id)->one();
+	/**
+     * @param int $id
+     * @param int $mid
+     * @param string $reply
+     * @param InlineKeyboardMarkup $replyMarkup
+     * @param bool $delete
+     */
+	private function sendOrEditMessageHTML($id, $mid, $reply, $replyMarkup, $delete = false)
+	{
+		if ($delete) {
+			if ($mid !== null) {
+				$this->_botApi->deleteMessage($id, $mid);
+			}
+
+			$this->_botApi->sendMessage($id, $reply, self::HTML, false, null, $replyMarkup);
+		} else {
+			if ($mid === null) {
+				$this->_botApi->sendMessage($id, $reply, self::HTML, false, null, $replyMarkup);
+			} else {
+				$this->_botApi->editMessageText($id, $mid, $reply, self::HTML, false, $replyMarkup);
+			}
+		}
+	}
+
+	/**
+	 * @param int $chatId
+	 *
+     * @return string
+     */
+	private function chatReply($chatId)
+	{
+		$chat = GroupChat::find($chatId)->one();
 
 		$title = $chat->getTitle();
 		$mode = $chat->getMode();
+		$enabled = $chat->getEnabled();
 
-		return urlencode("⚡️ " . $title . "
+		return "⚡️ " . $title . "
 
-<b>Режим:</b> " . ($mode == self::MODE_GO ? "Пропускные фразы" : "Стоп фразы"));
+<b>" . \Yii::t('bot', 'Mode') . ":</b> " . ($mode == GroupChat::MODE_GO ? \Yii::t('bot', 'Go phrases')  : \Yii::t('bot', 'Stop phrases')) . "
+
+<b>" . ($enabled == true ? "✅ " . \Yii::t('bot', 'Launched') : '❗️ ' . \Yii::t('bot', 'Paused')) . "</b>";
 	}
 
-	private function chat_buttons($chat_id) {
-
-		$chat = GroupChat::find()->where(['_id' => $chat_id])->one();
+	/**
+     * @param int $chatId
+     *
+     * @return InlineKeyboardMarkup
+     */
+	private function chatButtons($chatId)
+	{
+		$chat = GroupChat::find()->where(['_id' => $chatId])->one();
 
 		$mode = $chat->getMode();
 
-		$go = ($mode == self::MODE_GO ? "✅" : "🅾️") . " Пропускные фразы";
-		$stop = ($mode == self::MODE_STOP ? "✅" : "🅾️") . " Стоп фразы";
+		$go = ($mode == GroupChat::MODE_GO ? "✅" : "🅾️") . " " . \Yii::t('bot', 'Go phrases');
+		$stop = ($mode == GroupChat::MODE_STOP ? "✅" : "🅾️") . " " . \Yii::t('bot', 'Stop phrases');
 
-		$phrases = $mode == self::MODE_GO ? GroupGoword::find()->where(['chat_id' => $chat_id])->all() : GroupStopword::find()->where(['chat_id' => $chat_id])->all();
+		$phrases = $mode == GroupChat::MODE_GO ? GroupGoword::find()->where(['chat_id' => $chatId])->all() : GroupStopword::find()->where(['chat_id' => $chatId])->all();
 
 		$buttons = [];
 
-		$buttons[] = [['text' => $go, "callback_data" => "manage_mode:" . self::MODE_GO . ":$chat_id"], ['text' => $stop, 'callback_data' => "manage_mode:" . self::MODE_STOP . ":$chat_id"]];
+		$buttons[] = [['text' => $go, "callback_data" => "manage_mode:" . GroupChat::MODE_GO . ":$chatId"], ['text' => $stop, 'callback_data' => "manage_mode:" . GroupChat::MODE_STOP . ":$chatId"]];
 
 		foreach ($phrases as $phrase) {
-			$callback_data = ($mode == self::MODE_GO ? "remove_goword:" . $phrase->getId() : "remove_stopword:" . $phrase->getId()) . ":" . $chat_id;
+			$callbackData = ($mode == GroupChat::MODE_GO ? "remove_goword:" . $phrase->getId() : "remove_stopword:" . $phrase->getId()) . ":" . $chatId;
 
-			$buttons[] = [['text' => "⚡️ " . $phrase->getText(), "callback_data" => $callback_data]];
+			$buttons[] = [['text' => "⚡️ " . $phrase->getText(), "callback_data" => $callbackData]];
 		}
 
-		$callback_data = $mode == self::MODE_GO ? "go_to_add_goword:$chat_id" : "go_to_add_stopword:$chat_id";
+		$callbackData = $mode == GroupChat::MODE_GO ? "go_to_add_goword:$chatId" : "go_to_add_stopword:$chatId";
 
-		$buttons[] = [['text' => '✅ Добавить фразу', 'callback_data' => $callback_data]];
-		$buttons[] = [['text' => self::BACK, "callback_data" => "go_to_chats"],
-					['text' => self::MAIN, "callback_data" => "go_to_main"]];
+		$buttons[] = [['text' => '✅ ' . \Yii::t('bot', 'Add phrase'), 'callback_data' => $callbackData]];
+		$buttons[] = [['text' => \Yii::t('bot', self::BACK), "callback_data" => "go_to_chats"],
+					['text' => \Yii::t('bot', self::MAIN), "callback_data" => "go_to_main"]];
 
-		return $this->get_inline_keyboard($buttons);
+		return new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup($buttons);
 	}
 
-	private function send_chat($id, $chat_id, $mid = null) {
-		$reply = $this->chat_reply($chat_id) . $this->chat_buttons($chat_id);
-
-		$user = Groupuser::find($id)->one();
+	/**
+     * @param int $id
+     * @param int $chatId
+     * @param int $mid
+     */
+	private function sendChat($id, $chatId, $mid = null)
+	{
+		$user = GroupUser::find($id)->one();
 		$user->setFlag(0);
 		$user->save();
 
-		TG::send_or_edit_messageHTML($id, $mid, $reply);
-	}
-
-	private function send_or_edit_messageHTML($id, $mid, $reply, $delete = FALSE) {
-		if ($delete) {
-			if ($mid !== null) {
-				TG::deleteMessage($id, $mid);
-			}
-
-			$this->sendMessageHTML($id, $reply);
-		} else {
-			if ($mid === null) {
-				TG::sendMessageHTML($id, $reply);
-			} else {
-				TG::editMessageTextHTML($id, $mid, $reply);
-			}
-		}
-	}
-
-	private function get_inline_keyboard($buttons) {
-    	$keyboard = [
-        	'inline_keyboard' => $buttons,
-        ];
-
-    	return "&reply_markup=" . json_encode($keyboard);
+		$this->sendOrEditMessageHTML($id, $mid, $this->chatReply($chatId), $this->chatButtons($chatId));
 	}
 }
 

@@ -20,7 +20,7 @@ class GroupGoword extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'group_gowords';
+        return 'group_goword';
     }
 
     /**

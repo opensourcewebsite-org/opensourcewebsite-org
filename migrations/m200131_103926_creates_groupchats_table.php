@@ -12,19 +12,20 @@ class m200131_103926_creates_groupchats_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%group_chats}}', [
-            '_id' => $this->primaryKey(),
-            'owner_id' => $this->integer()->notNull(),
-            'tg_id' => $this->integer()->notNull(),
+        $this->createTable('{{%group_chat}}', [
+            '_id' => $this->primaryKey()->unsigned(),
+            'owner_id' => $this->integer()->unsigned()->notNull(),
+            'tg_id' => $this->string()->notNull(),
             'title' => $this->string()->notNull(),
-            'mode' => $this->integer()->notNull(),
+            'mode' => $this->tinyInteger()->notNull(),
+            'enabled' => $this->boolean()->notNull(),
         ]);
 
         $this->addForeignKey(
-            'fk-chats-owner-id-to-users',
-            'group_chats',
+            'fk-chat-owner-id-to-user',
+            '{{%group_chat}}',
             'owner_id',
-            'groupusers',
+            '{{%group_user}}',
             'id',
             'CASCADE'
         );
@@ -35,11 +36,9 @@ class m200131_103926_creates_groupchats_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%group_chats}}');
+        $this->dropForeignKey('fk-chat-owner-id-to-user', '{{%group_chat}}');
 
-        $this->dropForeignKey('fk-chats-owner-id-to-users', 'group_chats');
-
-        return true;
+        $this->dropTable('{{%group_chat}}');
     }
 
     /*

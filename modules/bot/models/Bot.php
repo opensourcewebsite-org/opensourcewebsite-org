@@ -148,4 +148,11 @@ class Bot extends \yii\db\ActiveRecord
     {
         return $this->hasMany(BotOutsideMessage::className(), ['bot_id' => 'id']);
     }
+
+    /**
+     * @return int
+     */
+    public function getStatus() {
+        return $this->status;
+    }
 }

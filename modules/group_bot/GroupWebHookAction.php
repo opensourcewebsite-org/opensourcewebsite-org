@@ -4,19 +4,40 @@ namespace app\modules\group_bot;
 
 use yii\base\Action;
 use app\modules\group_bot\BotHandler;
-use app\modules\group_bot\telegram\TG;
+use app\modules\bot\telegram\BotApiClient;
+use app\modules\bot\models\Bot;
 
+/**
+ * Class GroupWebHookAction
+ *
+ * @package app\modules\group_bot
+ */
 class GroupWebHookAction extends Action {
 	
-	public function run($token = '') {
-		$output = json_decode(file_get_contents("php://input"), true);
 
-		$bot_handler = new BotHandler($output);
+	/**
+     * @param string $token
+     */
+	public function run($token = '')
+	{
 
-		if (TG::is_callback_query($output)) {
-			$bot_handler->handleCallbackQuery();
-		} else if (TG::is_input_message($output)) {
-			$bot_handler->handleInputMessage();
+		if (Bot::find()->where(['token' => $token])->exists()) {
+
+			$bot = Bot::find()->where(['token' => $token])->one();
+			if ($bot->getStatus() == Bot::BOT_STATUS_DISABLED) {
+				return;
+			}
+
+			$output = json_decode(file_get_contents("php://input"), true);
+
+			$botHandler = new BotHandler($output, $token);
+			$botApiClient = new BotApiClient($token, $output);
+
+			if ($botApiClient->getCallbackQuery() !== null) {
+				$botHandler->handleCallbackQuery();
+			} else if ($botApiClient->getMessage() !== null) {
+				$botHandler->handleInputMessage();
+			}
 		}
 	}
 }

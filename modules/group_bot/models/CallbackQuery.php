@@ -2,23 +2,47 @@
 
 namespace app\modules\group_bot\models;
 
+/**
+ * Class CallbackQuery
+ *
+ * @package app\modules\group_bot\models
+ */
 class CallbackQuery {
-	private $output;
+	/**
+     * Telegram Request
+     */
+	private $_output;
 
-	function __construct($output) {
-		$this->output = $output;
+	/**
+     * @param array $output
+     */
+	public function __construct($output)
+	{
+		$this->_output = $output;
 	}
 
-	function get_chat_id() {
-		return $this->output['callback_query']['message']['chat']['id'];
+	/**
+     * @return int
+     */
+	public function getChatId()
+	{
+		return $this->_output['callback_query']['message']['chat']['id'];
 	}
 
-	function get_mid() {
-		return $this->output['callback_query']['message']['message_id'];
+	/**
+     * @return int
+     */
+	public function getMid()
+	{
+		return $this->_output['callback_query']['message']['message_id'];
 	}
 
-	function get_data() {
-		return $this->output['callback_query']['data'];
+	/**
+     * @return string
+     */
+	public function getData()
+	{
+		return $this->_output['callback_query']['data'];
 	}
 }
 
