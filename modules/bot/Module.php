@@ -31,6 +31,11 @@ class Module extends \yii\base\Module
     public $update;
 
     /**
+     * @var \app\models\User
+     */
+    public $user;
+
+    /**
      * @var \TelegramBot\Api\Types\Chat
      */
     private $chat;
@@ -105,11 +110,15 @@ class Module extends \yii\base\Module
 
             if (!isset($botClient->user_id))
             {
-                $user = User::genereateUserWithRandomPassword();
-                if ($user)
+                $this->user = User::genereateUserWithRandomPassword();
+                if ($this->user)
                 {
-                    $botClient->user_id = $user->id;
+                    $botClient->user_id = $this->user->id;
                 }
+            }
+            else
+            {
+                $this->user = User::findOne($botClient->user_id);
             }
 
             if (isset($botClient->user_id))

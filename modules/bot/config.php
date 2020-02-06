@@ -19,6 +19,9 @@ return [
                 '/set_email' => 'my_email/create',
                 '@change_email' => 'my_email/update',
 
+                '/set_birthday' => 'my_birthday/create',
+                '@change_birthday' => 'my_birthday/update',
+
 				'/<controller:\w+>' => '<controller>/index',
             ],
         ],

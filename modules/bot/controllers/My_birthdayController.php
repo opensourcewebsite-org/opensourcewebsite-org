@@ -2,6 +2,9 @@
 
 namespace app\modules\bot\controllers;
 
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use Yii;
+
 /**
  * Class My_birthdayController
  *
@@ -14,25 +17,63 @@ class My_birthdayController extends Controller
      */
     public function actionIndex()
     {
-    	// $botClient = \Yii::$app->botClient->getModel();
-     //    $text = \Yii::$app->requestMessage->getText();
-    	// $success = $this->validateDate($text, 'd.m.Y');
-     //    if ($success)
-     //    {
-     //        $botClient->setState();
-     //    }
 
         return [
             [
                 'type' => 'message',
-                'text' => $this->render('index'),
+                'text' => $this->render('index',
+                    [
+                        'birthday' => (new \DateTime($this->module->user->birthday))->format('m.d.Y')
+                    ]),
+                'replyMarkup' => new InlineKeyboardMarkup(
+                    [
+                        [
+                            [
+                                'callback_data' => 'change_birthday',
+                                'text' => Yii::t('bot', 'Change Birthday'),
+                            ]
+                        ]
+                    ]),
             ]
         ];
     }
 
-    private function validateDate($date, $format)
+    public function actionCreate()
     {
-        $dateObject = \DateTime::createFromFormat($format, $date);
-        return $dateObject && $dateObject->format($format) === $date;
+        $text = $this->module->update->getMessage()->getText();
+        $this->module->user->birthday = $text;
+        if ($success = $this->module->user->save())
+        {
+            $this->module->botClient->setState();
+            $this->module->botClient->save();
+        }
+
+        return [
+            [
+                'type' => 'message',
+                'text' => $this->render('create',
+                    [
+                        'success' => $success,
+                    ]),
+            ]
+        ];
+    }
+
+    public function actionUpdate()
+    {
+        $this->module->botClient->setState([
+            'state' => '/set_birthday',
+        ]);
+        $this->module->botClient->save();
+
+        return [
+            [
+                'type' => 'message',
+                'text' => $this->render('update'),
+            ],
+            [
+                'type' => 'callback'
+            ]
+        ];
     }
 }
