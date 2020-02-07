@@ -45,7 +45,7 @@ class My_emailController extends Controller
                 'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => 'change_email',
+                                    'callback_data' => '/change_email',
                                     'text' => Yii::t('bot', 'Change Email')
                                 ]
                             ]

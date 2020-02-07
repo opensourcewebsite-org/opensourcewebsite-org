@@ -29,7 +29,7 @@ class My_birthdayController extends Controller
                     [
                         [
                             [
-                                'callback_data' => 'change_birthday',
+                                'callback_data' => '/change_birthday',
                                 'text' => Yii::t('bot', 'Change Birthday'),
                             ]
                         ]

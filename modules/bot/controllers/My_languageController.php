@@ -6,6 +6,8 @@ use app\models\Language;
 use app\modules\bot\helpers\PaginationButtons;
 use app\modules\bot\telegram\Message;
 use yii\data\Pagination;
+use Yii;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class My_languageController
@@ -21,23 +23,15 @@ class My_languageController extends Controller
      */
     public function actionIndex($language = null)
     {
-        \Yii::$app->responseMessage->setKeyboard(new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
-            [
-                [
-                    ['callback_data' => 'language_list', 'text' => \Yii::t('bot', 'Change Language')],
-                ],
-            ]
-        ));
-
         $languageModel = null;
         if ($language) {
             $languageModel = Language::findOne(['code' => $language]);
             if ($languageModel) {
-                $botClient = \Yii::$app->botClient->getModel();
+                $botClient = $this->module->botClient;
                 if ($botClient) {
                     $botClient->language_code = $language;
                     if ($botClient->save()) {
-                        \Yii::$app->language = $languageModel->code;
+                        Yii::$app->language = $languageModel->code;
                     }
                 }
             }
@@ -46,7 +40,21 @@ class My_languageController extends Controller
         $currentCode = \Yii::$app->language;
         $currentName = $languageModel ? $languageModel->name : Language::findOne(['code' => $currentCode])->name;
 
-        return $this->render('index', compact('languageModel', 'currentCode', 'currentName'));
+        return [
+            [
+                'type' => 'message',
+                'text' => $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
+                'replyMarkup' => new InlineKeyboardMarkup(
+                            [
+                                [
+                                    [
+                                        'callback_data' => '/language_list',
+                                        'text' => Yii::t('bot', 'Change Language')
+                                    ],
+                                ],
+                            ])
+            ]
+        ];
     }
 
     /**
@@ -74,12 +82,12 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        \Yii::$app->responseMessage->setKeyboard(PaginationButtons::build('language_list_<page>', $pagination));
-
-        /** @var Message $responseMessage */
-        $responseMessage = \Yii::$app->responseMessage;
-        $responseMessage->setMessageId(\Yii::$app->requestMessage->getMessageId());
-
-        return $this->render('language-list', compact('languages', 'pagination'));
+        return [
+            [
+                'type' => 'editMessage',
+                'text' => $this->render('language-list', compact('languages', 'pagination')),
+                'replyMarkup' => PaginationButtons::build('language_list_<page>', $pagination)
+            ]
+        ];
     }
 }

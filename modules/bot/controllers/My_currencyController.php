@@ -4,8 +4,9 @@ namespace app\modules\bot\controllers;
 
 use app\models\Currency;
 use app\modules\bot\helpers\PaginationButtons;
-use app\modules\bot\telegram\Message;
 use yii\data\Pagination;
+use Yii;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class My_currencyController
@@ -21,15 +22,7 @@ class My_currencyController extends Controller
      */
     public function actionIndex($currency = null)
     {
-        \Yii::$app->responseMessage->setKeyboard(new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
-            [
-                [
-                    ['callback_data' => 'currency_list', 'text' => \Yii::t('bot', 'Change Currency')],
-                ],
-            ]
-        ));
-
-        $botClient = \Yii::$app->botClient->getModel();
+        $botClient = $this->module->botClient;
 
         $currencyModel = null;
         if ($currency) {
@@ -45,11 +38,20 @@ class My_currencyController extends Controller
         $currentCode = $botClient->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
-
         return [
             [
                 'type' => 'message',
                 'text' => $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
+                'replyMarkup' => new InlineKeyboardMarkup(
+            [
+                [
+                    [
+                        'callback_data' => '/currency_list',
+                        'text' => Yii::t('bot', 'Change Currency')
+                    ],
+                ],
+            ]
+        )
             ]
         ];
     }
@@ -79,16 +81,11 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        \Yii::$app->responseMessage->setKeyboard(PaginationButtons::build('currency_list_<page>', $pagination));
-
-        /** @var Message $responseMessage */
-        $responseMessage = \Yii::$app->responseMessage;
-        $responseMessage->setMessageId(\Yii::$app->requestMessage->getMessageId());
-
         return [
             [
-                'type' => 'message',
+                'type' => 'editMessage',
                 'text' => $this->render('currency-list', compact('currencies', 'pagination')),
+                'replyMarkup' => PaginationButtons::build('currency_list_<page>', $pagination)
             ]
         ];
     }

@@ -6,6 +6,7 @@ use app\modules\bot\telegram\BotApiClient;
 use app\modules\bot\Module;
 use yii\base\Component;
 use yii\base\InvalidRouteException;
+use Yii;
 
 /**
  * Class CommandRouter
@@ -18,8 +19,6 @@ class CommandRouter extends Component
      * @var string
      */
     public $defaultAction = 'index';
-
-    public $invalidRouteRedirect = false;
 
     /**
      * @var array
@@ -45,49 +44,15 @@ class CommandRouter extends Component
      * @throws \yii\base\InvalidRouteException
      * @throws \yii\base\InvalidConfigException
      */
-    public function dispatchRoute($update)
+    public function dispatchRoute($route)
     {
-        $status = false;
-        $route = null;
-        $params = [];
-        $response = null;
-        $notFound = false;
-
-        $isBotCommand = false;
-
-        if ($update->getMessage() && $this->isBotCommand($update->getMessage()->getText())) {
-            $parts = $this->resolveCommandRoute($update->getMessage()->getText());
-            list($route, $params) = $parts;
-            $isBotCommand = true;
-        } elseif ($callbackQuery = $update->getCallbackQuery()) {
-            $parts = $this->resolveCallbackRoute($callbackQuery);
-            list($route, $params) = $parts;
-        } else {
-            list($route, $params) = $this->resolveRouteByState(Module::getInstance()->botClient->getState());
-        }
-
+        list($route, $params) = $this->resolveCommandRoute($route);
+        Yii::info(json_encode($route));
         if ($route) {
-            \Yii::warning($route);
-            \Yii::warning($params);
-            try {
-                $response = Module::getInstance()->runAction($route, $params);
-            } catch (InvalidRouteException $e) {
-                $notFound = true;
-            }
-        } elseif ($this->invalidRouteRedirect && $isBotCommand) {
-            $notFound = true;
-        }
-
-        if ($notFound) {
-            $response = Module::getInstance()->runAction($this->invalidRouteRedirect);
+            $response = Module::getInstance()->runAction($route, $params);
         }
 
         return $response;
-    }
-
-    public function isBotCommand($text)
-    {
-        return substr(trim($text), 0, 1) === '/';
     }
 
     /**
@@ -103,46 +68,10 @@ class CommandRouter extends Component
         $params = [];
 
         foreach ($this->rules as $pattern => $targetRoute) {
-            if ('/' !== substr($pattern, 0, 1)) {
-                continue;
-            }
 
             $pattern = $this->preparePattern($pattern);
 
             if (preg_match($pattern, $commandText, $matches)) {
-                list($route, $params) = $this->prepareRoute($targetRoute, $matches);
-            }
-
-            if ($route) {
-                break;
-            }
-        }
-
-        return [$route, $params];
-    }
-
-    /**
-     * Resolve route in callback query rules
-     *
-     * @param $callbackQuery
-     *
-     * @return array
-     */
-    public function resolveCallbackRoute($callbackQuery)
-    {
-        $route = null;
-        $params = [];
-
-        $callbackText = '@' . $callbackQuery->getData();
-
-        foreach ($this->rules as $pattern => $targetRoute) {
-            if ('@' !== substr($pattern, 0, 1)) {
-                continue;
-            }
-
-            $pattern = $this->preparePattern($pattern);
-
-            if (preg_match($pattern, $callbackText, $matches)) {
                 list($route, $params) = $this->prepareRoute($targetRoute, $matches);
             }
 

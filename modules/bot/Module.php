@@ -18,7 +18,14 @@ class Module extends \yii\base\Module
     /** 
      * @var TelegramBot\Api\BotApi
      */
-    public $botApi;
+    private $botApi;
+
+    /**
+     * @var \TelegramBot\Api\Types\Chat
+     */
+    private $chat;
+
+    private $requestId;
 
     /**
      * @var app\modules\bot\models\BotClient
@@ -34,13 +41,6 @@ class Module extends \yii\base\Module
      * @var \app\models\User
      */
     public $user;
-
-    /**
-     * @var \TelegramBot\Api\Types\Chat
-     */
-    private $chat;
-
-    private $requestId;
 
     public function init()
     {
@@ -150,6 +150,11 @@ class Module extends \yii\base\Module
         return $botClient;
     }
 
+    public function isBotCommand($text)
+    {
+        return substr(trim($text), 0, 1) === '/';
+    }
+
     /**
      * @param $update \TelegramBot\Api\Types\Update
      *
@@ -161,7 +166,15 @@ class Module extends \yii\base\Module
     {
         $result = false;
 
-        $responses = $this->commandRouter->dispatchRoute($update);
+        if ($update->getMessage() && $this->isBotCommand($update->getMessage()->getText())) {
+            $route = $update->getMessage()->getText();
+        } elseif ($callbackQuery = $update->getCallbackQuery()) {
+            $route = $callbackQuery->getData();
+        } else {
+            $route = $this->botClient->getState()->state;
+        }
+
+        $responses = $this->commandRouter->dispatchRoute($route);
         if (is_array($responses))
         {
             $chatId = $this->chat->getId();
@@ -176,6 +189,17 @@ class Module extends \yii\base\Module
                         'html',
                         FALSE,
                         NULL,
+                        $response->replyMarkup
+                    );
+                }
+                elseif ($type == 'editMessage')
+                {
+                    $this->botApi->editMessageText(
+                        $chatId,
+                        $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                        $this->prepareText($response->text),
+                        'html',
+                        FALSE,
                         $response->replyMarkup
                     );
                 }
