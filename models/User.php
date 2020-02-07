@@ -59,6 +59,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['name', 'string'],
             [['birthday'], 'date', 'format' => 'php:d.m.Y'],
             ['email', 'email'],
+            [['gender'], 'boolean']
         ];
     }
 
@@ -164,7 +165,7 @@ class User extends ActiveRecord implements IdentityInterface
         return $timestamp + $expireTime >= time();
     }
 
-    public static function genereateUserWithRandomPassword()
+    public static function generateUserWithRandomPassword()
     {
         $length = 126;
         $chars = array_merge(range(0, 9), range('a', 'z'), range('A', 'Z'));
