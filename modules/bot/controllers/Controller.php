@@ -93,4 +93,31 @@ class Controller extends \yii\base\Controller
 
         return $args;
     }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    protected function prepareText($text)
+    {
+        $text = str_replace(["\n", "\r\n"], '', $text);
+
+        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
+    }
+
+    protected function getBotClient()
+    {
+        return $this->module->botClient;
+    }
+
+    protected function getUser()
+    {
+        return $this->module->user;
+    }
+
+    protected function getUpdate()
+    {
+        return $this->module->update;
+    }
 }

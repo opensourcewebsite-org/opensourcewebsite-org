@@ -108,8 +108,13 @@ class BotClient extends \yii\db\ActiveRecord
         return (object)json_decode($this->state, TRUE);
     }
 
-    public function setState($state = NULL)
+    public function setState($state)
     {
-        $this->state = isset($state) ? json_encode($state) : NULL;
+        $this->state = json_encode($state);
+    }
+
+    public function resetState()
+    {
+        $this->state = NULL;
     }
 }

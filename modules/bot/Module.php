@@ -9,6 +9,8 @@ use app\modules\bot\models\Bot;
 use app\modules\bot\models\BotClient;
 use yii\base\InvalidRouteException;
 use app\models\User;
+use app\modules\bot\components\request\MessageRequestHandler;
+use app\modules\bot\components\request\CallbackQueryRequestHandler;
 
 /**
  * admin module definition class
@@ -20,12 +22,7 @@ class Module extends \yii\base\Module
      */
     private $botApi;
 
-    /**
-     * @var \TelegramBot\Api\Types\Chat
-     */
-    private $chat;
-
-    private $requestId;
+    private $requestHandler;
 
     /**
      * @var app\modules\bot\models\BotClient
@@ -47,6 +44,9 @@ class Module extends \yii\base\Module
         parent::init();
 
         Yii::configure($this, require __DIR__ . '/config.php');
+
+        $this->requestHandler = new MessageRequestHandler();
+        $this->requestHandler = new CallbackQueryRequestHandler($this->requestHandler);
     }
 
     public function handleInput($input, $token)
@@ -83,18 +83,7 @@ class Module extends \yii\base\Module
      */
     private function resolveBotClient($update)
     {
-        if ($update->getMessage())
-        {
-            $from = $update->getMessage()->getFrom();
-            $this->chat = $update->getMessage()->getChat();
-            $this->requestId = $update->getMessage()->getMessageId();
-        }
-        else if ($update->getCallbackQuery())
-        {
-            $from = $update->getCallbackQuery()->getFrom();
-            $this->chat = $update->getCallbackQuery()->getMessage()->getChat();
-            $this->requestId = $update->getCallbackQuery()->getId();
-        }
+        $from = $this->requestHandler->getFrom($update);
 
         if ($from)
         {
@@ -110,7 +99,7 @@ class Module extends \yii\base\Module
 
             if (!isset($botClient->user_id))
             {
-                $this->user = User::genereateUserWithRandomPassword();
+                $this->user = User::generateUserWithRandomPassword();
                 if ($this->user)
                 {
                     $botClient->user_id = $this->user->id;
@@ -166,77 +155,24 @@ class Module extends \yii\base\Module
     {
         $result = false;
 
-        if ($update->getMessage() && $this->isBotCommand($update->getMessage()->getText())) {
-            $route = $update->getMessage()->getText();
-        } elseif ($callbackQuery = $update->getCallbackQuery()) {
-            $route = $callbackQuery->getData();
+        if (($text = $this->requestHandler->getText($update))
+            && $this->isBotCommand($text)) {
+            $route = $text;
         } else {
             $route = $this->botClient->getState()->state;
         }
-
-        $responses = $this->commandRouter->dispatchRoute($route);
-        if (is_array($responses))
+        
+        $commandSenders = $this->commandRouter->dispatchRoute($route);
+        if (is_array($commandSenders))
         {
-            $chatId = $this->chat->getId();
-            foreach ($responses as $response) {
-                $response = (object)$response;
-                $type = $response->type;
-                if ($type == 'message')
-                {
-                    $this->botApi->sendMessage(
-                        $chatId,
-                        $this->prepareText($response->text),
-                        'html',
-                        FALSE,
-                        NULL,
-                        $response->replyMarkup
-                    );
-                }
-                elseif ($type == 'editMessage')
-                {
-                    $this->botApi->editMessageText(
-                        $chatId,
-                        $this->update->getCallbackQuery()->getMessage()->getMessageId(),
-                        $this->prepareText($response->text),
-                        'html',
-                        FALSE,
-                        $response->replyMarkup
-                    );
-                }
-                elseif ($type == 'location')
-                {
-                    $this->botApi->sendLocation(
-                        $chatId,
-                        $response->latitude,
-                        $response->longtitude,
-                        NULL,
-                        $response->replyMarkup
-                    );
-                }
-                elseif ($type == 'callback')
-                {
-                    $this->botApi->answerCallbackQuery(
-                        $this->requestId
-                    );
-                }
+            foreach ($commandSenders as $commandSender) {
+                $commandSender->sendCommand($this->botApi);
             }
 
             $result = true;
         }
 
         return $result;
-    }
-
-    /**
-     * @param string $text
-     *
-     * @return string
-     */
-    public static function prepareText($text)
-    {
-        $text = str_replace(["\n", "\r\n"], '', $text);
-
-        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
     }
 
     /**
