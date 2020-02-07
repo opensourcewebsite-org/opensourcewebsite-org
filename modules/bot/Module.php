@@ -161,7 +161,7 @@ class Module extends \yii\base\Module
         } else {
             $route = $this->botClient->getState()->state;
         }
-        
+
         $commandSenders = $this->commandRouter->dispatchRoute($route);
         if (is_array($commandSenders))
         {

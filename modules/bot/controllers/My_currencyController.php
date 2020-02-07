@@ -7,7 +7,12 @@ use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
 use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-
+use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\EditMessageTextCommandSender;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
+use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 /**
  * Class My_currencyController
  *
@@ -22,7 +27,8 @@ class My_currencyController extends Controller
      */
     public function actionIndex($currency = null)
     {
-        $botClient = $this->module->botClient;
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
 
         $currencyModel = null;
         if ($currency) {
@@ -38,21 +44,24 @@ class My_currencyController extends Controller
         $currentCode = $botClient->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
+        $text = $this->render('index', compact('currencyModel', 'currentCode', 'currentName'));
+
         return [
-            [
-                'type' => 'message',
-                'text' => $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
-                'replyMarkup' => new InlineKeyboardMarkup(
-            [
-                [
-                    [
-                        'callback_data' => '/currency_list',
-                        'text' => Yii::t('bot', 'Change Currency')
-                    ],
-                ],
-            ]
-        )
-            ]
+            new SendMessageCommandSender(
+                new SendMessageCommand([
+                    'chatId' => $update->getMessage()->getChat()->getId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/currency_list',
+                                'text' => Yii::t('bot', 'Change Currency')
+                            ],
+                        ],
+                    ])
+                ])
+            ),
         ];
     }
 
@@ -64,6 +73,8 @@ class My_currencyController extends Controller
      */
     public function actionCurrencyList($page = 1)
     {
+        $update = $this->getUpdate();
+
         $currencyQuery = Currency::find()->orderBy('code ASC');
         $countQuery = clone $currencyQuery;
         $pagination = new Pagination([
@@ -81,12 +92,23 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $text = $this->render('currency-list', compact('currencies', 'pagination'));
+
         return [
-            [
-                'type' => 'editMessage',
-                'text' => $this->render('currency-list', compact('currencies', 'pagination')),
-                'replyMarkup' => PaginationButtons::build('currency_list_<page>', $pagination)
-            ]
+            new EditMessageTextCommandSender(
+                new EditMessageTextCommand([
+                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                    'messageId' => $update->getCallbackQuery()->getmessage()->getMessageId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                    'replyMarkup' => PaginationButtons::build('/currency_list_<page>', $pagination),
+                ])
+            ),
+            new AnswerCallbackQueryCommandSender(
+                new AnswerCallbackQueryCommand([
+                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
+                ])
+            ),
         ];
     }
 }

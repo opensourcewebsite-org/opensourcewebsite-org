@@ -7,6 +7,10 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\models\PasswordResetRequestForm;
 use app\modules\bot\models\BotClient;
+use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 
 /**
  * Class My_emailController
@@ -20,10 +24,12 @@ class My_emailController extends Controller
      */
     public function actionIndex()
     {
-        $botClient = $this->module->botClient;
-        if (isset($botClient->user_id))
+        $botClient = $this->getBotClient();
+        $user = $this->getUser();
+        $update = $this->getUpdate();
+
+        if (isset($user->email))
         {
-            $user = User::findOne($botClient->user_id);
             $email = $user->email;
             $isEmailConfirmed = $user->is_email_confirmed;
         }
@@ -35,102 +41,113 @@ class My_emailController extends Controller
             $botClient->save();
         }
 
+        $text = $this->render('index', [
+            'email' => $email,
+            'isEmailConfirmed' => $isEmailConfirmed,
+        ]);
+
         return [
-            [
-                'type' => 'message',
-                'text' => $this->render('index', [
-                            'email' => $email,
-                            'isEmailConfirmed' => $isEmailConfirmed,
-                        ]),
-                'replyMarkup' => new InlineKeyboardMarkup([
+            new SendMessageCommandSender(
+                new SendMessageCommand([
+                    'chatId' => $update->getMessage()->getChat()->getId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
                             [
-                                [
-                                    'callback_data' => '/change_email',
-                                    'text' => Yii::t('bot', 'Change Email')
-                                ]
-                            ]
-                        ])
-            ]
+                                'callback_data' => '/change_email',
+                                'text' => Yii::t('bot', 'Change Email'),
+                            ],
+                        ],
+                    ]),
+                ])
+            ),
         ];
     }
 
     public function actionCreate()
     {
-        $botClient = $this->module->botClient;
-        $email = $this->module->update->getMessage()->getText();
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
+        $user = $this->getUser();
 
-        $user = User::findOne($botClient->user_id);
-        if (isset($user))
+        $email = $update->getMessage()->getText();
+
+        $userWithSameEmail = User::findOne(['email' => $email]);
+        if (isset($userWithSameEmail))
         {
-            $user->email = $email;
-            if ($user->save())
-            {
-                $resetRequest = true;
-            }
+            $error = Yii::t('bot', 'A user with the same email already exists');
         }
         else
         {
-            $user = User::findOne(['email' => $email]);
-            if (isset($user))
-            {
-                $error = Yii::t('bot', 'A user with the same email already exists');
-            }
-            else
-            {
-                $user = new User();
-                $user->email = $email;
-                $user->password = 123;
-                $user->generateAuthKey();
+            $user->email = $email;
 
-                if ($user->save())
+            if ($user->save())
+            {
+                $passwordResetRequest = new PasswordResetRequestForm();
+                $passwordResetRequest->email = $email;
+
+                if ($passwordResetRequest->sendEmail())
                 {
-                    $passwordResetRequest = new PasswordResetRequestForm();
-                    $passwordResetRequest->email = $email;
+                    $botClient->user_id = $user->id;
+                    $botClient->resetState();
+                    $botClient->save();
 
-                    if ($passwordResetRequest->sendEmail())
-                    {
-                        $botClient->user_id = $user->id;
-                        $botClient->setState();
-                        $botClient->save();
+                    $resetRequest = true;
 
-                        $resetRequest = true;
-
-                    }
-                    else
-                    {
-                        $error = Yii::t('bot', '');
-                    }
                 }
                 else
                 {
-                    $error = Yii::t('bot', 'Given email is invalid');
+                    $error = Yii::t('bot', '');
                 }
+            }
+            else
+            {
+                $error = Yii::t('bot', 'Given email is invalid: ' . json_encode($user->getErrors()));
             }
         }
 
+        $text = $this->render('create', [
+            'resetRequest' => $resetRequest,
+            'error' => $error
+        ]);
+
         return [
-            [
-                'type' => 'message',
-                'text' => $this->render('create', [
-                            'resetRequest' => $resetRequest,
-                            'error' => $error
-                        ]),
-            ]
+            new SendMessageCommandSender(
+                new SendMessageCommand([
+                    'chatId' => $update->getMessage()->getChat()->getId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                ])
+            ),
         ];
     }
 
     public function actionUpdate()
     {
-        $botClient = $this->module->botClient;
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
+
         $botClient->setState([
             'state' => '/set_email'
         ]);
         $botClient->save();
+
+        $text = $this->render('update');
+
         return [
-            [
-                'type' => 'message',
-                'text' => $this->render('update'),
-            ]
+            new SendMessageCommandSender(
+                new SendMessageCommand([
+                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                ])
+            ),
+            new AnswerCallbackQueryCommandSender(
+                new AnswerCallbackQueryCommand([
+                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
+                ])
+            ),
         ];
     }
 }

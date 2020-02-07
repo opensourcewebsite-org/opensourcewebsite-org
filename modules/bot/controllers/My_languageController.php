@@ -8,6 +8,12 @@ use app\modules\bot\telegram\Message;
 use yii\data\Pagination;
 use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\EditMessageTextCommandSender;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
+use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
 
 /**
  * Class My_languageController
@@ -23,11 +29,13 @@ class My_languageController extends Controller
      */
     public function actionIndex($language = null)
     {
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
+
         $languageModel = null;
         if ($language) {
             $languageModel = Language::findOne(['code' => $language]);
             if ($languageModel) {
-                $botClient = $this->module->botClient;
                 if ($botClient) {
                     $botClient->language_code = $language;
                     if ($botClient->save()) {
@@ -40,20 +48,24 @@ class My_languageController extends Controller
         $currentCode = \Yii::$app->language;
         $currentName = $languageModel ? $languageModel->name : Language::findOne(['code' => $currentCode])->name;
 
+        $text = $this->render('index', compact('languageModel', 'currentCode', 'currentName'));
+
         return [
-            [
-                'type' => 'message',
-                'text' => $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
-                'replyMarkup' => new InlineKeyboardMarkup(
+            new SendMessageCommandSender(
+                new SendMessageCommand([
+                    'chatId' => $update->getMessage()->getChat()->getId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
                             [
-                                [
-                                    [
-                                        'callback_data' => '/language_list',
-                                        'text' => Yii::t('bot', 'Change Language')
-                                    ],
-                                ],
-                            ])
-            ]
+                                'callback_data' => '/language_list',
+                                'text' => Yii::t('bot', 'Change Language')
+                            ],
+                        ],
+                    ]),
+                ])
+            ),
         ];
     }
 
@@ -65,6 +77,8 @@ class My_languageController extends Controller
      */
     public function actionLanguageList($page = 1)
     {
+        $update = $this->getUpdate();
+
         $languageQuery = Language::find()->orderBy('code ASC');
         $countQuery = clone $languageQuery;
         $pagination = new Pagination([
@@ -82,12 +96,23 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $text = $this->render('language-list', compact('languages', 'pagination'));
+
         return [
-            [
-                'type' => 'editMessage',
-                'text' => $this->render('language-list', compact('languages', 'pagination')),
-                'replyMarkup' => PaginationButtons::build('language_list_<page>', $pagination)
-            ]
+            new EditMessageTextCommandSender(
+                new EditMessageTextCommand([
+                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+                    'parseMode' => 'html',
+                    'text' => $this->prepareText($text),
+                    'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
+                ])
+            ),
+            new AnswerCallbackQueryCommandSender(
+                new AnswerCallbackQueryCommand([
+                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
+                ])
+            ),
         ];
     }
 }

@@ -31,15 +31,14 @@ class My_birthdayController extends Controller
                     'chatId' => $this->getUpdate()->getMessage()->getChat()->getId(),
                     'parseMode' => 'html',
                     'text' => $this->prepareText($text),
-                    'replyMarkup' => new InlineKeyboardMarkup(
+                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                [
-                                    'callback_data' => '/change_birthday',
-                                    'text' => Yii::t('bot', 'Change Birthday'),
-                                ]
+                                'callback_data' => '/change_birthday',
+                                'text' => Yii::t('bot', 'Change Birthday'),
                             ]
-                        ]),
+                        ]
+                    ]),
                 ])
             ),
         ];
@@ -59,16 +58,16 @@ class My_birthdayController extends Controller
             $botClient->save();
         }
 
+        $text = $this->render('create', [
+            'success' => $success,
+        ]);
+
         return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getMessage()->getChat()->getId(),
                     'parseMode' => 'html',
-                    'type' => 'message',
-                    'text' => $this->render('create',
-                        [
-                            'success' => $success,
-                        ]),
+                    'text' => $this->prepareText($text),
                 ])
             ),
         ];
@@ -91,7 +90,6 @@ class My_birthdayController extends Controller
                 new SendMessageCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'parseMode' => 'html',
-                    'type' => 'message',
                     'text' => $this->prepareText($text),
                 ])
             ),
