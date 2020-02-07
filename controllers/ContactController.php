@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\User;
 use app\models\Contact;
+use yii\bootstrap\Alert;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -88,23 +89,36 @@ class ContactController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
-                $user = User::find()
-                    ->andWhere([
-                        'OR',
-                        ['id' => $model->userIdOrName],
-                        ['username' => $model->userIdOrName]
-                    ])
-                    ->one();
-                if (!empty($user->contact)) {
-                    $contact = $user->contact;
-                    $contact->link_user_id = null;
-                    $contact->save(false);
-                }
-                $model->link_user_id = $user->id;
-            }
-            $model->save(false);
+                # validate your id
+                if($model->user_id == $model->userIdOrName){
+                    Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
 
-            return $this->redirect(['view', 'id' => $model->id]);
+                    return $this->render('create', [
+                    'model' => $model,
+                    ]);
+                }else{
+                    $user = User::find()
+                        ->andWhere([
+                            'OR',
+                            ['id' => $model->userIdOrName],
+                            ['username' => $model->userIdOrName]
+                        ])
+                        ->one();
+                    if (!empty($user->contact)) {
+                        $contact = $user->contact;
+                        $contact->link_user_id = null;
+                        $contact->save(false);
+                    }
+                    $model->link_user_id = $user->id;
+
+                    $model->save(false);
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            }else{
+                $model->save(false);
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('create', [
@@ -129,19 +143,28 @@ class ContactController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
-                $user = User::find()
-                    ->andWhere([
-                        'OR',
-                        ['id' => $model->userIdOrName],
-                        ['username' => $model->userIdOrName]
-                    ])
-                    ->one();
-                if (!empty($user->contact) && ((int) $user->contact->id !== (int) $id)) {
-                    $contact = $user->contact;
-                    $contact->link_user_id = null;
-                    $contact->save(false);
+                if($model->user_id == $model->userIdOrName){
+                    Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
+
+                    return $this->render('update', [
+                        'model' => $model,
+                    ]);
+
+                }else{
+                    $user = User::find()
+                        ->andWhere([
+                            'OR',
+                            ['id' => $model->userIdOrName],
+                            ['username' => $model->userIdOrName]
+                        ])
+                        ->one();
+                    if (!empty($user->contact) && ((int) $user->contact->id !== (int) $id)) {
+                        $contact = $user->contact;
+                        $contact->link_user_id = null;
+                        $contact->save(false);
+                    }
+                    $model->link_user_id = $user->id;
                 }
-                $model->link_user_id = $user->id;
             } else {
                 $model->link_user_id = null;
             }
