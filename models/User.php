@@ -181,6 +181,14 @@ class User extends ActiveRecord implements IdentityInterface
         return $timestamp + $expireTime >= time();
     }
 
+    public static function createWithRandomPassword()
+    {
+        $user = new User();
+        $user->password = Yii::$app->security->generateRandomString();
+        $user->generateAuthKey();
+        return $user;
+    }
+
     /**
      * Validates password
      *

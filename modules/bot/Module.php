@@ -108,10 +108,8 @@ class Module extends \yii\base\Module
 
             if (!isset($botClient->user_id))
             {
-                $this->user = new User();
+                $this->user = User::createWithRandomPassword();
                 $this->user->name = $from->getFirstName() . ' ' . $from->getLastName();
-                $this->user->password = Yii::$app->security->generateRandomString();
-                $this->user->generateAuthKey();
                 if ($this->user->save())
                 {
                     $botClient->user_id = $this->user->id;

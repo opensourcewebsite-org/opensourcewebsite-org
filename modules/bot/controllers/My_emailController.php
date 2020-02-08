@@ -81,15 +81,27 @@ class My_emailController extends Controller
         $userWithSameEmail = User::findOne(['email' => $email]);
         if (isset($userWithSameEmail))
         {
-            $mergeRequest = true;
-            $botClient->setState([
-                'state' => 'waiting_for_merge',
-                'email' => $email,
-            ]);
-            $botClient->save();
+            if ($userWithSameEmail->id != $user->id)
+            {
+                $mergeRequest = true;
+                $botClient->setState([
+                    'state' => 'waiting_for_merge',
+                    'email' => $email,
+                ]);
+                $botClient->save();
+            }
+            else
+            {
+
+            }
         }
         else
         {
+            if (!isset($user))
+            {
+                $user = User::createWithRandomPassword();
+            }
+
             $user->email = $email;
 
             if ($user->save())
