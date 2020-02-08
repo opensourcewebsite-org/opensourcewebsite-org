@@ -13,7 +13,6 @@ use app\modules\bot\models\BotClient as BotClientModel;
  */
 class BotClient extends Component
 {
-
     /**
      * @var null|BotClient
      */

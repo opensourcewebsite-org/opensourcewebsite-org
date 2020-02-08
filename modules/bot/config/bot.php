@@ -9,7 +9,7 @@ return [
     'components' => [
         'commandRouter' => [
             'class' => CommandRouter::className(),
-            'invalidRouteRedirect' => 'command-not-found',
+            'invalidRouteRedirect' => 'default/command-not-found',
             'rules' => [
                 '/my_language_<language:\w+>' => 'my_language/index',
                 '@language_list' => 'my_language/language-list',

@@ -11,7 +11,8 @@ use app\modules\bot\models\BotInsideMessage;
 use app\modules\bot\models\BotOutsideMessage;
 
 /**
- * admin module definition class
+ * OSW Bot module definition class
+ * @link https://t.me/opensourcewebsite_bot
  */
 class Module extends \yii\base\Module
 {
