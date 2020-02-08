@@ -96,7 +96,7 @@ To do so, make changes to source files. Then open a pull request to apply your c
 
 To help our CI servers you should add `[ci skip]` to your documentation commit message to skip build on that commit. Please remember to use it for commits containing only documentation changes.
 
-## Styleguides
+## Style Guides
 
 #### Git Commit Messages
 
@@ -107,11 +107,33 @@ To help our CI servers you should add `[ci skip]` to your documentation commit m
 - When only changing documentation, include `[ci skip]` in the commit title
 - When there is a issue, include issue number in the commit title (for example: #234 YOUR_COMMIT_NAME).
 
-#### Documentation Styleguide
+#### Documentation Style Guide
 
-#### JavaScript Styleguide
+All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/)
+
+#### PHP Style Guide
+
+All PHP must adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards).
+
+Recommended IDE:
+  * [Atom](https://atom.io)
+    * [Atom package for Yii Framework 2](https://atom.io/packages/atom-yii2)
+    * [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
+	* [Atom package for PHP Linter](https://atom.io/packages/linter-php)
+  * [PhpStorm](https://www.jetbrains.com/phpstorm/)
+    * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window "Before commit > Perform SonarLint analysis".
+	* Yii 2 code styles for import to PhpStorm - [download](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml). Save the file and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
+  * [Eclipse](https://www.eclipse.org)
+	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
+
+#### JavaScript Style Guide
 
 All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com).
+
+Recommended IDE:
+  * [Atom](https://atom.io)
+  * [PhpStorm](https://www.jetbrains.com/phpstorm/)
+  * [Eclipse](https://www.eclipse.org)
 
 - Prefer the object spread operator (`{...anotherObj}`) to `Object.assign()`
 - Inline `export`s with expressions whenever possible
@@ -129,28 +151,9 @@ All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com
   export default ClassName
 ```
 
-#### PHP Styleguide
-
-All PHP must adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards).
-
-Recommended IDE - [JetBrains PhpStorm](https://www.jetbrains.com/phpstorm/)
-
-Yii2 code styles for import to PhpStorm - [download](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml). Save the file and import to "Settings > Editor > Code Style > PHP" (for PhpStorm):
-
-![](http://i.imgur.com/i5C928j.png)
-
-Recommended spell checker - SonarLint
-  - [Setup for PhpStorm](https://www.sonarlint.org/intellij)
-  - [Setup for Eclipse](https://www.sonarlint.org/eclipse)
-  - [Setup for Atom](https://www.sonarlint.org/atom)
-
-To automatically check a code style and formatting, you need to enable settings in the commit window (for PhpStorm):
-
-![](http://i.imgur.com/Wsvzx3C.png)
-
 #### Composer
 
-If you update `composer.json`, then there should be two files in the commit: `composer.json` and `composer.lock`.
+In any case when `composer.json` file is updated, add `composer.json` and `composer.lock` files to the same commit.
 
 #### Yii 2 migration files
 

@@ -1,11 +1,5 @@
 # Installation
 
-## Minimum technical requirements
-
-- [PHP 7.2](https://en.wikipedia.org/wiki/PHP)
-- [Yii 2](https://en.wikipedia.org/wiki/Yii)
-- [MySQL 5.7](https://en.wikipedia.org/wiki/MySQL)
-
 ## General setup
 
 - Copy file `.env.dist` to `.env` in the root directory
@@ -24,9 +18,11 @@ Web-server can be accessed at http://localhost:8000
 
 #### Without Docker
 
+- Install [MySQL +5.7.X](https://www.mysql.com)
 - Create a new MySQL database with an "utf8mb4_unicode_ci" collation
-- Setup your web-server root folder to `web`
-- Install php and composer
+- Setup your web-server root folder to `web`    
+- Install [PHP +7.2.X](https://www.php.net)
+- Install [Composer](https://getcomposer.org)
 - Run `php composer.phar install`
 - Run `php yii migrate`
 
@@ -34,7 +30,7 @@ Web-server can be accessed at http://localhost:8000
 
 Fixtures are used to load a "fake" set of data into a database that can then be used for testing or to help give you some interesting data while you're developing your application.
 
-After loading fixtures, will be available [user login credentials](tests/fixtures/data/user.php).
+After loading fixtures, will be available this [user login credentials](tests/fixtures/data/user.php).
 
 Attention! When loading fixtures, all current records from the database will be deleted!
 
@@ -50,9 +46,13 @@ php yii fixture/unload "*"
 
 ## Telegram bots
 
-We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
+We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
 
-- Create a new records in `bot` table in MySQL database, with `status` = 0
+- Set `baseUrl` in `params.php` for your ngrok https url.
+- Create a new record in `bot` table in MySQL database, with `status` = 0, or use console command to add new bot:
+```
+php yii bot/add NAME TOKEN
+```
 
 Enable Telegram webhooks for all bots with `status` = 0:
 ```

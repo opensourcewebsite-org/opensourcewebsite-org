@@ -13,7 +13,8 @@ use app\modules\bot\components\request\MessageRequestHandler;
 use app\modules\bot\components\request\CallbackQueryRequestHandler;
 
 /**
- * admin module definition class
+ * OSW Bot module definition class
+ * @link https://t.me/opensourcewebsite_bot
  */
 class Module extends \yii\base\Module
 {
