@@ -9,6 +9,7 @@ use app\modules\bot\models\Bot;
 use app\modules\bot\models\BotClient;
 use yii\base\InvalidRouteException;
 use app\models\User;
+use app\models\Language;
 use app\modules\bot\components\request\MessageRequestHandler;
 use app\modules\bot\components\request\CallbackQueryRequestHandler;
 
@@ -93,9 +94,15 @@ class Module extends \yii\base\Module
             if (!isset($botClient))
             {
                 $botClient = new BotClient();
+
+                $baseLanguage = Language::findOne([
+                    'code' => $$from->getLanguageCode(),
+                ]);
+                $language = isset($language) ? $language->code : 'en';
+
                 $botClient->setAttributes([
                     'provider_user_id' => $from->getId(),
-                    'language_code' => $from->getLanguageCode(),
+                    'language_code' => $language,
                 ]);   
             }
 
