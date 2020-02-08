@@ -33,6 +33,17 @@ class My_locationController extends Controller
                         'chatId' => $update->getMessage()->getChat()->getId(),
                         'longitude' => $botClient->location_lon,
                         'latitude' => $botClient->location_lat,
+                        'replyMarkup' => new ReplyKeyboardMarkup([
+                            [
+                                [
+                                    'text' => Yii::t('bot', 'Send Location'),
+                                    'request_location' => TRUE,
+                                ],
+                                [
+                                    'text' => '⚙️',
+                                ]
+                            ]
+                        ], TRUE, TRUE),
                     ])
                 ),
             ];
@@ -54,7 +65,7 @@ class My_locationController extends Controller
                                     'request_location' => TRUE,
                                 ],
                                 [
-                                    'text' => '/help',
+                                    'text' => '⚙️',
                                 ]
                             ]
                         ], TRUE, TRUE),
@@ -90,7 +101,7 @@ class My_locationController extends Controller
                     'replyMarkup' => new ReplyKeyboardMarkup([
                         [
                             [
-                                'text' => '/help',
+                                'text' => '⚙️',
                             ]
                         ]
                     ], TRUE, TRUE),
