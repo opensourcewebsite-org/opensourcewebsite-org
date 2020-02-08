@@ -34,6 +34,9 @@ class My_locationController extends Controller
                             [
                                 'text' => Yii::t('bot', 'Send Location'),
                                 'request_location' => TRUE,
+                            ],
+                            [
+                                'text' => '/help',
                             ]
                         ]
                     ], TRUE, TRUE),

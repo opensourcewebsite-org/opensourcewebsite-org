@@ -1,6 +1,9 @@
 <?php
 
 namespace app\modules\bot\controllers;
+use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
 
 /**
  * Class StartController
@@ -14,6 +17,25 @@ class StartController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+    	$update = $this->getUpdate();
+
+    	$text = $this->render('index');
+
+        return [
+        	new SendMessageCommandSender(
+        		new SendMessageCommand([
+        			'chatId' => $update->getMessage()->getChat()->getId(),
+        			'parseMode' => 'html',
+        			'text' => $this->prepareText($text),
+        			'replyMarkup' => new ReplyKeyboardMarkup([
+        				[
+                            [
+                                'text' => "⚙️",
+                            ]
+        				]
+        			], TRUE, TRUE),
+        		])
+        	),
+        ];
     }
 }

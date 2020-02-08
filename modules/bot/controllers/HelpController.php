@@ -1,6 +1,8 @@
 <?php
 
 namespace app\modules\bot\controllers;
+use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
 
 /**
  * Class HelpController
@@ -14,11 +16,18 @@ class HelpController extends Controller
      */
     public function actionIndex()
     {
+    	$update = $this->getUpdate();
+
+    	$text = $this->render('index');
+
 		return [
-			[
-				'type' => 'message',
-				'text' => $this->render('index'),
-			]
+			new SendMessageCommandSender(
+				new SendMessageCommand([
+					'chatId' => $update->getMessage()->getChat()->getId(),
+					'parseMode' => 'html',
+					'text' => $this->prepareText($text),
+				])
+			),
 		];
     }
 }

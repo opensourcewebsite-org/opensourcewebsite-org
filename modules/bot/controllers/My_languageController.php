@@ -4,7 +4,6 @@ namespace app\modules\bot\controllers;
 
 use app\models\Language;
 use app\modules\bot\helpers\PaginationButtons;
-use app\modules\bot\telegram\Message;
 use yii\data\Pagination;
 use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;

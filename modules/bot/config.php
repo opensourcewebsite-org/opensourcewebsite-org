@@ -7,6 +7,8 @@ return [
         'commandRouter' => [
             'class' => CommandRouter::className(),
             'rules' => [
+                "⚙️" => 'help/index',
+
                 '/my_language_<language:\w+>' => 'my_language/index',
                 '/language_list' => 'my_language/language-list',
                 '/language_list_<page:\d+>' => 'my_language/language-list',

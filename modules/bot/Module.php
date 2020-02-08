@@ -142,11 +142,6 @@ class Module extends \yii\base\Module
         return $botClient;
     }
 
-    public function isBotCommand($text)
-    {
-        return substr(trim($text), 0, 1) === '/';
-    }
-
     /**
      * @param $update \TelegramBot\Api\Types\Update
      *
@@ -158,8 +153,7 @@ class Module extends \yii\base\Module
     {
         $result = false;
 
-        if (($text = $this->requestHandler->getText($update))
-            && $this->isBotCommand($text)) {
+        if ($text = $this->requestHandler->getText($update)) {
             $route = $text;
         } else {
             $route = $this->botClient->getState()->state;

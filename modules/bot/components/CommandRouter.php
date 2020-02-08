@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\components;
 
-use app\modules\bot\telegram\BotApiClient;
 use app\modules\bot\Module;
 use yii\base\Component;
 use yii\base\InvalidRouteException;
@@ -81,19 +80,6 @@ class CommandRouter extends Component
         }
 
         return [$route, $params];
-    }
-
-    /**
-     * Resolve route depending on state
-     *
-     * @param $state
-     *
-     * @return array
-     */
-    public function resolveRouteByState($state)
-    {
-        list($route, $params) = $this->resolveCommandRoute($state->state);
-        return [ $route, [] ];
     }
 
     /**
