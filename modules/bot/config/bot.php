@@ -20,6 +20,7 @@ return [
                 '@currency_list_<page:\d+>' => 'my_currency/currency-list',
 
 				'/<controller:\w+>' => '<controller>/index',
+                '/<controller:\w+> <text:.+>' => '<controller>/index',
             ],
         ],
         'requestMessage' => [
