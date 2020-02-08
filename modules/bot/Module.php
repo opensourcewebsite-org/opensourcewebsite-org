@@ -169,7 +169,14 @@ class Module extends \yii\base\Module
         if (is_array($commandSenders))
         {
             foreach ($commandSenders as $commandSender) {
-                $commandSender->sendCommand($this->botApi);
+                try
+                {
+                    $commandSender->sendCommand($this->botApi);
+                }
+                catch (\Exception $ex)
+                {
+                    Yii::error($ex->getCode() . ': ' . $ex->getMessage(), 'bot');
+                }
             }
 
             $result = true;
