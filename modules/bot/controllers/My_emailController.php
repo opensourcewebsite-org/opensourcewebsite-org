@@ -34,7 +34,16 @@ class My_emailController extends Controller
         if (isset($user->email))
         {
             $email = $user->email;
+            
             $isEmailConfirmed = $user->is_email_confirmed;
+
+            $tokenLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
+            $mergeAccountsRequest = MergeAccountsRequest::findOne(['user_to_merge_id' => $user->id]);
+            var_dump($mergeAccountsRequest);
+            if (isset($mergeAccountsRequest))
+            {
+                $mergeAccountsRequestId = $mergeAccountsRequest->id;
+            }
         }
         else
         {
@@ -47,6 +56,7 @@ class My_emailController extends Controller
         $text = $this->render('index', [
             'email' => $email,
             'isEmailConfirmed' => $isEmailConfirmed,
+            'hasMergeAccountsRequest' => isset($mergeAccountsRequestId),
         ]);
 
         return [
@@ -61,7 +71,9 @@ class My_emailController extends Controller
                             [
                                 [
                                     'callback_data' => '/change_email',
-                                    'text' => Yii::t('bot', 'Change Email'),
+                                    'text' => Yii::t('bot', !isset($mergeAccountsRequestId)
+                                        ? 'Change Email'
+                                        : 'Discard Request And Change Email'),
                                 ],
                             ],
                         ])),
@@ -103,6 +115,7 @@ class My_emailController extends Controller
             }
 
             $user->email = $email;
+            $user->is_email_confirmed = false;
 
             if ($user->save())
             {
@@ -164,6 +177,9 @@ class My_emailController extends Controller
     {
         $botClient = $this->getBotClient();
         $update = $this->getUpdate();
+        $user = $this->getUser();
+
+        MergeAccountsRequest::deleteAll('user_id = ' . $user->id);
 
         $botClient->setState([
             'state' => '/set_email'
@@ -217,13 +233,23 @@ class My_emailController extends Controller
                 ]);
                 if ($mergeAccountsRequest->sendEmail())
                 {
+                    $text = $this->render('merge-accounts');
+
                     return [
                         new EditMessageTextCommandSender(
                             new EditMessageTextCommand([
                                 'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                                 'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
                                 'parseMode' => 'html',
-                                'text' => 'Request sent',
+                                'text' => $this->prepareText($text),
+                                'replyMarkup' => new InlineKeyboardMarkup([
+                                    [
+                                        [
+                                            'text' => Yii::t('bot', 'Discard Request'),
+                                            'callback_data' => '/discard_merge_request ' . $mergeAccountsRequest->id,
+                                        ],
+                                    ],
+                                ]),
                             ])
                         ),
                         new AnswerCallbackQueryCommandSender(
@@ -255,5 +281,35 @@ class My_emailController extends Controller
                 ),
             ];
         }
+    }
+
+    public function actionDiscardMergeRequest($mergeAccountsRequestId)
+    {
+        $update = $this->getUpdate();
+
+        $mergeAccountsRequest = MergeAccountsRequest::findOne($mergeAccountsRequestId);
+        if (isset($mergeAccountsRequest))
+        {
+            $deleted = $mergeAccountsRequest->delete();
+        }
+        return [
+            new EditMessageTextCommandSender(
+                new EditMessageTextCommand([
+                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+                    'parseMode' => 'html',
+                    'text' => $update->getCallbackQuery()->getMessage()->getText(),
+                ])
+            ),
+            new AnswerCallbackQueryCommandSender(
+                new AnswerCallbackQueryCommand([
+                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
+                    'text' => Yii::t('bot', $deleted
+                        ? 'Request was successfully discarded'
+                        : 'Nothing to discard'),
+                    'showAlert' => true,
+                ])
+            ),
+        ];
     }
 }

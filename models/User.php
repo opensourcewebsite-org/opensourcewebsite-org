@@ -71,7 +71,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            ['is_email_confirmed', 'integer'],
+            ['is_email_confirmed', 'boolean'],
             ['name', 'string'],
             [['birthday'], 'date', 'format' => 'php:' . self::DATE_FORMAT],
             ['email', 'email'],
@@ -587,7 +587,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed' => 1]);
+        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed' => true]);
     }
 
     /**

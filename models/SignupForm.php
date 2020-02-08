@@ -70,10 +70,10 @@ class SignupForm extends Model
     public static function confirmEmail($id, $auth_key)
     {
         if (!\Yii::$app->user->isGuest && \Yii::$app->user->id == $id) {
-            $user = User::findOne(['id' => $id, 'is_email_confirmed' => 0]);
+            $user = User::findOne(['id' => $id, 'is_email_confirmed' => false]);
 
             if ($user && $user->validateAuthKey($auth_key)) {
-                $user->is_email_confirmed = 1;
+                $user->is_email_confirmed = true;
                 $user->status = User::STATUS_ACTIVE;
                 if ($user->save()) {
                     return $user;
