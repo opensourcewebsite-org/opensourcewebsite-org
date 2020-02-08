@@ -10,6 +10,7 @@ use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
 use \app\modules\bot\components\response\commands\EditMessageTextCommand;
 use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\models\User;
 
 /**
  * Class My_genderController
@@ -96,7 +97,7 @@ class My_genderController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        $user->gender = 0;
+        $user->gender = User::MALE;
         $user->save();
 
         $text = $this->render('index', [
@@ -128,7 +129,7 @@ class My_genderController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        $user->gender = 1;
+        $user->gender = User::FEMALE;
         $user->save();
 
         $text = $this->render('index', [
