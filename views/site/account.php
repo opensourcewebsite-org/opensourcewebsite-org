@@ -49,7 +49,6 @@ $this->title = 'Account';
                                 'balance' => '(sum(amount))',
                             ])
                             ->from(Rating::tableName() . ' r')
-                            ->innerJoin(User::tableName() . ' u ON u.id = r.user_id')
                             ->groupBy('user_id')
                             ->orderBy('balance DESC');
 

@@ -40,7 +40,6 @@ class My_ratingController extends Controller
                 'balance' => '(sum(amount))',
             ])
             ->from(Rating::tableName() . ' r')
-            ->innerJoin(User::tableName() . ' u ON u.id = r.user_id')
             ->groupBy('user_id')
             ->orderBy('balance DESC');
 
@@ -49,7 +48,7 @@ class My_ratingController extends Controller
         $rank = (new Query)
             ->select(['count(*)+1'])
             ->from(['g' => $groupQuery])
-            ->where(['>', 'balance', $model->rating])
+            ->where(['>', 'balance', $rating])
             ->scalar();
 
         $params = [
