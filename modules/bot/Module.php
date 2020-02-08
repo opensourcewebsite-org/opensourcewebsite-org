@@ -115,29 +115,17 @@ class Module extends \yii\base\Module
                 $this->user = User::findOne($botClient->user_id);
             }
 
-            if (isset($botClient->user_id) && isset($this->user))
+            $botClient->setAttributes([
+                'provider_user_name' => $from->getUsername(),
+                'provider_user_first_name' => $from->getFirstName(),
+                'provider_user_last_name' => $from->getLastName(),
+                'provider_bot_user_blocked' => 0,
+                'last_message_at' => time(),
+            ]);
+
+            if (!isset($botClient->user_id) || !isset($this->user) || !$botClient->save())
             {
-                if ($update->getMessage() && $location = $update->getMessage()->getLocation())
-                {
-                    $botClient->setAttributes([
-                        'location_lon' => $location->getLongitude(),
-                        'location_lat' => $location->getLatitude(),
-                        'location_at' => time(),
-                    ]);            
-                }
-
-                $botClient->setAttributes([
-                    'provider_user_name' => $from->getUsername(),
-                    'provider_user_first_name' => $from->getFirstName(),
-                    'provider_user_last_name' => $from->getLastName(),
-                    'provider_bot_user_blocked' => 0,
-                    'last_message_at' => time(),
-                ]);
-
-                if (!$botClient->save())
-                {
-                    unset($botClient);
-                }
+                unset($botClient);
             }
         }
         

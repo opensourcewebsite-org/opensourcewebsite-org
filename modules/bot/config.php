@@ -3,6 +3,7 @@
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\MessageRequestHandler;
 use app\modules\bot\components\request\CallbackQueryRequestHandler;
+use app\modules\bot\components\request\LocationRequestHandler;
 
 return [
     'components' => [
@@ -31,11 +32,14 @@ return [
                 '/set_gender_female' => 'my_gender/set-female',
                 '/set_gender_back' => 'my_gender/back',
 
+                '/update_location' => 'my_location/update',
+
 				'/<controller:\w+>' => '<controller>/index',
             ],
             'requestHandlers' => [
                 new MessageRequestHandler(),
                 new CallbackQueryRequestHandler(),
+                new LocationRequestHandler(),
             ],
         ],
     ],
