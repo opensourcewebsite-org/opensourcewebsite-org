@@ -3,6 +3,7 @@
 namespace app\modules\bot\components;
 
 use app\modules\bot\Module;
+use app\modules\bot\components\request\IRequestHandler;
 use yii\base\Component;
 use yii\base\InvalidRouteException;
 use Yii;
@@ -12,8 +13,13 @@ use Yii;
  *
  * @package app\modules\bot\components
  */
-class CommandRouter extends Component
+class CommandRouteResolver extends Component
 {
+    /**
+     * @var array
+     */
+    public $requestHandlers = [];
+
     /**
      * @var string
      */
@@ -34,24 +40,34 @@ class CommandRouter extends Component
      */
     public $rules = [];
 
-    /**
-     * Check rules and if route is founded execute route action
-     *
-     * @param TelegramBot\Api\BotApi $botApi
-     *
-     * @return bool
-     * @throws \yii\base\InvalidRouteException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function dispatchRoute($route)
+    public function resolveRoute($update)
     {
-        list($route, $params) = $this->resolveCommandRoute($route);
-        Yii::info(json_encode($route));
-        if ($route) {
-            $response = Module::getInstance()->runAction($route, $params);
+        foreach ($this->requestHandlers as $requestHandler) {
+            $commandText = $requestHandler->getCommandText($update);
+            if (isset($commandText))
+            {
+                list($route, $params) = $this->resolveCommandRoute($commandText);
+                if (isset($routeParts))
+                {
+                    break;                    
+                }
+            }         
         }
 
-        return $response;
+        if (!isset($route))
+        {
+            $clientState = Module::getInstance()->botClient->getState();
+            if (isset($clientState))
+            {
+                $commandText = $clientState->state;
+                if (isset($commandText))
+                {
+                    list($route, $params) = $this->resolveCommandRoute($commandText);
+                }   
+            }
+        }
+
+        return [ $route, $params ];
     }
 
     /**
@@ -61,7 +77,7 @@ class CommandRouter extends Component
      *
      * @return array
      */
-    public function resolveCommandRoute($commandText)
+    private function resolveCommandRoute($commandText)
     {
         $route = null;
         $params = [];
@@ -89,7 +105,7 @@ class CommandRouter extends Component
      *
      * @return mixed|string
      */
-    public function preparePattern($pattern)
+    private function preparePattern($pattern)
     {
         $placeholders = [];
 
@@ -129,7 +145,7 @@ class CommandRouter extends Component
      *
      * @return array
      */
-    public function prepareRoute($targetRoute, $matches)
+    private function prepareRoute($targetRoute, $matches)
     {
         $route = $targetRoute;
         if (isset($matches['controller'])) {

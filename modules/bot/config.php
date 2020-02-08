@@ -1,11 +1,13 @@
 <?php
 
-use app\modules\bot\components\CommandRouter;
+use app\modules\bot\components\CommandRouteResolver;
+use app\modules\bot\components\request\MessageRequestHandler;
+use app\modules\bot\components\request\CallbackQueryRequestHandler;
 
 return [
     'components' => [
-        'commandRouter' => [
-            'class' => CommandRouter::className(),
+        'commandRouteResolver' => [
+            'class' => CommandRouteResolver::className(),
             'rules' => [
                 "⚙️" => 'help/index',
 
@@ -30,6 +32,10 @@ return [
                 '/set_gender_back' => 'my_gender/back',
 
 				'/<controller:\w+>' => '<controller>/index',
+            ],
+            'requestHandlers' => [
+                new MessageRequestHandler(),
+                new CallbackQueryRequestHandler(),
             ],
         ],
     ],

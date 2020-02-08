@@ -3,13 +3,6 @@
 
 	class MessageRequestHandler implements IRequestHandler
 	{
-		private $nextRequestHandler;
-
-		public function __construct(IRequestHandler $nextRequestHandler = NULL)
-		{
-			$this->nextRequestHandler = $nextRequestHandler;
-		}
-
 		public function getFrom($update)
 		{
 			if ($message = $update->getMessage())
@@ -17,26 +10,16 @@
 				$from = $message->getFrom();
 			}
 
-			return (isset($from)
-					? $from
-					: (isset($this->nextRequestHandler)
-						? $this->nextRequestHandler->getFrom($update)
-						: NULL));
-		}
+			return $from;
+		}		
 
-		
-
-		public function getText($update)
+		public function getCommandText($update)
 		{
 			if ($message = $update->getMessage())
 			{
-				$text = $message->getText();
+				$commandText = $message->getText();
 			}
 
-			return (isset($text)
-					? $text
-					: (isset($this->nextRequestHandler)
-						? $this->nextRequestHandler->getText($update)
-						: NULL));
+			return $commandText;
 		}
 	}

@@ -22,8 +22,6 @@ class Module extends \yii\base\Module
      */
     private $botApi;
 
-    private $requestHandler;
-
     /**
      * @var app\modules\bot\models\BotClient
      */
@@ -44,9 +42,6 @@ class Module extends \yii\base\Module
         parent::init();
 
         Yii::configure($this, require __DIR__ . '/config.php');
-
-        $this->requestHandler = new MessageRequestHandler();
-        $this->requestHandler = new CallbackQueryRequestHandler($this->requestHandler);
     }
 
     public function handleInput($input, $token)
@@ -83,7 +78,13 @@ class Module extends \yii\base\Module
      */
     private function resolveBotClient($update)
     {
-        $from = $this->requestHandler->getFrom($update);
+        foreach ($this->commandRouteResolver->requestHandlers as $requestHandler) {
+            $from = $requestHandler->getFrom($update);
+            if (isset($from))
+            {
+                break;
+            }
+        }
 
         if ($from)
         {
@@ -153,27 +154,26 @@ class Module extends \yii\base\Module
     {
         $result = false;
 
-        if ($text = $this->requestHandler->getText($update)) {
-            $route = $text;
-        } else {
-            $route = $this->botClient->getState()->state;
-        }
-
-        $commandSenders = $this->commandRouter->dispatchRoute($route);
-        if (is_array($commandSenders))
+        list($route, $params) = $this->commandRouteResolver->resolveRoute($update);
+        if ($route)
         {
-            foreach ($commandSenders as $commandSender) {
-                try
-                {
-                    $commandSender->sendCommand($this->botApi);
-                }
-                catch (\Exception $ex)
-                {
-                    Yii::error($ex->getCode() . ': ' . $ex->getMessage(), 'bot');
-                }
-            }
+            $commandSenders = $this->runAction($route, $params);
 
-            $result = true;
+            if (is_array($commandSenders))
+            {
+                foreach ($commandSenders as $commandSender) {
+                    try
+                    {
+                        $commandSender->sendCommand($this->botApi);
+                    }
+                    catch (\Exception $ex)
+                    {
+                        Yii::error($ex->getCode() . ': ' . $ex->getMessage(), 'bot');
+                    }
+                }
+
+                $result = true;
+            }
         }
 
         return $result;
@@ -194,7 +194,7 @@ class Module extends \yii\base\Module
     {
         $parts = $this->createController($route);
         if (is_array($parts)) {
-            /* @var $controller CommandController */
+            /* @var $controller Controller */
             list($controller, $actionID) = $parts;
             $oldController = \Yii::$app->controller;
             \Yii::$app->controller = $controller;

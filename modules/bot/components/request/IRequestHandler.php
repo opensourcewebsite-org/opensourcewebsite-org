@@ -4,5 +4,5 @@
 	interface IRequestHandler
 	{
 		public function getFrom($update);
-		public function getText($update);
+		public function getCommandText($update);
 	}
