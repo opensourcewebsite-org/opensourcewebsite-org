@@ -6,7 +6,6 @@ use \app\modules\bot\components\response\SendMessageCommandSender;
 use \app\modules\bot\components\response\commands\SendMessageCommand;
 use \app\models\Rating;
 use \app\models\User;
-use yii\db\Query;
 use app\components\Converter;
 
 /**
@@ -34,22 +33,7 @@ class My_ratingController extends Controller
             $percent = Converter::percentage($rating, $totalRating);
         }
 
-        $groupQuery = (new Query)
-            ->select([
-                'user_id',
-                'balance' => '(sum(amount))',
-            ])
-            ->from(Rating::tableName() . ' r')
-            ->groupBy('user_id')
-            ->orderBy('balance DESC');
-
-        $total = $groupQuery->count();
-
-        $rank = (new Query)
-            ->select(['count(*)+1'])
-            ->from(['g' => $groupQuery])
-            ->where(['>', 'balance', $rating])
-            ->scalar();
+        list($total, $rank) = Rating::getRank($rating);
 
         $params = [
             'active_rating' => $activeRating,

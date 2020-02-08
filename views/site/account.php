@@ -21,46 +21,22 @@ $this->title = 'Account';
                 [
                     'label' => 'Active Rating',
                     'format' => 'html',
-                    'value' => function ($model) {
-                        return "<b>{$model->activeRating}</b>";
+                    'value' => function ($model) use ($activeRating) {
+                        return "<b>$activeRating</b>";
                     },
                 ],
                 [
                     'label' => 'Overall Rating',
                     'format' => 'html',
-                    'value' => function ($model) use ($totalRating) {
-
-                        if ($totalRating < 1) {
-                            $percent = 0;
-                        } else {
-                            $percent = Converter::percentage($model->rating, $totalRating);
-                        }
-
-                        return "<b>{$model->rating}</b>, {$percent}% of {$totalRating} (total system overall rating)";
+                    'value' => function ($model) use ($overallRating) {
+                        return "<b>$overallRating[rating]</b>, $overallRating[percent]% of $overallRating[totalRating] (total system overall rating)";
                     },
                 ],
                 [
                     'label' => 'Ranking',
                     'format' => 'html',
-                    'value' => function ($model) {
-                        $groupQuery = (new Query)
-                            ->select([
-                                'user_id',
-                                'balance' => '(sum(amount))',
-                            ])
-                            ->from(Rating::tableName() . ' r')
-                            ->groupBy('user_id')
-                            ->orderBy('balance DESC');
-
-                        $total = $groupQuery->count();
-
-                        $rank = (new Query)
-                            ->select(['count(*)+1'])
-                            ->from(['g' => $groupQuery])
-                            ->where(['>', 'balance', $model->rating])
-                            ->scalar();
-
-                        return "#<b>{$rank}</b> among {$total} users";
+                    'value' => function ($model) use ($ranking) {
+                        return "#<b>$ranking[rank]</b> among $ranking[total] users";
                     },
                 ],
             ],

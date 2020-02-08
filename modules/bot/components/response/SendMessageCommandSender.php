@@ -24,6 +24,5 @@
 		        $this->sendMessageCommand->replyMarkup,
 		        $this->sendMessageCommand->disableNotification
 			);
-			var_dump($this->sendMessageCommand->chatId,);
 		}
 	}

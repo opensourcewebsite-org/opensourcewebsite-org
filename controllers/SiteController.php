@@ -16,6 +16,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use app\components\Converter;
 
 class SiteController extends Controller
 {
@@ -258,9 +259,32 @@ class SiteController extends Controller
     public function actionAccount()
     {
         $model = Yii::$app->user->identity;
-        $totalRating = Rating::getTotalRating();
 
-        return $this->render('account', ['model' => $model, 'totalRating' => $totalRating]);
+        $activeRating = $model->activeRating;
+
+        $rating = $model->rating;
+        $totalRating = Rating::getTotalRating();
+        if ($totalRating < 1) {
+            $percent = 0;
+        } else {
+            $percent = Converter::percentage($rating, $totalRating);
+        }
+
+        list($total, $rank) = Rating::getRank($rating);
+
+        return $this->render('account', [
+            'model' => $model,
+            'activeRating' => $activeRating,
+            'overallRating' => [
+                'rating' => $rating,
+                'totalRating' => $totalRating,
+                'percent' => $percent,
+            ],
+            'ranking' => [
+                'rank' => $rank,
+                'total' => $total,
+            ]
+        ]);
     }
 
     /**

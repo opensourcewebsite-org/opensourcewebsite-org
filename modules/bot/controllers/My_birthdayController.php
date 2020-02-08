@@ -51,9 +51,10 @@ class My_birthdayController extends Controller
         $user = $this->getUser();
 
         $text = $update->getMessage()->getText();
-        $user->birthday = $text;
-        if ($success = $user->save())
+        if ($success = $this->validateDate($text))
         {
+            $user->birthday = $text;
+            $user->save();
             $botClient->resetState();
             $botClient->save();
         }
@@ -99,5 +100,11 @@ class My_birthdayController extends Controller
                 ])
             ),
         ];
+    }
+
+    private function validateDate($date, $format = 'Y-m-d')
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) === $date;
     }
 }

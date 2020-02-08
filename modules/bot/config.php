@@ -35,6 +35,7 @@ return [
                 '/update_location' => 'my_location/update',
 
 				'/<controller:\w+>' => '<controller>/index',
+                '/<controller:\w+> <text:.+>' => '<controller>/index',
             ],
             'requestHandlers' => [
                 new MessageRequestHandler(),

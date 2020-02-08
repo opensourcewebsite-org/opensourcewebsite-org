@@ -6,6 +6,7 @@ use app\components\Converter;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\behaviors\AttributeBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -44,6 +45,16 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birthday',
+                ],
+                'value' => function($event)
+                {
+                    return date('d.m.Y', strtotime($event->sender->birthday));
+                }
+            ],
         ];
     }
 
@@ -57,7 +68,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'integer'],
             ['name', 'string'],
-            //[['birthday'], 'date', 'format' => 'php:d.m.Y'],
+            [['birthday'], 'date', 'format' => 'php:d.m.Y'],
             ['email', 'email'],
             [['gender'], 'boolean']
         ];
