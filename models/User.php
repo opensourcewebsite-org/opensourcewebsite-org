@@ -33,6 +33,8 @@ class User extends ActiveRecord implements IdentityInterface
     const FEMALE = 0;
     const MALE = 1;
 
+    const DATE_FORMAT = 'd.m.Y';
+
     /**
      * {@inheritdoc}
      */
@@ -55,7 +57,7 @@ class User extends ActiveRecord implements IdentityInterface
                 ],
                 'value' => function($event)
                 {
-                    return date('d.m.Y', strtotime($event->sender->birthday));
+                    return date(self::DATE_FORMAT, strtotime($event->sender->birthday));
                 }
             ],
         ];
@@ -71,7 +73,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'integer'],
             ['name', 'string'],
-            [['birthday'], 'date', 'format' => 'php:d.m.Y'],
+            [['birthday'], 'date', 'format' => 'php:' . self::DATE_FORMAT],
             ['email', 'email'],
             [['gender'], 'boolean']
         ];

@@ -5,9 +5,12 @@ namespace app\modules\bot\controllers;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\EditMessageTextCommandSender;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
 use \app\modules\bot\components\response\commands\SendMessageCommand;
 use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
+use \app\models\User;
 
 /**
  * Class My_birthdayController
@@ -51,7 +54,7 @@ class My_birthdayController extends Controller
         $user = $this->getUser();
 
         $text = $update->getMessage()->getText();
-        if ($success = $this->validateDate($text))
+        if ($success = $this->validateDate($text, User::DATE_FORMAT))
         {
             $user->birthday = $text;
             $user->save();
@@ -87,6 +90,14 @@ class My_birthdayController extends Controller
         $text = $this->render('update');
 
         return [
+            new EditMessageTextCommandSender(
+                new EditMessageTextCommand([
+                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+                    'parseMode' => 'html',
+                    'text' => $update->getCallbackQuery()->getMessage()->getText(),
+                ])
+            ),
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
@@ -102,7 +113,7 @@ class My_birthdayController extends Controller
         ];
     }
 
-    private function validateDate($date, $format = 'Y-m-d')
+    private function validateDate($date, $format)
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
