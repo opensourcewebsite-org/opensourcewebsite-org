@@ -17,6 +17,7 @@ return [
 
                 '/set_email' => 'my_email/create',
                 '/change_email' => 'my_email/update',
+                '/merge_accounts' => 'my_email/merge-accounts',
 
                 '/set_birthday' => 'my_birthday/create',
                 '/change_birthday' => 'my_birthday/update',

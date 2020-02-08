@@ -99,8 +99,11 @@ class Module extends \yii\base\Module
 
             if (!isset($botClient->user_id))
             {
-                $this->user = User::generateUserWithRandomPassword();
-                if ($this->user)
+                $this->user = new User();
+                $this->user->name = $from->getFirstName() . ' ' . $from->getLastName();
+                $this->user->password = Yii::$app->security->generateRandomString();
+                $this->user->generateAuthKey();
+                if ($this->user->save())
                 {
                     $botClient->user_id = $this->user->id;
                 }
@@ -110,7 +113,7 @@ class Module extends \yii\base\Module
                 $this->user = User::findOne($botClient->user_id);
             }
 
-            if (isset($botClient->user_id))
+            if (isset($botClient->user_id) && isset($this->user))
             {
                 if ($update->getMessage() && $location = $update->getMessage()->getLocation())
                 {

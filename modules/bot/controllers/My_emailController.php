@@ -5,12 +5,15 @@ namespace app\modules\bot\controllers;
 use Yii;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
+use app\models\MergeAccountsRequest;
 use app\models\PasswordResetRequestForm;
 use app\modules\bot\models\BotClient;
 use \app\modules\bot\components\response\SendMessageCommandSender;
+use \app\modules\bot\components\response\EditMessageTextCommandSender;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
 use \app\modules\bot\components\response\commands\SendMessageCommand;
 use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
 
 /**
  * Class My_emailController
@@ -52,14 +55,16 @@ class My_emailController extends Controller
                     'chatId' => $update->getMessage()->getChat()->getId(),
                     'parseMode' => 'html',
                     'text' => $this->prepareText($text),
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
+                    'replyMarkup' => (!isset($email)
+                        ? NULL
+                        : new InlineKeyboardMarkup([
                             [
-                                'callback_data' => '/change_email',
-                                'text' => Yii::t('bot', 'Change Email'),
+                                [
+                                    'callback_data' => '/change_email',
+                                    'text' => Yii::t('bot', 'Change Email'),
+                                ],
                             ],
-                        ],
-                    ]),
+                        ])),
                 ])
             ),
         ];
@@ -76,7 +81,12 @@ class My_emailController extends Controller
         $userWithSameEmail = User::findOne(['email' => $email]);
         if (isset($userWithSameEmail))
         {
-            $error = Yii::t('bot', 'A user with the same email already exists');
+            $mergeRequest = true;
+            $botClient->setState([
+                'state' => 'waiting_for_merge',
+                'email' => $email,
+            ]);
+            $botClient->save();
         }
         else
         {
@@ -103,12 +113,13 @@ class My_emailController extends Controller
             }
             else
             {
-                $error = Yii::t('bot', 'Given email is invalid: ' . json_encode($user->getErrors()));
+                $error = Yii::t('bot', 'Given email is invalid');
             }
         }
 
         $text = $this->render('create', [
             'resetRequest' => $resetRequest,
+            'mergeRequest' => $mergeRequest,
             'error' => $error
         ]);
 
@@ -118,6 +129,20 @@ class My_emailController extends Controller
                     'chatId' => $update->getMessage()->getChat()->getId(),
                     'parseMode' => 'html',
                     'text' => $this->prepareText($text),
+                    'replyMarkup' => (!$mergeRequest
+                        ? NULL
+                        : new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => '/merge_accounts',
+                                    'text' => Yii::t('bot', 'Yes'),
+                                ],
+                                [
+                                    'callback_data' => '/change_email',
+                                    'text' => Yii::t('bot', 'No'),
+                                ]
+                            ]
+                        ])),
                 ])
             ),
         ];
@@ -136,6 +161,14 @@ class My_emailController extends Controller
         $text = $this->render('update');
 
         return [
+            new EditMessageTextCommandSender(
+                new EditMessageTextCommand([
+                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+                    'parseMode' => 'html',
+                    'text' => $update->getCallbackQuery()->getMessage()->getText(),
+                ])
+            ),
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
@@ -149,5 +182,66 @@ class My_emailController extends Controller
                 ])
             ),
         ];
+    }
+
+    public function actionMergeAccounts()
+    {
+        $update = $this->getUpdate();
+        $botClient = $this->getBotClient();
+        $user = $this->getUser();
+        $state = $botClient->getState();
+        $stateName = $state->state;
+
+        if ($stateName == 'waiting_for_merge')
+        {
+            $userToMerge = User::findOne(['email' => $state->email]);
+            if ($userToMerge)
+            {
+                $mergeAccountsRequest = new MergeAccountsRequest();
+                $mergeAccountsRequest->setAttributes([
+                    'user_to_merge_id' => $user->id,
+                    'user_id' => $userToMerge->id,
+                    'token' => Yii::$app->security->generateRandomString(),
+                ]);
+                if ($mergeAccountsRequest->sendEmail())
+                {
+                    return [
+                        new EditMessageTextCommandSender(
+                            new EditMessageTextCommand([
+                                'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                                'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+                                'parseMode' => 'html',
+                                'text' => 'Request sent',
+                            ])
+                        ),
+                        new AnswerCallbackQueryCommandSender(
+                            new AnswerCallbackQueryCommand([
+                                'callbackQueryId' => $update->getCallbackQuery()->getId(),
+                            ])
+                        ),
+                    ];
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+
+            }
+        }
+        else
+        {
+            return [
+                new AnswerCallbackQueryCommandSender(
+                    new AnswerCallbackQueryCommand([
+                        'callbackQueryId' => $update->getCallbackQuery()->getId(),
+                        'showAlert' => true,
+                        'text' => Yii::t('bot', 'This request has expired'),
+                    ])
+                ),
+            ];
+        }
     }
 }

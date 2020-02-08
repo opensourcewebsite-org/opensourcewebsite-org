@@ -8,6 +8,8 @@ use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
 use app\models\User;
+use app\modules\bot\models\BotClient;
+use app\models\MergeAccountsRequest;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
@@ -186,6 +188,43 @@ class SiteController extends Controller
 
         return $this->render('requestPasswordResetToken', [
             'model' => $model,
+        ]);
+    }
+
+    public function actionMergeAccounts($token)
+    {
+        $mergeAccountsRequest = MergeAccountsRequest::findOne(['token' => $token]);
+        if ($mergeAccountsRequest)
+        {
+            $user = User::findOne(['id' => $mergeAccountsRequest->user_id]);
+            $userToMerge = User::findOne(['id' => $mergeAccountsRequest->user_to_merge_id]);
+            if (Yii::$app->request->isPost)
+            {
+                $botClients = BotClient::find()->where(['user_id' => $userToMerge->id])->all();
+                foreach ($botClients as $botClient) {
+                    $botClient->user_id = $user->id;
+                    $botClient->save();
+                }
+                $userToMerge->delete();
+                $mergeAccountsRequest->delete();
+                return $this->redirect(['site/login']);
+            }
+            else
+            {
+                $created_at = $mergeAccountsRequest->created_at;
+                $requestLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
+
+                if ($created_at + $requestLifeTime < time())
+                {
+                    $mergeAccountsRequest->delete();
+                    unset($mergeAccountsRequest);
+                }
+            }
+        }
+        return $this->render('mergeAccounts', [
+            'model' => $mergeAccountsRequest,
+            'user' => $user,
+            'userToMerge' => $userToMerge,
         ]);
     }
 
