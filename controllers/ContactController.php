@@ -88,13 +88,13 @@ class ContactController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
-                if($model->user_id == $model->userIdOrName){
+                if ($model->user_id == $model->userIdOrName) {
                     Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
 
                     return $this->render('create', [
-                    'model' => $model,
+                        'model' => $model,
                     ]);
-                }else{
+                } else {
                     $user = User::find()
                         ->andWhere([
                             'OR',
@@ -134,21 +134,21 @@ class ContactController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if(!empty($model->linkedUser)){
+        if (!empty($model->linkedUser)) {
             $model->userIdOrName = !empty($model->linkedUser->username) ? $model->linkedUser->username : $model->linkedUser->id;
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
-                if($model->user_id == $model->userIdOrName){
+                if ($model->user_id == $model->userIdOrName) {
                     Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
 
                     return $this->render('update', [
                         'model' => $model,
                     ]);
 
-                }else{
+                } else {
                     $user = User::find()
                         ->andWhere([
                             'OR',
