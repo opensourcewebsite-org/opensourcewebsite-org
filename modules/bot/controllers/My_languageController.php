@@ -44,17 +44,15 @@ class My_languageController extends Controller
             }
         }
 
-        $currentCode = \Yii::$app->language;
+        $currentCode = Yii::$app->language;
         $currentName = $languageModel ? $languageModel->name : Language::findOne(['code' => $currentCode])->name;
-
-        $text = $this->render('index', compact('languageModel', 'currentCode', 'currentName'));
 
         return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -95,15 +93,13 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $text = $this->render('language-list', compact('languages', 'pagination'));
-
         return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('language-list', compact('languages', 'pagination')),
                     'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
                 ])
             ),

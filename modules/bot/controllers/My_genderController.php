@@ -27,16 +27,14 @@ class My_genderController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        $text = $this->render('index', [
-            'gender' => $user->gender,
-        ]);
-
     	return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', [
+                        'gender' => $user->gender,
+                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -53,19 +51,17 @@ class My_genderController extends Controller
     public function actionChange()
     {
         $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        $text = $this->render('index', [
-            'gender' => $user->gender,
-        ]);
+        $user = $this->getUser();;
 
     	return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $text = $this->render('index', [
+                        'gender' => $user->gender,
+                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -100,17 +96,15 @@ class My_genderController extends Controller
         $user->gender = User::MALE;
         $user->save();
 
-        $text = $this->render('index', [
-            'gender' => $user->gender,
-        ]);
-
         return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', [
+                        'gender' => $user->gender,
+                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -132,17 +126,15 @@ class My_genderController extends Controller
         $user->gender = User::FEMALE;
         $user->save();
 
-        $text = $this->render('index', [
-            'gender' => $user->gender,
-        ]);
-
         return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', [
+                        'gender' => $user->gender,
+                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -160,18 +152,16 @@ class My_genderController extends Controller
     {
         $update = $this->getUpdate();
         $user = $this->getUser();
-
-        $text = $this->render('index', [
-            'gender' => $user->gender,
-        ]);
         
         return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', [
+                        'gender' => $user->gender,
+                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [

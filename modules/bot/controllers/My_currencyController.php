@@ -44,14 +44,12 @@ class My_currencyController extends Controller
         $currentCode = $botClient->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
-        $text = $this->render('index', compact('currencyModel', 'currentCode', 'currentName'));
-
         return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -92,15 +90,13 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $text = $this->render('currency-list', compact('currencies', 'pagination'));
-
         return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getmessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('currency-list', compact('currencies', 'pagination')),
                     'replyMarkup' => PaginationButtons::build('/currency_list_<page>', $pagination),
                 ])
             ),

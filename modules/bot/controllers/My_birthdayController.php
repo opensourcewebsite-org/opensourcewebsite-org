@@ -24,16 +24,14 @@ class My_birthdayController extends Controller
      */
     public function actionIndex()
     {
-        $text = $this->render('index', [
-            'birthday' => (new \DateTime($this->module->user->birthday))->format('m.d.Y')
-        ]);
-
         return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $this->getUpdate()->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('index', [
+                        'birthday' => (new \DateTime($this->module->user->birthday))->format(User::DATE_FORMAT)
+                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -62,16 +60,14 @@ class My_birthdayController extends Controller
             $botClient->save();
         }
 
-        $text = $this->render('create', [
-            'success' => $success,
-        ]);
-
         return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('create', [
+                        'success' => $success,
+                    ]),
                 ])
             ),
         ];
@@ -87,22 +83,20 @@ class My_birthdayController extends Controller
         ]);
         $botClient->save();
 
-        $text = $this->render('update');
-
         return [
             new EditMessageTextCommandSender(
                 new EditMessageTextCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                     'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
+                    'parseMode' => $this->textFormat,
                     'text' => $update->getCallbackQuery()->getMessage()->getText(),
                 ])
             ),
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('update'),
                 ])
             ),
             new AnswerCallbackQueryCommandSender(

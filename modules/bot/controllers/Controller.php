@@ -13,6 +13,8 @@ use yii\web\BadRequestHttpException;
  */
 class Controller extends \yii\base\Controller
 {
+    protected $textFormat = 'html';
+
     /**
      * @var bool
      */
@@ -94,16 +96,9 @@ class Controller extends \yii\base\Controller
         return $args;
     }
 
-    /**
-     * @param string $text
-     *
-     * @return string
-     */
-    protected function prepareText($text)
+    public function render($view, $params = [])
     {
-        $text = str_replace(["\n", "\r\n"], '', $text);
-
-        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
+        return $this->prepareText(parent::render($view));
     }
 
     protected function getBotClient()
@@ -119,5 +114,17 @@ class Controller extends \yii\base\Controller
     protected function getUpdate()
     {
         return $this->module->update;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    private function prepareText($text)
+    {
+        $text = str_replace(["\n", "\r\n"], '', $text);
+
+        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
     }
 }

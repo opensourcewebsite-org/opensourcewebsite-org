@@ -18,14 +18,12 @@ class HelpController extends Controller
     {
     	$update = $this->getUpdate();
 
-    	$text = $this->render('index');
-
 		return [
 			new SendMessageCommandSender(
 				new SendMessageCommand([
 					'chatId' => $update->getMessage()->getChat()->getId(),
-					'parseMode' => 'html',
-					'text' => $this->prepareText($text),
+					'parseMode' => $this->textFormat,
+					'text' => $this->render('index'),
 				])
 			),
 		];

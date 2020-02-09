@@ -28,15 +28,29 @@ class My_locationController extends Controller
         if (isset($botClient->location_lon) && isset($botClient->location_lat))
         {
             return [
+                new SendMessageCommandSender(
+                    new SendMessageCommand([
+                        'chatId' => $update->getMessage()->getChat()->getId(),
+                        'parseMode' => $this->textFormat,
+                        'text' => $this->render('header'),
+                    ])
+                ),
                 new SendLocationCommandSender(
                     new SendLocationCommand([
                         'chatId' => $update->getMessage()->getChat()->getId(),
                         'longitude' => $botClient->location_lon,
                         'latitude' => $botClient->location_lat,
+                    ])
+                ),
+                new SendMessageCommandSender(
+                    new SendMessageCommand([
+                        'chatId' => $update->getMessage()->getChat()->getId(),
+                        'parseMode' => $this->textFormat,
+                        'text' => $this->render('footer'),
                         'replyMarkup' => new ReplyKeyboardMarkup([
                             [
                                 [
-                                    'text' => Yii::t('bot', 'Send Location'),
+                                    'text' => $this->render('send-location'),
                                     'request_location' => TRUE,
                                 ],
                                 [
@@ -50,18 +64,16 @@ class My_locationController extends Controller
         }
         else
         {
-            $text = $this->render('index');
-
             return [
                 new SendMessageCommandSender(
                     new SendMessageCommand([
                         'chatId' => $update->getMessage()->getChat()->getId(),
-                        'parseMode' => 'html',
-                        'text' => $this->prepareText($text),
+                        'parseMode' => $this->textFormat,
+                        'text' => $this->render('index'),
                         'replyMarkup' => new ReplyKeyboardMarkup([
                             [
                                 [
-                                    'text' => Yii::t('bot', 'Send Location'),
+                                    'text' => $this->render('send-location'),
                                     'request_location' => TRUE,
                                 ],
                                 [
@@ -90,14 +102,12 @@ class My_locationController extends Controller
             $botClient->save(); 
         }
 
-        $text = $this->render('update');
-
         return [
             new SendMessageCommandSender(
                 new SendMessageCommand([
                     'chatId' => $update->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+                    'parseMode' => $this->textFormat,
+                    'text' => $this->render('update'),
                     'replyMarkup' => new ReplyKeyboardMarkup([
                         [
                             [
