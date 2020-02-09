@@ -5,7 +5,6 @@ namespace app\controllers;
 use Yii;
 use app\models\User;
 use app\models\Contact;
-use yii\bootstrap\Alert;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -89,7 +88,6 @@ class ContactController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
-                # validate your id
                 if($model->user_id == $model->userIdOrName){
                     Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
 
@@ -136,7 +134,7 @@ class ContactController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if (!empty($model->linkedUser)) {
+        if(!empty($model->linkedUser)){
             $model->userIdOrName = !empty($model->linkedUser->username) ? $model->linkedUser->username : $model->linkedUser->id;
         }
 
