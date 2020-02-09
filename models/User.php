@@ -50,16 +50,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-            [
-                'class' => AttributeBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birthday',
-                ],
-                'value' => function($event)
-                {
-                    return date(self::DATE_FORMAT, strtotime($event->sender->birthday));
-                }
-            ],
         ];
     }
 
@@ -73,7 +63,6 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_email_confirmed', 'boolean'],
             ['name', 'string'],
-            [['birthday'], 'date', 'format' => 'php:' . self::DATE_FORMAT],
             ['email', 'email'],
             [['gender'], 'boolean']
         ];

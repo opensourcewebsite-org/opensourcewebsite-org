@@ -32,8 +32,6 @@ class My_emailController extends Controller
         {
             $email = $user->email;
             
-            $isEmailConfirmed = $user->is_email_confirmed;
-
             $tokenLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
             $mergeAccountsRequest = MergeAccountsRequest::findOne(['user_to_merge_id' => $user->id]);
             if (isset($mergeAccountsRequest))
@@ -54,7 +52,6 @@ class My_emailController extends Controller
                 $update->getMessage()->getChat()->getId(),
                 $this->render('index', [
                     'email' => $email,
-                    'isEmailConfirmed' => $isEmailConfirmed,
                     'hasMergeAccountsRequest' => isset($mergeAccountsRequestId),
                 ]),
                 [

@@ -21,22 +21,39 @@ class My_birthdayController extends Controller
      */
     public function actionIndex()
     {
+        $botClient = $this->getBotClient();
+        $user = $this->getUser();
+
+        $birthday = $user->birthday;
+
+        if (!isset($birthday))
+        {
+            $botClient->setState([
+                'state' => '/set_birthday',
+            ]);
+            $botClient->save();
+        }
+
         return [
             new SendMessageCommand(
                 $this->getUpdate()->getMessage()->getChat()->getId(),
                 $this->render('index', [
-                    'birthday' => (new \DateTime($this->module->user->birthday))->format(User::DATE_FORMAT),
+                    'birthday' => isset($birthday)
+                        ? (new \DateTime($birthday))->format(User::DATE_FORMAT)
+                        : NULL,
                 ]),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
+                    'replyMarkup' => isset($birthday)
+                        ? new InlineKeyboardMarkup([
                             [
-                                'callback_data' => '/change_birthday',
-                                'text' => Yii::t('bot', 'Change Birthday'),
+                                [
+                                    'callback_data' => '/change_birthday',
+                                    'text' => Yii::t('bot', 'Change Birthday'),
+                                ]
                             ]
-                        ]
-                    ]),
+                        ])
+                        : NULL,
                 ]
             ),
         ];
@@ -57,17 +74,7 @@ class My_birthdayController extends Controller
             $botClient->save();
         }
 
-        return [
-            new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
-                $this->render('create', [
-                    'success' => $success,
-                ]),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
-            ),
-        ];
+        return $this->actionIndex();
     }
 
     public function actionUpdate()

@@ -95,8 +95,8 @@ class Module extends \yii\base\Module
             {
                 $botClient = new BotClient();
 
-                $baseLanguage = Language::findOne([
-                    'code' => $$from->getLanguageCode(),
+                $language = Language::findOne([
+                    'code' => $from->getLanguageCode(),
                 ]);
                 $language = isset($language) ? $language->code : 'en';
 
@@ -133,7 +133,7 @@ class Module extends \yii\base\Module
                 unset($botClient);
             }
         }
-        
+
         return $botClient;
     }
 
@@ -190,11 +190,11 @@ class Module extends \yii\base\Module
         if (is_array($parts)) {
             /* @var $controller Controller */
             list($controller, $actionID) = $parts;
-            $oldController = \Yii::$app->controller;
-            \Yii::$app->controller = $controller;
+            $oldController = Yii::$app->controller;
+            Yii::$app->controller = $controller;
             $result = $controller->runAction($actionID, $params, true);
             if ($oldController !== null) {
-                \Yii::$app->controller = $oldController;
+                Yii::$app->controller = $oldController;
             }
 
             return $result;
