@@ -7,12 +7,9 @@ use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
 use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\EditMessageTextCommandSender;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
 
 /**
  * Class My_languageController
@@ -48,11 +45,11 @@ class My_languageController extends Controller
         $currentName = $languageModel ? $languageModel->name : Language::findOne(['code' => $currentCode])->name;
 
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -61,7 +58,7 @@ class My_languageController extends Controller
                             ],
                         ],
                     ]),
-                ])
+                ]
             ),
         ];
     }
@@ -94,19 +91,17 @@ class My_languageController extends Controller
             ->all();
 
         return [
-            new EditMessageTextCommandSender(
-                new EditMessageTextCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->render('language-list', compact('languages', 'pagination')),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('language-list', compact('languages', 'pagination')),
                     'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
-                ])
+                ]
             ),
-            new AnswerCallbackQueryCommandSender(
-                new AnswerCallbackQueryCommand([
-                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                ])
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId()
             ),
         ];
     }

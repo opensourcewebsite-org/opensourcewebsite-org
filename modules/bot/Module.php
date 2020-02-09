@@ -151,14 +151,14 @@ class Module extends \yii\base\Module
         list($route, $params) = $this->commandRouteResolver->resolveRoute($update);
         if ($route)
         {
-            $commandSenders = $this->runAction($route, $params);
+            $commands = $this->runAction($route, $params);
 
-            if (is_array($commandSenders))
+            if (is_array($commands))
             {
-                foreach ($commandSenders as $commandSender) {
+                foreach ($commands as $command) {
                     try
                     {
-                        $commandSender->sendCommand($this->botApi);
+                        $command->send($this->botApi);
                     }
                     catch (\Exception $ex)
                     {

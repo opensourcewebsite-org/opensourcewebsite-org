@@ -1,5 +1,7 @@
 <?php
-	namespace app\modules\bot\components\response\commands;
+	namespace app\modules\bot\components\response;
+
+	use \TelegramBot\Api\BotApi;
 
 	abstract class Command
 	{
@@ -20,5 +22,12 @@
 		public function __set($name, $value)
 		{
 			$this->fields[$name] = $value;
+		}
+
+		public abstract function send(BotApi $botApi);
+
+		protected function getOptionalProperty($name, $defaultValue)
+		{
+			return isset($this->fields[$name]) ? $this->fields[$name] : $defaultValue;
 		}
 	}

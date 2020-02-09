@@ -7,12 +7,9 @@ use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
 use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\EditMessageTextCommandSender;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 /**
  * Class My_currencyController
  *
@@ -45,11 +42,11 @@ class My_currencyController extends Controller
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -57,8 +54,8 @@ class My_currencyController extends Controller
                                 'text' => Yii::t('bot', 'Change Currency')
                             ],
                         ],
-                    ])
-                ])
+                    ]),
+                ]
             ),
         ];
     }
@@ -91,19 +88,17 @@ class My_currencyController extends Controller
             ->all();
 
         return [
-            new EditMessageTextCommandSender(
-                new EditMessageTextCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'messageId' => $update->getCallbackQuery()->getmessage()->getMessageId(),
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getmessage()->getMessageId(),
+                $this->render('currency-list', compact('currencies', 'pagination')),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('currency-list', compact('currencies', 'pagination')),
                     'replyMarkup' => PaginationButtons::build('/currency_list_<page>', $pagination),
-                ])
+                ]
             ),
-            new AnswerCallbackQueryCommandSender(
-                new AnswerCallbackQueryCommand([
-                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                ])
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId()
             ),
         ];
     }

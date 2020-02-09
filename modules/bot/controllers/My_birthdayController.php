@@ -4,12 +4,9 @@ namespace app\modules\bot\controllers;
 
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\EditMessageTextCommandSender;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\models\User;
 
 /**
@@ -25,13 +22,13 @@ class My_birthdayController extends Controller
     public function actionIndex()
     {
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $this->getUpdate()->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $this->getUpdate()->getMessage()->getChat()->getId(),
+                $this->render('index', [
+                    'birthday' => (new \DateTime($this->module->user->birthday))->format(User::DATE_FORMAT),
+                ]),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('index', [
-                        'birthday' => (new \DateTime($this->module->user->birthday))->format(User::DATE_FORMAT)
-                    ]),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -40,7 +37,7 @@ class My_birthdayController extends Controller
                             ]
                         ]
                     ]),
-                ])
+                ]
             ),
         ];
     }
@@ -61,14 +58,14 @@ class My_birthdayController extends Controller
         }
 
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('create', [
+                    'success' => $success,
+                ]),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('create', [
-                        'success' => $success,
-                    ]),
-                ])
+                ]
             ),
         ];
     }
@@ -84,25 +81,23 @@ class My_birthdayController extends Controller
         $botClient->save();
 
         return [
-            new EditMessageTextCommandSender(
-                new EditMessageTextCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $update->getCallbackQuery()->getMessage()->getText(),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $update->getCallbackQuery()->getMessage()->getText(),
-                ])
+                ]
             ),
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->render('update'),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('update'),
-                ])
+                ]
             ),
-            new AnswerCallbackQueryCommandSender(
-                new AnswerCallbackQueryCommand([
-                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                ])
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId()
             ),
         ];
     }

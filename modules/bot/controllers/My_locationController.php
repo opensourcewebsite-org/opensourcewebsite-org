@@ -4,10 +4,8 @@ namespace app\modules\bot\controllers;
 
 use app\modules\bot\components\BotClient;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use \app\modules\bot\components\response\SendLocationCommandSender;
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\commands\SendLocationCommand;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\SendLocationCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
 use Yii;
 
 /**
@@ -28,25 +26,23 @@ class My_locationController extends Controller
         if (isset($botClient->location_lon) && isset($botClient->location_lat))
         {
             return [
-                new SendMessageCommandSender(
-                    new SendMessageCommand([
-                        'chatId' => $update->getMessage()->getChat()->getId(),
+                new SendMessageCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $this->render('header'),
+                    [
                         'parseMode' => $this->textFormat,
-                        'text' => $this->render('header'),
-                    ])
+                    ]
                 ),
-                new SendLocationCommandSender(
-                    new SendLocationCommand([
-                        'chatId' => $update->getMessage()->getChat()->getId(),
-                        'longitude' => $botClient->location_lon,
-                        'latitude' => $botClient->location_lat,
-                    ])
+                new SendLocationCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $botClient->location_lat,
+                    $botClient->location_lon,
                 ),
-                new SendMessageCommandSender(
-                    new SendMessageCommand([
-                        'chatId' => $update->getMessage()->getChat()->getId(),
+                new SendMessageCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $this->render('footer'),
+                    [
                         'parseMode' => $this->textFormat,
-                        'text' => $this->render('footer'),
                         'replyMarkup' => new ReplyKeyboardMarkup([
                             [
                                 [
@@ -58,18 +54,18 @@ class My_locationController extends Controller
                                 ]
                             ]
                         ], TRUE, TRUE),
-                    ])
+                    ]
                 ),
             ];
         }
         else
         {
             return [
-                new SendMessageCommandSender(
-                    new SendMessageCommand([
-                        'chatId' => $update->getMessage()->getChat()->getId(),
+                new SendMessageCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $this->render('index'),
+                    [
                         'parseMode' => $this->textFormat,
-                        'text' => $this->render('index'),
                         'replyMarkup' => new ReplyKeyboardMarkup([
                             [
                                 [
@@ -81,7 +77,7 @@ class My_locationController extends Controller
                                 ]
                             ]
                         ], TRUE, TRUE),
-                    ])
+                    ]
                 ),
             ];
         }
@@ -103,11 +99,11 @@ class My_locationController extends Controller
         }
 
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('update'),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('update'),
                     'replyMarkup' => new ReplyKeyboardMarkup([
                         [
                             [
@@ -115,7 +111,7 @@ class My_locationController extends Controller
                             ]
                         ]
                     ], TRUE, TRUE),
-                ])
+                ]
             ),
         ];
     }

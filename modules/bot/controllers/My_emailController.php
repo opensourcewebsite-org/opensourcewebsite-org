@@ -8,12 +8,9 @@ use app\models\User;
 use app\models\MergeAccountsRequest;
 use app\models\PasswordResetRequestForm;
 use app\modules\bot\models\BotClient;
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\EditMessageTextCommandSender;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
 
 /**
  * Class My_emailController
@@ -39,7 +36,6 @@ class My_emailController extends Controller
 
             $tokenLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
             $mergeAccountsRequest = MergeAccountsRequest::findOne(['user_to_merge_id' => $user->id]);
-            var_dump($mergeAccountsRequest);
             if (isset($mergeAccountsRequest))
             {
                 $mergeAccountsRequestId = $mergeAccountsRequest->id;
@@ -54,15 +50,15 @@ class My_emailController extends Controller
         }
 
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index', [
+                    'email' => $email,
+                    'isEmailConfirmed' => $isEmailConfirmed,
+                    'hasMergeAccountsRequest' => isset($mergeAccountsRequestId),
+                ]),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('index', [
-                        'email' => $email,
-                        'isEmailConfirmed' => $isEmailConfirmed,
-                        'hasMergeAccountsRequest' => isset($mergeAccountsRequestId),
-                    ]),
                     'replyMarkup' => (!isset($email)
                         ? NULL
                         : new InlineKeyboardMarkup([
@@ -75,7 +71,7 @@ class My_emailController extends Controller
                                 ],
                             ],
                         ])),
-                ])
+                ]
             ),
         ];
     }
@@ -141,15 +137,15 @@ class My_emailController extends Controller
         }
 
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('create', [
+                    'resetRequest' => $resetRequest,
+                    'mergeRequest' => $mergeRequest,
+                    'error' => $error
+                ]),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('create', [
-                        'resetRequest' => $resetRequest,
-                        'mergeRequest' => $mergeRequest,
-                        'error' => $error
-                    ]),
                     'replyMarkup' => (!$mergeRequest
                         ? NULL
                         : new InlineKeyboardMarkup([
@@ -164,7 +160,7 @@ class My_emailController extends Controller
                                 ]
                             ]
                         ])),
-                ])
+                ]
             ),
         ];
     }
@@ -183,25 +179,23 @@ class My_emailController extends Controller
         $botClient->save();
 
         return [
-            new EditMessageTextCommandSender(
-                new EditMessageTextCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $update->getCallbackQuery()->getMessage()->getText(),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $update->getCallbackQuery()->getMessage()->getText(),
-                ])
+                ]
             ),
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+            new SendMessageCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->render('update'),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $this->render('update'),
-                ])
+                ]
             ),
-            new AnswerCallbackQueryCommandSender(
-                new AnswerCallbackQueryCommand([
-                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                ])
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId()
             ),
         ];
     }
@@ -228,12 +222,12 @@ class My_emailController extends Controller
                 if ($mergeAccountsRequest->sendEmail())
                 {
                     return [
-                        new EditMessageTextCommandSender(
-                            new EditMessageTextCommand([
-                                'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                                'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+                        new EditMessageTextCommand(
+                            $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                            $update->getCallbackQuery()->getMessage()->getMessageId(),
+                            $this->render('merge-accounts'),
+                            [
                                 'parseMode' => $this->textFormat,
-                                'text' => $this->render('merge-accounts'),
                                 'replyMarkup' => new InlineKeyboardMarkup([
                                     [
                                         [
@@ -242,12 +236,10 @@ class My_emailController extends Controller
                                         ],
                                     ],
                                 ]),
-                            ])
+                            ]
                         ),
-                        new AnswerCallbackQueryCommandSender(
-                            new AnswerCallbackQueryCommand([
-                                'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                            ])
+                        new AnswerCallbackQueryCommand(
+                            $update->getCallbackQuery()->getId()
                         ),
                     ];
                 }
@@ -264,12 +256,12 @@ class My_emailController extends Controller
         else
         {
             return [
-                new AnswerCallbackQueryCommandSender(
-                    new AnswerCallbackQueryCommand([
-                        'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                        'showAlert' => true,
+                new AnswerCallbackQueryCommand(
+                    $update->getCallbackQuery()->getId(),
+                    [
+                        'showAlert' => TRUE,
                         'text' => Yii::t('bot', 'This request has expired'),
-                    ])
+                    ]
                 ),
             ];
         }
@@ -285,22 +277,22 @@ class My_emailController extends Controller
             $deleted = $mergeAccountsRequest->delete();
         }
         return [
-            new EditMessageTextCommandSender(
-                new EditMessageTextCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $update->getCallbackQuery()->getMessage()->getText(),
+                [
                     'parseMode' => $this->textFormat,
-                    'text' => $update->getCallbackQuery()->getMessage()->getText(),
-                ])
+                ]
             ),
-            new AnswerCallbackQueryCommandSender(
-                new AnswerCallbackQueryCommand([
-                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId(),
+                [
                     'text' => Yii::t('bot', $deleted
                         ? 'Request was successfully discarded'
                         : 'Nothing to discard'),
                     'showAlert' => TRUE,
-                ])
+                ]
             ),
         ];
     }

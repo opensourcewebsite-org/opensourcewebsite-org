@@ -2,12 +2,9 @@
 
 namespace app\modules\bot\controllers;
 
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\EditMessageTextCommandSender;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommandSender;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\models\Rating;
 use \app\models\User;
 use \app\components\Converter;
@@ -28,14 +25,12 @@ class My_ratingController extends Controller
     {
         $update = $this->getUpdate();
         
-        $text = $this->renderRating();
-
         return [
-            new SendMessageCommandSender(
-                new SendMessageCommand([
-                    'chatId' => $update->getMessage()->getChat()->getId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->renderRating(),
+                [
+                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -44,7 +39,7 @@ class My_ratingController extends Controller
                             ]
                         ]
                     ]),
-                ])
+                ]
             ),
         ];
     }
@@ -52,30 +47,26 @@ class My_ratingController extends Controller
     public function actionUpdate()
     {
         $update = $this->getUpdate();
-        
-        $text = $this->renderRating();
 
         return [
-            new EditMessageTextCommandSender(
-                new EditMessageTextCommand([
-                    'chatId' => $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                    'messageId' => $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    'parseMode' => 'html',
-                    'text' => $this->prepareText($text),
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->renderRating(),
+                [
+                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'text' => Yii::t('bot', 'Update'),
+                                'text' => Yii::t('bot', 'Refresh'),
                                 'callback_data' => '/update_rating'
                             ]
                         ]
                     ]),
-                ])
+                ]
             ),
-            new AnswerCallbackQueryCommandSender(
-                new AnswerCallbackQueryCommand([
-                    'callbackQueryId' => $update->getCallbackQuery()->getId(),
-                ])
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId()
             ),
         ];
     }

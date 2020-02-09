@@ -2,8 +2,7 @@
 
 namespace app\modules\bot\controllers;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
 
 /**
  * Class StartController
@@ -20,11 +19,11 @@ class StartController extends Controller
     	$update = $this->getUpdate();
 
         return [
-        	new SendMessageCommandSender(
-        		new SendMessageCommand([
-        			'chatId' => $update->getMessage()->getChat()->getId(),
+        	new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index'),
+        		[
                     'parseMode' => $this->textFormat,
-        			'text' => $this->render('index'),
         			'replyMarkup' => new ReplyKeyboardMarkup([
         				[
                             [
@@ -32,7 +31,7 @@ class StartController extends Controller
                             ]
         				]
         			], TRUE, TRUE),
-        		])
+        		]
         	),
         ];
     }

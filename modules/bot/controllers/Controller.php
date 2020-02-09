@@ -98,7 +98,7 @@ class Controller extends \yii\base\Controller
 
     public function render($view, $params = [])
     {
-        return $this->prepareText(parent::render($view));
+        return $this->prepareText(parent::render($view, $params));
     }
 
     protected function getBotClient()

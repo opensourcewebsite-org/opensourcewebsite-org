@@ -2,8 +2,7 @@
 
 namespace app\modules\bot\controllers;
 
-use \app\modules\bot\components\response\SendMessageCommandSender;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
 
 /**
  * Class My_profileController
@@ -20,14 +19,14 @@ class My_profileController extends Controller
     	$update = $this->getUpdate();
 
 		return [
-			new SendMessageCommandSender(
-				new SendMessageCommand([
-					'chatId' => $update->getMessage()->getChat()->getId(),
+			new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index', [
+                    'profile' => $update->getMessage()->getFrom(),
+                ]),
+				[
                     'parseMode' => $this->textFormat,
-					'text' => $this->render('index', [
-                        'profile' => $update->getMessage()->getFrom(),
-                    ]),
-				])
+				]
 			),
 		];
     }
