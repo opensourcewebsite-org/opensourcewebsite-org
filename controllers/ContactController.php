@@ -94,29 +94,30 @@ class ContactController extends Controller
                     return $this->render('create', [
                         'model' => $model,
                     ]);
-                } else {
-                    $user = User::find()
-                        ->andWhere([
-                            'OR',
-                            ['id' => $model->userIdOrName],
-                            ['username' => $model->userIdOrName]
-                        ])
-                        ->one();
-                    if (!empty($user->contact)) {
-                        $contact = $user->contact;
-                        $contact->link_user_id = null;
-                        $contact->save(false);
-                    }
-                    $model->link_user_id = $user->id;
-
-                    $model->save(false);
-
-                    return $this->redirect(['view', 'id' => $model->id]);
                 }
-            }else{
+                $user = User::find()
+                    ->andWhere([
+                        'OR',
+                        ['id' => $model->userIdOrName],
+                        ['username' => $model->userIdOrName]
+                    ])
+                    ->one();
+                if (!empty($user->contact)) {
+                    $contact = $user->contact;
+                    $contact->link_user_id = null;
+                    $contact->save(false);
+                }
+                $model->link_user_id = $user->id;
+
                 $model->save(false);
+
                 return $this->redirect(['view', 'id' => $model->id]);
+
             }
+
+            $model->save(false);
+            return $this->redirect(['view', 'id' => $model->id]);
+
         }
 
         return $this->render('create', [
@@ -148,21 +149,21 @@ class ContactController extends Controller
                         'model' => $model,
                     ]);
 
-                } else {
-                    $user = User::find()
-                        ->andWhere([
-                            'OR',
-                            ['id' => $model->userIdOrName],
-                            ['username' => $model->userIdOrName]
-                        ])
-                        ->one();
-                    if (!empty($user->contact) && ((int) $user->contact->id !== (int) $id)) {
-                        $contact = $user->contact;
-                        $contact->link_user_id = null;
-                        $contact->save(false);
-                    }
-                    $model->link_user_id = $user->id;
                 }
+                $user = User::find()
+                    ->andWhere([
+                        'OR',
+                        ['id' => $model->userIdOrName],
+                        ['username' => $model->userIdOrName]
+                    ])
+                    ->one();
+                if (!empty($user->contact) && ((int) $user->contact->id !== (int) $id)) {
+                    $contact = $user->contact;
+                    $contact->link_user_id = null;
+                    $contact->save(false);
+                }
+                $model->link_user_id = $user->id;
+
             } else {
                 $model->link_user_id = null;
             }
