@@ -19,8 +19,8 @@ return [
                 '@currency_list' => 'my_currency/currency-list',
                 '@currency_list_<page:\d+>' => 'my_currency/currency-list',
 
+                '/<controller:\w+> <message:.+>' => '<controller>/index',
 				'/<controller:\w+>' => '<controller>/index',
-                '/<controller:\w+> <text:.+>' => '<controller>/index',
             ],
         ],
         'requestMessage' => [

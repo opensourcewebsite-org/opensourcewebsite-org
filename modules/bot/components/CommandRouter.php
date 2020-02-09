@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components;
 
+use Yii;
 use app\modules\bot\telegram\BotApiClient;
 use app\modules\bot\Module;
 use yii\base\Component;
@@ -67,8 +68,8 @@ class CommandRouter extends Component
         }
 
         if ($route) {
-            \Yii::warning($route);
-            \Yii::warning($params);
+            Yii::warning($route);
+            Yii::warning($params);
             try {
                 $response = Module::getInstance()->runAction($route, $params);
             } catch (InvalidRouteException $e) {
