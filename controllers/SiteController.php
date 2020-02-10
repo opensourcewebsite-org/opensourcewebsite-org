@@ -201,14 +201,15 @@ class SiteController extends Controller
             $userToMerge = User::findOne(['id' => $mergeAccountsRequest->user_to_merge_id]);
             if (Yii::$app->request->isPost)
             {
-                $botClients = BotClient::find()->where(['user_id' => $userToMerge->id])->all();
-                foreach ($botClients as $botClient) {
-                    $botClient->user_id = $user->id;
-                    $botClient->save();
+                if ($this->mergeAccounts($user, $userToMerge))
+                {
+                    return $this->redirect(['site/login']);
                 }
-                $userToMerge->delete();
-                $mergeAccountsRequest->delete();
-                return $this->redirect(['site/login']);
+                else
+                {
+                    $mergeAccountsRequest->delete();
+                    unset($mergeAccountsRequest);
+                }
             }
             else
             {
@@ -227,6 +228,62 @@ class SiteController extends Controller
             'user' => $user,
             'userToMerge' => $userToMerge,
         ]);
+    }
+
+    private function mergeAccounts($user, $userToMerge)
+    {
+        $connection = Yii::$app->db;
+        $transaction = $connection->beginTransaction();
+        try
+        {
+            BotClient::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
+
+            \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Contact::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Contact::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
+
+            \app\models\Debt::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
+
+            \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+
+            \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\modules\comment\models\IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Moqup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\SettingValueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\SupportGroup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\SupportGroupBotClient::updateAll(['provider_bot_user_id' => $user->id], "provider_bot_user_id = {$userToMerge->id}");
+
+            \app\models\SupportGroupMember::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserIssueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserMoqupFollow::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserWikiPage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            $userToMerge->delete();
+
+            $transaction->commit();
+        }
+        catch (\Throwable $ex)
+        {
+            $transaction->rollBack();
+            return FALSE;
+        }
+        return TRUE;
     }
 
     /**

@@ -1,3 +1,3 @@
-<?= Yii::t('bot', !isset($hasMergeAccountsRequest)
+<?= Yii::t('bot', !$hasMergeAccountsRequest
         ? 'Change Email'
     	: 'Discard Request And Change Email')?>
