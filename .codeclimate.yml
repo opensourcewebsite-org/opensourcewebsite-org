@@ -11,13 +11,21 @@ checks:
 plugins:
   csslint:
     enabled: true
-  fixme:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+  editorconfig:
     enabled: true
   eslint:
     enabled: true
     channel: "eslint-4"
     config:
       config: .eslintrc
+  fixme:
+    enabled: true
   git-legal:
     enabled: true
   markdownlint:
@@ -48,12 +56,5 @@ plugins:
       minimum_severity: critical
   stylelint:
     enabled: true
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - javascript
-      - php
 exclude_patterns:
   - "/vendor/"
-  - "/yii/"
