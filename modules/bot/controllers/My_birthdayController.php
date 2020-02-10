@@ -68,7 +68,7 @@ class My_birthdayController extends Controller
         $text = $update->getMessage()->getText();
         if ($success = $this->validateDate($text, User::DATE_FORMAT))
         {
-            $user->birthday = $text;
+            $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
             $botClient->resetState();
             $botClient->save();
