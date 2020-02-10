@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-body">
                 <div>
                     <p>
-                        You are going to merge <?= $user->name ?>`s account with <?= $userToMerge->name?>` one.
+                        You are going to merge <?= !empty($user->name) ? $user->name : 'noname' ?>`s account with <?= !empty($userToMerge->name) ? $userToMerge->name : 'noname' ?>` one.
                     </p>
                 </div>
             </div>
