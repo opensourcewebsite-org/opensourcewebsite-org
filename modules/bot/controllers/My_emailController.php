@@ -100,11 +100,6 @@ class My_emailController extends Controller
         }
         else
         {
-            if (!isset($user))
-            {
-                $user = User::createWithRandomPassword();
-            }
-
             $user->email = $email;
             $user->is_email_confirmed = false;
 

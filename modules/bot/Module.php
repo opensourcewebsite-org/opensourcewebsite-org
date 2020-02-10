@@ -10,6 +10,7 @@ use app\modules\bot\models\BotClient;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Language;
+use app\models\Rating;
 use app\modules\bot\components\request\MessageRequestHandler;
 use app\modules\bot\components\request\CallbackQueryRequestHandler;
 
@@ -113,6 +114,8 @@ class Module extends \yii\base\Module
                 if ($this->user->save())
                 {
                     $botClient->user_id = $this->user->id;
+
+                    $this->user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
                 }
             }
             else
