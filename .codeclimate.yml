@@ -34,6 +34,7 @@ plugins:
     enabled: true
     config:
       file_extensions: "php"
+      ignore-undeclared: true
     checks:
       PhanUndeclaredClassMethod:
         enabled: false
@@ -48,8 +49,8 @@ plugins:
   phpmd:
     enabled: true
     config:
-      file_extensions:
-        - php
+      file_extensions: "php"
+      rulesets: "unusedcode,codesize,naming,phpmd.xml"
   sonar-php:
     enabled: true
     config:
