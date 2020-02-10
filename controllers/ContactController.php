@@ -112,12 +112,10 @@ class ContactController extends Controller
                 $model->save(false);
 
                 return $this->redirect(['view', 'id' => $model->id]);
-
             }
 
             $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
-
         }
 
         return $this->render('create', [
@@ -148,7 +146,6 @@ class ContactController extends Controller
                     return $this->render('update', [
                         'model' => $model,
                     ]);
-
                 }
                 $user = User::find()
                     ->andWhere([
@@ -163,7 +160,6 @@ class ContactController extends Controller
                     $contact->save(false);
                 }
                 $model->link_user_id = $user->id;
-
             } else {
                 $model->link_user_id = null;
             }
