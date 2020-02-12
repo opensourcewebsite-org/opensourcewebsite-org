@@ -34,8 +34,7 @@ class My_locationController extends Controller
             return [
                 new SendMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $this->render('header'),
-                    [
+                    $this->render('header'), [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
@@ -46,8 +45,7 @@ class My_locationController extends Controller
                 ),
                 new SendMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $this->render('footer'),
-                    [
+                    $this->render('footer'), [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
@@ -58,8 +56,7 @@ class My_locationController extends Controller
             return [
                 new SendMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $this->render('index'),
-                    [
+                    $this->render('index'), [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
@@ -72,8 +69,7 @@ class My_locationController extends Controller
         $botClient = $this->getBotClient();
         $update = $this->getUpdate();
 
-        if ($update->getMessage() && ($location = $update->getMessage()->getLocation()))
-        {
+        if ($update->getMessage() && ($location = $update->getMessage()->getLocation())) {
             $botClient->setAttributes([
                 'location_lon' => $location->getLongitude(),
                 'location_lat' => $location->getLatitude(),

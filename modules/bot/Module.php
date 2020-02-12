@@ -64,14 +64,11 @@ class Module extends \yii\base\Module
             }
 
             $this->botClient = $this->resolveBotClient($this->update, $botInfo->id);
-            if (isset($this->botClient))
-            {
+            if (isset($this->botClient)) {
                 Yii::$app->language = $this->botClient->language_code;
 
                 $result = $this->dispatchRoute($this->update);
-            }
-            else
-            {
+            } else {
                 $result = false;
             }
         }
@@ -87,8 +84,7 @@ class Module extends \yii\base\Module
     {
         foreach ($this->commandRouteResolver->requestHandlers as $requestHandler) {
             $from = $requestHandler->getFrom($update);
-            if (isset($from))
-            {
+            if (isset($from)) {
                 break;
             }
         }
@@ -107,13 +103,10 @@ class Module extends \yii\base\Module
                     'provider_user_id' => $from->getId(),
                 ]);
                 
-                if (isset($existingBotClient))
-                {
+                if (isset($existingBotClient)) {
                     $botClient->setAttributes($existingBotClient->attributes);
                     $botClient->state = NULL;
-                }
-                else
-                {
+                } else {
                     $language = Language::findOne([
                         'code' => $from->getLanguageCode(),
                     ]);
@@ -127,19 +120,15 @@ class Module extends \yii\base\Module
                 }
             }
 
-            if (!isset($botClient->user_id))
-            {
+            if (!isset($botClient->user_id)) {
                 $this->user = User::createWithRandomPassword();
                 $this->user->name = $from->getFirstName() . ' ' . $from->getLastName();
-                if ($this->user->save())
-                {
+                if ($this->user->save()) {
                     $botClient->user_id = $this->user->id;
 
                     $this->user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
                 }
-            }
-            else
-            {
+            } else {
                 $this->user = User::findOne($botClient->user_id);
             }
 
@@ -151,13 +140,11 @@ class Module extends \yii\base\Module
                 'last_message_at' => time(),
             ]);
 
-            if (!isset($botClient->user_id) || !isset($this->user) || !$botClient->save())
-            {
+            if (!isset($botClient->user_id) || !isset($this->user) || !$botClient->save()) {
                 unset($botClient);
             }
 
-            if (isset($botClient))
-            {
+            if (isset($botClient)) {
                 $keyboardButtons = $botClient->getState()->getKeyboardButtons();
                 ReplyKeyboardManager::init($keyboardButtons);
             }
@@ -178,20 +165,16 @@ class Module extends \yii\base\Module
         $result = false;
 
         list($route, $params) = $this->commandRouteResolver->resolveRoute($update);
-        if ($route)
-        {
+        if ($route) {
             $commands = $this->runAction($route, $params);
 
-            if (is_array($commands))
-            {
+            if (is_array($commands)) {
                 foreach ($commands as $command) {
-                    try
-                    {
+                    try {
                         $replyMarkup = $command->replyMarkup;
                         if (ReplyKeyboardManager::getInstance()->isChanged()
                             && $command instanceof SendMessageCommand
-                            && !isset($replyMarkup))
-                        {
+                            && !isset($replyMarkup)) {
                             $this->setReplyKeyboard($command);
 
                             $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
@@ -199,9 +182,7 @@ class Module extends \yii\base\Module
                             $this->botClient->save();
                         }
                         $command->send($this->botApi);
-                    }
-                    catch (\Exception $ex)
-                    {
+                    } catch (\Exception $ex) {
                         Yii::error($ex->getCode() . ': ' . $ex->getMessage(), 'bot');
                     }
                 }

@@ -28,12 +28,9 @@ class My_emailController extends Controller
         $user = $this->getUser();
         $update = $this->getUpdate();
 
-        if (isset($user->email))
-        {
+        if (isset($user->email)) {
             $email = $user->email;
-        }
-        else
-        {
+        } else {
             $botClient->getState()->setName('/set_email');
             $botClient->save();
         }
@@ -70,22 +67,16 @@ class My_emailController extends Controller
         $email = $update->getMessage()->getText();
 
         $userWithSameEmail = User::findOne(['email' => $email]);
-        if (isset($userWithSameEmail))
-        {
-            if ($userWithSameEmail->id != $user->id)
-            {
+        if (isset($userWithSameEmail)) {
+            if ($userWithSameEmail->id != $user->id) {
                 $mergeRequest = true;
                 $botClient->getState()->setName('waiting_for_merge');
                 $botClient->getState()->email = $email;
                 $botClient->save();
-            }
-            else
-            {
+            } else {
 
             }
-        }
-        else
-        {
+        } else {
             $changeEmailRequest = new ChangeEmailRequest();
             $changeEmailRequest->setAttributes([
                 'email' => $email,
@@ -93,10 +84,8 @@ class My_emailController extends Controller
                 'token' => Yii::$app->security->generateRandomString(),
             ]);
 
-            if ($changeEmailRequest->save())
-            {
-                if ($changeEmailRequest->sendEmail())
-                {
+            if ($changeEmailRequest->save()) {
+                if ($changeEmailRequest->sendEmail()) {
                     $botClient->getState()->setName(NULL);
                     $botClient->save();
 
@@ -104,8 +93,7 @@ class My_emailController extends Controller
 
                 }
             }
-            if (!$changeRequest)
-            {
+            if (!$changeRequest) {
                 $error = Yii::t('bot', 'Given email is invalid');
             }
         }
@@ -181,19 +169,16 @@ class My_emailController extends Controller
         $state = $botClient->getState();
         $stateName = $state->getName();
 
-        if ($stateName == 'waiting_for_merge')
-        {
+        if ($stateName == 'waiting_for_merge') {
             $userToMerge = User::findOne(['email' => $state->email]);
-            if ($userToMerge)
-            {
+            if ($userToMerge) {
                 $mergeAccountsRequest = new MergeAccountsRequest();
                 $mergeAccountsRequest->setAttributes([
                     'user_to_merge_id' => $user->id,
                     'user_id' => $userToMerge->id,
                     'token' => Yii::$app->security->generateRandomString(),
                 ]);
-                if ($mergeAccountsRequest->sendEmail())
-                {
+                if ($mergeAccountsRequest->sendEmail()) {
                     return [
                         new EditMessageTextCommand(
                             $update->getCallbackQuery()->getMessage()->getChat()->getId(),
@@ -215,14 +200,10 @@ class My_emailController extends Controller
                             $update->getCallbackQuery()->getId()
                         ),
                     ];
-                }
-                else
-                {
+                } else {
 
                 }
-            }
-            else
-            {
+            } else {
 
             }
         }
@@ -245,8 +226,7 @@ class My_emailController extends Controller
         $update = $this->getUpdate();
 
         $mergeAccountsRequest = MergeAccountsRequest::findOne($mergeAccountsRequestId);
-        if (isset($mergeAccountsRequest))
-        {
+        if (isset($mergeAccountsRequest)) {
             $deleted = $mergeAccountsRequest->delete();
         }
         return [

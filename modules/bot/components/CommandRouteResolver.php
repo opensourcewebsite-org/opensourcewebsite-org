@@ -44,11 +44,9 @@ class CommandRouteResolver extends Component
     {
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
-            if (isset($commandText))
-            {
+            if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
-                if (isset($routeParts))
-                {
+                if (isset($routeParts)) {
                     break;                    
                 }
             }         
@@ -57,11 +55,9 @@ class CommandRouteResolver extends Component
         if (!isset($route))
         {
             $clientState = Module::getInstance()->botClient->getState();
-            if (isset($clientState))
-            {
+            if (isset($clientState)) {
                 $commandText = $clientState->getName();
-                if (isset($commandText))
-                {
+                if (isset($commandText)) {
                     list($route, $params) = $this->resolveCommandRoute($commandText);
                 }
             }

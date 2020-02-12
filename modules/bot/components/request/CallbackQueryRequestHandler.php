@@ -1,25 +1,23 @@
 <?php
-	namespace app\modules\bot\components\request;
+namespace app\modules\bot\components\request;
 
-	class CallbackQueryRequestHandler implements IRequestHandler
+class CallbackQueryRequestHandler implements IRequestHandler
+{
+	public function getFrom($update)
 	{
-		public function getFrom($update)
-		{
-			if ($callbackQuery = $update->getCallbackQuery())
-			{
-				$from = $callbackQuery->getFrom();
-			}
-
-			return $from;
+		if ($callbackQuery = $update->getCallbackQuery()) {
+			$from = $callbackQuery->getFrom();
 		}
 
-		public function getCommandText($update)
-		{
-			if ($callbackQuery = $update->getCallbackQuery())
-			{
-				$commandText = $callbackQuery->getData();
-			}
-
-			return $commandText;
-		}
+		return $from;
 	}
+
+	public function getCommandText($update)
+	{
+		if ($callbackQuery = $update->getCallbackQuery()) {
+			$commandText = $callbackQuery->getData();
+		}
+
+		return $commandText;
+	}
+}

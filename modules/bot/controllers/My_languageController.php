@@ -94,8 +94,7 @@ class My_languageController extends Controller
             new EditMessageTextCommand(
                 $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('language-list', compact('languages', 'pagination')),
-                [
+                $this->render('language-list', compact('languages', 'pagination')), [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
                 ]

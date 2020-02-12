@@ -1,23 +1,23 @@
 <?php
-	namespace app\modules\bot\components\response;
+namespace app\modules\bot\components\response;
 
-	use \TelegramBot\Api\BotApi;
+use \TelegramBot\Api\BotApi;
 
-	class AnswerCallbackQueryCommand extends Command
+class AnswerCallbackQueryCommand extends Command
+{
+	public function __construct($callbackQueryId, $optionalParams = [])
 	{
-		public function __construct($callbackQueryId, $optionalParams = [])
-		{
-			parent::__construct($optionalParams);
+		parent::__construct($optionalParams);
 
-			$this->callbackQueryId = $callbackQueryId;
-		}
-
-		public function send(BotApi $botApi)
-		{
-			return $botApi->answerCallbackQuery(
-				$this->callbackQueryId,
-				$this->getOptionalProperty('text', NULL),
-				$this->getOptionalProperty('showAlert', FALSe),
-			);
-		}
+		$this->callbackQueryId = $callbackQueryId;
 	}
+
+	public function send(BotApi $botApi)
+	{
+		return $botApi->answerCallbackQuery(
+			$this->callbackQueryId,
+			$this->getOptionalProperty('text', NULL),
+			$this->getOptionalProperty('showAlert', FALSe),
+		);
+	}
+}

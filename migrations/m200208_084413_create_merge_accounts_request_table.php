@@ -13,10 +13,10 @@ class m200208_084413_create_merge_accounts_request_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%merge_accounts_request}}', [
-            'id' => $this->primaryKey(),
-            'token' => $this->string(),
-            'user_id' => $this->integer()->unsigned(),
-            'user_to_merge_id' => $this->integer()->unsigned(),
+            'id' => $this->primaryKey()->unsigned(),
+            'token' => $this->string()->notNull(),
+            'user_id' => $this->integer()->unsigned()->notNull(),
+            'user_to_merge_id' => $this->integer()->unsigned()->notNull(),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
         ]);

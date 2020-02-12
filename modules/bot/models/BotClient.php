@@ -109,8 +109,7 @@ class BotClient extends ActiveRecord
 
     public function getState()
     {
-        if (!isset($this->stateObject))
-        {
+        if (!isset($this->stateObject)) {
             $this->stateObject = isset($this->state)
                ? BotClientState::fromJson($this->state)
                : new BotClientState();

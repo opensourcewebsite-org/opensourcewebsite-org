@@ -13,7 +13,7 @@ class m200212_071339_create_change_email_request_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%change_email_request}}', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey()->unsigned(),
             'token' => $this->string()->notNull(),
             'user_id' => $this->integer()->unsigned()->notNull(),
             'email' => $this->string()->notNull(),
