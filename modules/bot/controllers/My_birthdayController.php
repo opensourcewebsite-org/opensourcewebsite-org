@@ -28,7 +28,7 @@ class My_birthdayController extends Controller
 
         if (!isset($birthday))
         {
-            $botClient->state->setName('/set_birthday');
+            $botClient->getState()->setName('/set_birthday');
             $botClient->save();
         }
 
@@ -68,7 +68,7 @@ class My_birthdayController extends Controller
         {
             $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
-            $botClient->state->setName(NULL);
+            $botClient->getState()->setName(NULL);
             $botClient->save();
         }
 
@@ -80,7 +80,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $botClient = $this->getBotClient();
 
-        $botClient->state->setName('/set_birthday');
+        $botClient->getState()->setName('/set_birthday');
         $botClient->save();
 
         return [

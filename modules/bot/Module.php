@@ -196,7 +196,6 @@ class Module extends \yii\base\Module
 
                             $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
                             $this->botClient->getState()->setKeyboardButtons($keyboardButtons);
-                            $this->botClient->state = $this->botClient->getState()->toJson();
                             $this->botClient->save();
                         }
                         $command->send($this->botApi);

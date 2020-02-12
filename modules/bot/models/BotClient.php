@@ -117,4 +117,10 @@ class BotClient extends ActiveRecord
         }
         return $this->stateObject;
     }
+
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        $this->state = $this->getState()->toJson();
+        return parent::save($runValidation, $attributeNames);
+    }
 }
