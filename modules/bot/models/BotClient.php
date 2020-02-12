@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\models;
 
-use app\modules\bot\Module;
 use \yii\db\ActiveRecord;
 
 /**
@@ -23,7 +22,7 @@ use \yii\db\ActiveRecord;
  */
 class BotClient extends ActiveRecord
 {
-    private $stateObject;
+    private $_stateObject;
 
     /**
      * {@inheritdoc}
@@ -109,12 +108,12 @@ class BotClient extends ActiveRecord
 
     public function getState()
     {
-        if (!isset($this->stateObject)) {
-            $this->stateObject = isset($this->state)
+        if (!isset($this->_stateObject)) {
+            $this->_stateObject = isset($this->state)
                ? BotClientState::fromJson($this->state)
                : new BotClientState();
         }
-        return $this->stateObject;
+        return $this->_stateObject;
     }
 
     public function save($runValidation = true, $attributeNames = null)

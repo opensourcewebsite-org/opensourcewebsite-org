@@ -36,7 +36,7 @@ class Controller extends \yii\base\Controller
     public function runAction($id, $params = [], $protect = false)
     {
         if (!$protect) {
-            throw new InvalidCallException("Command controller can run only by bot module");
+            throw new InvalidCallException('Command controller can run only by bot module');
         }
 
         return parent::runAction($id, $params);

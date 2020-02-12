@@ -1,7 +1,7 @@
 <?php
 
 namespace app\modules\bot\controllers;
-use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
 
@@ -13,14 +13,14 @@ use \app\modules\bot\components\ReplyKeyboardManager;
 class StartController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
         $update = $this->getUpdate();
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
-            'text' => "⚙️",
+            'text' => '⚙️',
             ReplyKeyboardManager::REPLYKEYBOARDBUTTON_IS_CONSTANT => true,
         ]);
 

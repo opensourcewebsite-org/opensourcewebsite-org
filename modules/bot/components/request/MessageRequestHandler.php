@@ -10,7 +10,7 @@ class MessageRequestHandler implements IRequestHandler
         }
 
         return $from;
-    }       
+    }
 
     public function getCommandText($update)
     {

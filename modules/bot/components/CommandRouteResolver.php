@@ -3,10 +3,7 @@
 namespace app\modules\bot\components;
 
 use app\modules\bot\Module;
-use app\modules\bot\components\request\IRequestHandler;
 use yii\base\Component;
-use yii\base\InvalidRouteException;
-use Yii;
 
 /**
  * Class CommandRouter
@@ -47,9 +44,9 @@ class CommandRouteResolver extends Component
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
                 if (isset($routeParts)) {
-                    break;                    
+                    break;
                 }
-            }         
+            }
         }
 
         if (!isset($route))

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Change Email' )?>
+<?= Yii::t('bot', 'Change Email')?>

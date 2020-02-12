@@ -17,7 +17,7 @@ use \app\models\User;
 class My_genderController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
@@ -48,7 +48,7 @@ class My_genderController extends Controller
     public function actionChange()
     {
         $update = $this->getUpdate();
-        $user = $this->getUser();;
+        $user = $this->getUser();
 
         return [
             new EditMessageTextCommand(

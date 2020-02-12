@@ -1,9 +1,5 @@
 <?php
 
-use app\components\Converter;
-use app\models\Rating;
-use app\models\User;
-use yii\db\Query;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 

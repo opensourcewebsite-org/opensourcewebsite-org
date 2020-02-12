@@ -10,7 +10,7 @@ return [
         'commandRouteResolver' => [
             'class' => CommandRouteResolver::className(),
             'rules' => [
-                "⚙️" => 'help/index',
+                '⚙️' => 'help/index',
 
                 '/my_language_<language:\w+>' => 'my_language/index',
                 '/language_list' => 'my_language/language-list',
@@ -36,7 +36,7 @@ return [
                 '/update_location' => 'my_location/update',
 
                 '/update_rating' => 'my_rating/update',
-                
+
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],

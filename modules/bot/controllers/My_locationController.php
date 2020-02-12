@@ -29,34 +29,34 @@ class My_locationController extends Controller
             'request_location' => true,
         ]);
 
-        if (isset($botClient->location_lon) && isset($botClient->location_lat))
-        {
+        if (isset($botClient->location_lon) && isset($botClient->location_lat)) {
             return [
                 new SendMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $this->render('header'), [
+                    $this->render('header'),
+                    [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
                 new SendLocationCommand(
                     $update->getMessage()->getChat()->getId(),
                     $botClient->location_lat,
-                    $botClient->location_lon,
+                    $botClient->location_lon
                 ),
                 new SendMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $this->render('footer'), [
+                    $this->render('footer'),
+                    [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
             ];
-        }
-        else
-        {
+        } else {
             return [
                 new SendMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $this->render('index'), [
+                    $this->render('index'),
+                    [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
@@ -75,7 +75,7 @@ class My_locationController extends Controller
                 'location_lat' => $location->getLatitude(),
                 'location_at' => time(),
             ]);
-            $botClient->save(); 
+            $botClient->save();
         }
 
         return [

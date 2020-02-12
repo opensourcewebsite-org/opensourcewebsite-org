@@ -3,37 +3,37 @@ namespace app\modules\bot\models;
 
 class BotClientState
 {
-    private $fields = [];
+    private $_fields = [];
 
     public function getKeyboardButtons()
     {
-        return isset($this->fields['keyboardButtons']) ? $this->fields['keyboardButtons'] : [];
+        return isset($this->_fields['keyboardButtons']) ? $this->_fields['keyboardButtons'] : [];
     }
 
     public function setKeyboardButtons($value)
     {
-        $this->fields['keyboardButtons'] = $value;
+        $this->_fields['keyboardButtons'] = $value;
     }
 
     public function getName()
     {
-        return $this->fields['name'];
+        return $this->_fields['name'];
     }
 
     public function setName($value)
     {
-        $this->fields['name'] = $value;
+        $this->_fields['name'] = $value;
     }
 
     public function toJson()
     {
-        return json_encode($this->fields);
+        return json_encode($this->_fields);
     }
 
     public static function fromJson($json)
     {
         $state = new BotClientState();
-        $state->fields = json_decode($json, true);
+        $state->_fields = json_decode($json, true);
         return $state;
     }
 }

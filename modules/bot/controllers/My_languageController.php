@@ -21,7 +21,7 @@ class My_languageController extends Controller
     /**
      * @param null|string $language
      *
-     * @return string
+     * @return array
      */
     public function actionIndex($language = null)
     {
@@ -66,7 +66,7 @@ class My_languageController extends Controller
     /**
      * @param int $page
      *
-     * @return string
+     * @return array
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function actionLanguageList($page = 1)
@@ -94,7 +94,8 @@ class My_languageController extends Controller
             new EditMessageTextCommand(
                 $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('language-list', compact('languages', 'pagination')), [
+                $this->render('language-list', compact('languages', 'pagination')),
+                [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
                 ]

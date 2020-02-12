@@ -7,7 +7,6 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
-use app\modules\bot\models\BotClient;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
@@ -20,7 +19,7 @@ use \app\modules\bot\components\response\EditMessageTextCommand;
 class My_emailController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
@@ -74,7 +73,6 @@ class My_emailController extends Controller
                 $botClient->getState()->email = $email;
                 $botClient->save();
             } else {
-
             }
         } else {
             $changeEmailRequest = new ChangeEmailRequest();
@@ -90,7 +88,6 @@ class My_emailController extends Controller
                     $botClient->save();
 
                     $changeRequest = true;
-
                 }
             }
             if (!$changeRequest) {
@@ -201,14 +198,10 @@ class My_emailController extends Controller
                         ),
                     ];
                 } else {
-
                 }
             } else {
-
             }
-        }
-        else
-        {
+        } else {
             return [
                 new AnswerCallbackQueryCommand(
                     $update->getCallbackQuery()->getId(),

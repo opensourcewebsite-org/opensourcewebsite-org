@@ -17,7 +17,7 @@ use \app\models\User;
 class My_birthdayController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {

@@ -1,6 +1,7 @@
 <?php
 
 namespace app\modules\bot\controllers;
+
 use \app\modules\bot\components\response\SendMessageCommand;
 
 /**
@@ -11,7 +12,7 @@ use \app\modules\bot\components\response\SendMessageCommand;
 class HelpController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {

@@ -56,8 +56,7 @@ class MergeAccountsRequest extends ActiveRecord
      */
     public function sendEmail()
     {
-        if (!$this->save())
-        {
+        if (!$this->save()) {
             return false;
         }
 

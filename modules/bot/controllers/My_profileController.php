@@ -12,7 +12,7 @@ use \app\modules\bot\components\response\SendMessageCommand;
 class My_profileController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {

@@ -11,8 +11,6 @@ use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Language;
 use app\models\Rating;
-use app\modules\bot\components\request\MessageRequestHandler;
-use app\modules\bot\components\request\CallbackQueryRequestHandler;
 use app\modules\bot\components\ReplyKeyboardManager;
 use app\modules\bot\components\response\SendMessageCommand;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
@@ -24,13 +22,13 @@ use TelegramBot\Api\Types\ReplyKeyboardRemove;
  */
 class Module extends \yii\base\Module
 {
-    /** 
-     * @var TelegramBot\Api\BotApi
+    /**
+     * @var \TelegramBot\Api\BotApi
      */
     private $botApi;
 
     /**
-     * @var app\modules\bot\models\BotClient
+     * @var models\BotClient
      */
     public $botClient;
 
@@ -102,7 +100,7 @@ class Module extends \yii\base\Module
                 $existingBotClient = BotClient::findOne([
                     'provider_user_id' => $from->getId(),
                 ]);
-                
+
                 if (isset($existingBotClient)) {
                     $botClient->setAttributes($existingBotClient->attributes);
                     $botClient->state = null;

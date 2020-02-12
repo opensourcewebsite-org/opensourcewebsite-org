@@ -10,6 +10,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
+
 /**
  * Class My_currencyController
  *
@@ -20,7 +21,7 @@ class My_currencyController extends Controller
     /**
      * @param null|string $currency
      *
-     * @return string
+     * @return array
      */
     public function actionIndex($currency = null)
     {
@@ -63,7 +64,7 @@ class My_currencyController extends Controller
     /**
      * @param int $page
      *
-     * @return string
+     * @return array
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function actionCurrencyList($page = 1)

@@ -25,7 +25,7 @@ class ReplyKeyboardManager
 
     static public function getInstance()
     {
-        return self::$instance; 
+        return self::$instance;
     }
 
     static public function init(array $keyboardButtons = [])
