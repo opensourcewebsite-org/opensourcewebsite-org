@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\helpers;
 
+use Yii;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use yii\base\InvalidParamException;
 use yii\data\Pagination;
@@ -54,7 +55,7 @@ class PaginationButtons
         if ($pagination->pageCount > $maxVisibleButtons) {
             $buttons[] = ['callback_data' => self::getRoute($route, $pagination->pageCount), 'text' => "\xE2\x8F\xA9"];
         }
-        \Yii::warning($buttons);
+        Yii::warning($buttons);
 
         return new InlineKeyboardMarkup([$buttons]);
     }

@@ -36,9 +36,9 @@ return [
                 '/update_location' => 'my_location/update',
 
                 '/update_rating' => 'my_rating/update',
-
+                
+                '/<controller:\w+> <message:.+>' => '<controller>/index',
 				'/<controller:\w+>' => '<controller>/index',
-                '/<controller:\w+> <text:.+>' => '<controller>/index',
             ],
             'requestHandlers' => [
                 new MessageRequestHandler(),

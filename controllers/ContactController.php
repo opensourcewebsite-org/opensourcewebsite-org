@@ -88,6 +88,13 @@ class ContactController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
+                if ($model->user_id == $model->userIdOrName) {
+                    Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
+
+                    return $this->render('create', [
+                        'model' => $model,
+                    ]);
+                }
                 $user = User::find()
                     ->andWhere([
                         'OR',
@@ -101,9 +108,13 @@ class ContactController extends Controller
                     $contact->save(false);
                 }
                 $model->link_user_id = $user->id;
-            }
-            $model->save(false);
 
+                $model->save(false);
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -129,6 +140,13 @@ class ContactController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
             if (!empty($model->userIdOrName)) {
+                if ($model->user_id == $model->userIdOrName) {
+                    Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
+
+                    return $this->render('update', [
+                        'model' => $model,
+                    ]);
+                }
                 $user = User::find()
                     ->andWhere([
                         'OR',

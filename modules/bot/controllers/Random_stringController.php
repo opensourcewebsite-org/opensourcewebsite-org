@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers;
 use Yii;
 
 /**
- * Class Random_intController
+ * Class Random_stringController
  *
  * @package app\modules\bot\controllers
  */
@@ -14,8 +14,9 @@ class Random_stringController extends Controller
     /**
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($message = '')
     {
+        //TODO add flexible int $n (1-1024) from $message
         $n = 10;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randomString = '';

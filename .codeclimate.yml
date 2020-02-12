@@ -11,13 +11,21 @@ checks:
 plugins:
   csslint:
     enabled: true
-  fixme:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+  editorconfig:
     enabled: true
   eslint:
     enabled: true
     channel: "eslint-4"
     config:
       config: .eslintrc
+  fixme:
+    enabled: true
   git-legal:
     enabled: true
   markdownlint:
@@ -26,6 +34,7 @@ plugins:
     enabled: true
     config:
       file_extensions: "php"
+      ignore-undeclared: true
     checks:
       PhanUndeclaredClassMethod:
         enabled: false
@@ -40,20 +49,13 @@ plugins:
   phpmd:
     enabled: true
     config:
-      file_extensions:
-        - php
+      file_extensions: "php"
+      rulesets: "unusedcode,codesize,naming,phpmd.xml"
   sonar-php:
     enabled: true
     config:
       minimum_severity: critical
   stylelint:
     enabled: true
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - javascript
-      - php
 exclude_patterns:
   - "/vendor/"
-  - "/yii/"

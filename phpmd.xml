@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<ruleset name="Yii2 PHPMD rule set"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                     http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="
+                     http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        Yii2 PHPMD custom rule set for checking code quality
+    </description>
+
+    <!-- @see https://phpmd.org/rules/cleancode.html#booleanargumentflag -->
+    <rule ref="rulesets/cleancode.xml/BooleanArgumentFlag"/>
+
+    <!-- @see https://phpmd.org/rules/cleancode.html#elseexpression -->
+    <rule ref="rulesets/cleancode.xml/ElseExpression"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#cyclomaticcomplexity -->
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#npathcomplexity -->
+    <rule ref="rulesets/codesize.xml/NPathComplexity"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#excessivemethodlength -->
+    <rule ref="rulesets/codesize.xml/ExcessiveMethodLength"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#excessiveclasslength -->
+    <rule ref="rulesets/codesize.xml/ExcessiveClassLength"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#excessiveparameterlist -->
+    <rule ref="rulesets/codesize.xml/ExcessiveParameterList">
+        <properties>
+            <property name="minimum" value="4" />
+        </properties>
+    </rule>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#excessivepubliccount -->
+    <rule ref="rulesets/codesize.xml/ExcessivePublicCount"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#toomanyfields -->
+    <rule ref="rulesets/codesize.xml/TooManyFields"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#toomanymethods -->
+    <rule ref="rulesets/codesize.xml/TooManyMethods"/>
+
+    <!-- @see http://phpmd.org/rules/codesize.html#excessiveclasscomplexity -->
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity"/>
+
+    <!-- @see http://phpmd.org/rules/controversial.html#superglobals -->
+    <rule ref="rulesets/controversial.xml/Superglobals"/>
+
+    <!-- @see http://phpmd.org/rules/controversial.html#camelcaseclassname -->
+    <rule ref="rulesets/controversial.xml/CamelCaseClassName"/>
+
+    <!-- @see http://phpmd.org/rules/controversial.html#camelcasepropertyname -->
+    <rule ref="rulesets/controversial.xml/CamelCasePropertyName"/>
+
+    <!-- @see http://phpmd.org/rules/controversial.html#camelcasemethodname -->
+    <rule ref="rulesets/controversial.xml/CamelCaseMethodName"/>
+
+    <!-- @see http://phpmd.org/rules/controversial.html#camelcaseparametername -->
+    <rule ref="rulesets/controversial.xml/CamelCaseParameterName"/>
+
+    <!-- @see http://phpmd.org/rules/controversial.html#camelcasevariablename -->
+    <rule ref="rulesets/controversial.xml/CamelCaseVariableName"/>
+
+    <!-- @see http://phpmd.org/rules/design.html#exitexpression -->
+    <rule ref="rulesets/design.xml/ExitExpression"/>
+
+    <!-- @see http://phpmd.org/rules/design.html#evalexpression -->
+    <rule ref="rulesets/design.xml/EvalExpression"/>
+
+    <!-- @see http://phpmd.org/rules/design.html#gotostatement -->
+    <rule ref="rulesets/design.xml/GotoStatement"/>
+
+    <!-- @see http://phpmd.org/rules/design.html#numberofchildren -->
+    <rule ref="rulesets/design.xml/NumberOfChildren"/>
+
+    <!-- @see http://phpmd.org/rules/design.html#depthofinheritance -->
+    <rule ref="rulesets/design.xml/DepthOfInheritance"/>
+
+    <!-- @see http://phpmd.org/rules/design.html#couplingbetweenobjects -->
+    <rule ref="rulesets/design.xml/CouplingBetweenObjects"/>
+
+    <!-- @see http://phpmd.org/rules/naming.html#longvariable -->
+    <rule ref="rulesets/naming.xml/LongVariable"/>
+
+    <!-- @see http://phpmd.org/rules/naming.html#shortmethodname -->
+    <rule ref="rulesets/naming.xml/ShortMethodName"/>
+
+    <!-- @see http://phpmd.org/rules/naming.html#constructorwithnameasenclosingclass -->
+    <rule ref="rulesets/naming.xml/ConstructorWithNameAsEnclosingClass"/>
+
+    <!-- @see http://phpmd.org/rules/naming.html#constantnamingconventions -->
+    <rule ref="rulesets/naming.xml/ConstantNamingConventions"/>
+
+    <!-- @see http://phpmd.org/rules/naming.html#booleangetmethodname -->
+    <rule ref="rulesets/naming.xml/BooleanGetMethodName"/>
+
+    <!-- @see http://phpmd.org/rules/unusedcode.html#unusedprivatefield -->
+    <rule ref="rulesets/unusedcode.xml/UnusedPrivateField"/>
+
+    <!-- @see http://phpmd.org/rules/unusedcode.html#unusedlocalvariable -->
+    <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable"/>
+
+    <!-- @see http://phpmd.org/rules/unusedcode.html#unusedprivatemethod -->
+    <rule ref="rulesets/unusedcode.xml/UnusedPrivateMethod"/>
+
+    <!-- @see http://phpmd.org/rules/unusedcode.html#unusedformalparameter -->
+    <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter"/>
+</ruleset>

@@ -63,7 +63,7 @@ class CommandRouteResolver extends Component
                 if (isset($commandText))
                 {
                     list($route, $params) = $this->resolveCommandRoute($commandText);
-                }   
+                }
             }
         }
 
