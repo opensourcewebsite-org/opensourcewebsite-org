@@ -118,7 +118,7 @@ All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/b
 
 #### PHP Style Guide
 
-All PHP must adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards).
+PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards) and [PHP Standards Recommendations](https://www.php-fig.org/psr/).
 
 Recommended IDE:
   * [Atom](https://atom.io)
@@ -133,7 +133,7 @@ Recommended IDE:
 
 #### JavaScript Style Guide
 
-All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com).
+JavaScript Code MUST adhere to [JavaScript Standard Style](https://standardjs.com).
 
 Recommended IDE:
   * [Atom](https://atom.io)
