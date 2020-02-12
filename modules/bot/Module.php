@@ -110,6 +110,7 @@ class Module extends \yii\base\Module
                 if (isset($existingBotClient))
                 {
                     $botClient->setAttributes($existingBotClient->attributes);
+                    $botClient->state = NULL;
                 }
                 else
                 {
