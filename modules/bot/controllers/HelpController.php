@@ -15,16 +15,16 @@ class HelpController extends Controller
      */
     public function actionIndex()
     {
-    	$update = $this->getUpdate();
+        $update = $this->getUpdate();
 
-		return [
-			new SendMessageCommand(
-				$update->getMessage()->getChat()->getId(),
-				$this->render('index'),
-				[
-					'parseMode' => $this->textFormat,
-				]
-			),
-		];
+        return [
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index'),
+                [
+                    'parseMode' => $this->textFormat,
+                ]
+            ),
+        ];
     }
 }

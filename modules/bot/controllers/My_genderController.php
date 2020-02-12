@@ -24,7 +24,7 @@ class My_genderController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-    	return [
+        return [
             new SendMessageCommand(
                 $update->getMessage()->getChat()->getId(),
                 $this->render('index', [
@@ -50,7 +50,7 @@ class My_genderController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();;
 
-    	return [
+        return [
             new EditMessageTextCommand(
                 $update->getCallbackQuery()->getMessage()->getChat()->getId(),
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
@@ -80,7 +80,7 @@ class My_genderController extends Controller
             new AnswerCallbackQueryCommand(
                 $update->getCallbackQuery()->getId()
             ),
-    	];
+        ];
     }
 
     public function actionSetMale()

@@ -29,7 +29,7 @@ class m200212_063716_add_bot_id_column_to_bot_client_table extends Migration
         $this->update(
             '{{%bot_client}}',
             [ 'bot_id' => $botId ],
-            [ 'bot_id' => NULL ],
+            [ 'bot_id' => NULL ]
         );
     }
 
@@ -40,7 +40,7 @@ class m200212_063716_add_bot_id_column_to_bot_client_table extends Migration
     {
         $this->dropForeignKey(
             'fk-bot_client-bot_id',
-            'bot_client',
+            'bot_client'
         );
 
         $this->dropColumn('{{%bot_client}}', 'bot_id');

@@ -22,7 +22,7 @@ class My_locationController extends Controller
     public function actionIndex()
     {
         $botClient = $this->getBotClient();
-    	$update = $this->getUpdate();
+        $update = $this->getUpdate();
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
             'text' => $this->render('send-location'),

@@ -16,7 +16,7 @@ return [
                 '/language_list' => 'my_language/language-list',
                 '/language_list_<page:\d+>' => 'my_language/language-list',
 
-				'/my_currency_<currency:\w+>' => 'my_currency/index',
+                '/my_currency_<currency:\w+>' => 'my_currency/index',
                 '/currency_list' => 'my_currency/currency-list',
                 '/currency_list_<page:\d+>' => 'my_currency/currency-list',
 
@@ -38,7 +38,7 @@ return [
                 '/update_rating' => 'my_rating/update',
                 
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
-				'/<controller:\w+>' => '<controller>/index',
+                '/<controller:\w+>' => '<controller>/index',
             ],
             'requestHandlers' => [
                 new MessageRequestHandler(),

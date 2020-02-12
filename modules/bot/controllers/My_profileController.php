@@ -16,18 +16,18 @@ class My_profileController extends Controller
      */
     public function actionIndex()
     {
-    	$update = $this->getUpdate();
+        $update = $this->getUpdate();
 
-		return [
-			new SendMessageCommand(
+        return [
+            new SendMessageCommand(
                 $update->getMessage()->getChat()->getId(),
                 $this->render('index', [
                     'profile' => $update->getMessage()->getFrom(),
                 ]),
-				[
+                [
                     'parseMode' => $this->textFormat,
-				]
-			),
-		];
+                ]
+            ),
+        ];
     }
 }

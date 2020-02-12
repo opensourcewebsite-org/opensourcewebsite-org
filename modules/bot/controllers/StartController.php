@@ -17,7 +17,7 @@ class StartController extends Controller
      */
     public function actionIndex()
     {
-    	$update = $this->getUpdate();
+        $update = $this->getUpdate();
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
             'text' => "⚙️",
@@ -25,13 +25,13 @@ class StartController extends Controller
         ]);
 
         return [
-        	new SendMessageCommand(
+            new SendMessageCommand(
                 $update->getMessage()->getChat()->getId(),
                 $this->render('index'),
-        		[
+                [
                     'parseMode' => $this->textFormat,
-        		]
-        	),
+                ]
+            ),
         ];
     }
 }
