@@ -63,7 +63,7 @@ class Module extends \yii\base\Module
                 $this->botApi->setProxy(Yii::$app->params['telegramProxy']);
             }
 
-            $this->botClient = $this->resolveBotClient($this->update);
+            $this->botClient = $this->resolveBotClient($this->update, $botInfo->id);
             if (isset($this->botClient))
             {
                 Yii::$app->language = $this->botClient->language_code;
@@ -83,7 +83,7 @@ class Module extends \yii\base\Module
      *
      * @return \app\modules\bot\models\BotClient
      */
-    private function resolveBotClient($update)
+    private function resolveBotClient($update, $botId)
     {
         foreach ($this->commandRouteResolver->requestHandlers as $requestHandler) {
             $from = $requestHandler->getFrom($update);
@@ -95,20 +95,35 @@ class Module extends \yii\base\Module
 
         if ($from)
         {
-            $botClient = BotClient::findOne(['provider_user_id' => $from->getId()]);
+            $botClient = BotClient::findOne([
+                'bot_id' => $botId,
+                'provider_user_id' => $from->getId(),
+            ]);
             if (!isset($botClient))
             {
                 $botClient = new BotClient();
 
-                $language = Language::findOne([
-                    'code' => $from->getLanguageCode(),
-                ]);
-                $language = isset($language) ? $language->code : 'en';
-
-                $botClient->setAttributes([
+                $existingBotClient = BotClient::findOne([
                     'provider_user_id' => $from->getId(),
-                    'language_code' => $language,
-                ]);   
+                ]);
+                
+                if (isset($existingBotClient))
+                {
+                    $botClient->setAttributes($existingBotClient->attributes);
+                }
+                else
+                {
+                    $language = Language::findOne([
+                        'code' => $from->getLanguageCode(),
+                    ]);
+                    $language = isset($language) ? $language->code : 'en';
+
+                    $botClient->setAttributes([
+                        'bot_id' => $botId,
+                        'provider_user_id' => $from->getId(),
+                        'language_code' => $language,
+                    ]);
+                }
             }
 
             if (!isset($botClient->user_id))

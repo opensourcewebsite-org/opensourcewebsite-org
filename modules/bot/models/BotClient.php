@@ -41,12 +41,14 @@ class BotClient extends ActiveRecord
         return [
             [
                 [
+                    'bot_id',
                     'provider_user_id',
                 ],
                 'required',
             ],
             [
                 [
+                    'bot_id',
                     'user_id',
                     'provider_user_id',
                     'provider_user_blocked',
