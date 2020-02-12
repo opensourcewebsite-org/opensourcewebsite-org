@@ -44,7 +44,7 @@ class My_emailController extends Controller
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => (!isset($email)
-                        ? NULL
+                        ? null
                         : new InlineKeyboardMarkup([
                             [
                                 [
@@ -86,7 +86,7 @@ class My_emailController extends Controller
 
             if ($changeEmailRequest->save()) {
                 if ($changeEmailRequest->sendEmail()) {
-                    $botClient->getState()->setName(NULL);
+                    $botClient->getState()->setName(null);
                     $botClient->save();
 
                     $changeRequest = true;
@@ -109,7 +109,7 @@ class My_emailController extends Controller
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => (!$mergeRequest
-                        ? NULL
+                        ? null
                         : new InlineKeyboardMarkup([
                             [
                                 [
@@ -213,7 +213,7 @@ class My_emailController extends Controller
                 new AnswerCallbackQueryCommand(
                     $update->getCallbackQuery()->getId(),
                     [
-                        'showAlert' => TRUE,
+                        'showAlert' => true,
                         'text' => Yii::t('bot', 'This request has expired'),
                     ]
                 ),
@@ -244,7 +244,7 @@ class My_emailController extends Controller
                     'text' => Yii::t('bot', $deleted
                         ? 'Request was successfully discarded'
                         : 'Nothing to discard'),
-                    'showAlert' => TRUE,
+                    'showAlert' => true,
                 ]
             ),
         ];

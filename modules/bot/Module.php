@@ -53,7 +53,7 @@ class Module extends \yii\base\Module
 
     public function handleInput($input, $token)
     {
-        $updateArray = json_decode($input, TRUE);
+        $updateArray = json_decode($input, true);
         $this->update = Update::fromResponse($updateArray);
         $botInfo = Bot::findOne(['token' => $token]);
         if ($botInfo) {
@@ -105,7 +105,7 @@ class Module extends \yii\base\Module
                 
                 if (isset($existingBotClient)) {
                     $botClient->setAttributes($existingBotClient->attributes);
-                    $botClient->state = NULL;
+                    $botClient->state = null;
                 } else {
                     $language = Language::findOne([
                         'code' => $from->getLanguageCode(),
@@ -187,7 +187,7 @@ class Module extends \yii\base\Module
                     }
                 }
 
-                $result = TRUE;
+                $result = true;
             }
         }
 
@@ -198,7 +198,7 @@ class Module extends \yii\base\Module
     {
         $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
         $command->replyMarkup = (!empty($keyboardButtons))
-            ? new ReplyKeyboardMarkup($keyboardButtons, FALSE, TRUE)
+            ? new ReplyKeyboardMarkup($keyboardButtons, false, true)
             : new ReplyKeyboardRemove();
     }
 

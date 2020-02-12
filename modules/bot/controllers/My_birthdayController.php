@@ -37,7 +37,7 @@ class My_birthdayController extends Controller
                 $this->render('index', [
                     'birthday' => isset($birthday)
                         ? (new \DateTime($birthday))->format(User::DATE_FORMAT)
-                        : NULL,
+                        : null,
                 ]),
                 [
                     'parseMode' => $this->textFormat,
@@ -50,7 +50,7 @@ class My_birthdayController extends Controller
                                 ]
                             ]
                         ])
-                        : NULL,
+                        : null,
                 ]
             ),
         ];
@@ -66,7 +66,7 @@ class My_birthdayController extends Controller
         if ($success = $this->validateDate($text, User::DATE_FORMAT)) {
             $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
-            $botClient->getState()->setName(NULL);
+            $botClient->getState()->setName(null);
             $botClient->save();
         }
 

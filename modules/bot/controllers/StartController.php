@@ -21,7 +21,7 @@ class StartController extends Controller
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
             'text' => "⚙️",
-            ReplyKeyboardManager::REPLYKEYBOARDBUTTON_IS_CONSTANT => TRUE,
+            ReplyKeyboardManager::REPLYKEYBOARDBUTTON_IS_CONSTANT => true,
         ]);
 
         return [

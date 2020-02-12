@@ -9,7 +9,7 @@ class ReplyKeyboardManager
 
     private $oldKeyboardButtons = [];
     private $keyboardButtons = [];
-    private $_isChanged = FALSE;
+    private $_isChanged = false;
 
     private function __construct(array $keyboardButtons = [])
     {
@@ -55,7 +55,7 @@ class ReplyKeyboardManager
         else {
             $this->keyboardButtons[$row] = [ $keyboardButton ];
         }
-        $this->_isChanged = TRUE;
+        $this->_isChanged = true;
     }
 
     public function getKeyboardButtons()
@@ -74,6 +74,6 @@ class ReplyKeyboardManager
         if (empty($this->keyboardButtons[$rowIndex])) {
             unset($this->keyboardButtons[$rowIndex]);
         }
-        $this->_isChanged = TRUE;
+        $this->_isChanged = true;
     }
 }

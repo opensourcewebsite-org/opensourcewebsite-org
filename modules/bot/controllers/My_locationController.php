@@ -26,7 +26,7 @@ class My_locationController extends Controller
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
             'text' => $this->render('send-location'),
-            'request_location' => TRUE,
+            'request_location' => true,
         ]);
 
         if (isset($botClient->location_lon) && isset($botClient->location_lat))

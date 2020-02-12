@@ -5,19 +5,19 @@ use \TelegramBot\Api\BotApi;
 
 class AnswerCallbackQueryCommand extends Command
 {
-	public function __construct($callbackQueryId, $optionalParams = [])
-	{
-		parent::__construct($optionalParams);
+    public function __construct($callbackQueryId, $optionalParams = [])
+    {
+        parent::__construct($optionalParams);
 
-		$this->callbackQueryId = $callbackQueryId;
-	}
+        $this->callbackQueryId = $callbackQueryId;
+    }
 
-	public function send(BotApi $botApi)
-	{
-		return $botApi->answerCallbackQuery(
-			$this->callbackQueryId,
-			$this->getOptionalProperty('text', NULL),
-			$this->getOptionalProperty('showAlert', FALSe),
-		);
-	}
+    public function send(BotApi $botApi)
+    {
+        return $botApi->answerCallbackQuery(
+            $this->callbackQueryId,
+            $this->getOptionalProperty('text', null),
+            $this->getOptionalProperty('showAlert', false),
+        );
+    }
 }

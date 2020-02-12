@@ -33,7 +33,7 @@
 		public static function fromJson($json)
 		{
 			$state = new BotClientState();
-			$state->fields = json_decode($json, TRUE);
+			$state->fields = json_decode($json, true);
 			return $state;
 		}
 	}
