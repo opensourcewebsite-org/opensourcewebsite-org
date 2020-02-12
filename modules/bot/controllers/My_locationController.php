@@ -6,6 +6,7 @@ use app\modules\bot\components\BotClient;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use \app\modules\bot\components\response\SendLocationCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\ReplyKeyboardManager;
 use Yii;
 
 /**
@@ -22,6 +23,11 @@ class My_locationController extends Controller
     {
         $botClient = $this->getBotClient();
     	$update = $this->getUpdate();
+
+        ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
+            'text' => $this->render('send-location'),
+            'request_location' => TRUE,
+        ]);
 
         if (isset($botClient->location_lon) && isset($botClient->location_lat))
         {
@@ -43,17 +49,6 @@ class My_locationController extends Controller
                     $this->render('footer'),
                     [
                         'parseMode' => $this->textFormat,
-                        'replyMarkup' => new ReplyKeyboardMarkup([
-                            [
-                                [
-                                    'text' => $this->render('send-location'),
-                                    'request_location' => TRUE,
-                                ],
-                                [
-                                    'text' => '⚙️',
-                                ]
-                            ]
-                        ], TRUE, TRUE),
                     ]
                 ),
             ];
@@ -66,17 +61,6 @@ class My_locationController extends Controller
                     $this->render('index'),
                     [
                         'parseMode' => $this->textFormat,
-                        'replyMarkup' => new ReplyKeyboardMarkup([
-                            [
-                                [
-                                    'text' => $this->render('send-location'),
-                                    'request_location' => TRUE,
-                                ],
-                                [
-                                    'text' => '⚙️',
-                                ]
-                            ]
-                        ], TRUE, TRUE),
                     ]
                 ),
             ];
@@ -104,13 +88,6 @@ class My_locationController extends Controller
                 $this->render('update'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => new ReplyKeyboardMarkup([
-                        [
-                            [
-                                'text' => '⚙️',
-                            ]
-                        ]
-                    ], TRUE, TRUE),
                 ]
             ),
         ];

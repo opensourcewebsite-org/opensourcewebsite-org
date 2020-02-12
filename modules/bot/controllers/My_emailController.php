@@ -41,9 +41,7 @@ class My_emailController extends Controller
         }
         else
         {
-            $botClient->setState([
-                'state' => '/set_email'
-            ]);
+            $botClient->state->setName('/set_email');
             $botClient->save();
         }
 
@@ -87,10 +85,8 @@ class My_emailController extends Controller
             if ($userWithSameEmail->id != $user->id)
             {
                 $mergeRequest = true;
-                $botClient->setState([
-                    'state' => 'waiting_for_merge',
-                    'email' => $email,
-                ]);
+                $botClient->state->setName('waiting_for_merge');
+                $botClient->state->email = $email;
                 $botClient->save();
             }
             else
@@ -111,7 +107,7 @@ class My_emailController extends Controller
                 if ($passwordResetRequest->sendEmail())
                 {
                     $botClient->user_id = $user->id;
-                    $botClient->resetState();
+                    $botClient->state->setName(NULL);
                     $botClient->save();
 
                     $resetRequest = true;
@@ -165,9 +161,7 @@ class My_emailController extends Controller
 
         MergeAccountsRequest::deleteAll('user_id = ' . $user->id);
 
-        $botClient->setState([
-            'state' => '/set_email'
-        ]);
+        $botClient->state->setName('/set_email');
         $botClient->save();
 
         return [
@@ -197,8 +191,8 @@ class My_emailController extends Controller
         $update = $this->getUpdate();
         $botClient = $this->getBotClient();
         $user = $this->getUser();
-        $state = $botClient->getState();
-        $stateName = $state->state;
+        $state = $botClient->state;
+        $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge')
         {

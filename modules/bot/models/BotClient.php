@@ -3,6 +3,7 @@
 namespace app\modules\bot\models;
 
 use app\modules\bot\Module;
+use \yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "support_group_bot_client".
@@ -20,8 +21,10 @@ use app\modules\bot\Module;
  * @property string $language_code
  * @property string $currency_code
  */
-class BotClient extends \yii\db\ActiveRecord
+class BotClient extends ActiveRecord
 {
+    private $stateObject;
+
     /**
      * {@inheritdoc}
      */
@@ -66,7 +69,6 @@ class BotClient extends \yii\db\ActiveRecord
             ],
             [['language_code'], 'default', 'value' => 'en'],
             [['currency_code'], 'default', 'value' => 'USD'],
-            [['state'], 'string']
         ];
     }
 
@@ -105,16 +107,12 @@ class BotClient extends \yii\db\ActiveRecord
 
     public function getState()
     {
-        return (object)json_decode($this->state, TRUE);
-    }
-
-    public function setState($state)
-    {
-        $this->state = json_encode($state);
-    }
-
-    public function resetState()
-    {
-        $this->state = NULL;
+        if (!isset($this->stateObject))
+        {
+            $this->stateObject = isset($this->state)
+               ? BotClientState::fromJson($this->state)
+               : new BotClientState();
+        }
+        return $this->stateObject;
     }
 }

@@ -13,6 +13,10 @@ use app\models\Language;
 use app\models\Rating;
 use app\modules\bot\components\request\MessageRequestHandler;
 use app\modules\bot\components\request\CallbackQueryRequestHandler;
+use app\modules\bot\components\ReplyKeyboardManager;
+use app\modules\bot\components\response\SendMessageCommand;
+use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use TelegramBot\Api\Types\ReplyKeyboardRemove;
 
 /**
  * OSW Bot module definition class
@@ -135,6 +139,12 @@ class Module extends \yii\base\Module
             {
                 unset($botClient);
             }
+
+            if (isset($botClient))
+            {
+                $keyboardButtons = $botClient->getState()->getKeyboardButtons();
+                ReplyKeyboardManager::init($keyboardButtons);
+            }
         }
 
         return $botClient;
@@ -161,6 +171,18 @@ class Module extends \yii\base\Module
                 foreach ($commands as $command) {
                     try
                     {
+                        $replyMarkup = $command->replyMarkup;
+                        if (ReplyKeyboardManager::getInstance()->isChanged()
+                            && $command instanceof SendMessageCommand
+                            && !isset($replyMarkup))
+                        {
+                            $this->setReplyKeyboard($command);
+
+                            $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
+                            $this->botClient->getState()->setKeyboardButtons($keyboardButtons);
+                            $this->botClient->state = $this->botClient->getState()->toJson();
+                            $this->botClient->save();
+                        }
                         $command->send($this->botApi);
                     }
                     catch (\Exception $ex)
@@ -169,11 +191,19 @@ class Module extends \yii\base\Module
                     }
                 }
 
-                $result = true;
+                $result = TRUE;
             }
         }
 
         return $result;
+    }
+
+    private function setReplyKeyboard(&$command)
+    {
+        $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
+        $command->replyMarkup = (!empty($keyboardButtons))
+            ? new ReplyKeyboardMarkup($keyboardButtons, FALSE, TRUE)
+            : new ReplyKeyboardRemove();
     }
 
     /**
