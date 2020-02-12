@@ -51,6 +51,11 @@ When contributing to this repository, please first discuss the change you wish t
 - Make your change. Add tests for your change. Make the tests pass.
 - Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork).
 
+##### Tips and tricks for using the Git
+
+- [GitHub Cheat Sheet](https://github.com/tiimgreen/github-cheat-sheet)
+- [git-tips](https://github.com/git-tips/tips)
+
 #### Your First Code Contribution
 
 Unsure where to begin contributing to OpenSourceWebsite? You can start by looking through these `beginner` and `help-wanted` issues:
