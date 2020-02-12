@@ -23,7 +23,7 @@ class SendLocationCommand extends Command
             $this->getOptionalProperty('replyToMessageId', null),
             $this->getOptionalProperty('replyMarkup', null),
             $this->getOptionalProperty('disableNotification', false),
-            $this->getOptionalProperty('livePeriod', null),
+            $this->getOptionalProperty('livePeriod', null)
         );
     }
 }

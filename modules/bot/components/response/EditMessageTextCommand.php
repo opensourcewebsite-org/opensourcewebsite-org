@@ -23,7 +23,7 @@ class EditMessageTextCommand extends Command
             $this->getOptionalProperty('parseMode', null),
             $this->getOptionalProperty('disablePreview', false),
             $this->getOptionalProperty('replyMarkup', null),
-            $this->getOptionalProperty('inlineMessageId', null),
+            $this->getOptionalProperty('inlineMessageId', null)
         );
     }
 }

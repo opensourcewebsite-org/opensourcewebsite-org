@@ -22,7 +22,7 @@ class SendMessageCommand extends Command
             $this->getOptionalProperty('disablePreview', false),
             $this->getOptionalProperty('replyToMessageId', null),
             $this->getOptionalProperty('replyMarkup', null),
-            $this->getOptionalProperty('disableNotification', false),
+            $this->getOptionalProperty('disableNotification', false)
         );
     }
 }

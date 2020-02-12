@@ -17,7 +17,7 @@ class AnswerCallbackQueryCommand extends Command
         return $botApi->answerCallbackQuery(
             $this->callbackQueryId,
             $this->getOptionalProperty('text', null),
-            $this->getOptionalProperty('showAlert', false),
+            $this->getOptionalProperty('showAlert', false)
         );
     }
 }

@@ -38,7 +38,7 @@ class m200212_071339_create_change_email_request_table extends Migration
     {
         $this->dropForeignKey(
             'fk-change_email_request-user_id',
-            'change_email_request',
+            'change_email_request'
         );
         $this->dropTable('{{%change_email_request}}');
     }
