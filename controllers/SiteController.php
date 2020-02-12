@@ -271,9 +271,9 @@ class SiteController extends Controller
             $transaction->commit();
         } catch (\Throwable $ex) {
             $transaction->rollBack();
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
     }
 
     /**
@@ -373,7 +373,7 @@ class SiteController extends Controller
             $user = User::findOne(['id' => $changeEmailRequest->user_id]);
             if (Yii::$app->request->isPost) {
                 $user->email = $changeEmailRequest->email; 
-                $user->is_email_confirmed = 1;
+                $user->is_email_confirmed = true;
 
                 $changeEmailRequest->delete();
                 unset($changeEmailRequest);
