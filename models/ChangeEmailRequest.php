@@ -44,7 +44,8 @@ class ChangeEmailRequest extends ActiveRecord
                 'filter' => ['status' => User::STATUS_ACTIVE],
             ],
             [['user_id'], 'integer'],
-            [['token', 'email'], 'string'],
+            [['token'], 'string'],
+            [['email'], 'email'],
         ];
     }
 
