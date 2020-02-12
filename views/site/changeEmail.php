@@ -9,7 +9,7 @@ use app\models\LoginForm;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
-$this->title = 'Merge accounts';
+$this->title = 'Change email';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php $this->beginBlock('content-header-data'); ?>
@@ -21,18 +21,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
             </div>
             <? if ($model) { ?>
-            <?php $form = ActiveForm::begin(['id' => 'merge-accounts-form']); ?>
+            <?php $form = ActiveForm::begin(['id' => 'change-email-form']); ?>
             <div class="card-body">
                 <div>
                     <p>
-                        You are going to merge <?= !empty($user->name) ? $user->name : 'noname' ?>`s account with <?= !empty($userToMerge->name) ? $userToMerge->name : 'noname' ?>` one.
+                        Please confirm changing your email to <?= $model->email ?>.
                     </p>
                 </div>
             </div>
 
             <div class="card-footer">
                 <div class="form-group">
-                    <?= Html::submitButton('Merge accounts', ['class' => 'btn btn-primary', 'name' => 'merge-accounts-button']) ?>
+                    <?= Html::submitButton('Change email', ['class' => 'btn btn-primary', 'name' => 'change-email-button']) ?>
                     <?= Html::a('Cancel', ['site/login', 'id' => $id], ['class' => 'btn btn-default']) ?>
                 </div>
             </div>

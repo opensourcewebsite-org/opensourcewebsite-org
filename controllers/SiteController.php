@@ -10,6 +10,7 @@ use app\models\SignupForm;
 use app\models\User;
 use app\modules\bot\models\BotClient;
 use app\models\MergeAccountsRequest;
+use app\models\ChangeEmailRequest;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
@@ -374,6 +375,44 @@ class SiteController extends Controller
         }
 
         return $this->redirect(['site/login']);
+    }
+
+    public function actionChangeEmail($token)
+    {
+        $changeEmailRequest = ChangeEmailRequest::findOne(['token' => $token]);
+        if ($changeEmailRequest)
+        {
+            $user = User::findOne(['id' => $changeEmailRequest->user_id]);
+            if (Yii::$app->request->isPost)
+            {
+                $user->email = $changeEmailRequest->email; 
+                $user->is_email_confirmed = 1;
+
+                $changeEmailRequest->delete();
+                unset($changeEmailRequest);
+
+                if ($user->save())
+                {
+                    return $this->redirect(['site/login']);
+                }
+                var_dump($user->getErrors());
+            }
+            else
+            {
+                $created_at = $changeEmailRequest->created_at;
+                $requestLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
+
+                if ($created_at + $requestLifeTime < time())
+                {
+                    $changeEmailRequest->delete();
+                    unset($changeEmailRequest);
+                }
+            }
+        }
+        return $this->render('changeEmail', [
+            'model' => $changeEmailRequest,
+            'user' => $user,
+        ]);
     }
 
     /**

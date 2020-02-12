@@ -6,7 +6,7 @@ use Yii;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\models\MergeAccountsRequest;
-use app\models\PasswordResetRequestForm;
+use app\models\ChangeEmailRequest;
 use app\modules\bot\models\BotClient;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
@@ -31,13 +31,6 @@ class My_emailController extends Controller
         if (isset($user->email))
         {
             $email = $user->email;
-            
-            $tokenLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
-            $mergeAccountsRequest = MergeAccountsRequest::findOne(['user_to_merge_id' => $user->id]);
-            if (isset($mergeAccountsRequest))
-            {
-                $mergeAccountsRequestId = $mergeAccountsRequest->id;
-            }
         }
         else
         {
@@ -50,7 +43,6 @@ class My_emailController extends Controller
                 $update->getMessage()->getChat()->getId(),
                 $this->render('index', [
                     'email' => $email,
-                    'hasMergeAccountsRequest' => isset($mergeAccountsRequestId),
                 ]),
                 [
                     'parseMode' => $this->textFormat,
@@ -60,9 +52,7 @@ class My_emailController extends Controller
                             [
                                 [
                                     'callback_data' => '/change_email',
-                                    'text' => $this->render('change-email', [
-                                        'hasMergeAccountsRequest' => isset($mergeAccountsRequestId),
-                                    ]),
+                                    'text' => $this->render('change-email'),
                                 ],
                             ],
                         ])),
@@ -96,29 +86,25 @@ class My_emailController extends Controller
         }
         else
         {
-            $user->email = $email;
-            $user->is_email_confirmed = false;
+            $changeEmailRequest = new ChangeEmailRequest();
+            $changeEmailRequest->setAttributes([
+                'email' => $email,
+                'user_id' => $user->id,
+                'token' => Yii::$app->security->generateRandomString(),
+            ]);
 
-            if ($user->save())
+            if ($changeEmailRequest->save())
             {
-                $passwordResetRequest = new PasswordResetRequestForm();
-                $passwordResetRequest->email = $email;
-
-                if ($passwordResetRequest->sendEmail())
+                if ($changeEmailRequest->sendEmail())
                 {
-                    $botClient->user_id = $user->id;
                     $botClient->getState()->setName(NULL);
                     $botClient->save();
 
-                    $resetRequest = true;
+                    $changeRequest = true;
 
                 }
-                else
-                {
-                    $error = Yii::t('bot', '');
-                }
             }
-            else
+            if (!$changeRequest)
             {
                 $error = Yii::t('bot', 'Given email is invalid');
             }
@@ -128,7 +114,7 @@ class My_emailController extends Controller
             new SendMessageCommand(
                 $update->getMessage()->getChat()->getId(),
                 $this->render('create', [
-                    'resetRequest' => $resetRequest,
+                    'changeRequest' => $changeRequest,
                     'mergeRequest' => $mergeRequest,
                     'error' => $error
                 ]),
@@ -160,6 +146,7 @@ class My_emailController extends Controller
         $user = $this->getUser();
 
         MergeAccountsRequest::deleteAll('user_id = ' . $user->id);
+        ChangeEmailRequest::deleteAll('user_id = ' . $user->id);
 
         $botClient->getState()->setName('/set_email');
         $botClient->save();
