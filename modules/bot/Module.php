@@ -87,14 +87,12 @@ class Module extends \yii\base\Module
             }
         }
 
-        if ($from)
-        {
+        if ($from) {
             $botClient = BotClient::findOne([
                 'bot_id' => $botId,
                 'provider_user_id' => $from->getId(),
             ]);
-            if (!isset($botClient))
-            {
+            if (!isset($botClient)) {
                 $botClient = new BotClient();
 
                 $existingBotClient = BotClient::findOne([

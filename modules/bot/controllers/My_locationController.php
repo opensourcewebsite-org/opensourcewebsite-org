@@ -2,12 +2,9 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\BotClient;
-use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use \app\modules\bot\components\response\SendLocationCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
-use Yii;
 
 /**
  * Class My_locationController

@@ -35,13 +35,15 @@ class m200204_165815_drop_bot_inside_message_table extends Migration
             'bot_id',
             '{{%bot}}',
             'id',
-            'CASCADE');
+            'CASCADE'
+        );
         $this->addForeignKey(
             '{{%fk-bot_inside_message-bot_client}}',
             '{{%bot_inside_message}}',
             'bot_client_id',
             '{{%bot_client}}',
             'id',
-            'CASCADE');
+            'CASCADE'
+        );
     }
 }

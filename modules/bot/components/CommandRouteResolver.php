@@ -76,7 +76,6 @@ class CommandRouteResolver extends Component
         $params = [];
 
         foreach ($this->rules as $pattern => $targetRoute) {
-
             $pattern = $this->preparePattern($pattern);
 
             if (preg_match($pattern, $commandText, $matches)) {
@@ -154,5 +153,4 @@ class CommandRouteResolver extends Component
 
         return [$route, $params];
     }
-
 }

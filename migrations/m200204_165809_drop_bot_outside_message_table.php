@@ -38,9 +38,11 @@ class m200204_165809_drop_bot_outside_message_table extends Migration
         $this->addForeignKey(
             '{{%fk-bot_outside_message-bot}}',
             '{{%bot_outside_message}}',
-            'bot_id', '{{%bot}}',
+            'bot_id',
+            '{{%bot}}',
             'id',
-            'CASCADE');
+            'CASCADE'
+        );
 
         $this->addForeignKey(
             '{{%fk-bot_outside_message-bot_client}}',
@@ -48,6 +50,7 @@ class m200204_165809_drop_bot_outside_message_table extends Migration
             'bot_client_id',
             '{{%bot_client}}',
             'id',
-            'CASCADE');
+            'CASCADE'
+        );
     }
 }
