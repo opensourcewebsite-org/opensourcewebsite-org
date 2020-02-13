@@ -7,6 +7,7 @@ use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Language;
@@ -28,9 +29,14 @@ class Module extends \yii\base\Module
     private $botApi;
 
     /**
-     * @var models\Chat
+     * @var models\User
      */
-    public $botClient;
+    public $telegramUser;
+
+    /**
+     * @var models\chat
+     */
+     public $telegramChat;
 
     /**
      * @var \TelegramBot\Api\Types\Update
@@ -61,9 +67,8 @@ class Module extends \yii\base\Module
                 $this->botApi->setProxy(Yii::$app->params['telegramProxy']);
             }
 
-            $this->botClient = $this->resolveBotClient($this->update, $botInfo->id);
-            if (isset($this->botClient)) {
-                Yii::$app->language = $this->botClient->language_code;
+            if ($this->initialize($this->update, $botInfo->id)) {
+                Yii::$app->language = $this->telegramUser->language_code;
 
                 $result = $this->dispatchRoute($this->update);
             } else {
@@ -78,108 +83,99 @@ class Module extends \yii\base\Module
      *
      * @return \app\modules\bot\models\Chat
      */
-    private function resolveBotClient($update, $botId)
+    private function initialize($update, $botId)
     {
-        $telegramUser = null;
-        $telegramChat = null;
         foreach ($this->commandRouteResolver->requestHandlers as $requestHandler) {
-            $telegramUser = $requestHandler->getFrom($update);
-            $telegramChat = $requestHandler->getChat($update);
-            if (isset($telegramUser) && isset($telegramChat)) {
+            $updateUser = $requestHandler->getFrom($update);
+            $updateChat = $requestHandler->getChat($update);
+            if (isset($updateUser) && isset($updateChat)) {
                 break;
             }
         }
 
-        if (isset($telegramUser) && isset($telegramChat)) {
-            $chat = Chat::findOne([
-                'chat_id' => $telegramChat->getId(),
-                'bot_id' => $botId,
-            ]);
-            // Create chat if it doesn't exist yet
-            if (!isset($chat))
-            {
-                $chat = new User();
-                $chat->setAttributes([
-                    'chat_id' => $telegramChat->getId(),
-                    'bot_id' => $botId,
-                    'type' => $telegramChat->getType(),
+        if (isset($updateUser) && isset($updateChat)) {
+            $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
+            // Store telegram user if it doesn't exist yet
+            if (!isset($telegramUser)) {
+                $telegramUser = new TelegramUser();
+                $telegramUser->setAttributes([
+                    'provider_user_id' => $updateUser->getId(),
                 ]);
             }
-            // Update chat information
-            $chat->setAttributes([
-                'title' => $telegramChat->getTitle(),
-                'username' => $telegramChat->getUsername(),
-                'first_name' => $telegramChat->getFirstName(),
-                'last_name' => $telegramChat->getLastName(),
+            // Update telegram user information
+            $language = Language::findOne([
+                'code' => $updateUser->getLanguageCode(),
             ]);
+            $language = isset($language) ? $language->code : 'en';
 
-            $user = User::findOne(['provider_user_id' => $telegramUser->getId()]);
-            if (!isset($user))
-            {
-                $user = new User();
-                $user->setAttributes([
-                    'provider_user_id' => $telegramUser->getId(),
-                ]);
-            }
-            $botClient = Chat::findOne([
-                'bot_id' => $botId,
-                'provider_user_id' => $from->getId(),
-            ]);
-            if (!isset($botClient)) {
-                $botClient = new Chat();
-
-                $existingBotClient = Chat::findOne([
-                    'provider_user_id' => $from->getId(),
-                ]);
-
-                if (isset($existingBotClient)) {
-                    $botClient->setAttributes($existingBotClient->attributes);
-                    $botClient->state = null;
-                } else {
-                    $language = Language::findOne([
-                        'code' => $from->getLanguageCode(),
-                    ]);
-                    $language = isset($language) ? $language->code : 'en';
-
-                    $botClient->setAttributes([
-                        'bot_id' => $botId,
-                        'provider_user_id' => $from->getId(),
-                        'language_code' => $language,
-                    ]);
-                }
-            }
-
-            if (!isset($botClient->user_id)) {
-                $this->user = User::createWithRandomPassword();
-                $this->user->name = $from->getFirstName() . ' ' . $from->getLastName();
-                if ($this->user->save()) {
-                    $botClient->user_id = $this->user->id;
-
-                    $this->user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
-                }
-            } else {
-                $this->user = User::findOne($botClient->user_id);
-            }
-
-            $botClient->setAttributes([
-                'provider_user_name' => $from->getUsername(),
-                'provider_user_first_name' => $from->getFirstName(),
-                'provider_user_last_name' => $from->getLastName(),
+            $telegramUser->setAttributes([
+                'provider_user_name' => $updateUser->getUsername(),
+                'provider_user_first_name' => $updateUser->getFirstName(),
+                'provider_user_last_name' => $updateUser->getLastName(),
+                'language_code' => $languageCode,
                 'provider_bot_user_blocked' => 0,
                 'last_message_at' => time(),
             ]);
+            if (!$telegramUser->save()) return false;
 
-            if (!isset($botClient->user_id) || !isset($this->user) || !$botClient->save()) {
-                unset($botClient);
+            $telegramChat = Chat::findOne([
+                'chat_id' => $updateChat->getId(),
+                'bot_id' => $botId,
+            ]);
+            // Store telegram chat if it doesn't exist yet
+            if (!isset($telegramChat)) {
+                $isNewChat = true;
+                $telegramChat = new Chat();
+                $telegramChat->setAttributes([
+                    'chat_id' => $updateChat->getId(),
+                    'bot_id' => $botId,
+                    'type' => $updateChat->getType(),
+                ]);
+            }
+            // Update telegram chat information
+            $telegramChat->setAttributes([
+                'title' => $updateChat->getTitle(),
+                'username' => $updateChat->getUsername(),
+                'first_name' => $updateChat->getFirstName(),
+                'last_name' => $updateChat->getLastName(),
+            ]);
+            if (!$telegramChat->save()) return false;
+
+            if (isset($isNewChat) && $isNewChat) {
+                $telegramChat->link('users', $telegramUser);
             }
 
-            if (isset($botClient)) {
-                $keyboardButtons = $botClient->getState()->getKeyboardButtons();
-                ReplyKeyboardManager::init($keyboardButtons);
+            if (!isset($telegramUser->user_id)) {
+                $user = User::createWithRandomPassword();
+                $user->name = $updateUser->getFirstName() . ' ' . $updateUser->getLastName();
+
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    $user->save();
+                    $telegramUser->user_id = $user->id;
+                    $telegramUser->save();
+                    $user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
+
+                    $transaction->commit();
+                } catch (\Exception $e) {
+                    $transaction->rollBack();
+                    return false;
+                }
+            } else {
+                $user = User::findOne($telegramUser->user_id);
             }
+
+            $keyboardButtons = $telegramUser->getState()->getKeyboardButtons();
+            ReplyKeyboardManager::init($keyboardButtons);
+
+            $this->user = $user;
+            $this->telegramUser = $telegramUser;
+            $this->telegramChat = $telegramChat;
+
+            return true;
         }
 
-        return $botClient;
+        return false;
     }
 
     /**
@@ -207,8 +203,8 @@ class Module extends \yii\base\Module
                             $this->setReplyKeyboard($command);
 
                             $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
-                            $this->botClient->getState()->setKeyboardButtons($keyboardButtons);
-                            $this->botClient->save();
+                            $this->telegramUser->getState()->setKeyboardButtons($keyboardButtons);
+                            $this->telegramUser->save();
                         }
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {

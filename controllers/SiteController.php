@@ -7,6 +7,7 @@ use app\models\PasswordResetRequestForm;
 use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
+use app\models\User;
 use app\modules\bot\models\BotClient;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;

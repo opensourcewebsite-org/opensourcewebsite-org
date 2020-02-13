@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\models;
 
 class UserState
@@ -32,7 +33,7 @@ class UserState
 
     public static function fromJson($json)
     {
-        $state = new UsertState();
+        $state = new UserState();
         $state->_fields = json_decode($json, true);
         return $state;
     }

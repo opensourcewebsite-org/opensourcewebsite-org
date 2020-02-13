@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers;
 use \app\modules\bot\components\response\SendLocationCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_locationController
@@ -18,7 +19,7 @@ class My_locationController extends Controller
      */
     public function actionIndex()
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
@@ -26,22 +27,22 @@ class My_locationController extends Controller
             'request_location' => true,
         ]);
 
-        if (isset($botClient->location_lon) && isset($botClient->location_lat)) {
+        if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
             return [
                 new SendMessageCommand(
-                    $update->getMessage()->getChat()->getId(),
+                    $this->getTelegramChat()->chat_id,
                     $this->render('header'),
                     [
                         'parseMode' => $this->textFormat,
                     ]
                 ),
                 new SendLocationCommand(
-                    $update->getMessage()->getChat()->getId(),
-                    $botClient->location_lat,
-                    $botClient->location_lon
+                    $this->getTelegramChat()->chat_id,
+                    $telegramUser->location_lat,
+                    $telegramUser->location_lon
                 ),
                 new SendMessageCommand(
-                    $update->getMessage()->getChat()->getId(),
+                    $this->getTelegramChat()->chat_id,
                     $this->render('footer'),
                     [
                         'parseMode' => $this->textFormat,
@@ -51,7 +52,7 @@ class My_locationController extends Controller
         } else {
             return [
                 new SendMessageCommand(
-                    $update->getMessage()->getChat()->getId(),
+                    $this->getTelegramChat()->chat_id,
                     $this->render('index'),
                     [
                         'parseMode' => $this->textFormat,
@@ -63,21 +64,21 @@ class My_locationController extends Controller
 
     public function actionUpdate()
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
         if ($update->getMessage() && ($location = $update->getMessage()->getLocation())) {
-            $botClient->setAttributes([
+            $telegramUser->setAttributes([
                 'location_lon' => $location->getLongitude(),
                 'location_lat' => $location->getLatitude(),
                 'location_at' => time(),
             ]);
-            $botClient->save();
+            $telegramUser->save();
         }
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('update'),
                 [
                     'parseMode' => $this->textFormat,

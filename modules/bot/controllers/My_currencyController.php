@@ -10,6 +10,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_currencyController
@@ -25,26 +26,26 @@ class My_currencyController extends Controller
      */
     public function actionIndex($currency = null)
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
         $currencyModel = null;
         if ($currency) {
             $currencyModel = Currency::findOne(['code' => $currency]);
             if ($currencyModel) {
-                if ($botClient) {
-                    $botClient->currency_code = $currency;
-                    $botClient->save();
+                if ($telegramUser) {
+                    $telegramUser->currency_code = $currency;
+                    $telegramUser->save();
                 }
             }
         }
 
-        $currentCode = $botClient->currency_code;
+        $currentCode = $telegramUser->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
                 [
                     'parseMode' => $this->textFormat,
@@ -90,7 +91,7 @@ class My_currencyController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getmessage()->getMessageId(),
                 $this->render('currency-list', compact('currencies', 'pagination')),
                 [

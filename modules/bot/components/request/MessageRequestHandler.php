@@ -14,6 +14,14 @@ class MessageRequestHandler implements IRequestHandler
         return $from ?? null;
     }
 
+    public function getChat(Update $update)
+    {
+        if ($message = $update->getMessage()) {
+            $chat = $message->getChat();
+        }
+        return $chat ?? null;
+    }
+
     public function getCommandText(Update $update)
     {
         if ($message = $update->getMessage()) {

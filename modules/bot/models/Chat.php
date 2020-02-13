@@ -1,5 +1,5 @@
 <?php
-namespace app\module\bot\models;
+namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -8,19 +8,19 @@ class Chat extends ActiveRecord
 {
     public static function tableName()
     {
-        return '{{%bot_chat}}';
+        return 'bot_chat';
     }
 
     public function rules()
     {
         return [
-            [['id', 'type', 'bot_id'], 'required'],
-            [['id', 'bot_id', 'created_at', 'updated_at'], 'integer'],
+            [['type', 'bot_id', 'chat_id'], 'required'],
+            [['id', 'chat_id', 'bot_id'], 'integer'],
             [['type', 'title', 'username', 'first_name', 'last_name'], 'string'],
         ];
     }
 
-    public function behabiors()
+    public function behaviors()
     {
         return [
             TimestampBehavior::className(),
@@ -29,7 +29,7 @@ class Chat extends ActiveRecord
 
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'bot_user_id'])
-                    ->viaTable('bot_chat_client', ['bot_chat_id' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'user_id'])
+                    ->viaTable('bot_chat_bot_user', ['chat_id' => 'id']);
     }
 }

@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers;
 
 use \app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class HelpController
@@ -16,11 +17,9 @@ class HelpController extends Controller
      */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
-
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,

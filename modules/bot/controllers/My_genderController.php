@@ -8,6 +8,7 @@ use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\models\User;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_genderController
@@ -26,7 +27,7 @@ class My_genderController extends Controller
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index', [
                     'gender' => $user->gender,
                 ]),
@@ -52,7 +53,7 @@ class My_genderController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $text = $this->render('index', [
                     'gender' => $user->gender,
@@ -93,7 +94,7 @@ class My_genderController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->render('index', [
                     'gender' => $user->gender,
@@ -123,7 +124,7 @@ class My_genderController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->render('index', [
                     'gender' => $user->gender,
@@ -150,7 +151,7 @@ class My_genderController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->render('index', [
                     'gender' => $user->gender,

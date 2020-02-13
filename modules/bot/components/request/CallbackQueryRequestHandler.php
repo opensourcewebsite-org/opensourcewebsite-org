@@ -7,8 +7,6 @@ class CallbackQueryRequestHandler implements IRequestHandler
 {
     public function getFrom(Update $update)
     {
-        $from = null;
-
         if ($callbackQuery = $update->getCallbackQuery()) {
             $from = $callbackQuery->getFrom();
         }
@@ -18,19 +16,15 @@ class CallbackQueryRequestHandler implements IRequestHandler
 
     public function getChat(Update $update)
     {
-        $chat = null;
-
     	if ($callbackQuery = $update->getCallbackQuery()) {
             $chat = $callbackQuery->getMessage()->getChat();
         }
 
-        return $chat;
+        return $chat ?? null;
     }
 
     public function getCommandText(Update $update)
     {
-        $commandText = null;
-
         if ($callbackQuery = $update->getCallbackQuery()) {
             $commandText = $callbackQuery->getData();
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\components;
 
 use yii\base\InlineAction;
 use yii\base\InvalidCallException;
@@ -101,9 +101,14 @@ class Controller extends \yii\base\Controller
         return $this->prepareText(parent::render($view, $params));
     }
 
-    protected function getBotClient()
+    protected function getTelegramUser()
     {
-        return $this->module->botClient;
+        return $this->module->telegramUser;
+    }
+
+    protected function getTelegramChat()
+    {
+        return $this->module->telegramChat;
     }
 
     protected function getUser()

@@ -40,14 +40,12 @@ class User extends ActiveRecord
         return [
             [
                 [
-                    'bot_id',
                     'provider_user_id',
                 ],
                 'required',
             ],
             [
                 [
-                    'bot_id',
                     'user_id',
                     'provider_user_id',
                     'provider_user_blocked',
@@ -110,8 +108,8 @@ class User extends ActiveRecord
     {
         if (!isset($this->_stateObject)) {
             $this->_stateObject = isset($this->state)
-               ? UsertState::fromJson($this->state)
-               : new UsertState();
+               ? UserState::fromJson($this->state)
+               : new UserState();
         }
         return $this->_stateObject;
     }
@@ -124,7 +122,7 @@ class User extends ActiveRecord
 
     public function getChats()
     {
-        return $this->hasMany(Chat::className(), ['id' => 'bot_chat_id'])
-                    ->viaTable('bot_chat_client', ['bot_user_id' => 'id']);
+        return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
+                    ->viaTable('bot_chat_bot_user', ['user_id' => 'id']);
     }
 }

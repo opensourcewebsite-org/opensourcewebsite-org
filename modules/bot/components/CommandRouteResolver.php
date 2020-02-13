@@ -50,7 +50,7 @@ class CommandRouteResolver extends Component
         }
 
         if (!isset($route)) {
-            $clientState = Module::getInstance()->botClient->getState();
+            $clientState = Module::getInstance()->telegramUser->getState();
             if (isset($clientState)) {
                 $commandText = $clientState->getName();
                 if (isset($commandText)) {

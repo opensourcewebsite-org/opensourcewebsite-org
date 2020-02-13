@@ -15,7 +15,7 @@ class m200213_003152_create_bot_chat_table extends Migration
     {
         $this->createTable('{{%bot_chat}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'chat_id' => $this->bigInteger()->notNull(),
+            'chat_id' => $this->bigInteger()->notNull()->unique(),
             'type' => $this->string()->notNull(),
             'title' => $this->string(),
             'username' => $this->string(),
@@ -34,13 +34,17 @@ class m200213_003152_create_bot_chat_table extends Migration
             'id'
         );
 
-        $rows = (new Query())->select([
-            'bot_id',
-            'provider_user_id',
-            'provider_user_first_name',
-            'provider_user_last_name',
-            'provider_user_name',
-            ])->from('bot_user')->all();
+        $rows = (new Query())
+            ->select([
+                'bot_id',
+                'provider_user_id',
+                'provider_user_first_name',
+                'provider_user_last_name',
+                'provider_user_name',
+            ])
+            ->from('bot_user')
+            ->all();
+
         foreach ($rows as $row) {
             $this->insert('{{%bot_chat}}',
                 [

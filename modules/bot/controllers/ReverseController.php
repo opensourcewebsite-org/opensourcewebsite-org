@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers;
 
 use Yii;
-use app\modules\bot\components\CommandController as Controller;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class ReverseController

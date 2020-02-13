@@ -9,6 +9,7 @@ use \app\models\Rating;
 use \app\components\Converter;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_ratingController
@@ -26,7 +27,7 @@ class My_ratingController extends Controller
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->renderRating(),
                 [
                     'parseMode' => $this->textFormat,
