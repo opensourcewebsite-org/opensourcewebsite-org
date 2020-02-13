@@ -49,10 +49,9 @@ class ReplyKeyboardManager
     public function addKeyboardButton(int $row, array $keyboardButton)
     {
         $this->removeKeyboardButton($keyboardButton['text']);
-        if (is_array($this->keyboardButtons[$row])) {
+        if (isset($this->keyboardButtons[$row]) && is_array($this->keyboardButtons[$row])) {
             $this->keyboardButtons[$row] = array_merge($this->keyboardButtons[$row], [ $keyboardButton ]);
-        }
-        else {
+        } else {
             $this->keyboardButtons[$row] = [ $keyboardButton ];
         }
         $this->_isChanged = true;

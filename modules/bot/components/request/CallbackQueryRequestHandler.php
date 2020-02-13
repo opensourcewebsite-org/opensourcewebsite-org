@@ -9,7 +9,7 @@ class CallbackQueryRequestHandler implements IRequestHandler
             $from = $callbackQuery->getFrom();
         }
 
-        return $from;
+        return $from ?? null;
     }
 
     public function getCommandText($update)
@@ -18,6 +18,6 @@ class CallbackQueryRequestHandler implements IRequestHandler
             $commandText = $callbackQuery->getData();
         }
 
-        return $commandText;
+        return $commandText ?? null;
     }
 }
