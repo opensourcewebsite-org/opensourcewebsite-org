@@ -39,6 +39,7 @@ class CommandRouteResolver extends Component
 
     public function resolveRoute($update)
     {
+        $commandText = null;
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
@@ -49,8 +50,7 @@ class CommandRouteResolver extends Component
             }
         }
 
-        if (!isset($route))
-        {
+        if (!isset($route)) {
             $clientState = Module::getInstance()->botClient->getState();
             if (isset($clientState)) {
                 $commandText = $clientState->getName();
@@ -74,6 +74,7 @@ class CommandRouteResolver extends Component
     {
         $route = null;
         $params = [];
+        $commandText = null;
 
         foreach ($this->rules as $pattern => $targetRoute) {
             $pattern = $this->preparePattern($pattern);
