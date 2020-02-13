@@ -226,36 +226,4 @@ class Module extends \yii\base\Module
             ? new ReplyKeyboardMarkup($keyboardButtons, false, true)
             : new ReplyKeyboardRemove();
     }
-
-    /**
-     *
-     * Runs a command controller action specified by a route.
-     *
-     * @param string $route the route that specifies the action.
-     * @param array $params the parameters to be passed to the action
-     *
-     * @return mixed the result of the action.
-     * @throws InvalidConfigException if the requested route cannot be resolved into an action successfully.
-     * @throws InvalidRouteException
-     */
-    public function runAction($route, $params = [])
-    {
-        $parts = $this->createController($route);
-        if (is_array($parts)) {
-            /* @var $controller Controller */
-            list($controller, $actionID) = $parts;
-            $oldController = Yii::$app->controller;
-            Yii::$app->controller = $controller;
-            $result = $controller->runAction($actionID, $params, true);
-            if ($oldController !== null) {
-                Yii::$app->controller = $oldController;
-            }
-
-            return $result;
-        }
-
-        $id = $this->getUniqueId();
-        throw new InvalidRouteException('Unable to resolve the request "' . ($id === '' ? $route
-                : $id . '/' . $route) . '".');
-    }
 }

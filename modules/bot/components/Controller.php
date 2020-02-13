@@ -26,23 +26,6 @@ class Controller extends \yii\base\Controller
     public $actionParams = [];
 
     /**
-     * @param string $id
-     * @param array $params
-     * @param bool $protect
-     *
-     * @return mixed
-     * @throws \yii\base\InvalidRouteException
-     */
-    public function runAction($id, $params = [], $protect = false)
-    {
-        if (!$protect) {
-            throw new InvalidCallException('Command controller can run only by bot module');
-        }
-
-        return parent::runAction($id, $params);
-    }
-
-    /**
      * Binds the parameters to the action.
      * This method is invoked by [[\yii\base\Action]] when it begins to run with the given parameters.
      * This method will check the parameter names that the action requires and return
@@ -128,8 +111,11 @@ class Controller extends \yii\base\Controller
      */
     private function prepareText($text)
     {
-        $text = str_replace(["\n", "\r\n"], '', $text);
-
-        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
+        if ($this->textFormat == 'html')
+        {
+            $text = str_replace(["\n", "\r\n"], '', $text);
+            $text = preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
+        }
+        return $text;
     }
 }
