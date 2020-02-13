@@ -6,7 +6,7 @@ use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
-use app\modules\bot\models\BotClient;
+use app\modules\bot\models\Chat;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Language;
@@ -28,7 +28,7 @@ class Module extends \yii\base\Module
     private $botApi;
 
     /**
-     * @var models\BotClient
+     * @var models\Chat
      */
     public $botClient;
 
@@ -76,26 +76,59 @@ class Module extends \yii\base\Module
     /**
      * @param $update \TelegramBot\Api\Types\Update
      *
-     * @return \app\modules\bot\models\BotClient
+     * @return \app\modules\bot\models\Chat
      */
     private function resolveBotClient($update, $botId)
     {
+        $telegramUser = null;
+        $telegramChat = null;
         foreach ($this->commandRouteResolver->requestHandlers as $requestHandler) {
-            $from = $requestHandler->getFrom($update);
-            if (isset($from)) {
+            $telegramUser = $requestHandler->getFrom($update);
+            $telegramChat = $requestHandler->getChat($update);
+            if (isset($telegramUser) && isset($telegramChat)) {
                 break;
             }
         }
 
-        if ($from) {
-            $botClient = BotClient::findOne([
+        if (isset($telegramUser) && isset($telegramChat)) {
+            $chat = Chat::findOne([
+                'chat_id' => $telegramChat->getId(),
+                'bot_id' => $botId,
+            ]);
+            // Create chat if it doesn't exist yet
+            if (!isset($chat))
+            {
+                $chat = new User();
+                $chat->setAttributes([
+                    'chat_id' => $telegramChat->getId(),
+                    'bot_id' => $botId,
+                    'type' => $telegramChat->getType(),
+                ]);
+            }
+            // Update chat information
+            $chat->setAttributes([
+                'title' => $telegramChat->getTitle(),
+                'username' => $telegramChat->getUsername(),
+                'first_name' => $telegramChat->getFirstName(),
+                'last_name' => $telegramChat->getLastName(),
+            ]);
+
+            $user = User::findOne(['provider_user_id' => $telegramUser->getId()]);
+            if (!isset($user))
+            {
+                $user = new User();
+                $user->setAttributes([
+                    'provider_user_id' => $telegramUser->getId(),
+                ]);
+            }
+            $botClient = Chat::findOne([
                 'bot_id' => $botId,
                 'provider_user_id' => $from->getId(),
             ]);
             if (!isset($botClient)) {
-                $botClient = new BotClient();
+                $botClient = new Chat();
 
-                $existingBotClient = BotClient::findOne([
+                $existingBotClient = Chat::findOne([
                     'provider_user_id' => $from->getId(),
                 ]);
 

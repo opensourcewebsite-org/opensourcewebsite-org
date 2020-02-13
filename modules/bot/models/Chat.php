@@ -29,7 +29,7 @@ class Chat extends ActiveRecord
 
     public function getUsers()
     {
-        return $this->hasMany(BotClient::className(), ['id' => 'bot_client_id'])
+        return $this->hasMany(User::className(), ['id' => 'bot_user_id'])
                     ->viaTable('bot_chat_client', ['bot_chat_id' => 'id']);
     }
 }

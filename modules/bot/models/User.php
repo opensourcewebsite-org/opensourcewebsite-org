@@ -29,7 +29,7 @@ class User extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_client';
+        return 'bot_user';
     }
 
     /**
@@ -110,8 +110,8 @@ class User extends ActiveRecord
     {
         if (!isset($this->_stateObject)) {
             $this->_stateObject = isset($this->state)
-               ? BotClientState::fromJson($this->state)
-               : new BotClientState();
+               ? UsertState::fromJson($this->state)
+               : new UsertState();
         }
         return $this->_stateObject;
     }
@@ -120,5 +120,11 @@ class User extends ActiveRecord
     {
         $this->state = $this->getState()->toJson();
         return parent::save($runValidation, $attributeNames);
+    }
+
+    public function getChats()
+    {
+        return $this->hasMany(Chat::className(), ['id' => 'bot_chat_id'])
+                    ->viaTable('bot_chat_client', ['bot_user_id' => 'id']);
     }
 }

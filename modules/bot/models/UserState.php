@@ -1,7 +1,7 @@
 <?php
 namespace app\modules\bot\models;
 
-class BotClientState
+class UserState
 {
     private $_fields = [];
 

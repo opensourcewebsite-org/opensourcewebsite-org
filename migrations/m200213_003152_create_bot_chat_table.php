@@ -15,13 +15,13 @@ class m200213_003152_create_bot_chat_table extends Migration
     {
         $this->createTable('{{%bot_chat}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'chat_id' => $this->bigInteger(),
-            'type' => $this->string(),
+            'chat_id' => $this->bigInteger()->notNull(),
+            'type' => $this->string()->notNull(),
             'title' => $this->string(),
             'username' => $this->string(),
             'first_name' => $this->string(),
             'last_name' => $this->string(),
-            'bot_id' => $this->integer()->unsigned(),
+            'bot_id' => $this->integer()->unsigned()->notNull(),
             'created_at' => $this->integer(),
             'updated_at' => $this->integer(),
         ]);
