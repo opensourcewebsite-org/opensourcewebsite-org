@@ -11,7 +11,7 @@ class LocationRequestHandler implements IRequestHandler
             $from = $message->getFrom();
         }
 
-        return $from;
+        return $from ?? null;
     }
 
     public function getCommandText(Update $update)
@@ -20,6 +20,6 @@ class LocationRequestHandler implements IRequestHandler
             $commandText = '/update_location';
         }
 
-        return $commandText;
+        return $commandText ?? null;
     }
 }

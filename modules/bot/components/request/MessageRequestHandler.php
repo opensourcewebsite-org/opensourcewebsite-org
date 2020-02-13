@@ -11,7 +11,7 @@ class MessageRequestHandler implements IRequestHandler
             $from = $message->getFrom();
         }
 
-        return $from;
+        return $from ?? null;
     }
 
     public function getCommandText(Update $update)
@@ -20,6 +20,6 @@ class MessageRequestHandler implements IRequestHandler
             $commandText = $message->getText();
         }
 
-        return $commandText;
+        return $commandText ?? null;
     }
 }

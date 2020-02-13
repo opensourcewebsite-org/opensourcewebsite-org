@@ -49,8 +49,7 @@ class CommandRouteResolver extends Component
             }
         }
 
-        if (!isset($route))
-        {
+        if (!isset($route)) {
             $clientState = Module::getInstance()->botClient->getState();
             if (isset($clientState)) {
                 $commandText = $clientState->getName();
