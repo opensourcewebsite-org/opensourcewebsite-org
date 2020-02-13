@@ -1,30 +1,26 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use \app\modules\bot\components\response\SendMessageCommand;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_profileController
+ * Class HelpController
  *
- * @package app\modules\bot\controllers
+ * @package app\controllers\bot
  */
-class My_profileController extends Controller
+class HelpController extends Controller
 {
     /**
      * @return array
      */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
-
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('index', [
-                    'profile' => $update->getMessage()->getFrom(),
-                ]),
+                $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
                 ]

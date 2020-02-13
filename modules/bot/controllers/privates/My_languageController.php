@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use app\models\Language;
 use app\modules\bot\helpers\PaginationButtons;

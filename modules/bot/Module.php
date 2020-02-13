@@ -141,6 +141,12 @@ class Module extends \yii\base\Module
             ]);
             if (!$telegramChat->save()) return false;
 
+            /** 
+             * To separate commands for each type of chat
+             * postfix 's' must be present because of php-keywords (such as 'private')
+             */   
+            $this->setupPaths($telegramChat->type);
+
             if (isset($isNewChat) && $isNewChat) {
                 $telegramChat->link('users', $telegramUser);
             }
@@ -176,6 +182,12 @@ class Module extends \yii\base\Module
         }
 
         return false;
+    }
+
+    private function setupPaths($name)
+    {
+        $this->controllerNamespace .= '\\' . $name . 's';
+        $this->setViewPath($this->getViewPath() . '/' . $name . 's');
     }
 
     /**

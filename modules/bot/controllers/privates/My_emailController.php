@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
