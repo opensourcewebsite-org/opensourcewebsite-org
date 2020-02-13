@@ -59,6 +59,10 @@ $config = [
                     ],
                     'jsOptions' => ['position' => View::POS_HEAD],
                 ],
+                'yii\jui\JuiAsset' => [
+                    'css' => [],
+                    'js' => ['//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'],
+                ],
             ],
         ],
         'request' => [

@@ -8,6 +8,8 @@
  * @license http://www.yiiframework.com/license/
  */
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 use Dotenv\Dotenv;
 
