@@ -74,6 +74,9 @@ class My_emailController extends Controller
                 $telegramUser->getState()->email = $email;
                 $telegramUser->save();
             } else {
+                $telegramUser->getState()->setName(NULL);
+                $telegramUser->save();
+                return $this->actionIndex();
             }
         } else {
             $changeEmailRequest = new ChangeEmailRequest();
