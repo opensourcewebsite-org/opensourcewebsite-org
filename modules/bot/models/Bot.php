@@ -12,7 +12,7 @@ use Yii;
  * @property string $token
  * @property integer $status
  *
- * @property BotClient[] $botClients
+ * @property Chat[] $chats
  */
 class Bot extends \yii\db\ActiveRecord
 {
@@ -126,8 +126,8 @@ class Bot extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getBotClients()
+    public function getChats()
     {
-        return $this->hasMany(BotClient::className(), ['bot_id' => 'id']);
+        return $this->hasMany(Chat::className(), ['bot_id' => 'id']);
     }
 }

@@ -20,7 +20,7 @@ use \yii\db\ActiveRecord;
  * @property string $language_code
  * @property string $currency_code
  */
-class BotClient extends ActiveRecord
+class User extends ActiveRecord
 {
     private $_stateObject;
 

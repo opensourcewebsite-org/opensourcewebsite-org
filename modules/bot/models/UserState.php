@@ -32,7 +32,7 @@ class BotClientState
 
     public static function fromJson($json)
     {
-        $state = new BotClientState();
+        $state = new UsertState();
         $state->_fields = json_decode($json, true);
         return $state;
     }
