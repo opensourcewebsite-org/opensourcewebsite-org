@@ -13,8 +13,6 @@ use Yii;
  * @property integer $status
  *
  * @property BotClient[] $botClients
- * @property BotInsideMessage[] $insideMessages
- * @property BotOutsideMessage[] $outsideMessages
  */
 class Bot extends \yii\db\ActiveRecord
 {
@@ -131,21 +129,5 @@ class Bot extends \yii\db\ActiveRecord
     public function getBotClients()
     {
         return $this->hasMany(BotClient::className(), ['bot_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getInsideMessages()
-    {
-        return $this->hasMany(BotInsideMessage::className(), ['bot_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOutsideMessages()
-    {
-        return $this->hasMany(BotOutsideMessage::className(), ['bot_id' => 'id']);
     }
 }

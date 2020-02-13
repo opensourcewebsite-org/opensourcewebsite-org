@@ -2,7 +2,9 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\CommandController as Controller;
+use \app\modules\bot\components\response\SendLocationCommand;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\ReplyKeyboardManager;
 
 /**
  * Class My_locationController
@@ -16,6 +18,71 @@ class My_locationController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
+
+        ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
+            'text' => $this->render('send-location'),
+            'request_location' => true,
+        ]);
+
+        if (isset($botClient->location_lon) && isset($botClient->location_lat)) {
+            return [
+                new SendMessageCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $this->render('header'),
+                    [
+                        'parseMode' => $this->textFormat,
+                    ]
+                ),
+                new SendLocationCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $botClient->location_lat,
+                    $botClient->location_lon
+                ),
+                new SendMessageCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $this->render('footer'),
+                    [
+                        'parseMode' => $this->textFormat,
+                    ]
+                ),
+            ];
+        } else {
+            return [
+                new SendMessageCommand(
+                    $update->getMessage()->getChat()->getId(),
+                    $this->render('index'),
+                    [
+                        'parseMode' => $this->textFormat,
+                    ]
+                ),
+            ];
+        }
+    }
+
+    public function actionUpdate()
+    {
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
+
+        if ($update->getMessage() && ($location = $update->getMessage()->getLocation())) {
+            $botClient->setAttributes([
+                'location_lon' => $location->getLongitude(),
+                'location_lat' => $location->getLatitude(),
+                'location_at' => time(),
+            ]);
+            $botClient->save();
+        }
+
+        return [
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('update'),
+                [
+                    'parseMode' => $this->textFormat,
+                ]
+            ),
+        ];
     }
 }

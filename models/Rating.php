@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "rating".
@@ -20,6 +21,7 @@ class Rating extends \yii\db\ActiveRecord
     const CONFIRM_EMAIL = 0;
     const TEAM = 1;
     const DONATE = 2;
+    const USE_TELEGRAM_BOT = 3;
 
     /**
      * {@inheritdoc}
@@ -71,5 +73,28 @@ class Rating extends \yii\db\ActiveRecord
     {
         $totalRating = static::find()->select('sum(amount)')->scalar();
         return $totalRating != null ? $totalRating : 0;
+    }
+
+    public static function getRank($userRating)
+    {
+        $groupQuery = (new Query)
+            ->select([
+                '`user`.id',
+                'balance' => 'CASE WHEN SUM(`rating`.`amount`) IS NULL THEN 0 ELSE SUM(`rating`.`amount`) END',
+            ])
+            ->from(User::tableName())
+            ->leftJoin(Rating::tableName() . ' ON `user`.`id` = `rating`.`user_id`')
+            ->groupBy('`user`.`id`')
+            ->orderBy('balance DESC');
+
+        $total = $groupQuery->count();
+
+        $rank = (new Query)
+            ->select(['count(*)+1'])
+            ->from(['g' => $groupQuery])
+            ->where(['>', 'balance', $userRating])
+            ->scalar();
+
+        return [$total, $rank];
     }
 }

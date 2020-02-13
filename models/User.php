@@ -29,6 +29,11 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
+    const FEMALE = 0;
+    const MALE = 1;
+
+    const DATE_FORMAT = 'd.m.Y';
+
     /**
      * {@inheritdoc}
      */
@@ -55,8 +60,10 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            ['is_email_confirmed', 'integer'],
+            ['is_email_confirmed', 'boolean'],
             ['name', 'string'],
+            ['email', 'email'],
+            [['gender'], 'boolean']
         ];
     }
 
@@ -160,6 +167,14 @@ class User extends ActiveRecord implements IdentityInterface
         $expireTime = Yii::$app->params['user.passwordResetTokenExpire'];
 
         return $timestamp + $expireTime >= time();
+    }
+
+    public static function createWithRandomPassword()
+    {
+        $user = new User();
+        $user->password = Yii::$app->security->generateRandomString();
+        $user->generateAuthKey();
+        return $user;
     }
 
     /**
@@ -560,7 +575,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed' => 1]);
+        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed' => true]);
     }
 
     /**

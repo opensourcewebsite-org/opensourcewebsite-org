@@ -2,8 +2,7 @@
 
 namespace app\modules\bot\controllers;
 
-use app\modules\bot\components\CommandController as Controller;
-use app\modules\bot\telegram\Message;
+use \app\modules\bot\components\response\SendMessageCommand;
 
 /**
  * Class My_profileController
@@ -13,13 +12,22 @@ use app\modules\bot\telegram\Message;
 class My_profileController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
-        /** @var Message $requestMessage */
-        $requestMessage = \Yii::$app->requestMessage;
+        $update = $this->getUpdate();
 
-        return $this->render('index', ['profile' => $requestMessage->getFrom()]);
+        return [
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index', [
+                    'profile' => $update->getMessage()->getFrom(),
+                ]),
+                [
+                    'parseMode' => $this->textFormat,
+                ]
+            ),
+        ];
     }
 }

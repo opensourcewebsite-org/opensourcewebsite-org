@@ -2,25 +2,25 @@
 
 namespace app\modules\bot\components;
 
-use Yii;
-use app\modules\bot\telegram\BotApiClient;
 use app\modules\bot\Module;
 use yii\base\Component;
-use yii\base\InvalidRouteException;
 
 /**
  * Class CommandRouter
  *
  * @package app\modules\bot\components
  */
-class CommandRouter extends Component
+class CommandRouteResolver extends Component
 {
+    /**
+     * @var array
+     */
+    public $requestHandlers = [];
+
     /**
      * @var string
      */
     public $defaultAction = 'index';
-
-    public $invalidRouteRedirect = false;
 
     /**
      * @var array
@@ -37,63 +37,30 @@ class CommandRouter extends Component
      */
     public $rules = [];
 
-    /**
-     * Check rules and if route is founded execute route action
-     *
-     * @param BotApiClient $botApi
-     *
-     * @return bool
-     * @throws \yii\base\InvalidRouteException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function dispatchRoute($botApi)
+    public function resolveRoute($update)
     {
-        $status = false;
-        $route = null;
-        $params = [];
-        $response = null;
-        $notFound = false;
-
-        $isCallbackQuery = false;
-        $isBotCommand = false;
-
-        if ($botApi->getMessage() && $botApi->getMessage()->isBotCommand()) {
-            $parts = $this->resolveCommandRoute($botApi->getMessage()->getText());
-            list($route, $params) = $parts;
-            $isBotCommand = true;
-        } elseif ($callbackQuery = $botApi->getCallbackQuery()) {
-            $isCallbackQuery = true;
-            $parts = $this->resolveCallbackRoute($callbackQuery);
-            list($route, $params) = $parts;
-        }
-
-        if ($route) {
-            Yii::warning($route);
-            Yii::warning($params);
-            try {
-                $response = Module::getInstance()->runAction($route, $params);
-            } catch (InvalidRouteException $e) {
-                $notFound = true;
+        foreach ($this->requestHandlers as $requestHandler) {
+            $commandText = $requestHandler->getCommandText($update);
+            if (isset($commandText)) {
+                list($route, $params) = $this->resolveCommandRoute($commandText);
+                if (isset($routeParts)) {
+                    break;
+                }
             }
-        } elseif ($this->invalidRouteRedirect && $isBotCommand) {
-            $notFound = true;
         }
 
-        if ($notFound) {
-            $response = Module::getInstance()->runAction($this->invalidRouteRedirect);
+        if (!isset($route))
+        {
+            $clientState = Module::getInstance()->botClient->getState();
+            if (isset($clientState)) {
+                $commandText = $clientState->getName();
+                if (isset($commandText)) {
+                    list($route, $params) = $this->resolveCommandRoute($commandText);
+                }
+            }
         }
 
-        if ($isCallbackQuery) {
-            // skip telegram clock on pressed button
-            $botApi->answerCallbackQuery($callbackQuery['id']);
-        }
-
-        if ($response) {
-            \Yii::$app->responseMessage->setText($response);
-            $status = true;
-        }
-
-        return $status;
+        return [ $route, $params ];
     }
 
     /**
@@ -103,52 +70,15 @@ class CommandRouter extends Component
      *
      * @return array
      */
-    public function resolveCommandRoute($commandText)
+    private function resolveCommandRoute($commandText)
     {
         $route = null;
         $params = [];
 
         foreach ($this->rules as $pattern => $targetRoute) {
-            if ('/' !== substr($pattern, 0, 1)) {
-                continue;
-            }
-
             $pattern = $this->preparePattern($pattern);
 
             if (preg_match($pattern, $commandText, $matches)) {
-                list($route, $params) = $this->prepareRoute($targetRoute, $matches);
-            }
-
-            if ($route) {
-                break;
-            }
-        }
-
-        return [$route, $params];
-    }
-
-    /**
-     * Resolve route in callback query rules
-     *
-     * @param $callbackQuery
-     *
-     * @return array
-     */
-    public function resolveCallbackRoute($callbackQuery)
-    {
-        $route = null;
-        $params = [];
-
-        $callbackText = '@' . $callbackQuery['data'];
-
-        foreach ($this->rules as $pattern => $targetRoute) {
-            if ('@' !== substr($pattern, 0, 1)) {
-                continue;
-            }
-
-            $pattern = $this->preparePattern($pattern);
-
-            if (preg_match($pattern, $callbackText, $matches)) {
                 list($route, $params) = $this->prepareRoute($targetRoute, $matches);
             }
 
@@ -167,7 +97,7 @@ class CommandRouter extends Component
      *
      * @return mixed|string
      */
-    public function preparePattern($pattern)
+    private function preparePattern($pattern)
     {
         $placeholders = [];
 
@@ -207,7 +137,7 @@ class CommandRouter extends Component
      *
      * @return array
      */
-    public function prepareRoute($targetRoute, $matches)
+    private function prepareRoute($targetRoute, $matches)
     {
         $route = $targetRoute;
         if (isset($matches['controller'])) {
@@ -223,5 +153,4 @@ class CommandRouter extends Component
 
         return [$route, $params];
     }
-
 }

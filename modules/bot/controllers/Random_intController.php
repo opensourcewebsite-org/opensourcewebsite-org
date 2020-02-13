@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers;
 
 use Yii;
-use app\modules\bot\components\CommandController as Controller;
 
 /**
  * Class Random_intController

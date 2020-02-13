@@ -1,8 +1,7 @@
 <?php
 
-namespace app\modules\bot\components;
+namespace app\modules\bot\controllers;
 
-use yii\base\Controller;
 use yii\base\InlineAction;
 use yii\base\InvalidCallException;
 use yii\web\BadRequestHttpException;
@@ -12,8 +11,10 @@ use yii\web\BadRequestHttpException;
  *
  * @package app\modules\bot
  */
-class CommandController extends Controller
+class Controller extends \yii\base\Controller
 {
+    protected $textFormat = 'html';
+
     /**
      * @var bool
      */
@@ -35,7 +36,7 @@ class CommandController extends Controller
     public function runAction($id, $params = [], $protect = false)
     {
         if (!$protect) {
-            throw new InvalidCallException("Command controller can run only by bot module");
+            throw new InvalidCallException('Command controller can run only by bot module');
         }
 
         return parent::runAction($id, $params);
@@ -93,5 +94,37 @@ class CommandController extends Controller
         $this->actionParams = $actionParams;
 
         return $args;
+    }
+
+    public function render($view, $params = [])
+    {
+        return $this->prepareText(parent::render($view, $params));
+    }
+
+    protected function getBotClient()
+    {
+        return $this->module->botClient;
+    }
+
+    protected function getUser()
+    {
+        return $this->module->user;
+    }
+
+    protected function getUpdate()
+    {
+        return $this->module->update;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    private function prepareText($text)
+    {
+        $text = str_replace(["\n", "\r\n"], '', $text);
+
+        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
     }
 }

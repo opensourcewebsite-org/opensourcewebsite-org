@@ -86,7 +86,7 @@ class WebhookController extends Controller
         $botApi->bot_client_id = $botApi->saveClientInfo();
 
         # check if it's command
-        if (substr(trim($botApi->getMessage()->getText()), 0, 1) != '/') {
+        if (!$botApi->getMessage()->isBotCommand()) {
             $botApi->type = 1;
             $botApi->saveOutsideMessage();
             $botApi->executeExchangeRateCommand();

@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\models;
 
-use app\modules\bot\Module;
+use \yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "support_group_bot_client".
@@ -20,8 +20,10 @@ use app\modules\bot\Module;
  * @property string $language_code
  * @property string $currency_code
  */
-class BotClient extends \yii\db\ActiveRecord
+class BotClient extends ActiveRecord
 {
+    private $_stateObject;
+
     /**
      * {@inheritdoc}
      */
@@ -38,12 +40,15 @@ class BotClient extends \yii\db\ActiveRecord
         return [
             [
                 [
+                    'bot_id',
                     'provider_user_id',
                 ],
                 'required',
             ],
             [
                 [
+                    'bot_id',
+                    'user_id',
                     'provider_user_id',
                     'provider_user_blocked',
                     'location_at',
@@ -101,25 +106,19 @@ class BotClient extends \yii\db\ActiveRecord
         }
     }
 
-    /**
-     * @return null|BotOutsideMessage
-     */
-    public function getLastOutsideMessage()
+    public function getState()
     {
-        return BotOutsideMessage::find()
-            ->where(['bot_client_id' => $this->id, 'bot_id' => Module::getInstance()->botApi->bot_id])
-            ->orderBy('created_at DESC')
-            ->one();
+        if (!isset($this->_stateObject)) {
+            $this->_stateObject = isset($this->state)
+               ? BotClientState::fromJson($this->state)
+               : new BotClientState();
+        }
+        return $this->_stateObject;
     }
 
-    /**
-     * @return null|BotInsideMessage
-     */
-    public function getLastInsideMessage()
+    public function save($runValidation = true, $attributeNames = null)
     {
-        return BotInsideMessage::find()
-            ->where(['bot_client_id' => $this->id, 'bot_id' => Module::getInstance()->botApi->bot_id])
-            ->orderBy('created_at DESC')
-            ->one();
+        $this->state = $this->getState()->toJson();
+        return parent::save($runValidation, $attributeNames);
     }
 }

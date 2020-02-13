@@ -3,10 +3,13 @@
 namespace app\modules\bot\controllers;
 
 use app\models\Currency;
-use app\modules\bot\components\CommandController as Controller;
 use app\modules\bot\helpers\PaginationButtons;
-use app\modules\bot\telegram\Message;
 use yii\data\Pagination;
+use Yii;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 
 /**
  * Class My_currencyController
@@ -18,19 +21,12 @@ class My_currencyController extends Controller
     /**
      * @param null|string $currency
      *
-     * @return string
+     * @return array
      */
     public function actionIndex($currency = null)
     {
-        \Yii::$app->responseMessage->setKeyboard(new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup(
-            [
-                [
-                    ['callback_data' => 'currency_list', 'text' => \Yii::t('bot', 'Change Currency')],
-                ],
-            ]
-        ));
-
-        $botClient = \Yii::$app->botClient->getModel();
+        $botClient = $this->getBotClient();
+        $update = $this->getUpdate();
 
         $currencyModel = null;
         if ($currency) {
@@ -46,17 +42,35 @@ class My_currencyController extends Controller
         $currentCode = $botClient->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
-        return $this->render('index', compact('currencyModel', 'currentCode', 'currentName'));
+        return [
+            new SendMessageCommand(
+                $update->getMessage()->getChat()->getId(),
+                $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
+                [
+                    'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/currency_list',
+                                'text' => Yii::t('bot', 'Change Currency')
+                            ],
+                        ],
+                    ]),
+                ]
+            ),
+        ];
     }
 
     /**
      * @param int $page
      *
-     * @return string
+     * @return array
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function actionCurrencyList($page = 1)
     {
+        $update = $this->getUpdate();
+
         $currencyQuery = Currency::find()->orderBy('code ASC');
         $countQuery = clone $currencyQuery;
         $pagination = new Pagination([
@@ -74,12 +88,19 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        \Yii::$app->responseMessage->setKeyboard(PaginationButtons::build('currency_list_<page>', $pagination));
-
-        /** @var Message $responseMessage */
-        $responseMessage = \Yii::$app->responseMessage;
-        $responseMessage->setMessageId(\Yii::$app->requestMessage->getMessageId());
-
-        return $this->render('currency-list', compact('currencies', 'pagination'));
+        return [
+            new EditMessageTextCommand(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $update->getCallbackQuery()->getmessage()->getMessageId(),
+                $this->render('currency-list', compact('currencies', 'pagination')),
+                [
+                    'parseMode' => $this->textFormat,
+                    'replyMarkup' => PaginationButtons::build('/currency_list_<page>', $pagination),
+                ]
+            ),
+            new AnswerCallbackQueryCommand(
+                $update->getCallbackQuery()->getId()
+            ),
+        ];
     }
 }

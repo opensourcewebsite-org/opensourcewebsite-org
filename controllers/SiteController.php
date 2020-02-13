@@ -7,13 +7,16 @@ use app\models\PasswordResetRequestForm;
 use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
-use app\models\User;
+use app\modules\bot\models\BotClient;
+use app\models\MergeAccountsRequest;
+use app\models\ChangeEmailRequest;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use app\components\Converter;
 
 class SiteController extends Controller
 {
@@ -189,6 +192,89 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionMergeAccounts($token)
+    {
+        $mergeAccountsRequest = MergeAccountsRequest::findOne(['token' => $token]);
+        if ($mergeAccountsRequest) {
+            $user = User::findOne(['id' => $mergeAccountsRequest->user_id]);
+            $userToMerge = User::findOne(['id' => $mergeAccountsRequest->user_to_merge_id]);
+            if (Yii::$app->request->isPost) {
+                if ($this->mergeAccounts($user, $userToMerge)) {
+                    return $this->redirect(['site/login']);
+                } else {
+                    $mergeAccountsRequest->delete();
+                    unset($mergeAccountsRequest);
+                }
+            } else {
+                $created_at = $mergeAccountsRequest->created_at;
+                $requestLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
+
+                if ($created_at + $requestLifeTime < time()) {
+                    $mergeAccountsRequest->delete();
+                    unset($mergeAccountsRequest);
+                }
+            }
+        }
+        return $this->render('mergeAccounts', [
+            'model' => $mergeAccountsRequest,
+            'user' => $user,
+            'userToMerge' => $userToMerge,
+        ]);
+    }
+
+    private function mergeAccounts($user, $userToMerge)
+    {
+        $connection = Yii::$app->db;
+        $transaction = $connection->beginTransaction();
+        try {
+            BotClient::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
+
+            \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Contact::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Contact::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
+
+            \app\models\Debt::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
+
+            \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+
+            \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\modules\comment\models\IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Moqup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\SettingValueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\SupportGroup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\SupportGroupBotClient::updateAll(['provider_bot_user_id' => $user->id], "provider_bot_user_id = {$userToMerge->id}");
+
+            \app\models\SupportGroupMember::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserIssueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserMoqupFollow::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserWikiPage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            $userToMerge->delete();
+
+            $transaction->commit();
+        } catch (\Throwable $ex) {
+            $transaction->rollBack();
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Resets password.
      *
@@ -219,9 +305,32 @@ class SiteController extends Controller
     public function actionAccount()
     {
         $model = Yii::$app->user->identity;
-        $totalRating = Rating::getTotalRating();
 
-        return $this->render('account', ['model' => $model, 'totalRating' => $totalRating]);
+        $activeRating = $model->activeRating;
+
+        $rating = $model->rating;
+        $totalRating = Rating::getTotalRating();
+        if ($totalRating < 1) {
+            $percent = 0;
+        } else {
+            $percent = Converter::percentage($rating, $totalRating);
+        }
+
+        list($total, $rank) = Rating::getRank($rating);
+
+        return $this->render('account', [
+            'model' => $model,
+            'activeRating' => $activeRating,
+            'overallRating' => [
+                'rating' => $rating,
+                'totalRating' => $totalRating,
+                'percent' => $percent,
+            ],
+            'ranking' => [
+                'rank' => $rank,
+                'total' => $total,
+            ]
+        ]);
     }
 
     /**
@@ -254,6 +363,37 @@ class SiteController extends Controller
         }
 
         return $this->redirect(['site/login']);
+    }
+
+    public function actionChangeEmail($token)
+    {
+        $changeEmailRequest = ChangeEmailRequest::findOne(['token' => $token]);
+        if ($changeEmailRequest) {
+            $user = User::findOne(['id' => $changeEmailRequest->user_id]);
+            if (Yii::$app->request->isPost) {
+                $user->email = $changeEmailRequest->email;
+                $user->is_email_confirmed = true;
+
+                $changeEmailRequest->delete();
+                unset($changeEmailRequest);
+
+                if ($user->save()) {
+                    return $this->redirect(['site/login']);
+                }
+            } else {
+                $created_at = $changeEmailRequest->created_at;
+                $requestLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
+
+                if ($created_at + $requestLifeTime < time()) {
+                    $changeEmailRequest->delete();
+                    unset($changeEmailRequest);
+                }
+            }
+        }
+        return $this->render('changeEmail', [
+            'model' => $changeEmailRequest,
+            'user' => $user,
+        ]);
     }
 
     /**
