@@ -49,7 +49,7 @@ When contributing to this repository, please first discuss the change you wish t
   - A issue is not necessary for trivial changes.
 - Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
 - Make your change. Add tests for your change. Make the tests pass.
-- Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork).
+- Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork) to the repository.
 
 ##### Tips and tricks for using the Git
 
