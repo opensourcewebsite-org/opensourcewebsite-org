@@ -209,7 +209,7 @@ class Module extends \yii\base\Module
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
-            } catch (\Exception $e) {
+            } catch (\InvalidRouteException $e) {
                 $commands = $this->runAction('default/command-not-found');
             }
 
