@@ -15,7 +15,7 @@ class m200213_003152_create_bot_chat_table extends Migration
     {
         $this->createTable('{{%bot_chat}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'chat_id' => $this->bigInteger()->notNull()->unique(),
+            'chat_id' => $this->bigInteger()->notNull(),
             'type' => $this->string()->notNull(),
             'title' => $this->string(),
             'username' => $this->string(),

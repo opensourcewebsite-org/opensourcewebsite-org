@@ -14,7 +14,7 @@ class m200213_191549_create_bot_chat_bot_user_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%bot_chat_bot_user}}', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey()->unsigned(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'user_id' => $this->integer()->unsigned()->notNull(),
         ]);

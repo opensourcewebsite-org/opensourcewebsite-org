@@ -116,7 +116,10 @@ class Module extends \yii\base\Module
                 'provider_bot_user_blocked' => 0,
                 'last_message_at' => time(),
             ]);
-            if (!$telegramUser->save()) return false;
+            if (!$telegramUser->save())
+            {
+                return false;
+            }
 
             $telegramChat = Chat::findOne([
                 'chat_id' => $updateChat->getId(),
@@ -139,7 +142,10 @@ class Module extends \yii\base\Module
                 'first_name' => $updateChat->getFirstName(),
                 'last_name' => $updateChat->getLastName(),
             ]);
-            if (!$telegramChat->save()) return false;
+            if (!$telegramChat->save())
+            {
+                return false;
+            }
 
             // To separate commands for each type of chat
             $this->setupPaths($telegramChat->type == Chat::TYPE_PRIVATE ? "private" : "public");
