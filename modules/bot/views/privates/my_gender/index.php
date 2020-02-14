@@ -4,8 +4,8 @@
 
 <b><?= \Yii::t('bot', 'Your Gender') ?></b>
 <br/><br/>
-<? if (isset($gender)) : ?>
+<?php if (isset($gender)) : ?>
     <?= \Yii::t('bot', User::FEMALE == $gender ? 'Female' : 'Male') ?>
-<? else : ?>
+<?php else : ?>
     <?= \Yii::t('bot', 'Unknown') ?>
-<? endif; ?>
+<?php endif; ?>
