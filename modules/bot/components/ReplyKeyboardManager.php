@@ -3,13 +3,13 @@ namespace app\modules\bot\components;
 
 class ReplyKeyboardManager
 {
-    const REPLYKEYBOARDBUTTON_IS_CONSTANT = 'isConstants';
+    const REPLYKEYBOARDBUTTON_IS_CONSTANT = 'isConstant';
 
     static private $instance;
 
     private $oldKeyboardButtons = [];
     private $keyboardButtons = [];
-    private $_isChanged = false;
+    private $isChanged = false;
 
     private function __construct(array $keyboardButtons = [])
     {
@@ -54,7 +54,7 @@ class ReplyKeyboardManager
         } else {
             $this->keyboardButtons[$row] = [ $keyboardButton ];
         }
-        $this->_isChanged = true;
+        $this->isChanged = true;
     }
 
     public function getKeyboardButtons()
@@ -64,7 +64,7 @@ class ReplyKeyboardManager
 
     public function isChanged()
     {
-        return $this->_isChanged;
+        return $this->isChanged;
     }
 
     private function removeButton(int $rowIndex, int $columnIndex)
@@ -73,6 +73,6 @@ class ReplyKeyboardManager
         if (empty($this->keyboardButtons[$rowIndex])) {
             unset($this->keyboardButtons[$rowIndex]);
         }
-        $this->_isChanged = true;
+        $this->isChanged = true;
     }
 }

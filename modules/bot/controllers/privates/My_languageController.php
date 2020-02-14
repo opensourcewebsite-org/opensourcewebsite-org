@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use app\models\Language;
 use app\modules\bot\helpers\PaginationButtons;
@@ -10,6 +10,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_languageController
@@ -25,16 +26,16 @@ class My_languageController extends Controller
      */
     public function actionIndex($language = null)
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
         $languageModel = null;
         if ($language) {
             $languageModel = Language::findOne(['code' => $language]);
             if ($languageModel) {
-                if ($botClient) {
-                    $botClient->language_code = $language;
-                    if ($botClient->save()) {
+                if ($telegramUser) {
+                    $telegramUser->language_code = $language;
+                    if ($telegramUser->save()) {
                         Yii::$app->language = $languageModel->code;
                     }
                 }
@@ -46,7 +47,7 @@ class My_languageController extends Controller
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
                 [
                     'parseMode' => $this->textFormat,
@@ -92,7 +93,7 @@ class My_languageController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->render('language-list', compact('languages', 'pagination')),
                 [

@@ -1,9 +1,10 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class StartController
@@ -26,7 +27,7 @@ class StartController extends Controller
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,

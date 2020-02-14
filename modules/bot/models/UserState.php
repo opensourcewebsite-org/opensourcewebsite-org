@@ -1,9 +1,11 @@
 <?php
+
 namespace app\modules\bot\models;
 
-class BotClientState
+class UserState
 {
     private $_fields = [];
+
 
     public function getKeyboardButtons()
     {
@@ -17,7 +19,7 @@ class BotClientState
 
     public function getName()
     {
-        return $this->_fields['name'];
+        return isset($this->_fields['name']) ? $this->_fields['name'] : "";
     }
 
     public function setName($value)
@@ -32,7 +34,7 @@ class BotClientState
 
     public static function fromJson($json)
     {
-        $state = new BotClientState();
+        $state = new UserState();
         $state->_fields = json_decode($json, true);
         return $state;
     }

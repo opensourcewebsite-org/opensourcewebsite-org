@@ -18,21 +18,6 @@ class CommandRouteResolver extends Component
     public $requestHandlers = [];
 
     /**
-     * @var string
-     */
-    public $defaultAction = 'index';
-
-    /**
-     * @var array
-     */
-    public $controllerMap = [];
-
-    /**
-     * @var string
-     */
-    public $controllerNamespace = 'app\\controllers\\bot';
-
-    /**
      * @var array
      */
     public $rules = [];
@@ -50,13 +35,17 @@ class CommandRouteResolver extends Component
         }
 
         if (!isset($route)) {
-            $clientState = Module::getInstance()->botClient->getState();
+            $clientState = Module::getInstance()->telegramUser->getState();
             if (isset($clientState)) {
                 $commandText = $clientState->getName();
                 if (isset($commandText)) {
                     list($route, $params) = $this->resolveCommandRoute($commandText);
                 }
             }
+        }
+
+        if (!isset($route)) {
+            $route = 'default/command-not-found';
         }
 
         return [ $route, $params ];

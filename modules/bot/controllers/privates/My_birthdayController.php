@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
@@ -8,6 +8,7 @@ use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\models\User;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_birthdayController
@@ -21,19 +22,19 @@ class My_birthdayController extends Controller
      */
     public function actionIndex()
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
 
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $botClient->getState()->setName('/set_birthday');
-            $botClient->save();
+            $telegramUser->getState()->setName('/set_birthday');
+            $telegramUser->save();
         }
 
         return [
             new SendMessageCommand(
-                $this->getUpdate()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index', [
                     'birthday' => isset($birthday)
                         ? (new \DateTime($birthday))->format(User::DATE_FORMAT)
@@ -59,15 +60,15 @@ class My_birthdayController extends Controller
     public function actionCreate()
     {
         $update = $this->getUpdate();
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
 
         $text = $update->getMessage()->getText();
         if ($this->validateDate($text, User::DATE_FORMAT)) {
             $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
-            $botClient->getState()->setName(null);
-            $botClient->save();
+            $telegramUser->getState()->setName(null);
+            $telegramUser->save();
         }
 
         return $this->actionIndex();
@@ -76,14 +77,14 @@ class My_birthdayController extends Controller
     public function actionUpdate()
     {
         $update = $this->getUpdate();
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
 
-        $botClient->getState()->setName('/set_birthday');
-        $botClient->save();
+        $telegramUser->getState()->setName('/set_birthday');
+        $telegramUser->save();
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $update->getCallbackQuery()->getMessage()->getText(),
                 [
@@ -91,7 +92,7 @@ class My_birthdayController extends Controller
                 ]
             ),
             new SendMessageCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('update'),
                 [
                     'parseMode' => $this->textFormat,

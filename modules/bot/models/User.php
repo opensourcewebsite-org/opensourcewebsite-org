@@ -20,7 +20,7 @@ use \yii\db\ActiveRecord;
  * @property string $language_code
  * @property string $currency_code
  */
-class BotClient extends ActiveRecord
+class User extends ActiveRecord
 {
     private $_stateObject;
 
@@ -29,7 +29,7 @@ class BotClient extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_client';
+        return 'bot_user';
     }
 
     /**
@@ -40,14 +40,12 @@ class BotClient extends ActiveRecord
         return [
             [
                 [
-                    'bot_id',
                     'provider_user_id',
                 ],
                 'required',
             ],
             [
                 [
-                    'bot_id',
                     'user_id',
                     'provider_user_id',
                     'provider_user_blocked',
@@ -110,8 +108,8 @@ class BotClient extends ActiveRecord
     {
         if (!isset($this->_stateObject)) {
             $this->_stateObject = isset($this->state)
-               ? BotClientState::fromJson($this->state)
-               : new BotClientState();
+               ? UserState::fromJson($this->state)
+               : new UserState();
         }
         return $this->_stateObject;
     }
@@ -120,5 +118,11 @@ class BotClient extends ActiveRecord
     {
         $this->state = $this->getState()->toJson();
         return parent::save($runValidation, $attributeNames);
+    }
+
+    public function getChats()
+    {
+        return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
+                    ->viaTable('bot_chat_bot_user', ['user_id' => 'id']);
     }
 }

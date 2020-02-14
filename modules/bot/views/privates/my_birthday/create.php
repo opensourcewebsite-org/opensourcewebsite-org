@@ -1,5 +1,5 @@
-<? if ($success) : ?>
+<?php if ($success) : ?>
     <?= \Yii::t('bot', 'Birthday successfully changed') ?>
-<? else : ?>
+<?php else : ?>
 <?= \Yii::t('bot', 'Please, enter your birthday in format DD.MM.YYYY') ?>
-<? endif; ?>
+<?php endif; ?>

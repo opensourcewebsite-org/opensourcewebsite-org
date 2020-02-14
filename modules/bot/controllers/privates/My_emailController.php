@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
@@ -10,6 +10,7 @@ use app\models\ChangeEmailRequest;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class My_emailController
@@ -23,20 +24,20 @@ class My_emailController extends Controller
      */
     public function actionIndex()
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
         $update = $this->getUpdate();
 
         if (isset($user->email)) {
             $email = $user->email;
         } else {
-            $botClient->getState()->setName('/set_email');
-            $botClient->save();
+            $telegramUser->getState()->setName('/set_email');
+            $telegramUser->save();
         }
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('index', [
                     'email' => $email,
                 ]),
@@ -59,20 +60,26 @@ class My_emailController extends Controller
 
     public function actionCreate()
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
         $user = $this->getUser();
 
         $email = $update->getMessage()->getText();
 
+        $changeRequest = false;
+        $mergeRequest = false;
+
         $userWithSameEmail = User::findOne(['email' => $email]);
         if (isset($userWithSameEmail)) {
             if ($userWithSameEmail->id != $user->id) {
                 $mergeRequest = true;
-                $botClient->getState()->setName('waiting_for_merge');
-                $botClient->getState()->email = $email;
-                $botClient->save();
+                $telegramUser->getState()->setName('waiting_for_merge');
+                $telegramUser->getState()->email = $email;
+                $telegramUser->save();
             } else {
+                $telegramUser->getState()->setName(NULL);
+                $telegramUser->save();
+                return $this->actionIndex();
             }
         } else {
             $changeEmailRequest = new ChangeEmailRequest();
@@ -84,8 +91,8 @@ class My_emailController extends Controller
 
             if ($changeEmailRequest->save()) {
                 if ($changeEmailRequest->sendEmail()) {
-                    $botClient->getState()->setName(null);
-                    $botClient->save();
+                    $telegramUser->getState()->setName(null);
+                    $telegramUser->save();
 
                     $changeRequest = true;
                 }
@@ -97,7 +104,7 @@ class My_emailController extends Controller
 
         return [
             new SendMessageCommand(
-                $update->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('create', [
                     'changeRequest' => $changeRequest,
                     'mergeRequest' => $mergeRequest,
@@ -126,19 +133,19 @@ class My_emailController extends Controller
 
     public function actionUpdate()
     {
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        MergeAccountsRequest::deleteAll('user_id = ' . $user->id);
-        ChangeEmailRequest::deleteAll('user_id = ' . $user->id);
+        MergeAccountsRequest::deleteAll("user_id = {$user->id}");
+        ChangeEmailRequest::deleteAll("user_id = {$user->id}");
 
-        $botClient->getState()->setName('/set_email');
-        $botClient->save();
+        $telegramUser->getState()->setName('/set_email');
+        $telegramUser->save();
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $update->getCallbackQuery()->getMessage()->getText(),
                 [
@@ -146,7 +153,7 @@ class My_emailController extends Controller
                 ]
             ),
             new SendMessageCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $this->render('update'),
                 [
                     'parseMode' => $this->textFormat,
@@ -161,9 +168,9 @@ class My_emailController extends Controller
     public function actionMergeAccounts()
     {
         $update = $this->getUpdate();
-        $botClient = $this->getBotClient();
+        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
-        $state = $botClient->getState();
+        $state = $telegramUser->getState();
         $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge') {

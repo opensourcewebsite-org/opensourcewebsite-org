@@ -1,8 +1,9 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\Controller as Controller;
 
 /**
  * Class Random_intController

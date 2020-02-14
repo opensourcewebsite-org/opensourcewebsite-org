@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-header">
                 <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
             </div>
-            <? if ($model) : ?>
+            <?php if ($model) : ?>
             <?php $form = ActiveForm::begin(['id' => 'merge-accounts-form']); ?>
             <div class="card-body">
                 <div>
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <?php ActiveForm::end(); ?>
-            <? else : ?>
+            <?php else : ?>
             <div class="card-body">
                 <div>
                     <p>
@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= Html::a('Go back', ['site/login', 'id' => $id], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
-            <? endif; ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>

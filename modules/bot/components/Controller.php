@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\controllers;
+namespace app\modules\bot\components;
 
 use yii\base\InlineAction;
 use yii\base\InvalidCallException;
@@ -24,23 +24,6 @@ class Controller extends \yii\base\Controller
      * @var array the parameters bound to the current action.
      */
     public $actionParams = [];
-
-    /**
-     * @param string $id
-     * @param array $params
-     * @param bool $protect
-     *
-     * @return mixed
-     * @throws \yii\base\InvalidRouteException
-     */
-    public function runAction($id, $params = [], $protect = false)
-    {
-        if (!$protect) {
-            throw new InvalidCallException('Command controller can run only by bot module');
-        }
-
-        return parent::runAction($id, $params);
-    }
 
     /**
      * Binds the parameters to the action.
@@ -101,9 +84,14 @@ class Controller extends \yii\base\Controller
         return $this->prepareText(parent::render($view, $params));
     }
 
-    protected function getBotClient()
+    protected function getTelegramUser()
     {
-        return $this->module->botClient;
+        return $this->module->telegramUser;
+    }
+
+    protected function getTelegramChat()
+    {
+        return $this->module->telegramChat;
     }
 
     protected function getUser()
@@ -123,8 +111,11 @@ class Controller extends \yii\base\Controller
      */
     private function prepareText($text)
     {
-        $text = str_replace(["\n", "\r\n"], '', $text);
-
-        return preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
+        if ($this->textFormat == 'html')
+        {
+            $text = str_replace(["\n", "\r\n"], '', $text);
+            $text = preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
+        }
+        return $text;
     }
 }
