@@ -222,7 +222,7 @@ class Module extends \yii\base\Module
                         }
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {
-                        Yii::error("[$route] " . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
+                        Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
                     }
                 }
 
