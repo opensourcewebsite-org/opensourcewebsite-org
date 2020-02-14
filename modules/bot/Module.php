@@ -201,9 +201,13 @@ class Module extends \yii\base\Module
 
         list($route, $params) = $this->commandRouteResolver->resolveRoute($update);
         if ($route) {
-            $commands = $this->runAction($route, $params);
+            try {
+                $commands = $this->runAction($route, $params);
+            } catch (\Exception $e) {
+                $commands = $this->runAction('default/command-not-found');
+            }
 
-            if (is_array($commands)) {
+            if (isset($commands) && is_array($commands)) {
                 foreach ($commands as $command) {
                     try {
                         $replyMarkup = $command->replyMarkup;
