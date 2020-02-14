@@ -132,11 +132,11 @@ class Module extends \yii\base\Module
                 $telegramChat->setAttributes([
                     'chat_id' => $updateChat->getId(),
                     'bot_id' => $botId,
-                    'type' => $updateChat->getType(),
                 ]);
             }
             // Update telegram chat information
             $telegramChat->setAttributes([
+                'type' => $updateChat->getType(),
                 'title' => $updateChat->getTitle(),
                 'username' => $updateChat->getUsername(),
                 'first_name' => $updateChat->getFirstName(),
