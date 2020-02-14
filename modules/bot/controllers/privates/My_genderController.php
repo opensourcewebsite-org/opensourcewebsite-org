@@ -63,16 +63,12 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => ($user->gender == User::FEMALE)
-                                    ? '/set_gender_male'
-                                    : '/set_gender_female',
-                                'text' => Yii::t('bot', ($user->gender == User::FEMALE)
-                                    ? 'Male'
-                                    : 'Female'),
+                                'callback_data' => '/set_gender_male',
+                                'text' => Yii::t('bot', 'Male'),
                             ],
                             [
-                                'callback_data' => '/set_gender_back',
-                                'text' => Yii::t('bot', 'Cancel'),
+                                'callback_data' => '/set_gender_female',
+                                'text' => Yii::t('bot', 'Female'),
                             ],
                         ],
                     ]),
