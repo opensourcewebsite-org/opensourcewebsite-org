@@ -97,22 +97,22 @@ class Module extends \yii\base\Module
             $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
             // Store telegram user if it doesn't exist yet
             if (!isset($telegramUser)) {
+                $language = Language::findOne([
+                    'code' => $updateUser->getLanguageCode(),
+                ]);
+                $languageCode = isset($language) ? $language->code : 'en';
+
                 $telegramUser = new TelegramUser();
                 $telegramUser->setAttributes([
                     'provider_user_id' => $updateUser->getId(),
+                    'language_code' => $languageCode,
                 ]);
             }
             // Update telegram user information
-            $language = Language::findOne([
-                'code' => $updateUser->getLanguageCode(),
-            ]);
-            $language = isset($language) ? $language->code : 'en';
-
             $telegramUser->setAttributes([
                 'provider_user_name' => $updateUser->getUsername(),
                 'provider_user_first_name' => $updateUser->getFirstName(),
                 'provider_user_last_name' => $updateUser->getLastName(),
-                'language_code' => $languageCode,
                 'provider_bot_user_blocked' => 0,
                 'last_message_at' => time(),
             ]);
