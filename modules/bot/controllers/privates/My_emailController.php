@@ -100,7 +100,7 @@ class My_emailController extends Controller
                 }
             }
             if (!$changeRequest) {
-                $error = Yii::t('bot', 'Given email is invalid');
+                $error = Yii::t('bot', 'This email is invalid');
             }
         }
 

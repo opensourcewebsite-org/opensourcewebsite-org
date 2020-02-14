@@ -24,7 +24,7 @@ class My_ratingController extends Controller
     public function actionIndex()
     {
         $update = $this->getUpdate();
-        
+
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
