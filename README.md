@@ -20,7 +20,7 @@
 
 <h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) - online community. Welcome to https://opensourcewebsite.org
+OpenSourceWebsite (OSW) - online community. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot
 
 ## Code of Conduct
 
