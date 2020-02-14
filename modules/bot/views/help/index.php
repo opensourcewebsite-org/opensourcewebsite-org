@@ -8,3 +8,4 @@
 /my_language - <?= \Yii::t('bot', 'Language') ?><br/>
 /my_currency - <?= \Yii::t('bot', 'Currency') ?><br/>
 /start - <?= \Yii::t('bot', 'Greeting') ?><br/>
+/filter - <?= \Yii::t('bot', 'Filter') ?><br/>

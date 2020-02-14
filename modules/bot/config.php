@@ -37,6 +37,10 @@ return [
 
                 '/update_rating' => 'my_rating/update',
 
+                '/filter' => 'filter/index',
+                '/filter list' => 'filter/list',
+                '/filter <action> <message:.+>' => 'filter/<action>',
+
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers;
 
+use app\modules\bot\components\message\MessageHandler;
 use yii\base\InlineAction;
 use yii\base\InvalidCallException;
 use yii\web\BadRequestHttpException;
@@ -114,6 +115,11 @@ class Controller extends \yii\base\Controller
     protected function getUpdate()
     {
         return $this->module->update;
+    }
+
+    protected function getMessageHandler(): MessageHandler
+    {
+        return $this->module->messageHandler;
     }
 
     /**

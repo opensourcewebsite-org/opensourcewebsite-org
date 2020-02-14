@@ -2,6 +2,7 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\components\message\MessageHandler;
 use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
@@ -42,6 +43,11 @@ class Module extends \yii\base\Module
      */
     public $user;
 
+    /**
+     * @var MessageHandler
+     */
+    public $messageHandler;
+
     public function init()
     {
         parent::init();
@@ -65,11 +71,17 @@ class Module extends \yii\base\Module
             if (isset($this->botClient)) {
                 Yii::$app->language = $this->botClient->language_code;
 
+                $this->messageHandler = Yii::createObject(MessageHandler::class, [
+                    $this->botApi, $this->update->getMessage(),
+                ]);
+                $this->messageHandler->filterMessage();
+
                 $result = $this->dispatchRoute($this->update);
             } else {
                 $result = false;
             }
         }
+
         return $result;
     }
 
