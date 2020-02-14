@@ -69,6 +69,7 @@ class My_emailController extends Controller
 
         $changeRequest = false;
         $mergeRequest = false;
+        $error = null;
 
         $userWithSameEmail = User::findOne(['email' => $email]);
         if (isset($userWithSameEmail)) {
