@@ -6,10 +6,10 @@ use yii\behaviors\TimestampBehavior;
 
 class Chat extends ActiveRecord
 {
-    const TYPE_PRIVATE = "private";
-    const TYPE_GROUP = "group";
-    const TYPE_SUPERGROUP = "supergroup";
-    const TYPE_CHANNEL = "channel"; 
+    const TYPE_PRIVATE = 'private';
+    const TYPE_GROUP = 'group';
+    const TYPE_SUPERGROUP = 'supergroup';
+    const TYPE_CHANNEL = 'channel'; 
 
     public static function tableName()
     {
