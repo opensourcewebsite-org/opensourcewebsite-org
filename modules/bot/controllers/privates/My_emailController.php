@@ -76,7 +76,7 @@ class My_emailController extends Controller
             if ($userWithSameEmail->id != $user->id) {
                 $mergeRequest = true;
                 $telegramUser->getState()->setName('waiting_for_merge');
-                $telegramUser->getState()->email = $email;
+                $telegramUser->getState()->setEmail($email);
                 $telegramUser->save();
             } else {
                 $telegramUser->getState()->setName(NULL);
@@ -176,7 +176,7 @@ class My_emailController extends Controller
         $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge') {
-            $userToMerge = User::findOne(['email' => $state->email]);
+            $userToMerge = User::findOne(['email' => $state->getEmail()]);
             if ($userToMerge) {
                 $mergeAccountsRequest = new MergeAccountsRequest();
                 $mergeAccountsRequest->setAttributes([
@@ -184,10 +184,11 @@ class My_emailController extends Controller
                     'user_id' => $userToMerge->id,
                     'token' => Yii::$app->security->generateRandomString(),
                 ]);
+                // MergeAccountsRequest::sendEmail also call ActiveRecord::save method
                 if ($mergeAccountsRequest->sendEmail()) {
                     return [
                         new EditMessageTextCommand(
-                            $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                            $this->getTelegramChat()->chat_id,
                             $update->getCallbackQuery()->getMessage()->getMessageId(),
                             $this->render('merge-accounts'),
                             [
