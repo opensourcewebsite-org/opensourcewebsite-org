@@ -3,5 +3,5 @@
 <?php if ($birthday) : ?>
 <?= $birthday ?>
 <?php else : ?>
-<?= \Yii::t('bot', 'We don\'t know your birthday yet. Please, enter your birthday in format DD.MM.YYYY') ?>
+<?= \Yii::t('bot', 'Unknown') ?>. <?= \Yii::t('bot', 'Please, send your birthday in format DD.MM.YYYY') ?>.
 <?php endif; ?>

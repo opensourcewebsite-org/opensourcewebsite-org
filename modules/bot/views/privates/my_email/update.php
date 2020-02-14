@@ -1,1 +1,1 @@
-<?= \Yii::t('bot', 'Please, send me your email') ?>
+<?= \Yii::t('bot', 'Please, send your email') ?>.

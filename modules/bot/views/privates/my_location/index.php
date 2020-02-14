@@ -1,1 +1,3 @@
-<?= \Yii::t('bot', 'We don\'t know your location yet. Please, send your location.') ?>
+<b><?= \Yii::t('bot', 'Your Location') ?></b><br/><br/>
+
+<?= \Yii::t('bot', 'Unknown') ?>. <?= \Yii::t('bot', 'Please, send your location') ?>.
