@@ -24,7 +24,7 @@ class My_ratingController extends Controller
     public function actionIndex()
     {
         $update = $this->getUpdate();
-
+        
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
@@ -34,7 +34,7 @@ class My_ratingController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'text' => Yii::t('bot', 'Update'),
+                                'text' => Yii::t('bot', 'Refresh'),
                                 'callback_data' => '/update_rating'
                             ]
                         ]
