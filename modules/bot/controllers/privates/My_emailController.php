@@ -28,6 +28,7 @@ class My_emailController extends Controller
         $user = $this->getUser();
         $update = $this->getUpdate();
 
+        $email = null;
         if (isset($user->email)) {
             $email = $user->email;
         } else {
