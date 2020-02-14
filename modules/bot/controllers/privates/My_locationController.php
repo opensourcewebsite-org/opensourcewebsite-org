@@ -76,14 +76,6 @@ class My_locationController extends Controller
             $telegramUser->save();
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('update'),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
-            ),
-        ];
+        return $this->actionIndex();
     }
 }
