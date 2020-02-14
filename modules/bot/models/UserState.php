@@ -6,6 +6,7 @@ class UserState
 {
     private $_fields = [];
 
+
     public function getKeyboardButtons()
     {
         return isset($this->_fields['keyboardButtons']) ? $this->_fields['keyboardButtons'] : [];
@@ -18,7 +19,7 @@ class UserState
 
     public function getName()
     {
-        return $this->_fields['name'];
+        return isset($this->_fields['name']) ? $this->_fields['name'] : "";
     }
 
     public function setName($value)

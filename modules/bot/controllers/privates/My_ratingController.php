@@ -50,7 +50,7 @@ class My_ratingController extends Controller
 
         return [
             new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->renderRating(),
                 [

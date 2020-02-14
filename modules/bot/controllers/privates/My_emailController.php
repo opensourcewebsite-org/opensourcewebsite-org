@@ -66,6 +66,9 @@ class My_emailController extends Controller
 
         $email = $update->getMessage()->getText();
 
+        $changeRequest = false;
+        $mergeRequest = false;
+
         $userWithSameEmail = User::findOne(['email' => $email]);
         if (isset($userWithSameEmail)) {
             if ($userWithSameEmail->id != $user->id) {
@@ -134,8 +137,8 @@ class My_emailController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        MergeAccountsRequest::deleteAll('user_id = ' . $user->id);
-        ChangeEmailRequest::deleteAll('user_id = ' . $user->id);
+        MergeAccountsRequest::deleteAll("user_id = {$user->id}");
+        ChangeEmailRequest::deleteAll("user_id = {$user->id}");
 
         $telegramUser->getState()->setName('/set_email');
         $telegramUser->save();
