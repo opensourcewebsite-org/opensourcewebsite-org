@@ -95,7 +95,7 @@ class m200213_003152_create_bot_chat_table extends Migration
 
         $this->dropForeignKey(
             'fk-bot_chat-bot_id',
-            '{{%bot_chat}}',
+            '{{%bot_chat}}'
         );
 
         $this->dropTable('{{%bot_chat}}');

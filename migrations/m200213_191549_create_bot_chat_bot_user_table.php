@@ -62,12 +62,12 @@ class m200213_191549_create_bot_chat_bot_user_table extends Migration
     {
         $this->dropForeignKey(
             'fk-bot_chat_bot_user-chat_id',
-            '{{%bot_chat_bot_user}}',
+            '{{%bot_chat_bot_user}}'
         );
 
         $this->dropForeignKey(
             'fk-bot_chat_bot_user-user_id',
-            '{{%bot_chat_bot_user}}',
+            '{{%bot_chat_bot_user}}'
         );
 
         $this->dropTable('{{%bot_chat_bot_user}}');
