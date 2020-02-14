@@ -79,7 +79,7 @@ class My_emailController extends Controller
                 $telegramUser->getState()->setEmail($email);
                 $telegramUser->save();
             } else {
-                $telegramUser->getState()->setName(NULL);
+                $telegramUser->getState()->setName(null);
                 $telegramUser->save();
                 return $this->actionIndex();
             }
