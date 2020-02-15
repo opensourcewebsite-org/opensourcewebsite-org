@@ -213,7 +213,7 @@ class Module extends \yii\base\Module
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
-            } catch (\InvalidRouteException $e) {
+            } catch (InvalidRouteException $e) {
                 if ($this->telegramChat->isPrivate())
                 {
                     $commands = $this->runAction('default/command-not-found');
