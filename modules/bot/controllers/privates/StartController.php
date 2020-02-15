@@ -4,6 +4,8 @@ namespace app\modules\bot\controllers\privates;
 
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use Yii;
 use app\modules\bot\components\Controller as Controller;
 
 /**
@@ -31,6 +33,22 @@ class StartController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/my_language',
+                                'text' => Yii::t('bot', 'Language')
+                            ],
+                            [
+                                'callback_data' => '/help',
+                                'text' => Yii::t('bot', 'Help')
+                            ],
+                            [
+                                'url' => 'https://opensourcewebsite.org',
+                                'text' => Yii::t('bot', 'Website')
+                            ],
+                        ],
+                    ]),
                 ]
             ),
         ];

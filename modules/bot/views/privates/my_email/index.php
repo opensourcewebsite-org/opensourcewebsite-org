@@ -3,7 +3,5 @@
 <?php if (isset($email)) : ?>
 <?= $email ?>
 <?php else : ?>
-<?= \Yii::t('bot', 'Your email isn\'t set for now') ?>
-<br/><br/>
-<?= \Yii::t('bot', 'Please, sent me your email') ?>
+<?= \Yii::t('bot', 'Unknown') ?>. <?= \Yii::t('bot', 'Please, send your email') ?>.
 <?php endif; ?>

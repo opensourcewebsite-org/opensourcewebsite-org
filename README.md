@@ -20,7 +20,7 @@
 
 <h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) - online community. Welcome to https://opensourcewebsite.org
+OpenSourceWebsite (OSW) - online community. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot
 
 ## Code of Conduct
 
@@ -59,6 +59,10 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/opensourcewebsite/organization/7/website"><img src="https://opencollective.com/opensourcewebsite/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/opensourcewebsite/organization/8/website"><img src="https://opencollective.com/opensourcewebsite/organization/8/avatar.svg"></a>
 <a href="https://opencollective.com/opensourcewebsite/organization/9/website"><img src="https://opencollective.com/opensourcewebsite/organization/9/avatar.svg"></a>
+
+## Donate
+
+Donate to support the project and expand its operations. [Read more](/DONATE.md).
 
 ## Continuous Integration
 

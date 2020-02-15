@@ -28,6 +28,7 @@ class My_emailController extends Controller
         $user = $this->getUser();
         $update = $this->getUpdate();
 
+        $email = null;
         if (isset($user->email)) {
             $email = $user->email;
         } else {
@@ -68,16 +69,17 @@ class My_emailController extends Controller
 
         $changeRequest = false;
         $mergeRequest = false;
+        $error = null;
 
         $userWithSameEmail = User::findOne(['email' => $email]);
         if (isset($userWithSameEmail)) {
             if ($userWithSameEmail->id != $user->id) {
                 $mergeRequest = true;
                 $telegramUser->getState()->setName('waiting_for_merge');
-                $telegramUser->getState()->email = $email;
+                $telegramUser->getState()->setEmail($email);
                 $telegramUser->save();
             } else {
-                $telegramUser->getState()->setName(NULL);
+                $telegramUser->getState()->setName(null);
                 $telegramUser->save();
                 return $this->actionIndex();
             }
@@ -98,7 +100,7 @@ class My_emailController extends Controller
                 }
             }
             if (!$changeRequest) {
-                $error = Yii::t('bot', 'Given email is invalid');
+                $error = Yii::t('bot', 'This email is invalid');
             }
         }
 
@@ -174,7 +176,7 @@ class My_emailController extends Controller
         $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge') {
-            $userToMerge = User::findOne(['email' => $state->email]);
+            $userToMerge = User::findOne(['email' => $state->getEmail()]);
             if ($userToMerge) {
                 $mergeAccountsRequest = new MergeAccountsRequest();
                 $mergeAccountsRequest->setAttributes([
@@ -182,10 +184,11 @@ class My_emailController extends Controller
                     'user_id' => $userToMerge->id,
                     'token' => Yii::$app->security->generateRandomString(),
                 ]);
+                // MergeAccountsRequest::sendEmail also call ActiveRecord::save method
                 if ($mergeAccountsRequest->sendEmail()) {
                     return [
                         new EditMessageTextCommand(
-                            $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                            $this->getTelegramChat()->chat_id,
                             $update->getCallbackQuery()->getMessage()->getMessageId(),
                             $this->render('merge-accounts'),
                             [

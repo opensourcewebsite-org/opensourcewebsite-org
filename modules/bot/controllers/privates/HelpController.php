@@ -3,6 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use \app\modules\bot\components\response\SendMessageCommand;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use Yii;
 use app\modules\bot\components\Controller as Controller;
 
 /**
@@ -23,6 +25,18 @@ class HelpController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/my_language',
+                                'text' => Yii::t('bot', 'Language')
+                            ],
+                            [
+                                'callback_data' => '/start',
+                                'text' => Yii::t('bot', 'Greeting')
+                            ],
+                        ],
+                    ]),
                 ]
             ),
         ];
