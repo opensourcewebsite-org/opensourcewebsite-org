@@ -10,6 +10,7 @@ use app\models\ChangeEmailRequest;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\Controller as Controller;
 
 /**
