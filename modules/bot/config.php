@@ -31,7 +31,6 @@ return [
                 '/change_gender' => 'my_gender/change',
                 '/set_gender_male' => 'my_gender/set-male',
                 '/set_gender_female' => 'my_gender/set-female',
-                '/set_gender_back' => 'my_gender/back',
 
                 '/update_location' => 'my_location/update',
 

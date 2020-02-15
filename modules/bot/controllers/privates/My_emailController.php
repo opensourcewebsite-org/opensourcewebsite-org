@@ -146,13 +146,9 @@ class My_emailController extends Controller
         $telegramUser->save();
 
         return [
-            new EditMessageTextCommand(
+            new EditMessageReplyMarkupCommand(
                 $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $update->getCallbackQuery()->getMessage()->getText(),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
+                $update->getCallbackQuery()->getMessage()->getMessageId()
             ),
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
@@ -233,13 +229,9 @@ class My_emailController extends Controller
             $deleted = $mergeAccountsRequest->delete();
         }
         return [
-            new EditMessageTextCommand(
-                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $update->getCallbackQuery()->getMessage()->getText(),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
+            new EditMessageReplyMarkupCommand(
+                $this->getTelegramChat()->chat_id,
+                $update->getCallbackQuery()->getMessage()->getMessageId()
             ),
             new AnswerCallbackQueryCommand(
                 $update->getCallbackQuery()->getId(),
