@@ -60,6 +60,10 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/opensourcewebsite/organization/8/website"><img src="https://opencollective.com/opensourcewebsite/organization/8/avatar.svg"></a>
 <a href="https://opencollective.com/opensourcewebsite/organization/9/website"><img src="https://opencollective.com/opensourcewebsite/organization/9/avatar.svg"></a>
 
+## Donate
+
+Donate to support the project and expand its operations. [Read more](/DONATE.md).
+
 ## Continuous Integration
 
 Any commit pushed to a branch `master` gets deployed to [opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).

@@ -43,6 +43,10 @@ class StartController extends Controller
                                 'callback_data' => '/help',
                                 'text' => Yii::t('bot', 'Help')
                             ],
+                            [
+                                'url' => 'https://opensourcewebsite.org',
+                                'text' => Yii::t('bot', 'Website')
+                            ],
                         ],
                     ]),
                 ]

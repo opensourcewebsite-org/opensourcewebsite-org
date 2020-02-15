@@ -213,7 +213,7 @@ use yii\helpers\Html;
         <div class="col-md-12">
           <ul>
               <li><?= Yii::t('app', 'The power of user vote when voting for new features or changing existing features of the Website') ?>.</li>
-              <li><?= Yii::t('app', 'More opportunities and removing limits when user uses of the Website') ?>.</li>
+              <li><?= Yii::t('app', 'More possibilities and less limits when using of the Website') ?>.</li>
               <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of the Website, which is distributed proportionally among all users in accordance with the value of their User Ratings') ?>.</li>
           </ul>
         </div>
