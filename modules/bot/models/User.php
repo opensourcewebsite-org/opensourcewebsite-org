@@ -5,7 +5,7 @@ namespace app\modules\bot\models;
 use \yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "support_group_bot_client".
+ * This is the model class for table "bot_user".
  *
  * @property int $id
  * @property int $provider_user_id
@@ -22,7 +22,7 @@ use \yii\db\ActiveRecord;
  */
 class User extends ActiveRecord
 {
-    private $_stateObject;
+    private $stateObject;
 
     /**
      * {@inheritdoc}
@@ -93,25 +93,27 @@ class User extends ActiveRecord
     /**
      * @return int|string
      */
-    public function showUserName()
+    public function getFullName()
     {
         if (!empty($this->provider_user_first_name) || !empty($this->provider_user_last_name)) {
-            return trim($this->provider_user_first_name . ' ' . $this->provider_user_last_name);
+            return trim($this->provider_user_first_name) . ' ' . trim($this->provider_user_last_name);
+        } elseif (!empty($this->provider_user_first_name)) {
+            return trim($this->provider_user_first_name);
+        } elseif (!empty($this->provider_user_last_name)) {
+            return trim($this->provider_user_last_name);
         } elseif (!empty($this->provider_user_name)) {
-            return $this->provider_user_name;
-        } else {
-            return $this->provider_user_first_name;
+            return trim($this->provider_user_name);
         }
     }
 
     public function getState()
     {
-        if (!isset($this->_stateObject)) {
-            $this->_stateObject = isset($this->state)
+        if (!isset($this->stateObject)) {
+            $this->stateObject = isset($this->state)
                ? UserState::fromJson($this->state)
                : new UserState();
         }
-        return $this->_stateObject;
+        return $this->stateObject;
     }
 
     public function save($runValidation = true, $attributeNames = null)

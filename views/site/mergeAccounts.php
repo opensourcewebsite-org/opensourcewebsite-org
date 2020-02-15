@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-footer">
                 <div class="form-group">
                     <?= Html::submitButton('Merge accounts', ['class' => 'btn btn-primary', 'name' => 'merge-accounts-button']) ?>
-                    <?= Html::a('Cancel', ['site/login', 'id' => $id], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('Cancel', ['site/login'], ['class' => 'btn btn-default']) ?>
                 </div>
             </div>
             <?php ActiveForm::end(); ?>
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="card-footer">
                 <div class="form-group">
-                    <?= Html::a('Go back', ['site/login', 'id' => $id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('Go back', ['site/login'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
             <?php endif; ?>

@@ -16,6 +16,7 @@ use app\modules\bot\components\ReplyKeyboardManager;
 use app\modules\bot\components\response\SendMessageCommand;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
+use app\modules\bot\components\Controller;
 
 /**
  * OSW Bot module definition class
@@ -81,7 +82,7 @@ class Module extends \yii\base\Module
     /**
      * @param $update \TelegramBot\Api\Types\Update
      *
-     * @return \app\modules\bot\models\Chat
+     * @return bool
      */
     private function initialize($update, $botId)
     {
@@ -148,7 +149,10 @@ class Module extends \yii\base\Module
             }
 
             // To separate commands for each type of chat
-            $this->setupPaths($telegramChat->type == Chat::TYPE_PRIVATE ? "private" : "public");
+            $namespace = $telegramChat->isPrivate()
+                ? Controller::TYPE_PRIVATE
+                : Controller::TYPE_PUBLIC;
+            $this->setupPaths($namespace);
 
             if (isset($isNewChat) && $isNewChat) {
                 $telegramChat->link('users', $telegramUser);
@@ -156,7 +160,7 @@ class Module extends \yii\base\Module
 
             if (!isset($telegramUser->user_id)) {
                 $user = User::createWithRandomPassword();
-                $user->name = $updateUser->getFirstName() . ' ' . $updateUser->getLastName();
+                $user->name = $telegramUser->getFullName();
 
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
@@ -187,30 +191,33 @@ class Module extends \yii\base\Module
         return false;
     }
 
-    private function setupPaths($name)
+    private function setupPaths($namespace)
     {
-        // Postfix 's' must be present because of php-keywords (such as 'private')
-        $this->controllerNamespace .= '\\' . $name . 's';
-        $this->setViewPath($this->getViewPath() . '/' . $name . 's');
+        $this->controllerNamespace .= '\\' . $namespace;
+        $this->setViewPath($this->getViewPath() . '/' . $namespace);
     }
 
     /**
      * @param $update \TelegramBot\Api\Types\Update
      *
      * @return bool
-     * @throws \TelegramBot\Api\Exception
-     * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function dispatchRoute($update)
     {
         $result = false;
 
-        list($route, $params) = $this->commandRouteResolver->resolveRoute($update);
+        $state = $this->telegramChat->isPrivate()
+            ? $this->telegramUser->getState()->getName()
+            : null;
+        list($route, $params) = $this->commandRouteResolver->resolveRoute($update, $state);
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
             } catch (\InvalidRouteException $e) {
-                $commands = $this->runAction('default/command-not-found');
+                if ($this->telegramChat->isPrivate())
+                {
+                    $commands = $this->runAction('default/command-not-found');
+                }
             }
 
             if (isset($commands) && is_array($commands)) {
