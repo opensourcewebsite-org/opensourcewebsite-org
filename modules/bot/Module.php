@@ -117,8 +117,7 @@ class Module extends \yii\base\Module
                 'provider_bot_user_blocked' => 0,
                 'last_message_at' => time(),
             ]);
-            if (!$telegramUser->save())
-            {
+            if (!$telegramUser->save()) {
                 return false;
             }
 
@@ -143,8 +142,7 @@ class Module extends \yii\base\Module
                 'first_name' => $updateChat->getFirstName(),
                 'last_name' => $updateChat->getLastName(),
             ]);
-            if (!$telegramChat->save())
-            {
+            if (!$telegramChat->save()) {
                 return false;
             }
 
@@ -214,8 +212,7 @@ class Module extends \yii\base\Module
             try {
                 $commands = $this->runAction($route, $params);
             } catch (InvalidRouteException $e) {
-                if ($this->telegramChat->isPrivate())
-                {
+                if ($this->telegramChat->isPrivate()) {
                     $commands = $this->runAction('default/command-not-found');
                 }
             }

@@ -273,7 +273,6 @@ class SiteController extends Controller
             $transaction->commit();
         } catch (\Throwable $ex) {
             $transaction->rollBack();
-            var_dump($ex->getMessage());
             return false;
         }
         return true;
