@@ -23,6 +23,8 @@ class CommandRouteResolver extends Component
 
     public function resolveRoute($update, $state)
     {
+        $params = null;
+
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
