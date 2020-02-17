@@ -17,7 +17,7 @@ class UserState
         return $this->fields['keyboardButtons'] ?? [];
     }
 
-    public function setKeyboardButtons(array $value)
+    public function setKeyboardButtons(?array $value)
     {
         $this->fields['keyboardButtons'] = $value;
     }
@@ -27,7 +27,7 @@ class UserState
         return $this->fields['name'] ?? null;
     }
 
-    public function setName(string $value)
+    public function setName(?string $value)
     {
         $this->fields['name'] = $value;
     }
@@ -37,14 +37,14 @@ class UserState
         return $this->fields['email'] ?? null;
     }
 
-    public function setEmail(string $value)
+    public function setEmail(?string $value)
     {
         $this->fields['email'] = $value;
     }
 
     public function save(User $user)
     {
-        $user->state = json_encode($this);
+        $user->state = json_encode($this->fields);
         return $user->save();
     }
 

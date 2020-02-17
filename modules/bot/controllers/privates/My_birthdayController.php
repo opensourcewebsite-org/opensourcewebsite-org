@@ -68,9 +68,19 @@ class My_birthdayController extends Controller
             $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
             $this->getState()->setName(null);
+        
+            return $this->actionIndex();
         }
 
-        return $this->actionIndex();
+        return [
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $this->render('update'),
+                [
+                    'parseMode' => $this->textFormat,
+                ]
+            )
+        ];
     }
 
     public function actionUpdate()

@@ -53,7 +53,7 @@ class Module extends \yii\base\Module
     /**
      * @var models\UserState
      */
-    private $userState;
+    public $userState;
 
     public function init()
     {
@@ -184,12 +184,14 @@ class Module extends \yii\base\Module
                 $user = User::findOne($telegramUser->user_id);
             }
 
-            $userState = isset($telegramUser->state)
-               ? UserState::fromJson($telegramUser->state)
-               : new UserState();
+            $userState = UserState::fromUser($telegramUser);
 
             $keyboardButtons = $userState->getKeyboardButtons();
             ReplyKeyboardManager::init($keyboardButtons);
+            ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
+                'text' => '⚙️',
+                ReplyKeyboardManager::REPLYKEYBOARDBUTTON_IS_CONSTANT => true,
+            ]);
 
             $this->user = $user;
             $this->telegramUser = $telegramUser;
@@ -225,10 +227,10 @@ class Module extends \yii\base\Module
         $result = false;
 
         $state = $this->telegramChat->isPrivate()
-            ? $userState->getName()
+            ? $this->userState->getName()
             : null;
-        list($route, $params, $isRouteState) = $this->commandRouteResolver->resolveRoute($update, $state);
-        if ($isRouteState) {
+        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state);
+        if (!$isStateRoute) {
             $this->userState->setName(null);
         }
         if ($route) {

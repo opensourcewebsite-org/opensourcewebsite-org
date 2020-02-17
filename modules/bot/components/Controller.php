@@ -52,7 +52,7 @@ class Controller extends \yii\web\Controller
 
     protected function getState()
     {
-        return $this->module->state;
+        return $this->module->userState;
     }
 
     /**
