@@ -6,10 +6,10 @@ use yii\behaviors\TimestampBehavior;
 
 class Chat extends ActiveRecord
 {
-    const TYPE_PRIVATE = 'private';
-    const TYPE_GROUP = 'group';
-    const TYPE_SUPERGROUP = 'supergroup';
-    const TYPE_CHANNEL = 'channel'; 
+    public const TYPE_PRIVATE = 'private';
+    public const TYPE_GROUP = 'group';
+    public const TYPE_SUPERGROUP = 'supergroup';
+    public const TYPE_CHANNEL = 'channel';
 
     public static function tableName()
     {
@@ -36,5 +36,10 @@ class Chat extends ActiveRecord
     {
         return $this->hasMany(User::className(), ['id' => 'user_id'])
                     ->viaTable('bot_chat_bot_user', ['chat_id' => 'id']);
+    }
+
+    public function isPrivate()
+    {
+        return $this->type == self::TYPE_PRIVATE;
     }
 }

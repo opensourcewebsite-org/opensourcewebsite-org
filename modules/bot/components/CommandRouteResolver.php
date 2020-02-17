@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\components;
 
-use app\modules\bot\Module;
 use yii\base\Component;
 
 /**
@@ -22,8 +21,10 @@ class CommandRouteResolver extends Component
      */
     public $rules = [];
 
-    public function resolveRoute($update)
+    public function resolveRoute($update, $state)
     {
+        $params = null;
+
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
@@ -34,14 +35,8 @@ class CommandRouteResolver extends Component
             }
         }
 
-        if (!isset($route)) {
-            $clientState = Module::getInstance()->telegramUser->getState();
-            if (isset($clientState)) {
-                $commandText = $clientState->getName();
-                if (isset($commandText)) {
-                    list($route, $params) = $this->resolveCommandRoute($commandText);
-                }
-            }
+        if (!isset($route) && !empty($state)) {
+            list($route, $params) = $this->resolveCommandRoute($state);
         }
 
         if (!isset($route)) {

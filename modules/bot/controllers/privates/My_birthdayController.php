@@ -7,6 +7,7 @@ use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
@@ -83,13 +84,9 @@ class My_birthdayController extends Controller
         $telegramUser->save();
 
         return [
-            new EditMessageTextCommand(
+            new EditMessageReplyMarkupCommand(
                 $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $update->getCallbackQuery()->getMessage()->getText(),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
+                $update->getCallbackQuery()->getMessage()->getMessageId()
             ),
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,

@@ -28,6 +28,6 @@ abstract class Command
 
     protected function getOptionalProperty($name, $defaultValue)
     {
-        return isset($this->fields[$name]) ? $this->fields[$name] : $defaultValue;
+        return $this->{$name} ?? $defaultValue;
     }
 }

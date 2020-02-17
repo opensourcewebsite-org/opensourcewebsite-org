@@ -8,7 +8,7 @@ use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
 use app\models\User;
-use app\modules\bot\models\BotClient;
+use app\modules\bot\models\User as BotUser;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
 use Yii;
@@ -196,6 +196,8 @@ class SiteController extends Controller
     public function actionMergeAccounts($token)
     {
         $mergeAccountsRequest = MergeAccountsRequest::findOne(['token' => $token]);
+        $user = null;
+        $userToMerge = null;
         if ($mergeAccountsRequest) {
             $user = User::findOne(['id' => $mergeAccountsRequest->user_id]);
             $userToMerge = User::findOne(['id' => $mergeAccountsRequest->user_to_merge_id]);
@@ -217,7 +219,7 @@ class SiteController extends Controller
             }
         }
         return $this->render('mergeAccounts', [
-            'model' => $mergeAccountsRequest,
+            'model' => $mergeAccountsRequest ?? null,
             'user' => $user,
             'userToMerge' => $userToMerge,
         ]);
@@ -228,7 +230,7 @@ class SiteController extends Controller
         $connection = Yii::$app->db;
         $transaction = $connection->beginTransaction();
         try {
-            BotClient::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            BotUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
 
@@ -369,6 +371,7 @@ class SiteController extends Controller
     public function actionChangeEmail($token)
     {
         $changeEmailRequest = ChangeEmailRequest::findOne(['token' => $token]);
+        $user = null;
         if ($changeEmailRequest) {
             $user = User::findOne(['id' => $changeEmailRequest->user_id]);
             if (Yii::$app->request->isPost) {
@@ -392,7 +395,7 @@ class SiteController extends Controller
             }
         }
         return $this->render('changeEmail', [
-            'model' => $changeEmailRequest,
+            'model' => $changeEmailRequest ?? null,
             'user' => $user,
         ]);
     }

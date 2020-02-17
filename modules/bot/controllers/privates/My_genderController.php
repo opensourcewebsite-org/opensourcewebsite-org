@@ -139,31 +139,4 @@ class My_genderController extends Controller
             ),
         ];
     }
-
-    public function actionBack()
-    {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', [
-                    'gender' => $user->gender,
-                ]),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => '/change_gender',
-                                'text' => Yii::t('bot', 'Change Gender')
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
-    }
 }
