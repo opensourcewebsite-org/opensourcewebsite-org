@@ -50,6 +50,11 @@ class Controller extends \yii\web\Controller
         return $this->module->update;
     }
 
+    protected function getState()
+    {
+        return $this->module->state;
+    }
+
     /**
      * @param string $text
      *

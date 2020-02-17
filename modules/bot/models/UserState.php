@@ -2,6 +2,11 @@
 
 namespace app\modules\bot\models;
 
+/**
+ * @property array $keyboardButtons
+ * @property string $name
+ * @property string $email
+ */
 class UserState
 {
     private $fields = [];
@@ -9,43 +14,46 @@ class UserState
 
     public function getKeyboardButtons()
     {
-        return isset($this->fields['keyboardButtons']) ? $this->fields['keyboardButtons'] : [];
+        return $this->fields['keyboardButtons'] ?? [];
     }
 
-    public function setKeyboardButtons($value)
+    public function setKeyboardButtons(array $value)
     {
         $this->fields['keyboardButtons'] = $value;
     }
 
     public function getName()
     {
-        return isset($this->fields['name']) ? $this->fields['name'] : null;
+        return $this->fields['name'] ?? null;
     }
 
-    public function setName($value)
+    public function setName(string $value)
     {
         $this->fields['name'] = $value;
     }
 
     public function getEmail()
     {
-        return isset($this->fields['email']) ? $this->fields['email'] : null;
+        return $this->fields['email'] ?? null;
     }
 
-    public function setEmail($value)
+    public function setEmail(string $value)
     {
         $this->fields['email'] = $value;
     }
 
-    public function toJson()
+    public function save(User $user)
     {
-        return json_encode($this->fields);
+        $user->state = json_encode($this);
+        return $user->save();
     }
 
-    public static function fromJson($json)
+    public static function fromUser(User $user)
     {
         $state = new UserState();
-        $state->fields = json_decode($json, true);
+        if (!empty($user->state)) {
+            $state->fields = json_decode($user->state, true);
+        }
         return $state;
     }
 }

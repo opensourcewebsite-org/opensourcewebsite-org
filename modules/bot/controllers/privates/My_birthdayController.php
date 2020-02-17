@@ -29,8 +29,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $telegramUser->getState()->setName('/set_birthday');
-            $telegramUser->save();
+            $this->getState()->setName('/set_birthday');
         }
 
         return [
@@ -68,8 +67,7 @@ class My_birthdayController extends Controller
         if ($this->validateDate($text, User::DATE_FORMAT)) {
             $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
-            $telegramUser->getState()->setName(null);
-            $telegramUser->save();
+            $this->getState()->setName(null);
         }
 
         return $this->actionIndex();
@@ -80,8 +78,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/set_birthday');
-        $telegramUser->save();
+        $this->getState()->setName('/set_birthday');
 
         return [
             new EditMessageReplyMarkupCommand(

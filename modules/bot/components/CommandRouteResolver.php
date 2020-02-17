@@ -23,7 +23,9 @@ class CommandRouteResolver extends Component
 
     public function resolveRoute($update, $state)
     {
+        $route = null;
         $params = null;
+        $isStateRoute = false;
 
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
@@ -37,13 +39,14 @@ class CommandRouteResolver extends Component
 
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
+            $isStateRoute = true;
         }
 
         if (!isset($route)) {
             $route = 'default/command-not-found';
         }
 
-        return [ $route, $params ];
+        return [ $route, $params, $isStateRoute ];
     }
 
     /**

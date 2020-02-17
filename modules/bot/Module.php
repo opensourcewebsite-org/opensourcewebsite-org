@@ -7,6 +7,7 @@ use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\UserState;
 use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
@@ -37,7 +38,7 @@ class Module extends \yii\base\Module
     /**
      * @var models\chat
      */
-     public $telegramChat;
+    public $telegramChat;
 
     /**
      * @var \TelegramBot\Api\Types\Update
@@ -49,6 +50,11 @@ class Module extends \yii\base\Module
      */
     public $user;
 
+    /**
+     * @var models\UserState
+     */
+    private $userState;
+
     public function init()
     {
         parent::init();
@@ -58,6 +64,8 @@ class Module extends \yii\base\Module
 
     public function handleInput($input, $token)
     {
+        $result = false;
+
         $updateArray = json_decode($input, true);
         $this->update = Update::fromResponse($updateArray);
         $botInfo = Bot::findOne(['token' => $token]);
@@ -72,8 +80,8 @@ class Module extends \yii\base\Module
                 Yii::$app->language = $this->telegramUser->language_code;
 
                 $result = $this->dispatchRoute($this->update);
-            } else {
-                $result = false;
+
+                $this->save();
             }
         }
         return $result;
@@ -176,17 +184,29 @@ class Module extends \yii\base\Module
                 $user = User::findOne($telegramUser->user_id);
             }
 
-            $keyboardButtons = $telegramUser->getState()->getKeyboardButtons();
+            $userState = isset($telegramUser->state)
+               ? UserState::fromJson($telegramUser->state)
+               : new UserState();
+
+            $keyboardButtons = $userState->getKeyboardButtons();
             ReplyKeyboardManager::init($keyboardButtons);
 
             $this->user = $user;
             $this->telegramUser = $telegramUser;
+            $this->userState = $userState;
             $this->telegramChat = $telegramChat;
 
             return true;
         }
 
         return false;
+    }
+
+    private function save()
+    {
+        $this->user->save();
+        $this->telegramChat->save();
+        $this->userState->save($this->telegramUser);
     }
 
     private function setupPaths($namespace)
@@ -200,14 +220,17 @@ class Module extends \yii\base\Module
      *
      * @return bool
      */
-    public function dispatchRoute($update)
+    private function dispatchRoute($update)
     {
         $result = false;
 
         $state = $this->telegramChat->isPrivate()
-            ? $this->telegramUser->getState()->getName()
+            ? $userState->getName()
             : null;
-        list($route, $params) = $this->commandRouteResolver->resolveRoute($update, $state);
+        list($route, $params, $isRouteState) = $this->commandRouteResolver->resolveRoute($update, $state);
+        if ($isRouteState) {
+            $this->userState->setName(null);
+        }
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
@@ -225,10 +248,6 @@ class Module extends \yii\base\Module
                             && $command instanceof SendMessageCommand
                             && !isset($replyMarkup)) {
                             $this->setReplyKeyboard($command);
-
-                            $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
-                            $this->telegramUser->getState()->setKeyboardButtons($keyboardButtons);
-                            $this->telegramUser->save();
                         }
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {
@@ -249,5 +268,7 @@ class Module extends \yii\base\Module
         $command->replyMarkup = (!empty($keyboardButtons))
             ? new ReplyKeyboardMarkup($keyboardButtons, false, true)
             : new ReplyKeyboardRemove();
+
+        $this->userState->setKeyboardButtons($keyboardButtons);
     }
 }

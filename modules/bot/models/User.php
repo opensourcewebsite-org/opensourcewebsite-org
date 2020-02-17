@@ -106,22 +106,6 @@ class User extends ActiveRecord
         }
     }
 
-    public function getState()
-    {
-        if (!isset($this->stateObject)) {
-            $this->stateObject = isset($this->state)
-               ? UserState::fromJson($this->state)
-               : new UserState();
-        }
-        return $this->stateObject;
-    }
-
-    public function save($runValidation = true, $attributeNames = null)
-    {
-        $this->state = $this->getState()->toJson();
-        return parent::save($runValidation, $attributeNames);
-    }
-
     public function getChats()
     {
         return $this->hasMany(Chat::className(), ['id' => 'chat_id'])

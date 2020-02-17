@@ -33,8 +33,7 @@ class My_emailController extends Controller
         if (isset($user->email)) {
             $email = $user->email;
         } else {
-            $telegramUser->getState()->setName('/set_email');
-            $telegramUser->save();
+            $this->getState()->setName('/set_email');
         }
 
         return [
@@ -76,12 +75,10 @@ class My_emailController extends Controller
         if (isset($userWithSameEmail)) {
             if ($userWithSameEmail->id != $user->id) {
                 $mergeRequest = true;
-                $telegramUser->getState()->setName('waiting_for_merge');
-                $telegramUser->getState()->setEmail($email);
-                $telegramUser->save();
+                $this->getState()->setName('waiting_for_merge');
+                $this->getState()->setEmail($email);
             } else {
-                $telegramUser->getState()->setName(null);
-                $telegramUser->save();
+                $this->getState()->setName(null);
                 return $this->actionIndex();
             }
         } else {
@@ -94,8 +91,7 @@ class My_emailController extends Controller
 
             if ($changeEmailRequest->save()) {
                 if ($changeEmailRequest->sendEmail()) {
-                    $telegramUser->getState()->setName(null);
-                    $telegramUser->save();
+                    $this->getState()->setName(null);
 
                     $changeRequest = true;
                 }
@@ -143,8 +139,7 @@ class My_emailController extends Controller
         MergeAccountsRequest::deleteAll("user_id = {$user->id}");
         ChangeEmailRequest::deleteAll("user_id = {$user->id}");
 
-        $telegramUser->getState()->setName('/set_email');
-        $telegramUser->save();
+        $this->getState()->setName('/set_email');
 
         return [
             new EditMessageReplyMarkupCommand(
@@ -169,7 +164,7 @@ class My_emailController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
-        $state = $telegramUser->getState();
+        $state = $this->getState();
         $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge') {
