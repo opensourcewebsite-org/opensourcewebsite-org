@@ -9,7 +9,7 @@ use \app\models\Rating;
 use \app\components\Converter;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class My_ratingController

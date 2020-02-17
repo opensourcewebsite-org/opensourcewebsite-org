@@ -11,7 +11,7 @@ use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class My_emailController
@@ -76,7 +76,7 @@ class My_emailController extends Controller
             if ($userWithSameEmail->id != $user->id) {
                 $mergeRequest = true;
                 $this->getState()->setName('waiting_for_merge');
-                $this->getState()->setEmail($email);
+                $this->getState()->setIntermediateField('email', $email);
             } else {
                 $this->getState()->setName(null);
                 return $this->actionIndex();
@@ -168,7 +168,7 @@ class My_emailController extends Controller
         $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge') {
-            $userToMerge = User::findOne(['email' => $state->getEmail()]);
+            $userToMerge = User::findOne(['email' => $state->getIntermediateField('email')]);
             if ($userToMerge) {
                 $mergeAccountsRequest = new MergeAccountsRequest();
                 $mergeAccountsRequest->setAttributes([

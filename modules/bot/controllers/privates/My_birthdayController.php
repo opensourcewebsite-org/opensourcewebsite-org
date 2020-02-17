@@ -9,7 +9,7 @@ use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use \app\models\User;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class My_birthdayController
@@ -23,7 +23,6 @@ class My_birthdayController extends Controller
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
 
         $birthday = $user->birthday;
@@ -60,7 +59,6 @@ class My_birthdayController extends Controller
     public function actionCreate()
     {
         $update = $this->getUpdate();
-        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
 
         $text = $update->getMessage()->getText();
@@ -68,7 +66,7 @@ class My_birthdayController extends Controller
             $user->birthday = \Yii::$app->formatter->format($text, 'date');
             $user->save();
             $this->getState()->setName(null);
-        
+
             return $this->actionIndex();
         }
 
@@ -86,7 +84,6 @@ class My_birthdayController extends Controller
     public function actionUpdate()
     {
         $update = $this->getUpdate();
-        $telegramUser = $this->getTelegramUser();
 
         $this->getState()->setName('/set_birthday');
 

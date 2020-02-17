@@ -11,6 +11,10 @@ class UserState
 {
     private $fields = [];
 
+    private function __construct()
+    {
+        $fields['intermediate'] = [];
+    }
 
     public function getKeyboardButtons()
     {
@@ -32,14 +36,14 @@ class UserState
         $this->fields['name'] = $value;
     }
 
-    public function getEmail()
+    public function getIntermediateField(string $name)
     {
-        return $this->fields['email'] ?? null;
+        return $this->fields['intermediate'][$name] ?? null;
     }
 
-    public function setEmail(?string $value)
+    public function setIntermediateField(string $name, ?string $value)
     {
-        $this->fields['email'] = $value;
+        $this->fields['intermediate'][$name] = $value;
     }
 
     public function save(User $user)

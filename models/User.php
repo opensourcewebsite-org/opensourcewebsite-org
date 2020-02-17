@@ -599,4 +599,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->contact->getContactName();
     }
+
+    public function getCompanies()
+    {
+        return $this->hasMany(Company::className(), ['id' => 'company_id'])
+            ->viaTable('company_user', ['user_id' => 'id']);
+    }
 }

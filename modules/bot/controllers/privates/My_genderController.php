@@ -8,7 +8,7 @@ use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\models\User;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class My_genderController

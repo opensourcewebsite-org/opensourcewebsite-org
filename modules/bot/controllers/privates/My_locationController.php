@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use \app\modules\bot\components\response\SendLocationCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class My_locationController

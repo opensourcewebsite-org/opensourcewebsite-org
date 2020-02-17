@@ -36,6 +36,13 @@ return [
 
                 '/update_rating' => 'my_rating/update',
 
+                '/create_company' => 'companies/create',
+                '/set_company_name' => 'companies/set-name',
+                '/set_company_url' => 'companies/set-url',
+                '/set_company_address' => 'companies/set-address',
+                '/set_company_description' => 'companies/set-description',
+                '/company <id:\d+>' => 'companies/show',
+
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],
