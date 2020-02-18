@@ -22,47 +22,30 @@
 
 OpenSourceWebsite (OSW) - online community. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot
 
+The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org).
+
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Contributing
 
-Please read through our [Contributing Guidelines](CONTRIBUTING.md).
-
-## Contributors
-
-### Code Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+This project exists thanks to all the people who contribute.
 <a href="https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors"><img src="https://opencollective.com/opensourcewebsite/contributors.svg?width=890&button=false" /></a>
 
-### Financial Contributors
-
-Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/opensourcewebsite/contribute)]
-
-#### Individuals
-
-<a href="https://opencollective.com/opensourcewebsite"><img src="https://opencollective.com/opensourcewebsite/individuals.svg?width=890"></a>
-
-#### Organizations
-
-Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/opensourcewebsite/contribute)]
-
-<a href="https://opencollective.com/opensourcewebsite/organization/0/website"><img src="https://opencollective.com/opensourcewebsite/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/1/website"><img src="https://opencollective.com/opensourcewebsite/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/2/website"><img src="https://opencollective.com/opensourcewebsite/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/3/website"><img src="https://opencollective.com/opensourcewebsite/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/4/website"><img src="https://opencollective.com/opensourcewebsite/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/5/website"><img src="https://opencollective.com/opensourcewebsite/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/6/website"><img src="https://opencollective.com/opensourcewebsite/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/7/website"><img src="https://opencollective.com/opensourcewebsite/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/8/website"><img src="https://opencollective.com/opensourcewebsite/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/opensourcewebsite/organization/9/website"><img src="https://opencollective.com/opensourcewebsite/organization/9/avatar.svg"></a>
+Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## Donate
 
-Donate to support the project and expand its operations. [Read more](/DONATE.md).
+Become a financial contributor and help us sustain our community. [Read more](/DONATE.md).
+
+## Architecture
+
+Please read through our [Architecture Overview](ARCHITECTURE.md).
+
+## Installation
+
+Please read through our [Installation Instructions](INSTALL.md).
 
 ## Continuous Integration
 
@@ -71,10 +54,6 @@ Any commit pushed to a branch `master` gets deployed to [opensourcewebsite.org](
 ## API Documentation
 
 Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
-
-## Installation
-
-Please read through our [Installation Instructions](INSTALL.md).
 
 ## License
 
