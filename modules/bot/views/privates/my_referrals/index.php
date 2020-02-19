@@ -1,6 +1,6 @@
 <b><?= Yii::t('bot', 'Your referrals'); ?></b><br/>
 <br/>
-<b><?= \Yii::t('bot', 'Referrals') ?> (<?= \Yii::t('bot', 'Level {0,number}', 1) ?>):</b> <b>0</b><br/>
+<b><?= \Yii::t('bot', 'Referrals') ?> (<?= \Yii::t('bot', 'Level {0,number}', 1) ?>): <?= $referralsCount ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'All new users, who have joined the Bot or Website through your referral link, become your referrals'); ?>.<br/>
 <br/>

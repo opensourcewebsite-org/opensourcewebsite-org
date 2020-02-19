@@ -50,6 +50,11 @@ class Controller extends \yii\web\Controller
         return $this->module->update;
     }
 
+    protected function getBotName()
+    {
+        return $this->module->getBotName();
+    }
+
     /**
      * @param string $text
      *
