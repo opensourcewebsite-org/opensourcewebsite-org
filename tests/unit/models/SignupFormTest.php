@@ -124,7 +124,7 @@ class SignupFormTest extends Unit
         expect_not(\Yii::$app->user->isGuest);
 
         expect($user = SignupForm::confirmEmail(102, 'test102key'))->notNull();
-        expect($user->is_email_confirmed)->equals(1);
+        expect($user->is_authenticated)->equals(true);
         expect($user->status)->equals(User::STATUS_ACTIVE);
     }
 
