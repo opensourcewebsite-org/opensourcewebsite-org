@@ -8,7 +8,9 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\response\EditMessageTextCommand;
 use app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use app\modules\bot\components\response\EditMessageReplyMarkupCommand;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Company;
+use app\modules\bot\components\Emoji;
 
 class CompaniesController extends Controller
 {
@@ -24,57 +26,37 @@ class CompaniesController extends Controller
                 [
                     'text' => $company->name,
                     'callback_data' => '/company ' . $company->id,
-                ]
-            ];
-        }
-        if ($update->getCallbackQuery()) {
-            $keyboards[] = [
-                [
-                    'text' => '⬅️',
-                    'callback_data' => '/hr',
-                ],
-                [
-                    'text' => '➕',
-                    'callback_data' => '/create_company',
-                ],
-            ];
-        }
-        else {
-            $keyboards[] = [
-                [
-                    'text' => '➕',
-                    'callback_data' => '/create_company',
                 ],
             ];
         }
 
-		if ($update->getMessage()) {
-			return [
-				new SendMessageCommand(
-					$this->getTelegramChat()->chat_id,
-					$this->render('index'),
-					[
-						'parseMode' => $this->textFormat,
-						'replyMarkup' => new InlineKeyboardMarkup($keyboards),
-					]
-				),
-			];
-		} elseif ($update->getCallbackQuery()) {
-			return [
-				new AnswerCallbackQueryCommand(
-					$update->getCallbackQuery()->getMessage()->getMessageId()
-				),
-				new EditMessageTextCommand(
-					$this->getTelegramChat()->chat_id,
-					$update->getCallbackQuery()->getMessage()->getMessageId(),
-					$this->render('index'),
-					[
-						'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($keyboards),
-					]
-				),
-			];
-		}
+        return (new ResponseBuilder($update))
+            ->answerCallbackQuery()
+            ->editMessageTextOrSendMessage(
+                $this->render('index'),
+                $this->textFormat,
+                new InlineKeyboardMarkup(array_merge($keyboards, [
+                    [
+                        [
+                            'text' => Emoji::BACK,
+                            'callback_data' => '/hr',
+                        ],
+                        [
+                            'text' => Emoji::ADD,
+                            'callback_data' => '/create_company',
+                        ],
+                    ]
+                ])),
+                new InlineKeyboardMarkup(array_merge($keyboards, [
+                    [
+                        [
+                            'text' => Emoji::ADD,
+                            'callback_data' => '/create_company',
+                        ],
+                    ]
+                ]))
+            )
+            ->build();
 	}
 
 	public function actionCreate()
@@ -84,23 +66,37 @@ class CompaniesController extends Controller
 
         $state->setName('/set_company_name');
 
-		return [
-			new AnswerCallbackQueryCommand(
-				$update->getCallbackQuery()->getId()
-			),
-            new EditMessageReplyMarkupCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId()
-            ),
-			new SendMessageCommand(
-				$this->getTelegramChat()->chat_id,
-				$this->render('set-name'),
-				[
-					'parseMode' => $this->textFormat,
-				]
-			),
-		];
+        return (new ResponseBuilder($update))
+            ->answerCallbackQuery()
+            ->removeInlineKeyboardMarkup()
+            ->sendMessage(
+                $this->render('set-name'),
+                $this->textFormat,
+                null
+            )
+            ->build();
 	}
+
+    public function actionUpdate($id)
+    {
+		$update = $this->getUpdate();
+		$state = $this->getState();
+
+        $company = Company::findOne($id);
+
+        $state->setName('/set_company_name');
+        $state->setIntermediateField('id', $id);
+
+        return (new ResponseBuilder($update))
+            ->answerCallbackQuery()
+            ->removeInlineKeyboardMarkup()
+            ->sendMessage(
+                $this->render('set-name'),
+                $this->textFormat,
+                null
+            )
+            ->build();
+    }
 
     public function actionSetName()
     {
@@ -111,23 +107,21 @@ class CompaniesController extends Controller
         $state->setName('/set_company_url');
         $state->setIntermediateField('name', $text);
 
-        return [
-			new SendMessageCommand(
-				$this->getTelegramChat()->chat_id,
-				$this->render('set-url'),
-				[
-					'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+        return (new ResponseBuilder($update))
+            ->answerCallbackQuery()
+            ->sendMessage(
+                $this->render('set-url'),
+                $this->textFormat,
+                new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'text' => $this->render('skip'),
-                                'callback_data' => '/set_company_address',
-                            ],
+                            'text' => $this->render('skip'),
+                            'callback_data' => '/set_company_address',
                         ],
-                    ]),
-				]
-			),
-        ];
+                    ],
+                ])
+            )
+            ->build();
     }
 
     public function actionSetUrl()
@@ -139,23 +133,21 @@ class CompaniesController extends Controller
         $state->setName('/set_company_address');
         $state->setIntermediateField('url', $text);
 
-        return [
-			new SendMessageCommand(
-				$this->getTelegramChat()->chat_id,
-				$this->render('set-address'),
-				[
-					'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+        return (new ResponseBuilder($update))
+            ->answerCallbackQuery()
+            ->sendMessage(
+                $this->render('set-address'),
+                $this->textFormat,
+                new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'text' => $this->render('skip'),
-                                'callback_data' => '/set_company_address',
-                            ],
+                            'text' => $this->render('skip'),
+                            'callback_data' => '/set_company_address',
                         ],
-                    ]),
-				]
-			),
-        ];
+                    ],
+                ])
+            )
+            ->build();
     }
 
     public function actionSetAddress()
@@ -167,23 +159,21 @@ class CompaniesController extends Controller
         $state->setName('/set_company_description');
         $state->setIntermediateField('address', $text);
 
-        return [
-			new SendMessageCommand(
-				$this->getTelegramChat()->chat_id,
-				$this->render('set-description'),
-				[
-					'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+        return (new ResponseBuilder($update))
+            ->answerCallbackQuery()
+            ->sendMessage(
+                $this->render('set-description'),
+                $this->textFormat,
+                new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'text' => $this->render('skip'),
-                                'callback_data' => '/set_company_description',
-                            ],
+                            'text' => $this->render('skip'),
+                            'callback_data' => '/set_company_description',
                         ],
-                    ]),
-				]
-			),
-        ];
+                    ],
+                ])
+            )
+            ->build();
     }
 
     public function actionSetDescription()
@@ -193,12 +183,13 @@ class CompaniesController extends Controller
         $state = $this->getState();
 
         $description = $update->getMessage()->getText();
-        $name = $state->getIntermediateField('name');
-        $url = $state->getIntermediateField('url');
-        $address = $state->getIntermediateField('address');
+        $name = $state->getIntermediateField('name', '');
+        $url = $state->getIntermediateField('url', null);
+        $address = $state->getIntermediateField('address', null);
+        $id = $state->getIntermediateField('id', null);
         $state->setName(null);
 
-        $company = new Company();
+        $company = ($id == null) ? new Company() : Company::findOne($id);
         $company->setAttributes([
             'name' => $name,
             'url' => $url,
@@ -207,7 +198,9 @@ class CompaniesController extends Controller
         ]);
         $company->save();
 
-        $user->link('companies', $company);
+        if (is_null($id)) {
+            $user->link('companies', $company);
+        }
 
         return $this->actionShow($company->id);
     }
@@ -215,31 +208,58 @@ class CompaniesController extends Controller
     public function actionShow($id)
     {
         $user = $this->getUser();
+        $update = $this->getUpdate();
+
         $company = $user->getCompanies()->where(['id' => $id])->one();
         if ($company != null) {
-
-            return [
-    			new SendMessageCommand(
-    				$this->getTelegramChat()->chat_id,
-    				$this->render('show', [
+            return (new ResponseBuilder($update))
+                ->answerCallbackQuery()
+                ->editMessageTextOrSendMessage(
+                    $this->render('show', [
                         'name' => $company->name,
                         'url' => $company->url,
                         'address' => $company->address,
                         'description' => $company->description,
                     ]),
-    				[
-    					'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
+                    $this->textFormat,
+                    new InlineKeyboardMarkup([
+                        [
                             [
-                                [
-                                    'text' => $this->render('vacancies'),
-                                    'callback_data' => '/vacancies',
-                                ],
+                                'text' => $this->render('vacancies'),
+                                'callback_data' => '/vacancies',
                             ],
-                        ]),
-    				]
-    			),
-            ];
+                        ],
+                        [
+                            [
+                                'text' => Emoji::BACK,
+                                'callback_data' => '/companies',
+                            ],
+                            [
+                                'text' => Emoji::EDIT,
+                                'callback_data' => '/update_company ' . $id,
+                            ]
+                        ],
+                    ]),
+                    new InlineKeyboardMarkup([
+                        [
+                            [
+                                'text' => $this->render('vacancies'),
+                                'callback_data' => '/vacancies',
+                            ],
+                        ],
+                        [
+                            [
+                                'text' => Emoji::BACK,
+                                'callback_data' => '/companies',
+                            ],
+                            [
+                                'text' => Emoji::EDIT,
+                                'callback_data' => '/update_company ' . $id,
+                            ]
+                        ],
+                    ])
+                )
+                ->build();
         } else {
 
         }

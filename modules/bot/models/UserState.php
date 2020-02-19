@@ -33,10 +33,13 @@ class UserState
 
     public function setName(?string $value)
     {
-        $this->fields['name'] = $value;
+        if ($this->fields['name'] != $value) {
+            $this->fields['name'] = $value;
+            //$this->fields['intermediate'] = [];
+        }
     }
 
-    public function getIntermediateField(string $name)
+    public function getIntermediateField(string $name, $defaultValue)
     {
         return $this->fields['intermediate'][$name] ?? null;
     }

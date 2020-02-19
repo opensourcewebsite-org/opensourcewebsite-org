@@ -37,6 +37,7 @@ return [
                 '/update_rating' => 'my_rating/update',
 
                 '/create_company' => 'companies/create',
+                '/update_company <id:\d+>' => 'companies/update',
                 '/set_company_name' => 'companies/set-name',
                 '/set_company_url' => 'companies/set-url',
                 '/set_company_address' => 'companies/set-address',

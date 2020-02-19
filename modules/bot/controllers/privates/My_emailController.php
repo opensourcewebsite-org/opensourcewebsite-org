@@ -168,7 +168,7 @@ class My_emailController extends Controller
         $stateName = $state->getName();
 
         if ($stateName == 'waiting_for_merge') {
-            $userToMerge = User::findOne(['email' => $state->getIntermediateField('email')]);
+            $userToMerge = User::findOne(['email' => $state->getIntermediateField('email', null)]);
             if ($userToMerge) {
                 $mergeAccountsRequest = new MergeAccountsRequest();
                 $mergeAccountsRequest->setAttributes([
