@@ -115,6 +115,7 @@ class Module extends \yii\base\Module
                 $telegramUser->setAttributes([
                     'provider_user_id' => $updateUser->getId(),
                     'language_code' => $languageCode,
+                    'is_authenticated' => true,
                 ]);
             }
             // Update telegram user information
