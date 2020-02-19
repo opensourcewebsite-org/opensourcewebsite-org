@@ -576,7 +576,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return User::find()->where(['referrer_id' => $this->id]);
+        return User::find()->where([
+            'referrer_id' => $this->id,
+            'is_email_confirmed' => true,
+        ]);
     }
 
     /**
