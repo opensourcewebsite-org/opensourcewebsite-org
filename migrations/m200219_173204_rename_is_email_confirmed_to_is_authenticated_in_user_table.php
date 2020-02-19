@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m200219_173204_rename_is_email_confirmed_to_is_user_authenticated_in_user_table
+ * Class m200219_173204_rename_is_email_confirmed_to_authenticated_in_user_table
  */
-class m200219_173204_rename_is_email_confirmed_to_is_user_authenticated_in_user_table extends Migration
+class m200219_173204_rename_is_email_confirmed_to_is_authenticated_in_user_table extends Migration
 {
     /**
      * {@inheritdoc}
