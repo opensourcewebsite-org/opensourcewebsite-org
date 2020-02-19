@@ -61,7 +61,6 @@ class BotController extends Controller
     /**
      * Add new bot or update exist bot
      *
-     * @param $name
      * @param $token
      */
     public function actionAdd(string $token) : bool

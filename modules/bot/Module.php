@@ -136,7 +136,6 @@ class Module extends \yii\base\Module
             ]);
             // Store telegram chat if it doesn't exist yet
             if (!isset($telegramChat)) {
-                $isNewChat = true;
                 $telegramChat = new Chat();
                 $telegramChat->setAttributes([
                     'chat_id' => $updateChat->getId(),
@@ -172,7 +171,7 @@ class Module extends \yii\base\Module
                 if ($isNewUser) {
                     if ($message = $update->getMessage()) {
                         $matches = [];
-                        if (preg_match("/\/start (\d+)/", $message->getText(), $matches)) {
+                        if (preg_match('/\/start (\d+)/', $message->getText(), $matches)) {
                             $user->referrer_id = $matches[1];
                         }
                     }
