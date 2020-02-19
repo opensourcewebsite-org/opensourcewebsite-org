@@ -1,6 +1,6 @@
 # Architecture
 
-[Russian version](ARCHITECTURE.ru.md)
+[Русская версия](ARCHITECTURE.ru.md)
 
 ## Website
 

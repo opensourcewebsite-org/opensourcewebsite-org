@@ -37,6 +37,8 @@ class My_ratingController extends Controller
                                 'text' => Yii::t('bot', 'Refresh'),
                                 'callback_data' => '/update_rating'
                             ],
+                        ],
+                        [
                             [
                                 'text' => Yii::t('bot', 'Donate'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md'
@@ -45,7 +47,7 @@ class My_ratingController extends Controller
                                 'text' => Yii::t('bot', 'Contribution'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md'
                             ],
-                        ]
+                        ],
                     ]),
                 ]
             ),
@@ -69,6 +71,8 @@ class My_ratingController extends Controller
                                 'text' => Yii::t('bot', 'Refresh'),
                                 'callback_data' => '/update_rating'
                             ],
+                        ],
+                        [
                             [
                                 'text' => Yii::t('bot', 'Donate'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md'
@@ -77,7 +81,7 @@ class My_ratingController extends Controller
                                 'text' => Yii::t('bot', 'Contribution'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md'
                             ],
-                        ]
+                        ],
                     ]),
                 ]
             ),

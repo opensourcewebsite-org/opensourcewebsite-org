@@ -1,6 +1,6 @@
 # Архитектура
 
-[Английская версия](ARCHITECTURE.md)
+[English version](ARCHITECTURE.md)
 
 ## Сайт
 

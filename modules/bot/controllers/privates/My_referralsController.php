@@ -27,6 +27,13 @@ class My_referralsController extends Controller
                     'parseMode' => $this->textFormat,
                 ]
             ),
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $this->render('invite-template'),
+                [
+                    'parseMode' => $this->textFormat,
+                ]
+            ),
         ];
     }
 }

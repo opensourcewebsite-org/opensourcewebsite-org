@@ -13,6 +13,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
+    'Join us and participate in the community' => 'Присоединяйтесь к нам и участвуйте в сообществе',
     'Welcome' => 'Добро пожаловать',
     'I am a free virtual personal assistant, multilingual and available everywhere where there is internet. I adhere to a privacy policy that guarantees 100% confidentiality for your data. The list of my features and services is constantly expanding, along with the service improvement.' => 'Я - бесплатный виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших данных. Список моих возможностей и услуг постоянно расширяется, как и качество обслуживания.',
     'My code is open source and is a part of the online community OpenSourceWebsite. You can help the project by participating in its development or supporting it with donations.' => 'Мой код находится в открытом доступе и является частью онлайн сообщества OpenSourceWebsite. Вы можете помочь проекту, участвуя в разработке и поддерживая пожертвованиями.',
@@ -86,13 +88,17 @@ return [
     'No' => 'Нет',
     'Referrals' => 'Рефералы',
     'Your referrals' => 'Ваши рефералы',
+    'Level {0,number}' => 'Уровень {0,number}',
     'All new users, who have joined the Bot or Website through your referral link, become your referrals' => 'Все новые пользователи, которые присоединились к боту или сайту по вашей реферальной ссылке, становятся вашими рефералами',
     'You get rewards from your referrals for their purchases on the Website and websites of our partner companies, and from offline partners using a discount card' => 'Вы получаете вознаграждение от ваших рефералов за их покупки на сайте и сайтах наших партнерских компаний, а также от офлайн-партнеров с использованием дисконтной карты',
     'Multi-level loyalty program, you get rewards from multiple referral levels, not only from first level' => 'Многоуровневая программа лояльности, вы получаете награды с нескольких реферальных уровней, а не только с первого уровня',
     'User community decides what conditions will be in loyalty program' => 'Сообщество пользователей определяет, какие условия будут в программе лояльности',
     'You can participate in discuss process and vote for the conditions' => 'Вы можете участвовать в процессе обсуждения и голосовать за условия',
+    'Share the following message with your friends and followers, and start earning now' => 'Поделитесь следующим сообщением со своими друзьями и подписчиками и начните зарабатывать уже сейчас',
     'Coming soon' => 'Скоро будет',
     'Website' => 'Сайт',
+    'Telegram Bot' => 'Телеграм бот',
+    'Source Code' => 'Исходный код',
     'Your donations and contributions increase your User Rating' => 'Ваши пожертвования и помощь повышают ваш пользовательский рейтинг',
     'User Rating provides' => 'Пользовательский рейтинг дает',
     'The power of user vote when voting for new features or changing existing features of the Bot and Website' => 'Силу голоса при голосованиях за новые функции или изменение существующих функций бота и сайта',
