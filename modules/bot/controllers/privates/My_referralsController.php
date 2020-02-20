@@ -45,6 +45,7 @@ class My_referralsController extends Controller
                 ]),
                 [
                     'parseMode' => $this->textFormat,
+                    'disablePreview' => true,
                 ]
             ),
         ];
