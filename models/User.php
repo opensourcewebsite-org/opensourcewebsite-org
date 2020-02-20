@@ -60,8 +60,9 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            ['is_email_confirmed', 'boolean'],
+            ['is_authenticated', 'boolean'],
             ['name', 'string'],
+            [['id'], 'integer'],
             ['email', 'email'],
             [['gender'], 'boolean']
         ];
@@ -238,7 +239,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function beforeSave($insert)
     {
         if ($insert) {
-            $this->is_email_confirmed = false;
+            $this->is_authenticated = false;
         }
         return parent::beforeSave($insert);
     }
@@ -575,7 +576,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return $this->hasMany(User::class, ['referrer_id' => 'id'])->where(['is_email_confirmed' => true]);
+        return User::find()->where([
+            'referrer_id' => $this->id,
+            'is_authenticated' => true,
+        ]);
     }
 
     /**

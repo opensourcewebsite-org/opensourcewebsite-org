@@ -52,7 +52,7 @@ class UserController extends Controller
      */
     public function actionDisplay()
     {
-        $confirmed_users = User::findAll(['is_email_confirmed' => true]);
+        $confirmed_users = User::findAll(['is_authenticated' => true]);
 
         return $this->render('display', [
             'confirmed_users' => count($confirmed_users),

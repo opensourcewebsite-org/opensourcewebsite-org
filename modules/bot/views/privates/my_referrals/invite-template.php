@@ -2,6 +2,6 @@ OpenSourceWebsite (OSW) - <?= Yii::t('bot', 'online community managed by users u
 <br/>
 <?= Yii::t('bot', 'Join us and participate in the community'); ?>!<br/>
 <br/>
-<?= Yii::t('bot', 'Website'); ?>: https://opensourcewebsite.org/invite/1
+<a href="<?= $websiteRefUrl ?>"><?= Yii::t('bot', 'Website'); ?></a>
 <br/>
-<?= Yii::t('bot', 'Telegram Bot'); ?>: https://t.me/opensourcewebsite_bot?start=1
+<a href="<?= $botRefUrl ?>"><?= Yii::t('bot', 'Telegram Bot'); ?></a>

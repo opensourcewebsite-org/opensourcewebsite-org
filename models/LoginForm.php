@@ -50,7 +50,7 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-            if (!$user || !$user->is_email_confirmed) {
+            if (!$user || !$user->is_authenticated) {
                 $this->addError($attribute, 'Please confirm your email.');
 
                 if ($user->sendConfirmationEmail($user)) {
