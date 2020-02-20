@@ -25,6 +25,7 @@ class My_referralsController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'disablePreview' => true,
                 ]
             ),
             new SendMessageCommand(
