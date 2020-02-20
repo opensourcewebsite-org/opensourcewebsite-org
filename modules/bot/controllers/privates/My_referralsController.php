@@ -25,7 +25,6 @@ class My_referralsController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
-                    'disablePreview' => true,
                 ]
             ),
             new SendMessageCommand(
@@ -33,6 +32,7 @@ class My_referralsController extends Controller
                 $this->render('invite-template'),
                 [
                     'parseMode' => $this->textFormat,
+                    'disablePreview' => true,
                 ]
             ),
         ];
