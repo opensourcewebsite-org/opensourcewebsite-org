@@ -8,4 +8,4 @@
 - <?= Yii::t('bot', 'Multi-level loyalty program, you get rewards from multiple referral levels, not only from first level'); ?>.<br/>
 - <?= Yii::t('bot', 'User community decides what conditions will be in loyalty program'); ?>. <?= Yii::t('bot', 'You can participate in discuss process and vote for the conditions'); ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'Share the following message with your friends and followers, and start earning now'); ?>!
+<?= Yii::t('bot', 'Forward following message to your friends and followers, and start earning now'); ?>!

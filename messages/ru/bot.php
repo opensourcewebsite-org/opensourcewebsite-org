@@ -94,7 +94,7 @@ return [
     'Multi-level loyalty program, you get rewards from multiple referral levels, not only from first level' => 'Многоуровневая программа лояльности, вы получаете награды с нескольких реферальных уровней, а не только с первого уровня',
     'User community decides what conditions will be in loyalty program' => 'Сообщество пользователей определяет, какие условия будут в программе лояльности',
     'You can participate in discuss process and vote for the conditions' => 'Вы можете участвовать в процессе обсуждения и голосовать за условия',
-    'Share the following message with your friends and followers, and start earning now' => 'Поделитесь следующим сообщением со своими друзьями и подписчиками и начните зарабатывать уже сейчас',
+    'Forward following message to your friends and followers, and start earning now' => 'Перешлите следующее сообщение вашим друзьям и подписчикам, и начните зарабатывать уже сейчас',
     'Coming soon' => 'Скоро будет',
     'Website' => 'Сайт',
     'Telegram Bot' => 'Телеграм бот',
