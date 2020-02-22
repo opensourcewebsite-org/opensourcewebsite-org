@@ -83,7 +83,7 @@ class My_languageController extends Controller
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
             'params' => [
-                'pageSize' => 20,
+                'pageSize' => 10,
                 'page' => $page,
             ],
         ]);
@@ -95,14 +95,26 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $paginationButtons = PaginationButtons::build('/language_list_', $pagination);
+        $listButtons = [];
+        if ($languages) {
+            foreach ($languages as $language) {
+                $listButtons[][] = ['callback_data' => '/my_language_' . $language->code, 'text' => strtoupper($language->code) . ' - ' . $language->name];
+            }
+
+            if ($paginationButtons) {
+                $listButtons[] = $paginationButtons;
+            }
+        }
+
         return [
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('language-list', compact('languages', 'pagination')),
+                $this->render('language-list'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
+                    'replyMarkup' => new InlineKeyboardMarkup($listButtons),
                 ]
             ),
             new AnswerCallbackQueryCommand(

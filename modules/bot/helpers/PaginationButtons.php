@@ -24,29 +24,18 @@ class PaginationButtons
     {
         $buttons = [];
 
-        if ($pagination->pageCount) {
+        if ($pagination->pageCount > 1) {
             $currentPage = $pagination->page + 1;
             $previousPage = $currentPage - 1 ?: $pagination->pageCount;
             $nextPage = ($currentPage + 1) <= $pagination->pageCount ? $currentPage + 1 : 1;
 
-            $buttons[] = ['callback_data' => self::getRoute($route, $previousPage), 'text' => '<'];
-            $buttons[] = ['callback_data' => self::getRoute($route, $currentPage), 'text' => $currentPage . '/' . $pagination->pageCount];
-            $buttons[] = ['callback_data' => self::getRoute($route, $nextPage), 'text' => '>'];
+            $buttons[] = ['callback_data' => $route . $previousPage, 'text' => '<'];
+            $buttons[] = ['callback_data' => $route . $currentPage, 'text' => $currentPage . '/' . $pagination->pageCount];
+            $buttons[] = ['callback_data' => $route . $nextPage, 'text' => '>'];
 
             Yii::warning($buttons);
         }
 
-        return new InlineKeyboardMarkup([$buttons]);
-    }
-
-    /**
-     * @param $pattern
-     * @param $page
-     *
-     * @return mixed
-     */
-    protected static function getRoute($pattern, $page)
-    {
-        return str_replace('<page>', $page, $pattern);
+        return $buttons;
     }
 }

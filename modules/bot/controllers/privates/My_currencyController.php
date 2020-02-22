@@ -81,7 +81,7 @@ class My_currencyController extends Controller
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
             'params' => [
-                'pageSize' => 20,
+                'pageSize' => 10,
                 'page' => $page,
             ],
         ]);
@@ -93,14 +93,28 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $paginationButtons = PaginationButtons::build('/currency_list_', $pagination);
+        $listButtons = [];
+        if ($currencies) {
+            foreach ($currencies as $currency) {
+                $listButtons[][] = ['callback_data' => '/my_currency_' . $currency->code, 'text' => strtoupper($currency->code) . ' - ' . $currency->name];
+            }
+
+            if ($paginationButtons) {
+                $listButtons[] = $paginationButtons;
+            }
+        }
+
+        Yii::warning($listButtons);
+
         return [
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getmessage()->getMessageId(),
-                $this->render('currency-list', compact('currencies', 'pagination')),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->render('currency-list'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => PaginationButtons::build('/currency_list_<page>', $pagination),
+                    'replyMarkup' => new InlineKeyboardMarkup($listButtons),
                 ]
             ),
             new AnswerCallbackQueryCommand(
