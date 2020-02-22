@@ -2,9 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use Yii;
 use app\modules\bot\components\Controller as Controller;
 
 /**

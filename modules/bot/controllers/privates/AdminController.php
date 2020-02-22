@@ -2,7 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 
 /**
@@ -23,6 +25,14 @@ class AdminController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/help',
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
                 ]
             ),
         ];

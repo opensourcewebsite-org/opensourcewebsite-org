@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\models\Language;
 use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
-use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
@@ -54,8 +54,12 @@ class My_languageController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/help',
+                                'text' => '🔙',
+                            ],
+                            [
                                 'callback_data' => '/language_list',
-                                'text' => Yii::t('bot', 'Change Language')
+                                'text' => '✏️',
                             ],
                         ],
                     ]),

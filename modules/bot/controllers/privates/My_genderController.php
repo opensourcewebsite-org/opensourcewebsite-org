@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
@@ -20,10 +20,20 @@ class My_genderController extends Controller
     /**
      * @return array
      */
-    public function actionIndex()
+    public function actionIndex($gender = null)
     {
         $update = $this->getUpdate();
         $user = $this->getUser();
+
+        if ($gender) {
+            if ($gender == 'male') {
+                $user->gender = User::MALE;
+                $user->save();
+            } elseif ($gender == 'female') {
+                $user->gender = User::FEMALE;
+                $user->save();
+            }
+        }
 
         return [
             new SendMessageCommand(
@@ -36,8 +46,12 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/change_gender',
-                                'text' => Yii::t('bot', 'Change Gender')
+                                'callback_data' => '/help',
+                                'text' => '🔙',
+                            ],
+                            [
+                                'callback_data' => '/my_gender_update',
+                                'text' => '✏️',
                             ],
                         ],
                     ]),
@@ -46,7 +60,7 @@ class My_genderController extends Controller
         ];
     }
 
-    public function actionChange()
+    public function actionUpdate()
     {
         $update = $this->getUpdate();
         $user = $this->getUser();
@@ -55,7 +69,7 @@ class My_genderController extends Controller
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $text = $this->render('index', [
+                $text = $this->render('update', [
                     'gender' => $user->gender,
                 ]),
                 [
@@ -63,11 +77,15 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/set_gender_male',
+                                'callback_data' => '/my_gender',
+                                'text' => '🔙',
+                            ],
+                            [
+                                'callback_data' => '/my_gender_male',
                                 'text' => Yii::t('bot', 'Male'),
                             ],
                             [
-                                'callback_data' => '/set_gender_female',
+                                'callback_data' => '/my_gender_female',
                                 'text' => Yii::t('bot', 'Female'),
                             ],
                         ],
@@ -76,66 +94,6 @@ class My_genderController extends Controller
             ),
             new AnswerCallbackQueryCommand(
                 $update->getCallbackQuery()->getId()
-            ),
-        ];
-    }
-
-    public function actionSetMale()
-    {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        $user->gender = User::MALE;
-        $user->save();
-
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', [
-                    'gender' => $user->gender,
-                ]),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => '/change_gender',
-                                'text' => Yii::t('bot', 'Change Gender')
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
-    }
-
-    public function actionSetFemale()
-    {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        $user->gender = User::FEMALE;
-        $user->save();
-
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', [
-                    'gender' => $user->gender,
-                ]),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => '/change_gender',
-                                'text' => Yii::t('bot', 'Change Gender')
-                            ],
-                        ],
-                    ]),
-                ]
             ),
         ];
     }

@@ -25,16 +25,13 @@ return [
                 '/merge_accounts' => 'my_email/merge-accounts',
                 '/discard_merge_request <mergeAccountsRequestId:\d+>' => 'my_email/discard-merge-request',
 
-                '/set_birthday' => 'my_birthday/create',
-                '/change_birthday' => 'my_birthday/update',
+                '/my_birthday_create' => 'my_birthday/create',
+                '/my_birthday_update' => 'my_birthday/update',
 
-                '/change_gender' => 'my_gender/change',
-                '/set_gender_male' => 'my_gender/set-male',
-                '/set_gender_female' => 'my_gender/set-female',
+                '/my_gender_update' => 'my_gender/update',
+                '/my_gender_<gender:\w+>' => 'my_gender/index',
 
                 '/update_location' => 'my_location/update',
-
-                '/update_rating' => 'my_rating/update',
 
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',

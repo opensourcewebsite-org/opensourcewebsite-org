@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\models\Currency;
 use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
-use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
@@ -52,8 +52,12 @@ class My_currencyController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/help',
+                                'text' => '🔙',
+                            ],
+                            [
                                 'callback_data' => '/currency_list',
-                                'text' => Yii::t('bot', 'Change Currency')
+                                'text' => '✏️',
                             ],
                         ],
                     ]),

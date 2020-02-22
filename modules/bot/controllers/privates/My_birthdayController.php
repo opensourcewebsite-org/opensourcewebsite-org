@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
@@ -29,7 +29,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $telegramUser->getState()->setName('/set_birthday');
+            $telegramUser->getState()->setName('/my_birthday_create');
             $telegramUser->save();
         }
 
@@ -43,16 +43,20 @@ class My_birthdayController extends Controller
                 ]),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => isset($birthday)
-                        ? new InlineKeyboardMarkup([
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        (isset($birthday) ? [
                             [
-                                [
-                                    'callback_data' => '/change_birthday',
-                                    'text' => Yii::t('bot', 'Change Birthday'),
-                                ]
+                                'callback_data' => '/my_birthday_update',
+                                'text' => '✏️',
                             ]
-                        ])
-                        : null,
+                        ] : []),
+                        [
+                            [
+                                'callback_data' => '/help',
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
                 ]
             ),
         ];
@@ -80,7 +84,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/set_birthday');
+        $telegramUser->getState()->setName('/my_birthday_create');
         $telegramUser->save();
 
         return [
@@ -93,6 +97,14 @@ class My_birthdayController extends Controller
                 $this->render('update'),
                 [
                     'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/my_birthday',
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
                 ]
             ),
             new AnswerCallbackQueryCommand(

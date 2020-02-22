@@ -45,16 +45,20 @@ class My_emailController extends Controller
                 ]),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => (!isset($email)
-                        ? null
-                        : new InlineKeyboardMarkup([
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        (isset($email) ? [
                             [
-                                [
-                                    'callback_data' => '/change_email',
-                                    'text' => $this->render('change-email'),
-                                ],
+                                'callback_data' => '/change_email',
+                                'text' => '✏️',
+                            ]
+                        ] : []),
+                        [
+                            [
+                                'callback_data' => '/help',
+                                'text' => '🔙',
                             ],
-                        ])),
+                        ],
+                    ]),
                 ]
             ),
         ];

@@ -37,7 +37,7 @@ class StartController extends Controller
                         [
                             [
                                 'callback_data' => '/help',
-                                'text' => Yii::t('bot', 'Help')
+                                'text' => Yii::t('bot', 'Menu')
                             ],
                             [
                                 'callback_data' => '/my_language',
