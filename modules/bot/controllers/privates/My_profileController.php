@@ -6,6 +6,8 @@ use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
+use app\models\Currency;
+use app\models\Language;
 
 /**
  * Class My_profileController
@@ -20,13 +22,30 @@ class My_profileController extends Controller
     public function actionIndex()
     {
         $update = $this->getUpdate();
+        $telegramUser = $this->getTelegramUser();
+        $user = $this->getUser();
+
+        $currencyCode = $telegramUser->currency_code;
+        $currencyName = Currency::findOne(['code' => $currencyCode])->name;
+
+        $languageCode = $telegramUser->language_code;
+        $languageName = Language::findOne(['code' => $languageCode])->name;
+        $languageCode = strtoupper($languageCode);
+        
+        $params = [
+            'firstName' => $telegramUser->provider_user_first_name,
+            'lastName' => $telegramUser->provider_user_last_name,
+            'username' => $telegramUser->provider_user_name,
+            'gender' => $user->gender,
+            'birthday' => $user->birthday,
+            'currency' => "$currencyName ($currencyCode)",
+            'language' => "$languageName ($languageCode)",
+        ];
 
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('index', [
-                    'profile' => $update->getMessage()->getFrom(),
-                ]),
+                $this->render('index', $params),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
