@@ -25,8 +25,13 @@ class AdminController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
-                    'disablePreview' => true,
                     'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                                'text' => Yii::t('bot', 'Read more')
+                            ],
+                        ],
                         [
                             [
                                 'callback_data' => '/menu',

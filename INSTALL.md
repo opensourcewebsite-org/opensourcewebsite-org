@@ -48,10 +48,11 @@ php yii fixture/unload "*"
 
 We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
 
+- Use [Telegram BotFather](https://t.me/BotFather) to create new bot.
 - Set `baseUrl` in `params.php` for your ngrok https url.
 - Create a new record in `bot` table in MySQL database, with `status` = 0, or use console command to add new bot:
 ```
-php yii bot/add NAME TOKEN
+php yii bot/add USERNAME TOKEN
 ```
 
 Enable Telegram webhooks for all bots with `status` = 0:

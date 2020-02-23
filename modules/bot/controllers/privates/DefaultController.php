@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\components\response\SendMessageCommand;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
@@ -40,8 +41,13 @@ class DefaultController extends Controller
                 $this->render('command-not-found'),
                 [
                     'parseMode' => $this->textFormat,
-                    'disablePreview' => true,
                     'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                                'text' => Yii::t('bot', 'Read more')
+                            ],
+                        ],
                         [
                             [
                                 'callback_data' => '/menu',
