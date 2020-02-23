@@ -28,11 +28,10 @@ class My_genderController extends Controller
         if ($gender) {
             if ($gender == 'male') {
                 $user->gender = User::MALE;
-                $user->save();
             } elseif ($gender == 'female') {
                 $user->gender = User::FEMALE;
-                $user->save();
             }
+            $user->save();
         }
 
         return [
