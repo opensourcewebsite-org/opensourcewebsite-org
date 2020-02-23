@@ -102,6 +102,7 @@ return [
     'You can participate in discuss process and vote for the conditions' => 'Вы можете участвовать в процессе обсуждения и голосовать за условия',
     'Forward following message to your friends and followers, and start earning now' => 'Перешлите следующее сообщение вашим друзьям и подписчикам, и начните зарабатывать уже сейчас',
     'Coming soon' => 'Скоро будет',
+    'Coming soon, you can join the development' => 'Скоро будет, вы можете присоединиться к разработке',
     'Website' => 'Сайт',
     'Telegram Bot' => 'Телеграм бот',
     'Source Code' => 'Исходный код',

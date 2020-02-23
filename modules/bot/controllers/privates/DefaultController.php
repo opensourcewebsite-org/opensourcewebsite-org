@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\components\response\SendMessageCommand;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class DefaultController
@@ -20,7 +21,7 @@ class DefaultController extends Controller
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('/help/index'),
+                $this->render('/menu/index'),
                 [
                     'parseMode' => $this->textFormat,
                 ]
@@ -39,6 +40,15 @@ class DefaultController extends Controller
                 $this->render('command-not-found'),
                 [
                     'parseMode' => $this->textFormat,
+                    'disablePreview' => true,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/menu',
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
                 ]
             ),
         ];

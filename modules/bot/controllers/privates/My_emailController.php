@@ -54,7 +54,7 @@ class My_emailController extends Controller
                         ] : []),
                         [
                             [
-                                'callback_data' => '/help',
+                                'callback_data' => '/my_profile',
                                 'text' => '🔙',
                             ],
                         ],

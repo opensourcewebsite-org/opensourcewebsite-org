@@ -54,7 +54,7 @@ class My_languageController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/help',
+                                'callback_data' => '/menu',
                                 'text' => '🔙',
                             ],
                             [

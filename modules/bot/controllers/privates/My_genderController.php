@@ -46,7 +46,7 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/help',
+                                'callback_data' => '/my_profile',
                                 'text' => '🔙',
                             ],
                             [

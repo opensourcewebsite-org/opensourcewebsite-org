@@ -25,10 +25,11 @@ class AdminController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'disablePreview' => true,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/help',
+                                'callback_data' => '/menu',
                                 'text' => '🔙',
                             ],
                         ],

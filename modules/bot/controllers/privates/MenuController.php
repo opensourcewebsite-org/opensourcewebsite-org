@@ -8,62 +8,56 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_profileController
+ * Class MenuController
  *
- * @package app\modules\bot\controllers
+ * @package app\controllers\bot
  */
-class My_profileController extends Controller
+class MenuController extends Controller
 {
     /**
      * @return array
      */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
-
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('index', [
-                    'profile' => $update->getMessage()->getFrom(),
-                ]),
+                $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_location',
-                                'text' => Yii::t('bot', 'Location'),
+                                'callback_data' => '/my_profile',
+                                'text' => Yii::t('bot', 'Profile')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_gender',
-                                'text' => Yii::t('bot', 'Gender'),
+                                'callback_data' => '/my_rating',
+                                'text' => Yii::t('bot', 'Rating')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_birthday',
-                                'text' => Yii::t('bot', 'Birthday'),
+                                'callback_data' => '/my_referrals',
+                                'text' => Yii::t('bot', 'Referrals')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_currency',
-                                'text' => Yii::t('bot', 'Currency'),
+                                'callback_data' => '/help',
+                                'text' => Yii::t('bot', 'Available commands')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_email',
-                                'text' => Yii::t('bot', 'Email'),
+                                'callback_data' => '/start',
+                                'text' => Yii::t('bot', 'Greeting')
                             ],
-                        ],
-                        [
                             [
-                                'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'callback_data' => '/my_language',
+                                'text' => Yii::t('bot', 'Language')
                             ],
                         ],
                     ]),

@@ -28,12 +28,8 @@ class HelpController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/start',
-                                'text' => Yii::t('bot', 'Greeting')
-                            ],
-                            [
-                                'callback_data' => '/my_language',
-                                'text' => Yii::t('bot', 'Language')
+                                'callback_data' => '/menu',
+                                'text' => '🔙',
                             ],
                         ],
                     ]),

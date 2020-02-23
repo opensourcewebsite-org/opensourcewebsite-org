@@ -34,16 +34,18 @@ class My_ratingController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/help',
-                                'text' => '🔙',
-                            ],
-                            [
                                 'text' => Yii::t('bot', 'Donate'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md'
                             ],
                             [
                                 'text' => Yii::t('bot', 'Contribution'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md'
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/menu',
+                                'text' => '🔙',
                             ],
                         ],
                     ]),

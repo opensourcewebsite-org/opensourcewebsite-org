@@ -39,7 +39,7 @@ class My_referralsController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/help',
+                                'callback_data' => '/menu',
                                 'text' => '🔙',
                             ],
                         ],

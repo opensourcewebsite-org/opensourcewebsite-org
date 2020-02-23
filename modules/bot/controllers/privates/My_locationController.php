@@ -51,7 +51,7 @@ class My_locationController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/help',
+                                    'callback_data' => '/my_profile',
                                     'text' => '🔙',
                                 ],
                             ],
@@ -69,7 +69,7 @@ class My_locationController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/help',
+                                    'callback_data' => '/my_profile',
                                     'text' => '🔙',
                                 ],
                             ],
