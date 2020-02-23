@@ -80,7 +80,7 @@ class My_currencyController extends Controller
         $countQuery = clone $currencyQuery;
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
-            'pageSize' => 10,
+            'pageSize' => 9,
             'params' => [
                 'page' => $page,
             ],
@@ -103,6 +103,8 @@ class My_currencyController extends Controller
             if ($paginationButtons) {
                 $listButtons[] = $paginationButtons;
             }
+
+            $listButtons[][] = ['callback_data' => '/my_currency', 'text' => '🔙'];
         }
 
         Yii::warning($listButtons);
