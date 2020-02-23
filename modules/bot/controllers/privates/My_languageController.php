@@ -82,8 +82,8 @@ class My_languageController extends Controller
         $countQuery = clone $languageQuery;
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
+            'pageSize' => 10,
             'params' => [
-                'pageSize' => 10,
                 'page' => $page,
             ],
         ]);
@@ -106,6 +106,8 @@ class My_languageController extends Controller
                 $listButtons[] = $paginationButtons;
             }
         }
+
+        Yii::warning($listButtons);
 
         return [
             new EditMessageTextCommand(

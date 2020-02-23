@@ -80,8 +80,8 @@ class My_currencyController extends Controller
         $countQuery = clone $currencyQuery;
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
+            'pageSize' => 10,
             'params' => [
-                'pageSize' => 10,
                 'page' => $page,
             ],
         ]);
