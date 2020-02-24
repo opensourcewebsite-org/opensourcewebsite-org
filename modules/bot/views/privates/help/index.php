@@ -1,4 +1,4 @@
-<b><?= \Yii::t('bot', 'Available commands') ?></b><br/>
+<b><?= \Yii::t('bot', 'Commands') ?></b><br/>
 <br/>
 /my_profile - <?= \Yii::t('bot', 'Profile') ?><br/>
 /my_location - <?= \Yii::t('bot', 'Location') ?><br/>
@@ -11,6 +11,9 @@
 /my_referrals - <?= \Yii::t('bot', 'Referrals') ?><br/>
 <br/>
 /menu - <?= \Yii::t('bot', 'Menu') ?><br/>
-/start - <?= \Yii::t('bot', 'Greeting') ?><br/>
 <br/>
-/admin - <?= \Yii::t('bot', 'Available commands for managing telegram groups and channels') ?>
+/services - <?= \Yii::t('bot', 'Services') ?><br/>
+<br/>
+/admin - <?= \Yii::t('bot', 'Commands for managing telegram groups and channels') ?><br/>
+<br/>
+/start - <?= \Yii::t('bot', 'Greeting') ?>

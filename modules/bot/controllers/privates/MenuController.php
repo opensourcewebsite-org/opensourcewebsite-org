@@ -46,8 +46,20 @@ class MenuController extends Controller
                         ],
                         [
                             [
+                                'callback_data' => '/services',
+                                'text' => Yii::t('bot', 'Services')
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/admin',
+                                'text' => Yii::t('bot', 'Groups')
+                            ],
+                        ],
+                        [
+                            [
                                 'callback_data' => '/help',
-                                'text' => Yii::t('bot', 'Available commands')
+                                'text' => Yii::t('bot', 'Commands')
                             ],
                         ],
                         [
