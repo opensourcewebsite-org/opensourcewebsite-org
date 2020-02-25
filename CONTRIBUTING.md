@@ -2,8 +2,6 @@
 
 First off, thanks for taking the time to contribute!
 
-The following is a set of guidelines for contributing to OpenSourceWebsite, which are hosted in the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
-
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Request a new feature, give us feedback or start a design discussion
@@ -116,7 +114,7 @@ All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/b
 
 ### PHP Style Guide
 
-PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards) and [PHP Standards Recommendations](https://www.php-fig.org/psr/).
+PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards), [PHP Standards Recommendations](https://www.php-fig.org/psr/), [Clean Code PHP](https://github.com/jupeter/clean-code-php).
 
 Recommended IDE:
   * [Atom](https://atom.io)

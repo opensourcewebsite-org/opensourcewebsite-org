@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\models\Currency;
 use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
-use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
@@ -52,8 +52,12 @@ class My_currencyController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/my_profile',
+                                'text' => '🔙',
+                            ],
+                            [
                                 'callback_data' => '/currency_list',
-                                'text' => Yii::t('bot', 'Change Currency')
+                                'text' => '✏️',
                             ],
                         ],
                     ]),
@@ -76,8 +80,8 @@ class My_currencyController extends Controller
         $countQuery = clone $currencyQuery;
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
+            'pageSize' => 9,
             'params' => [
-                'pageSize' => 20,
                 'page' => $page,
             ],
         ]);
@@ -89,14 +93,30 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $paginationButtons = PaginationButtons::build('/currency_list_', $pagination);
+        $listButtons = [];
+        if ($currencies) {
+            foreach ($currencies as $currency) {
+                $listButtons[][] = ['callback_data' => '/my_currency_' . $currency->code, 'text' => strtoupper($currency->code) . ' - ' . $currency->name];
+            }
+
+            if ($paginationButtons) {
+                $listButtons[] = $paginationButtons;
+            }
+
+            $listButtons[][] = ['callback_data' => '/my_currency', 'text' => '🔙'];
+        }
+
+        Yii::warning($listButtons);
+
         return [
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getmessage()->getMessageId(),
-                $this->render('currency-list', compact('currencies', 'pagination')),
+                $update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->render('currency-list'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => PaginationButtons::build('/currency_list_<page>', $pagination),
+                    'replyMarkup' => new InlineKeyboardMarkup($listButtons),
                 ]
             ),
             new AnswerCallbackQueryCommand(

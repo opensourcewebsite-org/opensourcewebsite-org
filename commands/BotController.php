@@ -61,27 +61,35 @@ class BotController extends Controller
     /**
      * Add new bot or update exist bot
      *
-     * @param $name
      * @param $token
      */
-    public function actionAdd(string $name, string $token) : bool
+    public function actionAdd(string $token) : bool
     {
-        if (!$bot = Bot::findOne(['name' => $name])) {
+        if (!$bot = Bot::findOne(['token' => $token])) {
             $bot = new Bot();
+
+            $botApi = new \TelegramBot\Api\BotApi($token);
+            if (isset(\Yii::$app->params['telegramProxy'])) {
+                $botApi->setProxy(Yii::$app->params['telegramProxy']);
+            }
+            $user = $botApi->getMe();
+
+            $bot->name = $user->getUsername();
+            $bot->token = $token;
+            $bot->status = 0;
+
+            if ($bot->save()) {
+                echo "The bot \"$bot->name\" has been successfully saved\n";
+
+                return true;
+            } else {
+                echo current($bot->getFirstErrors()) . "\n";
+
+                return false;
+            }
         }
 
-        $bot->name = $name;
-        $bot->token = $token;
-        $bot->status = 0;
-
-        if ($bot->save()) {
-            echo "The bot \"$name\" has been successfully saved\n";
-
-            return true;
-        } else {
-            echo current($bot->getFirstErrors()) . "\n";
-
-            return false;
-        }
+        echo 'Bot with the same token already exists';
+        return false;
     }
 }

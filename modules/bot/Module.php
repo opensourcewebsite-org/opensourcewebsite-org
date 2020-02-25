@@ -31,6 +31,11 @@ class Module extends \yii\base\Module
     private $botApi;
 
     /**
+     * @var models\Bot
+     */
+    private $botInfo;
+
+    /**
      * @var models\User
      */
     public $telegramUser;
@@ -68,15 +73,15 @@ class Module extends \yii\base\Module
 
         $updateArray = json_decode($input, true);
         $this->update = Update::fromResponse($updateArray);
-        $botInfo = Bot::findOne(['token' => $token]);
-        if ($botInfo) {
-            $this->botApi = new BotApi($botInfo->token);
+        $this->botInfo = Bot::findOne(['token' => $token]);
+        if ($this->botInfo) {
+            $this->botApi = new BotApi($this->botInfo->token);
 
             if (isset(Yii::$app->params['telegramProxy'])) {
                 $this->botApi->setProxy(Yii::$app->params['telegramProxy']);
             }
 
-            if ($this->initialize($this->update, $botInfo->id)) {
+            if ($this->initialize($this->update, $this->botInfo->id)) {
                 Yii::$app->language = $this->telegramUser->language_code;
 
                 $result = $this->dispatchRoute($this->update);
@@ -103,6 +108,7 @@ class Module extends \yii\base\Module
         }
 
         if (isset($updateUser) && isset($updateChat)) {
+            $isNewUser = false;
             $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
             // Store telegram user if it doesn't exist yet
             if (!isset($telegramUser)) {
@@ -111,10 +117,13 @@ class Module extends \yii\base\Module
                 ]);
                 $languageCode = isset($language) ? $language->code : 'en';
 
+                $isNewUser = true;
+
                 $telegramUser = new TelegramUser();
                 $telegramUser->setAttributes([
                     'provider_user_id' => $updateUser->getId(),
                     'language_code' => $languageCode,
+                    'is_authenticated' => true,
                 ]);
             }
             // Update telegram user information
@@ -135,7 +144,6 @@ class Module extends \yii\base\Module
             ]);
             // Store telegram chat if it doesn't exist yet
             if (!isset($telegramChat)) {
-                $isNewChat = true;
                 $telegramChat = new Chat();
                 $telegramChat->setAttributes([
                     'chat_id' => $updateChat->getId(),
@@ -160,13 +168,22 @@ class Module extends \yii\base\Module
                 : Controller::TYPE_PUBLIC;
             $this->setupPaths($namespace);
 
-            if (isset($isNewChat) && $isNewChat) {
+            if (!in_array($telegramUser, $telegramChat->getUsers()->all())) {
                 $telegramChat->link('users', $telegramUser);
             }
 
             if (!isset($telegramUser->user_id)) {
                 $user = User::createWithRandomPassword();
                 $user->name = $telegramUser->getFullName();
+
+                if ($isNewUser) {
+                    if ($message = $update->getMessage()) {
+                        $matches = [];
+                        if (preg_match('/\/start (\d+)/', $message->getText(), $matches)) {
+                            $user->referrer_id = $matches[1];
+                        }
+                    }
+                }
 
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
@@ -262,6 +279,11 @@ class Module extends \yii\base\Module
         }
 
         return $result;
+    }
+
+    public function getBotName()
+    {
+        return $this->botInfo->name;
     }
 
     private function setReplyKeyboard(&$command)

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
@@ -34,10 +35,6 @@ class My_ratingController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'text' => Yii::t('bot', 'Refresh'),
-                                'callback_data' => '/update_rating'
-                            ],
-                            [
                                 'text' => Yii::t('bot', 'Donate'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md'
                             ],
@@ -45,44 +42,15 @@ class My_ratingController extends Controller
                                 'text' => Yii::t('bot', 'Contribution'),
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md'
                             ],
-                        ]
-                    ]),
-                ]
-            ),
-        ];
-    }
-
-    public function actionUpdate()
-    {
-        $update = $this->getUpdate();
-
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->renderRating(),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                        ],
                         [
                             [
-                                'text' => Yii::t('bot', 'Refresh'),
-                                'callback_data' => '/update_rating'
+                                'callback_data' => '/menu',
+                                'text' => '🔙',
                             ],
-                            [
-                                'text' => Yii::t('bot', 'Donate'),
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md'
-                            ],
-                            [
-                                'text' => Yii::t('bot', 'Contribution'),
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md'
-                            ],
-                        ]
+                        ],
                     ]),
                 ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
             ),
         ];
     }

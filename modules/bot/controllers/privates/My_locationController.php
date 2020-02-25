@@ -2,10 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use \app\modules\bot\components\response\SendLocationCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\ReplyKeyboardManager;
 use app\modules\bot\components\Controller;
+use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class My_locationController
@@ -46,6 +48,14 @@ class My_locationController extends Controller
                     $this->render('footer'),
                     [
                         'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => '/my_profile',
+                                    'text' => '🔙',
+                                ],
+                            ],
+                        ]),
                     ]
                 ),
             ];
@@ -56,6 +66,14 @@ class My_locationController extends Controller
                     $this->render('index'),
                     [
                         'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => '/my_profile',
+                                    'text' => '🔙',
+                                ],
+                            ],
+                        ]),
                     ]
                 ),
             ];

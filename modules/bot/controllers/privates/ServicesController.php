@@ -4,15 +4,15 @@ namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class HelpController
+ * Class ServicesController
  *
  * @package app\controllers\bot
  */
-class HelpController extends Controller
+class ServicesController extends Controller
 {
     /**
      * @return array
@@ -26,6 +26,12 @@ class HelpController extends Controller
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                                'text' => Yii::t('bot', 'Read more')
+                            ],
+                        ],
                         [
                             [
                                 'callback_data' => '/menu',

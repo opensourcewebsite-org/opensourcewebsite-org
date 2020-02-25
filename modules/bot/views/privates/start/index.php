@@ -13,11 +13,11 @@
 - <?= Yii::t('bot', 'Dating'); ?>. <?= Yii::t('bot', 'Search for new contacts based on different criteria and locations'); ?>.<br/>
 - <?= Yii::t('bot', 'P2P currency/cryptocurrency exchange between users'); ?>.<br/>
 - <?= Yii::t('bot', 'Paid surveys from companies for users'); ?>.<br/>
-- <?= Yii::t('bot', 'Personalized news'); ?><br/>.
-- <?= Yii::t('bot', 'Personalized advertising/offers from companies for users'); ?><br/>.
-- <?= Yii::t('bot', 'Money bets between users'); ?><br/>.
-- <?= Yii::t('bot', 'Anonymous lotteries'); ?><br/>.
+- <?= Yii::t('bot', 'Personalized news'); ?>.<br/>
+- <?= Yii::t('bot', 'Personalized advertising/offers from companies for users'); ?>.<br/>
+- <?= Yii::t('bot', 'Money bets between users'); ?>.<br/>
+- <?= Yii::t('bot', 'Anonymous lotteries'); ?>.<br/>
 - <?= Yii::t('bot', 'Hobby clubs'); ?>. <?= Yii::t('bot', 'Search for like-minded people by different criteria and locations'); ?>.<br/>
-- <?= Yii::t('bot', 'Traveling together. Search for fellow travelers'); ?>/<br/>
+- <?= Yii::t('bot', 'Traveling together. Search for fellow travelers'); ?>.<br/>
 - <?= Yii::t('bot', 'Informing about important events and interesting events'); ?>.<br/>
 - <?= Yii::t('bot', 'As well as many useful functions for managing telegram groups and channels'); ?>.

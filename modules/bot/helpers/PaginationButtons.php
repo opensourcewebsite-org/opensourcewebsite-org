@@ -20,54 +20,22 @@ class PaginationButtons
      *
      * @return InlineKeyboardMarkup
      */
-    public static function build($route, $pagination, $maxVisibleButtons = 5)
+    public static function build($route, $pagination)
     {
-        if ($maxVisibleButtons < 5) {
-            throw new InvalidParamException('maxVisibleButtons can\t be less than 5');
-        }
-
         $buttons = [];
 
-        $page = $pagination->page + 1;
+        if ($pagination->pageCount > 1) {
+            $currentPage = $pagination->page + 1;
+            $previousPage = $currentPage - 1 ?: $pagination->pageCount;
+            $nextPage = ($currentPage + 1) <= $pagination->pageCount ? $currentPage + 1 : 1;
 
-        $start = 1;
-        $end = $pagination->pageCount;
+            $buttons[] = ['callback_data' => $route . $previousPage, 'text' => '<'];
+            $buttons[] = ['callback_data' => $route . $currentPage, 'text' => $currentPage . '/' . $pagination->pageCount];
+            $buttons[] = ['callback_data' => $route . $nextPage, 'text' => '>'];
 
-        if ($end > $maxVisibleButtons) {
-            $position = $page;
-            $radius = ceil(($maxVisibleButtons - 2) / 2);
-            if ($page > $pagination->pageCount - $radius) {
-                $position = $pagination->pageCount - $radius + 1;
-            }
-            if ($page <= $radius) {
-                $position = $radius;
-            }
-            $start = $position - $radius + 1;
-            $end = $position + $radius;
-
-            $buttons[] = ['callback_data' => self::getRoute($route, 1), 'text' => "\xE2\x8F\xAA"];
+            Yii::warning($buttons);
         }
 
-        for ($pageIndex = $start; $pageIndex < $end; $pageIndex++) {
-            $buttons[] = ['callback_data' => self::getRoute($route, $pageIndex), 'text' => (int)$pageIndex];
-        }
-
-        if ($pagination->pageCount > $maxVisibleButtons) {
-            $buttons[] = ['callback_data' => self::getRoute($route, $pagination->pageCount), 'text' => "\xE2\x8F\xA9"];
-        }
-        Yii::warning($buttons);
-
-        return new InlineKeyboardMarkup([$buttons]);
-    }
-
-    /**
-     * @param $pattern
-     * @param $page
-     *
-     * @return mixed
-     */
-    protected static function getRoute($pattern, $page)
-    {
-        return str_replace('<page>', $page, $pattern);
+        return $buttons;
     }
 }

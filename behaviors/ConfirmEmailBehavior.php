@@ -29,7 +29,7 @@ class ConfirmEmailBehavior extends Behavior
             return true;
         }
 
-        if (Yii::$app->user->identity->is_email_confirmed) {
+        if (Yii::$app->user->identity->is_authenticated) {
             return true;
         }
 

@@ -55,6 +55,11 @@ class Controller extends \yii\web\Controller
         return $this->module->userState;
     }
 
+    protected function getBotName()
+    {
+        return $this->module->getBotName();
+    }
+
     /**
      * @param string $text
      *

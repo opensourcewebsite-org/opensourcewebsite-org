@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\models\Language;
 use app\modules\bot\helpers\PaginationButtons;
 use yii\data\Pagination;
-use Yii;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
@@ -54,8 +54,12 @@ class My_languageController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/menu',
+                                'text' => '🔙',
+                            ],
+                            [
                                 'callback_data' => '/language_list',
-                                'text' => Yii::t('bot', 'Change Language')
+                                'text' => '✏️',
                             ],
                         ],
                     ]),
@@ -78,8 +82,8 @@ class My_languageController extends Controller
         $countQuery = clone $languageQuery;
         $pagination = new Pagination([
             'totalCount' => $countQuery->count(),
+            'pageSize' => 9,
             'params' => [
-                'pageSize' => 20,
                 'page' => $page,
             ],
         ]);
@@ -91,14 +95,30 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $paginationButtons = PaginationButtons::build('/language_list_', $pagination);
+        $listButtons = [];
+        if ($languages) {
+            foreach ($languages as $language) {
+                $listButtons[][] = ['callback_data' => '/my_language_' . $language->code, 'text' => strtoupper($language->code) . ' - ' . $language->name];
+            }
+
+            if ($paginationButtons) {
+                $listButtons[] = $paginationButtons;
+            }
+
+            $listButtons[][] = ['callback_data' => '/my_language', 'text' => '🔙'];
+        }
+
+        Yii::warning($listButtons);
+
         return [
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('language-list', compact('languages', 'pagination')),
+                $this->render('language-list'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => PaginationButtons::build('/language_list_<page>', $pagination),
+                    'replyMarkup' => new InlineKeyboardMarkup($listButtons),
                 ]
             ),
             new AnswerCallbackQueryCommand(
