@@ -50,7 +50,7 @@ We recommend use [ngrok - secure introspectable tunnels to localhost](https://ng
 
 - Use [Telegram BotFather](https://t.me/BotFather) to create new bot and get a bot token.
 - Set `baseUrl` in `params.php` for your ngrok https url.
-- In case of connection problems to Telegram, use [free anonymous proxy][https://www.firexproxy.com/en] to set `telegramProxy` in `params.php`.
+- In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `telegramProxy` in `params.php`.
 - Create a new record in `bot` table in MySQL database, with `status` = 0, or use console command to add new bot:
 ```
 php yii bot/add TOKEN
