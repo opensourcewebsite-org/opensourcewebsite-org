@@ -114,7 +114,7 @@ All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/b
 
 ### PHP Style Guide
 
-PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards) and [PHP Standards Recommendations](https://www.php-fig.org/psr/).
+PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards), [PHP Standards Recommendations](https://www.php-fig.org/psr/), [Clean Code PHP](https://github.com/jupeter/clean-code-php).
 
 Recommended IDE:
   * [Atom](https://atom.io)
