@@ -11,6 +11,9 @@ class Chat extends ActiveRecord
     public const TYPE_SUPERGROUP = 'supergroup';
     public const TYPE_CHANNEL = 'channel';
 
+    public const FILTER_MODE_BLACK = 'black';
+    public const FILTER_MODE_WHITE = 'white';
+
     public static function tableName()
     {
         return 'bot_chat';
@@ -21,7 +24,7 @@ class Chat extends ActiveRecord
         return [
             [['type', 'bot_id', 'chat_id'], 'required'],
             [['id', 'chat_id', 'bot_id'], 'integer'],
-            [['type', 'title', 'username', 'first_name', 'last_name'], 'string'],
+            [['type', 'title', 'username', 'first_name', 'last_name', 'filter_mode'], 'string'],
         ];
     }
 
@@ -41,5 +44,9 @@ class Chat extends ActiveRecord
     public function isPrivate()
     {
         return $this->type == self::TYPE_PRIVATE;
+    }
+
+    public function isFilterModeBlack() {
+        return $this->filter_mode == self::FILTER_MODE_BLACK;
     }
 }

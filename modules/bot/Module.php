@@ -8,6 +8,7 @@ use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\User as TelegramUser;
+use app\modules\bot\models\Admin;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Language;
@@ -135,12 +136,16 @@ class Module extends \yii\base\Module
                 'bot_id' => $botId,
             ]);
             // Store telegram chat if it doesn't exist yet
+            $newChat = false;
             if (!isset($telegramChat)) {
                 $telegramChat = new Chat();
                 $telegramChat->setAttributes([
                     'chat_id' => $updateChat->getId(),
                     'bot_id' => $botId,
+                    'filter_mode' => Chat::FILTER_MODE_BLACK,
                 ]);
+
+                $newChat = true;
             }
             // Update telegram chat information
             $telegramChat->setAttributes([
@@ -152,6 +157,22 @@ class Module extends \yii\base\Module
             ]);
             if (!$telegramChat->save()) {
                 return false;
+            }
+
+            // Add chat administrators to db
+            if ($newChat && $updateChat->getType() != Chat::TYPE_PRIVATE) {
+                $administrators = $this->botApi->getChatAdministrators($updateChat->getId());
+
+                foreach ($administrators as $administrator) {
+                    $admin = new Admin();
+
+                    $admin->setAttributes([
+                        'chat_id' => $telegramChat->id,
+                        'telegram_user_id' => $administrator->getUser()->getId(),
+                    ]);
+
+                    $admin->save();
+                }
             }
 
             // To separate commands for each type of chat
@@ -231,6 +252,8 @@ class Module extends \yii\base\Module
             } catch (InvalidRouteException $e) {
                 if ($this->telegramChat->isPrivate()) {
                     $commands = $this->runAction('default/command-not-found');
+                } else {
+                    $commands = $this->runAction('message');
                 }
             }
 

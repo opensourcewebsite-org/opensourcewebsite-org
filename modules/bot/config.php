@@ -33,6 +33,18 @@ return [
 
                 '/update_location' => 'my_location/update',
 
+                '/filterchat <groupId:\d+>' => 'filterchat',
+                '/change_filter_mode <groupId:\d+>' => 'filterchat/update',
+                '/whitelist <groupId:\d+>' => 'whitelist',
+                '/blacklist <groupId:\d+>' => 'blacklist',
+                '/newphrase <type:\w+> <groupId:\d+>' => 'newphrase/index',
+                '/set_newphrase <type:\w+> <groupId:\d+>' => 'newphrase/update',
+
+                '/phrase <phraseId:\d+>' => 'phrase/index',
+                '/delete_phrase <phraseId:\d+>' => 'phrase/delete',
+                '/change_phrase <phraseId:\d+>' => 'phrase/create',
+                '/update_phrase <phraseId:\d+>' => 'phrase/update',
+
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],

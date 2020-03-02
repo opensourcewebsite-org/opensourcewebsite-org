@@ -28,6 +28,12 @@ class AdminController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/filter',
+                                'text' => Yii::t('bot', 'Filter'), 
+                            ],
+                        ],
+                        [
+                            [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
                                 'text' => Yii::t('bot', 'Read more')
                             ],
