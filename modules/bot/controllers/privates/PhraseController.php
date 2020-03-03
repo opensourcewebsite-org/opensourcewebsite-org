@@ -29,43 +29,80 @@ class PhraseController extends Controller
 
         $phrase = Phrase::find()->where(['id' => $phraseId])->one();
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', compact('phrase')),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
+        if ($this->getUpdate()->getCallbackQuery()) {
+            return [
+                new EditMessageTextCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+                    $this->render('index', compact('phrase')),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
                             [
-                                'callback_data' => '/change_phrase ' . $phraseId,
-                                'text' => 'Изменить',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/delete_phrase ' . $phraseId,
-                                'text' => 'Удалить',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => ($phrase->isTypeBlack() ? '/blacklist' : '/whitelist') . ' ' . $phrase->group_id,
-                                'text' => '🔙',
+                                [
+                                    'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
+                                    'text' => 'Изменить',
+                                ],
                             ],
                             [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ В главное меню',
+                                [
+                                    'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
+                                    'text' => 'Удалить',
+                                ],
                             ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
+                            [
+                                [
+                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->group_id,
+                                    'text' => '🔙',
+                                ],
+                                [
+                                    'callback_data' => '/menu',
+                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                                ],
+                            ],
+                        ]),
+                    ]
+                ),
+            ];
+        } else {
+            return [
+                new SendMessageCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->render('index', compact('phrase')),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
+                                    'text' => 'Изменить',
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
+                                    'text' => 'Удалить',
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->group_id,
+                                    'text' => '🔙',
+                                ],
+                                [
+                                    'callback_data' => '/menu',
+                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                                ],
+                            ],
+                        ]),
+                    ]
+                ),
+            ];
+        }
     }
 
-    public function actionDelete($phraseId = null) {
+    public function actionDelete($phraseId = null)
+    {
         $phrase = Phrase::find()->where(['id' => $phraseId])->one();
 
         $groupId = $phrase->group_id;
@@ -73,34 +110,17 @@ class PhraseController extends Controller
         $isTypeBlack = $phrase->isTypeBlack();
         $phrase->delete();
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('delete'),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => ($isTypeBlack ? '/blacklist' : '/whitelist') . ' ' . $groupId,
-                                'text' => Yii::t('bot', 'Next'),
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
+        $update = $this->getUpdate();
+        $update->getCallbackQuery()->setData(($isTypeBlack ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
+
+        $this->module->dispatchRoute($update);
     }
 
-    public function actionCreate($phraseId = null) {
+    public function actionCreate($phraseId = null)
+    {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/update_phrase ' . $phraseId);
+        $telegramUser->getState()->setName('/admin_filter_update_phrase ' . $phraseId);
         $telegramUser->save();
 
         return [
@@ -113,7 +133,7 @@ class PhraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/phrase ' . $phraseId,
+                                'callback_data' => '/admin_filter_phrase ' . $phraseId,
                                 'text' => '🔙',
                             ],
                             [
@@ -127,7 +147,8 @@ class PhraseController extends Controller
         ];
     }
 
-    public function actionUpdate($phraseId = null) {
+    public function actionUpdate($phraseId = null)
+    {
         $update = $this->getUpdate();
 
         $phrase = Phrase::find()->where(['id' => $phraseId])->one();
@@ -137,26 +158,6 @@ class PhraseController extends Controller
         $phrase->text = $text;
         $phrase->save();
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('update'),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => '/phrase ' . $phraseId,
-                                'text' => Yii::t('bot', 'Next'),
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
+        return $this->actionIndex($phraseId);
     }
 }

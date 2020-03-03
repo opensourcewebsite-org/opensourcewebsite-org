@@ -24,7 +24,7 @@ class Chat extends ActiveRecord
         return [
             [['type', 'bot_id', 'chat_id'], 'required'],
             [['id', 'chat_id', 'bot_id'], 'integer'],
-            [['type', 'title', 'username', 'first_name', 'last_name', 'filter_mode'], 'string'],
+            [['type', 'title', 'username', 'first_name', 'last_name'], 'string'],
         ];
     }
 
@@ -44,9 +44,5 @@ class Chat extends ActiveRecord
     public function isPrivate()
     {
         return $this->type == self::TYPE_PRIVATE;
-    }
-
-    public function isFilterModeBlack() {
-        return $this->filter_mode == self::FILTER_MODE_BLACK;
     }
 }

@@ -134,4 +134,9 @@ return [
     'Phrase successfully deleted' => 'Фраза успешно удалена',
     'Phrase successfully changed' => 'Фраза успешно изменена',
     'Mode' => 'Режим',
+    'Refresh' => 'Обновить',
+    'Chats successfully refreshed' => 'Чаты успешно обновлены',
+    'Change status' => 'Изменить статус',
+    'Status' => 'Статус',
+    'Error. Phrase is already exists' => 'Ошибка. Фраза уже существует',
 ];

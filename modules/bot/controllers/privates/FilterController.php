@@ -22,7 +22,6 @@ class FilterController extends Controller
      */
     public function actionIndex()
     {
-
         $chat_id = $this->getTelegramChat()->chat_id;
 
         $admins = Admin::find()->where(['telegram_user_id' => $chat_id])->all();
@@ -37,7 +36,7 @@ class FilterController extends Controller
 
         foreach ($adminGroups as $adminGroup) {
             $currentRow[] = [
-                'callback_data' => '/filterchat ' . $adminGroup->id,
+                'callback_data' => '/admin_filter_filterchat ' . $adminGroup->id,
                 'text' => $adminGroup->title,
             ];
 

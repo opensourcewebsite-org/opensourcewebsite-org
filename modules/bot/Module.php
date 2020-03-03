@@ -28,7 +28,7 @@ class Module extends \yii\base\Module
     /**
      * @var \TelegramBot\Api\BotApi
      */
-    private $botApi;
+    public $botApi;
 
     /**
      * @var models\Bot
@@ -127,8 +127,28 @@ class Module extends \yii\base\Module
                 'provider_bot_user_blocked' => 0,
                 'last_message_at' => time(),
             ]);
+
             if (!$telegramUser->save()) {
                 return false;
+            }
+
+            // Update Group -> SuperGroup
+            if ($update->getMessage() !== null && $update->getMessage()->getMigrateToChatId() !== null) {
+                $telegramChat = Chat::findOne([
+                    'chat_id' => $updateChat->getId(),
+                    'bot_id' => $botId,
+                ]);
+
+                if (isset($telegramChat)) {
+                    $telegramChat->setAttributes([
+                        'type' => Chat::TYPE_SUPERGROUP,
+                        'chat_id' => $update->getMessage()->getMigrateToChatId(),
+                    ]);
+
+                    $telegramChat->save();
+                }
+
+                return true;
             }
 
             $telegramChat = Chat::findOne([
@@ -142,11 +162,11 @@ class Module extends \yii\base\Module
                 $telegramChat->setAttributes([
                     'chat_id' => $updateChat->getId(),
                     'bot_id' => $botId,
-                    'filter_mode' => Chat::FILTER_MODE_BLACK,
                 ]);
 
                 $newChat = true;
             }
+
             // Update telegram chat information
             $telegramChat->setAttributes([
                 'type' => $updateChat->getType(),
@@ -155,6 +175,7 @@ class Module extends \yii\base\Module
                 'first_name' => $updateChat->getFirstName(),
                 'last_name' => $updateChat->getLastName(),
             ]);
+
             if (!$telegramChat->save()) {
                 return false;
             }

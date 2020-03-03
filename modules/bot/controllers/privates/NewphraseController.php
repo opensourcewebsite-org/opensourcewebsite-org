@@ -9,6 +9,7 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
+use app\modules\bot\models\User;
 
 /**
  * Class FilterChatController
@@ -24,7 +25,7 @@ class NewphraseController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/set_newphrase ' . $type . ' ' . $groupId);
+        $telegramUser->getState()->setName('/admin_filter_set_newphrase ' . $type . ' ' . $groupId);
         $telegramUser->save();
 
         return [
@@ -37,7 +38,7 @@ class NewphraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => ($type == Phrase::TYPE_BLACK ? '/blacklist' : '/whitelist') . ' ' . $groupId,
+                                'callback_data' => ($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
                                 'text' => '🔙',
                             ],
                             [
@@ -51,29 +52,39 @@ class NewphraseController extends Controller
         ];
     }
 
-    public function actionUpdate($type = null, $groupId = null) {
+    public function actionUpdate($type = null, $groupId = null)
+    {
         $update = $this->getUpdate();
         $text = $update->getMessage()->getText();
 
-        $phrase = new Phrase();
+        $isCreated = false;
+        if (!Phrase::find()->where(['type' => $type, 'group_id' => $groupId, 'text' => $text])->exists()) {
+            $phrase = new Phrase();
 
-        $phrase->id = time();
-        $phrase->group_id = $groupId;
-        $phrase->type = $type;
-        $phrase->text = $text;
+            $user = User::find()->where(['provider_user_id' => $this->getTelegramChat()->chat_id])->one();
 
-        $phrase->save();
+            $phrase->setAttributes([
+                'group_id' => $groupId,
+                'type' => $type,
+                'text' => $text,
+                'created_by' => $user->id,
+            ]);
+
+            $phrase->save();
+
+            $isCreated = true;
+        }
 
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('update'),
+                $this->render('update', compact('isCreated')),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => ($type == Phrase::TYPE_BLACK ? '/blacklist' : '/whitelist') . ' ' . $groupId,
+                                'callback_data' => ($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
                                 'text' => Yii::t('bot', 'Next'),
                             ],
                             [

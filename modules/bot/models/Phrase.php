@@ -17,16 +17,10 @@ class Phrase extends ActiveRecord
     public function rules()
     {
         return [
-            [['group_id', 'type', 'text'], 'required'],
-            [['id', 'group_id'], 'integer'],
+            [['group_id', 'type', 'text', 'created_by'], 'required'],
+            [['id', 'group_id', 'created_by'], 'integer'],
             [['type', 'text'], 'string'],
-        ];
-    }
-
-    public function behaviors()
-    {
-        return [
-            // TimestampBehavior::className(),
+            [['created_at'], 'default', 'value' => time()],
         ];
     }
 

@@ -22,7 +22,6 @@ class WhitelistController extends Controller
      */
     public function actionIndex($groupId = null)
     {
-
         $telegramUser = $this->getTelegramUser();
         $telegramUser->getState()->setName(null);
         $telegramUser->save();
@@ -34,7 +33,7 @@ class WhitelistController extends Controller
         foreach ($phrases as $phrase) {
             $buttons[] = [
                 [
-                    'callback_data' => '/phrase ' . $phrase->id,
+                    'callback_data' => '/admin_filter_phrase ' . $phrase->id,
                     'text' => $phrase->text,
                 ],
             ];
@@ -42,14 +41,14 @@ class WhitelistController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/newphrase ' . Phrase::TYPE_WHITE . ' ' . $groupId,
+                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_WHITE . ' ' . $groupId,
                 'text' => Yii::t('bot', 'Add phrase'),
             ],
         ];
 
         $buttons[] = [
             [
-                'callback_data' => '/filterchat ' . $groupId,
+                'callback_data' => '/admin_filter_filterchat ' . $groupId,
                 'text' => '🔙',
             ],
             [

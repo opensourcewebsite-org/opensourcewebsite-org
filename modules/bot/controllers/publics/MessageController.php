@@ -10,6 +10,7 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
+use app\modules\bot\models\Setting;
 
 /**
  * Class MessageController
@@ -34,11 +35,18 @@ class MessageController extends Controller
 
         $chat = Chat::find()->where(['chat_id' => $groupId])->one();
 
+        $statusSetting = Setting::find()->where(['chat_id' => $chat->id, 'setting' => Setting::FILTER_STATUS])->one();
+        $modeSetting = Setting::find()->where(['chat_id' => $chat->id, 'setting' => Setting::FILTER_MODE])->one();
+
+        if (!isset($statusSetting) || $statusSetting->value == Setting::FILTER_STATUS_OFF) {
+            return;
+        }
+
         $deleteMessage = null;
-        if ($chat->isFilterModeBlack()) {
+        if ($modeSetting->value = Setting::FILTER_MODE_BLACK) {
             $deleteMessage = false;
 
-            $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => Chat::FILTER_MODE_BLACK])->all();
+            $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => Setting::FILTER_MODE_BLACK])->all();
             foreach ($phrases as $phrase) {
                 if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
                     $deleteMessage = true;
@@ -48,7 +56,7 @@ class MessageController extends Controller
         } else {
             $deleteMessage = true;
 
-            $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => Chat::FILTER_MODE_WHITE])->all();
+            $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => Setting::FILTER_MODE_WHITE])->all();
             foreach ($phrases as $phrase) {
                 if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
                     $deleteMessage = false;
