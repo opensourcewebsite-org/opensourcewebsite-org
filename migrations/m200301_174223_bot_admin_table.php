@@ -14,8 +14,8 @@ class m200301_174223_bot_admin_table extends Migration
     {
         $this->createTable('{{%bot_admin}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'chat_id' => $this->integer()->unsigned(),
-            'telegram_user_id' => $this->integer()->unsigned(),
+            'chat_id' => $this->integer()->unsigned()->notNull(),
+            'telegram_user_id' => $this->integer()->unsigned()->notNull(),
         ]);
 
         $this->addForeignKey(

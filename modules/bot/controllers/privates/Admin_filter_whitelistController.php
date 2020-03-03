@@ -15,7 +15,7 @@ use app\modules\bot\models\Phrase;
  *
  * @package app\controllers\bot
  */
-class WhitelistController extends Controller
+class Admin_filter_whitelistController extends Controller
 {
     /**
      * @return array
@@ -57,16 +57,29 @@ class WhitelistController extends Controller
             ],
         ];
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', compact('groupTitle')),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                ]
-            ),
-        ];
+        if ($this->getUpdate()->getCallbackQuery()) {
+            return [
+                new EditMessageTextCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+                    $this->render('index', compact('groupTitle')),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
+                    ]
+                ),
+            ];
+        } else {
+            return [
+                new SendMessageCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->render('index', compact('groupTitle')),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
+                    ]
+                ),
+            ];
+        }
     }
 }

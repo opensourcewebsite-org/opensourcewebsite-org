@@ -8,14 +8,14 @@ use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
-use app\modules\bot\models\Setting;
+use app\modules\bot\models\ChatSetting;
 
 /**
  * Class FilterChatController
  *
  * @package app\controllers\bot
  */
-class FilterchatController extends Controller
+class Admin_filter_filterchatController extends Controller
 {
     /**
      * @return array
@@ -24,37 +24,37 @@ class FilterchatController extends Controller
     {
         $chat = Chat::find()->where(['id' => $groupId])->one();
 
-        $statusSetting = Setting::find()->where(['chat_id' => $groupId, 'setting' => Setting::FILTER_STATUS])->one();
+        $statusSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_STATUS])->one();
 
         if (!isset($statusSetting)) {
-            $statusSetting = new Setting();
+            $statusSetting = new ChatSetting();
 
             $statusSetting->setAttributes([
                 'chat_id' => $groupId,
-                'setting' => Setting::FILTER_STATUS,
-                'value' => Setting::FILTER_STATUS_OFF,
+                'setting' => ChatSetting::FILTER_STATUS,
+                'value' => ChatSetting::FILTER_STATUS_OFF,
             ]);
 
             $statusSetting->save();
         }
 
-        $modeSetting = Setting::find()->where(['chat_id' => $groupId, 'setting' => Setting::FILTER_MODE])->one();
+        $modeSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_MODE])->one();
 
         if (!isset($modeSetting)) {
-            $modeSetting = new Setting();
+            $modeSetting = new ChatSetting();
 
             $modeSetting->setAttributes([
                 'chat_id' => $groupId,
-                'setting' => Setting::FILTER_MODE,
-                'value' => Setting::FILTER_MODE_BLACK,
+                'setting' => ChatSetting::FILTER_MODE,
+                'value' => ChatSetting::FILTER_MODE_BLACK,
             ]);
 
             $modeSetting->save();
         }
 
         $groupTitle = $chat->title;
-        $isFilterOn = ($statusSetting->value == Setting::FILTER_STATUS_ON);
-        $isFilterModeBlack = ($modeSetting->value == Setting::FILTER_MODE_BLACK);
+        $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
+        $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACK);
 
         return [
             new EditMessageTextCommand(
@@ -106,12 +106,12 @@ class FilterchatController extends Controller
 
     public function actionUpdate($groupId = null)
     {
-        $modeSetting = Setting::find()->where(['chat_id' => $groupId, 'setting' => Setting::FILTER_MODE])->one();
+        $modeSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_MODE])->one();
 
-        if ($modeSetting->value == Setting::FILTER_MODE_BLACK) {
-            $modeSetting->value = Setting::FILTER_MODE_WHITE;
+        if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACK) {
+            $modeSetting->value = ChatSetting::FILTER_MODE_WHITE;
         } else {
-            $modeSetting->value = Setting::FILTER_MODE_BLACK;
+            $modeSetting->value = ChatSetting::FILTER_MODE_BLACK;
         }
 
         $modeSetting->save();
@@ -121,12 +121,12 @@ class FilterchatController extends Controller
 
     public function actionStatus($groupId = null)
     {
-        $statusSetting = Setting::find()->where(['chat_id' => $groupId, 'setting' => Setting::FILTER_STATUS])->one();
+        $statusSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_STATUS])->one();
 
-        if ($statusSetting->value == Setting::FILTER_STATUS_ON) {
-            $statusSetting->value = Setting::FILTER_STATUS_OFF;
+        if ($statusSetting->value == ChatSetting::FILTER_STATUS_ON) {
+            $statusSetting->value = ChatSetting::FILTER_STATUS_OFF;
         } else {
-            $statusSetting->value = Setting::FILTER_STATUS_ON;
+            $statusSetting->value = ChatSetting::FILTER_STATUS_ON;
         }
 
         $statusSetting->save();

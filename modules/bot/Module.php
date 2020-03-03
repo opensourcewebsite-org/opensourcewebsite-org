@@ -8,7 +8,7 @@ use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\User as TelegramUser;
-use app\modules\bot\models\Admin;
+use app\modules\bot\models\ChatMember;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Language;
@@ -185,14 +185,15 @@ class Module extends \yii\base\Module
                 $administrators = $this->botApi->getChatAdministrators($updateChat->getId());
 
                 foreach ($administrators as $administrator) {
-                    $admin = new Admin();
+                    $chatMember = new ChatMember();
 
-                    $admin->setAttributes([
+                    $chatMember->setAttributes([
                         'chat_id' => $telegramChat->id,
                         'telegram_user_id' => $administrator->getUser()->getId(),
+                        'status' => $administrator->getStatus(),
                     ]);
 
-                    $admin->save();
+                    $chatMember->save();
                 }
             }
 

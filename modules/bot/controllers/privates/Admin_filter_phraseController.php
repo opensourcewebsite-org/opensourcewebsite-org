@@ -15,7 +15,7 @@ use app\modules\bot\models\Phrase;
  *
  * @package app\controllers\bot
  */
-class PhraseController extends Controller
+class Admin_filter_phraseController extends Controller
 {
     /**
      * @return array
@@ -154,6 +154,30 @@ class PhraseController extends Controller
         $phrase = Phrase::find()->where(['id' => $phraseId])->one();
 
         $text = $update->getMessage()->getText();
+
+        if (Phrase::find()->where(['group_id' => $phrase->group_id, 'text' => $text, 'type' => $phrase->type])->exists()) {
+            return [
+                new SendMessageCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->render('update'),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => '/admin_filter_phrase ' . $phraseId,
+                                    'text' => '🔙',
+                                ],
+                                [
+                                    'callback_data' => '/menu',
+                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                                ],
+                            ],
+                        ]),
+                    ]
+                ),
+            ];
+        }
 
         $phrase->text = $text;
         $phrase->save();

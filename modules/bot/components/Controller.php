@@ -55,7 +55,8 @@ class Controller extends \yii\web\Controller
         return $this->module->getBotName();
     }
 
-    protected function getBotApi() {
+    protected function getBotApi()
+    {
         return $this->module->botApi;
     }
 

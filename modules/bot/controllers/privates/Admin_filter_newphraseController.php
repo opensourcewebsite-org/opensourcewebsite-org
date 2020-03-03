@@ -16,7 +16,7 @@ use app\modules\bot\models\User;
  *
  * @package app\controllers\bot
  */
-class NewphraseController extends Controller
+class Admin_filter_newphraseController extends Controller
 {
     /**
      * @return array
@@ -55,6 +55,8 @@ class NewphraseController extends Controller
     public function actionUpdate($type = null, $groupId = null)
     {
         $update = $this->getUpdate();
+        $telegramUser = $this->getTelegramUser();
+
         $text = $update->getMessage()->getText();
 
         $isCreated = false;
@@ -75,26 +77,33 @@ class NewphraseController extends Controller
             $isCreated = true;
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('update', compact('isCreated')),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
+        if ($isCreated) {
+            $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
+            $telegramUser->save();
+
+            $this->module->dispatchRoute($update);
+        } else {
+            return [
+                new SendMessageCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->render('update'),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
                             [
-                                'callback_data' => ($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
-                                'text' => Yii::t('bot', 'Next'),
+                                [
+                                    'callback_data' => ($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
+                                    'text' => '🔙',
+                                ],
+                                [
+                                    'callback_data' => '/menu',
+                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                                ],
                             ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
+                        ]),
+                    ]
+                ),
+            ];
+        }
     }
 }

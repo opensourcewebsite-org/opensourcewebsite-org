@@ -8,7 +8,7 @@ use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\models\Admin;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\Chat;
 
 /**
@@ -25,7 +25,7 @@ class AdminController extends Controller
     {
         $chat_id = $this->getTelegramChat()->chat_id;
 
-        $admins = Admin::find()->where(['telegram_user_id' => $chat_id])->all();
+        $admins = ChatMember::find()->where(['and', ['telegram_user_id' => $chat_id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
 
         $adminGroups = [];
         foreach ($admins as $admin) {
@@ -111,19 +111,20 @@ class AdminController extends Controller
                 $userId = $administrator->getUser()->getId();
                 $adminUserIds[] = $userId;
 
-                if (!Admin::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $userId])->exists()) {
-                    $admin = new Admin();
+                if (!ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $userId])->exists()) {
+                    $chatMember = new ChatMember();
 
-                    $admin->setAttributes([
+                    $chatMember->setAttributes([
                         'chat_id' => $chat->id,
                         'telegram_user_id' => $userId,
+                        'status' => $administrator->getStatus(),
                     ]);
 
-                    $admin->save();
+                    $chatMember->save();
                 }
             }
 
-            $curAdmins = Admin::find()->where(['chat_id' => $chat->id])->all();
+            $curAdmins = ChatMember::find()->where(['and', ['chat_id' => $chat->id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
 
             foreach ($curAdmins as $curAdmin) {
                 if (!in_array($curAdmin->telegram_user_id, $adminUserIds)) {

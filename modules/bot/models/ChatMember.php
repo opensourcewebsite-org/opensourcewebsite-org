@@ -4,19 +4,22 @@ namespace app\modules\bot\models;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
-class Admin extends ActiveRecord
+class ChatMember extends ActiveRecord
 {
+    public const STATUS_CREATOR = 'creator';
+    public const STATUS_ADMINISTRATOR = 'administrator';
 
     public static function tableName()
     {
-        return 'bot_admin';
+        return 'bot_chat_member';
     }
 
     public function rules()
     {
         return [
-            [['chat_id', 'telegram_user_id'], 'required'],
+            [['chat_id', 'telegram_user_id', 'status'], 'required'],
             [['id', 'chat_id', 'telegram_user_id'], 'integer'],
+            [['status'], 'string'],
         ];
     }
 

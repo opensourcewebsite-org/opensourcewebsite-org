@@ -4,7 +4,7 @@ namespace app\modules\bot\models;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
-class Setting extends ActiveRecord
+class ChatSetting extends ActiveRecord
 {
     public const FILTER_STATUS = "filter_status";
     public const FILTER_MODE = "filter_mode";
@@ -17,7 +17,7 @@ class Setting extends ActiveRecord
 
     public static function tableName()
     {
-        return 'bot_setting';
+        return 'bot_chat_setting';
     }
 
     public function rules()

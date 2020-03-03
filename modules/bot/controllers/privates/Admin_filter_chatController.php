@@ -14,7 +14,7 @@ use app\modules\bot\models\Chat;
  *
  * @package app\controllers\bot
  */
-class ChatController extends Controller
+class Admin_filter_chatController extends Controller
 {
     /**
      * @return array
