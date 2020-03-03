@@ -48,6 +48,9 @@ return [
                 '/admin_filter_change_phrase <phraseId:\d+>' => 'admin_filter_phrase/create',
                 '/admin_filter_update_phrase <phraseId:\d+>' => 'admin_filter_phrase/update',
 
+                '/join_hider_main <groupId:\d+>' => 'join_hider_main',
+                '/join_hider_change_status <groupId:\d+>' => 'join_hider_main/update',
+
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],

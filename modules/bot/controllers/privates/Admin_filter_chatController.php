@@ -35,7 +35,13 @@ class Admin_filter_chatController extends Controller
                         [
                             [
                                 'callback_data' => '/admin_filter_filterchat ' . $groupId,
-                                'text' => Yii::t('bot', 'Filter'), 
+                                'text' => Yii::t('bot', 'Message Filter'), 
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/join_hider_main ' . $groupId,
+                                'text' => 'Join Hider',
                             ],
                         ],
                         [

@@ -38,30 +38,42 @@ class MessageController extends Controller
         $statusSetting = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::FILTER_STATUS])->one();
         $modeSetting = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::FILTER_MODE])->one();
 
-        if (!isset($statusSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) {
+        if (!isset($statusSetting) || !isset($modeSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) {
             return;
         }
 
-        $deleteMessage = null;
-        if ($modeSetting->value = ChatSetting::FILTER_MODE_BLACK) {
-            $deleteMessage = false;
+        $deleteMessage = false;
 
-            $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACK])->all();
-            foreach ($phrases as $phrase) {
-                if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
-                    $deleteMessage = true;
-                    break;
+        if ($update->getMessage()->getText() !== null) {
+            if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACK) {
+                $deleteMessage = false;
+
+                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACK])->all();
+                
+                foreach ($phrases as $phrase) {
+                    if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
+                        $deleteMessage = true;
+                        break;
+                    }
+                }
+            } else {
+                $deleteMessage = true;
+
+                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITE])->all();
+                foreach ($phrases as $phrase) {
+                    if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
+                        $deleteMessage = false;
+                        break;
+                    }
                 }
             }
-        } else {
-            $deleteMessage = true;
+        }
 
-            $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITE])->all();
-            foreach ($phrases as $phrase) {
-                if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
-                    $deleteMessage = false;
-                    break;
-                }
+        $joinHiderStatus = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::JOIN_HIDER_STATUS])->one();
+
+        if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
+            if ($update->getMessage()->getNewChatMember() !== null || $update->getMessage()->getLeftChatMember() !== null) {
+                $deleteMessage = true;
             }
         }
 

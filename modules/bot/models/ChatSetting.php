@@ -8,12 +8,16 @@ class ChatSetting extends ActiveRecord
 {
     public const FILTER_STATUS = "filter_status";
     public const FILTER_MODE = "filter_mode";
+    public const JOIN_HIDER_STATUS = "join_hider_status";
 
     public const FILTER_MODE_BLACK = "black";
     public const FILTER_MODE_WHITE = "white";
 
     public const FILTER_STATUS_ON = "on";
     public const FILTER_STATUS_OFF = "off";
+
+    public const JOIN_HIDER_STATUS_ON = "on";
+    public const JOIN_HIDER_STATUS_OFF = "off";
 
     public static function tableName()
     {

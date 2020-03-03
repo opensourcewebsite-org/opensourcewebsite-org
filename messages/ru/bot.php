@@ -123,7 +123,7 @@ return [
     'Services' => 'Сервисы',
     'Add phrase' => 'Добавить фразу',
     'Main menu' => 'В главное меню',
-    'Filter' => 'Фильтр',
+    'Message Filter' => 'Фильтр сообщений',
     'Change mode' => 'Изменить режим',
     'Change WhiteList' => 'Изменить WhiteList',
     'Change BlackList' => 'Изменить BlackList',

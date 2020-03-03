@@ -59,7 +59,6 @@ class Admin_filter_newphraseController extends Controller
 
         $text = $update->getMessage()->getText();
 
-        $isCreated = false;
         if (!Phrase::find()->where(['type' => $type, 'group_id' => $groupId, 'text' => $text])->exists()) {
             $phrase = new Phrase();
 
@@ -73,37 +72,11 @@ class Admin_filter_newphraseController extends Controller
             ]);
 
             $phrase->save();
-
-            $isCreated = true;
         }
 
-        if ($isCreated) {
-            $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
-            $telegramUser->save();
+        $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
+        $telegramUser->save();
 
-            $this->module->dispatchRoute($update);
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('update'),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => ($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => '/menu',
-                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
-        }
+        $this->module->dispatchRoute($update);
     }
 }
