@@ -6,8 +6,8 @@ use yii\behaviors\TimestampBehavior;
 
 class Phrase extends ActiveRecord
 {
-    public const TYPE_WHITE = 'white';
-    public const TYPE_BLACK = 'black';
+    public const TYPE_WHITELIST = 'whitelist';
+    public const TYPE_BLACKLIST = 'blacklist';
 
     public static function tableName()
     {

@@ -46,7 +46,7 @@ class Admin_filter_filterchatController extends Controller
             $modeSetting->setAttributes([
                 'chat_id' => $groupId,
                 'setting' => ChatSetting::FILTER_MODE,
-                'value' => ChatSetting::FILTER_MODE_BLACK,
+                'value' => ChatSetting::FILTER_MODE_BLACKLIST,
             ]);
 
             $modeSetting->save();
@@ -54,7 +54,7 @@ class Admin_filter_filterchatController extends Controller
 
         $groupTitle = $chat->title;
         $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
-        $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACK);
+        $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
 
         return [
             new EditMessageTextCommand(
@@ -108,10 +108,10 @@ class Admin_filter_filterchatController extends Controller
     {
         $modeSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_MODE])->one();
 
-        if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACK) {
-            $modeSetting->value = ChatSetting::FILTER_MODE_WHITE;
+        if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+            $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
         } else {
-            $modeSetting->value = ChatSetting::FILTER_MODE_BLACK;
+            $modeSetting->value = ChatSetting::FILTER_MODE_BLACKLIST;
         }
 
         $modeSetting->save();

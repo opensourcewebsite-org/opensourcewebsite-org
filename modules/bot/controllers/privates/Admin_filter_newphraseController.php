@@ -38,7 +38,7 @@ class Admin_filter_newphraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => ($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
+                                'callback_data' => ($type == Phrase::TYPE_BLACKLIST ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
                                 'text' => '🔙',
                             ],
                             [
@@ -74,7 +74,7 @@ class Admin_filter_newphraseController extends Controller
             $phrase->save();
         }
 
-        $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACK ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
+        $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACKLIST ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
         $telegramUser->save();
 
         $this->module->dispatchRoute($update);

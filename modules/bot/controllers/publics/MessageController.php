@@ -45,10 +45,10 @@ class MessageController extends Controller
         $deleteMessage = false;
 
         if ($update->getMessage()->getText() !== null) {
-            if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACK) {
+            if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                 $deleteMessage = false;
 
-                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACK])->all();
+                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACKLIST])->all();
                 
                 foreach ($phrases as $phrase) {
                     if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
@@ -59,7 +59,7 @@ class MessageController extends Controller
             } else {
                 $deleteMessage = true;
 
-                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITE])->all();
+                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITELIST])->all();
                 foreach ($phrases as $phrase) {
                     if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
                         $deleteMessage = false;

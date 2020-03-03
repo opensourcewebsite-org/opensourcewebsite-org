@@ -11,8 +11,8 @@ class Chat extends ActiveRecord
     public const TYPE_SUPERGROUP = 'supergroup';
     public const TYPE_CHANNEL = 'channel';
 
-    public const FILTER_MODE_BLACK = 'black';
-    public const FILTER_MODE_WHITE = 'white';
+    public const FILTER_MODE_BLACKLIST = 'blacklist';
+    public const FILTER_MODE_WHITELIST = 'whitelist';
 
     public static function tableName()
     {

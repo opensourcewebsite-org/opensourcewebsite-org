@@ -27,7 +27,7 @@ class Admin_filter_blacklistController extends Controller
         $telegramUser->save();
 
         $groupTitle = Chat::find()->where(['id' => $groupId])->one()->title;
-        $phrases = Phrase::find()->where(['group_id' => $groupId, 'type' => Phrase::TYPE_BLACK])->all();
+        $phrases = Phrase::find()->where(['group_id' => $groupId, 'type' => Phrase::TYPE_BLACKLIST])->all();
 
         $buttons = [];
         foreach ($phrases as $phrase) {
@@ -41,7 +41,7 @@ class Admin_filter_blacklistController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_BLACK . ' ' . $groupId,
+                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_BLACKLIST . ' ' . $groupId,
                 'text' => Yii::t('bot', 'Add phrase'),
             ],
         ];
