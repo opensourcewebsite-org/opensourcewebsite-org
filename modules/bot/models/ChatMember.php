@@ -29,4 +29,8 @@ class ChatMember extends ActiveRecord
             // TimestampBehavior::className(),
         ];
     }
+
+    public function isAdmin() {
+        return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
+    }
 }

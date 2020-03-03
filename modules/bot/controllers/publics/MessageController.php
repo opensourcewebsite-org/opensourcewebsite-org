@@ -11,6 +11,7 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\ChatMember;
 
 /**
  * Class MessageController
@@ -45,25 +46,30 @@ class MessageController extends Controller
         $deleteMessage = false;
 
         if ($update->getMessage()->getText() !== null) {
-            if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
-                $deleteMessage = false;
+            $chatMember = ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $telegramUser->provider_user_id])->one();
 
-                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACKLIST])->all();
-                
-                foreach ($phrases as $phrase) {
-                    if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
-                        $deleteMessage = true;
-                        break;
+            if (!isset($chatMember) || !$chatMember->isAdmin()) {
+
+                if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+                    $deleteMessage = false;
+
+                    $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACKLIST])->all();
+                    
+                    foreach ($phrases as $phrase) {
+                        if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
+                            $deleteMessage = true;
+                            break;
+                        }
                     }
-                }
-            } else {
-                $deleteMessage = true;
+                } else {
+                    $deleteMessage = true;
 
-                $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITELIST])->all();
-                foreach ($phrases as $phrase) {
-                    if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
-                        $deleteMessage = false;
-                        break;
+                    $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITELIST])->all();
+                    foreach ($phrases as $phrase) {
+                        if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
+                            $deleteMessage = false;
+                            break;
+                        }
                     }
                 }
             }

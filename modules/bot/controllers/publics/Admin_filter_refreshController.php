@@ -59,12 +59,14 @@ class Admin_filter_refreshController extends Controller
             }
         }
         
+        
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
                 ]
             ),
         ];
