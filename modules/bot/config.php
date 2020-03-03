@@ -33,7 +33,6 @@ return [
 
                 '/update_location' => 'my_location/update',
 
-                '/admin_refresh' => 'admin/refresh',
                 '/admin_filter_chat <groupId:\d+>' => 'admin_filter_chat',
                 '/admin_filter_filterchat <groupId:\d+>' => 'admin_filter_filterchat',
                 '/admin_filter_change_filter_mode <groupId:\d+>' => 'admin_filter_filterchat/update',

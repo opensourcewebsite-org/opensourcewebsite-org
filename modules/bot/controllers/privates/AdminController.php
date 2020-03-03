@@ -54,13 +54,6 @@ class AdminController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_refresh',
-                'text' => Yii::t('bot', 'Refresh'),
-            ],
-        ];
-
-        $buttons[] = [
-            [
                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
                 'text' => Yii::t('bot', 'Read more')
             ],
@@ -97,49 +90,5 @@ class AdminController extends Controller
                 ),
             ];
         }
-    }
-
-    public function actionRefresh()
-    {
-        $chats = Chat::find()->where(['or', ['type' => Chat::TYPE_GROUP], ['type' => Chat::TYPE_SUPERGROUP], ['type' => Chat::TYPE_CHANNEL]])->all();
-
-        foreach ($chats as $chat) {
-            $administrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
-
-            $adminUserIds = [];
-            foreach ($administrators as $administrator) {
-                $userId = $administrator->getUser()->getId();
-                $adminUserIds[] = $userId;
-
-                if (!ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $userId])->exists()) {
-                    $chatMember = new ChatMember();
-
-                    $chatMember->setAttributes([
-                        'chat_id' => $chat->id,
-                        'telegram_user_id' => $userId,
-                        'status' => $administrator->getStatus(),
-                    ]);
-
-                    $chatMember->save();
-                }
-            }
-
-            $curAdmins = ChatMember::find()->where(['and', ['chat_id' => $chat->id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
-
-            foreach ($curAdmins as $curAdmin) {
-                if (!in_array($curAdmin->telegram_user_id, $adminUserIds)) {
-                    $curAdmin->delete();
-                }
-            }
-        }
-
-        $response = $this->actionIndex();
-
-        $response[] = new AnswerCallbackQueryCommand(
-            $this->getUpdate()->getCallbackQuery()->getId(),
-            ['text' => Yii::t('bot', 'Chats successfully refreshed') . ' ✅']
-        );
-
-        return $response;
     }
 }
