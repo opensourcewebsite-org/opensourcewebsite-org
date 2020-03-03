@@ -25,6 +25,6 @@ class Phrase extends ActiveRecord
     }
 
     public function isTypeBlack() {
-        return $this->type == self::TYPE_BLACK;
+        return $this->type == self::TYPE_BLACKLIST;
     }
 }

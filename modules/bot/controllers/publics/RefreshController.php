@@ -16,7 +16,7 @@ use app\modules\bot\models\ChatMember;
  *
  * @package app\controllers\bot
  */
-class Admin_filter_refreshController extends Controller
+class RefreshController extends Controller
 {
     /**
      * @return array
@@ -58,7 +58,6 @@ class Admin_filter_refreshController extends Controller
                 $curAdmin->delete();
             }
         }
-        
         
         return [
             new SendMessageCommand(

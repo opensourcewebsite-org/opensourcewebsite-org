@@ -50,8 +50,6 @@ return [
                 '/admin_join_hider <groupId:\d+>' => 'admin_join_hider',
                 '/admin_join_hider_change_status <groupId:\d+>' => 'admin_join_hider/update',
 
-                '/refresh' => 'admin_filter_refresh',
-
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],
