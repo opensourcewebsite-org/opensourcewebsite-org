@@ -40,7 +40,7 @@ class Admin_filter_chatController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/join_hider_main ' . $groupId,
+                                'callback_data' => '/admin_join_hider ' . $groupId,
                                 'text' => 'Join Hider',
                             ],
                         ],

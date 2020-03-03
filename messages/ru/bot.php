@@ -135,5 +135,4 @@ return [
     'Chats successfully refreshed' => 'Чаты успешно обновлены',
     'Change status' => 'Изменить статус',
     'Status' => 'Статус',
-    'Error. Phrase is already exists' => 'Ошибка. Фраза уже существует',
 ];

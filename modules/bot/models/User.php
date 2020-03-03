@@ -121,10 +121,4 @@ class User extends ActiveRecord
         $this->state = $this->getState()->toJson();
         return parent::save($runValidation, $attributeNames);
     }
-
-    public function getChats()
-    {
-        return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
-                    ->viaTable('bot_chat_bot_user', ['user_id' => 'id']);
-    }
 }

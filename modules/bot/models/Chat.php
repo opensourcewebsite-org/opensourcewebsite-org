@@ -35,12 +35,6 @@ class Chat extends ActiveRecord
         ];
     }
 
-    public function getUsers()
-    {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])
-                    ->viaTable('bot_chat_bot_user', ['chat_id' => 'id']);
-    }
-
     public function isPrivate()
     {
         return $this->type == self::TYPE_PRIVATE;

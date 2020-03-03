@@ -203,9 +203,23 @@ class Module extends \yii\base\Module
                 : Controller::TYPE_PUBLIC;
             $this->setupPaths($namespace);
 
-            if (!in_array($telegramUser, $telegramChat->getUsers()->all())) {
-                $telegramChat->link('users', $telegramUser);
+            $chatMember = ChatMember::find()->where(['chat_id' => $telegramChat->id, 'telegram_user_id' => $telegramUser->provider_user_id])->one();
+
+            if (!isset($chatMember)) {
+                $chatMember = new ChatMember();
+
+                $chatMember->setAttributes([
+                    'chat_id' => $telegramChat->id,
+                    'telegram_user_id' => $telegramUser->provider_user_id,
+                ]);
             }
+
+            $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
+            $chatMember->setAttributes([
+                'status' => $telegramChatMember->getStatus(),
+            ]);
+
+            $chatMember->save();
 
             if (!isset($telegramUser->user_id)) {
                 $user = User::createWithRandomPassword();

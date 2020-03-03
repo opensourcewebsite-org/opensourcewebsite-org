@@ -15,7 +15,7 @@ use app\modules\bot\models\ChatSetting;
  *
  * @package app\controllers\bot
  */
-class Join_hider_mainController extends Controller
+class Admin_join_hiderController extends Controller
 {
     /**
      * @return array
@@ -51,7 +51,7 @@ class Join_hider_mainController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/join_hider_change_status ' . $groupId,
+                                'callback_data' => '/admin_join_hider_change_status ' . $groupId,
                                 'text' => Yii::t('bot', 'Status') . ': ' . ($statusOn ? "ON" : "OFF"), 
                             ],
                         ],
