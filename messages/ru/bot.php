@@ -15,6 +15,7 @@
 return [
     'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
     'Join us and participate in the community' => 'Присоединяйтесь к нам и участвуйте в сообществе',
+    'Hello' => 'Здравствуйте',
     'Welcome' => 'Добро пожаловать',
     'I am a free virtual personal assistant, multilingual and available everywhere where there is internet. I adhere to a privacy policy that guarantees 100% confidentiality for your data. The list of my features and services is constantly expanding, along with the service improvement.' => 'Я - бесплатный виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших данных. Список моих возможностей и услуг постоянно расширяется, как и качество обслуживания.',
     'My code is open source and is a part of the online community OpenSourceWebsite. You can help the project by participating in its development or supporting it with donations.' => 'Мой код находится в открытом доступе и является частью онлайн сообщества OpenSourceWebsite. Вы можете помочь проекту, участвуя в разработке и поддерживая пожертвованиями.',
@@ -105,6 +106,7 @@ return [
     'Coming soon, you can join the development' => 'Скоро будет, вы можете присоединиться к разработке',
     'Website' => 'Сайт',
     'Telegram Bot' => 'Телеграм бот',
+    'Bot' => 'Бот',
     'Source Code' => 'Исходный код',
     'Your donations and contributions increase your Rating' => 'Ваши пожертвования и помощь повышают ваш рейтинг',
     'Rating provides' => 'Рейтинг дает',
