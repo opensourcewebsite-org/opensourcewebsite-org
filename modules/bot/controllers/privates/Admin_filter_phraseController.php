@@ -41,7 +41,7 @@ class Admin_filter_phraseController extends Controller
                             [
                                 [
                                     'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
-                                    'text' => 'Изменить',
+                                    'text' => Yii::t('bot', 'Change'),
                                 ],
                             ],
                             [
