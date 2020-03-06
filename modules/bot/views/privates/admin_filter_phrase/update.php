@@ -1,1 +1,0 @@
-❗️  <?= \Yii::t('bot', 'Error. Phrase is already exists') ?>

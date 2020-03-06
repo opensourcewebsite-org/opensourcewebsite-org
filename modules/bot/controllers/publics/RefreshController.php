@@ -31,12 +31,12 @@ class RefreshController extends Controller
             return;
         }
 
-        $administrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
+        $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
 
-        $adminUserIds = [];
-        foreach ($administrators as $administrator) {
-            $userId = $administrator->getUser()->getId();
-            $adminUserIds[] = $userId;
+        $administratorUserIds = [];
+        foreach ($telegramAdministrators as $telegramAdministrator) {
+            $userId = $telegramAdministrator->getUser()->getId();
+            $administratorUserIds[] = $userId;
 
             if (!ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $userId])->exists()) {
                 $chatMember = new ChatMember();
@@ -44,18 +44,18 @@ class RefreshController extends Controller
                 $chatMember->setAttributes([
                     'chat_id' => $chat->id,
                     'telegram_user_id' => $userId,
-                    'status' => $administrator->getStatus(),
+                    'status' => $telegramAdministrator->getStatus(),
                 ]);
 
                 $chatMember->save();
             }
         }
 
-        $curAdmins = ChatMember::find()->where(['and', ['chat_id' => $chat->id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
+        $currentAdministrators = ChatMember::find()->where(['and', ['chat_id' => $chat->id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
 
-        foreach ($curAdmins as $curAdmin) {
-            if (!in_array($curAdmin->telegram_user_id, $adminUserIds)) {
-                $curAdmin->delete();
+        foreach ($currentAdministrators as $currentAdministrator) {
+            if (!in_array($currentAdministrator->telegram_user_id, $administratorUserIds)) {
+                $currentAdministrator->delete();
             }
         }
         

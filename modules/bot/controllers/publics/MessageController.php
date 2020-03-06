@@ -23,7 +23,7 @@ class MessageController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($groupId = null)
+    public function actionIndex()
     {
         $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
@@ -49,7 +49,6 @@ class MessageController extends Controller
             $chatMember = ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $telegramUser->provider_user_id])->one();
 
             if (!isset($chatMember) || !$chatMember->isAdmin()) {
-
                 if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                     $deleteMessage = false;
 

@@ -155,33 +155,11 @@ class Admin_filter_phraseController extends Controller
 
         $text = $update->getMessage()->getText();
 
-        if (Phrase::find()->where(['group_id' => $phrase->group_id, 'text' => $text, 'type' => $phrase->type])->exists()) {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('update'),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => '/admin_filter_phrase ' . $phraseId,
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => '/menu',
-                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
+        if (!Phrase::find()->where(['group_id' => $phrase->group_id, 'text' => $text, 'type' => $phrase->type])->exists()) {
+            $phrase->text = $text;
+            $phrase->save();
+
+            return $this->actionIndex($phraseId);
         }
-
-        $phrase->text = $text;
-        $phrase->save();
-
-        return $this->actionIndex($phraseId);
     }
 }

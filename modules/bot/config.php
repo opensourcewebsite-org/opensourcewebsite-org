@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\bot\components\CommandRouteResolver;
+use app\modules\bot\components\request\SystemMessageRequestHandler;
 use app\modules\bot\components\request\MessageRequestHandler;
 use app\modules\bot\components\request\CallbackQueryRequestHandler;
 use app\modules\bot\components\request\LocationRequestHandler;
@@ -54,6 +55,7 @@ return [
                 '/<controller:\w+>' => '<controller>/index',
             ],
             'requestHandlers' => [
+                new SystemMessageRequestHandler(),
                 new MessageRequestHandler(),
                 new CallbackQueryRequestHandler(),
                 new LocationRequestHandler(),
