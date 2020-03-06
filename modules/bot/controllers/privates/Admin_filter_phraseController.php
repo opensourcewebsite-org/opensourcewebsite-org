@@ -81,7 +81,7 @@ class Admin_filter_phraseController extends Controller
                             [
                                 [
                                     'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
-                                    'text' => 'Удалить',
+                                    'text' => Yii::t('bot', 'Remove'),
                                 ],
                             ],
                             [
