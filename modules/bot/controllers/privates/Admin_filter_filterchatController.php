@@ -20,17 +20,21 @@ class Admin_filter_filterchatController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($groupId = null)
+    public function actionIndex($chatId = null)
     {
-        $chat = Chat::find()->where(['id' => $groupId])->one();
+        $chat = Chat::findOne($chatId);
 
-        $statusSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_STATUS])->one();
+        if (!isset($chat)) {
+            return;
+        }
+
+        $statusSetting = ChatSetting::find()->where(['chat_id' => $chatId, 'setting' => ChatSetting::FILTER_STATUS])->one();
 
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();
 
             $statusSetting->setAttributes([
-                'chat_id' => $groupId,
+                'chat_id' => $chatId,
                 'setting' => ChatSetting::FILTER_STATUS,
                 'value' => ChatSetting::FILTER_STATUS_OFF,
             ]);
@@ -38,13 +42,13 @@ class Admin_filter_filterchatController extends Controller
             $statusSetting->save();
         }
 
-        $modeSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_MODE])->one();
+        $modeSetting = ChatSetting::find()->where(['chat_id' => $chatId, 'setting' => ChatSetting::FILTER_MODE])->one();
 
         if (!isset($modeSetting)) {
             $modeSetting = new ChatSetting();
 
             $modeSetting->setAttributes([
-                'chat_id' => $groupId,
+                'chat_id' => $chatId,
                 'setting' => ChatSetting::FILTER_MODE,
                 'value' => ChatSetting::FILTER_MODE_BLACKLIST,
             ]);
@@ -52,7 +56,7 @@ class Admin_filter_filterchatController extends Controller
             $modeSetting->save();
         }
 
-        $groupTitle = $chat->title;
+        $chatTitle = $chat->title;
         $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
         $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
 
@@ -60,37 +64,37 @@ class Admin_filter_filterchatController extends Controller
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', compact('groupTitle', 'isFilterOn', 'isFilterModeBlack')),
+                $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_filter_change_filter_on ' . $groupId,
+                                'callback_data' => '/admin_filter_change_filter_on ' . $chatId,
                                 'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? "ON" : "OFF"), 
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_change_filter_mode ' . $groupId,
+                                'callback_data' => '/admin_filter_change_filter_mode ' . $chatId,
                                 'text' => Yii::t('bot', 'Change mode'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_whitelist ' . $groupId,
+                                'callback_data' => '/admin_filter_whitelist ' . $chatId,
                                 'text' => Yii::t('bot', 'Change WhiteList'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_blacklist ' . $groupId,
+                                'callback_data' => '/admin_filter_blacklist ' . $chatId,
                                 'text' => Yii::t('bot', 'Change BlackList'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_chat '  . $groupId,
+                                'callback_data' => '/admin_filter_chat '  . $chatId,
                                 'text' => '🔙',
                             ],
                             [
@@ -104,9 +108,15 @@ class Admin_filter_filterchatController extends Controller
         ];
     }
 
-    public function actionUpdate($groupId = null)
+    public function actionUpdate($chatId = null)
     {
-        $modeSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_MODE])->one();
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return;
+        }
+
+        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
         if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
             $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
@@ -116,12 +126,18 @@ class Admin_filter_filterchatController extends Controller
 
         $modeSetting->save();
 
-        return $this->actionIndex($groupId);
+        return $this->actionIndex($chatId);
     }
 
-    public function actionStatus($groupId = null)
+    public function actionStatus($chatId = null)
     {
-        $statusSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::FILTER_STATUS])->one();
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return;
+        }
+
+        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
 
         if ($statusSetting->value == ChatSetting::FILTER_STATUS_ON) {
             $statusSetting->value = ChatSetting::FILTER_STATUS_OFF;
@@ -131,6 +147,6 @@ class Admin_filter_filterchatController extends Controller
 
         $statusSetting->save();
 
-        return $this->actionIndex($groupId);
+        return $this->actionIndex($chatId);
     }
 }

@@ -23,22 +23,15 @@ class AdminController extends Controller
      */
     public function actionIndex()
     {
-        $chat_id = $this->getTelegramChat()->chat_id;
-
-        $admins = ChatMember::find()->where(['and', ['telegram_user_id' => $chat_id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
-
-        $adminGroups = [];
-        foreach ($admins as $admin) {
-            $adminGroups[] = Chat::findOne($admin->chat_id);
-        }
+        $chats = $this->getTelegramUser()->getAdminChats()->all();
 
         $buttons = [];
         $currentRow = [];
 
-        foreach ($adminGroups as $adminGroup) {
+        foreach ($chats as $chat) {
             $currentRow[] = [
-                'callback_data' => '/admin_filter_chat ' . $adminGroup->id,
-                'text' => $adminGroup->title,
+                'callback_data' => '/admin_filter_chat ' . $chat->id,
+                'text' => $chat->title,
             ];
 
             if (count($currentRow) == 2) {

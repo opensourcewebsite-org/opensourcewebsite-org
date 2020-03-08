@@ -17,8 +17,8 @@ class ChatMember extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'telegram_user_id', 'status'], 'required'],
-            [['id', 'chat_id', 'telegram_user_id'], 'integer'],
+            [['chat_id', 'user_id', 'status'], 'required'],
+            [['id', 'chat_id', 'user_id'], 'integer'],
             [['status'], 'string'],
         ];
     }
@@ -30,7 +30,8 @@ class ChatMember extends ActiveRecord
         ];
     }
 
-    public function isAdmin() {
+    public function isAdmin()
+    {
         return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
     }
 }

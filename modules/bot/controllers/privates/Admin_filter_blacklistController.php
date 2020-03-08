@@ -20,14 +20,20 @@ class Admin_filter_blacklistController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($groupId = null)
+    public function actionIndex($chatId = null)
     {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return;
+        }
+
         $telegramUser = $this->getTelegramUser();
         $telegramUser->getState()->setName(null);
         $telegramUser->save();
 
-        $groupTitle = Chat::find()->where(['id' => $groupId])->one()->title;
-        $phrases = Phrase::find()->where(['group_id' => $groupId, 'type' => Phrase::TYPE_BLACKLIST])->all();
+        $chatTitle = $chat->title;
+        $phrases = $chat->getBlacklistPhrases();
 
         $buttons = [];
         foreach ($phrases as $phrase) {
@@ -41,14 +47,14 @@ class Admin_filter_blacklistController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_BLACKLIST . ' ' . $groupId,
+                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_BLACKLIST . ' ' . $chatId,
                 'text' => Yii::t('bot', 'Add phrase'),
             ],
         ];
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_filter_filterchat ' . $groupId,
+                'callback_data' => '/admin_filter_filterchat ' . $chatId,
                 'text' => '🔙',
             ],
             [
@@ -62,7 +68,7 @@ class Admin_filter_blacklistController extends Controller
                 new EditMessageTextCommand(
                     $this->getTelegramChat()->chat_id,
                     $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index', compact('groupTitle')),
+                    $this->render('index', compact('chatTitle')),
                     [
                         'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup($buttons),
@@ -73,7 +79,7 @@ class Admin_filter_blacklistController extends Controller
             return [
                 new SendMessageCommand(
                     $this->getTelegramChat()->chat_id,
-                    $this->render('index', compact('groupTitle')),
+                    $this->render('index', compact('chatTitle')),
                     [
                         'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup($buttons),

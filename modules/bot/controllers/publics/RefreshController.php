@@ -10,6 +10,7 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
 use app\modules\bot\models\ChatMember;
+use app\modules\bot\models\User;
 
 /**
  * Class FilterChatController
@@ -23,39 +24,29 @@ class RefreshController extends Controller
      */
     public function actionIndex()
     {
-        $chat = Chat::find()->where([
-            'chat_id' => $this->getTelegramChat()->chat_id,
-        ])->one();
-
-        if (!isset($chat)) {
-            return;
-        }
+        $chat = $this->getTelegramChat();
 
         $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
 
-        $administratorUserIds = [];
+        $administratorUsers = [];
+
         foreach ($telegramAdministrators as $telegramAdministrator) {
-            $userId = $telegramAdministrator->getUser()->getId();
-            $administratorUserIds[] = $userId;
+            $user = User::find()->where(['provider_user_id' => $telegramAdministrator->getUser()->getId()])->one();
 
-            if (!ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $userId])->exists()) {
-                $chatMember = new ChatMember();
+            if (isset($user)) {
+                $administratorUsers[] = $user;
+            }
 
-                $chatMember->setAttributes([
-                    'chat_id' => $chat->id,
-                    'telegram_user_id' => $userId,
-                    'status' => $telegramAdministrator->getStatus(),
-                ]);
-
-                $chatMember->save();
+            if (isset($user) && !in_array($user, $chat->getAdminUsers()->all())) {
+                $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
 
-        $currentAdministrators = ChatMember::find()->where(['and', ['chat_id' => $chat->id], ['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]])->all();
+        $currentAdministrators = $chat->getAdminUsers()->all();
 
         foreach ($currentAdministrators as $currentAdministrator) {
-            if (!in_array($currentAdministrator->telegram_user_id, $administratorUserIds)) {
-                $currentAdministrator->delete();
+            if (!in_array($currentAdministrator, $administratorUsers)) {
+                $chat->unlink('users', $currentAdministrator, true);
             }
         }
         

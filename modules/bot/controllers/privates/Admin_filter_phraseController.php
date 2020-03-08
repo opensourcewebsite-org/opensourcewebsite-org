@@ -27,7 +27,7 @@ class Admin_filter_phraseController extends Controller
         $telegramUser->getState()->setName(null);
         $telegramUser->save();
 
-        $phrase = Phrase::find()->where(['id' => $phraseId])->one();
+        $phrase = Phrase::findOne($phraseId);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [
@@ -41,18 +41,18 @@ class Admin_filter_phraseController extends Controller
                             [
                                 [
                                     'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
-                                    'text' => 'Изменить',
+                                    'text' => Yii::t('bot', 'Change'),
                                 ],
                             ],
                             [
                                 [
                                     'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
-                                    'text' => 'Удалить',
+                                    'text' => Yii::t('bot', 'Remove'),
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->group_id,
+                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->chat_id,
                                     'text' => '🔙',
                                 ],
                                 [
@@ -75,18 +75,18 @@ class Admin_filter_phraseController extends Controller
                             [
                                 [
                                     'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
-                                    'text' => 'Изменить',
+                                    'text' => Yii::t('bot', 'Change'),
                                 ],
                             ],
                             [
                                 [
                                     'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
-                                    'text' => 'Удалить',
+                                    'text' => Yii::t('bot', 'Remove'),
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->group_id,
+                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->chat_id,
                                     'text' => '🔙',
                                 ],
                                 [
@@ -103,15 +103,15 @@ class Admin_filter_phraseController extends Controller
 
     public function actionDelete($phraseId = null)
     {
-        $phrase = Phrase::find()->where(['id' => $phraseId])->one();
+        $phrase = Phrase::findOne($phraseId);
 
-        $groupId = $phrase->group_id;
+        $chatId = $phrase->chat_id;
 
         $isTypeBlack = $phrase->isTypeBlack();
         $phrase->delete();
 
         $update = $this->getUpdate();
-        $update->getCallbackQuery()->setData(($isTypeBlack ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
+        $update->getCallbackQuery()->setData(($isTypeBlack ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $chatId);
 
         $this->module->dispatchRoute($update);
     }
@@ -151,11 +151,11 @@ class Admin_filter_phraseController extends Controller
     {
         $update = $this->getUpdate();
 
-        $phrase = Phrase::find()->where(['id' => $phraseId])->one();
-
+        $phrase = Phrase::findOne($phraseId);
+        
         $text = $update->getMessage()->getText();
 
-        if (!Phrase::find()->where(['group_id' => $phrase->group_id, 'text' => $text, 'type' => $phrase->type])->exists()) {
+        if (!Phrase::find()->where(['chat_id' => $phrase->chat_id, 'text' => $text, 'type' => $phrase->type])->exists()) {
             $phrase->text = $text;
             $phrase->save();
 

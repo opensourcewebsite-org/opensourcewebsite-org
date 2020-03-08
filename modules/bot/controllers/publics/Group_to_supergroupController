@@ -1,0 +1,37 @@
+<?php
+
+namespace app\modules\bot\controllers\publics;
+
+use Yii;
+use \app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\DeleteMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\models\Chat;
+
+/**
+ * Class MessageController
+ *
+ * @package app\controllers\bot
+ */
+class Group_to_supergroupController extends Controller
+{
+    /**
+     * @return array
+     */
+    public function actionIndex()
+    {
+        $update = $this->getUpdate();
+        $chat = $this->getTelegramChat();
+
+        $chat->setAttributes([
+            'type' => Chat::TYPE_SUPERGROUP,
+            'chat_id' => $update->getMessage()->getMigrateToChatId(),
+        ]);
+
+        $chat->save();
+        
+        return [];
+    }
+}

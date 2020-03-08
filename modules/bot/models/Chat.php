@@ -39,4 +39,41 @@ class Chat extends ActiveRecord
     {
         return $this->type == self::TYPE_PRIVATE;
     }
+
+    public function getPhrases()
+    {
+        return $this->hasMany(Phrase::className(), ['chat_id' => 'id']);
+    }
+
+    public function getBlacklistPhrases()
+    {
+        return $this->getPhrases()->where(['type' => self::FILTER_MODE_BLACKLIST])->all();
+    }
+
+    public function getWhitelistPhrases()
+    {
+        return $this->getPhrases()->where(['type' => self::FILTER_MODE_WHITELIST])->all();
+    }
+
+    public function getSettings()
+    {
+        return $this->hasMany(ChatSetting::className(), ['chat_id' => 'id']);
+    }
+
+    public function getSetting($setting)
+    {
+        return $this->getSettings()->where(['setting' => $setting])->one();
+    }
+
+    public function getUsers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+    }
+
+    public function getAdminUsers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function($query) {
+            $query->andWhere(['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]);
+        });
+    }
 }

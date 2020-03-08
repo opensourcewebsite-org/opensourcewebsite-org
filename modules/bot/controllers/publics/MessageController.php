@@ -28,16 +28,10 @@ class MessageController extends Controller
         $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
-        $groupId = $update->getMessage()->getChat()->getId();
+        $chat = $this->getTelegramChat();
 
-        if (!Chat::find()->where(['chat_id' => $groupId])->exists()) {
-            return;
-        }
-
-        $chat = Chat::find()->where(['chat_id' => $groupId])->one();
-
-        $statusSetting = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::FILTER_STATUS])->one();
-        $modeSetting = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::FILTER_MODE])->one();
+        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
+        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
         if (!isset($statusSetting) || !isset($modeSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) {
             return;
@@ -46,13 +40,13 @@ class MessageController extends Controller
         $deleteMessage = false;
 
         if ($update->getMessage()->getText() !== null) {
-            $chatMember = ChatMember::find()->where(['chat_id' => $chat->id, 'telegram_user_id' => $telegramUser->provider_user_id])->one();
+            $adminUser = $chat->getAdminUsers()->where(['id' => $telegramUser->user_id])->one();
 
-            if (!isset($chatMember) || !$chatMember->isAdmin()) {
+            if (!isset($adminUser)) {
                 if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                     $deleteMessage = false;
 
-                    $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_BLACKLIST])->all();
+                    $phrases = $chat->getBlacklistPhrases();
                     
                     foreach ($phrases as $phrase) {
                         if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
@@ -63,7 +57,8 @@ class MessageController extends Controller
                 } else {
                     $deleteMessage = true;
 
-                    $phrases = Phrase::find()->where(['group_id' => $chat->id, 'type' => ChatSetting::FILTER_MODE_WHITELIST])->all();
+                    $phrases = $chat->getWhitelistPhrases();
+
                     foreach ($phrases as $phrase) {
                         if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
                             $deleteMessage = false;
@@ -74,19 +69,11 @@ class MessageController extends Controller
             }
         }
 
-        $joinHiderStatus = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::JOIN_HIDER_STATUS])->one();
-
-        if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
-            if ($update->getMessage()->getNewChatMember() !== null || $update->getMessage()->getLeftChatMember() !== null) {
-                $deleteMessage = true;
-            }
-        }
-
         if ($deleteMessage) {
             return [
                 new DeleteMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $update->getMessage()->getMessageId(),
+                    $update->getMessage()->getMessageId()
                 ),
             ];
         }

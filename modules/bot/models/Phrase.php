@@ -17,14 +17,15 @@ class Phrase extends ActiveRecord
     public function rules()
     {
         return [
-            [['group_id', 'type', 'text', 'created_by'], 'required'],
-            [['id', 'group_id', 'created_by'], 'integer'],
+            [['chat_id', 'type', 'text', 'created_by'], 'required'],
+            [['id', 'chat_id', 'created_by'], 'integer'],
             [['type', 'text'], 'string'],
             [['created_at'], 'default', 'value' => time()],
         ];
     }
 
-    public function isTypeBlack() {
+    public function isTypeBlack()
+    {
         return $this->type == self::TYPE_BLACKLIST;
     }
 }

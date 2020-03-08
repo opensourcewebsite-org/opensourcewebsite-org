@@ -28,17 +28,10 @@ class System_messageController extends Controller
         $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
-        $groupId = $update->getMessage()->getChat()->getId();
-
-        if (!Chat::find()->where(['chat_id' => $groupId])->exists()) {
-            return;
-        }
-
-        $chat = Chat::find()->where(['chat_id' => $groupId])->one();
+        $chat = $this->getTelegramChat();
 
         $deleteMessage = false;
-
-        $joinHiderStatus = ChatSetting::find()->where(['chat_id' => $chat->id, 'setting' => ChatSetting::JOIN_HIDER_STATUS])->one();
+        $joinHiderStatus = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
 
         if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
             $deleteMessage = true;
@@ -48,7 +41,7 @@ class System_messageController extends Controller
             return [
                 new DeleteMessageCommand(
                     $update->getMessage()->getChat()->getId(),
-                    $update->getMessage()->getMessageId(),
+                    $update->getMessage()->getMessageId()
                 ),
             ];
         }

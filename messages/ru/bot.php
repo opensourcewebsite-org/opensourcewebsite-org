@@ -136,4 +136,6 @@ return [
     'Change status' => 'Изменить статус',
     'Status' => 'Статус',
     'Type command /refresh in group to update administrator list' => 'Введите команду /refresh в группе, чтобы обновить список администраторов',
+    'Change' => 'Изменить',
+    'Remove' => 'Удалить',
 ];

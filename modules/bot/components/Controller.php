@@ -57,7 +57,7 @@ class Controller extends \yii\web\Controller
 
     protected function getBotApi()
     {
-        return $this->module->botApi;
+        return $this->module->getBotApi();
     }
 
     /**

@@ -19,28 +19,33 @@ class Admin_filter_chatController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($groupId)
+    public function actionIndex($chatId)
     {
-        $chat = Chat::find()->where(['id' => $groupId])->one();
-        $groupTitle = $chat->title;
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return;
+        }
+
+        $chatTitle = $chat->title;
 
         return [
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', compact('groupTitle')),
+                $this->render('index', compact('chatTitle')),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_filter_filterchat ' . $groupId,
+                                'callback_data' => '/admin_filter_filterchat ' . $chatId,
                                 'text' => Yii::t('bot', 'Message Filter'), 
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_join_hider ' . $groupId,
+                                'callback_data' => '/admin_join_hider ' . $chatId,
                                 'text' => 'Join Hider',
                             ],
                         ],

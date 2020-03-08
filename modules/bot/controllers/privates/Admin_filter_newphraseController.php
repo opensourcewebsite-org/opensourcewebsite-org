@@ -21,11 +21,11 @@ class Admin_filter_newphraseController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($type = null, $groupId = null)
+    public function actionIndex($type = null, $chatId = null)
     {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/admin_filter_set_newphrase ' . $type . ' ' . $groupId);
+        $telegramUser->getState()->setName('/admin_filter_set_newphrase ' . $type . ' ' . $chatId);
         $telegramUser->save();
 
         return [
@@ -38,7 +38,7 @@ class Admin_filter_newphraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => ($type == Phrase::TYPE_BLACKLIST ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId,
+                                'callback_data' => ($type == Phrase::TYPE_BLACKLIST ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $chatId,
                                 'text' => '🔙',
                             ],
                             [
@@ -52,20 +52,20 @@ class Admin_filter_newphraseController extends Controller
         ];
     }
 
-    public function actionUpdate($type = null, $groupId = null)
+    public function actionUpdate($type = null, $chatId = null)
     {
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
         $text = $update->getMessage()->getText();
 
-        if (!Phrase::find()->where(['type' => $type, 'group_id' => $groupId, 'text' => $text])->exists()) {
+        if (!Phrase::find()->where(['type' => $type, 'chat_id' => $chatId, 'text' => $text])->exists()) {
             $phrase = new Phrase();
 
             $user = User::find()->where(['provider_user_id' => $this->getTelegramChat()->chat_id])->one();
 
             $phrase->setAttributes([
-                'group_id' => $groupId,
+                'chat_id' => $chatId,
                 'type' => $type,
                 'text' => $text,
                 'created_by' => $user->id,
@@ -74,7 +74,7 @@ class Admin_filter_newphraseController extends Controller
             $phrase->save();
         }
 
-        $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACKLIST ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $groupId);
+        $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACKLIST ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $chatId);
         $telegramUser->save();
 
         $this->module->dispatchRoute($update);

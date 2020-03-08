@@ -1,1 +1,1 @@
-<b><?= $groupTitle ?></b>
+<b><?= $chatTitle ?></b>

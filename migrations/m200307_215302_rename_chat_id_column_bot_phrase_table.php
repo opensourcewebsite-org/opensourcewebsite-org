@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m200303_150819_rename_bot_admin_tabble
+ * Class m200307_215302_rename_chat_id_column_bot_phrase_table
  */
-class m200303_150819_rename_bot_admin_table extends Migration
+class m200307_215302_rename_chat_id_column_bot_phrase_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->renameTable('{{%bot_admin}}', '{{%bot_chat_member}}');
+        $this->renameColumn('{{%bot_phrase}}', 'group_id', 'chat_id');
     }
 
     /**
@@ -20,7 +20,7 @@ class m200303_150819_rename_bot_admin_table extends Migration
      */
     public function safeDown()
     {
-        $this->renameTable('{{%bot_chat_member}}', '{{%bot_admin}}');
+        $this->renameColumn('{{%bot_phrase}}', 'chat_id', 'group_id');
     }
 
     /*
@@ -32,7 +32,7 @@ class m200303_150819_rename_bot_admin_table extends Migration
 
     public function down()
     {
-        echo "m200303_150819_rename_bot_admin_tabble cannot be reverted.\n";
+        echo "m200307_215302_rename_chat_id_column_bot_phrase_table cannot be reverted.\n";
 
         return false;
     }

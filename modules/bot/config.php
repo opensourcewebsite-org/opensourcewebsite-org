@@ -34,22 +34,22 @@ return [
 
                 '/update_location' => 'my_location/update',
 
-                '/admin_filter_chat <groupId:\d+>' => 'admin_filter_chat',
-                '/admin_filter_filterchat <groupId:\d+>' => 'admin_filter_filterchat',
-                '/admin_filter_change_filter_mode <groupId:\d+>' => 'admin_filter_filterchat/update',
-                '/admin_filter_change_filter_on <groupId:\d+>' => 'admin_filter_filterchat/status',
-                '/admin_filter_whitelist <groupId:\d+>' => 'admin_filter_whitelist',
-                '/admin_filter_blacklist <groupId:\d+>' => 'admin_filter_blacklist',
-                '/admin_filter_newphrase <type:\w+> <groupId:\d+>' => 'admin_filter_newphrase/index',
-                '/admin_filter_set_newphrase <type:\w+> <groupId:\d+>' => 'admin_filter_newphrase/update',
+                '/admin_filter_chat <chatId:\d+>' => 'admin_filter_chat',
+                '/admin_filter_filterchat <chatId:\d+>' => 'admin_filter_filterchat',
+                '/admin_filter_change_filter_mode <chatId:\d+>' => 'admin_filter_filterchat/update',
+                '/admin_filter_change_filter_on <chatId:\d+>' => 'admin_filter_filterchat/status',
+                '/admin_filter_whitelist <chatId:\d+>' => 'admin_filter_whitelist',
+                '/admin_filter_blacklist <chatId:\d+>' => 'admin_filter_blacklist',
+                '/admin_filter_newphrase <type:\w+> <chatId:\d+>' => 'admin_filter_newphrase/index',
+                '/admin_filter_set_newphrase <type:\w+> <chatId:\d+>' => 'admin_filter_newphrase/update',
 
                 '/admin_filter_phrase <phraseId:\d+>' => 'admin_filter_phrase/index',
                 '/admin_filter_delete_phrase <phraseId:\d+>' => 'admin_filter_phrase/delete',
                 '/admin_filter_change_phrase <phraseId:\d+>' => 'admin_filter_phrase/create',
                 '/admin_filter_update_phrase <phraseId:\d+>' => 'admin_filter_phrase/update',
 
-                '/admin_join_hider <groupId:\d+>' => 'admin_join_hider',
-                '/admin_join_hider_change_status <groupId:\d+>' => 'admin_join_hider/update',
+                '/admin_join_hider <chatId:\d+>' => 'admin_join_hider',
+                '/admin_join_hider_change_status <chatId:\d+>' => 'admin_join_hider/update',
 
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',

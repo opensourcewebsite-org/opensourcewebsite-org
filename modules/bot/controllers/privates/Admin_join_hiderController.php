@@ -20,17 +20,21 @@ class Admin_join_hiderController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($groupId = null)
+    public function actionIndex($chatId = null)
     {
-        $chat = Chat::find()->where(['id' => $groupId])->one();
+        $chat = Chat::findOne($chatId);
 
-        $statusSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::JOIN_HIDER_STATUS])->one();
+        if (!isset($chat)) {
+            return;
+        }
+
+        $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
 
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();
 
             $statusSetting->setAttributes([
-                'chat_id' => $groupId,
+                'chat_id' => $chatId,
                 'setting' => ChatSetting::JOIN_HIDER_STATUS,
                 'value' => ChatSetting::JOIN_HIDER_STATUS_OFF,
             ]);
@@ -38,26 +42,26 @@ class Admin_join_hiderController extends Controller
             $statusSetting->save();
         }
 
-        $groupTitle = $chat->title;
+        $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
 
         return [
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('index', compact('groupTitle')),
+                $this->render('index', compact('chatTitle')),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_join_hider_change_status ' . $groupId,
+                                'callback_data' => '/admin_join_hider_change_status ' . $chatId,
                                 'text' => Yii::t('bot', 'Status') . ': ' . ($statusOn ? "ON" : "OFF"), 
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_chat '  . $groupId,
+                                'callback_data' => '/admin_filter_chat '  . $chatId,
                                 'text' => '🔙',
                             ],
                             [
@@ -71,18 +75,24 @@ class Admin_join_hiderController extends Controller
         ];
     }
 
-    public function actionUpdate($groupId = null)
+    public function actionUpdate($chatId = null)
     {
-        $modeSetting = ChatSetting::find()->where(['chat_id' => $groupId, 'setting' => ChatSetting::JOIN_HIDER_STATUS])->one();
+        $chat = Chat::findOne($chatId);
 
-        if ($modeSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
-            $modeSetting->value = ChatSetting::JOIN_HIDER_STATUS_OFF;
-        } else {
-            $modeSetting->value = ChatSetting::JOIN_HIDER_STATUS_ON;
+        if (!isset($chat)) {
+            return;
         }
 
-        $modeSetting->save();
+        $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
 
-        return $this->actionIndex($groupId);
+        if ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
+            $statusSetting->value = ChatSetting::JOIN_HIDER_STATUS_OFF;
+        } else {
+            $statusSetting->value = ChatSetting::JOIN_HIDER_STATUS_ON;
+        }
+
+        $statusSetting->save();
+
+        return $this->actionIndex($chatId);
     }
 }

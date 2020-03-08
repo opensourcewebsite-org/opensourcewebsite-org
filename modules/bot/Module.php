@@ -28,7 +28,7 @@ class Module extends \yii\base\Module
     /**
      * @var \TelegramBot\Api\BotApi
      */
-    public $botApi;
+    private $botApi;
 
     /**
      * @var models\Bot
@@ -54,6 +54,10 @@ class Module extends \yii\base\Module
      * @var \app\models\User
      */
     public $user;
+
+    public function getBotApi() {
+        return $this->botApi;
+    }
 
     public function init()
     {
@@ -132,25 +136,6 @@ class Module extends \yii\base\Module
                 return false;
             }
 
-            // Update Group -> SuperGroup
-            if ($update->getMessage() !== null && $update->getMessage()->getMigrateToChatId() !== null) {
-                $telegramChat = Chat::findOne([
-                    'chat_id' => $updateChat->getId(),
-                    'bot_id' => $botId,
-                ]);
-
-                if (isset($telegramChat)) {
-                    $telegramChat->setAttributes([
-                        'type' => Chat::TYPE_SUPERGROUP,
-                        'chat_id' => $update->getMessage()->getMigrateToChatId(),
-                    ]);
-
-                    $telegramChat->save();
-                }
-
-                return true;
-            }
-
             $telegramChat = Chat::findOne([
                 'chat_id' => $updateChat->getId(),
                 'bot_id' => $botId,
@@ -185,15 +170,11 @@ class Module extends \yii\base\Module
                 $administrators = $this->botApi->getChatAdministrators($updateChat->getId());
 
                 foreach ($administrators as $administrator) {
-                    $chatMember = new ChatMember();
+                    $user = User::find()->where(['provider_user_id'])->one();
 
-                    $chatMember->setAttributes([
-                        'chat_id' => $telegramChat->id,
-                        'telegram_user_id' => $administrator->getUser()->getId(),
-                        'status' => $administrator->getStatus(),
-                    ]);
-
-                    $chatMember->save();
+                    if (isset($user)) {
+                        $user->link('chats', $telegramChat, ['status' => $administrator->getStatus()]);
+                    }
                 }
             }
 
@@ -203,23 +184,18 @@ class Module extends \yii\base\Module
                 : Controller::TYPE_PUBLIC;
             $this->setupPaths($namespace);
 
-            $chatMember = ChatMember::find()->where(['chat_id' => $telegramChat->id, 'telegram_user_id' => $telegramUser->provider_user_id])->one();
+            if (!in_array($telegramUser, $telegramChat->getUsers()->all())) {
+                $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
 
-            if (!isset($chatMember)) {
-                $chatMember = new ChatMember();
-
-                $chatMember->setAttributes([
-                    'chat_id' => $telegramChat->id,
-                    'telegram_user_id' => $telegramUser->provider_user_id,
-                ]);
+                $telegramChat->link('users', $telegramUser, ['status' => $telegramChatMember->getStatus()]);
             }
 
-            $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
-            $chatMember->setAttributes([
-                'status' => $telegramChatMember->getStatus(),
-            ]);
+            // $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
+            // $chatMember->setAttributes([
+            //     'status' => $telegramChatMember->getStatus(),
+            // ]);
 
-            $chatMember->save();
+            // $chatMember->save();
 
             if (!isset($telegramUser->user_id)) {
                 $user = User::createWithRandomPassword();

@@ -1,1 +1,1 @@
-<?= $groupTitle ?>
+<?= $chatTitle ?>
