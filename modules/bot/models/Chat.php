@@ -11,6 +11,9 @@ class Chat extends ActiveRecord
     public const TYPE_SUPERGROUP = 'supergroup';
     public const TYPE_CHANNEL = 'channel';
 
+    public const FILTER_MODE_BLACKLIST = 'blacklist';
+    public const FILTER_MODE_WHITELIST = 'whitelist';
+
     public static function tableName()
     {
         return 'bot_chat';
@@ -32,14 +35,64 @@ class Chat extends ActiveRecord
         ];
     }
 
-    public function getUsers()
-    {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])
-                    ->viaTable('bot_chat_bot_user', ['chat_id' => 'id']);
-    }
-
     public function isPrivate()
     {
         return $this->type == self::TYPE_PRIVATE;
+    }
+
+    public function getPhrases()
+    {
+        return $this->hasMany(Phrase::className(), ['chat_id' => 'id']);
+    }
+
+    public function getBlacklistPhrases()
+    {
+        return $this->getPhrases()->where(['type' => self::FILTER_MODE_BLACKLIST])->all();
+    }
+
+    public function getWhitelistPhrases()
+    {
+        return $this->getPhrases()->where(['type' => self::FILTER_MODE_WHITELIST])->all();
+    }
+
+    public function getSettings()
+    {
+        return $this->hasMany(ChatSetting::className(), ['chat_id' => 'id']);
+    }
+
+    public function getSetting($setting)
+    {
+        return $this->getSettings()->where(['setting' => $setting])->one();
+    }
+
+    public function getUsers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+    }
+
+    public function hasUser($user)
+    {
+        $users = $this->getUsers()->all();
+
+        foreach ($users as $chatUser) {
+            if ($chatUser->id == $user->id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getAdministrators()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                ]);
+        });
     }
 }

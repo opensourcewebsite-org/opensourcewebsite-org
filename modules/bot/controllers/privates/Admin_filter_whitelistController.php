@@ -7,52 +7,59 @@ use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\Phrase;
 
 /**
- * Class AdminController
+ * Class FilterChatController
  *
  * @package app\controllers\bot
  */
-class AdminController extends Controller
+class Admin_filter_whitelistController extends Controller
 {
     /**
      * @return array
      */
-    public function actionIndex()
+    public function actionIndex($chatId = null)
     {
-        $chats = $this->getTelegramUser()->getAdministratedChats()->all();
+        $chat = Chat::findOne($chatId);
 
-        $buttons = [];
-        $currentRow = [];
-
-        foreach ($chats as $chat) {
-            $currentRow[] = [
-                'callback_data' => '/admin_filter_chat ' . $chat->id,
-                'text' => $chat->title,
-            ];
-
-            if (count($currentRow) == 2) {
-                $buttons[] = $currentRow;
-                $currentRow = [];
-            }
+        if (!isset($chat)) {
+            return [];
         }
 
-        if (!empty($currentRow)) {
-            $buttons[] = $currentRow;
-            $currentRow = [];
+        $telegramUser = $this->getTelegramUser();
+        $telegramUser->getState()->setName(null);
+        $telegramUser->save();
+
+        $chatTitle = $chat->title;
+        $phrases = $chat->getWhitelistPhrases();
+
+        $buttons = [];
+        foreach ($phrases as $phrase) {
+            $buttons[] = [
+                [
+                    'callback_data' => '/admin_filter_phrase ' . $phrase->id,
+                    'text' => $phrase->text,
+                ],
+            ];
         }
 
         $buttons[] = [
             [
-                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                'text' => Yii::t('bot', 'Read more')
+                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_WHITELIST . ' ' . $chatId,
+                'text' => Yii::t('bot', 'Add phrase'),
             ],
         ];
 
         $buttons[] = [
             [
-                'callback_data' => '/menu',
+                'callback_data' => '/admin_filter_filterchat ' . $chatId,
                 'text' => '🔙',
+            ],
+            [
+                'callback_data' => '/menu',
+                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
             ],
         ];
 
@@ -61,7 +68,7 @@ class AdminController extends Controller
                 new EditMessageTextCommand(
                     $this->getTelegramChat()->chat_id,
                     $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index'),
+                    $this->render('index', compact('chatTitle')),
                     [
                         'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup($buttons),
@@ -72,7 +79,7 @@ class AdminController extends Controller
             return [
                 new SendMessageCommand(
                     $this->getTelegramChat()->chat_id,
-                    $this->render('index'),
+                    $this->render('index', compact('chatTitle')),
                     [
                         'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup($buttons),

@@ -25,6 +25,7 @@ class HelloController extends Controller
                 $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
+                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
