@@ -61,14 +61,12 @@ class Admin_filter_newphraseController extends Controller
 
         if (!Phrase::find()->where(['type' => $type, 'chat_id' => $chatId, 'text' => $text])->exists()) {
             $phrase = new Phrase();
-
-            $user = User::find()->where(['provider_user_id' => $this->getTelegramChat()->chat_id])->one();
-
+            
             $phrase->setAttributes([
                 'chat_id' => $chatId,
                 'type' => $type,
                 'text' => $text,
-                'created_by' => $user->id,
+                'created_by' => $this->getTelegramUser()->id,
             ]);
 
             $phrase->save();

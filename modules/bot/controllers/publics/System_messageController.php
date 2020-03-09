@@ -46,4 +46,18 @@ class System_messageController extends Controller
             ];
         }
     }
+
+    public function actionGroup_to_supergroup()
+    {
+        $chat = $this->getTelegramChat();
+
+        $chat->setAttributes([
+            'type' => Chat::TYPE_SUPERGROUP,
+            'chat_id' => $this->getUpdate()->getMessage()->getMigrateToChatId(),
+        ]);
+
+        $chat->save();
+        
+        return [];
+    }
 }

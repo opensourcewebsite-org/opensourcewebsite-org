@@ -51,6 +51,8 @@ return [
                 '/admin_join_hider <chatId:\d+>' => 'admin_join_hider',
                 '/admin_join_hider_change_status <chatId:\d+>' => 'admin_join_hider/update',
 
+                '/system_message_group_to_supergroup' => 'system_message/group_to_supergroup',
+
                 '/<controller:\w+> <message:.+>' => '<controller>/index',
                 '/<controller:\w+>' => '<controller>/index',
             ],

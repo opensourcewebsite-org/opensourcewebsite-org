@@ -70,6 +70,19 @@ class Chat extends ActiveRecord
         return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
     }
 
+    public function hasUser($user)
+    {
+        $users = $this->getUsers()->all();
+
+        foreach ($users as $chatUser) {
+            if ($chatUser->id == $user->id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getAdminUsers()
     {
         return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function($query) {

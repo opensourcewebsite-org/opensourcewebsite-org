@@ -28,7 +28,7 @@ class Admin_filter_filterchatController extends Controller
             return;
         }
 
-        $statusSetting = ChatSetting::find()->where(['chat_id' => $chatId, 'setting' => ChatSetting::FILTER_STATUS])->one();
+        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
 
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();
@@ -42,7 +42,7 @@ class Admin_filter_filterchatController extends Controller
             $statusSetting->save();
         }
 
-        $modeSetting = ChatSetting::find()->where(['chat_id' => $chatId, 'setting' => ChatSetting::FILTER_MODE])->one();
+        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
         if (!isset($modeSetting)) {
             $modeSetting = new ChatSetting();

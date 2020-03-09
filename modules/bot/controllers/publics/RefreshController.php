@@ -31,13 +31,16 @@ class RefreshController extends Controller
         $administratorUsers = [];
 
         foreach ($telegramAdministrators as $telegramAdministrator) {
-            $user = User::find()->where(['provider_user_id' => $telegramAdministrator->getUser()->getId()])->one();
+            $user = User::findOne(['provider_user_id' => $telegramAdministrator->getUser()->getId()]);
 
-            if (isset($user)) {
-                $administratorUsers[] = $user;
+            if (!isset($user)) {
+                $user = User::createUser($telegramAdministrator->getUser());
+                $user->updateInfo($telegramAdministrator->getUser());
             }
 
-            if (isset($user) && !in_array($user, $chat->getAdminUsers()->all())) {
+            $administratorUsers[] = $user;
+
+            if (!in_array($user, $chat->getAdminUsers()->all())) {
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
@@ -46,7 +49,20 @@ class RefreshController extends Controller
 
         foreach ($currentAdministrators as $currentAdministrator) {
             if (!in_array($currentAdministrator, $administratorUsers)) {
-                $chat->unlink('users', $currentAdministrator, true);
+                $telegramChatMember = $this->getBotApi()->getChatMember($chat->chat_id, $currentAdministrator->provider_user_id);
+
+                $isMember = $telegramChatMember->getIsMember() !== null ? $telegramChatMember->getIsMember() : false;
+
+                if ($isMember) {
+                    $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $currentAdministrator->id]);
+                    $chatMember->setAttributes([
+                        'status' => $telegramChatMember->getStatus(),
+                    ]);
+
+                    $chatMember->save();
+                } else {
+                    $chat->unlink('users', $currentAdministrator, true);
+                }
             }
         }
         

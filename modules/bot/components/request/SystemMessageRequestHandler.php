@@ -12,7 +12,7 @@ class SystemMessageRequestHandler extends MessageRequestHandler
         }
 
         if ($update->getMessage() && $update->getMessage()->getMigrateToChatId()) {
-            $commandText = '/group_to_supergroup';
+            $commandText = '/system_message_group_to_supergroup';
         }
 
         return $commandText ?? null;

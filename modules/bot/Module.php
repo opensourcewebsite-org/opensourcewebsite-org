@@ -109,28 +109,12 @@ class Module extends \yii\base\Module
             $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
             // Store telegram user if it doesn't exist yet
             if (!isset($telegramUser)) {
-                $language = Language::findOne([
-                    'code' => $updateUser->getLanguageCode(),
-                ]);
-                $languageCode = isset($language) ? $language->code : 'en';
-
                 $isNewUser = true;
 
-                $telegramUser = new TelegramUser();
-                $telegramUser->setAttributes([
-                    'provider_user_id' => $updateUser->getId(),
-                    'language_code' => $languageCode,
-                    'is_authenticated' => true,
-                ]);
+                $telegramUser = TelegramUser::createUser($updateUser);
             }
             // Update telegram user information
-            $telegramUser->setAttributes([
-                'provider_user_name' => $updateUser->getUsername(),
-                'provider_user_first_name' => $updateUser->getFirstName(),
-                'provider_user_last_name' => $updateUser->getLastName(),
-                'provider_bot_user_blocked' => 0,
-                'last_message_at' => time(),
-            ]);
+            $telegramUser->updateInfo($updateUser);
 
             if (!$telegramUser->save()) {
                 return false;
@@ -170,11 +154,18 @@ class Module extends \yii\base\Module
                 $administrators = $this->botApi->getChatAdministrators($updateChat->getId());
 
                 foreach ($administrators as $administrator) {
-                    $user = User::find()->where(['provider_user_id'])->one();
+                    $user = TelegramUser::findOne(['provider_user_id' => $administrator->getUser()->getId()]);
 
-                    if (isset($user)) {
-                        $user->link('chats', $telegramChat, ['status' => $administrator->getStatus()]);
+                    if (!isset($user)) {
+                        $administratorUpdateUser = $administrator->getUser();
+
+                        $user = TelegramUser::createUser($administratorUpdateUser);
+                        
+                        // Update telegram user information
+                        $user->updateInfo($administratorUpdateUser);
                     }
+
+                    $user->link('chats', $telegramChat, ['status' => $administrator->getStatus()]);
                 }
             }
 
@@ -184,7 +175,7 @@ class Module extends \yii\base\Module
                 : Controller::TYPE_PUBLIC;
             $this->setupPaths($namespace);
 
-            if (!in_array($telegramUser, $telegramChat->getUsers()->all())) {
+            if (!$telegramChat->hasUser($telegramUser)) {
                 $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
 
                 $telegramChat->link('users', $telegramUser, ['status' => $telegramChatMember->getStatus()]);
