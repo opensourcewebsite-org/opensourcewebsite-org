@@ -152,11 +152,11 @@ class User extends ActiveRecord
     {
         return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
-            $query->andWhere([
-                'or',
-                ['status' => ChatMember::STATUS_CREATOR],
-                ['status' => ChatMember::STATUS_ADMINISTRATOR]
-            ]);
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                ]);
         });
     }
 
