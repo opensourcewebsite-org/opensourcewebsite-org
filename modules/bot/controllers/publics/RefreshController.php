@@ -4,11 +4,8 @@ namespace app\modules\bot\controllers\publics;
 
 use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\Phrase;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
 
