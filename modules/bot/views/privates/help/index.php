@@ -10,10 +10,8 @@
 /my_rating - <?= \Yii::t('bot', 'Rating') ?><br/>
 /my_referrals - <?= \Yii::t('bot', 'Referrals') ?><br/>
 <br/>
-/menu - <?= \Yii::t('bot', 'Menu') ?><br/>
-<br/>
 /services - <?= \Yii::t('bot', 'Services') ?><br/>
-<br/>
-/admin - <?= \Yii::t('bot', 'Commands for managing telegram groups and channels') ?><br/>
+/admin - <?= \Yii::t('bot', 'Groups') ?><br/>
+/menu - <?= \Yii::t('bot', 'Menu') ?><br/>
 <br/>
 /start - <?= \Yii::t('bot', 'Greeting') ?>

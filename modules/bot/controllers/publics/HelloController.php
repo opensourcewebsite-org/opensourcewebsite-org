@@ -26,6 +26,36 @@ class HelloController extends Controller
                 [
                     'parseMode' => $this->textFormat,
                     'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'url' => 'https://t.me/opensourcewebsite_bot',
+                                'text' => Yii::t('bot', 'Bot')
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => 'https://opensourcewebsite.org',
+                                'text' => Yii::t('bot', 'Website')
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
+                                'text' => Yii::t('bot', 'Source Code')
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                                'text' => Yii::t('bot', 'Donate')
+                            ],
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                                'text' => Yii::t('bot', 'Contribution')
+                            ],
+                        ],
+                    ]),
                 ]
             ),
         ];
