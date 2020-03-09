@@ -7,7 +7,8 @@ class SystemMessageRequestHandler extends MessageRequestHandler
 {
     public function getCommandText(Update $update)
     {
-        if ($update->getMessage() && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {
+        if ($update->getMessage()
+            && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {
             $commandText = '/system_message';
         }
 

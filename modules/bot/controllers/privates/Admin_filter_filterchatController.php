@@ -70,7 +70,7 @@ class Admin_filter_filterchatController extends Controller
                         [
                             [
                                 'callback_data' => '/admin_filter_change_filter_on ' . $chatId,
-                                'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? "ON" : "OFF"),
+                                'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? 'ON' : 'OFF'),
                             ],
                         ],
                         [

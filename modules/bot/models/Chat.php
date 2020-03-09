@@ -67,7 +67,8 @@ class Chat extends ActiveRecord
 
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
     }
 
     public function hasUser($user)
@@ -85,8 +86,13 @@ class Chat extends ActiveRecord
 
     public function getAdministrators()
     {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function($query) {
-            $query->andWhere(['or', ['status' => ChatMember::STATUS_CREATOR], ['status' => ChatMember::STATUS_ADMINISTRATOR]]);
+        return $this->hasMany(User::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function($query) {
+            $query->andWhere([
+                'or',
+                ['status' => ChatMember::STATUS_CREATOR],
+                ['status' => ChatMember::STATUS_ADMINISTRATOR]
+            ]);
         });
     }
 }

@@ -2,9 +2,7 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
@@ -27,6 +25,7 @@ class RefreshController extends Controller
 
         $administratorUsers = [];
 
+        $currentAdministrators = $chat->getAdministrators()->all();
         foreach ($telegramAdministrators as $telegramAdministrator) {
             $user = User::findOne(['provider_user_id' => $telegramAdministrator->getUser()->getId()]);
 
@@ -37,16 +36,17 @@ class RefreshController extends Controller
 
             $administratorUsers[] = $user;
 
-            if (!in_array($user, $chat->getAdministrators()->all())) {
+            if (!in_array($user, $currentAdministrators)) {
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
 
-        $currentAdministrators = $chat->getAdministrators()->all();
-
         foreach ($currentAdministrators as $currentAdministrator) {
             if (!in_array($currentAdministrator, $administratorUsers)) {
-                $telegramChatMember = $this->getBotApi()->getChatMember($chat->chat_id, $currentAdministrator->provider_user_id);
+                $telegramChatMember = $this->getBotApi()->getChatMember(
+                    $chat->chat_id,
+                    $currentAdministrator->provider_user_id
+                );
 
                 $isMember = $telegramChatMember->getIsMember() !== null ? $telegramChatMember->getIsMember() : false;
 

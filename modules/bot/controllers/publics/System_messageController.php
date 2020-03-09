@@ -2,9 +2,7 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use Yii;
 use \app\modules\bot\components\response\DeleteMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;

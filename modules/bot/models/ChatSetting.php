@@ -2,7 +2,6 @@
 namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
 
 class ChatSetting extends ActiveRecord
 {

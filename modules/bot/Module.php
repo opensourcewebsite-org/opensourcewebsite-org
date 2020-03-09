@@ -53,7 +53,8 @@ class Module extends \yii\base\Module
      */
     public $user;
 
-    public function getBotApi() {
+    public function getBotApi()
+    {
         return $this->botApi;
     }
 
@@ -179,7 +180,10 @@ class Module extends \yii\base\Module
                 $telegramChat->link('users', $telegramUser, ['status' => $telegramChatMember->getStatus()]);
             }
 
-            // $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
+            // $telegramChatMember = $this->botApi->getChatMember(
+            //     $telegramChat->chat_id,
+            //     $telegramUser->provider_user_id
+            // );
             // $chatMember->setAttributes([
             //     'status' => $telegramChatMember->getStatus(),
             // ]);

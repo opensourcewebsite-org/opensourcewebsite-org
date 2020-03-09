@@ -51,7 +51,10 @@ class Admin_filter_phraseController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->chat_id,
+                                    'callback_data' => ($phrase->isTypeBlack()
+                                        ? '/admin_filter_blacklist'
+                                        : '/admin_filter_whitelist'
+                                    ) . ' ' . $phrase->chat_id,
                                     'text' => '🔙',
                                 ],
                                 [
@@ -85,7 +88,10 @@ class Admin_filter_phraseController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => ($phrase->isTypeBlack() ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $phrase->chat_id,
+                                    'callback_data' => ($phrase->isTypeBlack()
+                                        ? '/admin_filter_blacklist'
+                                        : '/admin_filter_whitelist'
+                                    ) . ' ' . $phrase->chat_id,
                                     'text' => '🔙',
                                 ],
                                 [
@@ -110,7 +116,10 @@ class Admin_filter_phraseController extends Controller
         $phrase->delete();
 
         $update = $this->getUpdate();
-        $update->getCallbackQuery()->setData(($isTypeBlack ? '/admin_filter_blacklist' : '/admin_filter_whitelist') . ' ' . $chatId);
+        $update->getCallbackQuery()->setData(($isTypeBlack
+            ? '/admin_filter_blacklist'
+            : '/admin_filter_whitelist'
+        ) . ' ' . $chatId);
 
         $this->module->dispatchRoute($update);
     }
@@ -154,7 +163,11 @@ class Admin_filter_phraseController extends Controller
 
         $text = $update->getMessage()->getText();
 
-        if (!Phrase::find()->where(['chat_id' => $phrase->chat_id, 'text' => $text, 'type' => $phrase->type])->exists()) {
+        if (!Phrase::find()->where([
+            'chat_id' => $phrase->chat_id,
+            'text' => $text,
+            'type' => $phrase->type
+        ])->exists()) {
             $phrase->text = $text;
             $phrase->save();
 

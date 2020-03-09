@@ -4,7 +4,6 @@ namespace app\modules\bot\controllers\publics;
 
 use Yii;
 use \app\modules\bot\components\response\DeleteMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\ChatSetting;
 
@@ -29,7 +28,7 @@ class MessageController extends Controller
         $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
         if (!isset($statusSetting) || !isset($modeSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) {
-            return;
+            return [];
         }
 
         $deleteMessage = false;
