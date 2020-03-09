@@ -40,14 +40,14 @@ class MessageController extends Controller
         $deleteMessage = false;
 
         if ($update->getMessage()->getText() !== null) {
-            $adminUser = $chat->getAdminUsers()->where(['id' => $telegramUser->user_id])->one();
+            $adminUser = $chat->getAdministrators()->where(['id' => $telegramUser->user_id])->one();
 
             if (!isset($adminUser)) {
                 if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                     $deleteMessage = false;
 
                     $phrases = $chat->getBlacklistPhrases();
-                    
+
                     foreach ($phrases as $phrase) {
                         if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
                             $deleteMessage = true;

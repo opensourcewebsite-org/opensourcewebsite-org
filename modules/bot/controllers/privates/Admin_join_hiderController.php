@@ -25,7 +25,7 @@ class Admin_join_hiderController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
@@ -56,7 +56,7 @@ class Admin_join_hiderController extends Controller
                         [
                             [
                                 'callback_data' => '/admin_join_hider_change_status ' . $chatId,
-                                'text' => Yii::t('bot', 'Status') . ': ' . ($statusOn ? "ON" : "OFF"), 
+                                'text' => Yii::t('bot', 'Status') . ': ' . ($statusOn ? "ON" : "OFF"),
                             ],
                         ],
                         [

@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
@@ -24,7 +23,7 @@ class Admin_filter_chatController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $chatTitle = $chat->title;
@@ -40,7 +39,7 @@ class Admin_filter_chatController extends Controller
                         [
                             [
                                 'callback_data' => '/admin_filter_filterchat ' . $chatId,
-                                'text' => Yii::t('bot', 'Message Filter'), 
+                                'text' => Yii::t('bot', 'Message Filter'),
                             ],
                         ],
                         [

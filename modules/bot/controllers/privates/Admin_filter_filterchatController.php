@@ -25,7 +25,7 @@ class Admin_filter_filterchatController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
@@ -71,7 +71,7 @@ class Admin_filter_filterchatController extends Controller
                         [
                             [
                                 'callback_data' => '/admin_filter_change_filter_on ' . $chatId,
-                                'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? "ON" : "OFF"), 
+                                'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? "ON" : "OFF"),
                             ],
                         ],
                         [

@@ -152,7 +152,7 @@ class Admin_filter_phraseController extends Controller
         $update = $this->getUpdate();
 
         $phrase = Phrase::findOne($phraseId);
-        
+
         $text = $update->getMessage()->getText();
 
         if (!Phrase::find()->where(['chat_id' => $phrase->chat_id, 'text' => $text, 'type' => $phrase->type])->exists()) {

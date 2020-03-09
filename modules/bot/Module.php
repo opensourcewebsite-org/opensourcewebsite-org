@@ -8,10 +8,8 @@ use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\User as TelegramUser;
-use app\modules\bot\models\ChatMember;
 use yii\base\InvalidRouteException;
 use app\models\User;
-use app\models\Language;
 use app\models\Rating;
 use app\modules\bot\components\ReplyKeyboardManager;
 use app\modules\bot\components\response\SendMessageCommand;
@@ -160,7 +158,7 @@ class Module extends \yii\base\Module
                         $administratorUpdateUser = $administrator->getUser();
 
                         $user = TelegramUser::createUser($administratorUpdateUser);
-                        
+
                         // Update telegram user information
                         $user->updateInfo($administratorUpdateUser);
                     }

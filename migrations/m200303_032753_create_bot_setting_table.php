@@ -34,7 +34,7 @@ class m200303_032753_create_bot_setting_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-vot_setting-chat_id');
-        
+
         $this->dropTable('{{%bot_setting}}');
     }
 }

@@ -25,7 +25,7 @@ class Admin_filter_blacklistController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $telegramUser = $this->getTelegramUser();

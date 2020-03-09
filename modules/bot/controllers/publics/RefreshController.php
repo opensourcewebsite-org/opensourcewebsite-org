@@ -40,12 +40,12 @@ class RefreshController extends Controller
 
             $administratorUsers[] = $user;
 
-            if (!in_array($user, $chat->getAdminUsers()->all())) {
+            if (!in_array($user, $chat->getAdministrators()->all())) {
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
 
-        $currentAdministrators = $chat->getAdminUsers()->all();
+        $currentAdministrators = $chat->getAdministrators()->all();
 
         foreach ($currentAdministrators as $currentAdministrator) {
             if (!in_array($currentAdministrator, $administratorUsers)) {
@@ -65,7 +65,7 @@ class RefreshController extends Controller
                 }
             }
         }
-        
+
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
@@ -76,6 +76,5 @@ class RefreshController extends Controller
                 ]
             ),
         ];
-        
     }
 }

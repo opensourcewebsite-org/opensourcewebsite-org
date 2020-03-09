@@ -5,11 +5,8 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\models\ChatMember;
-use app\modules\bot\models\Chat;
 
 /**
  * Class AdminController
@@ -23,7 +20,7 @@ class AdminController extends Controller
      */
     public function actionIndex()
     {
-        $chats = $this->getTelegramUser()->getAdminChats()->all();
+        $chats = $this->getTelegramUser()->getAdministratedChats()->all();
 
         $buttons = [];
         $currentRow = [];

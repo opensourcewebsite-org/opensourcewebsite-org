@@ -57,7 +57,7 @@ class System_messageController extends Controller
         ]);
 
         $chat->save();
-        
+
         return [];
     }
 }

@@ -61,7 +61,7 @@ class Admin_filter_newphraseController extends Controller
 
         if (!Phrase::find()->where(['type' => $type, 'chat_id' => $chatId, 'text' => $text])->exists()) {
             $phrase = new Phrase();
-            
+
             $phrase->setAttributes([
                 'chat_id' => $chatId,
                 'type' => $type,
