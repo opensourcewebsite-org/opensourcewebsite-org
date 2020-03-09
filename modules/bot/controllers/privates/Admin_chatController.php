@@ -9,11 +9,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 
 /**
- * Class AdminController
+ * Class Admin_chatController
  *
  * @package app\controllers\bot
  */
-class Admin_filter_chatController extends Controller
+class Admin_chatController extends Controller
 {
     /**
      * @return array
@@ -38,30 +38,20 @@ class Admin_filter_chatController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_filter_filterchat ' . $chatId,
+                                'callback_data' => '/admin_message_filter ' . $chatId,
                                 'text' => Yii::t('bot', 'Message Filter'),
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/admin_join_hider ' . $chatId,
-                                'text' => 'Join Hider',
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Yii::t('bot', 'Read more')
+                                'text' => Yii::t('bot', 'Join Hider'),
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/admin',
                                 'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
                             ],
                         ],
                     ]),

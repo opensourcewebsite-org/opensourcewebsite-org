@@ -11,11 +11,11 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
 
 /**
- * Class FilterChatController
+ * Class Admin_message_filter_blacklistController
  *
  * @package app\controllers\bot
  */
-class Admin_filter_blacklistController extends Controller
+class Admin_message_filter_blacklistController extends Controller
 {
     /**
      * @return array
@@ -39,7 +39,7 @@ class Admin_filter_blacklistController extends Controller
         foreach ($phrases as $phrase) {
             $buttons[] = [
                 [
-                    'callback_data' => '/admin_filter_phrase ' . $phrase->id,
+                    'callback_data' => '/admin_message_filter_phrase ' . $phrase->id,
                     'text' => $phrase->text,
                 ],
             ];
@@ -47,19 +47,12 @@ class Admin_filter_blacklistController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_filter_newphrase ' . Phrase::TYPE_BLACKLIST . ' ' . $chatId,
-                'text' => Yii::t('bot', 'Add phrase'),
-            ],
-        ];
-
-        $buttons[] = [
-            [
-                'callback_data' => '/admin_filter_filterchat ' . $chatId,
+                'callback_data' => '/admin_message_filter ' . $chatId,
                 'text' => '🔙',
             ],
             [
-                'callback_data' => '/menu',
-                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                'callback_data' => '/admin_message_filter_newphrase ' . Phrase::TYPE_BLACKLIST . ' ' . $chatId,
+                'text' => '➕',
             ],
         ];
 

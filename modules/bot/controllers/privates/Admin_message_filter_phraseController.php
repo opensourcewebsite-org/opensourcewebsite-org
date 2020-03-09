@@ -10,11 +10,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Phrase;
 
 /**
- * Class FilterChatController
+ * Class Admin_message_filter_phraseController
  *
  * @package app\controllers\bot
  */
-class Admin_filter_phraseController extends Controller
+class Admin_message_filter_phraseController extends Controller
 {
     /**
      * @return array
@@ -39,27 +39,19 @@ class Admin_filter_phraseController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
-                                    'text' => Yii::t('bot', 'Change'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
-                                    'text' => Yii::t('bot', 'Remove'),
-                                ],
-                            ],
-                            [
-                                [
                                     'callback_data' => ($phrase->isTypeBlack()
-                                        ? '/admin_filter_blacklist'
-                                        : '/admin_filter_whitelist'
+                                        ? '/admin_message_filter_blacklist'
+                                        : '/admin_message_filter_whitelist'
                                     ) . ' ' . $phrase->chat_id,
                                     'text' => '🔙',
                                 ],
                                 [
-                                    'callback_data' => '/menu',
-                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                                    'callback_data' => '/admin_message_filter_change_phrase ' . $phraseId,
+                                    'text' => '✏️',
+                                ],
+                                [
+                                    'callback_data' => '/admin_message_filter_delete_phrase ' . $phraseId,
+                                    'text' => '🗑',
                                 ],
                             ],
                         ]),
@@ -76,27 +68,19 @@ class Admin_filter_phraseController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/admin_filter_change_phrase ' . $phraseId,
-                                    'text' => Yii::t('bot', 'Change'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => '/admin_filter_delete_phrase ' . $phraseId,
-                                    'text' => Yii::t('bot', 'Remove'),
-                                ],
-                            ],
-                            [
-                                [
                                     'callback_data' => ($phrase->isTypeBlack()
-                                        ? '/admin_filter_blacklist'
-                                        : '/admin_filter_whitelist'
+                                        ? '/admin_message_filter_blacklist'
+                                        : '/admin_message_filter_whitelist'
                                     ) . ' ' . $phrase->chat_id,
                                     'text' => '🔙',
                                 ],
                                 [
-                                    'callback_data' => '/menu',
-                                    'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
+                                    'callback_data' => '/admin_message_filter_change_phrase ' . $phraseId,
+                                    'text' => '✏️',
+                                ],
+                                [
+                                    'callback_data' => '/admin_message_filter_delete_phrase ' . $phraseId,
+                                    'text' => '🗑',
                                 ],
                             ],
                         ]),
@@ -117,8 +101,8 @@ class Admin_filter_phraseController extends Controller
 
         $update = $this->getUpdate();
         $update->getCallbackQuery()->setData(($isTypeBlack
-            ? '/admin_filter_blacklist'
-            : '/admin_filter_whitelist'
+            ? '/admin_message_filter_blacklist'
+            : '/admin_message_filter_whitelist'
         ) . ' ' . $chatId);
 
         $this->module->dispatchRoute($update);
@@ -128,7 +112,7 @@ class Admin_filter_phraseController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/admin_filter_update_phrase ' . $phraseId);
+        $telegramUser->getState()->setName('/admin_message_filter_update_phrase ' . $phraseId);
         $telegramUser->save();
 
         return [
@@ -141,12 +125,8 @@ class Admin_filter_phraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_filter_phrase ' . $phraseId,
+                                'callback_data' => '/admin_message_filter_phrase ' . $phraseId,
                                 'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
                             ],
                         ],
                     ]),

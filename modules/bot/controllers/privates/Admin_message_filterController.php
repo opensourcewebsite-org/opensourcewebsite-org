@@ -10,11 +10,11 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class FilterChatController
+ * Class Admin_message_filterChatController
  *
  * @package app\controllers\bot
  */
-class Admin_filter_filterchatController extends Controller
+class Admin_message_filterController extends Controller
 {
     /**
      * @return array
@@ -69,36 +69,32 @@ class Admin_filter_filterchatController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_filter_change_filter_on ' . $chatId,
+                                'callback_data' => '/admin_message_filter_change_status ' . $chatId,
                                 'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? 'ON' : 'OFF'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_change_filter_mode ' . $chatId,
+                                'callback_data' => '/admin_message_filter_change_mode ' . $chatId,
                                 'text' => Yii::t('bot', 'Change mode'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_whitelist ' . $chatId,
+                                'callback_data' => '/admin_message_filter_whitelist ' . $chatId,
                                 'text' => Yii::t('bot', 'Change WhiteList'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_blacklist ' . $chatId,
+                                'callback_data' => '/admin_message_filter_blacklist ' . $chatId,
                                 'text' => Yii::t('bot', 'Change BlackList'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_chat '  . $chatId,
+                                'callback_data' => '/admin_chat '  . $chatId,
                                 'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
                             ],
                         ]
                     ]),

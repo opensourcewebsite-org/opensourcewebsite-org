@@ -10,7 +10,7 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class FilterChatController
+ * Class Admin_join_hiderController
  *
  * @package app\controllers\bot
  */
@@ -60,12 +60,8 @@ class Admin_join_hiderController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/admin_filter_chat '  . $chatId,
+                                'callback_data' => '/admin_chat '  . $chatId,
                                 'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
                             ],
                         ]
                     ]),

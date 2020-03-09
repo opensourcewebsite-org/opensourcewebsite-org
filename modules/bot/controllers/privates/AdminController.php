@@ -27,7 +27,7 @@ class AdminController extends Controller
 
         foreach ($chats as $chat) {
             $currentRow[] = [
-                'callback_data' => '/admin_filter_chat ' . $chat->id,
+                'callback_data' => '/admin_chat ' . $chat->id,
                 'text' => $chat->title,
             ];
 
@@ -41,13 +41,6 @@ class AdminController extends Controller
             $buttons[] = $currentRow;
             $currentRow = [];
         }
-
-        $buttons[] = [
-            [
-                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                'text' => Yii::t('bot', 'Read more')
-            ],
-        ];
 
         $buttons[] = [
             [

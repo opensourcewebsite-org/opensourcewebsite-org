@@ -9,11 +9,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Phrase;
 
 /**
- * Class FilterChatController
+ * Class Admin_message_filter_newphraseController
  *
  * @package app\controllers\bot
  */
-class Admin_filter_newphraseController extends Controller
+class Admin_message_filter_newphraseController extends Controller
 {
     /**
      * @return array
@@ -22,7 +22,7 @@ class Admin_filter_newphraseController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/admin_filter_set_newphrase ' . $type . ' ' . $chatId);
+        $telegramUser->getState()->setName('/admin_message_filter_set_newphrase ' . $type . ' ' . $chatId);
         $telegramUser->save();
 
         return [
@@ -36,14 +36,10 @@ class Admin_filter_newphraseController extends Controller
                         [
                             [
                                 'callback_data' => ($type == Phrase::TYPE_BLACKLIST
-                                    ? '/admin_filter_blacklist'
-                                    : '/admin_filter_whitelist'
+                                    ? '/admin_message_filter_blacklist'
+                                    : '/admin_message_filter_whitelist'
                                 ) . ' ' . $chatId,
                                 'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/menu',
-                                'text' => '⏪ ' . Yii::t('bot', 'Main menu'),
                             ],
                         ],
                     ]),
@@ -73,8 +69,8 @@ class Admin_filter_newphraseController extends Controller
         }
 
         $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACKLIST
-            ? '/admin_filter_blacklist'
-            : '/admin_filter_whitelist'
+            ? '/admin_message_filter_blacklist'
+            : '/admin_message_filter_whitelist'
         ) . ' ' . $chatId);
         $telegramUser->save();
 

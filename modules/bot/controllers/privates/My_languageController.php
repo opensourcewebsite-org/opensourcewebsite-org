@@ -96,20 +96,21 @@ class My_languageController extends Controller
             ->all();
 
         $paginationButtons = PaginationButtons::build('/language_list_', $pagination);
-        $listButtons = [];
+        $buttons = [];
+
         if ($languages) {
             foreach ($languages as $language) {
-                $listButtons[][] = ['callback_data' => '/my_language_' . $language->code, 'text' => strtoupper($language->code) . ' - ' . $language->name];
+                $buttons[][] = ['callback_data' => '/my_language_' . $language->code, 'text' => strtoupper($language->code) . ' - ' . $language->name];
             }
 
             if ($paginationButtons) {
-                $listButtons[] = $paginationButtons;
+                $buttons[] = $paginationButtons;
             }
 
-            $listButtons[][] = ['callback_data' => '/my_language', 'text' => '🔙'];
+            $buttons[][] = ['callback_data' => '/my_language', 'text' => '🔙'];
         }
 
-        Yii::warning($listButtons);
+        Yii::warning($buttons);
 
         return [
             new EditMessageTextCommand(
@@ -118,7 +119,7 @@ class My_languageController extends Controller
                 $this->render('language-list'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup($listButtons),
+                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
                 ]
             ),
             new AnswerCallbackQueryCommand(

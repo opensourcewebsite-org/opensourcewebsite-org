@@ -94,20 +94,21 @@ class My_currencyController extends Controller
             ->all();
 
         $paginationButtons = PaginationButtons::build('/currency_list_', $pagination);
-        $listButtons = [];
+        $buttons = [];
+
         if ($currencies) {
             foreach ($currencies as $currency) {
-                $listButtons[][] = ['callback_data' => '/my_currency_' . $currency->code, 'text' => strtoupper($currency->code) . ' - ' . $currency->name];
+                $buttons[][] = ['callback_data' => '/my_currency_' . $currency->code, 'text' => strtoupper($currency->code) . ' - ' . $currency->name];
             }
 
             if ($paginationButtons) {
-                $listButtons[] = $paginationButtons;
+                $buttons[] = $paginationButtons;
             }
 
-            $listButtons[][] = ['callback_data' => '/my_currency', 'text' => '🔙'];
+            $buttons[][] = ['callback_data' => '/my_currency', 'text' => '🔙'];
         }
 
-        Yii::warning($listButtons);
+        Yii::warning($buttons);
 
         return [
             new EditMessageTextCommand(
@@ -116,7 +117,7 @@ class My_currencyController extends Controller
                 $this->render('currency-list'),
                 [
                     'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup($listButtons),
+                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
                 ]
             ),
             new AnswerCallbackQueryCommand(
