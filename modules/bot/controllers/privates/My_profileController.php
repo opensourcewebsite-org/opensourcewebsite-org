@@ -31,7 +31,7 @@ class My_profileController extends Controller
         $languageCode = $telegramUser->language_code;
         $languageName = Language::findOne(['code' => $languageCode])->name;
         $languageCode = strtoupper($languageCode);
-        
+
         $params = [
             'firstName' => $telegramUser->provider_user_first_name,
             'lastName' => $telegramUser->provider_user_last_name,
@@ -53,6 +53,12 @@ class My_profileController extends Controller
                             [
                                 'callback_data' => '/my_location',
                                 'text' => Yii::t('bot', 'Location'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/my_timezone',
+                                'text' => Yii::t('bot', 'Timezone'),
                             ],
                         ],
                         [

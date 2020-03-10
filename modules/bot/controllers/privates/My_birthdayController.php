@@ -29,7 +29,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $telegramUser->getState()->setName('/my_birthday_create');
+            $telegramUser->getState()->setName('/my_birthday__create');
             $telegramUser->save();
         }
 
@@ -46,7 +46,7 @@ class My_birthdayController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         (isset($birthday) ? [
                             [
-                                'callback_data' => '/my_birthday_update',
+                                'callback_data' => '/my_birthday__update',
                                 'text' => '✏️',
                             ]
                         ] : []),
@@ -84,7 +84,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/my_birthday_create');
+        $telegramUser->getState()->setName('/my_birthday__create');
         $telegramUser->save();
 
         return [

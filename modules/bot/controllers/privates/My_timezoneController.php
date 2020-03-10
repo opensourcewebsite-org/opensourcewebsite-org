@@ -11,35 +11,24 @@ use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_genderController
+ * Class My_timezoneController
  *
  * @package app\modules\bot\controllers
  */
-class My_genderController extends Controller
+class My_timezoneController extends Controller
 {
     /**
      * @return array
      */
-    public function actionIndex($gender = null)
+    public function actionIndex()
     {
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        if ($gender) {
-            if ($gender == 'male') {
-                $user->gender = User::MALE;
-            } elseif ($gender == 'female') {
-                $user->gender = User::FEMALE;
-            }
-            $user->save();
-        }
-
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('index', [
-                    'gender' => $user->gender,
-                ]),
+                $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
@@ -49,7 +38,7 @@ class My_genderController extends Controller
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_gender__update',
+                                'callback_data' => '/my_timezone__update',
                                 'text' => '✏️',
                             ],
                         ],
@@ -68,27 +57,13 @@ class My_genderController extends Controller
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $text = $this->render('update', [
-                    'gender' => $user->gender,
-                ]),
+                $text = $this->render('update'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_gender_male',
-                                'text' => Yii::t('bot', 'Male'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/my_gender_female',
-                                'text' => Yii::t('bot', 'Female'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/my_gender',
+                                'callback_data' => '/my_timezone',
                                 'text' => '🔙',
                             ],
                         ],

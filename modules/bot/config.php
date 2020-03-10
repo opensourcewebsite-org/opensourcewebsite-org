@@ -11,6 +11,7 @@ return [
         'commandRouteResolver' => [
             'class' => CommandRouteResolver::className(),
             'rules' => [
+                '/<controller:\w+>__<action:\w+>' => '<controller>/<action>',
                 '⚙️' => 'help/index',
 
                 '/my_language_<language:\w+>' => 'my_language/index',
@@ -26,10 +27,6 @@ return [
                 '/merge_accounts' => 'my_email/merge-accounts',
                 '/discard_merge_request <mergeAccountsRequestId:\d+>' => 'my_email/discard-merge-request',
 
-                '/my_birthday_create' => 'my_birthday/create',
-                '/my_birthday_update' => 'my_birthday/update',
-
-                '/my_gender_update' => 'my_gender/update',
                 '/my_gender_<gender:\w+>' => 'my_gender/index',
 
                 '/update_location' => 'my_location/update',

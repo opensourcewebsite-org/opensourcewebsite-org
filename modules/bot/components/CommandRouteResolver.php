@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components;
 
+use Yii;
 use yii\base\Component;
 
 /**
@@ -38,6 +39,8 @@ class CommandRouteResolver extends Component
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
         }
+
+        Yii::warning($route);
 
         if (!isset($route)) {
             $route = 'default/command-not-found';
