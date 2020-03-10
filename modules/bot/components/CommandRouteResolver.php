@@ -40,11 +40,11 @@ class CommandRouteResolver extends Component
             list($route, $params) = $this->resolveCommandRoute($state);
         }
 
-        Yii::warning($route);
-
         if (!isset($route)) {
             $route = 'default/command-not-found';
         }
+
+        Yii::warning($route);
 
         return [ $route, $params ];
     }
