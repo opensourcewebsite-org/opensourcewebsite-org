@@ -80,7 +80,10 @@ class My_timezoneController extends Controller
             ->all();
 
         foreach ($timezones as $timezone) {
-            $buttons[][] = ['text' => $timezone->getFullName(), 'callback_data' => '/my_timezone_create_' . $timezone->code];
+            $buttons[][] = [
+                'text' => $timezone->getFullName(),
+                'callback_data' => '/my_timezone_create_' . $timezone->code
+            ];
         }
 
         $paginationButtons = PaginationButtons::build('/my_timezone_update_', $pagination);

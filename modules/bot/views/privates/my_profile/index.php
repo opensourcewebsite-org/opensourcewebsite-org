@@ -28,5 +28,5 @@ if (!empty($language)) {
     echo \Yii::t('bot', 'Language') . ": " .  $language . "<br/>";
 }
 if (!empty($timezone)) {
-	echo \Yii::t('bot', 'Timezone') . ": " . $timezone . "<br/>";
+    echo \Yii::t('bot', 'Timezone') . ": " . $timezone . "<br/>";
 }
