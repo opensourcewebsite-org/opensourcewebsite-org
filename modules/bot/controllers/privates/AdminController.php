@@ -42,35 +42,22 @@ class AdminController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        foreach ($chats as $chat) {
-            $currentRow[] = [
-                'callback_data' => '/admin_chat ' . $chat->id,
-                'text' => $chat->title,
-            ];
+        $paginationButtons = PaginationButtons::build('/admin_', $pagination);
+        $buttons = [];
 
-            if (count($currentRow) == 2) {
-                $buttons[] = $currentRow;
-                $currentRow = [];
+        if ($chats) {
+            foreach ($chats as $chat) {
+                $buttons[][] = ['callback_data' => '/admin_chat ' . $chat->id, 'text' => $chat->title];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
             }
         }
 
-        if (!empty($currentRow)) {
-            $buttons[] = $currentRow;
-            $currentRow = [];
-        }
+        $buttons[][] = ['callback_data' => '/menu', 'text' => '🔙'];
 
-        $paginationButtons = PaginationButtons::build('/admin_', $pagination);
-
-        if ($paginationButtons) {
-            $buttons[] = $paginationButtons;
-        }
-
-        $buttons[] = [
-            [
-                'callback_data' => '/menu',
-                'text' => '🔙',
-            ],
-        ];
+        Yii::warning($buttons);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [

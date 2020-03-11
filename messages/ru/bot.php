@@ -147,7 +147,7 @@ return [
     'Chats successfully refreshed' => 'Чаты успешно обновлены',
     'Change status' => 'Изменить статус',
     'Status' => 'Статус',
-    'Type command /refresh in your group to add your group to the list, or update the list of group administrators' => 'Введите команду “/refresh” в вашей группе чтобы добавить вашу группу в список, или обновить список администраторов группы',
+    'Type command /refresh in your group to add the group to the list, or update the list of group administrators' => 'Введите команду “/refresh” в вашей группе чтобы добавить группу в список, или обновить список администраторов группы',
     'Change' => 'Изменить',
     'Remove' => 'Удалить',
     'Group settings updated' => 'Настройки группы обновлены',

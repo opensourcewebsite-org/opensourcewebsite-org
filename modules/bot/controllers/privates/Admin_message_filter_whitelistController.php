@@ -43,8 +43,6 @@ class Admin_message_filter_whitelistController extends Controller
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
 
-        $paginationButtons = PaginationButtons::build('/admin_message_filter_whitelist ' . $chatId . ' ', $pagination);
-
         $telegramUser = $this->getTelegramUser();
         $telegramUser->getState()->setName(null);
         $telegramUser->save();
@@ -54,18 +52,17 @@ class Admin_message_filter_whitelistController extends Controller
             ->limit($pagination->limit)
             ->all();
 
+        $paginationButtons = PaginationButtons::build('/admin_message_filter_whitelist ' . $chatId . ' ', $pagination);
         $buttons = [];
-        foreach ($phrases as $phrase) {
-            $buttons[] = [
-                [
-                    'callback_data' => '/admin_message_filter_phrase ' . $phrase->id,
-                    'text' => $phrase->text,
-                ],
-            ];
-        }
 
-        if ($paginationButtons) {
-            $buttons[] = $paginationButtons;
+        if ($phrases) {
+            foreach ($phrases as $phrase) {
+                $buttons[][] = ['callback_data' => '/admin_message_filter_phrase ' . $phrase->id, 'text' => $phrase->text];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
         }
 
         $buttons[] = [
@@ -78,6 +75,8 @@ class Admin_message_filter_whitelistController extends Controller
                 'text' => '➕',
             ],
         ];
+
+        Yii::warning($buttons);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [
