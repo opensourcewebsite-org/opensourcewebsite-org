@@ -60,7 +60,7 @@ class AdminController extends Controller
         }
 
         $paginationButtons = PaginationButtons::build('/admin_', $pagination);
-        
+
         if ($paginationButtons) {
             $buttons[] = $paginationButtons;
         }
