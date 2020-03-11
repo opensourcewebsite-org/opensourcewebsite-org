@@ -7,6 +7,8 @@ use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
+use yii\data\Pagination;
+use app\modules\bot\helpers\PaginationButtons;
 
 /**
  * Class AdminController
@@ -18,12 +20,27 @@ class AdminController extends Controller
     /**
      * @return array
      */
-    public function actionIndex()
+    public function actionIndex($page = 1)
     {
-        $chats = $this->getTelegramUser()->getAdministratedChats()->all();
-
+        $chatQuery = $this->getTelegramUser()->getAdministratedChats();
+     
         $buttons = [];
         $currentRow = [];
+
+        $pagination = new Pagination([
+            'totalCount' => $chatQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+        ]);
+
+        $pagination->pageSizeParam = false;
+        $pagination->validatePage = true;
+
+        $chats = $chatQuery->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
 
         foreach ($chats as $chat) {
             $currentRow[] = [
@@ -40,6 +57,12 @@ class AdminController extends Controller
         if (!empty($currentRow)) {
             $buttons[] = $currentRow;
             $currentRow = [];
+        }
+
+        $paginationButtons = PaginationButtons::build('/admin_', $pagination);
+        
+        if ($paginationButtons) {
+            $buttons[] = $paginationButtons;
         }
 
         $buttons[] = [

@@ -47,12 +47,12 @@ class Chat extends ActiveRecord
 
     public function getBlacklistPhrases()
     {
-        return $this->getPhrases()->where(['type' => self::FILTER_MODE_BLACKLIST])->all();
+        return $this->getPhrases()->where(['type' => self::FILTER_MODE_BLACKLIST]);
     }
 
     public function getWhitelistPhrases()
     {
-        return $this->getPhrases()->where(['type' => self::FILTER_MODE_WHITELIST])->all();
+        return $this->getPhrases()->where(['type' => self::FILTER_MODE_WHITELIST]);
     }
 
     public function getSettings()

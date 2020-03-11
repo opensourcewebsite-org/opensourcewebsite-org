@@ -39,7 +39,7 @@ class MessageController extends Controller
                 if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                     $deleteMessage = false;
 
-                    $phrases = $chat->getBlacklistPhrases();
+                    $phrases = $chat->getBlacklistPhrases()->all();
 
                     foreach ($phrases as $phrase) {
                         if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
@@ -50,7 +50,7 @@ class MessageController extends Controller
                 } else {
                     $deleteMessage = true;
 
-                    $phrases = $chat->getWhitelistPhrases();
+                    $phrases = $chat->getWhitelistPhrases()->all();
 
                     foreach ($phrases as $phrase) {
                         if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
