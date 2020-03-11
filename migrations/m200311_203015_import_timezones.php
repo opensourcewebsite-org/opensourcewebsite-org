@@ -19,7 +19,7 @@ class m200311_203015_import_timezones extends Migration
         foreach (timezone_identifiers_list() as $code => $name) {
             date_default_timezone_set($name);
             $offset = date('Z', $timestamp);
-        
+
             $this->execute("INSERT INTO `timezone` (`code`, `name`, `offset`) VALUES ('$code', '$name', '$offset');");
         }
     }

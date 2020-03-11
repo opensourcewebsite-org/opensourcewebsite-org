@@ -12,7 +12,11 @@ class m200311_204743_add_timezone_code_column_to_bot_user_table extends Migratio
      */
     public function safeUp()
     {
-        $this->addColumn('{{%bot_user}}', 'timezone_code', $this->integer()->unsigned()->defaultValue(425)->after('currency_code')->notNull());
+        $this->addColumn(
+            '{{%bot_user}}',
+            'timezone_code',
+            $this->integer()->unsigned()->defaultValue(425)->after('currency_code')->notNull()
+        );
 
         $this->addForeignKey(
             'fk-timezone_code-bot_user',
