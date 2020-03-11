@@ -31,12 +31,16 @@ return [
 
                 '/update_location' => 'my_location/update',
 
+                '/admin_<page:\d+>' => 'admin',
+
                 '/admin_chat <chatId:\d+>' => 'admin_chat',
                 '/admin_message_filter <chatId:\d+>' => 'admin_message_filter',
                 '/admin_message_filter_change_mode <chatId:\d+>' => 'admin_message_filter/update',
                 '/admin_message_filter_change_status <chatId:\d+>' => 'admin_message_filter/status',
                 '/admin_message_filter_whitelist <chatId:\d+>' => 'admin_message_filter_whitelist',
+                '/admin_message_filter_whitelist <chatId:\d+> <page:\d+>' => 'admin_message_filter_whitelist',
                 '/admin_message_filter_blacklist <chatId:\d+>' => 'admin_message_filter_blacklist',
+                '/admin_message_filter_blacklist <chatId:\d+> <page:\d+>' => 'admin_message_filter_blacklist',
                 '/admin_message_filter_newphrase <type:\w+> <chatId:\d+>' => 'admin_message_filter_newphrase/index',
                 '/admin_message_filter_set_newphrase <type:\w+> <chatId:\d+>' => 'admin_message_filter_newphrase/update',
 
