@@ -8,6 +8,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\models\Currency;
 use app\models\Language;
+use app\models\Timezone;
 
 /**
  * Class My_profileController
@@ -32,6 +33,9 @@ class My_profileController extends Controller
         $languageName = Language::findOne(['code' => $languageCode])->name;
         $languageCode = strtoupper($languageCode);
 
+        $timezoneCode = $telegramUser->timezone_code;
+        $timezoneName = Timezone::findOne($timezoneCode)->getFullName();
+
         $params = [
             'firstName' => $telegramUser->provider_user_first_name,
             'lastName' => $telegramUser->provider_user_last_name,
@@ -40,6 +44,7 @@ class My_profileController extends Controller
             'birthday' => $user->birthday,
             'currency' => "$currencyName ($currencyCode)",
             'language' => "$languageName ($languageCode)",
+            'timezone' => $timezoneName,
         ];
 
         return [

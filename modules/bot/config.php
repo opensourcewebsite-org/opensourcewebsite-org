@@ -22,6 +22,9 @@ return [
                 '/currency_list' => 'my_currency/currency-list',
                 '/currency_list_<page:\d+>' => 'my_currency/currency-list',
 
+                '/my_timezone_update_<page:\d+>' => 'my_timezone/update',
+                '/my_timezone_create_<timezoneCode:\d+>' => 'my_timezone/create',
+
                 '/set_email' => 'my_email/create',
                 '/change_email' => 'my_email/update',
                 '/merge_accounts' => 'my_email/merge-accounts',

@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 
 use \yii\db\ActiveRecord;
 use app\models\Language;
+use app\models\Timezone;
 
 /**
  * This is the model class for table "bot_user".
@@ -88,6 +89,7 @@ class User extends ActiveRecord
             ],
             [['language_code'], 'default', 'value' => 'en'],
             [['currency_code'], 'default', 'value' => 'USD'],
+            [['timezone_code'], 'default', 'value' => Timezone::TIMEZONE_UTC_CODE],
         ];
     }
 
