@@ -23,7 +23,7 @@ class AdminController extends Controller
     public function actionIndex($page = 1)
     {
         $chatQuery = $this->getTelegramUser()->getAdministratedChats();
-     
+
         $buttons = [];
         $currentRow = [];
 
