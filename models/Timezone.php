@@ -27,7 +27,8 @@ class Timezone extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['code', 'name'], 'required'],
+            [['code', 'name', 'offset'], 'required'],
+            [['code', 'offset'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['code'], 'unique'],
         ];
