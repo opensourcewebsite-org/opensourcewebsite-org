@@ -76,7 +76,7 @@ class Rating extends \yii\db\ActiveRecord
         return $totalRating != null ? $totalRating : 0;
     }
 
-    public static function getRank($userRating)
+    public static function getRank($userId)
     {
         $groupQueryResult = (new Query)
             ->select([
@@ -91,7 +91,7 @@ class Rating extends \yii\db\ActiveRecord
 
         $rank = static::UNRANKED;
         foreach ($groupQueryResult as $index => $row) {
-            if ($row['id'] == Yii::$app->user->getId()) {
+            if ($row['id'] == $userId) {
                 $rank = $index + 1;
             }
         }

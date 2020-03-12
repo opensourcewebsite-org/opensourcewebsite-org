@@ -319,7 +319,7 @@ class SiteController extends Controller
             $percent = Converter::percentage($rating, $totalRating);
         }
 
-        list($total, $rank) = Rating::getRank($rating);
+        list($total, $rank) = Rating::getRank($model->getId());
 
         return $this->render('account', [
             'model' => $model,
