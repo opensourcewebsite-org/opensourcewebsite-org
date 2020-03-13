@@ -86,7 +86,7 @@ class Rating extends \yii\db\ActiveRecord
             ->from(User::tableName())
             ->leftJoin(Rating::tableName() . ' ON `user`.`id` = `rating`.`user_id`')
             ->groupBy('`user`.`id`')
-            ->orderBy(['balance' => 'DESC', 'user.created_at' => 'ASC'])
+            ->orderBy(['balance' => SORT_DESC, 'user.created_at' => SORT_ASC])
             ->all();
 
         $total = count($groupQueryResult);
@@ -94,7 +94,7 @@ class Rating extends \yii\db\ActiveRecord
         $rank = static::UNRANKED;
         foreach ($groupQueryResult as $index => $row) {
             if ($row['id'] == $userId) {
-                $rank = $total - $index;
+                $rank = $index + 1;
             }
         }
 
