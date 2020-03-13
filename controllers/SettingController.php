@@ -76,8 +76,8 @@ class SettingController extends Controller
         $settingValues = SettingValue::find()->where(['setting_id' => $id, 'is_current' => 0])->all();
         $setting = Setting::find()->where(['id' => $id])->one();
 
-        if(empty($setting) || empty($settingValues)){
-            throw new NotFoundHttpException();
+        if(empty($setting)) {
+            throw new NotFoundHttpException('Setting not found');
         }
 
         return $this->render('setting-values', [
@@ -89,20 +89,22 @@ class SettingController extends Controller
 
     /**
      * Create new value for a setting
-     * @return string
+     * @return string|void
      */
     public function actionCreateValue()
     {
-        if (Yii::$app->request->isAjax) {
-            $postData = Yii::$app->request->post();
-            $setting_id = $postData['setting_id'];
-            $new_value = $postData['new_value'];
-            $settingValue = new SettingValue(['setting_id' => $setting_id, 'value' => $new_value, 'updated_at' => time()]);
-            if ($settingValue->save()) {
-                //Switch user vote to added value
-                $this->saveVote(['setting_id' => $setting_id, 'value_id' => $settingValue->id]);
-                return $this->redirect(['setting/values', 'id' => $setting_id]);
-            }
+        if (!Yii::$app->request->isAjax) {
+            return;
+        }
+
+        $postData = Yii::$app->request->post();
+        $setting_id = $postData['setting_id'];
+        $new_value = $postData['new_value'];
+        $settingValue = new SettingValue(['setting_id' => $setting_id, 'value' => $new_value, 'updated_at' => time()]);
+        if ($settingValue->save()) {
+            //Switch user vote to added value
+            $this->saveVote(['setting_id' => $setting_id, 'value_id' => $settingValue->id]);
+            return $this->redirect(['setting/values', 'id' => $setting_id]);
         }
     }
 
