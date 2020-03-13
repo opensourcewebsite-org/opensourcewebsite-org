@@ -94,7 +94,7 @@ class Rating extends \yii\db\ActiveRecord
         $rank = static::UNRANKED;
         foreach ($groupQueryResult as $index => $row) {
             if ($row['id'] == $userId) {
-                $rank = $total - $index;
+                $rank = $index + 1;
             }
         }
 
