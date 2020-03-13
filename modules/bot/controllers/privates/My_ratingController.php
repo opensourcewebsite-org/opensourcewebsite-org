@@ -68,7 +68,7 @@ class My_ratingController extends Controller
             $percent = Converter::percentage($rating, $totalRating);
         }
 
-        list($total, $rank) = Rating::getRank($rating);
+        list($total, $rank) = Rating::getRank($user->getId());
 
         $params = [
             'active_rating' => $activeRating,

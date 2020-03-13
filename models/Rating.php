@@ -22,6 +22,7 @@ class Rating extends \yii\db\ActiveRecord
     const TEAM = 1;
     const DONATE = 2;
     const USE_TELEGRAM_BOT = 3;
+    const UNRANKED = 'unranked';
 
     /**
      * {@inheritdoc}
@@ -75,9 +76,9 @@ class Rating extends \yii\db\ActiveRecord
         return $totalRating != null ? $totalRating : 0;
     }
 
-    public static function getRank($userRating)
+    public static function getRank($userId)
     {
-        $groupQuery = (new Query)
+        $groupQueryResult = (new Query)
             ->select([
                 '`user`.id',
                 'balance' => 'CASE WHEN SUM(`rating`.`amount`) IS NULL THEN 0 ELSE SUM(`rating`.`amount`) END',
@@ -85,15 +86,17 @@ class Rating extends \yii\db\ActiveRecord
             ->from(User::tableName())
             ->leftJoin(Rating::tableName() . ' ON `user`.`id` = `rating`.`user_id`')
             ->groupBy('`user`.`id`')
-            ->orderBy('balance DESC');
+            ->orderBy(['balance' => 'DESC', 'user.created_at' => 'DESC'])
+            ->all();
 
-        $total = $groupQuery->count();
+        $rank = static::UNRANKED;
+        foreach ($groupQueryResult as $index => $row) {
+            if ($row['id'] == $userId) {
+                $rank = $index + 1;
+            }
+        }
 
-        $rank = (new Query)
-            ->select(['count(*)+1'])
-            ->from(['g' => $groupQuery])
-            ->where(['>', 'balance', $userRating])
-            ->scalar();
+        $total = count($groupQueryResult);
 
         return [$total, $rank];
     }
