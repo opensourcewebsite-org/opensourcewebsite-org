@@ -11,6 +11,7 @@ checks:
     enabled: false
   identical-code:
     enabled: false
+# https://docs.codeclimate.com/docs/list-of-engines
 plugins:
   csslint:
     enabled: true

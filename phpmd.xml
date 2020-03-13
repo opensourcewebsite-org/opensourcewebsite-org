@@ -51,7 +51,8 @@
     <rule ref="rulesets/controversial.xml/Superglobals"/>
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcaseclassname -->
-    <rule ref="rulesets/controversial.xml/CamelCaseClassName"/>
+    <!-- TODO: Temporarily disabled due to /modules/bot/controllers -->
+    <!-- <rule ref="rulesets/controversial.xml/CamelCaseClassName"/> -->
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcasepropertyname -->
     <rule ref="rulesets/controversial.xml/CamelCasePropertyName"/>
