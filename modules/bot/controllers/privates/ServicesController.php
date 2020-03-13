@@ -28,12 +28,42 @@ class ServicesController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/s_job',
+                                'text' => '🏗 ' . Yii::t('bot', 'Jobs'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_ad',
+                                'text' => '🏗 ' . Yii::t('bot', 'Ads'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_da',
+                                'text' => '🏗 ' . Yii::t('bot', 'Dating'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_ce',
+                                'text' => '🏗 ' . Yii::t('bot', 'Currency Exchange'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_re',
+                                'text' => '🏗 ' . Yii::t('bot', 'Real Estates'),
+                            ],
+                        ],
+                        [
+                            [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => Yii::t('bot', 'Donate')
+                                'text' => Yii::t('bot', 'Donate'),
                             ],
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Yii::t('bot', 'Contribution')
+                                'text' => Yii::t('bot', 'Contribution'),
                             ],
                         ],
                         [

@@ -76,19 +76,19 @@ class Admin_message_filterController extends Controller
                         [
                             [
                                 'callback_data' => '/admin_message_filter_change_mode ' . $chatId,
-                                'text' => Yii::t('bot', 'Change mode'),
+                                'text' => Yii::t('bot', 'Mode') . ': ' . ($isFilterModeBlack ? Yii::t('bot', 'Blacklist') : Yii::t('bot', 'Whitelist')),
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/admin_message_filter_whitelist ' . $chatId,
-                                'text' => Yii::t('bot', 'Change WhiteList'),
+                                'text' => '✏️ ' . Yii::t('bot', 'Whitelist'),
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/admin_message_filter_blacklist ' . $chatId,
-                                'text' => Yii::t('bot', 'Change BlackList'),
+                                'text' => '✏️ ' . Yii::t('bot', 'Blacklist'),
                             ],
                         ],
                         [

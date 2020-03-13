@@ -47,7 +47,7 @@ class MenuController extends Controller
                         [
                             [
                                 'callback_data' => '/services',
-                                'text' => Yii::t('bot', 'Services')
+                                'text' => '🏗 ' . Yii::t('bot', 'Services')
                             ],
                         ],
                         [
@@ -65,21 +65,21 @@ class MenuController extends Controller
                         [
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => Yii::t('bot', 'Donate')
+                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
                             ],
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Yii::t('bot', 'Contribution')
+                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/start',
-                                'text' => Yii::t('bot', 'Greeting')
+                                'text' => Yii::t('bot', 'Greeting'),
                             ],
                             [
                                 'callback_data' => '/my_language',
-                                'text' => Yii::t('bot', 'Language')
+                                'text' => Yii::t('bot', 'Language'),
                             ],
                         ],
                     ]),
