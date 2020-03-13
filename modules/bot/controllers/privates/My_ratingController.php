@@ -35,11 +35,11 @@ class My_ratingController extends Controller
                         [
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => Yii::t('bot', 'Donate')
+                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
                             ],
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Yii::t('bot', 'Contribution')
+                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                             ],
                         ],
                         [

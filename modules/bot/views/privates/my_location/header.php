@@ -1,1 +1,1 @@
-<b><?= \Yii::t('bot', 'Your Location') ?></b>
+<b><?= Yii::t('bot', 'Your Location') ?></b>

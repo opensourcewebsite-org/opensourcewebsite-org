@@ -1,1 +1,1 @@
-<?= \Yii::t('bot', 'Please, send your email') ?>.
+<?= Yii::t('bot', 'Please, send your email') ?>.

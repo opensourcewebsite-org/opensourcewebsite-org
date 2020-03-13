@@ -58,7 +58,7 @@ class My_profileController extends Controller
                         [
                             [
                                 'callback_data' => '/my_timezone',
-                                'text' => Yii::t('bot', 'Timezone'),
+                                'text' => '🏗 ' . Yii::t('bot', 'Timezone'),
                             ],
                         ],
                         [

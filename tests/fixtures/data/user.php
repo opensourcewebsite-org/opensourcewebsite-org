@@ -20,8 +20,8 @@ return [
         'password_hash' => Yii::$app->security->generatePasswordHash('member2'),
         'is_authenticated' => 0,
         'status' => User::STATUS_ACTIVE,
-        'created_at' => 1531386000,
-        'updated_at' => 1531386000,
+        'created_at' => 1531386001,
+        'updated_at' => 1531386001,
     ],
     [
         'id' => 3,
@@ -30,8 +30,8 @@ return [
         'password_hash' => Yii::$app->security->generatePasswordHash('member3'),
         'is_authenticated' => 1,
         'status' => User::STATUS_DELETED,
-        'created_at' => 1531386000,
-        'updated_at' => 1531386000,
+        'created_at' => 1531386002,
+        'updated_at' => 1531386002,
     ],
     [
         'id' => 4,
@@ -40,7 +40,7 @@ return [
         'password_hash' => Yii::$app->security->generatePasswordHash('member4'),
         'is_authenticated' => 0,
         'status' => User::STATUS_DELETED,
-        'created_at' => 1531386000,
-        'updated_at' => 1531386000,
+        'created_at' => 1531386003,
+        'updated_at' => 1531386003,
     ],
 ];

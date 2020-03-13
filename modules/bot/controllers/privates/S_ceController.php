@@ -12,50 +12,34 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
  *
  * @package app\modules\bot\controllers
  */
-class DefaultController extends Controller
+class S_ceController extends Controller
 {
     /**
      * @return string
      */
     public function actionIndex()
-    {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('/menu/index'),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
-            ),
-        ];
-    }
-
-    /**
-     * @return string
-     */
-    public function actionCommandNotFound()
 	{
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('command-not-found'),
+                $this->render('index'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
+                                'text' => Yii::t('bot', 'Donate'),
                             ],
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                                'text' => Yii::t('bot', 'Contribution'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/menu',
-                                'text' => Yii::t('bot', 'Menu'),
+                                'callback_data' => '/services',
+                                'text' => '🔙',
                             ],
                         ],
                     ]),
