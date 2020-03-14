@@ -3,6 +3,7 @@
 namespace app\modules\bot\models;
 
 use \yii\db\ActiveRecord;
+use app\models\Language;
 
 /**
  * This is the model class for table "bot_user".
@@ -30,6 +31,25 @@ class User extends ActiveRecord
     public static function tableName()
     {
         return 'bot_user';
+    }
+
+    public static function createUser($updateUser)
+    {
+        $language = Language::findOne([
+            'code' => $updateUser->getLanguageCode(),
+        ]);
+        $languageCode = isset($language) ? $language->code : 'en';
+
+        $newUser = new User();
+        $newUser->setAttributes([
+            'provider_user_id' => $updateUser->getId(),
+            'language_code' => $languageCode,
+            'is_authenticated' => true,
+        ]);
+
+        $newUser->save();
+
+        return $newUser;
     }
 
     /**
@@ -109,6 +129,31 @@ class User extends ActiveRecord
     public function getChats()
     {
         return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
-                    ->viaTable('bot_chat_bot_user', ['user_id' => 'id']);
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
+    }
+
+    public function getAdministratedChats()
+    {
+        return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                ]);
+        });
+    }
+
+    public function updateInfo($updateUser)
+    {
+        $this->setAttributes([
+            'provider_user_name' => $updateUser->getUsername(),
+            'provider_user_first_name' => $updateUser->getFirstName(),
+            'provider_user_last_name' => $updateUser->getLastName(),
+            'provider_bot_user_blocked' => 0,
+            'last_message_at' => time(),
+        ]);
+
+        $this->save();
     }
 }

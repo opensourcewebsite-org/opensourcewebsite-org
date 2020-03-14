@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components;
 
+use Yii;
 use yii\base\Component;
 
 /**
@@ -46,6 +47,7 @@ class CommandRouteResolver extends Component
             $route = 'default/command-not-found';
         }
 
+        Yii::warning($route);
         return [ $route, $params, $isStateRoute ];
     }
 

@@ -1,5 +1,4 @@
 # https://codeclimate.com
-
 version: "2"
 checks:
   file-lines:
@@ -8,12 +7,18 @@ checks:
     enabled: false
   method-lines:
     enabled: false
+  similar-code:
+    enabled: false
+  identical-code:
+    enabled: false
+# https://docs.codeclimate.com/docs/list-of-engines
 plugins:
   csslint:
     enabled: true
   duplication:
-    enabled: true
+    enabled: false
     config:
+      count_threshold: 3
       languages:
       - javascript
       - php

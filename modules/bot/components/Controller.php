@@ -60,6 +60,11 @@ class Controller extends \yii\web\Controller
         return $this->module->getBotName();
     }
 
+    protected function getBotApi()
+    {
+        return $this->module->getBotApi();
+    }
+
     /**
      * @param string $text
      *

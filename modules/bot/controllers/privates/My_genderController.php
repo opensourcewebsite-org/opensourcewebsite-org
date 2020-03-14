@@ -49,7 +49,7 @@ class My_genderController extends Controller
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_gender_update',
+                                'callback_data' => '/my_gender__update',
                                 'text' => '✏️',
                             ],
                         ],
@@ -76,16 +76,20 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_gender',
-                                'text' => '🔙',
-                            ],
-                            [
                                 'callback_data' => '/my_gender_male',
                                 'text' => Yii::t('bot', 'Male'),
                             ],
+                        ],
+                        [
                             [
                                 'callback_data' => '/my_gender_female',
                                 'text' => Yii::t('bot', 'Female'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/my_gender',
+                                'text' => '🔙',
                             ],
                         ],
                     ]),

@@ -35,12 +35,12 @@ class My_ratingController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'text' => Yii::t('bot', 'Donate'),
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md'
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
                             ],
                             [
-                                'text' => Yii::t('bot', 'Contribution'),
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md'
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                             ],
                         ],
                         [
@@ -69,7 +69,7 @@ class My_ratingController extends Controller
             $percent = Converter::percentage($rating, $totalRating);
         }
 
-        list($total, $rank) = Rating::getRank($rating);
+        list($total, $rank) = Rating::getRank($user->getId());
 
         $params = [
             'active_rating' => $activeRating,

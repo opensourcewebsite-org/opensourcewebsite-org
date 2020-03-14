@@ -44,14 +44,18 @@ class DefaultController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
+                            ],
+                            [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Yii::t('bot', 'Read more')
+                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'text' => Yii::t('bot', 'Menu'),
                             ],
                         ],
                     ]),

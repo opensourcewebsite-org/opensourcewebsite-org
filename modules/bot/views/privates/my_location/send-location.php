@@ -1,1 +1,1 @@
-<?= \Yii::t('bot', 'Send Location') ?>
+<?= Yii::t('bot', 'Send Location') ?>

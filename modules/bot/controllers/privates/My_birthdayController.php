@@ -2,13 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
+use app\modules\bot\components\Emoji;
+use app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\response\AnswerCallbackQueryCommand;
+use app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\models\User;
+use app\models\User;
 use app\modules\bot\components\Controller;
 
 /**
@@ -28,7 +27,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $this->getState()->setName('/my_birthday_create');
+            $this->getState()->setName('/my_birthday__create');
         }
 
         return [
@@ -44,14 +43,14 @@ class My_birthdayController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         (isset($birthday) ? [
                             [
-                                'callback_data' => '/my_birthday_update',
-                                'text' => '✏️',
+                                'callback_data' => '/my_birthday__update',
+                                'text' => Emoji::EDIT,
                             ]
                         ] : []),
                         [
                             [
                                 'callback_data' => '/my_profile',
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                         ],
                     ]),
@@ -89,7 +88,7 @@ class My_birthdayController extends Controller
     {
         $update = $this->getUpdate();
 
-        $this->getState()->setName('/my_birthday_create');
+        $this->getState()->setName('/my_birthday__create');
 
         return [
             new EditMessageReplyMarkupCommand(
@@ -105,7 +104,7 @@ class My_birthdayController extends Controller
                         [
                             [
                                 'callback_data' => '/my_birthday',
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                         ],
                     ]),
