@@ -76,7 +76,7 @@ class SettingController extends Controller
         $settingValues = SettingValue::find()->where(['setting_id' => $id, 'is_current' => 0])->all();
         $setting = Setting::find()->where(['id' => $id])->one();
 
-        if(empty($setting)) {
+        if (empty($setting)) {
             throw new NotFoundHttpException('Setting not found');
         }
 
