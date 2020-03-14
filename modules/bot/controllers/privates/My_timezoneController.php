@@ -84,7 +84,8 @@ class My_timezoneController extends Controller
         $paginationButtons = PaginationButtons::build('/my_timezone__list ', $pagination);
         $buttons = [];
 
-//        Yii::warning($pagination);exit;
+        Yii::warning($buttons);
+
         if ($timezones) {
             foreach ($timezones as $timezone => $fullName) {
                 $buttons[][] = [
