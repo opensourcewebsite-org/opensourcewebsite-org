@@ -1,15 +1,10 @@
 <?php
 
 use app\components\helpers\SettingHelper;
-use app\models;
 use yii\helpers\Html;
-
 /* @var $this yii\web\View */
-/* @var $searchModel models\IssueSearch */
+/* @var $searchModel app\models\IssueSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $settingValues models\SettingValue[] */
-/* @var $setting models\Setting */
-/* @var $settingsConfig string */
 
 $this->title = Yii::t('app', 'View website setting').': '.$setting->key;
 ?>
