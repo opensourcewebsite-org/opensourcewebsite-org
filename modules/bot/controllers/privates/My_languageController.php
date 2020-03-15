@@ -74,7 +74,7 @@ class My_languageController extends Controller
      * @return array
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
-    public function actionLanguageList($page = 1)
+    public function actionList($page = 1)
     {
         $update = $this->getUpdate();
 
