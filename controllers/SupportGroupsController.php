@@ -400,28 +400,25 @@ class SupportGroupsController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			      $command = new SupportGroupCommand();
-    		    $command->support_group_id = intval($model->id);
-    		    $command->command = '/start';
-    		    $command->is_default = 1;
-    		    $command->save(false);
+            $command = new SupportGroupCommand();
+            $command->support_group_id = intval($model->id);
+            $command->command = '/start';
+            $command->is_default = 1;
+            $command->save(false);
 
             if (Model::loadMultiple($langs, Yii::$app->request->post()) && Model::validateMultiple($langs, ['language_code'])) {
-                unset($langs[0]);
-                foreach (Yii::$app->request->post('SupportGroupLanguage') as $i => $lang) {
-                    if ($i != 0) {
-                        $model2 = new SupportGroupLanguage();
-                        $model2->support_group_id = $model->id;
-                        $model2->language_code = $lang['language_code'];
-                        $model2->save(false);
+                foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
+                    $model2 = new SupportGroupLanguage();
+                    $model2->support_group_id = $model->id;
+                    $model2->language_code = $languageCode;
+                    $model2->save(false);
 
-			                  /*Save welcome meassage */
-                  			$command_text = new SupportGroupCommandText();
-                  			$command_text->support_group_command_id = $command->id;
-                  			$command_text->language_code = $lang['language_code'];
-                  			$command_text->text = Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!';
-                  			$command_text->save(false);
-                    }
+                    /*Save welcome meassage */
+                    $command_text = new SupportGroupCommandText();
+                    $command_text->support_group_command_id = $command->id;
+                    $command_text->language_code = $languageCode;
+                    $command_text->text = Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!';
+                    $command_text->save(false);
                 }
             }
            return $this->redirect(['index']);
@@ -458,15 +455,13 @@ class SupportGroupsController extends Controller
         $languages = Language::find()->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            unset($_POST['SupportGroupLanguage'][0]);
             SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
-            foreach (Yii::$app->request->post('SupportGroupLanguage') as $i => $lang) {
-                if ($i != 0) {
-                    $model2 = new SupportGroupLanguage();
-                    $model2->language_code = $lang['language_code'];
-                    $model2->support_group_id = intval($id);
-                    $model2->save(false);
-                }
+
+            foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
+                $model2 = new SupportGroupLanguage();
+                $model2->language_code = $languageCode;
+                $model2->support_group_id = intval($id);
+                $model2->save(false);
             }
 
             return $this->redirect(['index']);
