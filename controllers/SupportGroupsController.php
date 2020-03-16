@@ -406,21 +406,23 @@ class SupportGroupsController extends Controller
             $command->is_default = 1;
             $command->save(false);
 
-            if (Model::loadMultiple($langs, Yii::$app->request->post()) && Model::validateMultiple($langs, ['language_code'])) {
-                foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
-                    $model2 = new SupportGroupLanguage();
-                    $model2->support_group_id = $model->id;
-                    $model2->language_code = $languageCode;
-                    $model2->save(false);
+            foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
+                $supportGroupLanguage = new SupportGroupLanguage();
+                $supportGroupLanguage->support_group_id = $model->id;
+                $supportGroupLanguage->language_code = $languageCode;
 
-                    /*Save welcome meassage */
-                    $command_text = new SupportGroupCommandText();
-                    $command_text->support_group_command_id = $command->id;
-                    $command_text->language_code = $languageCode;
-                    $command_text->text = Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!';
-                    $command_text->save(false);
+                if (!$supportGroupLanguage->save()) {
+                    continue;
                 }
+
+                /*Save welcome meassage */
+                $command_text = new SupportGroupCommandText();
+                $command_text->support_group_command_id = $command->id;
+                $command_text->language_code = $languageCode;
+                $command_text->text = Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!';
+                $command_text->save(false);
             }
+
            return $this->redirect(['index']);
         }
 
@@ -456,12 +458,13 @@ class SupportGroupsController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
-
             foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
-                $model2 = new SupportGroupLanguage();
-                $model2->language_code = $languageCode;
-                $model2->support_group_id = intval($id);
-                $model2->save(false);
+                $supportGroupLanguage = new SupportGroupLanguage();
+                $supportGroupLanguage->language_code = $languageCode;
+                $supportGroupLanguage->support_group_id = intval($id);
+                if (!$supportGroupLanguage->save()) {
+                    continue;
+                }
             }
 
             return $this->redirect(['index']);

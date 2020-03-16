@@ -23,6 +23,7 @@ use yii\widgets\ActiveForm;
                 <p>Languages</p>
                 <?= Select2::widget([
                     'name'          => 'SupportGroupLanguage',
+                    'theme'         => Select2::THEME_MATERIAL,
                     'data'          => ArrayHelper::map($languages, 'code', 'name_ascii'),
                     'value'         => $model->isNewRecord ? 'en' : ArrayHelper::getColumn($langs, 'language_code'),
                     'options'       => [
@@ -31,7 +32,6 @@ use yii\widgets\ActiveForm;
                     ],
                     'maintainOrder' => true,
                     'pluginOptions' => [
-                        'tags'            => true,
                         'tokenSeparators' => [',', ' '],
                     ],
                 ]); ?>
