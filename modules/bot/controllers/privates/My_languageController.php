@@ -58,7 +58,7 @@ class My_languageController extends Controller
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/language_list',
+                                'callback_data' => '/my_language__list',
                                 'text' => '✏️',
                             ],
                         ],
@@ -74,7 +74,7 @@ class My_languageController extends Controller
      * @return array
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
-    public function actionLanguageList($page = 1)
+    public function actionList($page = 1)
     {
         $update = $this->getUpdate();
 
@@ -95,7 +95,7 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/language_list_', $pagination);
+        $paginationButtons = PaginationButtons::build('/my_language__list ', $pagination);
         $buttons = [];
 
         if ($languages) {
@@ -107,7 +107,10 @@ class My_languageController extends Controller
                 $buttons[] = $paginationButtons;
             }
 
-            $buttons[][] = ['callback_data' => '/my_language', 'text' => '🔙'];
+            $buttons[][] = [
+                'callback_data' => '/my_language',
+                'text' => '🔙'
+            ];
         }
 
         Yii::warning($buttons);
@@ -116,7 +119,7 @@ class My_languageController extends Controller
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('language-list'),
+                $this->render('list'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup($buttons),

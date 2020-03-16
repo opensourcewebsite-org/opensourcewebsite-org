@@ -15,12 +15,13 @@ return [
                 '⚙️' => 'help/index',
 
                 '/my_language_<language:\w+>' => 'my_language/index',
-                '/language_list' => 'my_language/language-list',
-                '/language_list_<page:\d+>' => 'my_language/language-list',
+                '/my_language__list <page:\d+>' => 'my_language/list',
 
                 '/my_currency_<currency:\w+>' => 'my_currency/index',
-                '/currency_list' => 'my_currency/currency-list',
-                '/currency_list_<page:\d+>' => 'my_currency/currency-list',
+                '/my_currency__list <page:\d+>' => 'my_currency/list',
+
+                '/my_timezone <timezone:\S+>' => 'my_timezone/index',
+                '/my_timezone__list <page:\d+>' => 'my_timezone/list',
 
                 '/set_email' => 'my_email/create',
                 '/change_email' => 'my_email/update',

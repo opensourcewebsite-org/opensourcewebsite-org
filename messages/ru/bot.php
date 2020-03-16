@@ -41,7 +41,7 @@ return [
     'Traveling together' => 'Совместные путешествия',
     'Fellow travelers' => 'Попутчики',
     'Informing about important events and interesting events' => 'Информирование о важных событиях и интересных мероприятиях',
-    'If you have any suggestions, questions or feedback, please contact our team' => 'Если у вас есть какие-либо предложения, вопросы или отзывы, пожалуйста, свяжитесь с нашей командой.',
+    'If you have any suggestions, questions or feedback, please contact our team' => 'Если у вас есть какие-либо предложения, вопросы или отзывы, пожалуйста, свяжитесь с нашей командой',
     'Commands' => 'Команды',
     'Greeting' => 'Приветствие',
     'Help' => 'Справка',
@@ -161,4 +161,6 @@ return [
     'Remove' => 'Удалить',
     'Group settings updated' => 'Настройки группы обновлены',
     'Now group administrators can manage this group using my features' => 'Теперь администраторы группы могут управлять этой группой, используя мои функции',
+    'Renew' => 'Продлить',
+    'Cash' => 'Наличные',
 ];

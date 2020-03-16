@@ -7,7 +7,6 @@ use app\models\SupportGroupExchangeRateCommand;
 
 class SupportGroupHelper extends Component
 {
-
     /**
      * @param $type Buying/Selling
      */
