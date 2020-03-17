@@ -91,7 +91,7 @@ class My_profileController extends Controller
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'text' => '📱',
                             ],
                         ],
                     ]),

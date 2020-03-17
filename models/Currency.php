@@ -14,7 +14,6 @@ use Yii;
  */
 class Currency extends \yii\db\ActiveRecord
 {
-
     /**
      * {@inheritdoc}
      */
