@@ -151,27 +151,33 @@ if (!empty($languages)) {
 $leftMenuItems = [
 	[
 		'title' => 'Data',
-		'icon' => 'fa fa-edit',
-		'urls' => ['data/country', 'data/currency', 'data/language'],
+		'icon' => 'fas fa-database',
+		'urls' => ['data/country', 'data/currency', 'data/language', 'data/payment-method'],
 		'items' => [
 			[
-				'title' => 'Country',
-				'icon' => 'fa fa-map-signs',
+				'title' => 'Countries',
+				'icon' => 'far fa-circle',
 				'url' => 'data/country',
 				'route' => 'data/country',
 			],
 			[
-				'title' => 'Currency',
-				'icon' => 'fa fa-credit-card',
+				'title' => 'Currencies',
+				'icon' => 'far fa-circle',
 				'url' => 'data/currency',
 				'route' => 'data/currency',
 			],
 			[
-				'title' => 'Language',
-				'icon' => 'fa fa-language',
+				'title' => 'Languages',
+				'icon' => 'far fa-circle',
 				'url' => 'data/language',
 				'route' => 'data/language',
 			],
+            [
+                'title' => 'Payment methods',
+                'icon' => 'far fa-circle',
+                'url' => 'data/payment-method',
+                'route' => 'data/payment-method',
+            ],
 		],
 	],
 	[
