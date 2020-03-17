@@ -28,13 +28,13 @@ use yii\widgets\LinkPager;
         <table class="table">
             <tbody>
                 <tr>
-                    <th>#</th>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Type</th>
                 </tr>
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
-                        <td><?php echo $key + 1; ?></td>
+                        <td><?= $model->id ?></td>
                         <td><?php echo $model->name ?? null; ?></td>
                         <td><?php echo $model->type ?? null; ?></td>
                     </tr>

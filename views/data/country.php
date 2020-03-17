@@ -29,7 +29,7 @@ use yii\widgets\LinkPager;
         <table class="table">
             <tbody>
                 <tr>
-                    <th>#</th>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Code</th>
                     <th>Slug</th>
@@ -37,7 +37,7 @@ use yii\widgets\LinkPager;
                 </tr>
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
-                        <td><?php echo $key + 1; ?></td>
+                        <td><?= $model->id ?></td>
                         <td><?php echo $model->name ?? null; ?></td>
                         <td><?php echo $model->code ?? null; ?></td>
                         <td><?php echo $model->slug ?? null; ?></td>
