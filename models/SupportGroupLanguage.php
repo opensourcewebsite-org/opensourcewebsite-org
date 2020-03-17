@@ -31,8 +31,13 @@ class SupportGroupLanguage extends \yii\db\ActiveRecord
         return [
             [['support_group_id'], 'required'],
             [['support_group_id'], 'integer'],
-            [['language_code'], 'each', 'rule' => [ 'string', 'max' => 255]],
-            [['language_code'], 'each', 'rule' => [ 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']]],
+            [['language_code'], 'string', 'max' => 255],
+            [
+                ['language_code'],
+                'exist',
+                'targetClass'     => Language::class,
+                'targetAttribute' => ['language_code' => 'code'],
+            ],
         ];
     }
 
