@@ -55,7 +55,10 @@ class AdminController extends Controller
             }
         }
 
-        $buttons[][] = ['callback_data' => '/menu', 'text' => '🔙'];
+        $buttons[][] = [
+            'callback_data' => '/menu',
+            'text' => '📱',
+        ];
 
         Yii::warning($buttons);
 

@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Country;
 use app\models\Currency;
 use app\models\Language;
+use app\models\PaymentMethod;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -20,7 +21,7 @@ class DataController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['country', 'currency', 'language'],
+                'only' => ['country', 'currency', 'language', 'payment-method'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -83,6 +84,21 @@ class DataController extends Controller
             ->all();
 
         return $this->render('language', [
+            'models' => $models,
+            'pages' => $pages,
+        ]);
+    }
+
+    public function actionPaymentMethod()
+    {
+        $paymentMethod = PaymentMethod::find();
+        $countQuery = clone $paymentMethod;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $paymentMethod->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('payment-method', [
             'models' => $models,
             'pages' => $pages,
         ]);

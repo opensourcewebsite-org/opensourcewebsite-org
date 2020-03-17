@@ -36,6 +36,16 @@ class StartController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
+                                'callback_data' => '/menu',
+                                'text' => '📱',
+                            ],
+                            [
+                                'callback_data' => '/my_language',
+                                'text' => '🗣',
+                            ],
+                        ],
+                        [
+                            [
                                 'url' => 'https://opensourcewebsite.org',
                                 'text' => Yii::t('bot', 'Website'),
                             ],
@@ -60,16 +70,6 @@ class StartController extends Controller
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
                                 'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/menu',
-                                'text' => Yii::t('bot', 'Menu'),
-                            ],
-                            [
-                                'callback_data' => '/my_language',
-                                'text' => Yii::t('bot', 'Language'),
                             ],
                         ],
                     ]),
