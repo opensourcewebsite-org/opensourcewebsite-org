@@ -1,13 +1,13 @@
 <?php
 
-use app\models\SupportGroupLanguage;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
-/* @var $langs app\models\SupportGroupLanguage */
+/* @var $langs app\models\SupportGroupLanguage[] */
 /* @var $form yii\widgets\ActiveForm */
 
 ?>
@@ -21,15 +21,20 @@ use yii\widgets\ActiveForm;
 
             <div class="p-3">
                 <p>Languages</p>
-                <?= $form->field(new SupportGroupLanguage(), '[]language_code')->checkboxList(ArrayHelper::map($languages,'code','name_ascii'), [
-                    'item' => function($index, $label, $name, $checked, $value){
-                        $check = $checked ? ' checked="checked"' : '';
-                        $name = 'SupportGroupLanguage['. ($index + 1) .'][language_code]';
-                        return "<div class='col-3'><div class='form-check'><input type=\"checkbox\" class='form-check-input' name=\"$name\" value=\"$value\" id=\"$name$value\" $check><label class='form-check-label' for=\"$name$value\">$label</label></div></div>";
-                    },
-                    'class' => 'row',
-                    'value' => $model->isNewRecord ? 'en' : ArrayHelper::getColumn($langs, 'language_code')
-                ])->label(false); ?>
+                <?= Select2::widget([
+                    'name'          => 'SupportGroupLanguage',
+                    'theme'         => Select2::THEME_MATERIAL,
+                    'data'          => ArrayHelper::map($languages, 'code', 'name_ascii'),
+                    'value'         => $model->isNewRecord ? 'en' : ArrayHelper::getColumn($langs, 'language_code'),
+                    'options'       => [
+                        'placeholder' => 'Select languages',
+                        'multiple'    => true,
+                    ],
+                    'maintainOrder' => true,
+                    'pluginOptions' => [
+                        'tokenSeparators' => [',', ' '],
+                    ],
+                ]); ?>
             </div>
 
             <div class="card-footer">
