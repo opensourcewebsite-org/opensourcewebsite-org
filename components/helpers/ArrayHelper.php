@@ -16,7 +16,7 @@ class ArrayHelper extends yii\helpers\ArrayHelper
     {
         $result = [];
         foreach ($items as $item) {
-            $key = self::_getObjectFieldValue($item, $keyField);
+            $key = self::getObjectFieldValue($item, $keyField);
             if ($key !== null) {
                 $result[$key] = $item;
             }
@@ -33,7 +33,7 @@ class ArrayHelper extends yii\helpers\ArrayHelper
     {
         $result = [];
         foreach ($items as $item) {
-            $key = self::_getObjectFieldValue($item, $keyField);
+            $key = self::getObjectFieldValue($item, $keyField);
             if ($key !== null) {
                 if (!in_array(gettype($key), ['string', 'integer'])) {
                     $key = (string)$key;
@@ -84,14 +84,24 @@ class ArrayHelper extends yii\helpers\ArrayHelper
      * @param string $fieldName
      * @return mixed
      */
-    private static function _getObjectFieldValue($object, $fieldName)
+    private static function getObjectFieldValue($object, $fieldName)
     {
-        $isArrayKeyExistAndScalar = is_array($object) && array_key_exists($fieldName, $object) && is_scalar($object[$fieldName]);
-        $isObjectKeyExistAndScalar = is_object($object) && array_key_exists($fieldName, get_object_vars($object)) && is_scalar($object->$fieldName);
-        $isYiiModelKeyExistAndScalar = is_object($object) && array_key_exists($fieldName, array_flip($object->attributes())) && is_scalar($object->$fieldName);
-        $isObjectMethodExistAndScalar = is_object($object) && method_exists($object, $fieldName) && is_scalar($object->$fieldName());
+        $isArrayKeyExistAndScalar = is_array($object)
+            && array_key_exists($fieldName, $object)
+            && is_scalar($object[$fieldName]);
+        $isObjectKeyExistAndScalar = is_object($object)
+            && array_key_exists($fieldName, get_object_vars($object))
+            && is_scalar($object->$fieldName);
+        $isYiiModelKeyExistAndScalar = is_object($object)
+            && array_key_exists($fieldName, array_flip($object->attributes()))
+            && is_scalar($object->$fieldName);
+        $isObjectMethodExistAndScalar = is_object($object)
+            && method_exists($object, $fieldName)
+            && is_scalar($object->$fieldName());
         $getMethodName = 'get' . ucfirst($fieldName);
-        $isObjectGetMethodExistAndScalar = is_object($object) && method_exists($object, $getMethodName) && is_scalar($object->$getMethodName());
+        $isObjectGetMethodExistAndScalar = is_object($object)
+            && method_exists($object, $getMethodName)
+            && is_scalar($object->$getMethodName());
 
         $value = null;
         if ($isYiiModelKeyExistAndScalar || $isObjectKeyExistAndScalar) {

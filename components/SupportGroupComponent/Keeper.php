@@ -17,11 +17,14 @@ class Keeper
     public function storeSupportGroup(models\SupportGroup $model, array $requestData, array $languages)
     {
         $sgLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
-        $existingLanguage = helpers\ArrayHelper::findFirst($sgLanguageCodes, function ($sgLanguageCode) use ($languages) {
-            $languageCodes = helpers\ArrayHelper::getColumn($languages, 'code');
-            return in_array($sgLanguageCode, $languageCodes);
-        });
 
+        $existingLanguage = helpers\ArrayHelper::findFirst(
+            $sgLanguageCodes,
+            function ($sgLanguageCode) use ($languages) {
+                $languageCodes = helpers\ArrayHelper::getColumn($languages, 'code');
+                return in_array($sgLanguageCode, $languageCodes);
+            }
+        );
         if (empty($existingLanguage)) {
             $model->addError('title', 'Languages cannot be empty');
             throw new \Exception();
@@ -55,7 +58,11 @@ class Keeper
      * @param string $text
      * @return models\SupportGroupCommandText
      */
-    public function createSupportGroupCommandText(int $commandId, string $languageCode, string $text): models\SupportGroupCommandText
+    public function createSupportGroupCommandText(
+        int $commandId,
+        string $languageCode,
+        string $text
+    ): models\SupportGroupCommandText
     {
         $result = new models\SupportGroupCommandText();
         $result->support_group_command_id = $commandId;
