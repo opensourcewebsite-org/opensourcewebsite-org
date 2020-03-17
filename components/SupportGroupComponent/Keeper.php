@@ -62,8 +62,7 @@ class Keeper
         int $commandId,
         string $languageCode,
         string $text
-    ): models\SupportGroupCommandText
-    {
+    ): models\SupportGroupCommandText {
         $result = new models\SupportGroupCommandText();
         $result->support_group_command_id = $commandId;
         $result->language_code = $languageCode;
