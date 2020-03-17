@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\helpers;
+use app\components\SupportGroupComponent;
 use app\models\Language;
 use app\models\search\SupportGroupBotClientSearch;
 use app\models\search\SupportGroupLanguageSearch;
@@ -35,6 +37,15 @@ use app\models\User;
  */
 class SupportGroupsController extends Controller
 {
+
+    /** @var SupportGroupComponent\Keeper */
+    protected $_supportComponent;
+
+    public function init()
+    {
+        $this->_supportComponent = Yii::$app->supportGroupComponent;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -392,45 +403,33 @@ class SupportGroupsController extends Controller
     public function actionCreate()
     {
         $model = new SupportGroup();
-
-        $count = count(Yii::$app->request->post('SupportGroupLanguage', []));
-        $langs = [new SupportGroupLanguage()];
-        for ($i = 1; $i < $count; $i++) {
-            $langs[] = new SupportGroupLanguage();
+        $languages = Language::find()->all();
+        $requestData = Yii::$app->request->post();
+        if (empty($requestData)) {
+            return $this->renderCreate($model, [], $languages);
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $command = new SupportGroupCommand();
-            $command->support_group_id = intval($model->id);
-            $command->command = '/start';
-            $command->is_default = 1;
-            $command->save(false);
+        $sgLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
+        $sgLanguages = [];
+        try {
+            $this->_supportComponent->storeSupportGroup($model, $requestData, $languages);
+            $command = $this->_supportComponent->createSupportGroupCommand($model->id);
+            $sgLanguages = $this->_supportComponent->createSupportGroupLanguages($model->id, $sgLanguageCodes);
 
-            foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
-                $supportGroupLanguage = new SupportGroupLanguage();
-                $supportGroupLanguage->support_group_id = $model->id;
-                $supportGroupLanguage->language_code = $languageCode;
-
-                if (!$supportGroupLanguage->save()) {
-                    continue;
-                }
-
-                /*Save welcome meassage */
-                $command_text = new SupportGroupCommandText();
-                $command_text->support_group_command_id = $command->id;
-                $command_text->language_code = $languageCode;
-                $command_text->text = Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!';
-                $command_text->save(false);
+            foreach ($sgLanguages as $sqLanguage) {
+                $this->_supportComponent->createSupportGroupCommandText(
+                    $command->id,
+                    $sqLanguage->language->code,
+                    Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!'
+                );
             }
 
-           return $this->redirect(['index']);
+        } catch (\Exception $e) {
+            return $this->renderCreate($model, $sgLanguages, $languages);
         }
 
-        return $this->render('create', [
-            'model'     => $model,
-            'langs'     => $langs,
-            'languages' => Language::find()->all(),
-        ]);
+
+        return $this->redirect(['index']);
     }
 
     /**
@@ -450,31 +449,25 @@ class SupportGroupsController extends Controller
         }
 
         $langs = SupportGroupLanguage::find()->where(['support_group_id' => intval($id)])->indexBy('id')->all();
-        if (empty($langs)) {
-            $langs[] = new SupportGroupLanguage();
-        }
-
         $languages = Language::find()->all();
+        $requestData = Yii::$app->request->post();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            SupportGroupLanguage::deleteAll(['support_group_id' => intval($id)]);
-            foreach (Yii::$app->request->post('SupportGroupLanguage', []) as $languageCode) {
-                $supportGroupLanguage = new SupportGroupLanguage();
-                $supportGroupLanguage->language_code = $languageCode;
-                $supportGroupLanguage->support_group_id = intval($id);
-                if (!$supportGroupLanguage->save()) {
-                    continue;
-                }
-            }
-
-            return $this->redirect(['index']);
+        if (empty($requestData)) {
+            return $this->renderUpdate($model, $langs, $languages);
         }
 
-        return $this->render('update', [
-            'model'     => $model,
-            'langs'     => $langs,
-            'languages' => $languages,
-        ]);
+        try {
+            $this->_supportComponent->storeSupportGroup($model, $requestData, $languages);
+            $this->_supportComponent->removeAllSupportGroupLanguagesBySupportGroupId(intval($id));
+            $this->_supportComponent->createSupportGroupLanguages(
+                $model->id,
+                helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', [])
+            );
+        } catch (\Exception $e) {
+            return $this->renderUpdate($model, $langs, $languages);
+        }
+
+        return $this->redirect(['index']);
     }
 
     /**
@@ -691,5 +684,35 @@ class SupportGroupsController extends Controller
         $member->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * @param SupportGroup $model
+     * @param array $langs
+     * @param array $languages
+     * @return string
+     */
+    private function renderCreate(SupportGroup $model, array $langs, array $languages)
+    {
+        return $this->render('create', [
+            'model'     => $model,
+            'langs'     => $langs,
+            'languages' => $languages,
+        ]);
+    }
+
+    /**
+     * @param SupportGroup $model
+     * @param array $langs
+     * @param array $languages
+     * @return string
+     */
+    private function renderUpdate(SupportGroup $model, array $langs, array $languages)
+    {
+        return $this->render('update', [
+            'model'     => $model,
+            'langs'     => $langs,
+            'languages' => $languages,
+        ]);
     }
 }
