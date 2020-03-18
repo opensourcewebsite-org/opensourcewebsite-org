@@ -24,8 +24,7 @@ class S_ceController extends Controller
         $user = $this->getUser();
 
         //TODO PaginationButtons for orders
-        if ($tru=1) {
-        //if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
+        if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
             return [
                 new SendMessageCommand(
                     $this->getTelegramChat()->chat_id,
@@ -61,6 +60,20 @@ class S_ceController extends Controller
                                 [
                                     'callback_data' => '/s_ce__offer',
                                     'text' => '🙋‍♂️ 0',
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => '/s_ce__offer',
+                                    'text' => '<',
+                                ],
+                                [
+                                    'callback_data' => '/s_ce__offer',
+                                    'text' => '1/3',
+                                ],
+                                [
+                                    'callback_data' => '/s_ce__offer',
+                                    'text' => '>',
                                 ],
                             ],
                             [
@@ -162,22 +175,20 @@ class S_ceController extends Controller
                         ],
                         [
                             [
+                                'callback_data' => '/s_ce__offer',
+                                'text' => '🙋‍♂️ 3',
+                            ],
+                        ],
+                        [
+                            [
                                 'callback_data' => '/s_ce__order_selling_rate',
                                 'text' => 'USD/THB: 30.0000',
-                            ],
-                            [
-                                'callback_data' => '/s_ce__order_selling_currency',
-                                'text' => '✏️',
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/s_ce__order_buying_rate',
                                 'text' => 'THB/USD: 0.3000',
-                            ],
-                            [
-                                'callback_data' => '/s_ce__order_buying_currency',
-                                'text' => '✏️',
                             ],
                         ],
                         [
@@ -188,6 +199,10 @@ class S_ceController extends Controller
                             [
                                 'callback_data' => '/menu',
                                 'text' => '📱',
+                            ],
+                            [
+                                'callback_data' => '/s_ce__order_edit',
+                                'text' => '✏️',
                             ],
                             [
                                 'callback_data' => '/s_ce__order_remove',
@@ -206,6 +221,42 @@ class S_ceController extends Controller
     public function actionOrder_status()
     {
         return $this->actionOrder();
+    }
+
+    /**
+     * @return string
+     */
+    public function actionOrder_edit()
+    {
+        return [
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $this->render('order-edit'),
+                [
+                    'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/s_ce__order_selling_currency',
+                                'text' => 'USD',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_ce__order_buying_currency',
+                                'text' => 'THB',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_ce__order',
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
+                ]
+            ),
+        ];
     }
 
     /**
@@ -296,7 +347,7 @@ class S_ceController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order',
+                                'callback_data' => '/s_ce__order_edit',
                                 'text' => '🔙',
                             ],
                         ],
@@ -326,7 +377,7 @@ class S_ceController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order',
+                                'callback_data' => '/s_ce__order_edit',
                                 'text' => '🔙',
                             ],
                         ],
@@ -348,6 +399,16 @@ class S_ceController extends Controller
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/s_ce__offer_like',
+                                'text' => '👍 100',
+                            ],
+                            [
+                                'callback_data' => '/s_ce__offer_like',
+                                'text' => '👎 10',
+                            ],
+                        ],
                         [
                             [
                                 'callback_data' => '/s_ce__offer',
