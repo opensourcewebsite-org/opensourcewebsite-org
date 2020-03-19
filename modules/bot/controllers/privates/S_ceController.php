@@ -24,6 +24,8 @@ class S_ceController extends Controller
         $user = $this->getUser();
 
         //TODO PaginationButtons for orders
+
+        //TODO add this check for all controller actions, remove from actions
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
             return [
                 new SendMessageCommand(
@@ -535,6 +537,34 @@ class S_ceController extends Controller
                             [
                                 'callback_data' => '/s_ce__order_selling_currency_payment_method',
                                 'text' => '🗑',
+                            ],
+                        ],
+                    ]),
+                ]
+            ),
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function actionNoRequirements()
+    {
+        return [
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $this->render('no-requirements'),
+                [
+                    'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/services',
+                                'text' => '🔙',
+                            ],
+                            [
+                                'callback_data' => '/menu',
+                                'text' => '📱',
                             ],
                         ],
                     ]),
