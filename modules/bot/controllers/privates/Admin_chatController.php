@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
@@ -28,10 +29,41 @@ class Admin_chatController extends Controller
 
         $chatTitle = $chat->title;
 
+        if ($this->getUpdate()->getCallbackQuery()) {
+            return [
+                new EditMessageTextCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+                    $this->render('index', compact('chatTitle')),
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => '/admin_message_filter ' . $chatId,
+                                    'text' => Yii::t('bot', 'Message Filter'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => '/admin_join_hider ' . $chatId,
+                                    'text' => Yii::t('bot', 'Join Hider'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => '/admin',
+                                    'text' => '🔙',
+                                ],
+                            ],
+                        ]),
+                    ]
+                ),
+            ];
+    } else {
         return [
-            new EditMessageTextCommand(
+            new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->render('index', compact('chatTitle')),
                 [
                     'parseMode' => $this->textFormat,
@@ -58,5 +90,6 @@ class Admin_chatController extends Controller
                 ]
             ),
         ];
+    }
     }
 }
