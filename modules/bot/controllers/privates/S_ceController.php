@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\components\response\SendMessageCommand;
+use \app\modules\bot\components\response\SendLocationCommand;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
@@ -98,7 +99,7 @@ class S_ceController extends Controller
                                     'text' => '📱',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__order_add',
+                                    'callback_data' => '/s_ce__order_create',
                                     'text' => '➕',
                                 ],
                             ],
@@ -134,17 +135,43 @@ class S_ceController extends Controller
     /**
      * @return string
      */
-    public function actionOrder_add()
+    public function actionOrder_create($step = 1)
     {
-        //TODO steps to create a order
+        //TODO make steps to create a order (maybe in separate actions)
 
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('order-add'),
+                $this->render('order-create'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => '/s_ce__order_create',
+                                'text' => 'USD',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_ce__order_create',
+                                'text' => 'THB',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => '/s_ce__order_create',
+                                'text' => '<',
+                            ],
+                            [
+                                'callback_data' => '/s_ce__order_create',
+                                'text' => '1/3',
+                            ],
+                            [
+                                'callback_data' => '/s_ce__order_create',
+                                'text' => '>',
+                            ],
+                        ],
                         [
                             [
                                 'callback_data' => '/s_ce',
@@ -500,7 +527,17 @@ class S_ceController extends Controller
      */
     public function actionOrder_selling_currency_payment_method()
     {
+        //TODO save any location that will be sent
+
+        $telegramUser = $this->getTelegramUser();
+
         return [
+            //TODO use location from order
+            new SendLocationCommand(
+                $this->getTelegramChat()->chat_id,
+                $telegramUser->location_lat,
+                $telegramUser->location_lon
+            ),
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
                 $this->render('order-selling-currency-payment-method'),
@@ -510,29 +547,19 @@ class S_ceController extends Controller
                         [
                             [
                                 'callback_data' => '/s_ce__order_selling_currency_payment_method',
-                                'text' => 'Location',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
                                 'text' => 'Delivery: ON',
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/s_ce__order_selling_currency_payment_method',
-                                'text' => 'Delivery zone: 2 km',
+                                'text' => 'Delivery area: 2 km',
                             ],
                         ],
                         [
                             [
                                 'callback_data' => '/s_ce__order_selling_currency_payment_methods',
                                 'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
-                                'text' => '✏️',
                             ],
                             [
                                 'callback_data' => '/s_ce__order_selling_currency_payment_method',

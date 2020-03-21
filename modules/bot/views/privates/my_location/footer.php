@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send your new location at any time for updating') ?>.
+<?= Yii::t('bot', 'Send your new location anytime for updates') ?>.

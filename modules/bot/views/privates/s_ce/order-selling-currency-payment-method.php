@@ -1,3 +1,5 @@
 <b>USD/THB offer</b><br/>
 <br/>
-Cash
+Cash<br/>
+<br/>
+<?= Yii::t('bot', 'Send new location anytime for updates') ?>.
