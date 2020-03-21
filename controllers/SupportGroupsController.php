@@ -43,7 +43,8 @@ class SupportGroupsController extends Controller
 
     public function init()
     {
-        $this->supportComponent = Yii::$app->supportGroupComponent;
+        // @TODO needs to create DependencyManager which will initiating in controllers
+        $this->supportComponent = new SupportGroupComponent\Keeper();
     }
 
     /**

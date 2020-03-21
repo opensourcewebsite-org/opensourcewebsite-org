@@ -162,7 +162,6 @@ $config = [
                 ],
             ],
         ],
-        'supportGroupComponent' => 'app\components\SupportGroupComponent\Keeper',
     ],
     'timeZone' => 'UTC',
     'params' => $params,
