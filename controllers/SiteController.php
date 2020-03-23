@@ -30,14 +30,9 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm', 'resend-confirmation-email',
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account',
                 ],
                 'rules' => [
-                    [
-                        'actions' => ['confirm', 'resend-confirmation-email'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
                     [
                         'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
                         'allow' => true,
