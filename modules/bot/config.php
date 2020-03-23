@@ -14,6 +14,8 @@ return [
                 '/<controller:\w+>__<action:\w+>' => '<controller>/<action>',
                 '⚙️' => 'help/index',
 
+                '/hello' => 'start/index',
+
                 '/my_language_<language:\w+>' => 'my_language/index',
                 '/my_language__list <page:\d+>' => 'my_language/list',
 
