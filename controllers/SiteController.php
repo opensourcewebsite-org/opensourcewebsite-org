@@ -150,8 +150,7 @@ class SiteController extends Controller
 
             if ($model->load($postData)) {
                 if ($user = $model->signup()) {
-                    if (Yii::$app->getUser()->login($user)) {
-                        $user->sendConfirmationEmail($user);
+                    if ($user->sendConfirmationEmail($user)) {
                         Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
 
                         return $this->redirect(['site/login']);
