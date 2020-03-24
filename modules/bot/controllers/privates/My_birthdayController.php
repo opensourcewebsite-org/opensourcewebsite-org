@@ -29,7 +29,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $telegramUser->getState()->setName('/my_birthday__create');
+            $telegramUser->getState()->setName(self::createRoute('update'));
             $telegramUser->save();
         }
 
@@ -46,13 +46,13 @@ class My_birthdayController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         (isset($birthday) ? [
                             [
-                                'callback_data' => '/my_birthday__update',
+                                'callback_data' => self::createRoute('update'),
                                 'text' => '✏️',
                             ]
                         ] : []),
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => My_profileController::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],
@@ -84,7 +84,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/my_birthday__create');
+        $telegramUser->getState()->setName(self::createRoute('update'));
         $telegramUser->save();
 
         return [
@@ -100,7 +100,7 @@ class My_birthdayController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_birthday',
+                                'callback_data' => self::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],

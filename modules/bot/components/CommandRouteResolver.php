@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components;
 
+use TelegramBot\Api\Types\Update;
 use Yii;
 use yii\base\Component;
 
@@ -22,22 +23,27 @@ class CommandRouteResolver extends Component
      */
     public $rules = [];
 
-    public function resolveRoute($update, $state)
+    public function resolveRoute(Update $update, ?string $state)
     {
         $params = null;
 
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
+            Yii::warning($commandText);
             if (isset($commandText)) {
-                list($route, $params) = $this->resolveCommandRoute($commandText);
-                if (isset($routeParts)) {
-                    break;
+                list($route, $params) = $this->resolveCommandRouteFromAlias($commandText);
+                if (!isset($route)) {
+                    list($route, $params) = $this->resolveCommandRouteFromUrl($commandText);
                 }
+                break;
             }
         }
 
         if (!isset($route) && !empty($state)) {
-            list($route, $params) = $this->resolveCommandRoute($state);
+            list($route, $params) = $this->resolveCommandRouteFromAlias($state);
+            if (!isset($route)) {
+                list($route, $params) = $this->resolveCommandRouteFromUrl($state);
+            }
         }
 
         if (!isset($route)) {
@@ -50,13 +56,12 @@ class CommandRouteResolver extends Component
     }
 
     /**
-     * Resolve route in command rules
+     * Resolve route using list of aliases
      *
-     * @param $commandText
-     *
+     * @param string $alias
      * @return array
      */
-    private function resolveCommandRoute($commandText)
+    private function resolveCommandRouteFromAlias(string $alias)
     {
         $route = null;
         $params = [];
@@ -64,7 +69,7 @@ class CommandRouteResolver extends Component
         foreach ($this->rules as $pattern => $targetRoute) {
             $pattern = $this->preparePattern($pattern);
 
-            if (preg_match($pattern, $commandText, $matches)) {
+            if (preg_match($pattern, $alias, $matches)) {
                 list($route, $params) = $this->prepareRoute($targetRoute, $matches);
             }
 
@@ -74,6 +79,27 @@ class CommandRouteResolver extends Component
         }
 
         return [$route, $params];
+    }
+
+    /**
+     * Resolve route parsing url
+     *
+     * @param string $url
+     * @return array
+     */
+    private function resolveCommandRouteFromUrl(string $url)
+    {
+        $isValidUrl = preg_match('#\w+/\w+(\?(\w+=.*))?#', $url);
+        if ($isValidUrl) {
+            $params = [];
+            list($route, $paramsString) = explode('?', $url);
+            $paramsKeyValues = explode('&', $paramsString);
+            foreach ($paramsKeyValues as $keyValue) {
+                list($key, $value) = explode('=', $keyValue);
+                $params[$key] = $value;
+            }
+            return [$route, $params];
+        }
     }
 
     /**
