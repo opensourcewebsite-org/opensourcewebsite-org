@@ -29,7 +29,6 @@ class CommandRouteResolver extends Component
 
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
-            Yii::warning($commandText);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRouteFromAlias($commandText);
                 if (!isset($route)) {
