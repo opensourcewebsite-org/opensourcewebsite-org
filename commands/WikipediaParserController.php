@@ -2,8 +2,10 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
 use app\components\WikipediaParser;
 use app\components\CustomConsole;
+use app\interfaces\ICronChained;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
 use app\models\WikiPage;
@@ -19,20 +21,17 @@ use yii\web\ServerErrorHttpException;
  * @property integer $groupId
  * @property bool $log
  */
-class WikipediaParserController extends Controller
+class WikipediaParserController extends Controller implements ICronChained
 {
-    public $log = false;
+    use ControllerLogTrait;
 
-    const PARSE_INTERVAL = 60;
     const UPDATE_INTERVAL = 24 * 3600;
     const PAGE_PARSE_RETRY_INTERVAL = 5;
     const PAGE_PARSE_RETRY_COUNT = 3;
 
     public function options($actionID)
     {
-        return array_merge(parent::options($actionID), [
-            'log',
-        ]);
+        return $this->optionsAppendLog(parent::options($actionID));
     }
 
     public function actionIndex()

@@ -1,6 +1,8 @@
 <?php
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\ICronChained;
 use app\models\CronJob;
 use app\models\CronJobConsole;
 use yii\console\Controller;
@@ -9,17 +11,19 @@ use Yii;
 use yii\web\NotFoundHttpException;
 
 /**
+ * CronController is a cron manager.
+ * It run other commands, that chained in single thread (should be run one by one).
  *
  * @property array $map
  * @property bool $log
  */
 class CronController extends Controller
 {
+    use ControllerLogTrait;
+
     const INTERVAL = 60;
     const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
-
-    public $log = false;
 
     private $_cronJobs;
 
@@ -51,9 +55,7 @@ class CronController extends Controller
      */
     public function options($actionID)
     {
-        return array_merge(parent::options($actionID), [
-            'log',
-        ]);
+        return $this->optionsAppendLog(parent::options($actionID));
     }
 
     /**
@@ -102,6 +104,7 @@ class CronController extends Controller
                     ['logs' => $this->log]
                 );
 
+                /** @var ControllerLogTrait|ICronChained $controller */
                 $controller = new $job(Yii::$app->controller->id, Yii::$app);
                 $controller->log = $this->log;
                 $controller->actionIndex();

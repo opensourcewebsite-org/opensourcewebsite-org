@@ -2,15 +2,17 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
 use app\components\CustomConsole;
+use app\interfaces\ICronChained;
 use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
 use yii\console\Controller;
 use yii\httpclient\Client;
 
-class WikinewsParserController extends Controller
+class WikinewsParserController extends Controller implements ICronChained
 {
-    public $log = false;
+    use ControllerLogTrait;
 
     public function actionIndex()
     {
