@@ -11,7 +11,7 @@ return [
         'commandRouteResolver' => [
             'class' => CommandRouteResolver::className(),
             'rules' => [
-                '/<controller:\w+>__<action:\w+>' => '<controller>/<action>',
+                '/<controller:\w+>__<action:\w+>(\?<query:(&?\w+=[^&]*)*>)?' => '<controller>/<action>',
                 '⚙️' => 'help/index',
 
                 '/hello' => 'start/index',

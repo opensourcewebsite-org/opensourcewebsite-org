@@ -63,11 +63,11 @@ class Controller extends \yii\web\Controller
     protected static function createRoute(string $actionName = 'index', array $params = [])
     {
         $controllerName = self::controllerName();
-        $route = "$controllerName";
+        $route = "/$controllerName";
         if (empty($actionName)) {
             $actionName = 'index';
         }
-        $route .= "/$actionName";
+        $route .= "__$actionName";
         $params = array_filter($params);
         if (!empty($params)) {
             $paramsString = http_build_query($params);

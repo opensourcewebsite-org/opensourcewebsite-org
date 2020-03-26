@@ -29,7 +29,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $telegramUser->getState()->setName(self::createRoute('update'));
+            $telegramUser->getState()->setName(self::createRoute('create'));
             $telegramUser->save();
         }
 
@@ -84,7 +84,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName(self::createRoute('update'));
+        $telegramUser->getState()->setName(self::createRoute('create'));
         $telegramUser->save();
 
         return [

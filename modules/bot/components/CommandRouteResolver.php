@@ -30,19 +30,13 @@ class CommandRouteResolver extends Component
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
-                list($route, $params) = $this->resolveCommandRouteFromAlias($commandText);
-                if (!isset($route)) {
-                    list($route, $params) = $this->resolveCommandRouteFromUrl($commandText);
-                }
+                list($route, $params) = $this->resolveCommandRoute($commandText);
                 break;
             }
         }
 
         if (!isset($route) && !empty($state)) {
-            list($route, $params) = $this->resolveCommandRouteFromAlias($state);
-            if (!isset($route)) {
-                list($route, $params) = $this->resolveCommandRouteFromUrl($state);
-            }
+            list($route, $params) = $this->resolveCommandRoute($state);
         }
 
         if (!isset($route)) {
@@ -60,45 +54,23 @@ class CommandRouteResolver extends Component
      * @param string $alias
      * @return array
      */
-    private function resolveCommandRouteFromAlias(string $alias)
+    private function resolveCommandRoute(string $alias)
     {
         $route = null;
         $params = [];
 
         foreach ($this->rules as $pattern => $targetRoute) {
             $pattern = $this->preparePattern($pattern);
-
             if (preg_match($pattern, $alias, $matches)) {
                 list($route, $params) = $this->prepareRoute($targetRoute, $matches);
             }
 
-            if ($route) {
+            if (isset($route)) {
                 break;
             }
         }
 
         return [$route, $params];
-    }
-
-    /**
-     * Resolve route parsing url
-     *
-     * @param string $url
-     * @return array
-     */
-    private function resolveCommandRouteFromUrl(string $url)
-    {
-        $isValidUrl = preg_match('#\w+/\w+(\?(\w+=.*))?#', $url);
-        if ($isValidUrl) {
-            $params = [];
-            list($route, $paramsString) = explode('?', $url);
-            $paramsKeyValues = explode('&', $paramsString);
-            foreach ($paramsKeyValues as $keyValue) {
-                list($key, $value) = explode('=', $keyValue);
-                $params[$key] = $value;
-            }
-            return [$route, $params];
-        }
     }
 
     /**
@@ -121,18 +93,7 @@ class CommandRouteResolver extends Component
             }
         }
 
-        $tr = [
-            '.' => '\\.',
-            '*' => '\\*',
-            '$' => '\\$',
-            '[' => '\\[',
-            ']' => '\\]',
-            '(' => '\\(',
-            ')' => '\\)',
-        ];
-
-        //$pattern = '#^' . $prefix . trim(strtr($pattern, $tr), '/@') . '$#u';
-        $pattern = '#^' . strtr($pattern, $tr) . '$#u';
+        $pattern = "#^$pattern$#u";
         foreach ($placeholders as $name => $expression) {
             $pattern = str_replace("<<" . $name . ">>", $expression, $pattern);
         }
@@ -143,25 +104,46 @@ class CommandRouteResolver extends Component
     /**
      * Dispatch params and convert route rule to ready route
      *
-     * @param $targetRoute
-     * @param $matches
-     *
+     * @param string $route
+     * @param array $matches
      * @return array
      */
-    private function prepareRoute($targetRoute, $matches)
+    private function prepareRoute(string $route, array $matches)
     {
-        $route = $targetRoute;
-        if (isset($matches['controller'])) {
-            $route = str_replace('<controller>', $matches['controller'], $route);
-            unset($matches['controller']);
-        }
-        if (isset($matches['action'])) {
-            $route = str_replace('<action>', $matches['action'], $route);
-            unset($matches['action']);
+        $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+        foreach ($namedGroups as $key => $namedGroup) {
+            $token = "<$key>";
+            if (stripos($route, $token) !== false) {
+                $route = str_replace($token, $namedGroup, $route);
+                unset($namedGroups[$key]);
+            }
         }
 
-        $params = array_filter($matches, function ($k) { return !is_numeric($k); }, ARRAY_FILTER_USE_KEY);
+        $queryParams = [];
+        if (array_key_exists('query', $namedGroups)) {
+            $query = $namedGroups['query'];
+            unset($namedGroups['query']);
+            $queryParams = $this->parseQuery($query);
+        }
+        $params = array_merge($queryParams, $namedGroups);
 
         return [$route, $params];
+    }
+
+    /**
+     * Parse query string to associative array of params
+     *
+     * @param string $query
+     * @return array
+     */
+    private function parseQuery(string $query)
+    {
+        $params = [];
+        $paramsKeyValues = explode('&', $query);
+        foreach ($paramsKeyValues as $keyValue) {
+            list($key, $value) = explode('=', $keyValue);
+            $params[$key] = $value;
+        }
+        return $params;
     }
 }
