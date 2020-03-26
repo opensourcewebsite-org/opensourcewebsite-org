@@ -2,25 +2,20 @@
 
 namespace app\commands;
 
-use app\components\CustomConsole;
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\ICronChained;
 use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
 use yii\console\Controller;
 use yii\httpclient\Client;
 
-class WikinewsParserController extends Controller
+class WikinewsParserController extends Controller implements ICronChained
 {
-    public $log = false;
+    use ControllerLogTrait;
 
     public function actionIndex()
     {
-        CustomConsole::output(
-            'Running wikinews parser...',
-            [
-                'logs' => $this->log,
-                'jobName' => CustomConsole::convertName(self::class),
-            ]
-        );
+        $this->output('Running wikinews parser...');
         $this->parse();
     }
 
@@ -34,13 +29,7 @@ class WikinewsParserController extends Controller
             $data = $this->api($news->language->code, $identity);
             $news->title = str_replace('_', ' ', $news->title);
             if ($data) {
-                CustomConsole::output(
-                    "Parsing page: {$news->title}",
-                    [
-                        'logs' => $this->log,
-                        'jobName' => CustomConsole::convertName(self::class),
-                    ]
-                );
+                $this->output("Parsing page: {$news->title}");
                 foreach ($data['langlinks'] as $check) {
                     $exist = WikinewsPage::findOne(['title' => $check['*']]);
                     if (empty($exist)) {
@@ -56,16 +45,10 @@ class WikinewsParserController extends Controller
                 $news->pageid = $data['pageid'];
                 $news->parsed_at = time();
                 $news->save();
-                foreach ($data['langlinks'] as $key => $langlink) {
+                foreach ($data['langlinks'] as $langlink) {
                     $dataLink = $this->api($langlink['lang'], $langlink['*']);
                     $newsTranslate = WikinewsPage::findOne(['pageid' => $dataLink['pageid']]);
-                    CustomConsole::output(
-                        "Parsing by language link: {$dataLink['title']}",
-                        [
-                            'logs' => $this->log,
-                            'jobName' => CustomConsole::convertName(self::class),
-                        ]
-                    );
+                    $this->output("Parsing by language link: {$dataLink['title']}");
                     $newsAnotherLang = !empty($newsTranslate) ? $newsTranslate : new WikinewsPage();
                     $newsAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $langlink['lang']])->id;
                     $newsAnotherLang->title = $dataLink['title'];
@@ -75,33 +58,15 @@ class WikinewsParserController extends Controller
                     $newsAnotherLang->save();
                 }
             } else {
-                CustomConsole::output(
-                    "Page is not exist: {$news->title}",
-                    [
-                        'logs' => $this->log,
-                        'jobName' => CustomConsole::convertName(self::class),
-                    ]
-                );
+                $this->output("Page is not exist: {$news->title}");
                 $news->parsed_at = time();
                 $news->save();
             }
         }
         if ($needParse) {
-            CustomConsole::output(
-                "Parsing is done.",
-                [
-                    'logs' => $this->log,
-                    'jobName' => CustomConsole::convertName(self::class),
-                ]
-            );
+            $this->output('Parsing is done.');
         } else {
-            CustomConsole::output(
-                "No page for parsing.",
-                [
-                    'logs' => $this->log,
-                    'jobName' => CustomConsole::convertName(self::class),
-                ]
-            );
+            $this->output('No page for parsing.');
         }
     }
 

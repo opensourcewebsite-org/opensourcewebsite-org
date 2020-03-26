@@ -37,7 +37,7 @@ Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## Donate
 
-Become a financial contributor and help us sustain our community. [Read more](/DONATE.md).
+Become a financial contributor and help us sustain our community. [Read more](DONATE.md).
 
 ## Architecture
 
