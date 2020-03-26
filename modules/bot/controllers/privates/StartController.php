@@ -36,11 +36,11 @@ class StartController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                             [
-                                'callback_data' => '/my_language',
+                                'callback_data' => MyLanguageController::createRoute(),
                                 'text' => '🗣',
                             ],
                         ],

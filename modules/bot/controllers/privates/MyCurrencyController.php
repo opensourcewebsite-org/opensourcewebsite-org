@@ -13,11 +13,11 @@ use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_currencyController
+ * Class MyCurrencyController
  *
  * @package app\modules\bot\controllers
  */
-class My_currencyController extends Controller
+class MyCurrencyController extends Controller
 {
     /**
      * @param null|string $currency
@@ -52,11 +52,11 @@ class My_currencyController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_currency__list',
+                                'callback_data' => MyCurrencyController::createRoute('list'),
                                 'text' => '✏️',
                             ],
                         ],
@@ -70,7 +70,6 @@ class My_currencyController extends Controller
      * @param int $page
      *
      * @return array
-     * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function actionList($page = 1)
     {
@@ -98,17 +97,21 @@ class My_currencyController extends Controller
 
         if ($currencies) {
             foreach ($currencies as $currency) {
-                $buttons[][] = ['callback_data' => '/my_currency_' . $currency->code, 'text' => strtoupper($currency->code) . ' - ' . $currency->name];
+                $buttons[][] = [
+                    'callback_data' => '/my_currency_' . $currency->code,
+                    'text' => strtoupper($currency->code) . ' - ' . $currency->name,
+                ];
             }
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
             }
 
-            $buttons[][] = ['callback_data' => '/my_currency', 'text' => '🔙'];
+            $buttons[][] = [
+                'callback_data' => self::createRoute(),
+                'text' => '🔙',
+            ];
         }
-
-        Yii::warning($buttons);
 
         return [
             new EditMessageTextCommand(

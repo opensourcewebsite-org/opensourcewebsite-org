@@ -28,31 +28,31 @@ class ServicesController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce',
+                                'callback_data' => SCeController::createRoute(),
                                 'text' => '🏗 ' . Yii::t('bot', 'Currency Exchange'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_job',
+                                'callback_data' => SJobController::createRoute(),
                                 'text' => '🏗 ' . Yii::t('bot', 'Jobs'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ad',
+                                'callback_data' => SAdController::createRoute(),
                                 'text' => '🏗 ' . Yii::t('bot', 'Ads'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_da',
+                                'callback_data' => SDaController::createRoute(),
                                 'text' => '🏗 ' . Yii::t('bot', 'Dating'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_re',
+                                'callback_data' => SReController::createRoute(),
                                 'text' => '🏗 ' . Yii::t('bot', 'Real Estates'),
                             ],
                         ],
@@ -68,7 +68,7 @@ class ServicesController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                         ],

@@ -10,11 +10,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 
 /**
- * Class Admin_chatController
+ * Class AdminChatController
  *
  * @package app\controllers\bot
  */
-class Admin_chatController extends Controller
+class AdminChatController extends Controller
 {
     /**
      * @return array
@@ -40,19 +40,23 @@ class Admin_chatController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/admin_message_filter ' . $chatId,
+                                    'callback_data' => AdminMessageFilterController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
                                     'text' => Yii::t('bot', 'Message Filter'),
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => '/admin_join_hider ' . $chatId,
+                                    'callback_data' => AdminJoinHiderController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
                                     'text' => Yii::t('bot', 'Join Hider'),
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => '/admin',
+                                    'callback_data' => AdminController::createRoute(),
                                     'text' => '🔙',
                                 ],
                             ],
@@ -70,19 +74,23 @@ class Admin_chatController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_message_filter ' . $chatId,
+                                'callback_data' => AdminMessageFilterController::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => Yii::t('bot', 'Message Filter'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_join_hider ' . $chatId,
+                                'callback_data' => AdminJoinHiderController::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => Yii::t('bot', 'Join Hider'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin',
+                                'callback_data' => AdminController::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],

@@ -15,7 +15,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 class DefaultController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
@@ -31,7 +31,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function actionCommandNotFound()
 	{
@@ -54,7 +54,7 @@ class DefaultController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => Yii::t('bot', 'Menu'),
                             ],
                         ],

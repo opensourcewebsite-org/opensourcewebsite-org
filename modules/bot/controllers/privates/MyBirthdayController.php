@@ -12,11 +12,11 @@ use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_birthdayController
+ * Class MyBirthdayController
  *
  * @package app\modules\bot\controllers
  */
-class My_birthdayController extends Controller
+class MyBirthdayController extends Controller
 {
     /**
      * @return array
@@ -52,7 +52,7 @@ class My_birthdayController extends Controller
                         ] : []),
                         [
                             [
-                                'callback_data' => My_profileController::createRoute(),
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],

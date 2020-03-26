@@ -111,13 +111,17 @@ class CommandRouteResolver extends Component
     private function prepareRoute(string $route, array $matches)
     {
         $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-        foreach ($namedGroups as $key => $namedGroup) {
+        foreach ($namedGroups as $key => $value) {
             $token = "<$key>";
             if (stripos($route, $token) !== false) {
-                $route = str_replace($token, $namedGroup, $route);
+                if ($key == 'controller' || $key == 'action') {
+                    $value = str_replace('_', '-', $value);
+                }
+                $route = str_replace($token, $value, $route);
                 unset($namedGroups[$key]);
             }
         }
+
 
         $queryParams = [];
         if (array_key_exists('query', $namedGroups)) {
@@ -127,7 +131,7 @@ class CommandRouteResolver extends Component
         }
         $params = array_merge($queryParams, $namedGroups);
 
-        return [$route, $params];
+        return [ $route, $params ];
     }
 
     /**

@@ -9,11 +9,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Phrase;
 
 /**
- * Class Admin_message_filter_newphraseController
+ * Class AdminMessageFilterNewphraseController
  *
  * @package app\controllers\bot
  */
-class Admin_message_filter_newphraseController extends Controller
+class AdminMessageFilterNewphraseController extends Controller
 {
     /**
      * @return array
@@ -22,7 +22,10 @@ class Admin_message_filter_newphraseController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/admin_message_filter_set_newphrase ' . $type . ' ' . $chatId);
+        $telegramUser->getState()->setName(AdminMessageFilterNewphraseController::createRoute('update', [
+            'type' => $type,
+            'chatId' => $chatId,
+        ]));
         $telegramUser->save();
 
         return [
@@ -35,10 +38,13 @@ class Admin_message_filter_newphraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => ($type == Phrase::TYPE_BLACKLIST
-                                    ? '/admin_message_filter_blacklist'
-                                    : '/admin_message_filter_whitelist'
-                                ) . ' ' . $chatId,
+                                'callback_data' => $type == Phrase::TYPE_BLACKLIST
+                                    ? AdminMessageFilterBlacklistController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ])
+                                    : AdminMessageFilterWhitelistController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
                                 'text' => '🔙',
                             ],
                         ],
@@ -68,10 +74,13 @@ class Admin_message_filter_newphraseController extends Controller
             $phrase->save();
         }
 
-        $telegramUser->getState()->setName(($type == Phrase::TYPE_BLACKLIST
-            ? '/admin_message_filter_blacklist'
-            : '/admin_message_filter_whitelist'
-        ) . ' ' . $chatId);
+        $telegramUser->getState()->setName($type == Phrase::TYPE_BLACKLIST
+            ? AdminMessageFilterBlacklistController::createRoute('index', [
+                'chatId' => $chatId,
+            ])
+            : AdminMessageFilterWhitelistController::createRoute('index', [
+                'chatId' => $chatId,
+            ]));
         $telegramUser->save();
 
         $this->module->dispatchRoute($update);

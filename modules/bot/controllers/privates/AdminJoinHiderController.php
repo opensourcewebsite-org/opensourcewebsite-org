@@ -10,11 +10,11 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class Admin_join_hiderController
+ * Class AdminJoinHiderController
  *
  * @package app\controllers\bot
  */
-class Admin_join_hiderController extends Controller
+class AdminJoinHiderController extends Controller
 {
     /**
      * @return array
@@ -54,13 +54,17 @@ class Admin_join_hiderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_join_hider_change_status ' . $chatId,
-                                'text' => Yii::t('bot', 'Status') . ': ' . ($statusOn ? 'ON' : 'OFF'),
+                                'callback_data' => self::createRoute('update', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_chat '  . $chatId,
+                                'callback_data' => AdminChatController::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => '🔙',
                             ],
                         ]
@@ -75,7 +79,7 @@ class Admin_join_hiderController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);

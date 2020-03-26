@@ -8,14 +8,14 @@ use app\modules\bot\components\response\SendMessageCommand;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
- * Class DefaultController
+ * Class SCeController
  *
  * @package app\modules\bot\controllers
  */
-class S_reController extends Controller
+class SCeController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
 	{
@@ -38,7 +38,7 @@ class S_reController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/services',
+                                'callback_data' => ServicesController::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],

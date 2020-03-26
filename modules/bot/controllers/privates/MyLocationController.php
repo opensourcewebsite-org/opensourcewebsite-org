@@ -10,19 +10,18 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_locationController
+ * Class MyLocationController
  *
  * @package app\modules\bot\controllers
  */
-class My_locationController extends Controller
+class MyLocationController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
         $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
 
         ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
             'text' => $this->render('send-location'),
@@ -51,7 +50,7 @@ class My_locationController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/my_profile',
+                                    'callback_data' => MyProfileController::createRoute(),
                                     'text' => '🔙',
                                 ],
                             ],
@@ -69,7 +68,7 @@ class My_locationController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/my_profile',
+                                    'callback_data' => MyProfileController::createRoute(),
                                     'text' => '🔙',
                                 ],
                             ],

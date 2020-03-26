@@ -8,11 +8,11 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_profileController
+ * Class MyReferralsController
  *
  * @package app\modules\bot\controllers
  */
-class My_referralsController extends Controller
+class MyReferralsController extends Controller
 {
     /**
      * @return array
@@ -39,7 +39,7 @@ class My_referralsController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                         ],

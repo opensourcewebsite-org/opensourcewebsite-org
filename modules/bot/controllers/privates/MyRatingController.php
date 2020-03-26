@@ -12,19 +12,17 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_ratingController
+ * Class MyRatingController
  *
  * @package app\modules\bot\controllers
  */
-class My_ratingController extends Controller
+class MyRatingController extends Controller
 {
     /**
      * @return array
      */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
-
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
@@ -44,7 +42,7 @@ class My_ratingController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                         ],

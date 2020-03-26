@@ -10,11 +10,11 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class Admin_message_filterChatController
+ * Class AdminMessageFilterController
  *
  * @package app\controllers\bot
  */
-class Admin_message_filterController extends Controller
+class AdminMessageFilterController extends Controller
 {
     /**
      * @return array
@@ -69,31 +69,41 @@ class Admin_message_filterController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_message_filter_change_status ' . $chatId,
+                                'callback_data' => AdminMessageFilterController::createRoute('status', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? 'ON' : 'OFF'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_message_filter_change_mode ' . $chatId,
+                                'callback_data' => AdminMessageFilterController::createRoute('update', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => Yii::t('bot', 'Mode') . ': ' . ($isFilterModeBlack ? Yii::t('bot', 'Blacklist') : Yii::t('bot', 'Whitelist')),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_message_filter_whitelist ' . $chatId,
+                                'callback_data' => AdminMessageFilterWhitelistController::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => '✏️ ' . Yii::t('bot', 'Whitelist'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_message_filter_blacklist ' . $chatId,
+                                'callback_data' => AdminMessageFilterBlacklistController::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => '✏️ ' . Yii::t('bot', 'Blacklist'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin_chat '  . $chatId,
+                                'callback_data' => AdminChatController::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
                                 'text' => '🔙',
                             ],
                         ]
@@ -108,7 +118,7 @@ class Admin_message_filterController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
@@ -129,7 +139,7 @@ class Admin_message_filterController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return;
+            return [];
         }
 
         $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);

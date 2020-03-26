@@ -11,11 +11,11 @@ use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_genderController
+ * Class MyGenderController
  *
  * @package app\modules\bot\controllers
  */
-class My_genderController extends Controller
+class MyGenderController extends Controller
 {
     /**
      * @return array
@@ -45,7 +45,7 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => My_profileController::createRoute(),
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [

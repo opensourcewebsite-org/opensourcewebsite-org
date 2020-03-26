@@ -3,62 +3,55 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use app\models\Language;
-use app\modules\bot\helpers\PaginationButtons;
-use yii\data\Pagination;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
 use \app\modules\bot\components\response\SendMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use \app\models\User;
+use app\modules\bot\helpers\PaginationButtons;
+use yii\data\Pagination;
 use app\modules\bot\components\Controller as Controller;
+use app\components\helpers\TimeHelper;
 
 /**
- * Class My_languageController
+ * Class MyTimezoneController
  *
  * @package app\modules\bot\controllers
  */
-class My_languageController extends Controller
+class MyTimezoneController extends Controller
 {
     /**
-     * @param null|string $language
-     *
      * @return array
      */
-    public function actionIndex($language = null)
+    public function actionIndex($timezone = null)
     {
-        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
+        $user = $this->getUser();
+        $timezones = TimeHelper::timezonesList();
 
-        $languageModel = null;
-        if ($language) {
-            $languageModel = Language::findOne(['code' => $language]);
-            if ($languageModel) {
-                if ($telegramUser) {
-                    $telegramUser->language_code = $language;
-                    if ($telegramUser->save()) {
-                        Yii::$app->language = $languageModel->code;
-                    }
-                }
+        if ($timezone) {
+            if (array_key_exists($timezone, $timezones)) {
+                $user->timezone = $timezone;
+                $user->save();
             }
         }
-
-        $currentCode = Yii::$app->language;
-        $currentName = $languageModel ? $languageModel->name : Language::findOne(['code' => $currentCode])->name;
 
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
+                $this->render('index', [
+                    'timezone' => $timezones[$user->timezone],
+                ]),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_language__list',
+                                'callback_data' => self::createRoute('list'),
                                 'text' => '✏️',
                             ],
                         ],
@@ -68,20 +61,15 @@ class My_languageController extends Controller
         ];
     }
 
-    /**
-     * @param int $page
-     *
-     * @return array
-     * @throws \TelegramBot\Api\InvalidArgumentException
-     */
-    public function actionList($page = 1)
+    public function actionList($page = 22)
     {
         $update = $this->getUpdate();
+        $user = $this->getUser();
 
-        $languageQuery = Language::find()->orderBy('code ASC');
-        $countQuery = clone $languageQuery;
+        $timezones = TimeHelper::timezonesList();
+
         $pagination = new Pagination([
-            'totalCount' => $countQuery->count(),
+            'totalCount' => count($timezones),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -91,16 +79,19 @@ class My_languageController extends Controller
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
 
-        $languages = $languageQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit);
 
-        $paginationButtons = PaginationButtons::build('/my_language__list ', $pagination);
+        $paginationButtons = PaginationButtons::build('/my_timezone__list ', $pagination);
         $buttons = [];
 
-        if ($languages) {
-            foreach ($languages as $language) {
-                $buttons[][] = ['callback_data' => '/my_language_' . $language->code, 'text' => strtoupper($language->code) . ' - ' . $language->name];
+        if ($timezones) {
+            foreach ($timezones as $timezone => $fullName) {
+                $buttons[][] = [
+                    'text' => $fullName,
+                    'callback_data' => self::createRoute('index', [
+                        'timezone' => $timezone,
+                    ]),
+                ];
             }
 
             if ($paginationButtons) {
@@ -108,8 +99,8 @@ class My_languageController extends Controller
             }
 
             $buttons[][] = [
-                'callback_data' => '/my_language',
-                'text' => '🔙'
+                'callback_data' => self::createRoute(),
+                'text' => '🔙',
             ];
         }
 
@@ -119,7 +110,7 @@ class My_languageController extends Controller
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('list'),
+                $text = $this->render('list'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup($buttons),

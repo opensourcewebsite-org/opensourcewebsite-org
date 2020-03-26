@@ -6,11 +6,11 @@ use Yii;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class Random_intController
+ * Class RandomIntController
  *
  * @package app\modules\bot\controllers
  */
-class Random_intController extends Controller
+class RandomIntController extends Controller
 {
     /**
      * @return string

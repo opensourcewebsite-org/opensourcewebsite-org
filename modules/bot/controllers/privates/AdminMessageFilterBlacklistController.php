@@ -13,11 +13,11 @@ use yii\data\Pagination;
 use app\modules\bot\helpers\PaginationButtons;
 
 /**
- * Class Admin_message_filter_blacklistController
+ * Class AdminMessageFilterBlacklistController
  *
  * @package app\controllers\bot
  */
-class Admin_message_filter_blacklistController extends Controller
+class AdminMessageFilterBlacklistController extends Controller
 {
     /**
      * @return array
@@ -57,7 +57,12 @@ class Admin_message_filter_blacklistController extends Controller
 
         if ($phrases) {
             foreach ($phrases as $phrase) {
-                $buttons[][] = ['callback_data' => '/admin_message_filter_phrase ' . $phrase->id, 'text' => $phrase->text];
+                $buttons[][] = [
+                    'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
+                        'phraseId' => $phrase->id,
+                    ]),
+                    'text' => $phrase->text
+                ];
             }
 
             if ($paginationButtons) {
@@ -67,16 +72,19 @@ class Admin_message_filter_blacklistController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_message_filter ' . $chatId,
+                'callback_data' => AdminMessageFilterController::createRoute('index', [
+                    'chatId' => $chatId,
+                ]),
                 'text' => '🔙',
             ],
             [
-                'callback_data' => '/admin_message_filter_newphrase ' . Phrase::TYPE_BLACKLIST . ' ' . $chatId,
+                'callback_data' => AdminMessageFilterNewphraseController::createRoute('index', [
+                    'type' => Phrase::TYPE_BLACKLIST,
+                    'chatId' => $chatId,
+                ]),
                 'text' => '➕',
             ],
         ];
-
-        Yii::warning($buttons);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [
