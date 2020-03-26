@@ -67,6 +67,7 @@ class Controller extends \yii\web\Controller
         if (empty($actionName)) {
             $actionName = 'index';
         }
+        $actionName = str_replace('-', '_', $actionName);
         $route .= "__$actionName";
         $params = array_filter($params);
         if (!empty($params)) {
