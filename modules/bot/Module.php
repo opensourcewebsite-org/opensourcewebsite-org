@@ -44,7 +44,7 @@ class Module extends \yii\base\Module
      public $telegramChat;
 
     /**
-     * @var \TelegramBot\Api\Types\Update
+     * @var Update
      */
     public $update;
 
@@ -67,6 +67,8 @@ class Module extends \yii\base\Module
 
     public function handleInput($input, $token)
     {
+        $result = false;
+
         $updateArray = json_decode($input, true);
         $this->update = Update::fromResponse($updateArray);
         $this->botInfo = Bot::findOne(['token' => $token]);
@@ -81,15 +83,13 @@ class Module extends \yii\base\Module
                 Yii::$app->language = $this->telegramUser->language_code;
 
                 $result = $this->dispatchRoute($this->update);
-            } else {
-                $result = false;
             }
         }
         return $result;
     }
 
     /**
-     * @param $update \TelegramBot\Api\Types\Update
+     * @param $update Update
      *
      * @return bool
      */
@@ -239,11 +239,11 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @param $update \TelegramBot\Api\Types\Update
+     * @param $update Update
      *
      * @return bool
      */
-    public function dispatchRoute($update)
+    public function dispatchRoute(Update $update)
     {
         $result = false;
 
