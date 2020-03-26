@@ -45,7 +45,7 @@ class WikinewsParserController extends Controller implements ICronChained
                 $news->pageid = $data['pageid'];
                 $news->parsed_at = time();
                 $news->save();
-                foreach ($data['langlinks'] as $key => $langlink) {
+                foreach ($data['langlinks'] as $langlink) {
                     $dataLink = $this->api($langlink['lang'], $langlink['*']);
                     $newsTranslate = WikinewsPage::findOne(['pageid' => $dataLink['pageid']]);
                     $this->output("Parsing by language link: {$dataLink['title']}");

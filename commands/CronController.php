@@ -42,10 +42,10 @@ class CronController extends Controller
      */
     public function beforeAction($action)
     {
-        $this->_cronJobs = new CronJobConsole();
-        $this->_cronJobs->setCronJobs(static::$map);
-        $this->_cronJobs->add();
-        $this->_cronJobs->clear();
+        $model = new CronJobConsole();
+        $model->setCronJobs(static::$map);
+        $model->add();
+        $model->clear();
 
         return parent::beforeAction($action);
     }
@@ -73,7 +73,7 @@ class CronController extends Controller
             );
         }
 
-        $this->_cronJobs = $this->_cronJobs->find()->all();
+        $this->_cronJobs = CronJobConsole::find()->all();
 
         if (empty($this->_cronJobs)) {
             throw new NotFoundHttpException;
@@ -89,8 +89,9 @@ class CronController extends Controller
                 ['logs' => $this->log]
             );
 
+            /** @var CronJobConsole $script */
             foreach ($this->_cronJobs as $script) {
-                if ($script->status !== 1) {
+                if ($script->status !== CronJobConsole::STATUS_ON) {
                     continue;
                 }
 

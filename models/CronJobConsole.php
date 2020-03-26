@@ -10,17 +10,14 @@ use yii\web\ServerErrorHttpException;
  *
  * @property int $id
  * @property string $name
- * @property string $description
  * @property int $status
  * @property int $created_at
  * @property int $updated_at
- *
- * @property array $_cronJobs
- * @property array $_cronJobsDb
  */
 class CronJobConsole extends CronJob
 {
-    const EXCLUDE = 'Cron';
+    public const EXCLUDE = 'Cron';
+    public const STATUS_ON = 1;
 
     private $_cronJobs = [];
     private $_cronJobsDb = [];
@@ -64,7 +61,7 @@ class CronJobConsole extends CronJob
                 $model = clone $this;
                 $model->setAttributes([
                     'name'   => $name,
-                    'status' => 1
+                    'status' => self::STATUS_ON,
                 ]);
 
                 if ($model->validate() && !$model->save()) {
