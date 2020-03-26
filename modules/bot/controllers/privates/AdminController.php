@@ -39,7 +39,11 @@ class AdminController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/admin_', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
 
         if ($chats) {

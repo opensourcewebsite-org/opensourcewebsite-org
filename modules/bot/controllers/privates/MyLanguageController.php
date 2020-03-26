@@ -78,9 +78,8 @@ class MyLanguageController extends Controller
         $update = $this->getUpdate();
 
         $languageQuery = Language::find()->orderBy('code ASC');
-        $countQuery = clone $languageQuery;
         $pagination = new Pagination([
-            'totalCount' => $countQuery->count(),
+            'totalCount' => $languageQuery->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -94,13 +93,19 @@ class MyLanguageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/my_language__list ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('list', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
 
         if ($languages) {
             foreach ($languages as $language) {
                 $buttons[][] = [
-                    'callback_data' => '/my_language_' . $language->code,
+                    'callback_data' => self::createRoute('index', [
+                        'language' => $language->code,
+                    ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name
                 ];
             }

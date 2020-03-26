@@ -52,7 +52,13 @@ class AdminMessageFilterWhitelistController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/admin_message_filter_whitelist ' . $chatId . ' ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+            return self::createRoute('index',
+                [
+                    'chatId' => $chatId,
+                    'page' => $page,
+                ]);
+        });
         $buttons = [];
 
         if ($phrases) {

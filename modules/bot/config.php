@@ -29,7 +29,7 @@ return [
 
                 '/update_location' => 'my_location/update',
 
-                '/admin_<page:\d+>' => 'admin',
+                '/admin <page:\d+>' => 'admin/index',
 
                 '/admin_chat <chatId:\d+>' => 'admin_chat/index',
                 '/admin_message_filter <chatId:\d+>' => 'admin_message_filter/index',

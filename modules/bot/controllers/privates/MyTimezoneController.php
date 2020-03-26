@@ -81,7 +81,11 @@ class MyTimezoneController extends Controller
 
         $timezones = array_slice($timezones, $pagination->offset, $pagination->limit);
 
-        $paginationButtons = PaginationButtons::build('/my_timezone__list ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('list', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
 
         if ($timezones) {
