@@ -1,8 +1,6 @@
 <?php
 
-
 namespace app\interfaces;
-
 
 interface ICronChained
 {
