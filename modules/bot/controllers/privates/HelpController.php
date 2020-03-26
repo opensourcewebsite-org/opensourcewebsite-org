@@ -29,7 +29,7 @@ class HelpController extends Controller
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'text' => '📱',
                             ],
                         ],
                     ]),

@@ -40,7 +40,7 @@ class My_referralsController extends Controller
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'text' => '📱',
                             ],
                         ],
                     ]),

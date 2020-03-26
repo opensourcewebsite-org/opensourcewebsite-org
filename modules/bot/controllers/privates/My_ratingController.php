@@ -46,7 +46,7 @@ class My_ratingController extends Controller
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'text' => '📱',
                             ],
                         ],
                     ]),

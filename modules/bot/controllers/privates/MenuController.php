@@ -75,11 +75,11 @@ class MenuController extends Controller
                         [
                             [
                                 'callback_data' => '/start',
-                                'text' => Yii::t('bot', 'Greeting'),
+                                'text' => '👋',
                             ],
                             [
                                 'callback_data' => '/my_language',
-                                'text' => Yii::t('bot', 'Language'),
+                                'text' => '🗣',
                             ],
                         ],
                     ]),

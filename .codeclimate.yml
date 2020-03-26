@@ -60,6 +60,9 @@ plugins:
     enabled: true
     config:
       minimum_severity: critical
+    checks:
+      php:S1192:
+        enabled: false
   stylelint:
     enabled: true
 exclude_patterns:

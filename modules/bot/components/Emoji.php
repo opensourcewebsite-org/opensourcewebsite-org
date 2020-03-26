@@ -7,4 +7,5 @@ class Emoji
     public const BACK = '⬅️';
     public const ADD = '➕';
     public const EDIT = '✏️';
+    public const MENU = '📱';
 }

@@ -22,10 +22,13 @@ use yii\behaviors\TimestampBehavior;
  * @property int $created_by
  * @property int $updated_at
  * @property int $updated_by
+ *
+ * @property User $toUser
+ * @property User $fromUser
+ * @property Currency $currency
  */
 class Debt extends ActiveRecord
 {
-
     const STATUS_PENDING = 0;
     const STATUS_CONFIRM = 1;
     const DIRECTION_DEPOSIT = 1;
@@ -96,7 +99,7 @@ class Debt extends ActiveRecord
             ],
         ];
     }
-    
+
     public function scenarios()
     {
         $scenarios = parent::scenarios();
@@ -134,7 +137,7 @@ class Debt extends ActiveRecord
 
         return $name;
     }
-    
+
     public function canConfirmDebt($direction)
     {
         $canConfirmDebt = ((int) $this->status === Debt::STATUS_PENDING) && ((int) $this->created_by !== (int) $this->from_user_id);
@@ -144,7 +147,7 @@ class Debt extends ActiveRecord
 
         return $canConfirmDebt;
     }
-    
+
     public function canCancelDebt()
     {
         return ((int) $this->status === Debt::STATUS_PENDING && (((int) $this->from_user_id === Yii::$app->user->id) || ((int) $this->to_user_id === Yii::$app->user->id)));

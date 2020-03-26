@@ -56,7 +56,7 @@ class My_currencyController extends Controller
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/currency_list',
+                                'callback_data' => '/my_currency__list',
                                 'text' => '✏️',
                             ],
                         ],
@@ -72,7 +72,7 @@ class My_currencyController extends Controller
      * @return array
      * @throws \TelegramBot\Api\InvalidArgumentException
      */
-    public function actionCurrencyList($page = 1)
+    public function actionList($page = 1)
     {
         $update = $this->getUpdate();
 
@@ -93,7 +93,7 @@ class My_currencyController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/currency_list_', $pagination);
+        $paginationButtons = PaginationButtons::build('/my_currency__list ', $pagination);
         $buttons = [];
 
         if ($currencies) {
@@ -114,7 +114,7 @@ class My_currencyController extends Controller
             new EditMessageTextCommand(
                 $this->getTelegramChat()->chat_id,
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('currency-list'),
+                $this->render('list'),
                 [
                     'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup($buttons),

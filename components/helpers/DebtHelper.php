@@ -6,7 +6,6 @@ use yii\base\Component;
 
 class DebtHelper extends Component
 {
-
     /**
      * @param $depositPending Pending deposit
      * @param $depositConfirmed Confirmed deposit

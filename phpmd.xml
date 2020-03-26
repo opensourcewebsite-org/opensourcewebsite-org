@@ -58,7 +58,8 @@
     <rule ref="rulesets/controversial.xml/CamelCasePropertyName"/>
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcasemethodname -->
-    <rule ref="rulesets/controversial.xml/CamelCaseMethodName"/>
+    <!-- TODO: Temporarily disabled due to /modules/bot/controllers -->
+    <!-- <rule ref="rulesets/controversial.xml/CamelCaseMethodName"/> -->
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcaseparametername -->
     <rule ref="rulesets/controversial.xml/CamelCaseParameterName"/>

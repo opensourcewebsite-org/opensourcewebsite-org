@@ -58,7 +58,7 @@ class AdminController extends Controller
 
         $buttons[][] = [
             'callback_data' => '/menu',
-            'text' => Emoji::BACK
+            'text' => Emoji::MENU,
         ];
 
         Yii::warning($buttons);

@@ -8,6 +8,7 @@ use app\modules\bot\components\Controller;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\Currency;
 use app\models\Language;
+use app\components\helpers\TimeHelper;
 
 /**
  * Class My_profileController
@@ -24,6 +25,7 @@ class My_profileController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
+        $timezones = TimeHelper::timezonesList();
 
         $currencyCode = $telegramUser->currency_code;
         $currencyName = Currency::findOne(['code' => $currencyCode])->name;
@@ -40,6 +42,7 @@ class My_profileController extends Controller
             'birthday' => $user->birthday,
             'currency' => "$currencyName ($currencyCode)",
             'language' => "$languageName ($languageCode)",
+            'timezone' => $timezones[$user->timezone],
         ];
 
         return [
@@ -58,7 +61,7 @@ class My_profileController extends Controller
                         [
                             [
                                 'callback_data' => '/my_timezone',
-                                'text' => '🏗 ' . Yii::t('bot', 'Timezone'),
+                                'text' => Yii::t('bot', 'Timezone'),
                             ],
                         ],
                         [
@@ -88,7 +91,7 @@ class My_profileController extends Controller
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '🔙',
+                                'text' => '📱',
                             ],
                         ],
                     ]),

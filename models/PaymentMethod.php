@@ -5,21 +5,23 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "currency".
+ * This is the model class for table "payment_method".
  *
  * @property int $id
- * @property string $code
  * @property string $name
- * @property string $symbol
+ * @property int $type
  */
-class Currency extends \yii\db\ActiveRecord
+class PaymentMethod extends \yii\db\ActiveRecord
 {
+    const TYPE_EMONEY = 0;
+    const TYPE_BANK = 1;
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'currency';
+        return 'payment_method';
     }
 
     /**
@@ -28,10 +30,9 @@ class Currency extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['code', 'name'], 'required'],
-            [['code', 'name'], 'string', 'max' => 255],
-            [['symbol'], 'string', 'max' => 4],
-            [['code'], 'unique'],
+            [['name', 'type'], 'required'],
+            [['type'], 'integer'],
+            [['name'], 'string', 'max' => 255],
         ];
     }
 
@@ -42,9 +43,8 @@ class Currency extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'code' => 'Code',
             'name' => 'Name',
-            'symbol' => 'Symbol',
+            'type' => 'Type',
         ];
     }
 }

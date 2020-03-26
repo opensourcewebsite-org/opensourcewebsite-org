@@ -15,24 +15,31 @@ $this->title = 'Account';
                 'id',
                 'email',
                 [
+                    'label' => 'Rank',
+                    'format' => 'html',
+                    'value' => function ($model) use ($ranking) {
+                        return "<b>$ranking[rank]</b> of $ranking[total]";
+                    },
+                ],
+                [
+                    'label' => 'Voting Power',
+                    'format' => 'html',
+                    'value' => function ($model) use ($overallRating) {
+                        return "<b>$overallRating[percent]%</b> of 100%";
+                    },
+                ],
+                [
+                    'label' => 'Rating',
+                    'format' => 'html',
+                    'value' => function ($model) use ($overallRating) {
+                        return "<b>$overallRating[rating]</b> of $overallRating[totalRating]";
+                    },
+                ],
+                [
                     'label' => 'Active Rating',
                     'format' => 'html',
                     'value' => function ($model) use ($activeRating) {
-                        return "<b>$activeRating</b>";
-                    },
-                ],
-                [
-                    'label' => 'Overall Rating',
-                    'format' => 'html',
-                    'value' => function ($model) use ($overallRating) {
-                        return "<b>$overallRating[rating]</b>, $overallRating[percent]% of $overallRating[totalRating] (total system overall rating)";
-                    },
-                ],
-                [
-                    'label' => 'Ranking',
-                    'format' => 'html',
-                    'value' => function ($model) use ($ranking) {
-                        return "#<b>$ranking[rank]</b> among $ranking[total] users";
+                        return "<b>$activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ')' ;
                     },
                 ],
             ],

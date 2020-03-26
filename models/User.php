@@ -64,7 +64,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['name', 'string'],
             [['id'], 'integer'],
             ['email', 'email'],
-            [['gender'], 'boolean']
+            [['gender'], 'boolean'],
+            [['timezone'], 'default', 'value' => 'UTC'],
         ];
     }
 
