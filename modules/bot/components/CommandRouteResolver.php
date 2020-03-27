@@ -108,7 +108,6 @@ class CommandRouteResolver extends Component
      */
     private function prepareRoute(string $route, array $matches)
     {
-        Yii::error(json_encode($matches));
         $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
         foreach ($namedGroups as $key => $value) {
             $token = "<$key>";
