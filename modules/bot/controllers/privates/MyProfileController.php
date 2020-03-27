@@ -11,18 +11,17 @@ use app\models\Language;
 use app\components\helpers\TimeHelper;
 
 /**
- * Class My_profileController
+ * Class MyProfileController
  *
  * @package app\modules\bot\controllers
  */
-class My_profileController extends Controller
+class MyProfileController extends Controller
 {
     /**
      * @return array
      */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
         $timezones = TimeHelper::timezonesList();
@@ -54,43 +53,43 @@ class My_profileController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_location',
+                                'callback_data' => MyLocationController::createRoute(),
                                 'text' => Yii::t('bot', 'Location'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_timezone',
+                                'callback_data' => MyTimezoneController::createRoute(),
                                 'text' => Yii::t('bot', 'Timezone'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_gender',
+                                'callback_data' => MyGenderController::createRoute(),
                                 'text' => Yii::t('bot', 'Gender'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_birthday',
+                                'callback_data' => MyBirthdayController::createRoute(),
                                 'text' => Yii::t('bot', 'Birthday'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_currency',
+                                'callback_data' => MyCurrencyController::createRoute(),
                                 'text' => Yii::t('bot', 'Currency'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_email',
+                                'callback_data' => MyEmailController::createRoute(),
                                 'text' => Yii::t('bot', 'Email'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                         ],

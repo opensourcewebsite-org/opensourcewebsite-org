@@ -5,24 +5,22 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\SendLocationCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\SendLocationCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
- * Class DefaultController
+ * Class SCeController
  *
  * @package app\modules\bot\controllers
  */
-class S_ceController extends Controller
+class SCeController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
 	{
-        $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
-        $user = $this->getUser();
 
         //TODO PaginationButtons for orders
 
@@ -37,45 +35,45 @@ class S_ceController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/s_ce__order',
+                                    'callback_data' => self::createRoute('order'),
                                     'text' => 'USD/THB',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__offer',
+                                    'callback_data' => self::createRoute('offer'),
                                     'text' => '🙋‍♂️ 3',
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => '/s_ce__order',
+                                    'callback_data' => self::createRoute('order'),
                                     'text' => 'USD/RUB',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__offer',
+                                    'callback_data' => self::createRoute('offer'),
                                     'text' => '🙋‍♂️ 0',
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => '/s_ce__order',
+                                    'callback_data' => self::createRoute('order'),
                                     'text' => '❌ ' . 'THB/RUB',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__offer',
+                                    'callback_data' => self::createRoute('offer'),
                                     'text' => '🙋‍♂️ 0',
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => '/s_ce__offer',
+                                    'callback_data' => self::createRoute('offer'),
                                     'text' => '<',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__offer',
+                                    'callback_data' => self::createRoute('offer'),
                                     'text' => '1/3',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__offer',
+                                    'callback_data' => self::createRoute('offer'),
                                     'text' => '>',
                                 ],
                             ],
@@ -91,15 +89,15 @@ class S_ceController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => '/services',
+                                    'callback_data' => ServicesController::createRoute(),
                                     'text' => '🔙',
                                 ],
                                 [
-                                    'callback_data' => '/menu',
+                                    'callback_data' => MenuController::createRoute(),
                                     'text' => '📱',
                                 ],
                                 [
-                                    'callback_data' => '/s_ce__order_create',
+                                    'callback_data' => self::createRoute('order-create'),
                                     'text' => '➕',
                                 ],
                             ],
@@ -117,11 +115,11 @@ class S_ceController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/services',
+                                    'callback_data' => ServicesController::createRoute(),
                                     'text' => '🔙',
                                 ],
                                 [
-                                    'callback_data' => '/menu',
+                                    'callback_data' => MenuController::createRoute(),
                                     'text' => '📱',
                                 ],
                             ],
@@ -133,9 +131,9 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_create($step = 1)
+    public function actionOrderCreate($step = 1)
     {
         //TODO make steps to create a order (maybe in separate actions)
 
@@ -148,33 +146,33 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_create',
+                                'callback_data' => self::createRoute('order-create'),
                                 'text' => 'USD',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_create',
+                                'callback_data' => self::createRoute('order-create'),
                                 'text' => 'THB',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_create',
+                                'callback_data' => self::createRoute('order-create'),
                                 'text' => '<',
                             ],
                             [
-                                'callback_data' => '/s_ce__order_create',
+                                'callback_data' => self::createRoute('order-create'),
                                 'text' => '1/3',
                             ],
                             [
-                                'callback_data' => '/s_ce__order_create',
+                                'callback_data' => self::createRoute('order-create'),
                                 'text' => '>',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce',
+                                'callback_data' => self::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],
@@ -185,7 +183,7 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function actionOrder()
     {
@@ -198,43 +196,43 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_status',
+                                'callback_data' => self::createRoute('order-status'),
                                 'text' => 'Status: ON',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__offer',
+                                'callback_data' => self::createRoute('offer'),
                                 'text' => '🙋‍♂️ 3',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_rate',
+                                'callback_data' => self::createRoute('order-selling-rate'),
                                 'text' => 'USD/THB: 30.0000',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_buying_rate',
+                                'callback_data' => self::createRoute('order-buying-rate'),
                                 'text' => 'THB/USD: 0.3000',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce',
+                                'callback_data' => self::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                             [
-                                'callback_data' => '/s_ce__order_edit',
+                                'callback_data' => self::createRoute('order-edit'),
                                 'text' => '✏️',
                             ],
                             [
-                                'callback_data' => '/s_ce__order_remove',
+                                'callback_data' => self::createRoute('order-remove'),
                                 'text' => '🗑',
                             ],
                         ],
@@ -245,17 +243,17 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_status()
+    public function actionOrderStatus()
     {
         return $this->actionOrder();
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_edit()
+    public function actionOrderEdit()
     {
         return [
             new SendMessageCommand(
@@ -266,19 +264,19 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency',
+                                'callback_data' => self::createRoute('order-selling-currency'),
                                 'text' => 'USD',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_buying_currency',
+                                'callback_data' => self::createRoute('order-buying-currency'),
                                 'text' => 'THB',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order',
+                                'callback_data' => self::createRoute('order'),
                                 'text' => '🔙',
                             ],
                         ],
@@ -289,17 +287,17 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_remove()
+    public function actionOrderRemove()
     {
         return $this->actionIndex();
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_selling_rate()
+    public function actionOrderSellingRate()
     {
         return [
             new SendMessageCommand(
@@ -310,7 +308,7 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order',
+                                'callback_data' => self::createRoute('order'),
                                 'text' => '🔙',
                             ],
                         ],
@@ -321,9 +319,9 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_buying_rate()
+    public function actionOrderBuyingRate()
     {
         return [
             new SendMessageCommand(
@@ -334,7 +332,7 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order',
+                                'callback_data' => self::createRoute('order'),
                                 'text' => '🔙',
                             ],
                         ],
@@ -345,9 +343,9 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_selling_currency()
+    public function actionOrderSellingCurrency()
     {
         return [
             new SendMessageCommand(
@@ -358,25 +356,25 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency',
+                                'callback_data' => self::createRoute('order-selling-currency'),
                                 'text' => 'Min. amount: ∞',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency',
+                                'callback_data' => self::createRoute('order-selling-currency'),
                                 'text' => 'Max. amount: 100.00',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_methods',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
                                 'text' => 'Payment methods',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_edit',
+                                'callback_data' => self::createRoute('order-edit'),
                                 'text' => '🔙',
                             ],
                         ],
@@ -387,9 +385,9 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_buying_currency()
+    public function actionOrderBuyingCurrency()
     {
         return [
             new SendMessageCommand(
@@ -400,13 +398,13 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_methods',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
                                 'text' => 'Payment methods',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_edit',
+                                'callback_data' => self::createRoute('order-edit'),
                                 'text' => '🔙',
                             ],
                         ],
@@ -417,7 +415,7 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function actionOffer()
     {
@@ -430,31 +428,31 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__offer_like',
+                                'callback_data' => self::createRoute('offer-like'),
                                 'text' => '👍 100',
                             ],
                             [
-                                'callback_data' => '/s_ce__offer_like',
+                                'callback_data' => self::createRoute('offer-like'),
                                 'text' => '👎 10',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__offer',
+                                'callback_data' => self::createRoute('offer'),
                                 'text' => '<',
                             ],
                             [
-                                'callback_data' => '/s_ce__offer',
+                                'callback_data' => self::createRoute('offer'),
                                 'text' => '1/3',
                             ],
                             [
-                                'callback_data' => '/s_ce__offer',
+                                'callback_data' => self::createRoute('offer'),
                                 'text' => '>',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce',
+                                'callback_data' => self::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],
@@ -465,9 +463,9 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_selling_currency_payment_methods()
+    public function actionOrderSellingCurrencyPaymentMethods()
     {
         return [
             new SendMessageCommand(
@@ -478,41 +476,41 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Cash',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Online System 1',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Online System 2',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Bank 1',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Bank 2',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency',
+                                'callback_data' => self::createRoute('order-selling-currency'),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method_add',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method-add'),
                                 'text' => '➕',
                             ],
                         ],
@@ -523,9 +521,9 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function actionOrder_selling_currency_payment_method()
+    public function actionOrderSellingCurrencyPaymentMethod()
     {
         //TODO save any location that will be sent
 
@@ -546,23 +544,23 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Delivery: ON',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => 'Delivery area: 2 km',
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_methods',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/s_ce__order_selling_currency_payment_method',
+                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
                                 'text' => '🗑',
                             ],
                         ],
@@ -573,7 +571,7 @@ class S_ceController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function actionNoRequirements()
     {
@@ -586,11 +584,11 @@ class S_ceController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/services',
+                                'callback_data' => ServicesController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
                             ],
                         ],

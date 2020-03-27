@@ -11,11 +11,11 @@ use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_genderController
+ * Class MyGenderController
  *
  * @package app\modules\bot\controllers
  */
-class My_genderController extends Controller
+class MyGenderController extends Controller
 {
     /**
      * @return array
@@ -45,11 +45,11 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_gender__update',
+                                'callback_data' => self::createRoute('update'),
                                 'text' => '✏️',
                             ],
                         ],
@@ -76,19 +76,23 @@ class My_genderController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_gender_male',
+                                'callback_data' => self::createRoute('index', [
+                                    'gender' => 'male',
+                                ]),
                                 'text' => Yii::t('bot', 'Male'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_gender_female',
+                                'callback_data' => self::createRoute('index', [
+                                    'gender' => 'female',
+                                ]),
                                 'text' => Yii::t('bot', 'Female'),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_gender',
+                                'callback_data' => self::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],

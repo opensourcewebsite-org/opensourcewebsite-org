@@ -5,18 +5,17 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
 use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\models\User;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_birthdayController
+ * Class MyBirthdayController
  *
  * @package app\modules\bot\controllers
  */
-class My_birthdayController extends Controller
+class MyBirthdayController extends Controller
 {
     /**
      * @return array
@@ -29,7 +28,7 @@ class My_birthdayController extends Controller
         $birthday = $user->birthday;
 
         if (!isset($birthday)) {
-            $telegramUser->getState()->setName('/my_birthday__create');
+            $telegramUser->getState()->setName(self::createRoute('create'));
             $telegramUser->save();
         }
 
@@ -46,13 +45,13 @@ class My_birthdayController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         (isset($birthday) ? [
                             [
-                                'callback_data' => '/my_birthday__update',
+                                'callback_data' => self::createRoute('update'),
                                 'text' => '✏️',
                             ]
                         ] : []),
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],
@@ -70,13 +69,30 @@ class My_birthdayController extends Controller
 
         $text = $update->getMessage()->getText();
         if ($this->validateDate($text, User::DATE_FORMAT)) {
-            $user->birthday = \Yii::$app->formatter->format($text, 'date');
+            $user->birthday = Yii::$app->formatter->format($text, 'date');
             $user->save();
             $telegramUser->getState()->setName(null);
             $telegramUser->save();
+            return $this->actionIndex();
         }
 
-        return $this->actionIndex();
+        return [
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $this->render('update'),
+                [
+                    'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => self::createRoute(),
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
+                ]
+            ),
+        ];
     }
 
     public function actionUpdate()
@@ -84,7 +100,7 @@ class My_birthdayController extends Controller
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/my_birthday__create');
+        $telegramUser->getState()->setName(self::createRoute('create'));
         $telegramUser->save();
 
         return [
@@ -100,7 +116,7 @@ class My_birthdayController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_birthday',
+                                'callback_data' => self::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],

@@ -24,9 +24,6 @@ class AdminController extends Controller
     {
         $chatQuery = $this->getTelegramUser()->getAdministratedChats();
 
-        $buttons = [];
-        $currentRow = [];
-
         $pagination = new Pagination([
             'totalCount' => $chatQuery->count(),
             'pageSize' => 9,
@@ -42,12 +39,21 @@ class AdminController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/admin_', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
 
         if ($chats) {
             foreach ($chats as $chat) {
-                $buttons[][] = ['callback_data' => '/admin_chat ' . $chat->id, 'text' => $chat->title];
+                $buttons[][] = [
+                    'callback_data' => AdminChatController::createRoute('index', [
+                        'chatId' => $chat->id,
+                    ]),
+                    'text' => $chat->title,
+                ];
             }
 
             if ($paginationButtons) {
@@ -56,7 +62,7 @@ class AdminController extends Controller
         }
 
         $buttons[][] = [
-            'callback_data' => '/menu',
+            'callback_data' => MenuController::createRoute(),
             'text' => '📱',
         ];
 

@@ -10,11 +10,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Phrase;
 
 /**
- * Class Admin_message_filter_phraseController
+ * Class AdminMessageFilterPhraseController
  *
  * @package app\controllers\bot
  */
-class Admin_message_filter_phraseController extends Controller
+class AdminMessageFilterPhraseController extends Controller
 {
     /**
      * @return array
@@ -39,18 +39,25 @@ class Admin_message_filter_phraseController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => ($phrase->isTypeBlack()
-                                        ? '/admin_message_filter_blacklist'
-                                        : '/admin_message_filter_whitelist'
-                                    ) . ' ' . $phrase->chat_id,
+                                    'callback_data' => $phrase->isTypeBlack()
+                                        ? AdminMessageFilterBlacklistController::createRoute('index', [
+                                            'chatId' => $phrase->chat_id,
+                                        ])
+                                        : AdminMessageFilterWhitelistController::createRoute('index', [
+                                            'chatId' => $phrase->chat_id,
+                                        ]),
                                     'text' => '🔙',
                                 ],
                                 [
-                                    'callback_data' => '/admin_message_filter_change_phrase ' . $phraseId,
+                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('create', [
+                                        'phraseId' => $phraseId,
+                                    ]),
                                     'text' => '✏️',
                                 ],
                                 [
-                                    'callback_data' => '/admin_message_filter_delete_phrase ' . $phraseId,
+                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('delete', [
+                                        'phraseId' => $phraseId,
+                                    ]),
                                     'text' => '🗑',
                                 ],
                             ],
@@ -68,18 +75,25 @@ class Admin_message_filter_phraseController extends Controller
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => ($phrase->isTypeBlack()
-                                        ? '/admin_message_filter_blacklist'
-                                        : '/admin_message_filter_whitelist'
-                                    ) . ' ' . $phrase->chat_id,
+                                    'callback_data' => $phrase->isTypeBlack()
+                                        ? AdminMessageFilterBlacklistController::createRoute('index', [
+                                            'chatId' => $phrase->chat_id,
+                                        ])
+                                        : AdminMessageFilterWhitelistController::createRoute('index', [
+                                            'chatId' => $phrase->chat_id,
+                                        ]),
                                     'text' => '🔙',
                                 ],
                                 [
-                                    'callback_data' => '/admin_message_filter_change_phrase ' . $phraseId,
+                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('create', [
+                                        'phraseId' => $phraseId,
+                                    ]),
                                     'text' => '✏️',
                                 ],
                                 [
-                                    'callback_data' => '/admin_message_filter_delete_phrase ' . $phraseId,
+                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('delete', [
+                                        'phraseId' => $phraseId,
+                                    ]),
                                     'text' => '🗑',
                                 ],
                             ],
@@ -100,10 +114,13 @@ class Admin_message_filter_phraseController extends Controller
         $phrase->delete();
 
         $update = $this->getUpdate();
-        $update->getCallbackQuery()->setData(($isTypeBlack
-            ? '/admin_message_filter_blacklist'
-            : '/admin_message_filter_whitelist'
-        ) . ' ' . $chatId);
+        $update->getCallbackQuery()->setData($isTypeBlack
+            ? AdminMessageFilterBlacklistController::createRoute('index', [
+                'chatId' => $chatId,
+            ])
+            : AdminMessageFilterWhitelistController::createRoute('index', [
+                'chatId' => $chatId,
+            ]));
 
         $this->module->dispatchRoute($update);
     }
@@ -112,7 +129,9 @@ class Admin_message_filter_phraseController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName('/admin_message_filter_update_phrase ' . $phraseId);
+        $telegramUser->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
+            'phraseId' => $phraseId,
+        ]));
         $telegramUser->save();
 
         return [
@@ -125,7 +144,9 @@ class Admin_message_filter_phraseController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/admin_message_filter_phrase ' . $phraseId,
+                                'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
+                                    'phraseId' => $phraseId,
+                                ]),
                                 'text' => '🔙',
                             ],
                         ],

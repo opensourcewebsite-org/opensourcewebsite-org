@@ -13,11 +13,11 @@ use \app\modules\bot\components\response\SendMessageCommand;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_languageController
+ * Class MyLanguageController
  *
  * @package app\modules\bot\controllers
  */
-class My_languageController extends Controller
+class MyLanguageController extends Controller
 {
     /**
      * @param null|string $language
@@ -54,11 +54,11 @@ class My_languageController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_language__list',
+                                'callback_data' => MyLanguageController::createRoute('list'),
                                 'text' => '✏️',
                             ],
                         ],
@@ -72,16 +72,14 @@ class My_languageController extends Controller
      * @param int $page
      *
      * @return array
-     * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function actionList($page = 1)
     {
         $update = $this->getUpdate();
 
         $languageQuery = Language::find()->orderBy('code ASC');
-        $countQuery = clone $languageQuery;
         $pagination = new Pagination([
-            'totalCount' => $countQuery->count(),
+            'totalCount' => $languageQuery->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -95,12 +93,21 @@ class My_languageController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/my_language__list ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('list', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
 
         if ($languages) {
             foreach ($languages as $language) {
-                $buttons[][] = ['callback_data' => '/my_language_' . $language->code, 'text' => strtoupper($language->code) . ' - ' . $language->name];
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('index', [
+                        'language' => $language->code,
+                    ]),
+                    'text' => strtoupper($language->code) . ' - ' . $language->name
+                ];
             }
 
             if ($paginationButtons) {
@@ -108,12 +115,10 @@ class My_languageController extends Controller
             }
 
             $buttons[][] = [
-                'callback_data' => '/my_language',
+                'callback_data' => self::createRoute(),
                 'text' => '🔙'
             ];
         }
-
-        Yii::warning($buttons);
 
         return [
             new EditMessageTextCommand(

@@ -14,11 +14,11 @@ use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\Controller as Controller;
 
 /**
- * Class My_emailController
+ * Class MyEmailController
  *
  * @package app\modules\bot\controllers
  */
-class My_emailController extends Controller
+class MyEmailController extends Controller
 {
     /**
      * @return array
@@ -27,13 +27,12 @@ class My_emailController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
-        $update = $this->getUpdate();
 
         $email = null;
         if (isset($user->email)) {
             $email = $user->email;
         } else {
-            $telegramUser->getState()->setName('/set_email');
+            $telegramUser->getState()->setName(self::createRoute('create'));
             $telegramUser->save();
         }
 
@@ -48,13 +47,13 @@ class My_emailController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         (isset($email) ? [
                             [
-                                'callback_data' => '/change_email',
+                                'callback_data' => self::createRoute('update'),
                                 'text' => '✏️',
                             ]
                         ] : []),
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                         ],
@@ -124,11 +123,11 @@ class My_emailController extends Controller
                         : new InlineKeyboardMarkup([
                             [
                                 [
-                                    'callback_data' => '/merge_accounts',
+                                    'callback_data' => self::createRoute('merge-accounts'),
                                     'text' => Yii::t('bot', 'Yes'),
                                 ],
                                 [
-                                    'callback_data' => '/change_email',
+                                    'callback_data' => self::createRoute('update'),
                                     'text' => Yii::t('bot', 'No'),
                                 ]
                             ]
@@ -147,7 +146,7 @@ class My_emailController extends Controller
         MergeAccountsRequest::deleteAll("user_id = {$user->id}");
         ChangeEmailRequest::deleteAll("user_id = {$user->id}");
 
-        $telegramUser->getState()->setName('/set_email');
+        $telegramUser->getState()->setName(self::createRoute('create'));
         $telegramUser->save();
 
         return [
@@ -198,7 +197,9 @@ class My_emailController extends Controller
                                     [
                                         [
                                             'text' => Yii::t('bot', 'Discard Request'),
-                                            'callback_data' => '/discard_merge_request ' . $mergeAccountsRequest->id,
+                                            'callback_data' => self::createRoute('discard-merge-request', [
+                                                'mergeAccountsRequestId' => $mergeAccountsRequest->id,
+                                            ]),
                                         ],
                                     ],
                                 ]),

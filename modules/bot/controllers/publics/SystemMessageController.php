@@ -8,18 +8,17 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class MessageController
+ * Class SystemMessageController
  *
  * @package app\controllers\bot
  */
-class System_messageController extends Controller
+class SystemMessageController extends Controller
 {
     /**
      * @return array
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
 
         $chat = $this->getTelegramChat();
@@ -41,7 +40,7 @@ class System_messageController extends Controller
         }
     }
 
-    public function actionGroup_to_supergroup()
+    public function actionGroupToSupergroup()
     {
         $chat = $this->getTelegramChat();
 

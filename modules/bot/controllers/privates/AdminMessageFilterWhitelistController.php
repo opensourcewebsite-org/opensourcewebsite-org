@@ -13,11 +13,11 @@ use yii\data\Pagination;
 use app\modules\bot\helpers\PaginationButtons;
 
 /**
- * Class Admin_message_filter_whitelistController
+ * Class AdminMessageFilterWhitelistController
  *
  * @package app\controllers\bot
  */
-class Admin_message_filter_whitelistController extends Controller
+class AdminMessageFilterWhitelistController extends Controller
 {
     /**
      * @return array
@@ -52,12 +52,23 @@ class Admin_message_filter_whitelistController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/admin_message_filter_whitelist ' . $chatId . ' ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+            return self::createRoute('index',
+                [
+                    'chatId' => $chatId,
+                    'page' => $page,
+                ]);
+        });
         $buttons = [];
 
         if ($phrases) {
             foreach ($phrases as $phrase) {
-                $buttons[][] = ['callback_data' => '/admin_message_filter_phrase ' . $phrase->id, 'text' => $phrase->text];
+                $buttons[][] = [
+                    'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
+                        'phraseId' => $phrase->id,
+                    ]),
+                    'text' => $phrase->text
+                ];
             }
 
             if ($paginationButtons) {
@@ -67,16 +78,19 @@ class Admin_message_filter_whitelistController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => '/admin_message_filter ' . $chatId,
+                'callback_data' => AdminMessageFilterController::createRoute('index', [
+                    'chatId' => $chatId,
+                ]),
                 'text' => '🔙',
             ],
             [
-                'callback_data' => '/admin_message_filter_newphrase ' . Phrase::TYPE_WHITELIST . ' ' . $chatId,
+                'callback_data' => AdminMessageFilterNewphraseController::createRoute('index', [
+                    'type' => Phrase::TYPE_WHITELIST,
+                    'chatId' => $chatId,
+                ]),
                 'text' => '➕',
             ],
         ];
-
-        Yii::warning($buttons);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [

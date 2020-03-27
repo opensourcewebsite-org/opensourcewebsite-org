@@ -14,11 +14,11 @@ use app\modules\bot\components\Controller as Controller;
 use app\components\helpers\TimeHelper;
 
 /**
- * Class My_timezoneController
+ * Class MyTimezoneController
  *
  * @package app\modules\bot\controllers
  */
-class My_timezoneController extends Controller
+class MyTimezoneController extends Controller
 {
     /**
      * @return array
@@ -47,11 +47,11 @@ class My_timezoneController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => '🔙',
                             ],
                             [
-                                'callback_data' => '/my_timezone__list',
+                                'callback_data' => self::createRoute('list'),
                                 'text' => '✏️',
                             ],
                         ],
@@ -81,16 +81,20 @@ class My_timezoneController extends Controller
 
         $timezones = array_slice($timezones, $pagination->offset, $pagination->limit);
 
-        $paginationButtons = PaginationButtons::build('/my_timezone__list ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('list', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
-
-        Yii::warning($buttons);
 
         if ($timezones) {
             foreach ($timezones as $timezone => $fullName) {
                 $buttons[][] = [
                     'text' => $fullName,
-                    'callback_data' => '/my_timezone ' . $timezone,
+                    'callback_data' => self::createRoute('index', [
+                        'timezone' => $timezone,
+                    ]),
                 ];
             }
 
@@ -99,7 +103,7 @@ class My_timezoneController extends Controller
             }
 
             $buttons[][] = [
-                'callback_data' => '/my_timezone',
+                'callback_data' => self::createRoute(),
                 'text' => '🔙',
             ];
         }
