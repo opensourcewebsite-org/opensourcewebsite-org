@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
 use Yii;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\models\User;
 use app\modules\bot\components\Controller;
@@ -22,7 +23,6 @@ class My_genderController extends Controller
      */
     public function actionIndex($gender = null)
     {
-        $update = $this->getUpdate();
         $user = $this->getUser();
 
         if ($gender) {
@@ -41,16 +41,15 @@ class My_genderController extends Controller
                     'gender' => $user->gender,
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => '/my_profile',
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                             [
                                 'callback_data' => '/my_gender__update',
-                                'text' => '✏️',
+                                'text' => Emoji::EDIT,
                             ],
                         ],
                     ]),
@@ -72,7 +71,6 @@ class My_genderController extends Controller
                     'gender' => $user->gender,
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [

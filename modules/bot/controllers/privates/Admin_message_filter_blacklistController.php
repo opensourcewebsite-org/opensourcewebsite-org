@@ -10,7 +10,7 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
 use yii\data\Pagination;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 
 /**
  * Class Admin_message_filter_blacklistController

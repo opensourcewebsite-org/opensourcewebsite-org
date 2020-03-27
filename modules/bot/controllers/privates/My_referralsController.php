@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
 use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class My_profileController
@@ -35,12 +36,11 @@ class My_referralsController extends Controller
                     'referralsCount' => $referralsCount,
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '📱',
+                                'text' => Emoji::MENU,
                             ],
                         ],
                     ]),
@@ -53,7 +53,6 @@ class My_referralsController extends Controller
                     'botRefUrl' => $botRefUrl,
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
                     'disablePreview' => true,
                 ]
             ),

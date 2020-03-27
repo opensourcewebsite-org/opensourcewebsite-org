@@ -5,3 +5,5 @@
 <b><?= \Yii::t('bot', 'Website link: ')?></b> <?= $url ?>
 <br/>
 <b><?= \Yii::t('bot', 'About company: ')?></b> <?= $description ?>
+<br/>
+<b><?= \Yii::t('bot', 'Vacancies in company') ?></b>: <?= $vacanciesCount ?>

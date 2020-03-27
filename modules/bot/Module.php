@@ -2,6 +2,7 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\components\helpers\Emoji;
 use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
@@ -12,8 +13,8 @@ use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
-use app\modules\bot\components\ReplyKeyboardManager;
-use app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\helpers\ReplyKeyboardManager;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
 use app\modules\bot\components\Controller;
@@ -99,6 +100,7 @@ class Module extends \yii\base\Module
     /**
      * @param $update Update
      *
+     * @param $botId
      * @return bool
      */
     private function initialize($update, $botId)
@@ -227,18 +229,9 @@ class Module extends \yii\base\Module
                 $user = User::findOne($telegramUser->user_id);
             }
 
-            $userState = UserState::fromUser($telegramUser);
-
-            $keyboardButtons = $userState->getKeyboardButtons();
-            ReplyKeyboardManager::init($keyboardButtons);
-            ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
-                'text' => '⚙️',
-                ReplyKeyboardManager::REPLYKEYBOARDBUTTON_IS_CONSTANT => true,
-            ]);
-
             $this->user = $user;
             $this->telegramUser = $telegramUser;
-            $this->userState = $userState;
+            $this->userState = UserState::fromUser($telegramUser);
             $this->telegramChat = $telegramChat;
 
             return true;
@@ -280,22 +273,21 @@ class Module extends \yii\base\Module
             try {
                 $commands = $this->runAction($route, $params);
             } catch (InvalidRouteException $e) {
-                if ($this->telegramChat->isPrivate()) {
-                    $commands = $this->runAction('default/command-not-found');
-                } else {
-                    $commands = $this->runAction('message');
+                Yii::error($e->getMessage());
+                try {
+                    if ($this->telegramChat->isPrivate()) {
+                        $commands = $this->runAction('default/command-not-found');
+                    } else {
+                        $commands = $this->runAction('message');
+                    }
+                } catch (InvalidRouteException $e) {
+                    Yii::error("[$route, isPrivate: {$this->telegramChat->isPrivate()}] Controller for 404 error not found", 'bot');
                 }
             }
 
             if (isset($commands) && is_array($commands)) {
                 foreach ($commands as $command) {
                     try {
-                        $replyMarkup = $command->replyMarkup;
-                        if (ReplyKeyboardManager::getInstance()->isChanged()
-                            && $command instanceof SendMessageCommand
-                            && !isset($replyMarkup)) {
-                            $this->setReplyKeyboard($command);
-                        }
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {
                         Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
@@ -312,15 +304,5 @@ class Module extends \yii\base\Module
     public function getBotName()
     {
         return $this->botInfo->name;
-    }
-
-    private function setReplyKeyboard(&$command)
-    {
-        $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
-        $command->replyMarkup = (!empty($keyboardButtons))
-            ? new ReplyKeyboardMarkup($keyboardButtons, false, true)
-            : new ReplyKeyboardRemove();
-
-        $this->userState->setKeyboardButtons($keyboardButtons);
     }
 }

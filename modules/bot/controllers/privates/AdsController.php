@@ -1,7 +1,7 @@
 <?php
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
 
 class AdsController extends Controller
@@ -11,10 +11,7 @@ class AdsController extends Controller
 		return [
 			new SendMessageCommand(
 				$this->getTelegramChat()->chat_id,
-				$this->render('index'),
-				[
-					'parseMode' => $this->textFormat,
-				]
+				$this->render('index')
 			),
 		];
 	}

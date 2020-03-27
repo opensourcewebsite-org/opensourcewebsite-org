@@ -21,7 +21,8 @@ class Company extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'url', 'description', 'address'], 'string'],
+            [['name', 'url', 'address'], 'string', 'max' => 256],
+            [['description'], 'string'],
             [['name'], 'required'],
         ];
     }
@@ -30,5 +31,10 @@ class Company extends ActiveRecord
     {
         return $this->hasMany(User::className(), ['id', 'user_id'])
             ->viaTable('company_user', ['company_id' => 'id']);
+    }
+
+    public function getVacancies()
+    {
+        return $this->hasMany(Vacancy::className(), ['company_id' => 'id']);
     }
 }

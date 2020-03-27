@@ -2,15 +2,17 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\MessageText;
 use Yii;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\Controller;
 
 /**
@@ -25,9 +27,7 @@ class My_emailController extends Controller
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
-        $update = $this->getUpdate();
 
         $email = null;
         if (isset($user->email)) {
@@ -43,18 +43,17 @@ class My_emailController extends Controller
                     'email' => $email,
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         (isset($email) ? [
                             [
                                 'callback_data' => '/change_email',
-                                'text' => '✏️',
+                                'text' => Emoji::EDIT,
                             ]
                         ] : []),
                         [
                             [
                                 'callback_data' => '/my_profile',
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                         ],
                     ]),
@@ -211,10 +210,8 @@ class My_emailController extends Controller
             return [
                 new AnswerCallbackQueryCommand(
                     $update->getCallbackQuery()->getId(),
-                    [
-                        'showAlert' => true,
-                        'text' => Yii::t('bot', 'This request has expired'),
-                    ]
+                    new MessageText(Yii::t('bot', 'This request has expired')),
+                    true
                 ),
             ];
         }
@@ -235,12 +232,10 @@ class My_emailController extends Controller
             ),
             new AnswerCallbackQueryCommand(
                 $update->getCallbackQuery()->getId(),
-                [
-                    'text' => Yii::t('bot', $deleted
-                        ? 'Request was successfully discarded'
-                        : 'Nothing to discard'),
-                    'showAlert' => true,
-                ]
+                new MessageText(Yii::t('bot', $deleted
+                    ? 'Request was successfully discarded'
+                    : 'Nothing to discard')),
+                true
             ),
         ];
     }

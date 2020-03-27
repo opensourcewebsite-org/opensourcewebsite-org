@@ -2,14 +2,14 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\Emoji;
+use app\modules\bot\components\response\commands\EditMessageTextCommand;
 use Yii;
-use app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\response\EditMessageTextCommand;
 use yii\data\Pagination;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 
 /**
  * Class AdminController

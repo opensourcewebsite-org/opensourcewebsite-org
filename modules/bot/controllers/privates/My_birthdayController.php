@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\Emoji;
-use app\modules\bot\components\response\SendMessageCommand;
-use app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use app\modules\bot\components\response\EditMessageReplyMarkupCommand;
+use app\modules\bot\components\helpers\Emoji;
+use Yii;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\modules\bot\components\Controller;
@@ -28,28 +29,30 @@ class My_birthdayController extends Controller
 
         if (!isset($birthday)) {
             $this->getState()->setName('/my_birthday__create');
+        } else {
+            try {
+                $birthday = (new \DateTime($birthday))->format(User::DATE_FORMAT);
+            } catch (\Exception $e) {
+            }
         }
 
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('index', [
-                    'birthday' => isset($birthday)
-                        ? (new \DateTime($birthday))->format(User::DATE_FORMAT)
-                        : null,
-                ]),
+                $this->render('index', compact('birthday')),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
-                        (isset($birthday) ? [
-                            [
-                                'callback_data' => '/my_birthday__update',
-                                'text' => Emoji::EDIT,
+                        (isset($birthday)
+                            ? [
+                                [
+                                    'callback_data' => '/my_birthday__update',
+                                    'text' => Emoji::EDIT,
+                                ]
                             ]
-                        ] : []),
+                            : null),
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => My_profileController::createRoute(),
                                 'text' => Emoji::BACK,
                             ],
                         ],
@@ -66,7 +69,7 @@ class My_birthdayController extends Controller
 
         $text = $update->getMessage()->getText();
         if ($this->validateDate($text, User::DATE_FORMAT)) {
-            $user->birthday = \Yii::$app->formatter->format($text, 'date');
+            $user->birthday = Yii::$app->formatter->format($text, 'date');
             $user->save();
             $this->getState()->setName(null);
 
@@ -76,10 +79,7 @@ class My_birthdayController extends Controller
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $this->render('update'),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
+                $this->render('update')
             )
         ];
     }
@@ -99,7 +99,6 @@ class My_birthdayController extends Controller
                 $this->getTelegramChat()->chat_id,
                 $this->render('update'),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [

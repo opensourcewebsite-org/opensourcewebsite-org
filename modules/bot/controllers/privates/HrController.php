@@ -1,98 +1,42 @@
 <?php
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\response\SendMessageCommand;
 use app\modules\bot\components\Controller;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\response\EditMessageTextCommand;
-use app\modules\bot\components\response\AnswerCallbackQueryCommand;
 
 class HrController extends Controller
 {
 	public function actionIndex()
 	{
-		$update = $this->getUpdate();
-
-		if ($update->getMessage())
-		{
-			return [
-				new SendMessageCommand(
-					$this->getTelegramChat()->chat_id,
-					$this->render('index', [
-						'isNotificationsEnabled' => true,
-					]),
-					[
-						'parseMode' => $this->textFormat,
-						'replyMarkup' => new InlineKeyboardMarkup([
-							[
-								[
-									'text' => Yii::t('bot', 'Вакансии'),
-									'callback_data' => '/vacancies',
-								],
-								[
-									'text' => Yii::t('bot', 'Резюме'),
-									'callback_data' => '/cvs',
-								],
-							],
-							[
-								[
-									'text' => Yii::t('bot', 'Компании'),
-									'callback_data' => '/companies',
-								],
-							],
-							[
-								[
-									'text' => Yii::t('bot', '🔔'),
-									'callback_data' => '/hrnotifications'
-								],
-							],
-						]),
-					]
-				),
-			];
-		}
-		elseif ($update->getCallbackQuery())
-		{
-			return [
-				new AnswerCallbackQueryCommand(
-					$update->getCallbackQuery()->getMessage()->getMessageId()
-				),
-				new EditMessageTextCommand(
-					$this->getTelegramChat()->chat_id,
-					$update->getCallbackQuery()->getMessage()->getMessageId(),
-					$this->render('index', [
-						'isNotificationsEnabled' => true,
-					]),
-					[
-						'parseMode' => $this->textFormat,
-						'replyMarkup' => new InlineKeyboardMarkup([
-							[
-								[
-									'text' => Yii::t('bot', 'Вакансии'),
-									'callback_data' => '/vacancies',
-								],
-								[
-									'text' => Yii::t('bot', 'Резюме'),
-									'callback_data' => '/cvs',
-								],
-							],
-							[
-								[
-									'text' => Yii::t('bot', 'Компании'),
-									'callback_data' => '/companies',
-								],
-							],
-							[
-								[
-									'text' => Yii::t('bot', '🔔'),
-									'callback_data' => '/hrnotifications'
-								],
-							],
-						]),
-					]
-				),
-			];
-		}
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->answerCallbackQuery()
+            ->editMessageTextOrSendMessage(
+                $this->render('index', [
+                    'isNotificationsEnabled' => true,
+                ]),
+                [
+                    [
+                        [
+                            'text' => Yii::t('bot', 'Resumes'),
+                            'callback_data' => ResumesController::createRoute(),
+                        ],
+                        [
+                            'text' => Yii::t('bot', 'Companies'),
+                            'callback_data' => CompaniesController::createRoute(),
+                        ],
+                    ],
+                    [
+                        [
+                            'text' => Emoji::NOTIFICATIONS_ON,
+                            'callback_data' => self::createRoute('enable_notifications'),
+                        ],
+                    ],
+                ],
+                ServicesController::createRoute(),
+                true
+            )
+            ->build();
 	}
 }

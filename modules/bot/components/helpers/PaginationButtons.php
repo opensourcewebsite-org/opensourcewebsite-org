@@ -1,10 +1,7 @@
 <?php
 
-namespace app\modules\bot\helpers;
+namespace app\modules\bot\components\helpers;
 
-use Yii;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use yii\base\InvalidParamException;
 use yii\data\Pagination;
 
 /**
@@ -17,8 +14,7 @@ class PaginationButtons
     /**
      * @param $route string
      * @param $pagination Pagination
-     *
-     * @return InlineKeyboardMarkup
+     * @return array
      */
     public static function build($route, $pagination)
     {
@@ -32,8 +28,6 @@ class PaginationButtons
             $buttons[] = ['callback_data' => $route . $previousPage, 'text' => '<'];
             $buttons[] = ['callback_data' => $route . $currentPage, 'text' => $currentPage . '/' . $pagination->pageCount];
             $buttons[] = ['callback_data' => $route . $nextPage, 'text' => '>'];
-
-            Yii::warning($buttons);
         }
 
         return $buttons;

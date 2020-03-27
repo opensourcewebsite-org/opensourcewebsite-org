@@ -15,7 +15,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 class S_jobController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
 	{

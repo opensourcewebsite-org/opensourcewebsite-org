@@ -32,7 +32,7 @@ class CommandRouteResolver extends Component
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
-                if (isset($routeParts)) {
+                if (isset($route)) {
                     break;
                 }
             }
@@ -47,7 +47,6 @@ class CommandRouteResolver extends Component
             $route = 'default/command-not-found';
         }
 
-        Yii::warning($route);
         return [ $route, $params, $isStateRoute ];
     }
 
@@ -65,12 +64,11 @@ class CommandRouteResolver extends Component
 
         foreach ($this->rules as $pattern => $targetRoute) {
             $pattern = $this->preparePattern($pattern);
-
             if (preg_match($pattern, $commandText, $matches)) {
                 list($route, $params) = $this->prepareRoute($targetRoute, $matches);
             }
 
-            if ($route) {
+            if (isset($route)) {
                 break;
             }
         }
@@ -98,18 +96,7 @@ class CommandRouteResolver extends Component
             }
         }
 
-        $tr = [
-            '.' => '\\.',
-            '*' => '\\*',
-            '$' => '\\$',
-            '[' => '\\[',
-            ']' => '\\]',
-            '(' => '\\(',
-            ')' => '\\)',
-        ];
-
-        //$pattern = '#^' . $prefix . trim(strtr($pattern, $tr), '/@') . '$#u';
-        $pattern = '#^' . strtr($pattern, $tr) . '$#u';
+        $pattern = "#^$pattern$#u";
         foreach ($placeholders as $name => $expression) {
             $pattern = str_replace("<<" . $name . ">>", $expression, $pattern);
         }
@@ -128,16 +115,16 @@ class CommandRouteResolver extends Component
     private function prepareRoute($targetRoute, $matches)
     {
         $route = $targetRoute;
-        if (isset($matches['controller'])) {
-            $route = str_replace('<controller>', $matches['controller'], $route);
-            unset($matches['controller']);
-        }
-        if (isset($matches['action'])) {
-            $route = str_replace('<action>', $matches['action'], $route);
-            unset($matches['action']);
-        }
 
-        $params = array_filter($matches, function ($k) { return !is_numeric($k); }, ARRAY_FILTER_USE_KEY);
+        $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+        foreach ($namedGroups as $key => $namedGroup) {
+            $token = "<$key>";
+            if (stripos($route, $token) !== false) {
+                $route = str_replace($token, $namedGroup, $route);
+                unset($namedGroups[$key]);
+            }
+        }
+        $params = $namedGroups;
 
         return [$route, $params];
     }

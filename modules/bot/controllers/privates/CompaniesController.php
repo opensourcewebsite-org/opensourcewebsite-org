@@ -1,218 +1,141 @@
 <?php
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\FillablePropertiesController;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
-use app\modules\bot\components\response\SendMessageCommand;
-use app\modules\bot\components\Controller;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\response\EditMessageTextCommand;
-use app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use app\modules\bot\components\response\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Company;
-use app\modules\bot\components\Emoji;
+use yii\data\Pagination;
 
-class CompaniesController extends Controller
+class CompaniesController extends FillablePropertiesController
 {
-	public function actionIndex()
+    protected static $properties = [
+            'name',
+            'description',
+            'address',
+            'url'
+        ];
+
+	public function actionIndex($page = 1)
 	{
 		$update = $this->getUpdate();
         $user = $this->getUser();
 
-        $keyboards = [];
-        $companies = $user->getCompanies()->all();
-        foreach ($companies as $company) {
-            $keyboards[] = [
+        $companiesCount = $user->getCompanies()->count();
+        $pagination = new Pagination([
+            'totalCount' => $companiesCount,
+            'pageSize' => 8,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+        $paginationButtons = PaginationButtons::build(self::createRoute() . ' ', $pagination);
+        $companies = $user->getCompanies()
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+        $keyboards = array_map(function($company) {
+            return [
                 [
                     'text' => $company->name,
-                    'callback_data' => '/company ' . $company->id,
+                    'callback_data' => self::createRoute('show', [ $company->id ]),
                 ],
             ];
-        }
+        }, $companies);
+        $keyboards = array_merge($keyboards, [ $paginationButtons ], [
+            [
+                [
+                    'text' => Emoji::ADD,
+                    'callback_data' => self::createRoute('set_' . reset(static::$properties)),
+                ],
+            ],
+        ]);
 
-        return (new ResponseBuilder($update))
+        return ResponseBuilder::fromUpdate($update)
             ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                $this->textFormat,
-                new InlineKeyboardMarkup(array_merge($keyboards, [
-                    [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => '/hr',
-                        ],
-                        [
-                            'text' => Emoji::ADD,
-                            'callback_data' => '/create_company',
-                        ],
-                    ]
-                ])),
-                new InlineKeyboardMarkup(array_merge($keyboards, [
-                    [
-                        [
-                            'text' => Emoji::ADD,
-                            'callback_data' => '/create_company',
-                        ],
-                    ]
-                ]))
-            )
-            ->build();
-	}
-
-	public function actionCreate()
-	{
-		$update = $this->getUpdate();
-		$state = $this->getState();
-
-        $state->setName('/set_company_name');
-
-        return (new ResponseBuilder($update))
-            ->answerCallbackQuery()
-            ->removeInlineKeyboardMarkup()
-            ->sendMessage(
-                $this->render('set-name'),
-                $this->textFormat,
-                null
+                $keyboards,
+                HrController::createRoute(),
+                true
             )
             ->build();
 	}
 
     public function actionUpdate($id)
     {
-		$update = $this->getUpdate();
-		$state = $this->getState();
-
-        $company = Company::findOne($id);
-
-        $state->setName('/set_company_name');
-        $state->setIntermediateField('id', $id);
-
-        return (new ResponseBuilder($update))
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->answerCallbackQuery()
-            ->removeInlineKeyboardMarkup()
-            ->sendMessage(
-                $this->render('set-name'),
-                $this->textFormat,
-                null
-            )
-            ->build();
-    }
-
-    public function actionSetName()
-    {
-        $update = $this->getUpdate();
-        $state = $this->getState();
-
-        $text = $update->getMessage()->getText();
-        $state->setName('/set_company_url');
-        $state->setIntermediateField('name', $text);
-
-        return (new ResponseBuilder($update))
-            ->answerCallbackQuery()
-            ->sendMessage(
-                $this->render('set-url'),
-                $this->textFormat,
-                new InlineKeyboardMarkup([
+            ->editMessageReplyMarkup([
                     [
                         [
-                            'text' => $this->render('skip'),
-                            'callback_data' => '/set_company_address',
+                            'text' => Yii::t('bot', 'Edit name'),
+                            'callback_data' => self::createRoute('set_name', [ $id ]),
+                        ],
+                        [
+                            'text' => Yii::t('bot', 'Edit address'),
+                            'callback_data' => self::createRoute('set_address', [ $id ]),
                         ],
                     ],
-                ])
-            )
-            ->build();
-    }
-
-    public function actionSetUrl()
-    {
-        $update = $this->getUpdate();
-        $state = $this->getState();
-
-        $text = $update->getMessage()->getText();
-        $state->setName('/set_company_address');
-        $state->setIntermediateField('url', $text);
-
-        return (new ResponseBuilder($update))
-            ->answerCallbackQuery()
-            ->sendMessage(
-                $this->render('set-address'),
-                $this->textFormat,
-                new InlineKeyboardMarkup([
                     [
                         [
-                            'text' => $this->render('skip'),
-                            'callback_data' => '/set_company_address',
+                            'text' => Yii::t('bot', 'Edit website link'),
+                            'callback_data' => self::createRoute('set_url', [ $id ]),
                         ],
+                        [
+                            'text' => Yii::t('bot', 'Edit description'),
+                            'callback_data' => self::createRoute('set_description', [ $id ]),
+                        ]
                     ],
-                ])
-            )
-            ->build();
-    }
-
-    public function actionSetAddress()
-    {
-        $update = $this->getUpdate();
-        $state = $this->getState();
-
-        $text = $update->getMessage()->getText();
-        $state->setName('/set_company_description');
-        $state->setIntermediateField('address', $text);
-
-        return (new ResponseBuilder($update))
-            ->answerCallbackQuery()
-            ->sendMessage(
-                $this->render('set-description'),
-                $this->textFormat,
-                new InlineKeyboardMarkup([
                     [
                         [
-                            'text' => $this->render('skip'),
-                            'callback_data' => '/set_company_description',
+                            'text' => Emoji::BACK,
+                            'callback_data' => self::createRoute('show', [ $id ]),
                         ],
                     ],
-                ])
+                ]
             )
             ->build();
     }
 
-    public function actionSetDescription()
-    {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-        $state = $this->getState();
-
-        $description = $update->getMessage()->getText();
-        $name = $state->getIntermediateField('name', '');
-        $url = $state->getIntermediateField('url', null);
-        $address = $state->getIntermediateField('address', null);
-        $id = $state->getIntermediateField('id', null);
-        $state->setName(null);
-
-        $company = ($id == null) ? new Company() : Company::findOne($id);
-        $company->setAttributes([
-            'name' => $name,
-            'url' => $url,
-            'address' => $address,
-            'description' => $description,
-        ]);
-        $company->save();
-
-        if (is_null($id)) {
-            $user->link('companies', $company);
-        }
-
-        return $this->actionShow($company->id);
-    }
-
-    public function actionShow($id)
+    public function actionShow($id, $page = 1)
     {
         $user = $this->getUser();
         $update = $this->getUpdate();
 
         $company = $user->getCompanies()->where(['id' => $id])->one();
         if ($company != null) {
-            return (new ResponseBuilder($update))
+            $vacanciesCount = $company->getVacancies()->count();
+            $pagination = new Pagination([
+                'totalCount' => $vacanciesCount,
+                'pageSize' => 7,
+                'params' => [
+                    'page' => $page,
+                ],
+                'pageSizeParam' => false,
+                'validatePage' => true,
+            ]);
+            $vacancies = $company->getVacancies()
+                ->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
+            $paginationButtons = PaginationButtons::build(self::createRoute('show', [ $id ]) . ' ', $pagination);
+            $rows = array_map(function ($vacancy) {
+                return [
+                    [
+                        'text' => $vacancy->name,
+                        'callback_data' => VacanciesController::createRoute('show', [ $vacancy->id ]),
+                    ]
+                ];
+            }, $vacancies);
+            $rows = array_merge($rows, [ $paginationButtons ]);
+
+            return ResponseBuilder::fromUpdate($update)
                 ->answerCallbackQuery()
                 ->editMessageTextOrSendMessage(
                     $this->render('show', [
@@ -220,48 +143,41 @@ class CompaniesController extends Controller
                         'url' => $company->url,
                         'address' => $company->address,
                         'description' => $company->description,
+                        'vacanciesCount' => $vacanciesCount,
                     ]),
-                    $this->textFormat,
-                    new InlineKeyboardMarkup([
+                    array_merge($rows, [
                         [
                             [
-                                'text' => $this->render('vacancies'),
-                                'callback_data' => '/vacancies',
+                                'text' => Yii::t('bot', 'Add a vacancy'),
+                                'callback_data' => VacanciesController::createRoute('create', [ $id ]),
                             ],
                         ],
                         [
-                            [
-                                'text' => Emoji::BACK,
-                                'callback_data' => '/companies',
-                            ],
                             [
                                 'text' => Emoji::EDIT,
-                                'callback_data' => '/update_company ' . $id,
-                            ]
+                                'callback_data' => self::createRoute('update', [ $id ]),
+                            ],
                         ],
                     ]),
-                    new InlineKeyboardMarkup([
-                        [
-                            [
-                                'text' => $this->render('vacancies'),
-                                'callback_data' => '/vacancies',
-                            ],
-                        ],
-                        [
-                            [
-                                'text' => Emoji::BACK,
-                                'callback_data' => '/companies',
-                            ],
-                            [
-                                'text' => Emoji::EDIT,
-                                'callback_data' => '/update_company ' . $id,
-                            ]
-                        ],
-                    ])
+                    self::createRoute(),
+                    true
                 )
                 ->build();
         } else {
-
+            return [];
         }
+    }
+
+    protected function getModel($id)
+    {
+        return ($id == null) ? new Company() : Company::findOne($id);
+    }
+
+    protected function afterSave($company, $isNew)
+    {
+        if ($isNew) {
+            $this->getUser()->link('companies', $company);
+        }
+        return $this->actionShow($company->id);
     }
 }

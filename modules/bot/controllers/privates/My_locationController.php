@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
 use Yii;
-use \app\modules\bot\components\response\SendLocationCommand;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\ReplyKeyboardManager;
+use app\modules\bot\components\response\commands\SendLocationCommand;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\helpers\ReplyKeyboardManager;
 use app\modules\bot\components\Controller;
 use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
@@ -16,9 +17,6 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
  */
 class My_locationController extends Controller
 {
-    /**
-     * @return string
-     */
     public function actionIndex()
     {
         $telegramUser = $this->getTelegramUser();
@@ -33,10 +31,7 @@ class My_locationController extends Controller
             return [
                 new SendMessageCommand(
                     $this->getTelegramChat()->chat_id,
-                    $this->render('header'),
-                    [
-                        'parseMode' => $this->textFormat,
-                    ]
+                    $this->render('header')
                 ),
                 new SendLocationCommand(
                     $this->getTelegramChat()->chat_id,
@@ -47,12 +42,11 @@ class My_locationController extends Controller
                     $this->getTelegramChat()->chat_id,
                     $this->render('footer'),
                     [
-                        'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
                                     'callback_data' => '/my_profile',
-                                    'text' => '🔙',
+                                    'text' => Emoji::BACK,
                                 ],
                             ],
                         ]),
@@ -65,12 +59,11 @@ class My_locationController extends Controller
                     $this->getTelegramChat()->chat_id,
                     $this->render('index'),
                     [
-                        'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
                                     'callback_data' => '/my_profile',
-                                    'text' => '🔙',
+                                    'text' => Emoji::BACK,
                                 ],
                             ],
                         ]),

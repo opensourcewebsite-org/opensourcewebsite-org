@@ -2,14 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\models\Rating;
-use \app\components\Converter;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use Yii;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\models\Rating;
+use app\components\Converter;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller;
 
 /**
@@ -25,13 +23,12 @@ class My_ratingController extends Controller
     public function actionIndex()
     {
         $update = $this->getUpdate();
-        
+
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
                 $this->renderRating(),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
@@ -46,7 +43,7 @@ class My_ratingController extends Controller
                         [
                             [
                                 'callback_data' => '/menu',
-                                'text' => '📱',
+                                'text' => Emoji::MENU,
                             ],
                         ],
                     ]),

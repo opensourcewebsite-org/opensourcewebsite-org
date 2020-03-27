@@ -2,14 +2,15 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
 use Yii;
 use app\models\Currency;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\Controller;
 
 /**
@@ -27,7 +28,6 @@ class My_currencyController extends Controller
     public function actionIndex($currency = null)
     {
         $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
 
         $currencyModel = null;
         if ($currency) {
@@ -48,16 +48,15 @@ class My_currencyController extends Controller
                 $this->getTelegramChat()->chat_id,
                 $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => '/my_profile',
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                             [
                                 'callback_data' => '/my_currency__list',
-                                'text' => '✏️',
+                                'text' => Emoji::EDIT,
                             ],
                         ],
                     ]),
@@ -70,7 +69,6 @@ class My_currencyController extends Controller
      * @param int $page
      *
      * @return array
-     * @throws \TelegramBot\Api\InvalidArgumentException
      */
     public function actionList($page = 1)
     {
@@ -95,17 +93,22 @@ class My_currencyController extends Controller
 
         $paginationButtons = PaginationButtons::build('/my_currency__list ', $pagination);
         $buttons = [];
-
         if ($currencies) {
             foreach ($currencies as $currency) {
-                $buttons[][] = ['callback_data' => '/my_currency_' . $currency->code, 'text' => strtoupper($currency->code) . ' - ' . $currency->name];
+                $buttons[][] = [
+                    'callback_data' => '/my_currency_' . $currency->code,
+                    'text' => strtoupper($currency->code) . ' - ' . $currency->name
+                ];
             }
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
             }
 
-            $buttons[][] = ['callback_data' => '/my_currency', 'text' => '🔙'];
+            $buttons[][] = [
+                'callback_data' => '/my_currency',
+                'text' => Emoji::BACK
+            ];
         }
 
         Yii::warning($buttons);
@@ -116,7 +119,6 @@ class My_currencyController extends Controller
                 $update->getCallbackQuery()->getMessage()->getMessageId(),
                 $this->render('list'),
                 [
-                    'parseMode' => $this->textFormat,
                     'replyMarkup' => new InlineKeyboardMarkup($buttons),
                 ]
             ),

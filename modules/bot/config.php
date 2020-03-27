@@ -55,18 +55,16 @@ return [
                 '/admin_join_hider <chatId:\d+>' => 'admin_join_hider',
                 '/admin_join_hider_change_status <chatId:\d+>' => 'admin_join_hider/update',
 
-                '/create_company' => 'companies/create',
-                '/update_company <id:\d+>' => 'companies/update',
-                '/set_company_name' => 'companies/set-name',
-                '/set_company_url' => 'companies/set-url',
-                '/set_company_address' => 'companies/set-address',
-                '/set_company_description' => 'companies/set-description',
-                '/company <id:\d+>' => 'companies/show',
-
                 '/system_message_group_to_supergroup' => 'system_message/group_to_supergroup',
 
-                '/<controller:\w+> <message:.+>' => '<controller>/index',
-                '/<controller:\w+>' => '<controller>/index',
+                '/companies <page:\d+>' => 'companies/index',
+
+                '/<controller:\w+>_update <id:\d+>' => '<controller>/update',
+                '/<controller:\w+>_create <id:\d+>' => '<controller>/create',
+                '/<controller:\w+>_set_<property:\w+>( <id:\d+>)?' => '<controller>/set-property',
+                '/<controller:\w+>_show <id:\d+>( <page:\d+>)?' => '<controller>/show',
+
+                '/<controller:\w+>( <message:.+>)?' => '<controller>/index',
             ],
             'requestHandlers' => [
                 new SystemMessageRequestHandler(),

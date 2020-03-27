@@ -3,9 +3,8 @@
 namespace app\modules\bot\models;
 
 /**
- * @property array $keyboardButtons
- * @property string $name
- * @property string $email
+ * Class UserState
+ * @package app\modules\bot\models
  */
 class UserState
 {
@@ -14,16 +13,6 @@ class UserState
     private function __construct()
     {
         $fields['intermediate'] = [];
-    }
-
-    public function getKeyboardButtons()
-    {
-        return $this->fields['keyboardButtons'] ?? [];
-    }
-
-    public function setKeyboardButtons(?array $value)
-    {
-        $this->fields['keyboardButtons'] = $value;
     }
 
     public function getName()
@@ -35,7 +24,6 @@ class UserState
     {
         if ($this->fields['name'] != $value) {
             $this->fields['name'] = $value;
-            //$this->fields['intermediate'] = [];
         }
     }
 
@@ -53,6 +41,11 @@ class UserState
     {
         $user->state = json_encode($this->fields);
         return $user->save();
+    }
+
+    public function reset()
+    {
+        $this->fields = [];
     }
 
     public static function fromUser(User $user)

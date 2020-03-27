@@ -3,9 +3,11 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class DefaultController
@@ -15,52 +17,44 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 class DefaultController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('/menu/index'),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
-            ),
-        ];
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendMessage(
+                $this->render('/menu/index')
+            )
+            ->build();
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function actionCommandNotFound()
 	{
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendMessage(
                 $this->render('command-not-found'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            [
-                                'callback_data' => '/menu',
-                                'text' => Yii::t('bot', 'Menu'),
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                         ],
-                    ]),
+                    ],
+                    [
+                        [
+                            'callback_data' => '/menu',
+                            'text' => Yii::t('bot', 'Menu'),
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }
