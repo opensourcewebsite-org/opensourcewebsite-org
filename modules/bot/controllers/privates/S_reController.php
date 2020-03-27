@@ -4,8 +4,8 @@ namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class DefaultController
@@ -15,7 +15,7 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 class S_reController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex()
 	{

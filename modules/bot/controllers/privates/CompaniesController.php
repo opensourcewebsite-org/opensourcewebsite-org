@@ -5,7 +5,6 @@ use app\modules\bot\components\FillablePropertiesController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Company;
 use yii\data\Pagination;
