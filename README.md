@@ -55,6 +55,9 @@ Any commit pushed to a branch `master` gets deployed to [opensourcewebsite.org](
 
 Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
 
+## Security reports
+Please report all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
+
 ## License
 
 This project is open source and available freely under the [MIT license](LICENSE.md).

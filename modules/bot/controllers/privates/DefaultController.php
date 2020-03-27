@@ -55,7 +55,7 @@ class DefaultController extends Controller
                         [
                             [
                                 'callback_data' => MenuController::createRoute(),
-                                'text' => Yii::t('bot', 'Menu'),
+                                'text' => '📱',
                             ],
                         ],
                     ]),
