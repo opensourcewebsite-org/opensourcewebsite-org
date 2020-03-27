@@ -168,4 +168,6 @@ return [
     'Cash' => 'Наличные',
     'To start using this service follow these steps' => 'Чтобы начать использовать этот сервис, выполните следующие действия',
     'Set your nickname in your Telegram account' => 'Установите ваш никнейм в вашем аккаунте Telegram',
+    'Citizenship' => 'Гражданство',
+    'Your Citizenship' => 'Ваше гражданство',
 ];
