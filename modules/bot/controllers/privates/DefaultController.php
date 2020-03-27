@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 
@@ -46,8 +47,8 @@ class DefaultController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => '/menu',
-                            'text' => Yii::t('bot', 'Menu'),
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]

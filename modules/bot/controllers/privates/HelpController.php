@@ -27,7 +27,7 @@ class HelpController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/menu',
+                                'callback_data' => MenuController::createRoute(),
                                 'text' => Emoji::MENU,
                             ],
                         ],

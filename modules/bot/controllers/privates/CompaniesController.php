@@ -33,7 +33,11 @@ class CompaniesController extends FillablePropertiesController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-        $paginationButtons = PaginationButtons::build(self::createRoute() . ' ', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
         $companies = $user->getCompanies()
             ->offset($pagination->offset)
             ->limit($pagination->limit)
@@ -74,27 +78,41 @@ class CompaniesController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Edit name'),
-                            'callback_data' => self::createRoute('set_name', [ $id ]),
+                            'callback_data' => self::createRoute('set-property', [
+                                'id' => $id,
+                                'property' => 'name',
+                            ]),
                         ],
                         [
                             'text' => Yii::t('bot', 'Edit address'),
-                            'callback_data' => self::createRoute('set_address', [ $id ]),
+                            'callback_data' => self::createRoute('set-property', [
+                                'id' => $id,
+                                'property' => 'address',
+                            ]),
                         ],
                     ],
                     [
                         [
                             'text' => Yii::t('bot', 'Edit website link'),
-                            'callback_data' => self::createRoute('set_url', [ $id ]),
+                            'callback_data' => self::createRoute('set-property', [
+                                'id' => $id,
+                                'property' => 'url',
+                            ]),
                         ],
                         [
                             'text' => Yii::t('bot', 'Edit description'),
-                            'callback_data' => self::createRoute('set_description', [ $id ]),
+                            'callback_data' => self::createRoute('set-property', [
+                                'id' => $id,
+                                'property' => 'description',
+                            ]),
                         ]
                     ],
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('show', [ $id ]),
+                            'callback_data' => self::createRoute('show', [
+                                'id' => $id
+                            ]),
                         ],
                     ],
                 ]
@@ -123,7 +141,12 @@ class CompaniesController extends FillablePropertiesController
                 ->offset($pagination->offset)
                 ->limit($pagination->limit)
                 ->all();
-            $paginationButtons = PaginationButtons::build(self::createRoute('show', [ $id ]) . ' ', $pagination);
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($id) {
+                return self::createRoute('show', [
+                    'id' => $id,
+                    'page' => $page,
+                ]);
+            });
             $rows = array_map(function ($vacancy) {
                 return [
                     [
@@ -148,13 +171,17 @@ class CompaniesController extends FillablePropertiesController
                         [
                             [
                                 'text' => Yii::t('bot', 'Add a vacancy'),
-                                'callback_data' => VacanciesController::createRoute('create', [ $id ]),
+                                'callback_data' => VacanciesController::createRoute('create', [
+                                    'id' => $id,
+                                ]),
                             ],
                         ],
                         [
                             [
                                 'text' => Emoji::EDIT,
-                                'callback_data' => self::createRoute('update', [ $id ]),
+                                'callback_data' => self::createRoute('update', [
+                                    'od'
+                                ]),
                             ],
                         ],
                     ]),

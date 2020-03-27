@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\components;
 
-use Yii;
+use TelegramBot\Api\Types\Update;
 use yii\base\Component;
 
 /**
@@ -22,19 +22,17 @@ class CommandRouteResolver extends Component
      */
     public $rules = [];
 
-    public function resolveRoute($update, $state)
+    public function resolveRoute(Update $update, ?string $state, string $defaultRoute)
     {
         $route = null;
-        $params = null;
+        $params = [];
         $isStateRoute = false;
 
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
-                if (isset($route)) {
-                    break;
-                }
+                break;
             }
         }
 
@@ -43,28 +41,27 @@ class CommandRouteResolver extends Component
             $isStateRoute = true;
         }
 
-        if (!isset($route)) {
-            $route = 'default/command-not-found';
+        if (!isset($route) && $route[0] == '/') {
+            $route = $defaultRoute;
         }
 
         return [ $route, $params, $isStateRoute ];
     }
 
     /**
-     * Resolve route in command rules
+     * Resolve route using list of aliases
      *
-     * @param $commandText
-     *
+     * @param string $alias
      * @return array
      */
-    private function resolveCommandRoute($commandText)
+    private function resolveCommandRoute(string $alias)
     {
         $route = null;
         $params = [];
 
         foreach ($this->rules as $pattern => $targetRoute) {
             $pattern = $this->preparePattern($pattern);
-            if (preg_match($pattern, $commandText, $matches)) {
+            if (preg_match($pattern, $alias, $matches)) {
                 list($route, $params) = $this->prepareRoute($targetRoute, $matches);
             }
 
@@ -107,25 +104,53 @@ class CommandRouteResolver extends Component
     /**
      * Dispatch params and convert route rule to ready route
      *
-     * @param $targetRoute
-     * @param $matches
-     *
+     * @param string $route
+     * @param array $matches
      * @return array
      */
-    private function prepareRoute($targetRoute, $matches)
+    private function prepareRoute(string $route, array $matches)
     {
-        $route = $targetRoute;
-
         $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-        foreach ($namedGroups as $key => $namedGroup) {
+        foreach ($namedGroups as $key => $value) {
             $token = "<$key>";
             if (stripos($route, $token) !== false) {
-                $route = str_replace($token, $namedGroup, $route);
+                if ($key == 'controller' || $key == 'action') {
+                    $value = str_replace('_', '-', $value);
+                }
+                if ($key == 'action' && empty($value)) {
+                    $value = 'index';
+                }
+                $route = str_replace($token, $value, $route);
                 unset($namedGroups[$key]);
             }
         }
-        $params = $namedGroups;
 
-        return [$route, $params];
+
+        $queryParams = [];
+        if (array_key_exists('query', $namedGroups)) {
+            $query = $namedGroups['query'];
+            unset($namedGroups['query']);
+            $queryParams = $this->parseQuery($query);
+        }
+        $params = array_merge($queryParams, $namedGroups);
+
+        return [ $route, $params ];
+    }
+
+    /**
+     * Parse query string to associative array of params
+     *
+     * @param string $query
+     * @return array
+     */
+    private function parseQuery(string $query)
+    {
+        $params = [];
+        $paramsKeyValues = explode('&', $query);
+        foreach ($paramsKeyValues as $keyValue) {
+            list($key, $value) = explode('=', $keyValue);
+            $params[$key] = $value;
+        }
+        return $params;
     }
 }

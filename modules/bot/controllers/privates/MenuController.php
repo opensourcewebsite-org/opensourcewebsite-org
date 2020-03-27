@@ -25,19 +25,19 @@ class MenuController extends Controller
                 [
                     [
                         [
-                            'callback_data' => My_profileController::createRoute(),
-                            'text' => Yii::t('bot', 'Profile')
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Yii::t('bot', 'Profile'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => My_ratingController::createRoute(),
-                            'text' => Yii::t('bot', 'Rating')
+                            'callback_data' => MyRatingController::createRoute(),
+                            'text' => Yii::t('bot', 'Rating'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => My_referralsController::createRoute(),
+                            'callback_data' => MyReferralsController::createRoute(),
                             'text' => Yii::t('bot', 'Referrals')
                         ],
                     ],
@@ -75,7 +75,7 @@ class MenuController extends Controller
                             'text' => '👋',
                         ],
                         [
-                            'callback_data' => My_languageController::createRoute(),
+                            'callback_data' => MyLanguageController::createRoute(),
                             'text' => '🗣',
                         ],
                     ],

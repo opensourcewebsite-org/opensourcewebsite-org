@@ -5,8 +5,6 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 
 /**
@@ -28,31 +26,31 @@ class ServicesController extends Controller
                 [
                     [
                         [
-                            'callback_data' => '/s_ce',
+                            'callback_data' => SCeController::createRoute(),
                             'text' => '🏗 ' . Yii::t('bot', 'Currency Exchange'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => '/hr',
+                            'callback_data' => SJobController::createRoute(),
                             'text' => '🏗 ' . Yii::t('bot', 'Jobs'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => '/s_ad',
+                            'callback_data' => SAdController::createRoute(),
                             'text' => '🏗 ' . Yii::t('bot', 'Ads'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => '/s_da',
+                            'callback_data' => SDaController::createRoute(),
                             'text' => '🏗 ' . Yii::t('bot', 'Dating'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => '/s_re',
+                            'callback_data' => SReController::createRoute(),
                             'text' => '🏗 ' . Yii::t('bot', 'Real Estates'),
                         ],
                     ],
@@ -68,8 +66,8 @@ class ServicesController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => '/menu',
-                            'text' => '📱',
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ],

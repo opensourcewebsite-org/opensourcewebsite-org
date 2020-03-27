@@ -2,7 +2,6 @@
 
 namespace app\modules\bot;
 
-use app\modules\bot\components\helpers\Emoji;
 use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
@@ -13,10 +12,6 @@ use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
-use app\modules\bot\components\helpers\ReplyKeyboardManager;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use TelegramBot\Api\Types\ReplyKeyboardRemove;
 use app\modules\bot\components\Controller;
 
 /**
@@ -26,7 +21,7 @@ use app\modules\bot\components\Controller;
 class Module extends \yii\base\Module
 {
     /**
-     * @var \TelegramBot\Api\BotApi
+     * @var BotApi
      */
     private $botApi;
 
@@ -98,8 +93,7 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @param $update Update
-     *
+     * @param $update
      * @param $botId
      * @return bool
      */
@@ -254,18 +248,21 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @param $update Update
-     *
+     * @param Update $update
      * @return bool
+     * @throws InvalidRouteException
      */
-    private function dispatchRoute($update)
+    public function dispatchRoute(Update $update)
     {
         $result = false;
 
         $state = $this->telegramChat->isPrivate()
             ? $this->userState->getName()
             : null;
-        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state);
+        $defaultRoute = $this->telegramChat->isPrivate()
+            ? 'default/command-not-found'
+            : 'message/index';
+        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
         if (!$isStateRoute) {
             $this->userState->setName(null);
         }
@@ -273,16 +270,7 @@ class Module extends \yii\base\Module
             try {
                 $commands = $this->runAction($route, $params);
             } catch (InvalidRouteException $e) {
-                Yii::error($e->getMessage());
-                try {
-                    if ($this->telegramChat->isPrivate()) {
-                        $commands = $this->runAction('default/command-not-found');
-                    } else {
-                        $commands = $this->runAction('message');
-                    }
-                } catch (InvalidRouteException $e) {
-                    Yii::error("[$route, isPrivate: {$this->telegramChat->isPrivate()}] Controller for 404 error not found", 'bot');
-                }
+                $commands = $this->runAction($defaultRoute);
             }
 
             if (isset($commands) && is_array($commands)) {

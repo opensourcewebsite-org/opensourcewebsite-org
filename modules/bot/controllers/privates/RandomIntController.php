@@ -1,0 +1,24 @@
+<?php
+
+namespace app\modules\bot\controllers\privates;
+
+use Yii;
+use app\modules\bot\components\Controller;
+
+/**
+ * Class RandomIntController
+ *
+ * @package app\modules\bot\controllers
+ */
+class RandomIntController extends Controller
+{
+    /**
+     * @return string
+     */
+    public function actionIndex($message = '')
+    {
+        //TODO add flexible int min and max from $message
+        return random_int(1, 10);
+        //return $this->render('index');
+    }
+}

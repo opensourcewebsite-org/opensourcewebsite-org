@@ -12,11 +12,11 @@ use yii\data\Pagination;
 class PaginationButtons
 {
     /**
-     * @param $route string
-     * @param $pagination Pagination
+     * @param Pagination $pagination
+     * @param callable $routeCallback
      * @return array
      */
-    public static function build($route, $pagination)
+    public static function build(Pagination $pagination, callable $routeCallback)
     {
         $buttons = [];
 
@@ -25,9 +25,18 @@ class PaginationButtons
             $previousPage = $currentPage - 1 ?: $pagination->pageCount;
             $nextPage = ($currentPage + 1) <= $pagination->pageCount ? $currentPage + 1 : 1;
 
-            $buttons[] = ['callback_data' => $route . $previousPage, 'text' => '<'];
-            $buttons[] = ['callback_data' => $route . $currentPage, 'text' => $currentPage . '/' . $pagination->pageCount];
-            $buttons[] = ['callback_data' => $route . $nextPage, 'text' => '>'];
+            $buttons[] = [
+                'callback_data' => $routeCallback($previousPage),
+                'text' => '<',
+            ];
+            $buttons[] = [
+                'callback_data' => $routeCallback($currentPage),
+                'text' => $currentPage . '/' . $pagination->pageCount,
+            ];
+            $buttons[] = [
+                'callback_data' => $routeCallback($nextPage),
+                'text' => '>',
+            ];
         }
 
         return $buttons;

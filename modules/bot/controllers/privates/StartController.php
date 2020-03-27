@@ -2,8 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\commands\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use app\modules\bot\components\Controller;
 
@@ -27,11 +28,11 @@ class StartController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/menu',
-                                'text' => '📱',
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
                             ],
                             [
-                                'callback_data' => '/my_language',
+                                'callback_data' => MyLanguageController::createRoute(),
                                 'text' => '🗣',
                             ],
                         ],
