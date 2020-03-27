@@ -9,51 +9,10 @@ use app\modules\bot\components\request\LocationRequestHandler;
 return [
     'components' => [
         'commandRouteResolver' => [
-            'class' => CommandRouteResolver::className(),
+            'class' => CommandRouteResolver::class,
             'rules' => [
-                '/<controller:\w+>__<action:\w+>(\?<query:(&?\w+=[^&]*)*>)?' => '<controller>/<action>',
-                '⚙️' => 'help/index',
-
-                '/hello' => 'start/index',
-
-                '/my_language_<language:\w+>' => 'my_language/index',
-                '/my_language__list <page:\d+>' => 'my_language/list',
-
-                '/my_currency_<currency:\w+>' => 'my_currency/index',
-                '/my_currency__list <page:\d+>' => 'my_currency/list',
-
-                '/my_timezone <timezone:\S+>' => 'my_timezone/index',
-                '/my_timezone__list <page:\d+>' => 'my_timezone/list',
-
-                '/my_gender_<gender:\w+>' => 'my_gender/index',
-
-                '/update_location' => 'my_location/update',
-
-                '/admin <page:\d+>' => 'admin/index',
-
-                '/admin_chat <chatId:\d+>' => 'admin_chat/index',
-                '/admin_message_filter <chatId:\d+>' => 'admin_message_filter/index',
-                '/admin_message_filter_change_mode <chatId:\d+>' => 'admin_message_filter/update',
-                '/admin_message_filter_change_status <chatId:\d+>' => 'admin_message_filter/status',
-                '/admin_message_filter_whitelist <chatId:\d+>' => 'admin_message_filter_whitelist/index',
-                '/admin_message_filter_whitelist <chatId:\d+> <page:\d+>' => 'admin_message_filter_whitelist/index',
-                '/admin_message_filter_blacklist <chatId:\d+>' => 'admin_message_filter_blacklist/index',
-                '/admin_message_filter_blacklist <chatId:\d+> <page:\d+>' => 'admin_message_filter_blacklist/index',
-                '/admin_message_filter_newphrase <type:\w+> <chatId:\d+>' => 'admin_message_filter_newphrase/index',
-                '/admin_message_filter_set_newphrase <type:\w+> <chatId:\d+>' => 'admin_message_filter_newphrase/update',
-
-                '/admin_message_filter_phrase <phraseId:\d+>' => 'admin_message_filter_phrase/index',
-                '/admin_message_filter_delete_phrase <phraseId:\d+>' => 'admin_message_filter_phrase/delete',
-                '/admin_message_filter_change_phrase <phraseId:\d+>' => 'admin_message_filter_phrase/create',
-                '/admin_message_filter_update_phrase <phraseId:\d+>' => 'admin_message_filter_phrase/update',
-
-                '/admin_join_hider <chatId:\d+>' => 'admin_join_hider',
-                '/admin_join_hider_change_status <chatId:\d+>' => 'admin_join_hider/update',
-
-                '/system_message_group_to_supergroup' => 'system_message/group_to_supergroup',
-
-                '/<controller:\w+> <message:.+>' => '<controller>/index',
-                '/<controller:\w+>' => '<controller>/index',
+                '/<controller:\w+>__<action:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
+                '/<controller:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],
             'requestHandlers' => [
                 new SystemMessageRequestHandler(),

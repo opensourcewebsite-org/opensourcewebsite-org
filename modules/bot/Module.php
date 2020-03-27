@@ -11,10 +11,6 @@ use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
-use app\modules\bot\components\ReplyKeyboardManager;
-use app\modules\bot\components\response\SendMessageCommand;
-use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use TelegramBot\Api\Types\ReplyKeyboardRemove;
 use app\modules\bot\components\Controller;
 
 /**
@@ -219,9 +215,6 @@ class Module extends \yii\base\Module
                 $user = User::findOne($telegramUser->user_id);
             }
 
-            $keyboardButtons = $telegramUser->getState()->getKeyboardButtons();
-            ReplyKeyboardManager::init($keyboardButtons);
-
             $this->user = $user;
             $this->telegramUser = $telegramUser;
             $this->telegramChat = $telegramChat;
@@ -265,16 +258,6 @@ class Module extends \yii\base\Module
             if (isset($commands) && is_array($commands)) {
                 foreach ($commands as $command) {
                     try {
-                        $replyMarkup = $command->replyMarkup;
-                        if (ReplyKeyboardManager::getInstance()->isChanged()
-                            && $command instanceof SendMessageCommand
-                            && !isset($replyMarkup)) {
-                            $this->setReplyKeyboard($command);
-
-                            $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
-                            $this->telegramUser->getState()->setKeyboardButtons($keyboardButtons);
-                            $this->telegramUser->save();
-                        }
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {
                         Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
@@ -291,13 +274,5 @@ class Module extends \yii\base\Module
     public function getBotName()
     {
         return $this->botInfo->name;
-    }
-
-    private function setReplyKeyboard(&$command)
-    {
-        $keyboardButtons = ReplyKeyboardManager::getInstance()->getKeyboardButtons();
-        $command->replyMarkup = (!empty($keyboardButtons))
-            ? new ReplyKeyboardMarkup($keyboardButtons, false, true)
-            : new ReplyKeyboardRemove();
     }
 }

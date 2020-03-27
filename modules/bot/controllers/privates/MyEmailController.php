@@ -27,7 +27,6 @@ class MyEmailController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
-        $update = $this->getUpdate();
 
         $email = null;
         if (isset($user->email)) {

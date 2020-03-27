@@ -23,11 +23,6 @@ class MyLocationController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
-        ReplyKeyboardManager::getInstance()->addKeyboardButton(0, [
-            'text' => $this->render('send-location'),
-            'request_location' => true,
-        ]);
-
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
             return [
                 new SendMessageCommand(

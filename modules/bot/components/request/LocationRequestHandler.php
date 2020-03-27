@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\components\request;
 
+use app\modules\bot\controllers\privates\MyLocationController;
 use TelegramBot\Api\Types\Update;
 
 class LocationRequestHandler implements IRequestHandler
@@ -26,7 +27,7 @@ class LocationRequestHandler implements IRequestHandler
     public function getCommandText(Update $update)
     {
         if (($message = $update->getMessage()) && $message->getLocation()) {
-            $commandText = '/update_location';
+            $commandText = MyLocationController::createRoute('update');
         }
 
         return $commandText ?? null;

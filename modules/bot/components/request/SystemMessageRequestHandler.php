@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\components\request;
 
+use app\modules\bot\controllers\publics\SystemMessageController;
 use TelegramBot\Api\Types\Update;
 
 class SystemMessageRequestHandler extends MessageRequestHandler
@@ -9,11 +10,11 @@ class SystemMessageRequestHandler extends MessageRequestHandler
     {
         if ($update->getMessage()
             && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {
-            $commandText = '/system_message';
+            $commandText = SystemMessageController::createRoute();
         }
 
         if ($update->getMessage() && $update->getMessage()->getMigrateToChatId()) {
-            $commandText = '/system_message_group_to_supergroup';
+            $commandText = SystemMessageController::createRoute('group-to-supergroup');
         }
 
         return $commandText ?? null;

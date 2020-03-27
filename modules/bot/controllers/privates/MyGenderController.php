@@ -85,8 +85,8 @@ class MyGenderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('index', [
-                                'gender' => 'female',
-                            ]),
+                                    'gender' => 'female',
+                                ]),
                                 'text' => Yii::t('bot', 'Female'),
                             ],
                         ],

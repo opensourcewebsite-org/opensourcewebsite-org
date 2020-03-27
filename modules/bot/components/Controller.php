@@ -60,7 +60,7 @@ class Controller extends \yii\web\Controller
         return $this->module->getBotApi();
     }
 
-    protected static function createRoute(string $actionName = 'index', array $params = [])
+    public static function createRoute(string $actionName = 'index', array $params = [])
     {
         $controllerName = self::controllerName();
         $route = "/$controllerName";

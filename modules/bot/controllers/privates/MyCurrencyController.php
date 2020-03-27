@@ -27,7 +27,6 @@ class MyCurrencyController extends Controller
     public function actionIndex($currency = null)
     {
         $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
 
         $currencyModel = null;
         if ($currency) {

@@ -110,12 +110,16 @@ class CommandRouteResolver extends Component
      */
     private function prepareRoute(string $route, array $matches)
     {
+        Yii::error(json_encode($matches));
         $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
         foreach ($namedGroups as $key => $value) {
             $token = "<$key>";
             if (stripos($route, $token) !== false) {
                 if ($key == 'controller' || $key == 'action') {
                     $value = str_replace('_', '-', $value);
+                }
+                if ($key == 'action' && empty($value)) {
+                    $value = 'index';
                 }
                 $route = str_replace($token, $value, $route);
                 unset($namedGroups[$key]);
