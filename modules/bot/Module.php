@@ -20,7 +20,7 @@ use app\modules\bot\components\Controller;
 class Module extends \yii\base\Module
 {
     /**
-     * @var \TelegramBot\Api\BotApi
+     * @var BotApi
      */
     private $botApi;
 
@@ -45,7 +45,7 @@ class Module extends \yii\base\Module
     public $update;
 
     /**
-     * @var \app\models\User
+     * @var User
      */
     public $user;
 
@@ -85,8 +85,8 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @param $update Update
-     *
+     * @param $update
+     * @param $botId
      * @return bool
      */
     private function initialize($update, $botId)
@@ -232,9 +232,9 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @param $update Update
-     *
+     * @param Update $update
      * @return bool
+     * @throws InvalidRouteException
      */
     public function dispatchRoute(Update $update)
     {
@@ -243,16 +243,15 @@ class Module extends \yii\base\Module
         $state = $this->telegramChat->isPrivate()
             ? $this->telegramUser->getState()->getName()
             : null;
-        list($route, $params) = $this->commandRouteResolver->resolveRoute($update, $state);
+        $defaultRoute = $this->telegramChat->isPrivate()
+            ? 'default/command-not-found'
+            : 'message/index';
+        list($route, $params) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
             } catch (InvalidRouteException $e) {
-                if ($this->telegramChat->isPrivate()) {
-                    $commands = $this->runAction('default/command-not-found');
-                } else {
-                    $commands = $this->runAction('message');
-                }
+                $commands = $this->runAction($defaultRoute);
             }
 
             if (isset($commands) && is_array($commands)) {

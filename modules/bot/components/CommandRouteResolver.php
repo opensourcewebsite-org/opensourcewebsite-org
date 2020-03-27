@@ -23,9 +23,9 @@ class CommandRouteResolver extends Component
      */
     public $rules = [];
 
-    public function resolveRoute(Update $update, ?string $state)
+    public function resolveRoute(Update $update, ?string $state, string $defaultRoute)
     {
-        $params = null;
+        $params = [];
 
         foreach ($this->requestHandlers as $requestHandler) {
             $commandText = $requestHandler->getCommandText($update);
@@ -39,11 +39,9 @@ class CommandRouteResolver extends Component
             list($route, $params) = $this->resolveCommandRoute($state);
         }
 
-        if (!isset($route)) {
-            $route = 'default/command-not-found';
+        if (!isset($route) && $route[0] == '/') {
+            $route = $defaultRoute;
         }
-
-        Yii::warning($route);
 
         return [ $route, $params ];
     }
