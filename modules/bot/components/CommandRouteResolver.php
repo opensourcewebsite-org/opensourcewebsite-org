@@ -39,7 +39,7 @@ class CommandRouteResolver extends Component
             list($route, $params) = $this->resolveCommandRoute($state);
         }
 
-        if (!isset($route) && $route[0] == '/') {
+        if (!isset($route) || $route[0] == '/') {
             $route = $defaultRoute;
         }
 
