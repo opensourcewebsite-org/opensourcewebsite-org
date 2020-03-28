@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
 
@@ -30,7 +31,7 @@ class RandomStringController extends Controller
         return [
             new SendMessageCommand(
                 $this->getTelegramChat()->chat_id,
-                $randomString
+                new MessageText($randomString),
             ),
         ];
     }
