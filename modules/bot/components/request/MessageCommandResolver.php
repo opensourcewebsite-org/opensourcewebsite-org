@@ -1,12 +1,10 @@
 <?php
 
-
 namespace app\modules\bot\components\request;
-
 
 use TelegramBot\Api\Types\Update;
 
-class MessageCommandResolver implements  ICommandResolver
+class MessageCommandResolver implements ICommandResolver
 {
     public function resolveCommand(Update $update)
     {

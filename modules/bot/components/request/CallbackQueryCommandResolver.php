@@ -1,8 +1,6 @@
 <?php
 
-
 namespace app\modules\bot\components\request;
-
 
 use TelegramBot\Api\Types\Update;
 
