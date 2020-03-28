@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
 
 /**
@@ -13,7 +13,7 @@ use app\modules\bot\components\Controller;
 class RandomStringController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex($message = '')
     {
@@ -27,7 +27,11 @@ class RandomStringController extends Controller
             $randomString .= $characters[$index];
         }
 
-        return $randomString;
-        //return $this->render('index');
+        return [
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $randomString
+            ),
+        ];
     }
 }

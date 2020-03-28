@@ -2,6 +2,8 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\components\request\CallbackQueryUpdateHandler;
+use app\modules\bot\components\request\MessageUpdateHandler;
 use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
@@ -31,6 +33,11 @@ class Module extends \yii\base\Module
     private $botInfo;
 
     /**
+     * @var array
+     */
+    private $updateHandlers = [];
+
+    /**
      * @var models\User
      */
     public $telegramUser;
@@ -55,16 +62,19 @@ class Module extends \yii\base\Module
      */
     public $userState;
 
-    public function getBotApi()
-    {
-        return $this->botApi;
-    }
-
     public function init()
     {
         parent::init();
 
-        Yii::configure($this, require __DIR__ . '/config.php');
+        $this->updateHandlers = [
+            new MessageUpdateHandler(),
+            new CallbackQueryUpdateHandler(),
+        ];
+    }
+
+    public function getBotApi()
+    {
+        return $this->botApi;
     }
 
     public function handleInput($input, $token)
@@ -99,9 +109,9 @@ class Module extends \yii\base\Module
      */
     private function initialize($update, $botId)
     {
-        foreach ($this->commandRouteResolver->requestHandlers as $requestHandler) {
-            $updateUser = $requestHandler->getFrom($update);
-            $updateChat = $requestHandler->getChat($update);
+        foreach ($this->updateHandlers as $updateHandler) {
+            $updateUser = $updateHandler->getFrom($update);
+            $updateChat = $updateHandler->getChat($update);
             if (isset($updateUser) && isset($updateChat)) {
                 break;
             }
@@ -171,6 +181,9 @@ class Module extends \yii\base\Module
                     $user->link('chats', $telegramChat, ['status' => $administrator->getStatus()]);
                 }
             }
+
+            $type = $telegramChat->isPrivate() ? 'private' : 'public';
+            Yii::configure($this, require __DIR__ . "/config/$type.php");
 
             // To separate commands for each type of chat
             $namespace = $telegramChat->isPrivate()

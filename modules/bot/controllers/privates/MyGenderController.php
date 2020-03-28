@@ -63,43 +63,46 @@ class MyGenderController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
-                $text = $this->render('update', [
-                    'gender' => $user->gender,
-                ]),
-                [
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => self::createRoute('index', [
-                                    'gender' => 'male',
-                                ]),
-                                'text' => Yii::t('bot', 'Male'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('index', [
-                                    'gender' => 'female',
-                                ]),
-                                'text' => Yii::t('bot', 'Female'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => '🔙',
-                            ],
-                        ],
+        if ($this->getUpdate()->getCallbackQuery()) {
+            return [
+                new EditMessageTextCommand(
+                    $this->getTelegramChat()->chat_id,
+                    $update->getCallbackQuery()->getMessage()->getMessageId(),
+                    $text = $this->render('update', [
+                        'gender' => $user->gender,
                     ]),
-                ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+                    [
+                        'parseMode' => $this->textFormat,
+                        'replyMarkup' => new InlineKeyboardMarkup([
+                            [
+                                [
+                                    'callback_data' => self::createRoute('index', [
+                                        'gender' => 'male',
+                                    ]),
+                                    'text' => Yii::t('bot', 'Male'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => self::createRoute('index', [
+                                        'gender' => 'female',
+                                    ]),
+                                    'text' => Yii::t('bot', 'Female'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => self::createRoute(),
+                                    'text' => '🔙',
+                                ],
+                            ],
+                        ]),
+                    ]
+                ),
+                new AnswerCallbackQueryCommand(
+                    $update->getCallbackQuery()->getId()
+                ),
+            ];
+        }
     }
 }

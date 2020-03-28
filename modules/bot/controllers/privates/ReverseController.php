@@ -2,6 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use Yii;
 use app\modules\bot\components\Controller;
 
@@ -13,13 +15,19 @@ use app\modules\bot\components\Controller;
 class ReverseController extends Controller
 {
     /**
-     * @return string
+     * @return array
      */
     public function actionIndex($message = '')
     {
         //TODO add reverse for $$message
-        return $message ? $message : '';
 
-        //return $this->render('index');
+        if ($message) {
+            return [
+                new SendMessageCommand(
+                    $this->getTelegramChat()->chat_id,
+                    new MessageText($message),
+                ),
+            ];
+        }
     }
 }

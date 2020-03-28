@@ -19,85 +19,87 @@ class AdminChatController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($chatId)
+    public function actionIndex($chatId = null)
     {
-        $chat = Chat::findOne($chatId);
+        if ($chatId) {
+            $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
-            return [];
+            if (!isset($chat)) {
+                return [];
+            }
+
+            $chatTitle = $chat->title;
+
+            if ($this->getUpdate()->getCallbackQuery()) {
+                return [
+                    new EditMessageTextCommand(
+                        $this->getTelegramChat()->chat_id,
+                        $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+                        $this->render('index', compact('chatTitle')),
+                        [
+                            'parseMode' => $this->textFormat,
+                            'replyMarkup' => new InlineKeyboardMarkup([
+                                [
+                                    [
+                                        'callback_data' => AdminMessageFilterController::createRoute('index', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => Yii::t('bot', 'Message Filter'),
+                                    ],
+                                ],
+                                [
+                                    [
+                                        'callback_data' => AdminJoinHiderController::createRoute('index', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => Yii::t('bot', 'Join Hider'),
+                                    ],
+                                ],
+                                [
+                                    [
+                                        'callback_data' => AdminController::createRoute(),
+                                        'text' => '🔙',
+                                    ],
+                                ],
+                            ]),
+                        ]
+                    ),
+                ];
+            } else {
+                return [
+                    new SendMessageCommand(
+                        $this->getTelegramChat()->chat_id,
+                        $this->render('index', compact('chatTitle')),
+                        [
+                            'parseMode' => $this->textFormat,
+                            'replyMarkup' => new InlineKeyboardMarkup([
+                                [
+                                    [
+                                        'callback_data' => AdminMessageFilterController::createRoute('index', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => Yii::t('bot', 'Message Filter'),
+                                    ],
+                                ],
+                                [
+                                    [
+                                        'callback_data' => AdminJoinHiderController::createRoute('index', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => Yii::t('bot', 'Join Hider'),
+                                    ],
+                                ],
+                                [
+                                    [
+                                        'callback_data' => AdminController::createRoute(),
+                                        'text' => '🔙',
+                                    ],
+                                ],
+                            ]),
+                        ]
+                    ),
+                ];
+            }
         }
-
-        $chatTitle = $chat->title;
-
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index', compact('chatTitle')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => AdminMessageFilterController::createRoute('index', [
-                                        'chatId' => $chatId,
-                                    ]),
-                                    'text' => Yii::t('bot', 'Message Filter'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => AdminJoinHiderController::createRoute('index', [
-                                        'chatId' => $chatId,
-                                    ]),
-                                    'text' => Yii::t('bot', 'Join Hider'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => AdminController::createRoute(),
-                                    'text' => '🔙',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
-    } else {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('index', compact('chatTitle')),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => AdminMessageFilterController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Message Filter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminJoinHiderController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Join Hider'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminController::createRoute(),
-                                'text' => '🔙',
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
-    }
     }
 }

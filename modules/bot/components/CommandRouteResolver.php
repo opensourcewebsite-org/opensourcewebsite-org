@@ -15,7 +15,7 @@ class CommandRouteResolver extends Component
     /**
      * @var array
      */
-    public $requestHandlers = [];
+    public $commandResolvers = [];
 
     /**
      * @var array
@@ -28,10 +28,15 @@ class CommandRouteResolver extends Component
         $params = [];
         $isStateRoute = false;
 
-        foreach ($this->requestHandlers as $requestHandler) {
-            $commandText = $requestHandler->getCommandText($update);
+        foreach ($this->commandResolvers as $commandResolver) {
+            $commandText = $commandResolver->resolveCommand($update);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
+
+                if (!isset($route) && $commandText[0] == '/') {
+                    list($route, $params) = [ $defaultRoute, [] ];
+                }
+
                 break;
             }
         }
@@ -39,10 +44,6 @@ class CommandRouteResolver extends Component
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
             $isStateRoute = true;
-        }
-
-        if (!isset($route) && $route[0] == '/') {
-            $route = $defaultRoute;
         }
 
         return [ $route, $params, $isStateRoute ];
@@ -143,14 +144,18 @@ class CommandRouteResolver extends Component
      * @param string $query
      * @return array
      */
-    private function parseQuery(string $query)
+    private function parseQuery(string $query = '')
     {
         $params = [];
-        $paramsKeyValues = explode('&', $query);
-        foreach ($paramsKeyValues as $keyValue) {
-            list($key, $value) = explode('=', $keyValue);
-            $params[$key] = $value;
+
+        if ($query) {
+            $paramsKeyValues = explode('&', $query);
+            foreach ($paramsKeyValues as $keyValue) {
+                list($key, $value) = explode('=', $keyValue);
+                $params[$key] = $value;
+            }
         }
+
         return $params;
     }
 }
