@@ -64,4 +64,4 @@ This project is open source and available freely under the [MIT license](LICENSE
 
 ## Questions and Suggestions
 
-Join [our Gitter](https://gitter.im/opensourcewebsite-org), [our Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE) or [email support](mailto:hello@opensourcewebsite.org).
+Join [our Gitter](https://gitter.im/opensourcewebsite-org), [our Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY) or [email support](mailto:hello@opensourcewebsite.org).
