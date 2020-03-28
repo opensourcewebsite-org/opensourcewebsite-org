@@ -141,14 +141,18 @@ class CommandRouteResolver extends Component
      * @param string $query
      * @return array
      */
-    private function parseQuery(string $query)
+    private function parseQuery(string $query = '')
     {
         $params = [];
-        $paramsKeyValues = explode('&', $query);
-        foreach ($paramsKeyValues as $keyValue) {
-            list($key, $value) = explode('=', $keyValue);
-            $params[$key] = $value;
+
+        if ($query) {
+            $paramsKeyValues = explode('&', $query);
+            foreach ($paramsKeyValues as $keyValue) {
+                list($key, $value) = explode('=', $keyValue);
+                $params[$key] = $value;
+            }
         }
+
         return $params;
     }
 }
