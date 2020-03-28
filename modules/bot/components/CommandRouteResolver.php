@@ -25,6 +25,7 @@ class CommandRouteResolver extends Component
 
     public function resolveRoute(Update $update, ?string $state, string $defaultRoute)
     {
+        $route = null;
         $params = [];
 
         foreach ($this->commandResolvers as $commandResolver) {
