@@ -1,10 +1,9 @@
 <?php
 
 use app\modules\bot\components\CommandRouteResolver;
-use app\modules\bot\components\request\SystemMessageRequestHandler;
-use app\modules\bot\components\request\MessageRequestHandler;
-use app\modules\bot\components\request\CallbackQueryRequestHandler;
-use app\modules\bot\components\request\LocationRequestHandler;
+use app\modules\bot\components\request\CallbackQueryCommandResolver;
+use app\modules\bot\components\request\MessageCommandResolver;
+use app\modules\bot\components\request\LocationCommandResolver;
 
 return [
     'components' => [
@@ -15,11 +14,10 @@ return [
                 '/<controller:\w+>__<action:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],
-            'requestHandlers' => [
-                new SystemMessageRequestHandler(),
-                new MessageRequestHandler(),
-                new CallbackQueryRequestHandler(),
-                new LocationRequestHandler(),
+            'commandResolvers' => [
+                new LocationCommandResolver(),
+                new MessageCommandResolver(),
+                new CallbackQueryCommandResolver(),
             ],
         ],
     ],

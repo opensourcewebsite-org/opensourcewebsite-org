@@ -4,9 +4,9 @@ namespace app\modules\bot\components\request;
 use app\modules\bot\controllers\publics\SystemMessageController;
 use TelegramBot\Api\Types\Update;
 
-class SystemMessageRequestHandler extends MessageRequestHandler
+class SystemMessageCommandResolver implements ICommandResolver
 {
-    public function getCommandText(Update $update)
+    public function resolveCommand(Update $update)
     {
         if ($update->getMessage()
             && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {

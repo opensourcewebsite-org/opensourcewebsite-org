@@ -16,7 +16,7 @@ class CommandRouteResolver extends Component
     /**
      * @var array
      */
-    public $requestHandlers = [];
+    public $commandResolvers = [];
 
     /**
      * @var array
@@ -27,20 +27,21 @@ class CommandRouteResolver extends Component
     {
         $params = [];
 
-        foreach ($this->requestHandlers as $requestHandler) {
-            $commandText = $requestHandler->getCommandText($update);
+        foreach ($this->commandResolvers as $commandResolver) {
+            $commandText = $commandResolver->resolveCommand($update);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
+
+                if (!isset($route) && $commandText[0] == '/') {
+                    list($route, $params) = [ $defaultRoute, [] ];
+                }
+
                 break;
             }
         }
 
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
-        }
-
-        if (!isset($route) || $route[0] == '/') {
-            $route = $defaultRoute;
         }
 
         return [ $route, $params ];
