@@ -3,7 +3,7 @@ namespace app\modules\bot\components\request;
 
 use TelegramBot\Api\Types\Update;
 
-class MessageRequestHandler implements IRequestHandler
+class MessageUpdateHandler implements IUpdateHandler
 {
     public function getFrom(Update $update)
     {
@@ -20,14 +20,5 @@ class MessageRequestHandler implements IRequestHandler
             $chat = $message->getChat();
         }
         return $chat ?? null;
-    }
-
-    public function getCommandText(Update $update)
-    {
-        if ($message = $update->getMessage()) {
-            $commandText = $message->getText();
-        }
-
-        return $commandText ?? null;
     }
 }

@@ -16,7 +16,7 @@ class CommandRouteResolver extends Component
     /**
      * @var array
      */
-    public $requestHandlers = [];
+    public $commandResolvers = [];
 
     /**
      * @var array
@@ -27,8 +27,8 @@ class CommandRouteResolver extends Component
     {
         $params = [];
 
-        foreach ($this->requestHandlers as $requestHandler) {
-            $commandText = $requestHandler->getCommandText($update);
+        foreach ($this->commandResolvers as $commandResolver) {
+            $commandText = $commandResolver->resolveCommand($update);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
 
