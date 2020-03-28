@@ -31,16 +31,17 @@ class CommandRouteResolver extends Component
             $commandText = $requestHandler->getCommandText($update);
             if (isset($commandText)) {
                 list($route, $params) = $this->resolveCommandRoute($commandText);
+
+                if (!isset($route) && $commandText[0] == '/') {
+                    list($route, $params) = [ $defaultRoute, [] ];
+                }
+
                 break;
             }
         }
 
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
-        }
-
-        if (!isset($route) || $route[0] == '/') {
-            $route = $defaultRoute;
         }
 
         return [ $route, $params ];
