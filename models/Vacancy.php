@@ -28,11 +28,16 @@ class Vacancy extends ActiveRecord
                     'views',
                     'status',
                     'sex',
-                    'location_lat',
-                    'location_lon',
                     'location_at',
                 ],
                 'integer',
+            ],
+            [
+                [
+                    'location_lat',
+                    'location_lon',
+                ],
+                'double'
             ],
             [
                 [
