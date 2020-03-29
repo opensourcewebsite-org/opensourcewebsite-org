@@ -16,7 +16,7 @@ class m200217_224106_create_company_user_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'user_id' => $this->integer()->unsigned()->notNull(),
             'company_id' => $this->integer()->unsigned()->notNull(),
-            'user_role' => $this->integer()->unsigned()->notNull()->defaultValue(0),
+            'user_role' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
         ]);
 
         $this->addForeignKey(
