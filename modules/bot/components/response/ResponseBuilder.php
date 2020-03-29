@@ -7,6 +7,7 @@ use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\SendLocationCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Update;
@@ -39,35 +40,17 @@ class ResponseBuilder
     /**
      * @param MessageText $messageText
      * @param array|null $replyMarkup
-     * @param string|null $backButtonData
-     * @param bool $useLastRow
      * @return $this
      */
     public function editMessageTextOrSendMessage(
         MessageText $messageText,
-        array $replyMarkup = null,
-        string $backButtonData = null,
-        bool $useLastRow = false
+        array $replyMarkup = []
     )
     {
         $commands = [];
 
-        if (!is_null($backButtonData)) {
-            $backButton = [
-                'text' => Emoji::BACK,
-                'callback_data' => $backButtonData,
-            ];
-            if ($useLastRow) {
-                $lastRow = end($replyMarkup);
-                array_unshift($lastRow, $backButton);
-                $replyMarkup[count($replyMarkup) - 1] = $lastRow;
-            } else {
-                $replyMarkup[] = [ $backButton ];
-            }
-        }
-
         if ($callbackQuery = $this->update->getCallbackQuery()) {
-
+            $this->answerCallbackQuery();
             $commands[] = new EditMessageTextCommand(
                 $callbackQuery->getMessage()->getChat()->getId(),
                 $callbackQuery->getMessage()->getMessageId(),
@@ -99,22 +82,13 @@ class ResponseBuilder
         array $replyMarkup = null
     )
     {
-        $commands = [];
         if ($callbackQuery = $this->update->getCallbackQuery()) {
-            $commands[] = new EditMessageReplyMarkupCommand(
+            $this->answerCallbackQuery();
+            $$this->commands[] = new EditMessageReplyMarkupCommand(
                 $callbackQuery->getMessage()->getChat()->getId(),
                 $callbackQuery->getMessage()->getMessageId(),
                 !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
             );
-        } elseif ($message = $this->update->getMessage()) {
-            $commands[] = new EditMessageReplyMarkupCommand(
-                $message->getChat()->getId(),
-                $message->getMessageId(),
-                !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
-            );
-        }
-        if (!empty($commands)) {
-            $this->commands = array_merge($this->commands, $commands);
         }
         return $this;
     }
@@ -125,6 +99,7 @@ class ResponseBuilder
     public function removeInlineKeyboardMarkup()
     {
         if ($callbackQuery = $this->update->getCallbackQuery()) {
+            $this->answerCallbackQuery();
             $this->commands[] = new EditMessageReplyMarkupCommand(
                 $callbackQuery->getMessage()->getChat()->getId(),
                 $callbackQuery->getMessage()->getMessageId(),
@@ -154,9 +129,10 @@ class ResponseBuilder
     /**
      * @param MessageText $messageText
      * @param array|null $replyMarkup
+     * @param bool $disablePreview
      * @return $this
      */
-    public function sendMessage(MessageText $messageText, array $replyMarkup = null)
+    public function sendMessage(MessageText $messageText, array $replyMarkup = null, bool $disablePreview = false)
     {
         $chatId = null;
         if ($message = $this->update->getMessage()) {
@@ -170,7 +146,31 @@ class ResponseBuilder
                 $messageText,
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                    'disablePreview' => $disablePreview,
                 ]
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @param int $longitude
+     * @param int $latitude
+     * @return $this
+     */
+    public function sendLocation(int $longitude, int $latitude)
+    {
+        $chatId = null;
+        if ($message = $this->update->getMessage()) {
+            $chatId = $message->getChat()->getId();
+        } elseif ($callbackQuery = $this->update->getCallbackQuery()) {
+            $chatId = $callbackQuery->getMessage()->getChat()->getId();
+        }
+        if (!is_null($chatId)) {
+            $this->commands[] = new SendLocationCommand(
+                $chatId,
+                $longitude,
+                $latitude
             );
         }
         return $this;

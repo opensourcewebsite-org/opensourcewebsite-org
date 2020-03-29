@@ -30,7 +30,6 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($id);
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $vacancy->name,
@@ -48,18 +47,26 @@ class VacanciesController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('update', [ $id ]),
+                            'callback_data' => self::createRoute('update', [
+                                'id' => $id
+                            ]),
                         ],
                     ],
                     [
                         [
+                            'text' => Emoji::BACK,
+                            'callback_data' => CompaniesController::createRoute('show', [
+                                'id' => $vacancy->company->id
+                            ]),
+                        ],
+                        [
                             'text' => Yii::t('bot', 'Publish'),
-                            'callback_data' => self::createRoute('publish', [ $id ]),
+                            'callback_data' => self::createRoute('publish', [
+                                'id' => $id
+                            ]),
                         ],
                     ],
-                ],
-                CompaniesController::createRoute('show', [ $vacancy->company->id ]),
-                true
+                ]
             )
             ->build();
     }
@@ -67,52 +74,77 @@ class VacanciesController extends FillablePropertiesController
     public function actionUpdate($id)
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
             ->editMessageReplyMarkup([
                 [
                     [
                         'text' => Yii::t('bot', 'Edit name'),
-                        'callback_data' => self::createRoute('set_name', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'name',
+                        ]),
                     ],
                     [
                         'text' => Yii::t('bot', 'Edit employment'),
-                        'callback_data' => self::createRoute('set_employment', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'employment',
+                        ]),
                     ],
                 ],
                 [
                     [
                         'text' => Yii::t('bot', 'Edit hours of employment'),
-                        'callback_data' => self::createRoute('set_hours_of_employment', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'hours-of-employment',
+                        ]),
                     ],
                     [
                         'text' => Yii::t('bot', 'Edit salary'),
-                        'callback_data' => self::createRoute('set_salary', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'salary',
+                        ]),
                     ],
                 ],
                 [
                     [
                         'text' => Yii::t('bot', 'Edit requirements'),
-                        'callback_data' => self::createRoute('set_requirements', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'requirements',
+                        ]),
                     ],
                     [
                         'text' => Yii::t('bot', 'Edit skills description'),
-                        'callback_data' => self::createRoute('set_skills_description', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'skills-description',
+                        ]),
                     ],
                 ],
                 [
                     [
                         'text' => Yii::t('bot', 'Edit conditions'),
-                        'callback_data' => self::createRoute('set_conditions', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'conditions',
+                        ]),
                     ],
                     [
                         'text' => Yii::t('bot', 'Edit responsibility'),
-                        'callback_data' => self::createRoute('set_responsibility', [ $id ]),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $id,
+                            'property' => 'responsibility',
+                        ]),
                     ],
                 ],
                 [
                     [
                         'text' => Emoji::BACK,
-                        'callback_data' => self::createRoute('show', [ $id ]),
+                        'callback_data' => self::createRoute('show', [
+                            'id' => $id,
+                        ]),
                     ],
                 ],
             ])

@@ -3,8 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class RandomStringController
@@ -28,11 +28,10 @@ class RandomStringController extends Controller
             $randomString .= $characters[$index];
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                new MessageText($randomString),
-            ),
-        ];
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendMessage(
+                new MessageText($randomString)
+            )
+            ->build();
     }
 }

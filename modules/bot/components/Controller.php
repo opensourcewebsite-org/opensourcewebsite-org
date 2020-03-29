@@ -101,37 +101,6 @@ class Controller extends \yii\web\Controller
     }
 
     /**
-     * @param string $actionName
-     * @param array $params
-     * @return string
-     */
-    protected static function createRoute(string $actionName = '', array $params = [])
-    {
-        $controllerName = self::controllerName();
-        $route = "/$controllerName";
-        if (!empty($actionName)) {
-            $route .= "_$actionName";
-        }
-        $params = array_filter($params);
-        if (!empty($params)) {
-            $paramsString = implode($params);
-            $route .= " $paramsString";
-        }
-        return $route;
-    }
-
-    private static function controllerName()
-    {
-        $className = static::class;
-        $parts = explode('\\', $className);
-        $className = array_pop($parts);
-        $parts = preg_split('/(?=[A-Z])/', $className, -1, PREG_SPLIT_NO_EMPTY);
-        array_pop($parts);
-        $controllerName = strtolower(implode('_', $parts));
-        return $controllerName;
-    }
-
-    /**
      * @param $text string Text to format
      * @return MessageText Instance of MessageText class that is used for sending Telegram commands
      */

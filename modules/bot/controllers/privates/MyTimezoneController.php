@@ -2,11 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
 use app\modules\bot\components\Controller as Controller;
@@ -24,7 +21,6 @@ class MyTimezoneController extends Controller
      */
     public function actionIndex($timezone = null)
     {
-        $update = $this->getUpdate();
         $user = $this->getUser();
         $timezones = TimeHelper::timezonesList();
 
@@ -35,29 +31,25 @@ class MyTimezoneController extends Controller
             }
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'timezone' => $timezones[$user->timezone],
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('list'),
-                                'text' => '✏️',
-                            ],
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => self::createRoute('list'),
+                            'text' => Emoji::EDIT,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionList($page = 22)
@@ -103,25 +95,15 @@ class MyTimezoneController extends Controller
 
             $buttons[][] = [
                 'callback_data' => self::createRoute(),
-                'text' => '🔙',
+                'text' => Emoji::BACK,
             ];
         }
 
-        Yii::warning($buttons);
-
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $text = $this->render('list'),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+                $buttons
+            )
+            ->build();
     }
 }

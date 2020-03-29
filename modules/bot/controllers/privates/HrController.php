@@ -11,7 +11,6 @@ class HrController extends Controller
 	public function actionIndex()
 	{
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'isNotificationsEnabled' => true,
@@ -29,13 +28,15 @@ class HrController extends Controller
                     ],
                     [
                         [
+                            'text' => Emoji::BACK,
+                            'callback_data' => ServicesController::createRoute(),
+                        ],
+                        [
                             'text' => Emoji::NOTIFICATIONS_ON,
                             'callback_data' => self::createRoute('enable_notifications'),
                         ],
                     ],
-                ],
-                ServicesController::createRoute(),
-                true
+                ]
             )
             ->build();
 	}

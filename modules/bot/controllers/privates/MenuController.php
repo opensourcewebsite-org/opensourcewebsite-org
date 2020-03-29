@@ -19,7 +19,6 @@ class MenuController extends Controller
     public function actionIndex()
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [

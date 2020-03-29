@@ -3,11 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\modules\bot\components\Controller;
 
@@ -38,30 +35,27 @@ class MyBirthdayController extends Controller
             $this->getState()->setName(self::createRoute('create'));
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', compact('birthday')),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        (isset($birthday) ?
-                            [
-                                [
-                                    'callback_data' => self::createRoute('update'),
-                                    'text' => Emoji::EDIT,
-                                ]
-                            ]
-                            : null),
+                    (isset($birthday) ?
                         [
                             [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
+                                'callback_data' => self::createRoute('update'),
+                                'text' => Emoji::EDIT,
+                            ]
+                        ]
+                        : []),
+                    [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionCreate()
@@ -77,23 +71,19 @@ class MyBirthdayController extends Controller
             return $this->actionIndex();
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('update'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionUpdate()
@@ -102,29 +92,20 @@ class MyBirthdayController extends Controller
 
         $this->getState()->setName(self::createRoute('create'));
 
-        return [
-            new EditMessageReplyMarkupCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId()
-            ),
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->removeInlineKeyboardMarkup()
+            ->sendMessage(
                 $this->render('update'),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+            )
+            ->build();
     }
 
     private function validateDate($date, $format)

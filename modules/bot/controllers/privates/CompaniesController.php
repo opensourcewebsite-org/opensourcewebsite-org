@@ -46,12 +46,18 @@ class CompaniesController extends FillablePropertiesController
             return [
                 [
                     'text' => $company->name,
-                    'callback_data' => self::createRoute('show', [ $company->id ]),
+                    'callback_data' => self::createRoute('show', [
+                        'id' => $company->id,
+                    ]),
                 ],
             ];
         }, $companies);
         $keyboards = array_merge($keyboards, [ $paginationButtons ], [
             [
+                [
+                    'text' => Emoji::BACK,
+                    'callback_data' => HrController::createRoute(),
+                ],
                 [
                     'text' => Emoji::ADD,
                     'callback_data' => self::createRoute('set_' . reset(static::$properties)),
@@ -60,12 +66,9 @@ class CompaniesController extends FillablePropertiesController
         ]);
 
         return ResponseBuilder::fromUpdate($update)
-            ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                $keyboards,
-                HrController::createRoute(),
-                true
+                $keyboards
             )
             ->build();
 	}
@@ -73,7 +76,6 @@ class CompaniesController extends FillablePropertiesController
     public function actionUpdate($id)
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
             ->editMessageReplyMarkup([
                     [
                         [
@@ -158,7 +160,6 @@ class CompaniesController extends FillablePropertiesController
             $rows = array_merge($rows, [ $paginationButtons ]);
 
             return ResponseBuilder::fromUpdate($update)
-                ->answerCallbackQuery()
                 ->editMessageTextOrSendMessage(
                     $this->render('show', [
                         'name' => $company->name,
@@ -178,15 +179,17 @@ class CompaniesController extends FillablePropertiesController
                         ],
                         [
                             [
+                                'text' => Emoji::BACK,
+                                'callback_data' => self::createRoute(),
+                            ],
+                            [
                                 'text' => Emoji::EDIT,
                                 'callback_data' => self::createRoute('update', [
                                     'od'
                                 ]),
                             ],
                         ],
-                    ]),
-                    self::createRoute(),
-                    true
+                    ])
                 )
                 ->build();
         } else {

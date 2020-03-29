@@ -3,8 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\Controller;
 
 /**
@@ -19,21 +18,18 @@ class HelpController extends Controller
      */
     public function actionIndex()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
                         ],
-                    ]),
+                    ]
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

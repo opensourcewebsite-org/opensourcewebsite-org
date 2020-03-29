@@ -4,15 +4,11 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\models\User;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use app\modules\bot\components\response\commands\EditMessageTextCommand;
-use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\Controller;
 
 /**
@@ -36,35 +32,31 @@ class MyEmailController extends Controller
             $this->getState()->setName(self::createRoute('create'));
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'email' => $email,
                 ]),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        (isset($email) ? [
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => Emoji::EDIT,
-                            ]
-                        ] : []),
+                    (isset($email) ? [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
+                            'callback_data' => self::createRoute('update'),
+                            'text' => Emoji::EDIT,
+                        ]
+                    ] : []),
+                    [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionCreate()
     {
-        $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
         $user = $this->getUser();
 
@@ -104,39 +96,33 @@ class MyEmailController extends Controller
             }
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendMessage(
                 $this->render('create', [
                     'changeRequest' => $changeRequest,
                     'mergeRequest' => $mergeRequest,
                     'error' => $error
                 ]),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => (!$mergeRequest
-                        ? null
-                        : new InlineKeyboardMarkup([
+                (!$mergeRequest
+                    ? []
+                    : [
+                        [
                             [
-                                [
-                                    'callback_data' => self::createRoute('merge-accounts'),
-                                    'text' => Yii::t('bot', 'Yes'),
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('update'),
-                                    'text' => Yii::t('bot', 'No'),
-                                ]
+                                'callback_data' => self::createRoute('merge-accounts'),
+                                'text' => Yii::t('bot', 'Yes'),
+                            ],
+                            [
+                                'callback_data' => self::createRoute('update'),
+                                'text' => Yii::t('bot', 'No'),
                             ]
-                        ])),
-                ]
-            ),
-        ];
+                        ]
+                    ])
+            )
+            ->build();
     }
 
     public function actionUpdate()
     {
-        $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
         $user = $this->getUser();
 
         MergeAccountsRequest::deleteAll("user_id = {$user->id}");
@@ -144,28 +130,17 @@ class MyEmailController extends Controller
 
         $this->getState()->setName(self::createRoute('create'));
 
-        return [
-            new EditMessageReplyMarkupCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId()
-            ),
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('update'),
-                [
-                    'parseMode' => $this->textFormat,
-                ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->removeInlineKeyboardMarkup()
+            ->sendMessage(
+                $this->render('update')
+            )
+            ->build();
     }
 
     public function actionMergeAccounts()
     {
         $update = $this->getUpdate();
-        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
         $state = $this->getState();
         $stateName = $state->getName();
@@ -181,41 +156,32 @@ class MyEmailController extends Controller
                 ]);
                 // MergeAccountsRequest::sendEmail also call ActiveRecord::save method
                 if ($mergeAccountsRequest->sendEmail()) {
-                    return [
-                        new EditMessageTextCommand(
-                            $this->getTelegramChat()->chat_id,
-                            $update->getCallbackQuery()->getMessage()->getMessageId(),
+                    return ResponseBuilder::fromUpdate($this->getUpdate())
+                        ->editMessageTextOrSendMessage(
                             $this->render('merge-accounts'),
                             [
-                                'parseMode' => $this->textFormat,
-                                'replyMarkup' => new InlineKeyboardMarkup([
+                                [
                                     [
-                                        [
-                                            'text' => Yii::t('bot', 'Discard Request'),
-                                            'callback_data' => self::createRoute('discard-merge-request', [
-                                                'mergeAccountsRequestId' => $mergeAccountsRequest->id,
-                                            ]),
-                                        ],
+                                        'text' => Yii::t('bot', 'Discard Request'),
+                                        'callback_data' => self::createRoute('discard-merge-request', [
+                                            'mergeAccountsRequestId' => $mergeAccountsRequest->id,
+                                        ]),
                                     ],
-                                ]),
+                                ],
                             ]
-                        ),
-                        new AnswerCallbackQueryCommand(
-                            $update->getCallbackQuery()->getId()
-                        ),
-                    ];
+                        )
+                        ->build();
                 } else {
                 }
             } else {
             }
         } else {
-            return [
-                new AnswerCallbackQueryCommand(
-                    $update->getCallbackQuery()->getId(),
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery(
                     new MessageText(Yii::t('bot', 'This request has expired')),
                     true
-                ),
-            ];
+                )
+                ->build();
         }
     }
 
@@ -227,18 +193,15 @@ class MyEmailController extends Controller
         if (isset($mergeAccountsRequest)) {
             $deleted = $mergeAccountsRequest->delete();
         }
-        return [
-            new EditMessageReplyMarkupCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId()
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId(),
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->removeInlineKeyboardMarkup()
+            ->answerCallbackQuery(
                 new MessageText(Yii::t('bot', $deleted
                     ? 'Request was successfully discarded'
                     : 'Nothing to discard')),
                 true
-            ),
-        ];
+            )
+            ->build();
     }
 }

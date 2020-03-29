@@ -3,14 +3,10 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use Yii;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Currency;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use app\modules\bot\components\response\commands\EditMessageTextCommand;
-use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\Controller;
 
 /**
@@ -43,26 +39,23 @@ class MyCurrencyController extends Controller
         $currentCode = $telegramUser->currency_code;
         $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MyCurrencyController::createRoute('list'),
-                                'text' => Emoji::EDIT,
-                            ],
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => MyCurrencyController::createRoute('list'),
+                            'text' => Emoji::EDIT,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -72,8 +65,6 @@ class MyCurrencyController extends Controller
      */
     public function actionList($page = 1)
     {
-        $update = $this->getUpdate();
-
         $currencyQuery = Currency::find()->orderBy('code ASC');
         $pagination = new Pagination([
             'totalCount' => $currencyQuery->count(),
@@ -116,18 +107,11 @@ class MyCurrencyController extends Controller
             ];
         }
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('list'),
-                [
-                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+                $buttons
+            )
+            ->build();
     }
 }

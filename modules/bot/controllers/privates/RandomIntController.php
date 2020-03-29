@@ -3,8 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class RandomIntController
@@ -21,11 +21,10 @@ class RandomIntController extends Controller
         //TODO add flexible int min and max from $message
         $randomInt = random_int(1, 10);
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendMessage(
                 new MessageText($randomInt),
-            ),
-        ];
+            )
+            ->build();
     }
 }

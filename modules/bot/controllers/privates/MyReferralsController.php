@@ -3,10 +3,9 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 /**
  * Class MyReferralsController
@@ -28,33 +27,27 @@ class MyReferralsController extends Controller
         $botName = $this->getBotName();
         $botRefUrl = "https://t.me/$botName?start=$userId";
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'referralsCount' => $referralsCount,
-                ]),
-                [
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+                ])
+            )
+            ->sendMessage(
                 $this->render('invite-template', [
                     'websiteRefUrl' => $websiteRefUrl,
                     'botRefUrl' => $botRefUrl,
                 ]),
                 [
-                    'disablePreview' => true,
-                ]
-            ),
-        ];
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ],
+                true
+            )
+            ->build();
     }
 }

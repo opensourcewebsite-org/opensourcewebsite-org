@@ -2,15 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use \app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\models\User;
-use app\modules\bot\components\helpers\PaginationButtons;
-use yii\data\Pagination;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\Controller;
 
 /**
  * Class MyCitizenshipController
@@ -22,57 +16,50 @@ class MyCitizenshipController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($сitizenship = null)
+    public function actionIndex($citizenShip = null)
     {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => 'Country 1',
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => 'Country 1',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => 'Country 2',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => '<',
                         ],
                         [
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => 'Country 2',
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => '1/3',
                         ],
                         [
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => '<',
-                            ],
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => '1/3',
-                            ],
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => '>',
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => '>',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
                         [
-                            [
-                                'callback_data' => '/my_profile',
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/my_сitizenship__add',
-                                'text' => '➕',
-                            ],
+                            'callback_data' => self::createRoute('add'),
+                            'text' => Emoji::ADD,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

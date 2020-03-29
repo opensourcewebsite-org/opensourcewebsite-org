@@ -3,11 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\response\commands\EditMessageTextCommand;
-use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use \app\models\User;
 use app\modules\bot\components\Controller;
 
@@ -34,75 +31,61 @@ class MyGenderController extends Controller
             $user->save();
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'gender' => $user->gender,
                 ]),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => Emoji::EDIT,
-                            ],
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => self::createRoute('update'),
+                            'text' => Emoji::EDIT,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionUpdate()
     {
-        $update = $this->getUpdate();
         $user = $this->getUser();
 
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    $text = $this->render('update', [
-                        'gender' => $user->gender,
-                    ]),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $text = $this->render('update', [
+                    'gender' => $user->gender,
+                ]),
+                [
                     [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => self::createRoute('index', [
-                                        'gender' => 'male',
-                                    ]),
-                                    'text' => Yii::t('bot', 'Male'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute('index', [
-                                        'gender' => 'female',
-                                    ]),
-                                    'text' => Yii::t('bot', 'Female'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute(),
-                                    'text' => '🔙',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-                new AnswerCallbackQueryCommand(
-                    $update->getCallbackQuery()->getId()
-                ),
-            ];
-        }
+                        [
+                            'callback_data' => self::createRoute('index', [
+                                'gender' => 'male',
+                            ]),
+                            'text' => Yii::t('bot', 'Male'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('index', [
+                                'gender' => 'female',
+                            ]),
+                            'text' => Yii::t('bot', 'Female'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 }

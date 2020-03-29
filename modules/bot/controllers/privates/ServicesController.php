@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class ServicesController
@@ -20,7 +20,6 @@ class ServicesController extends Controller
     public function actionIndex()
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
@@ -70,9 +69,7 @@ class ServicesController extends Controller
                             'text' => Emoji::MENU,
                         ],
                     ],
-                ],
-                MenuController::createRoute(),
-                false
+                ]
             )
             ->build();
     }

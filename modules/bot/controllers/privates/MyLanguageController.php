@@ -3,14 +3,11 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\models\Language;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\response\commands\EditMessageTextCommand;
-use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
-use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
 
 /**
@@ -45,26 +42,23 @@ class MyLanguageController extends Controller
         $currentCode = Yii::$app->language;
         $currentName = $languageModel ? $languageModel->name : Language::findOne(['code' => $currentCode])->name;
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', compact('languageModel', 'currentCode', 'currentName')),
                 [
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MyLanguageController::createRoute('list'),
-                                'text' => Emoji::EDIT,
-                            ],
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => MyLanguageController::createRoute('list'),
+                            'text' => Emoji::EDIT,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -119,18 +113,11 @@ class MyLanguageController extends Controller
             ];
         }
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('list'),
-                [
-                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+                $buttons
+            )
+            ->build();
     }
 }
