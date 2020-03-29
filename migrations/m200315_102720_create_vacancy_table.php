@@ -31,6 +31,7 @@ class m200315_102720_create_vacancy_table extends Migration
             'location_at' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
+            'renewed_at' => $this->integer()->notNull(),
         ]);
 
         $this->addForeignKey(
