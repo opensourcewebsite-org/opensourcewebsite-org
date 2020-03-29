@@ -57,11 +57,13 @@ class CompaniesController extends FillablePropertiesController
             [
                 [
                     'text' => Emoji::BACK,
-                    'callback_data' => HrController::createRoute(),
+                    'callback_data' => SJobController::createRoute(),
                 ],
                 [
                     'text' => Emoji::ADD,
-                    'callback_data' => self::createRoute('set_' . reset(static::$properties)),
+                    'callback_data' => self::createRoute('set-property', [
+                        'property' => reset(static::$properties),
+                    ]),
                 ],
             ],
         ]);

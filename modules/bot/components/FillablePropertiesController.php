@@ -4,6 +4,7 @@ namespace app\modules\bot\components;
 
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
+use phpDocumentor\Reflection\Types\Static_;
 use Yii;
 use yii\base\InvalidRouteException;
 use yii\db\ActiveRecord;
@@ -30,7 +31,10 @@ abstract class FillablePropertiesController extends Controller
         $state = $this->getState();
 
         if (is_null($update->getMessage())) {
-            $state->setName(self::createRoute("set_$property", [ $id ]));
+            $state->setName(self::createRoute("set-property", [
+                'id' => $id,
+                'property' => $property,
+            ]));
             return ResponseBuilder::fromUpdate($update)
                 ->answerCallbackQuery()
                 ->sendMessage(
@@ -42,8 +46,7 @@ abstract class FillablePropertiesController extends Controller
         $propertyValue = $update->getMessage()->getText();
         $state->setIntermediateField($property, $propertyValue);
 
-        $nextProperty = static::$properties[$currentPropertyIndex + 1];
-        $isEndOfProperties = !isset($nextProperty);
+        $isEndOfProperties = count(static::$properties) == $currentPropertyIndex + 1;
 
         if (!$isCreateAction || $isEndOfProperties) {
             $result = $this->savePropertiesToModel($id);
@@ -51,7 +54,10 @@ abstract class FillablePropertiesController extends Controller
             return $result;
         }
 
-        $state->setName(self::createRoute("set_$nextProperty"));
+        $nextProperty = static::$properties[$currentPropertyIndex + 1];
+        $state->setName(self::createRoute("set-property", [
+            'property' => $nextProperty,
+        ]));
 
         return ResponseBuilder::fromUpdate($update)
             ->answerCallbackQuery()
@@ -61,7 +67,9 @@ abstract class FillablePropertiesController extends Controller
                     [
                         [
                             'text' => Yii::t('bot', 'Skip'),
-                            'callback_data' => self::createRoute("set_$nextProperty"),
+                            'callback_data' => self::createRoute("set-property", [
+                                'property' => $nextProperty,
+                            ]),
                         ],
                     ],
                 ]
