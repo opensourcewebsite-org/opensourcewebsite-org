@@ -15,8 +15,8 @@ class m200315_102720_create_vacancy_table extends Migration
         $this->createTable('{{%vacancy}}', [
             'id' => $this->primaryKey()->unsigned(),
             'company_id' => $this->integer()->unsigned()->notNull(),
-            'views' => $this->integer()->notNull()->defaultValue(0),
-            'status' => $this->integer()->notNull()->defaultValue(0),
+            'views' => $this->tinyInteger()->notNull()->defaultValue(0),
+            'status' => $this->tineInteger()->notNull()->defaultValue(0),
             'name' => $this->string()->notNull(),
             'employment' => $this->string()->notNull(),
             'hours_of_employment' => $this->string()->notNull(),
