@@ -23,7 +23,7 @@ class RandomIntController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendMessage(
-                new MessageText($randomInt),
+                new MessageText($randomInt)
             )
             ->build();
     }

@@ -84,7 +84,7 @@ class ResponseBuilder
     {
         if ($callbackQuery = $this->update->getCallbackQuery()) {
             $this->answerCallbackQuery();
-            $$this->commands[] = new EditMessageReplyMarkupCommand(
+            $this->commands[] = new EditMessageReplyMarkupCommand(
                 $callbackQuery->getMessage()->getChat()->getId(),
                 $callbackQuery->getMessage()->getMessageId(),
                 !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
