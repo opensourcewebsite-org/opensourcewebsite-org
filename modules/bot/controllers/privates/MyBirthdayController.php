@@ -39,19 +39,17 @@ class MyBirthdayController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('birthday')),
                 [
-                    (isset($birthday) ?
-                        [
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => Emoji::EDIT,
-                            ]
-                        ]
-                        : []),
                     [
                         [
                             'callback_data' => MyProfileController::createRoute(),
                             'text' => Emoji::BACK,
                         ],
+                        (isset($birthday) ?
+                            [
+                                'callback_data' => self::createRoute('update'),
+                                'text' => Emoji::EDIT,
+                            ]
+                            : []),
                     ],
                 ]
             )

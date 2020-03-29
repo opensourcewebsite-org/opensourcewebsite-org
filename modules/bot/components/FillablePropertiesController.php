@@ -4,7 +4,6 @@ namespace app\modules\bot\components;
 
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use yii\base\InvalidRouteException;
 use yii\db\ActiveRecord;

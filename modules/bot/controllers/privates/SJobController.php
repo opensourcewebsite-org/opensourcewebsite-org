@@ -18,8 +18,8 @@ class SJobController extends Controller
      * @return array
      */
     public function actionIndex()
-	{
-	    return ResponseBuilder::fromUpdate($this->getUpdate())
+    {
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [

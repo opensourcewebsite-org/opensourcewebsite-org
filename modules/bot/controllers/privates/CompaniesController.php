@@ -8,6 +8,7 @@ use Yii;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Company;
 use yii\data\Pagination;
+use yii\db\ActiveRecord;
 
 class CompaniesController extends FillablePropertiesController
 {
@@ -18,9 +19,9 @@ class CompaniesController extends FillablePropertiesController
             'url'
         ];
 
-	public function actionIndex($page = 1)
-	{
-		$update = $this->getUpdate();
+    public function actionIndex($page = 1)
+    {
+        $update = $this->getUpdate();
         $user = $this->getUser();
 
         $companiesCount = $user->getCompanies()->count();
@@ -71,7 +72,7 @@ class CompaniesController extends FillablePropertiesController
                 $keyboards
             )
             ->build();
-	}
+    }
 
     public function actionUpdate($id)
     {
@@ -202,7 +203,12 @@ class CompaniesController extends FillablePropertiesController
         return ($id == null) ? new Company() : Company::findOne($id);
     }
 
-    protected function afterSave($company, $isNew)
+    /**
+     * @param ActiveRecord $company
+     * @param bool $isNew
+     * @return array
+     */
+    protected function afterSave(ActiveRecord $company, bool $isNew)
     {
         if ($isNew) {
             $this->getUser()->link('companies', $company);

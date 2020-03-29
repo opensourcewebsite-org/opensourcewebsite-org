@@ -6,6 +6,7 @@ use app\models\Vacancy;
 use app\modules\bot\components\FillablePropertiesController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
+use yii\db\ActiveRecord;
 
 class VacanciesController extends FillablePropertiesController
 {
@@ -151,7 +152,12 @@ class VacanciesController extends FillablePropertiesController
             ->build();
     }
 
-    protected function afterSave($model, $isNew)
+    /**
+     * @param ActiveRecord $model
+     * @param bool $isNew
+     * @return array
+     */
+    protected function afterSave(ActiveRecord $model, bool $isNew)
     {
         return $this->actionShow($model->id);
     }

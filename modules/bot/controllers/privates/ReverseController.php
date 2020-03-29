@@ -3,9 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\response\ResponseBuilder;
-use Yii;
 use app\modules\bot\components\Controller;
 
 /**

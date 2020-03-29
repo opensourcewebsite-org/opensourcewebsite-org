@@ -7,13 +7,20 @@ namespace app\modules\bot\components\helpers;
  */
 class MessageText
 {
+    /**
+     * @var string
+     */
     private $text;
+
+    /**
+     * @var string|null 
+     */
     private $parseMode;
 
     /**
      * MessageText constructor.
-     * @param string $text Text formatted using
-     * @param string $parseMode
+     * @param string $text
+     * @param string|null $parseMode
      */
     public function __construct(string $text, string $parseMode = null)
     {

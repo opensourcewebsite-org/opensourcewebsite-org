@@ -3,9 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\response\ResponseBuilder;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use app\modules\bot\components\Controller;
 

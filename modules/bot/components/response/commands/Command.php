@@ -24,7 +24,7 @@ abstract class Command
         $this->fields[$name] = $value;
     }
 
-    public abstract function send(BotApi $botApi);
+    abstract public function send(BotApi $botApi);
 
     protected function getOptionalProperty($name, $defaultValue)
     {

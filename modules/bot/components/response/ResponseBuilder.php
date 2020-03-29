@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\components\response;
 
-use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
@@ -39,14 +38,13 @@ class ResponseBuilder
 
     /**
      * @param MessageText $messageText
-     * @param array|null $replyMarkup
+     * @param array $replyMarkup
      * @return $this
      */
     public function editMessageTextOrSendMessage(
         MessageText $messageText,
         array $replyMarkup = []
-    )
-    {
+    ) {
         $commands = [];
 
         if ($callbackQuery = $this->update->getCallbackQuery()) {
@@ -80,8 +78,7 @@ class ResponseBuilder
      */
     public function editMessageReplyMarkup(
         array $replyMarkup = null
-    )
-    {
+    ) {
         if ($callbackQuery = $this->update->getCallbackQuery()) {
             $this->answerCallbackQuery();
             $this->commands[] = new EditMessageReplyMarkupCommand(

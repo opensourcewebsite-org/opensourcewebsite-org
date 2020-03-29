@@ -8,8 +8,8 @@ use app\modules\bot\components\Controller;
 
 class HrController extends Controller
 {
-	public function actionIndex()
-	{
+    public function actionIndex()
+    {
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
@@ -39,5 +39,5 @@ class HrController extends Controller
                 ]
             )
             ->build();
-	}
+    }
 }
