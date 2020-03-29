@@ -27,7 +27,7 @@ class CompaniesController extends FillablePropertiesController
         $companiesCount = $user->getCompanies()->count();
         $pagination = new Pagination([
             'totalCount' => $companiesCount,
-            'pageSize' => 8,
+            'pageSize' => 9,
             'params' => [
                 'page' => $page,
             ],
@@ -133,7 +133,7 @@ class CompaniesController extends FillablePropertiesController
             $vacanciesCount = $company->getVacancies()->count();
             $pagination = new Pagination([
                 'totalCount' => $vacanciesCount,
-                'pageSize' => 7,
+                'pageSize' => 9,
                 'params' => [
                     'page' => $page,
                 ],
