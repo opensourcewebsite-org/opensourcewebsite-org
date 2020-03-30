@@ -2,7 +2,6 @@
 
 namespace app\widgets\DebtDistributionSettings;
 
-
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\Widget;

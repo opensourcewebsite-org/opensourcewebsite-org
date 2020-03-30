@@ -149,6 +149,6 @@ a.desc:after {
 .modal-fix .modal-header .close {
     margin: 0;
     position: absolute;
-    top: 0;
     right: 0;
+    top: 0;
 }

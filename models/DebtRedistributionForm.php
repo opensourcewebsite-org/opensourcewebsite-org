@@ -74,7 +74,7 @@ class DebtRedistributionForm extends DebtRedistribution
 
     private function fnValidateContact(): callable
     {
-        return function() {
+        return function () {
             $this->contact = Contact::find()
                 ->where([
                     'id'      => $this->contactId,
@@ -93,6 +93,4 @@ class DebtRedistributionForm extends DebtRedistribution
             $this->populateRelation('toUser', $this->contact->linkedUser);
         };
     }
-
 }
-
