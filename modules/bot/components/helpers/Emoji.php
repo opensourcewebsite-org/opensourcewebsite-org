@@ -9,4 +9,6 @@ class Emoji
     public const EDIT = '✏️';
     public const NOTIFICATIONS_ON = '🔔';
     public const MENU = '📱';
+    public const DELETE = '🗑';
+    public const LANGUAGE = '🌐';
 }

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\Gender;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
@@ -24,9 +25,9 @@ class MyGenderController extends Controller
 
         if ($gender) {
             if ($gender == 'male') {
-                $user->gender = User::MALE;
+                $user->gender_id = Gender::findOne([ 'type' => User::MALE])->id;
             } elseif ($gender == 'female') {
-                $user->gender = User::FEMALE;
+                $user->gender_id = Gender::findOne([ 'type' => User::FEMALE])->id;
             }
             $user->save();
         }
@@ -34,7 +35,7 @@ class MyGenderController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'gender' => $user->gender,
+                    'gender' => isset($user->gender) ? $user->gender->type : null,
                 ]),
                 [
                     [
@@ -58,9 +59,7 @@ class MyGenderController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $text = $this->render('update', [
-                    'gender' => $user->gender,
-                ]),
+                $text = $this->render('update'),
                 [
                     [
                         [

@@ -1,1 +1,1 @@
-<b><?= \Yii::t('bot', 'Your Companies') ?></b>
+<b><?= Yii::t('bot', 'Your Companies') ?></b>

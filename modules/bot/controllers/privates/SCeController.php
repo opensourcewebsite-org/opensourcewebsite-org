@@ -108,11 +108,11 @@ class SCeController extends Controller
                         [
                             [
                                 'callback_data' => ServicesController::createRoute(),
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                             [
                                 'callback_data' => MenuController::createRoute(),
-                                'text' => '📱',
+                                'text' => Emoji::MENU,
                             ],
                         ],
                     ]
@@ -209,7 +209,7 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => MenuController::createRoute(),
-                            'text' => '📱',
+                            'text' => Emoji::MENU,
                         ],
                         [
                             'callback_data' => self::createRoute('order-edit'),
@@ -217,7 +217,7 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('order-remove'),
-                            'text' => '🗑',
+                            'text' => Emoji::DELETE,
                         ],
                     ],
                 ]

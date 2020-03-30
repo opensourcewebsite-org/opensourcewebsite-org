@@ -92,7 +92,7 @@ class Module extends \yii\base\Module
             }
 
             if ($this->initialize($this->update, $this->botInfo->id)) {
-                Yii::$app->language = $this->telegramUser->language_code;
+                Yii::$app->language = $this->telegramUser->language->code;
 
                 $result = $this->dispatchRoute($this->update);
 

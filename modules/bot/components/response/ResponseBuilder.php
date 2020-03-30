@@ -39,11 +39,13 @@ class ResponseBuilder
     /**
      * @param MessageText $messageText
      * @param array $replyMarkup
+     * @param bool $disablePreview
      * @return $this
      */
     public function editMessageTextOrSendMessage(
         MessageText $messageText,
-        array $replyMarkup = []
+        array $replyMarkup = [],
+        bool $disablePreview = false
     ) {
         $commands = [];
 
@@ -54,7 +56,7 @@ class ResponseBuilder
                 $callbackQuery->getMessage()->getMessageId(),
                 $messageText,
                 [
-                    'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
+                    'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
                 ]
             );
         } elseif ($message = $this->update->getMessage()) {
@@ -62,7 +64,8 @@ class ResponseBuilder
                 $message->getChat()->getId(),
                 $messageText,
                 [
-                    'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
+                    'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                    'disablePreview' => $disablePreview,
                 ]
             );
         }

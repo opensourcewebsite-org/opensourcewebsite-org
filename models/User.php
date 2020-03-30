@@ -62,9 +62,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
             ['name', 'string'],
-            [['id'], 'integer'],
+            [['gender_id', 'currency_id'], 'integer'],
             ['email', 'email'],
-            [['gender'], 'boolean'],
             [['timezone'], 'default', 'value' => 'UTC'],
         ];
     }
@@ -607,7 +606,27 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getCompanies()
     {
-        return $this->hasMany(Company::className(), ['id' => 'company_id'])
+        return $this->hasMany(Company::class, ['id' => 'company_id'])
             ->viaTable('company_user', ['user_id' => 'id']);
+    }
+
+    public function getGender()
+    {
+        return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
+    }
+
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+    }
+
+    public function getLanguages()
+    {
+        return $this->hasMany(UserLanguage::class, [ 'user_id' => 'id' ]);
+    }
+
+    public function getCitizenships()
+    {
+        return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
     }
 }

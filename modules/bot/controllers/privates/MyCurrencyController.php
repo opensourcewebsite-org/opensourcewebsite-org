@@ -17,31 +17,32 @@ use app\modules\bot\components\Controller;
 class MyCurrencyController extends Controller
 {
     /**
-     * @param null|string $currency
+     * @param null|string $currencyCode
      *
      * @return array
      */
-    public function actionIndex($currency = null)
+    public function actionIndex($currencyCode = null)
     {
-        $telegramUser = $this->getTelegramUser();
+        $user = $this->getUser();
 
-        $currencyModel = null;
-        if ($currency) {
-            $currencyModel = Currency::findOne(['code' => $currency]);
-            if ($currencyModel) {
-                if ($telegramUser) {
-                    $telegramUser->currency_code = $currency;
-                    $telegramUser->save();
+        $currency = null;
+        if ($currencyCode) {
+            $currency = Currency::findOne(['code' => $currencyCode]);
+            if ($currency) {
+                if ($user) {
+                    $user->currency_id = $currency->id;
+                    $user->save();
                 }
             }
         }
 
-        $currentCode = $telegramUser->currency_code;
-        $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
+        $currency = $currency ?? $user->currency;
+        $currencyCode = isset($currency) ? $currency->code : null;
+        $currencyName = isset($currency) ? $currency->name : null;
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
+                $this->render('index', compact('currencyCode', 'currencyName')),
                 [
                     [
                         [
@@ -91,7 +92,7 @@ class MyCurrencyController extends Controller
             foreach ($currencies as $currency) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('index', [
-                        'currency' => $currency->code,
+                        'currencyCode' => $currency->code,
                     ]),
                     'text' => strtoupper($currency->code) . ' - ' . $currency->name,
                 ];

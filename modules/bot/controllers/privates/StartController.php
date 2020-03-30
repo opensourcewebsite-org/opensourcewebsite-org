@@ -29,8 +29,8 @@ class StartController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => MyLanguageController::createRoute(),
-                            'text' => '🗣',
+                            'callback_data' => LanguageController::createRoute(),
+                            'text' => Emoji::LANGUAGE,
                         ],
                     ],
                     [

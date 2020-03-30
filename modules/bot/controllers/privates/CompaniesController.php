@@ -48,7 +48,7 @@ class CompaniesController extends FillablePropertiesController
                 [
                     'text' => $company->name,
                     'callback_data' => self::createRoute('show', [
-                        'id' => $company->id,
+                        'companyId' => $company->id,
                     ]),
                 ],
             ];
@@ -58,6 +58,10 @@ class CompaniesController extends FillablePropertiesController
                 [
                     'text' => Emoji::BACK,
                     'callback_data' => SJobController::createRoute(),
+                ],
+                [
+                    'text' => Emoji::MENU,
+                    'callback_data' => MenuController::createRoute(),
                 ],
                 [
                     'text' => Emoji::ADD,
@@ -76,38 +80,42 @@ class CompaniesController extends FillablePropertiesController
             ->build();
     }
 
-    public function actionUpdate($id)
+    public function actionUpdate($companyId)
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageReplyMarkup([
                     [
                         [
-                            'text' => Yii::t('bot', 'Edit name'),
+                            'text' => Yii::t('bot', 'Name'),
                             'callback_data' => self::createRoute('set-property', [
-                                'id' => $id,
+                                'id' => $companyId,
                                 'property' => 'name',
                             ]),
                         ],
+                    ],
+                    [
                         [
-                            'text' => Yii::t('bot', 'Edit address'),
+                            'text' => Yii::t('bot', 'Address'),
                             'callback_data' => self::createRoute('set-property', [
-                                'id' => $id,
+                                'id' => $companyId,
                                 'property' => 'address',
                             ]),
                         ],
                     ],
                     [
                         [
-                            'text' => Yii::t('bot', 'Edit website link'),
+                            'text' => Yii::t('bot', 'Website link'),
                             'callback_data' => self::createRoute('set-property', [
-                                'id' => $id,
+                                'id' => $companyId,
                                 'property' => 'url',
                             ]),
                         ],
+                    ],
+                    [
                         [
-                            'text' => Yii::t('bot', 'Edit description'),
+                            'text' => Yii::t('bot', 'Description'),
                             'callback_data' => self::createRoute('set-property', [
-                                'id' => $id,
+                                'id' => $companyId,
                                 'property' => 'description',
                             ]),
                         ]
@@ -116,7 +124,7 @@ class CompaniesController extends FillablePropertiesController
                         [
                             'text' => Emoji::BACK,
                             'callback_data' => self::createRoute('show', [
-                                'id' => $id
+                                'companyId' => $companyId,
                             ]),
                         ],
                     ],
@@ -125,79 +133,52 @@ class CompaniesController extends FillablePropertiesController
             ->build();
     }
 
-    public function actionShow($id, $page = 1)
+    public function actionShow($companyId)
     {
         $user = $this->getUser();
-        $update = $this->getUpdate();
 
-        $company = $user->getCompanies()->where(['id' => $id])->one();
-        if ($company != null) {
-            $vacanciesCount = $company->getVacancies()->count();
-            $pagination = new Pagination([
-                'totalCount' => $vacanciesCount,
-                'pageSize' => 9,
-                'params' => [
-                    'page' => $page,
-                ],
-                'pageSizeParam' => false,
-                'validatePage' => true,
-            ]);
-            $vacancies = $company->getVacancies()
-                ->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($id) {
-                return self::createRoute('show', [
-                    'id' => $id,
-                    'page' => $page,
-                ]);
-            });
-            $rows = array_map(function ($vacancy) {
-                return [
-                    [
-                        'text' => $vacancy->name,
-                        'callback_data' => VacanciesController::createRoute('show', [ $vacancy->id ]),
-                    ]
-                ];
-            }, $vacancies);
-            $rows = array_merge($rows, [ $paginationButtons ]);
-
-            return ResponseBuilder::fromUpdate($update)
-                ->editMessageTextOrSendMessage(
-                    $this->render('show', [
-                        'name' => $company->name,
-                        'url' => $company->url,
-                        'address' => $company->address,
-                        'description' => $company->description,
-                        'vacanciesCount' => $vacanciesCount,
-                    ]),
-                    array_merge($rows, [
-                        [
-                            [
-                                'text' => Yii::t('bot', 'Add a vacancy'),
-                                'callback_data' => VacanciesController::createRoute('create', [
-                                    'id' => $id,
-                                ]),
-                            ],
-                        ],
-                        [
-                            [
-                                'text' => Emoji::BACK,
-                                'callback_data' => self::createRoute(),
-                            ],
-                            [
-                                'text' => Emoji::EDIT,
-                                'callback_data' => self::createRoute('update', [
-                                    'od'
-                                ]),
-                            ],
-                        ],
-                    ])
-                )
-                ->build();
-        } else {
+        $company = $user->getCompanies()->where(['id' => $companyId])->one();
+        if (!isset($company)) {
             return [];
         }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('show', [
+                    'name' => $company->name,
+                    'url' => $company->url,
+                    'address' => $company->address,
+                    'description' => $company->description,
+                ]),
+                [
+                    [
+                        [
+                            'text' => Yii::t('bot', 'Vacancies') . ': ' . $company->getVacancies()->count(),
+                            'callback_data' => VacanciesController::createRoute('index', [
+                                'companyId' => $companyId,
+                            ]),
+                        ],
+                    ],
+                    [
+                        [
+                            'text' => Emoji::BACK,
+                            'callback_data' => self::createRoute(),
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                        [
+                            'text' => Emoji::EDIT,
+                            'callback_data' => self::createRoute('update', [
+                                'companyId' => $companyId,
+                            ]),
+                        ],
+                    ],
+                ],
+                true
+            )
+            ->build();
     }
 
     protected function getModel($id)

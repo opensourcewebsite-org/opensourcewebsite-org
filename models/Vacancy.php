@@ -15,7 +15,10 @@ class Vacancy extends ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            [
+                'class' => TimestampBehavior::class,
+                'updatedAtAttribute' => 'renewed_at',
+            ]
         ];
     }
 
@@ -25,9 +28,9 @@ class Vacancy extends ActiveRecord
             [
                 [
                     'company_id',
-                    'views',
+                    'currency_id',
                     'status',
-                    'sex',
+                    'gender',
                     'location_at',
                 ],
                 'integer',
@@ -51,7 +54,7 @@ class Vacancy extends ActiveRecord
             ],
             [
                 [
-                    'sex',
+                    'gender',
                 ],
                 'default',
                 'value' => 0,
@@ -61,13 +64,14 @@ class Vacancy extends ActiveRecord
                     'requirements',
                     'skills_description',
                     'conditions',
-                    'responsibility',
+                    'responsibilities',
                 ],
                 'string',
             ],
             [
                 [
                     'company_id',
+                    'currency_id',
                     'name',
                     'employment',
                     'hours_of_employment',
@@ -75,7 +79,7 @@ class Vacancy extends ActiveRecord
                     'requirements',
                     'skills_description',
                     'conditions',
-                    'responsibility',
+                    'responsibilities',
                 ],
                 'required',
             ],
@@ -84,6 +88,11 @@ class Vacancy extends ActiveRecord
 
     public function getCompany()
     {
-        return $this->hasOne(Company::className(), ['id' => 'company_id']);
+        return $this->hasOne(Company::class, ['id' => 'company_id']);
+    }
+
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
     }
 }

@@ -1,1 +1,1 @@
-<?= \Yii::t('bot', 'Send me address of your company') ?>
+<?= Yii::t('bot', 'Send me address of your company') ?>

@@ -15,22 +15,21 @@ class m200315_102720_create_vacancy_table extends Migration
         $this->createTable('{{%vacancy}}', [
             'id' => $this->primaryKey()->unsigned(),
             'company_id' => $this->integer()->unsigned()->notNull(),
-            'views' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'name' => $this->string()->notNull(),
             'employment' => $this->string()->notNull(),
             'hours_of_employment' => $this->string()->notNull(),
             'requirements' => $this->text()->notNull(),
             'salary' => $this->string()->notNull(),
+            'currency_id' => $this->integer()->unsigned()->notNull(),
             'skills_description' => $this->text()->notNull(),
             'conditions' => $this->text()->notNull(),
-            'responsibility' => $this->text()->notNull(),
-            'sex' => $this->integer()->notNull(),
+            'responsibilities' => $this->text()->notNull(),
+            'gender' => $this->tinyInteger()->null()->defaultValue(null),
             'location_lat' => $this->string(255),
             'location_lon' => $this->string(255),
             'location_at' => $this->integer()->unsigned(),
             'created_at' => $this->integer()->unsigned()->notNull(),
-            'updated_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),
         ]);
 
@@ -41,6 +40,14 @@ class m200315_102720_create_vacancy_table extends Migration
             'company',
             'id'
         );
+
+        $this->addForeignKey(
+            'fk-vacancy_currency_id-currency_id',
+            'vacancy',
+            'currency_id',
+            'currency',
+            'id'
+        );
     }
 
     /**
@@ -48,6 +55,11 @@ class m200315_102720_create_vacancy_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey(
+            'fk-vacancy_currency_id-currency_id',
+            'vacancy'
+        );
+
         $this->dropForeignKey(
             'fk-vacancy_company_id-company_id',
             'vacancy'

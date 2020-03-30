@@ -1,0 +1,1 @@
+<b><?= Yii::t('bot', 'Choose language you want to add') ?></b>:
