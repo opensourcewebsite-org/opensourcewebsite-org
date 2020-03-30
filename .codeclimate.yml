@@ -47,6 +47,8 @@ plugins:
         enabled: false
       PhanUndeclaredProperty:
         enabled: false
+      PhanUnreferencedUseNormal:
+        enabled: false
   phpcodesniffer:
     enabled: true
     config:
