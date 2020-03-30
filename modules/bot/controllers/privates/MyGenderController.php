@@ -58,13 +58,23 @@ class MyGenderController extends Controller
     {
         $genderQuery = Gender::find();
         $pagination = new Pagination([
-
+            'totalCount' => $genderQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('update', [
                 'page' => $page,
             ]);
         });
+        $genders = $genderQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
         $genderRows = array_map(function ($gender) {
             return [
                 [
@@ -74,7 +84,7 @@ class MyGenderController extends Controller
                     ]),
                 ],
             ];
-        }, $genderQuery->all());
+        }, $genders);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
