@@ -23,15 +23,19 @@ class m200330_090759_add_gender_id_column_to_user_table extends Migration
             'id'
         );
 
-        $genders = (new Query())->select([ 'type' ])->from('{{%gender}}')->all();
-        foreach ($genders as $gender) {
-            $genderId = (new Query())->select([ 'id' ])->from('{{%gender}}')->where([ 'type' => $gender ])->one();
-            $this->update(
-                '{{%user}}',
-                [ 'gender_id' => $genderId ],
-                [ 'gender' => $gender ]
-            );
-        }
+        $genderId = (new Query())->select([ 'id' ])->from('{{%gender}}')->where([ 'name' => 'Female' ])->one();
+        $this->update(
+            '{{%user}}',
+            [ 'gender_id' => $genderId ],
+            [ 'gender' => 0 ]
+        );
+
+        $genderId = (new Query())->select([ 'id' ])->from('{{%gender}}')->where([ 'name' => 'male' ])->one();
+        $this->update(
+            '{{%user}}',
+            [ 'gender_id' => $genderId ],
+            [ 'gender' => 1 ]
+        );
 
         $this->dropColumn('{{%user}}', 'gender');
     }
@@ -43,15 +47,19 @@ class m200330_090759_add_gender_id_column_to_user_table extends Migration
     {
         $this->addColumn('{{%user}}', 'gender', $this->tinyInteger()->unsigned());
 
-        $genders = (new Query())->select([ 'id' ])->from('{{%gender}}')->all();
-        foreach ($genders as $gender) {
-            $genderId = (new Query())->select([ 'type' ])->from('{{%gender}}')->where([ 'id' => $gender ])->one();
-            $this->update(
-                '{{%user}}',
-                [ 'gender' => $gender ],
-                [ 'gender_id' => $genderId ]
-            );
-        }
+        $genderId = (new Query())->select([ 'type' ])->from('{{%gender}}')->where([ 'name' => 'female' ])->one();
+        $this->update(
+            '{{%user}}',
+            [ 'gender' => 0 ],
+            [ 'gender_id' => $genderId ]
+        );
+
+        $genderId = (new Query())->select([ 'type' ])->from('{{%gender}}')->where([ 'name' => 'male' ])->one();
+        $this->update(
+            '{{%user}}',
+            [ 'gender' => 1 ],
+            [ 'gender_id' => $genderId ]
+        );
 
         $this->dropForeignKey(
             'fk-user_gender_id-gender_id',

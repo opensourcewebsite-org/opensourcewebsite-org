@@ -33,7 +33,7 @@ class MyProfileController extends Controller
             'firstName' => $telegramUser->provider_user_first_name,
             'lastName' => $telegramUser->provider_user_last_name,
             'username' => $telegramUser->provider_user_name,
-            'gender' => isset($user->gender) ? $user->gender->type : null,
+            'gender' => isset($user->gender) ? $user->gender->name : null,
             'birthday' => $user->birthday,
             'currency' => isset($currency) ? "{$currency->name} ({$currency->code})" : null,
             'interfaceLanguage' => isset($interfaceLanguage) ? "$interfaceLanguage->name (" . strtoupper($interfaceLanguage->code) . ')' : null,

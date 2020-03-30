@@ -14,8 +14,8 @@ class Gender extends ActiveRecord
     public function rules()
     {
         return [
-            [ [ 'type' ], 'integer' ],
-            [ [ 'type' ], 'required' ],
+            [ [ 'name' ], 'string' ],
+            [ [ 'name' ], 'required' ],
         ];
     }
 }

@@ -16,7 +16,7 @@ if (isset($username)) {
     echo Yii::t('bot', 'Telegram Username') . ': @' . $username . '<br/>';
 }
 if (isset($gender)) {
-    echo Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', ($gender == User::MALE ? 'Male' : 'Female')) . '<br/>';
+    echo Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender) . '<br/>';
 }
 if (isset($birthday)) {
     echo Yii::t('bot', 'Birthday') . ': ' . $birthday . '<br/>';

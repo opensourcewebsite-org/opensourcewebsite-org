@@ -15,18 +15,18 @@ class m200330_085104_create_gender_table extends Migration
     {
         $this->createTable('{{%gender}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'type' => $this->smallInteger()->notNull(),
+            'name' => $this->string()->notNull(),
         ]);
 
         $genders = [
-            0, // FEMALE
-            1, //MALE
+            'Female',
+            'Male',
         ];
 
         foreach ($genders as $gender) {
             $this->insert(
                 '{{%gender}}',
-                [ 'type' => $gender ]
+                [ 'name' => $gender ]
             );
         }
     }

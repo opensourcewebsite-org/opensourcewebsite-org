@@ -14,8 +14,8 @@ class m200330_171406_create_user_citizenship_table extends Migration
     {
         $this->createTable('{{%user_citizenship}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'user_id' => $this->integer()->unsigned(),
-            'country_id' => $this->integer()->unsigned(),
+            'user_id' => $this->integer()->unsigned()->notNull(),
+            'country_id' => $this->integer()->unsigned()->notNull(),
         ]);
 
         $this->addForeignKey(

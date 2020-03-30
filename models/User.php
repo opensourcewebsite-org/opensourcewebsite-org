@@ -29,9 +29,6 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
-    const FEMALE = 0;
-    const MALE = 1;
-
     const DATE_FORMAT = 'd.m.Y';
 
     /**

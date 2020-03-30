@@ -16,7 +16,7 @@ class m200330_124838_create_language_level_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'code' => $this->string(),
             'description' => $this->string()->notNull(),
-            'value' => $this->integer()->unsigned()->notNull(),
+            'value' => $this->tinyInteger()->unsigned()->notNull(),
         ]);
 
         $levels = [
