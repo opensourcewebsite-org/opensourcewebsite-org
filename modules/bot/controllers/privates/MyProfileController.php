@@ -80,7 +80,7 @@ class MyProfileController extends Controller
                     [
                         [
                             'callback_data' => MyCitizenshipController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Citizenship'),
+                            'text' => Yii::t('bot', 'Citizenship'),
                         ],
                     ],
                     [
