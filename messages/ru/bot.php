@@ -88,7 +88,7 @@ return [
     'Please, send your location' => 'Пожалуйста, отправьте ваше местонахождение',
     'Send your location' => 'Отправьте ваше местонахождение',
     'Send Location' => 'Отправить местонахождение',
-    'Send your new location at any time for updating' => 'Отправьте ваше новое местонахождение в любое время для обновления',
+    'Send your new location anytime for updates' => 'Отправьте ваше новое местонахождение в любое время для обновления',
 	'Your Email' => 'Ваш Email',
     'Change Email' => 'Изменить Email',
     'Please, send your email' => 'Пожалуйста, отправьте ваш email',
@@ -168,4 +168,6 @@ return [
     'Cash' => 'Наличные',
     'To start using this service follow these steps' => 'Чтобы начать использовать этот сервис, выполните следующие действия',
     'Set your nickname in your Telegram account' => 'Установите ваш никнейм в вашем аккаунте Telegram',
+    'Citizenship' => 'Гражданство',
+    'Your Citizenship' => 'Ваше гражданство',
 ];

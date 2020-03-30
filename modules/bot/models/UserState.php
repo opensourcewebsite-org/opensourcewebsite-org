@@ -6,17 +6,6 @@ class UserState
 {
     private $fields = [];
 
-
-    public function getKeyboardButtons()
-    {
-        return isset($this->fields['keyboardButtons']) ? $this->fields['keyboardButtons'] : [];
-    }
-
-    public function setKeyboardButtons($value)
-    {
-        $this->fields['keyboardButtons'] = $value;
-    }
-
     public function getName()
     {
         return isset($this->fields['name']) ? $this->fields['name'] : null;

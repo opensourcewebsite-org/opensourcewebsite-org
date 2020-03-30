@@ -7,25 +7,33 @@ use \app\modules\bot\components\response\SendMessageCommand;
 use \app\modules\bot\components\response\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\Phrase;
 use yii\data\Pagination;
 use app\modules\bot\helpers\PaginationButtons;
 
 /**
- * Class AdminController
+ * Class AdminMessageFilterWhitelistController
  *
  * @package app\controllers\bot
  */
-class AdminController extends Controller
+class AdminMessageFilterWhitelistController extends Controller
 {
     /**
      * @return array
      */
-    public function actionIndex($page = 1)
+    public function actionIndex($chatId = null, $page = 1)
     {
-        $chatQuery = $this->getTelegramUser()->getAdministratedChats();
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $phraseQuery = $chat->getWhitelistPhrases();
 
         $pagination = new Pagination([
-            'totalCount' => $chatQuery->count(),
+            'totalCount' => $phraseQuery->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -35,24 +43,31 @@ class AdminController extends Controller
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
 
-        $chats = $chatQuery->offset($pagination->offset)
+        $telegramUser = $this->getTelegramUser();
+        $telegramUser->getState()->setName(null);
+        $telegramUser->save();
+
+        $chatTitle = $chat->title;
+        $phrases = $phraseQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+            return self::createRoute('index',
+                [
+                    'chatId' => $chatId,
+                    'page' => $page,
+                ]);
         });
         $buttons = [];
 
-        if ($chats) {
-            foreach ($chats as $chat) {
+        if ($phrases) {
+            foreach ($phrases as $phrase) {
                 $buttons[][] = [
-                    'callback_data' => AdminChatController::createRoute('index', [
-                        'chatId' => $chat->id,
+                    'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
+                        'phraseId' => $phrase->id,
                     ]),
-                    'text' => $chat->title,
+                    'text' => $phrase->text
                 ];
             }
 
@@ -61,19 +76,28 @@ class AdminController extends Controller
             }
         }
 
-        $buttons[][] = [
-            'callback_data' => MenuController::createRoute(),
-            'text' => '📱',
+        $buttons[] = [
+            [
+                'callback_data' => AdminMessageFilterController::createRoute('index', [
+                    'chatId' => $chatId,
+                ]),
+                'text' => '🔙',
+            ],
+            [
+                'callback_data' => AdminMessageFilterNewphraseController::createRoute('index', [
+                    'type' => Phrase::TYPE_WHITELIST,
+                    'chatId' => $chatId,
+                ]),
+                'text' => '➕',
+            ],
         ];
-
-        Yii::warning($buttons);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [
                 new EditMessageTextCommand(
                     $this->getTelegramChat()->chat_id,
                     $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index'),
+                    $this->render('index', compact('chatTitle')),
                     [
                         'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup($buttons),
@@ -84,7 +108,7 @@ class AdminController extends Controller
             return [
                 new SendMessageCommand(
                     $this->getTelegramChat()->chat_id,
-                    $this->render('index'),
+                    $this->render('index', compact('chatTitle')),
                     [
                         'parseMode' => $this->textFormat,
                         'replyMarkup' => new InlineKeyboardMarkup($buttons),

@@ -7,26 +7,25 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\components\response\SendMessageCommand;
 
 /**
- * Class ReverseController
+ * Class RandomIntController
  *
  * @package app\modules\bot\controllers
  */
-class ReverseController extends Controller
+class RandomIntController extends Controller
 {
     /**
      * @return string
      */
     public function actionIndex($message = '')
     {
-        //TODO add reverse for $$message
+        //TODO add flexible int min and max from $message
+        $randomInt = random_int(1, 10);
 
-        if ($message) {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $message
-                ),
-            ];
-        }
+        return [
+            new SendMessageCommand(
+                $this->getTelegramChat()->chat_id,
+                $randomInt
+            ),
+        ];
     }
 }
