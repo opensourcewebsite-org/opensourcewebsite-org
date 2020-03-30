@@ -78,7 +78,7 @@ $this->beginBody();
 
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['site/login']) ?>">Account</a>
+          <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['site/login']) ?>"><?= Yii::t('app', 'Account') ?></a>
         </li>
       </ul>
     </div>
