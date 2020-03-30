@@ -54,11 +54,18 @@ plugins:
     checks:
       Yii2 Properties PrivatePropertiesUnderscore NoUnderscore:
         enabled: false
+      Generic Files LineLength TooLong:
+        enabled: false
   phpmd:
     enabled: true
     config:
       file_extensions: "php"
       rulesets: "unusedcode,codesize,naming,phpmd.xml"
+    checks:
+      Design/LongParameterList:
+        enabled: false
+      Naming/ShortVariable:
+        enabled: false
   sonar-php:
     enabled: true
     config:
