@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -12,6 +11,9 @@ use yii\db\ActiveRecord;
  * @property int $user_id
  * @property int $link_user_id
  * @property string $name
+ *
+ * @property User $linkedUser
+ * @property DebtRedistribution $debtRedistribution
  */
 class Contact extends ActiveRecord
 {
@@ -83,6 +85,11 @@ class Contact extends ActiveRecord
     public function getLinkedUser()
     {
         return $this->hasOne(User::className(), ['id' => 'link_user_id']);
+    }
+
+    public function getDebtRedistribution()
+    {
+        return $this->hasOne(DebtRedistribution::className(), ['from_user_id' => 'user_id', 'to_user_id' => 'link_user_id']);
     }
 
     public function getContactName()
