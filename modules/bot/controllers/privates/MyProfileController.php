@@ -40,7 +40,10 @@ class MyProfileController extends Controller
             'timezone' => $timezones[$user->timezone],
             'languages' => array_map(function ($userLanguage) {
                 return $userLanguage->getDisplayName();
-            }, $user->getLanguages()->all()),
+            }, $user->languages),
+            'citizenships' => array_map(function($citizenship) {
+                return $citizenship->country->name;
+            }, $user->citizenships),
         ];
 
         return ResponseBuilder::fromUpdate($this->getUpdate())

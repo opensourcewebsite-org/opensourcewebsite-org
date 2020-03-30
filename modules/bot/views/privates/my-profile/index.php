@@ -38,3 +38,10 @@ if (isset($timezone)) {
 <?= $language ?><br/>
 <? endforeach; ?>
 <? endif; ?>
+<? if (!empty($citizenships)) : ?>
+<br/>
+<?= Yii::t('bot', 'Citizenships') ?>:<br/>
+<? foreach ($citizenships as $citizenship) : ?>
+<?= $citizenship ?><br/>
+<? endforeach; ?>
+<? endif; ?>
