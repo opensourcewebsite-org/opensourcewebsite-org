@@ -28,37 +28,37 @@ class MenuController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => '/my_profile',
+                                'callback_data' => MyProfileController::createRoute(),
                                 'text' => Yii::t('bot', 'Profile')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_rating',
+                                'callback_data' => MyRatingController::createRoute(),
                                 'text' => Yii::t('bot', 'Rating')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/my_referrals',
+                                'callback_data' => MyReferralsController::createRoute(),
                                 'text' => Yii::t('bot', 'Referrals')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/services',
+                                'callback_data' => ServicesController::createRoute(),
                                 'text' => '🏗 ' . Yii::t('bot', 'Services')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/admin',
+                                'callback_data' => AdminController::createRoute(),
                                 'text' => Yii::t('bot', 'Groups')
                             ],
                         ],
                         [
                             [
-                                'callback_data' => '/help',
+                                'callback_data' => HelpController::createRoute(),
                                 'text' => Yii::t('bot', 'Commands')
                             ],
                         ],
@@ -74,11 +74,11 @@ class MenuController extends Controller
                         ],
                         [
                             [
-                                'callback_data' => '/start',
+                                'callback_data' => StartController::createRoute(),
                                 'text' => '👋',
                             ],
                             [
-                                'callback_data' => '/my_language',
+                                'callback_data' => MyLanguageController::createRoute(),
                                 'text' => '🗣',
                             ],
                         ],

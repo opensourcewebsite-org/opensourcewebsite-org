@@ -60,6 +60,34 @@ class Controller extends \yii\web\Controller
         return $this->module->getBotApi();
     }
 
+    public static function createRoute(string $actionName = 'index', array $params = [])
+    {
+        $controllerName = self::controllerName();
+        $route = "/$controllerName";
+        if (empty($actionName)) {
+            $actionName = 'index';
+        }
+        $actionName = str_replace('-', '_', $actionName);
+        $route .= "__$actionName";
+        $params = array_filter($params);
+        if (!empty($params)) {
+            $paramsString = http_build_query($params);
+            $route .= "?$paramsString";
+        }
+        return $route;
+    }
+
+    private static function controllerName()
+    {
+        $className = static::class;
+        $parts = explode('\\', $className);
+        $className = array_pop($parts);
+        $parts = preg_split('/(?=[A-Z])/', $className, -1, PREG_SPLIT_NO_EMPTY);
+        array_pop($parts);
+        $controllerName = strtolower(implode('_', $parts));
+        return $controllerName;
+    }
+
     /**
      * @param string $text
      *

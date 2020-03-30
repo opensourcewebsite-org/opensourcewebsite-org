@@ -51,6 +51,9 @@ plugins:
       file_extensions: "php"
       standard: "PSR1,PSR2,Yii2"
       encoding: utf-8
+    checks:
+      Yii2 Properties PrivatePropertiesUnderscore NoUnderscore:
+        enabled: false
   phpmd:
     enabled: true
     config:
