@@ -89,7 +89,10 @@ class Contact extends ActiveRecord
 
     public function getDebtRedistribution()
     {
-        return $this->hasOne(DebtRedistribution::className(), ['from_user_id' => 'user_id', 'to_user_id' => 'link_user_id']);
+        return $this->hasOne(DebtRedistribution::className(), [
+            'from_user_id' => 'user_id',
+            'to_user_id'   => 'link_user_id',
+        ]);
     }
 
     public function getContactName()

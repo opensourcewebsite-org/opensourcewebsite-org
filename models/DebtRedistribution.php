@@ -105,5 +105,4 @@ class DebtRedistribution extends ActiveRecord
             $this->max_amount = $this->max_amount === '' ? null : $this->max_amount;
         };
     }
-
 }

@@ -10,7 +10,6 @@ use app\tests\fixtures\UserFixture;
 use Codeception\Test\Unit;
 use Yii;
 
-
 class DebtRedistributionFormTest extends Unit
 {
     // fixture data located in tests/_data/*.php
@@ -205,5 +204,4 @@ class DebtRedistributionFormTest extends Unit
             ],
         ];
     }
-
 }
