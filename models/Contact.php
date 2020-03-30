@@ -110,4 +110,9 @@ class Contact extends ActiveRecord
         }
         return $contactName;
     }
+
+    public function canHaveDebtRedistribution(): bool
+    {
+        return (bool)$this->link_user_id;
+    }
 }

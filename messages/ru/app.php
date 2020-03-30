@@ -25,4 +25,6 @@ return [
     'What the site will look like and what functions it will have depends only on the users\' decisions.' => '',
     'Wiki' => '',
     'online community' => 'онлайн сообщество',
+    'Debt Redistribution' => 'Перераспределение долгов',
+    'Debt Redistribution for user "#{userId}"' => 'Перераспределение долгов для Пользователя "#{userId}"',
 ];
