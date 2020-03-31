@@ -26,7 +26,7 @@ $this->registerCss('#lang-menu{
 }');
 
 //List of language options
-$languages = \app\models\Language::find()->all();
+$languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
 
 if (!empty($languages)) {
