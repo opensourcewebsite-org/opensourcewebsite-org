@@ -25,7 +25,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p class="text-muted">OpenSourceWebsite (OSW) <?= Yii::t('app', 'means that the users are the protagonists of the entire Website') ?>.</p>
+        <p class="text-muted">OpenSourceWebsite (OSW) - <?= Yii::t('app', 'online community managed by users using electronic voting and modifying source code') ?>.</p>
       </div>
       <div class="col-md-12">
         <p class="text-muted"><?= Yii::t('app', 'The Website is totally free, and it gives to everyone the possibility to influence in a lot of different ways its development') ?>. <?= Yii::t('app', 'Through the use of e-Vote system, each user has the possibility to vote electronically for the features of the Website, with high levels of anonymity, safety and the congruity of personal preferences') ?>.</p>
@@ -355,7 +355,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p align="center"><?= Html::a(Yii::t('app', 'Join Us') . '!', Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
+        <p align="center"><?= Html::a(Yii::t('app', 'Join us and be part of the digital future') . '!', Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
       </div>
     </div>
   </div>

@@ -14,7 +14,7 @@
  */
 return [
     'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
-    'Join us and participate in the community' => 'Присоединяйтесь к нам и участвуйте в сообществе',
+    'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
     'Hello' => 'Здравствуйте',
     'Welcome' => 'Добро пожаловать',
     'I am a free virtual personal assistant, multilingual and available everywhere where there is internet, I adhere to a privacy policy that guarantees 100% confidentiality for your personal data' => 'Я - бесплатный виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших персональных данных',

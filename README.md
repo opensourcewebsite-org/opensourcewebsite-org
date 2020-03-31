@@ -20,7 +20,7 @@
 
 <h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) - online community. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot
+OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot. Join us and be part of the digital future!
 
 The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org).
 
