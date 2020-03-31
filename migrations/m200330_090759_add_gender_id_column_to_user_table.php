@@ -13,7 +13,7 @@ class m200330_090759_add_gender_id_column_to_user_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('{{%user}}', 'gender_id', $this->tinyInteger()->unsigned());
+        $this->addColumn('{{%user}}', 'gender_id', $this->integer()->unsigned());
 
         $this->addForeignKey(
             'fk-user_gender_id-gender_id',

@@ -25,7 +25,7 @@ class m200331_081533_create_vacancy_table extends Migration
             'currency_id' => $this->integer()->unsigned()->notNull(),
             'conditions' => $this->text()->notNull(),
             'responsibilities' => $this->text()->notNull(),
-            'gender_id' => $this->tinyInteger()->unsigned()->null()->defaultValue(null),
+            'gender_id' => $this->integer()->unsigned()->null()->defaultValue(null),
             'location_lat' => $this->string(255),
             'location_lon' => $this->string(255),
             'location_at' => $this->integer()->unsigned(),
