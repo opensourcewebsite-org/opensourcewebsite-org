@@ -17,11 +17,9 @@ class m200331_081533_create_vacancy_table extends Migration
             'company_id' => $this->integer()->unsigned()->notNull(),
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'name' => $this->string()->notNull(),
-            'employment' => $this->string()->notNull(),
-            'hours_of_employment' => $this->string()->notNull(),
             'requirements' => $this->text()->notNull(),
-            'min_hour_rate' => $this->decimal(10, 2)->unsigned(),
-            'max_hour_rate' => $this->decimal(10, 2)->unsigned(),
+            'min_hourly_rate' => $this->decimal(10, 2)->unsigned(),
+            'max_hourly_rate' => $this->decimal(10, 2)->unsigned(),
             'currency_id' => $this->integer()->unsigned()->notNull(),
             'conditions' => $this->text()->notNull(),
             'responsibilities' => $this->text()->notNull(),
@@ -29,8 +27,7 @@ class m200331_081533_create_vacancy_table extends Migration
             'location_lat' => $this->string(255),
             'location_lon' => $this->string(255),
             'location_at' => $this->integer()->unsigned(),
-            'created_at' => $this->integer()->unsigned()->notNull(),
-            'renewed_at' => $this->integer()->unsigned()->notNull(),
+            'renewed_at' => $this->integer()->unsigned(),
         ]);
 
         $this->addForeignKey(

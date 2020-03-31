@@ -17,10 +17,8 @@ class VacanciesController extends FillablePropertiesController
 {
     protected static $properties = [
             'name',
-            'employment',
-            'hours_of_employment',
-            'min_hour_rate',
-            'max_hour_rate',
+            'min_hourly_rate',
+            'max_hourly_rate',
             'requirements',
             'conditions',
             'responsibilities',
@@ -117,9 +115,7 @@ class VacanciesController extends FillablePropertiesController
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $vacancy->name,
-                    'employment' => $vacancy->employment,
-                    'hoursOfEmployment' => $vacancy->hours_of_employment,
-                    'hourRate' => $this->getDisplayHourRate($vacancy),
+                    'hourlyRate' => $this->getDisplayHourlyRate($vacancy),
                     'requirements' => $vacancy->requirements,
                     'conditions' => $vacancy->conditions,
                     'responsibilities' => $vacancy->responsibilities,
@@ -196,28 +192,10 @@ class VacanciesController extends FillablePropertiesController
                 ],
                 [
                     [
-                        'text' => Yii::t('bot', 'Employment'),
-                        'callback_data' => self::createRoute('set-property', [
-                            'id' => $vacancyId,
-                            'property' => 'employment',
-                        ]),
-                    ],
-                ],
-                [
-                    [
-                        'text' => Yii::t('bot', 'Hours of employment'),
-                        'callback_data' => self::createRoute('set-property', [
-                            'id' => $vacancyId,
-                            'property' => 'hours_of_employment',
-                        ]),
-                    ],
-                ],
-                [
-                    [
                         'text' => Yii::t('bot', 'Minimal hour rate'),
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
-                            'property' => 'min_hour_rate',
+                            'property' => 'min_hourly_rate',
                         ]),
                     ],
                 ],
@@ -226,7 +204,7 @@ class VacanciesController extends FillablePropertiesController
                         'text' => Yii::t('bot', 'Maximal hour rate'),
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
-                            'property' => 'max_hour_rate',
+                            'property' => 'max_hourly_rate',
                         ]),
                     ],
                 ],
@@ -332,7 +310,7 @@ class VacanciesController extends FillablePropertiesController
      * @param Vacancy $vacancy
      * @return string|null
      */
-    private function getDisplayHourRate(Vacancy $vacancy)
+    private function getDisplayHourlyRate(Vacancy $vacancy)
     {
         if (isset($vacancy->min_hour_rate) && isset($vacancy->max_hour_rate)) {
             return "{$vacancy->min_hour_rate}-{$vacancy->max_hour_rate} {$vacancy->currency->code}";

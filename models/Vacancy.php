@@ -12,16 +12,6 @@ class Vacancy extends ActiveRecord
         return '{{%vacancy}}';
     }
 
-    public function behaviors()
-    {
-        return [
-            [
-                'class' => TimestampBehavior::class,
-                'updatedAtAttribute' => 'renewed_at',
-            ]
-        ];
-    }
-
     public function rules()
     {
         return [
@@ -32,6 +22,7 @@ class Vacancy extends ActiveRecord
                     'status',
                     'gender_id',
                     'location_at',
+                    'renewed_at',
                 ],
                 'integer',
             ],
@@ -39,16 +30,14 @@ class Vacancy extends ActiveRecord
                 [
                     'location_lat',
                     'location_lon',
-                    'min_hour_rate',
-                    'max_hour_rate',
+                    'min_hourly_rate',
+                    'max_hourly_rate',
                 ],
                 'double'
             ],
             [
                 [
                     'name',
-                    'employment',
-                    'hours_of_employment',
                 ],
                 'string',
                 'max' => 256,
@@ -66,8 +55,6 @@ class Vacancy extends ActiveRecord
                     'company_id',
                     'currency_id',
                     'name',
-                    'employment',
-                    'hours_of_employment',
                     'requirements',
                     'conditions',
                     'responsibilities',
