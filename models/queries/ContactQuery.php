@@ -27,8 +27,8 @@ class ContactQuery extends ActiveQuery
         return $this;
     }
 
-    public function currentUserOwner()
+    public function userOwner($id = null)
     {
-        return $this->andWhere(['contact.user_id' => Yii::$app->user->id]);
+        return $this->andWhere(['contact.user_id' => $id ?? Yii::$app->user->id]);
     }
 }

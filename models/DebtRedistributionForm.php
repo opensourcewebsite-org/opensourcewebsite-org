@@ -77,7 +77,7 @@ class DebtRedistributionForm extends DebtRedistribution
         return function () {
             $this->contact = Contact::find()
                 ->where(['id' => $this->contactId])
-                ->currentUserOwner()
+                ->userOwner()
                 ->virtual(false)
                 ->one();
 

@@ -48,7 +48,7 @@ class ContactController extends Controller
     public function actionIndex($view = Contact::VIEW_USER)
     {
         $query = Contact::find()
-            ->currentUserOwner()
+            ->userOwner()
             ->virtual((int)$view !== Contact::VIEW_USER);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -192,7 +192,7 @@ class ContactController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Contact::find()->andWhere(['id' => $id])->currentUserOwner()->one()) !== null) {
+        if (($model = Contact::find()->andWhere(['id' => $id])->userOwner()->one()) !== null) {
             return $model;
         }
 
