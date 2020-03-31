@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use Yii;
 
 class LanguageLevel extends ActiveRecord
 {
@@ -22,6 +23,6 @@ class LanguageLevel extends ActiveRecord
 
     public function getDisplayName()
     {
-        return (isset($this->code) ? $this->code . ' - ' : '') . $this->description;
+        return (isset($this->code) ? $this->code . ' - ' : '') . Yii::t('app', $this->description);
     }
 }
