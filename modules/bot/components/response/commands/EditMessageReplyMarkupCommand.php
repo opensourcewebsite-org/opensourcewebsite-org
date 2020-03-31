@@ -1,12 +1,12 @@
 <?php
-namespace app\modules\bot\components\response;
+namespace app\modules\bot\components\response\commands;
 
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class EditMessageReplyMarkupCommand extends Command
 {
-    public function __construct($chatId, $messageId, InlineKeyboardMarkup $replyMarkup = null)
+    public function __construct(string $chatId, string $messageId, InlineKeyboardMarkup $replyMarkup = null)
     {
         parent::__construct([]);
 

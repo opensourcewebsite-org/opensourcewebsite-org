@@ -1,7 +1,8 @@
 <?php
-namespace app\modules\bot\components\response;
+namespace app\modules\bot\components\response\commands;
 
-use \TelegramBot\Api\BotApi;
+use app\modules\bot\components\response\Command;
+use TelegramBot\Api\BotApi;
 
 class DeleteMessageCommand extends Command
 {

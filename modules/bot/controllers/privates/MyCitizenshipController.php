@@ -2,15 +2,15 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\models\User;
-use app\modules\bot\helpers\PaginationButtons;
+use app\models\Country;
+use app\models\UserCitizenship;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\Controller;
 use yii\data\Pagination;
-use app\modules\bot\components\Controller as Controller;
+use yii\db\StaleObjectException;
+use function foo\func;
 
 /**
  * Class MyCitizenshipController
@@ -22,57 +22,179 @@ class MyCitizenshipController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($сitizenship = null)
+    public function actionIndex($page = 1)
     {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
+        $citizenshipsQuery = $this->getUser()->getCitizenships();
+        $pagination = new Pagination([
+            'totalCount' => $citizenshipsQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('index'),
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
+
+        $citizenships = $citizenshipsQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+        $citizenshipRows = array_map(function ($citizenship) use ($page) {
+            return [
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => 'Country 1',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => 'Country 2',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => '<',
-                            ],
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => '1/3',
-                            ],
-                            [
-                                'callback_data' => '/my_сitizenship',
-                                'text' => '>',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => '/my_profile',
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => '/my_сitizenship__add',
-                                'text' => '➕',
-                            ],
-                        ],
+                    'text' => $citizenship->country->name,
+                    'callback_data' => self::createRoute('show', [
+                        'countryId' => $citizenship->country->id,
                     ]),
+                ],
+            ];
+        }, $citizenships);
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index'),
+                array_merge($citizenshipRows, [ $paginationButtons ], [
+                    [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('create-country'),
+                            'text' => Emoji::ADD,
+                        ],
+                    ],
+                ])
+            )
+            ->build();
+    }
+
+    public function actionCreateCountry($page = 1)
+    {
+        $countriesQuery = Country::find();
+        $pagination = new Pagination([
+            'totalCount' => $countriesQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('create-country', [
+                'page' => $page,
+            ]);
+        });
+
+        $countries = $countriesQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+        $countryRows = array_map(function ($country) use ($page) {
+            return [
+                [
+                    'text' => $country->name,
+                    'callback_data' => self::createRoute('create', [
+                        'countryId' => $country->id,
+                    ]),
+                ],
+            ];
+        }, $countries);
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('create-country'),
+                array_merge($countryRows, [ $paginationButtons ], [
+                    [
+                        [
+                            'text' => Emoji::BACK,
+                            'callback_data' => self::createRoute()
+                        ]
+                    ]
+                ])
+            )
+            ->build();
+    }
+
+    public function actionCreate($countryId)
+    {
+        $country = Country::findOne($countryId);
+        if (!isset($country)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $citizenship = $this->getUser()->getCitizenships()->where([ 'country_id' => $countryId ])->one()
+            ?? new UserCitizenship();
+        $citizenship->setAttributes([
+            'user_id' => $this->getUser()->id,
+            'country_id' => $countryId,
+        ]);
+        $citizenship->save();
+
+        return $this->actionIndex();
+    }
+
+    public function actionShow($countryId)
+    {
+        $country = Country::findOne($countryId);
+        if (!isset($country)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('show', [
+                    'countryName' => $country->name,
+                ]),
+                [
+                    [
+                        [
+                            'text' => Emoji::BACK,
+                            'callback_data' => self::createRoute(),
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                        [
+                            'text' => Emoji::DELETE,
+                            'callback_data' => self::createRoute('delete', [
+                                'countryId' => $countryId,
+                            ]),
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
+    }
+
+    public function actionDelete($countryId)
+    {
+        $citizenship = $this->getUser()->getCitizenships()->where([ 'country_id' => $countryId ])->one();
+        if (!isset($citizenship)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        try {
+            $citizenship->delete();
+        } catch (StaleObjectException $e) {
+        } catch (\Throwable $e) {
+        }
+
+        return $this->actionIndex();
     }
 }

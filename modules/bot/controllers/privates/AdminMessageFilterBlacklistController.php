@@ -3,14 +3,14 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
 use yii\data\Pagination;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 
 /**
  * Class AdminMessageFilterBlacklistController

@@ -1,16 +1,16 @@
 <?php
-namespace app\modules\bot\components\response;
+namespace app\modules\bot\components\response\commands;
 
-use \TelegramBot\Api\BotApi;
+use app\modules\bot\components\helpers\MessageText;
+use TelegramBot\Api\BotApi;
 
-class SendMessageCommand extends Command
+class SendMessageCommand extends MessageTextCommand
 {
-    public function __construct($chatId, $text, $optionalParams = [])
+    public function __construct(string $chatId, MessageText $messageText, array $optionalParams = [])
     {
-        parent::__construct($optionalParams);
+        parent::__construct($messageText, $optionalParams);
 
         $this->chatId = $chatId;
-        $this->text = $text;
     }
 
     public function send(BotApi $botApi)

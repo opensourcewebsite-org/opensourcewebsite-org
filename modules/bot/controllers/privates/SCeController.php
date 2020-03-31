@@ -2,11 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\components\response\SendMessageCommand;
-use app\modules\bot\components\response\SendLocationCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\Controller;
 
 /**
  * Class SCeController
@@ -26,107 +25,99 @@ class SCeController extends Controller
 
         //TODO add this check for all controller actions, remove from actions
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
                     $this->render('index'),
                     [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
+                        [
                             [
-                                [
-                                    'callback_data' => self::createRoute('order'),
-                                    'text' => 'USD/THB',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('offer'),
-                                    'text' => '🙋‍♂️ 3',
-                                ],
+                                'callback_data' => self::createRoute('order'),
+                                'text' => 'USD/THB',
                             ],
                             [
-                                [
-                                    'callback_data' => self::createRoute('order'),
-                                    'text' => 'USD/RUB',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('offer'),
-                                    'text' => '🙋‍♂️ 0',
-                                ],
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '🙋‍♂️ 3',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('order'),
+                                'text' => 'USD/RUB',
                             ],
                             [
-                                [
-                                    'callback_data' => self::createRoute('order'),
-                                    'text' => '❌ ' . 'THB/RUB',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('offer'),
-                                    'text' => '🙋‍♂️ 0',
-                                ],
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '🙋‍♂️ 0',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('order'),
+                                'text' => '❌ ' . 'THB/RUB',
                             ],
                             [
-                                [
-                                    'callback_data' => self::createRoute('offer'),
-                                    'text' => '<',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('offer'),
-                                    'text' => '1/3',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('offer'),
-                                    'text' => '>',
-                                ],
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '🙋‍♂️ 0',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '<',
                             ],
                             [
-                                [
-                                    'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                    'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                                ],
-                                [
-                                    'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                    'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                                ],
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '1/3',
                             ],
                             [
-                                [
-                                    'callback_data' => ServicesController::createRoute(),
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => '📱',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('order-create'),
-                                    'text' => '➕',
-                                ],
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '>',
                             ],
-                        ]),
+                        ],
+                        [
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
+                            ],
+                            [
+                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => ServicesController::createRoute(),
+                                'text' => Emoji::BACK,
+                            ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => '📱',
+                            ],
+                            [
+                                'callback_data' => self::createRoute('order-create'),
+                                'text' => Emoji::ADD,
+                            ],
+                        ],
                     ]
-                ),
-            ];
+                )
+                ->build();
         } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
                     $this->render('no-requirements'),
                     [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
+                        [
                             [
-                                [
-                                    'callback_data' => ServicesController::createRoute(),
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => '📱',
-                                ],
+                                'callback_data' => ServicesController::createRoute(),
+                                'text' => Emoji::BACK,
                             ],
-                        ]),
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
+                        ],
                     ]
-                ),
-            ];
+                )
+                ->build();
         }
     }
 
@@ -137,49 +128,45 @@ class SCeController extends Controller
     {
         //TODO make steps to create a order (maybe in separate actions)
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-create'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-create'),
-                                'text' => 'USD',
-                            ],
+                            'callback_data' => self::createRoute('order-create'),
+                            'text' => 'USD',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-create'),
+                            'text' => 'THB',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-create'),
+                            'text' => '<',
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('order-create'),
-                                'text' => 'THB',
-                            ],
+                            'callback_data' => self::createRoute('order-create'),
+                            'text' => '1/3',
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('order-create'),
-                                'text' => '<',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-create'),
-                                'text' => '1/3',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-create'),
-                                'text' => '>',
-                            ],
+                            'callback_data' => self::createRoute('order-create'),
+                            'text' => '>',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -187,59 +174,55 @@ class SCeController extends Controller
      */
     public function actionOrder()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-status'),
-                                'text' => 'Status: ON',
-                            ],
+                            'callback_data' => self::createRoute('order-status'),
+                            'text' => 'Status: ON',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '🙋‍♂️ 3',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-rate'),
+                            'text' => 'USD/THB: 30.0000',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-buying-rate'),
+                            'text' => 'THB/USD: 0.3000',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '🙋‍♂️ 3',
-                            ],
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-rate'),
-                                'text' => 'USD/THB: 30.0000',
-                            ],
+                            'callback_data' => self::createRoute('order-edit'),
+                            'text' => Emoji::EDIT,
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('order-buying-rate'),
-                                'text' => 'THB/USD: 0.3000',
-                            ],
+                            'callback_data' => self::createRoute('order-remove'),
+                            'text' => Emoji::DELETE,
                         ],
-                        [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => '📱',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-edit'),
-                                'text' => '✏️',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-remove'),
-                                'text' => '🗑',
-                            ],
-                        ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -255,35 +238,31 @@ class SCeController extends Controller
      */
     public function actionOrderEdit()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-edit'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency'),
-                                'text' => 'USD',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency'),
+                            'text' => 'USD',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-buying-currency'),
-                                'text' => 'THB',
-                            ],
+                            'callback_data' => self::createRoute('order-buying-currency'),
+                            'text' => 'THB',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order'),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute('order'),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -299,23 +278,19 @@ class SCeController extends Controller
      */
     public function actionOrderSellingRate()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order'),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute('order'),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -323,23 +298,19 @@ class SCeController extends Controller
      */
     public function actionOrderBuyingRate()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order'),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute('order'),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -347,41 +318,37 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrency()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency'),
-                                'text' => 'Min. amount: ∞',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency'),
+                            'text' => 'Min. amount: ∞',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency'),
-                                'text' => 'Max. amount: 100.00',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency'),
+                            'text' => 'Max. amount: 100.00',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
-                                'text' => 'Payment methods',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
+                            'text' => 'Payment methods',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-edit'),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute('order-edit'),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -389,29 +356,25 @@ class SCeController extends Controller
      */
     public function actionOrderBuyingCurrency()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-buying-currency'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
-                                'text' => 'Payment methods',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
+                            'text' => 'Payment methods',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-edit'),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute('order-edit'),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -419,47 +382,43 @@ class SCeController extends Controller
      */
     public function actionOffer()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('offer'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('offer-like'),
-                                'text' => '👍 100',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer-like'),
-                                'text' => '👎 10',
-                            ],
+                            'callback_data' => self::createRoute('offer-like'),
+                            'text' => '👍 100',
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '<',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '1/3',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '>',
-                            ],
+                            'callback_data' => self::createRoute('offer-like'),
+                            'text' => '👎 10',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '<',
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '1/3',
                         ],
-                    ]),
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '>',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -467,57 +426,53 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrencyPaymentMethods()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency-payment-methods'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Cash',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Cash',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Online System 1',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Online System 2',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Bank 1',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Bank 2',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency'),
+                            'text' => Emoji::BACK,
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Online System 1',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method-add'),
+                            'text' => Emoji::ADD,
                         ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Online System 2',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Bank 1',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Bank 2',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency'),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method-add'),
-                                'text' => '➕',
-                            ],
-                        ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -529,45 +484,39 @@ class SCeController extends Controller
 
         $telegramUser = $this->getTelegramUser();
 
-        return [
-            //TODO use location from order
-            new SendLocationCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendLocation(
                 $telegramUser->location_lat,
                 $telegramUser->location_lon
-            ),
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+            )
+            ->sendMessage(
                 $this->render('order-selling-currency-payment-method'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Delivery: ON',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Delivery: ON',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => 'Delivery area: 2 km',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
+                            'text' => Emoji::BACK,
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => 'Delivery area: 2 km',
-                            ],
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
+                            'text' => '🗑',
                         ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                                'text' => '🗑',
-                            ],
-                        ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -575,26 +524,22 @@ class SCeController extends Controller
      */
     public function actionNoRequirements()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('no-requirements'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => ServicesController::createRoute(),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => '📱',
-                            ],
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

@@ -6,27 +6,42 @@ use app\models\User;
 <br/>
 <?php
 /** @var \TelegramBot\Api\Types\User $profile */
-if (!empty($firstName)) {
+if (isset($firstName)) {
     echo Yii::t('bot', 'First Name') . ': ' . $firstName . '<br/>';
 }
-if (!empty($lastName)) {
+if (isset($lastName)) {
     echo Yii::t('bot', 'Last Name') . ': ' . $lastName . '<br/>';
 }
-if (!empty($username)) {
+if (isset($username)) {
     echo Yii::t('bot', 'Telegram Username') . ': @' . $username . '<br/>';
 }
-if (!empty($gender)) {
-    echo Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', ($gender == User::MALE ? 'Male' : 'Female')) . '<br/>';
+if (isset($gender)) {
+    echo Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender) . '<br/>';
 }
-if (!empty($birthday)) {
+if (isset($birthday)) {
     echo Yii::t('bot', 'Birthday') . ': ' . $birthday . '<br/>';
 }
-if (!empty($currency)) {
+if (isset($currency)) {
     echo Yii::t('bot', 'Currency') . ': ' .  $currency . '<br/>';
 }
-if (!empty($language)) {
-    echo Yii::t('bot', 'Language') . ': ' .  $language . '<br/>';
+if (isset($language)) {
+    echo Yii::t('bot', 'Interface language') . ': ' .  $interfaceLanguage . '<br/>';
 }
-if (!empty($timezone)) {
+if (isset($timezone)) {
      echo Yii::t('bot', 'Timezone') . ': ' . $timezone . '<br/>';
- }
+}
+?>
+<? if (!empty($languages)) : ?>
+<br/>
+<?= Yii::t('bot', 'Languages') ?>:<br/>
+<? foreach ($languages as $language) : ?>
+<?= $language ?><br/>
+<? endforeach; ?>
+<? endif; ?>
+<? if (!empty($citizenships)) : ?>
+<br/>
+<?= Yii::t('bot', 'Citizenships') ?>:<br/>
+<? foreach ($citizenships as $citizenship) : ?>
+<?= $citizenship ?><br/>
+<? endforeach; ?>
+<? endif; ?>

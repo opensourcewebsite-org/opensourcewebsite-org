@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use \app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class StartController
@@ -19,54 +19,50 @@ class StartController extends Controller
      */
     public function actionIndex()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => '📱',
-                            ],
-                            [
-                                'callback_data' => MyLanguageController::createRoute(),
-                                'text' => '🗣',
-                            ],
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                         [
-                            [
-                                'url' => 'https://opensourcewebsite.org',
-                                'text' => Yii::t('bot', 'Website'),
-                            ],
+                            'callback_data' => LanguageController::createRoute(),
+                            'text' => Emoji::LANGUAGE,
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://opensourcewebsite.org',
+                            'text' => Yii::t('bot', 'Website'),
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
+                            'text' => Yii::t('bot', 'Source Code'),
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org#questions-and-suggestions',
+                            'text' => Yii::t('bot', 'Contacts'),
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
-                                'text' => Yii::t('bot', 'Source Code'),
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                         ],
-                        [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org#questions-and-suggestions',
-                                'text' => Yii::t('bot', 'Contacts'),
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
-                        ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

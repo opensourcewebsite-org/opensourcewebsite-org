@@ -9,6 +9,7 @@ use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\UserState;
 use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
@@ -56,6 +57,11 @@ class Module extends \yii\base\Module
      */
     public $user;
 
+    /**
+     * @var models\UserState
+     */
+    public $userState;
+
     public function init()
     {
         parent::init();
@@ -86,9 +92,11 @@ class Module extends \yii\base\Module
             }
 
             if ($this->initialize($this->update, $this->botInfo->id)) {
-                Yii::$app->language = $this->telegramUser->language_code;
+                Yii::$app->language = $this->telegramUser->language->code;
 
                 $result = $this->dispatchRoute($this->update);
+
+                $this->save();
             }
         }
         return $result;
@@ -230,12 +238,20 @@ class Module extends \yii\base\Module
 
             $this->user = $user;
             $this->telegramUser = $telegramUser;
+            $this->userState = UserState::fromUser($telegramUser);
             $this->telegramChat = $telegramChat;
 
             return true;
         }
 
         return false;
+    }
+
+    private function save()
+    {
+        $this->user->save();
+        $this->telegramChat->save();
+        $this->userState->save($this->telegramUser);
     }
 
     private function setupPaths($namespace)
@@ -254,12 +270,15 @@ class Module extends \yii\base\Module
         $result = false;
 
         $state = $this->telegramChat->isPrivate()
-            ? $this->telegramUser->getState()->getName()
+            ? $this->userState->getName()
             : null;
         $defaultRoute = $this->telegramChat->isPrivate()
             ? 'default/command-not-found'
             : 'message/index';
-        list($route, $params) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+        if (!$isStateRoute) {
+            $this->userState->setName(null);
+        }
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
