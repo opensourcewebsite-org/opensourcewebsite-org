@@ -18,6 +18,8 @@ class m200330_085104_create_gender_table extends Migration
             'name' => $this->string()->notNull(),
         ]);
 
+        $this->alterColumn('{{%gender}}', 'id', $this->tinyInteger()->unsigned() . ' NOT NULL AUTO_INCREMENT');
+
         $genders = [
             'Female',
             'Male',

@@ -30,7 +30,7 @@ class Vacancy extends ActiveRecord
                     'company_id',
                     'currency_id',
                     'status',
-                    'gender',
+                    'gender_id',
                     'location_at',
                 ],
                 'integer',
@@ -39,6 +39,8 @@ class Vacancy extends ActiveRecord
                 [
                     'location_lat',
                     'location_lon',
+                    'min_hour_rate',
+                    'max_hour_rate',
                 ],
                 'double'
             ],
@@ -47,22 +49,13 @@ class Vacancy extends ActiveRecord
                     'name',
                     'employment',
                     'hours_of_employment',
-                    'salary',
                 ],
                 'string',
                 'max' => 256,
             ],
             [
                 [
-                    'gender',
-                ],
-                'default',
-                'value' => 0,
-            ],
-            [
-                [
                     'requirements',
-                    'skills_description',
                     'conditions',
                     'responsibilities',
                 ],
@@ -75,9 +68,7 @@ class Vacancy extends ActiveRecord
                     'name',
                     'employment',
                     'hours_of_employment',
-                    'salary',
                     'requirements',
-                    'skills_description',
                     'conditions',
                     'responsibilities',
                 ],

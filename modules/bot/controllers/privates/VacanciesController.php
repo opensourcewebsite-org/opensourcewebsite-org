@@ -19,9 +19,9 @@ class VacanciesController extends FillablePropertiesController
             'name',
             'employment',
             'hours_of_employment',
-            'salary',
+            'min_hour_rate',
+            'max_hour_rate',
             'requirements',
-            'skills_description',
             'conditions',
             'responsibilities',
         ];
@@ -119,9 +119,8 @@ class VacanciesController extends FillablePropertiesController
                     'name' => $vacancy->name,
                     'employment' => $vacancy->employment,
                     'hoursOfEmployment' => $vacancy->hours_of_employment,
-                    'salary' => $vacancy->salary,
+                    'hourRate' => $this->getDisplayHourRate($vacancy),
                     'requirements' => $vacancy->requirements,
-                    'skillsDescription' => $vacancy->skills_description,
                     'conditions' => $vacancy->conditions,
                     'responsibilities' => $vacancy->responsibilities,
                     'currency' => $vacancy->currency,
@@ -209,16 +208,25 @@ class VacanciesController extends FillablePropertiesController
                         'text' => Yii::t('bot', 'Hours of employment'),
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
-                            'property' => 'hours-of-employment',
+                            'property' => 'hours_of_employment',
                         ]),
                     ],
                 ],
                 [
                     [
-                        'text' => Yii::t('bot', 'Salary'),
+                        'text' => Yii::t('bot', 'Minimal hour rate'),
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
-                            'property' => 'salary',
+                            'property' => 'min_hour_rate',
+                        ]),
+                    ],
+                ],
+                [
+                    [
+                        'text' => Yii::t('bot', 'Maximal hour rate'),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $vacancyId,
+                            'property' => 'max_hour_rate',
                         ]),
                     ],
                 ],
@@ -228,15 +236,6 @@ class VacanciesController extends FillablePropertiesController
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
                             'property' => 'requirements',
-                        ]),
-                    ],
-                ],
-                [
-                    [
-                        'text' => Yii::t('bot', 'Skills description'),
-                        'callback_data' => self::createRoute('set-property', [
-                            'id' => $vacancyId,
-                            'property' => 'skills-description',
                         ]),
                     ],
                 ],
@@ -327,5 +326,23 @@ class VacanciesController extends FillablePropertiesController
                 'company_id' => $this->getState()->getIntermediateField('companyId', null),
                 'currency_id' => Currency::findOne([ 'code' => 'USD' ])->id,
             ]);
+    }
+
+    /**
+     * @param Vacancy $vacancy
+     * @return string|null
+     */
+    private function getDisplayHourRate(Vacancy $vacancy)
+    {
+        if (isset($vacancy->min_hour_rate) && isset($vacancy->max_hour_rate)) {
+            return "{$vacancy->min_hour_rate}-{$vacancy->max_hour_rate} {$vacancy->currency->code}";
+        }
+        if (isset($vacancy->min_hour_rate)) {
+            return Yii::t('bot', 'from') . " {$vacancy->min_hour_rate} {$vacancy->currency->code}";
+        }
+        if (isset($vacancy->max_hour_rate)) {
+            return Yii::t('bot', 'till') . " {$vacancy->max_hour_rate} {$vacancy->currency->code}";
+        }
+        return null;
     }
 }

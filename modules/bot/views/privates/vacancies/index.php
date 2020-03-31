@@ -1,1 +1,1 @@
-<b><?= Yii::t('bot', 'Vacancies in company') ?> <?= $companyName ?></b>: <?= $vacanciesCount ?>
+<b><?= Yii::t('bot', 'Vacancies in company') ?> <?= $companyName ?>: <?= $vacanciesCount ?></b>

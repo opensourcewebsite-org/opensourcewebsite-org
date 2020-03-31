@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%vacancy}}`.
  */
-class m200315_102720_create_vacancy_table extends Migration
+class m200331_081533_create_vacancy_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -20,12 +20,12 @@ class m200315_102720_create_vacancy_table extends Migration
             'employment' => $this->string()->notNull(),
             'hours_of_employment' => $this->string()->notNull(),
             'requirements' => $this->text()->notNull(),
-            'salary' => $this->string()->notNull(),
+            'min_hour_rate' => $this->decimal(10, 2)->unsigned(),
+            'max_hour_rate' => $this->decimal(10, 2)->unsigned(),
             'currency_id' => $this->integer()->unsigned()->notNull(),
-            'skills_description' => $this->text()->notNull(),
             'conditions' => $this->text()->notNull(),
             'responsibilities' => $this->text()->notNull(),
-            'gender' => $this->tinyInteger()->null()->defaultValue(null),
+            'gender_id' => $this->tinyInteger()->unsigned()->null()->defaultValue(null),
             'location_lat' => $this->string(255),
             'location_lon' => $this->string(255),
             'location_at' => $this->integer()->unsigned(),
@@ -35,17 +35,25 @@ class m200315_102720_create_vacancy_table extends Migration
 
         $this->addForeignKey(
             'fk-vacancy_company_id-company_id',
-            'vacancy',
+            '{{%vacancy}}',
             'company_id',
-            'company',
+            '{{%company}}',
             'id'
         );
 
         $this->addForeignKey(
             'fk-vacancy_currency_id-currency_id',
-            'vacancy',
+            '{{%vacancy}}',
             'currency_id',
-            'currency',
+            '{{%currency}}',
+            'id'
+        );
+
+        $this->addForeignKey(
+            'fk-vacancy_gender_id-gender_id',
+            '{{%vacancy}}',
+            'gender_id',
+            '{{%gender}}',
             'id'
         );
     }
@@ -57,12 +65,17 @@ class m200315_102720_create_vacancy_table extends Migration
     {
         $this->dropForeignKey(
             'fk-vacancy_currency_id-currency_id',
-            'vacancy'
+            '{{%vacancy}}'
         );
 
         $this->dropForeignKey(
             'fk-vacancy_company_id-company_id',
-            'vacancy'
+            '{{%vacancy}}'
+        );
+
+        $this->dropForeignKey(
+            'fk-vacancy_gender_id-gender_id',
+            '{{%vacancy}}'
         );
 
         $this->dropTable('{{%vacancy}}');
