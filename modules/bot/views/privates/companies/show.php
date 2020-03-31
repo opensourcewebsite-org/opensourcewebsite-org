@@ -1,7 +1,8 @@
-<b><?= Yii::t('bot', 'Name of company')?></b>: <?= $name ?>
+<b><?= $name ?></b><br/>
 <br/>
-<b><?= Yii::t('bot', 'Address')?></b>: <?= $address ?>
+<?= $description ?><br/>
 <br/>
-<b><?= Yii::t('bot', 'Website link')?></b>: <?= $url ?>
+<?= Yii::t('bot', 'Address')?>: <?= $address ?><br/>
 <br/>
-<b><?= Yii::t('bot', 'About company')?></b>: <?= $description ?>
+<?= Yii::t('bot', 'Website')?>: <?= $url ?><br/>
+<br/>

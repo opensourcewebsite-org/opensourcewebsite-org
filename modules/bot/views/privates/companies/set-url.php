@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send me website link of your company') ?>
+<?= Yii::t('bot', 'Send a website link of the company') ?>

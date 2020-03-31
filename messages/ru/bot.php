@@ -180,4 +180,12 @@ return [
     'Your Vacancies' => 'Ваши вакансии',
     'Companies' => 'Компании',
     'Your Companies' => 'Ваши компании',
+    'Company' => 'Компания',
+    'Address' => 'Адрес',
+    'Name' => 'Название',
+    'Description' => 'Описание',
+    'Send a name of the company' => 'Отправьте название компании',
+    'Send a description of the company' => 'Отправьте описание компании',
+    'Send an address of the company' => 'Отправьте адрес компании',
+    'Send a website link of the company' => 'Отправьте ссылку на вебсайт компании',
 ];

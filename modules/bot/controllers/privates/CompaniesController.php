@@ -95,6 +95,15 @@ class CompaniesController extends FillablePropertiesController
                     ],
                     [
                         [
+                            'text' => Yii::t('bot', 'Description'),
+                            'callback_data' => self::createRoute('set-property', [
+                                'id' => $companyId,
+                                'property' => 'description',
+                            ]),
+                        ]
+                    ],
+                    [
+                        [
                             'text' => Yii::t('bot', 'Address'),
                             'callback_data' => self::createRoute('set-property', [
                                 'id' => $companyId,
@@ -104,21 +113,12 @@ class CompaniesController extends FillablePropertiesController
                     ],
                     [
                         [
-                            'text' => Yii::t('bot', 'Website link'),
+                            'text' => Yii::t('bot', 'Website'),
                             'callback_data' => self::createRoute('set-property', [
                                 'id' => $companyId,
                                 'property' => 'url',
                             ]),
                         ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Description'),
-                            'callback_data' => self::createRoute('set-property', [
-                                'id' => $companyId,
-                                'property' => 'description',
-                            ]),
-                        ]
                     ],
                     [
                         [
