@@ -61,7 +61,7 @@ $this->beginBody();
 
               <?php
                   //List of language options
-                  $languages = \app\models\Language::find()->all();
+                  $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 
                   if (!empty($languages)) {
                       foreach ($languages as $language) {
