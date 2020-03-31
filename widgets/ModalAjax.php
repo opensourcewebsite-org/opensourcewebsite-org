@@ -4,7 +4,7 @@ namespace app\widgets;
 
 use app\widgets\traits\ModalTrait;
 
-class Modal extends \yii\bootstrap\Modal
+class ModalAjax extends \lo\widgets\modal\ModalAjax
 {
     use ModalTrait;
 
