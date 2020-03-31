@@ -36,7 +36,6 @@ class MyProfileController extends Controller
             'gender' => isset($user->gender) ? $user->gender->name : null,
             'birthday' => $user->birthday,
             'currency' => isset($currency) ? "{$currency->name} ({$currency->code})" : null,
-            'interfaceLanguage' => isset($interfaceLanguage) ? "$interfaceLanguage->name (" . strtoupper($interfaceLanguage->code) . ')' : null,
             'timezone' => $timezones[$user->timezone],
             'languages' => array_map(function ($userLanguage) {
                 return $userLanguage->getDisplayName();

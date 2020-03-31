@@ -1,1 +1,1 @@
-<b><?= Yii::t('bot', 'Choose your level in') ?> <?= $languageName ?></b>:
+<b><?= Yii::t('bot', 'Choose your level of') ?> <?= $languageName ?>:</b>

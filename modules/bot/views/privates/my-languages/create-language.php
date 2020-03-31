@@ -1,1 +1,1 @@
-<b><?= Yii::t('bot', 'Choose language you want to add') ?></b>:
+<b><?= Yii::t('bot', 'Choose your language') ?>:</b>
