@@ -186,7 +186,7 @@ class MyLanguagesController extends Controller
                                 ]),
                             ],
                         ]
-                        : null
+                        : []
                     ),
                 ])
             )
