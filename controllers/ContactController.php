@@ -47,12 +47,9 @@ class ContactController extends Controller
      */
     public function actionIndex($view = Contact::VIEW_USER)
     {
-        $query = Contact::find()->andWhere(['user_id' => Yii::$app->user->id]);
-        if ((int) $view === Contact::VIEW_USER) {
-            $query->andWhere(['NOT', ['link_user_id' => null]]);
-        } else {
-            $query->andWhere(['link_user_id' => null]);
-        }
+        $query = Contact::find()
+            ->currentUserOwner()
+            ->virtual((int)$view !== Contact::VIEW_USER);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -195,7 +192,7 @@ class ContactController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Contact::find()->andWhere(['id' => $id, 'user_id' => Yii::$app->user->id])->one()) !== null) {
+        if (($model = Contact::find()->andWhere(['id' => $id])->currentUserOwner()->one()) !== null) {
             return $model;
         }
 

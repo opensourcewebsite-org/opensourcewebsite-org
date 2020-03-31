@@ -76,11 +76,9 @@ class DebtRedistributionForm extends DebtRedistribution
     {
         return function () {
             $this->contact = Contact::find()
-                ->where([
-                    'id'      => $this->contactId,
-                    'user_id' => Yii::$app->user->id,
-                ])
-                ->andWhere('`link_user_id` IS NOT NULL')
+                ->where(['id' => $this->contactId])
+                ->currentUserOwner()
+                ->virtual(false)
                 ->one();
 
             if (!$this->contact || !$this->contact->linkedUser) {

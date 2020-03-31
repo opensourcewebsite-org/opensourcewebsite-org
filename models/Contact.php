@@ -118,4 +118,9 @@ class Contact extends ActiveRecord
     {
         return (bool)$this->link_user_id;
     }
+
+    public static function find()
+    {
+        return new ContactQuery(get_called_class());
+    }
 }
