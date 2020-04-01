@@ -29,7 +29,7 @@ blocks:
             - cp config/params.dist.php config/params.php
             - cp config/web-local.dist.php config/web-local.php
             - mysql --version
-            - mysql -h 127.0.0.1 -P 3306 -u root -e 'CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+            - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
             - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             - chmod +x ./cc-test-reporter
             - ./cc-test-reporter before-build
