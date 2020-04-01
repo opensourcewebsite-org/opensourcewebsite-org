@@ -70,7 +70,7 @@ class BotController extends Controller
 
             $botApi = new \TelegramBot\Api\BotApi($token);
             if (isset(\Yii::$app->params['telegramProxy'])) {
-                $botApi->setProxy(Yii::$app->params['telegramProxy']);
+                $botApi->setProxy(\Yii::$app->params['telegramProxy']);
             }
             $user = $botApi->getMe();
 
