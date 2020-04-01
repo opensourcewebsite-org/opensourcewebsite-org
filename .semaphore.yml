@@ -3,7 +3,7 @@ name: Initial Pipeline
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1604
+    os_image: ubuntu1804
 global_job_config:
     env_vars:
       - name: CC_TEST_REPORTER_ID

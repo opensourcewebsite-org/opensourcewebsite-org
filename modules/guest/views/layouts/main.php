@@ -59,18 +59,17 @@ $this->beginBody();
                 <button type="button"><i class="fa fa-search"></i></button>
               </div>
 
-              <?php
-                  //List of language options
-                  $languages = \app\models\Language::find()->all();
+                <?php
+                //List of language options
+                $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 
-                  if (!empty($languages)) {
-                      foreach ($languages as $language) {
-                          //Check if the language is the active
-                          $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
-                          echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$language->code]), ['class'=>['dropdown-item', $active]]);
-                      }
-                  }
-              ?>
+                if (!empty($languages)) {
+                    foreach ($languages as $language) {
+                        //Check if the language is the active
+                        $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
+                        echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
+                    }
+                } ?>
 
             </div>
           </div>

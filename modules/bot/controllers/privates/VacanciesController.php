@@ -192,19 +192,10 @@ class VacanciesController extends FillablePropertiesController
                 ],
                 [
                     [
-                        'text' => Yii::t('bot', 'Minimal hour rate'),
+                        'text' => Yii::t('bot', 'Responsibilities'),
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
-                            'property' => 'min_hourly_rate',
-                        ]),
-                    ],
-                ],
-                [
-                    [
-                        'text' => Yii::t('bot', 'Maximal hour rate'),
-                        'callback_data' => self::createRoute('set-property', [
-                            'id' => $vacancyId,
-                            'property' => 'max_hourly_rate',
+                            'property' => 'responsibilities',
                         ]),
                     ],
                 ],
@@ -228,10 +219,19 @@ class VacanciesController extends FillablePropertiesController
                 ],
                 [
                     [
-                        'text' => Yii::t('bot', 'Responsibilities'),
+                        'text' => Yii::t('bot', 'Min. hourly rate'),
                         'callback_data' => self::createRoute('set-property', [
                             'id' => $vacancyId,
-                            'property' => 'responsibilities',
+                            'property' => 'min_hourly_rate',
+                        ]),
+                    ],
+                ],
+                [
+                    [
+                        'text' => Yii::t('bot', 'Max. hourly rate'),
+                        'callback_data' => self::createRoute('set-property', [
+                            'id' => $vacancyId,
+                            'property' => 'max_hourly_rate',
                         ]),
                     ],
                 ],
@@ -239,7 +239,7 @@ class VacanciesController extends FillablePropertiesController
                     [
                         'text' => Emoji::BACK,
                         'callback_data' => self::createRoute('show', [
-                            'id' => $vacancyId,
+                            'vacancyId' => $vacancyId,
                         ]),
                     ],
                 ],

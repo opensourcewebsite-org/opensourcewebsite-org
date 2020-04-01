@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send me minimal hourly rate for this vacancy') ?>
+<?= Yii::t('bot', 'Send minimum hourly rate of the vacancy') ?>
