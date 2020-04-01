@@ -239,7 +239,7 @@ class VacanciesController extends FillablePropertiesController
                     [
                         'text' => Emoji::BACK,
                         'callback_data' => self::createRoute('show', [
-                            'id' => $vacancyId,
+                            'vacancyId' => $vacancyId,
                         ]),
                     ],
                 ],
