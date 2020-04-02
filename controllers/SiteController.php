@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Gender;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\Rating;
@@ -315,6 +316,8 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
+        $genderList = Gender::find()->indexBy('id')->all();
+
         return $this->render('account', [
             'model' => $model,
             'activeRating' => $activeRating,
@@ -326,7 +329,8 @@ class SiteController extends Controller
             'ranking' => [
                 'rank' => $rank,
                 'total' => $total,
-            ]
+            ],
+            'genderList' => $genderList
         ]);
     }
 
@@ -334,21 +338,23 @@ class SiteController extends Controller
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param int $auth_key the user auth_key
+     * @param int $authKey the user auth_key
      *
      * @return string
      */
-    public function actionConfirm($id = '', $auth_key = '')
+    public function actionConfirm(int $id, string $authKey)
     {
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
 
-        $user = SignupForm::confirmEmail($id, $auth_key);
+        $user = SignupForm::confirmEmail($id, $authKey);
 
         if (!empty($user)) {
-
-            //Add user rating for confirm email
-            $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            $user->is_authenticated = true;
+            if ($user->save()) {
+                //Add user rating for confirm email
+                $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            }
         }
 
         if ($commit) {
