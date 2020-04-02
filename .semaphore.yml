@@ -1,3 +1,5 @@
+# For more PHP information and examples, see
+# https://docs.semaphoreci.com/article/84-language-php
 version: v1.0
 name: Initial Pipeline
 agent:
@@ -21,6 +23,8 @@ blocks:
             - checkout
             - sem-version php 7.2
             - cache restore
+            - php --version
+            - pecl install xdebug
             - sem-service start mysql 5.7
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
             - composer install --prefer-dist --no-interaction
