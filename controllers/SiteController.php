@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Gender;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\Rating;
@@ -315,6 +316,8 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
+        $genderList = Gender::find()->indexBy('id')->all();
+
         return $this->render('account', [
             'model' => $model,
             'activeRating' => $activeRating,
@@ -326,7 +329,8 @@ class SiteController extends Controller
             'ranking' => [
                 'rank' => $rank,
                 'total' => $total,
-            ]
+            ],
+            'genderList' => $genderList
         ]);
     }
 
@@ -346,9 +350,11 @@ class SiteController extends Controller
         $user = SignupForm::confirmEmail($id, $auth_key);
 
         if (!empty($user)) {
-
-            //Add user rating for confirm email
-            $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            $user->is_authenticated = true;
+            if($user->save()) {
+                //Add user rating for confirm email
+                $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            }
         }
 
         if ($commit) {

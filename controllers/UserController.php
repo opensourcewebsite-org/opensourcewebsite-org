@@ -137,16 +137,83 @@ class UserController extends Controller
         return $this->render('profile', ['model' => $user]);
     }
 
-    public function actionEditProfile()
+    public function actionChangeEmail()
     {
-        $model = new EditProfileForm(Yii::$app->user->identity);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect('/site/account');
+        if(!Yii::$app->request->isPost) {
+            return false;
         }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('EditProfileForm');
+        $user->email = $postData['field'];
+        $user->is_authenticated = false;
+        if($user->save()) {
+            $user->sendConfirmationEmail($user);
+        }
+        return $this->redirect('/account');
+    }
 
-        return $this->render('edit-profile', [
-            'model' => $model,
-        ]);
+    public function actionChangeUsername()
+    {
+        if(!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('EditProfileForm');
+        $user->username = $postData['field'];
+        $user->save();
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeName()
+    {
+        if(!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('EditProfileForm');
+        $user->name = $postData['field'];
+        $user->save();
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeBirthday()
+    {
+        if(!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('EditProfileForm');
+        $user->birthday = date('Y-m-d', strtotime($postData['field']));
+        $user->save();
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeGender()
+    {
+        if(!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('EditProfileForm');
+        $user->gender_id = $postData['field'];
+        $user->save();
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeTimezone()
+    {
+        if(!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('EditProfileForm');
+        $user->timezone = $postData['field'];
+        $user->save();
+
+        return $this->redirect('/account');
     }
 }
