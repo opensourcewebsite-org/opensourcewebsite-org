@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Gender;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\Rating;
@@ -315,6 +316,8 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
+        $genderList = Gender::find()->all();
+
         return $this->render('account', [
             'model' => $model,
             'activeRating' => $activeRating,
@@ -326,7 +329,8 @@ class SiteController extends Controller
             'ranking' => [
                 'rank' => $rank,
                 'total' => $total,
-            ]
+            ],
+            'genderList' => $genderList
         ]);
     }
 
