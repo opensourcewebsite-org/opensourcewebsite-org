@@ -1,7 +1,7 @@
 <b><?= Yii::t('bot', 'Your Language') ?></b><br/>
 <br/>
-<? if (isset($languageName) && isset($languageCode)) : ?>
+<?php if (isset($languageName) && isset($languageCode)) : ?>
 <?= $languageName ?> (<?= strtoupper($languageCode) ?>)
-<? else : ?>
+<?php else : ?>
 <?= Yii::t('bot', 'Unknown') ?>
-<? endif; ?>
+<?php endif; ?>

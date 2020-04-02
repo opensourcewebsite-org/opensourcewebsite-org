@@ -1,7 +1,7 @@
 <b><?= Yii::t('bot', 'Your Currency') ?></b><br/>
 <br/>
-<? if (isset($currencyName) && isset($currencyCode)) : ?>
+<?php if (isset($currencyName) && isset($currencyCode)) : ?>
 <?= $currencyName ?> (<?= strtoupper($currencyCode) ?>)
-<? else : ?>
+<?php else : ?>
 <?= Yii::t('bot', 'Unknown') ?>
-<? endif; ?>
+<?php endif; ?>
