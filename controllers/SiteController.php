@@ -316,7 +316,7 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
-        $genderList = Gender::find()->all();
+        $genderList = Gender::find()->indexBy('id')->all();
 
         return $this->render('account', [
             'model' => $model,
