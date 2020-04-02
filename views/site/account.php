@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use kartik\date\DatePicker;
 use app\components\helpers\TimeHelper;
 use kartik\select2\Select2;
+use yii\widgets\ActiveForm;
+use app\models\EditProfileForm;
 
 /* @var $this yii\web\View */
 $this->title = 'Account';
@@ -20,54 +22,17 @@ $genders = [];
  */
 $userGender = '';
 
+/**
+ * Модель для заполнения (проверки) полей профиля
+ */
+$profileModel = new EditProfileForm();
+
 foreach ($genderList as $key => $value) {
     $genders[$key] = $value->name;
     if ($key == $model->gender_id) {
         $userGender = $value->name;
     }
 }
-
-$JS = <<<JS
-$('.edit-btn').click(function() {
-    let modalName = $(this).data('modal');
-    let modalWindow = $('#' + modalName);
-    modalWindow.modal('toggle');
-});
-
-$('.save-btn').click(function() {
-    let that = this;
-    $.post(
-        '{$editProfileUrl}',
-        {
-            'field': $(this).data('name'),
-            'value': $('#' + $(this).data('name') + '-value').val()
-        },
-        function(result) {
-            if(result) {
-                let value = $('#' + $(that).data('name') + '-value').val();
-                if($(that).data('name') == 'gender') {
-                    switch ($('#' + $(that).data('name') + '-value').val()) {
-                        case '0':
-                            value = 'Male';
-                            break;
-                        case '1':
-                            value = 'Female';
-                            break;
-                        default:
-                            value = '';
-                            break;
-                    }
-                }
-                $('#' + $(that).data('name')).text(value);
-                $('#' + $(that).data('modal')).modal('toggle');
-                if($(that).data('name') == 'email') {
-                    location.reload();
-                }
-            }
-        });
-});
-JS;
-$this->registerJs($JS);
 ?>
 <!-- Модальное окно для email -->
 <div class="modal fade" id="change-email" tabindex="-1" role="dialog" aria-hidden="true">
@@ -79,15 +44,16 @@ $this->registerJs($JS);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-left">
-                <input type="text" class="form-control" id="email-value">
-                <div class="error"></div>
-            </div>
-            <div class="card-footer text-left">
-                <button type="button" class="btn btn-success save-btn" data-name="email"
-                        data-modal="change-email">Save</button>
-                <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
-            </div>
+            <?php $emailForm = ActiveForm::begin(['action' => 'user/change-email']); ?>
+                <div class="modal-body text-left">
+                    <?= $emailForm->field($profileModel, 'field')->input('email')->label('Email'); ?>
+                    <div class="error"></div>
+                </div>
+                <div class="card-footer text-left">
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                    <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
+                </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
@@ -102,15 +68,16 @@ $this->registerJs($JS);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <?php $usernameForm = ActiveForm::begin(['action' => 'user/change-username']); ?>
             <div class="modal-body text-left">
-                <input type="text" class="form-control" id="username-value">
+                <?= $usernameForm->field($profileModel, 'field')->textInput()->label('Username'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
-                <button type="button" class="btn btn-success save-btn" data-name="username"
-                        data-modal="change-username">Save</button>
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
                 <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
             </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
@@ -125,15 +92,16 @@ $this->registerJs($JS);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <?php $nameForm = ActiveForm::begin(['action' => 'user/change-name']); ?>
             <div class="modal-body text-left">
-                <input type="text" class="form-control" id="name-value">
+                <?= $nameForm->field($profileModel, 'field')->textInput()->label('Name'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
-                <button type="button" class="btn btn-success save-btn" data-name="name"
-                        data-modal="change-name">Save</button>
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
                 <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
             </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
@@ -148,22 +116,23 @@ $this->registerJs($JS);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <?php $birthdayForm = ActiveForm::begin(['action' => 'user/change-birthday']); ?>
             <div class="modal-body text-left">
-                <?= DatePicker::widget([
+                <?= $birthdayForm->field($profileModel, 'field')->widget(DatePicker::class, [
                     'name'          => 'birthday',
                     'id'            => 'birthday-value',
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format'    => 'mm/dd/yyyy',
                     ],
-                ]); ?>
+                ])->label('Birthday'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
-                <button type="button" class="btn btn-success save-btn" data-name="birthday"
-                        data-modal="change-birthday">Save</button>
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
                 <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
             </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
@@ -178,22 +147,16 @@ $this->registerJs($JS);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <?php $genderForm = ActiveForm::begin(['action' => 'user/change-gender']); ?>
             <div class="modal-body text-left">
-                <?= Html::dropDownList(
-                    'gender-value',
-                    null,
-                    $genders,
-                    [
-                        'id'    => 'gender-value',
-                        'class' => 'form-control'
-                    ]); ?>
+                <?= $genderForm->field($profileModel, 'field')->dropDownList($genders)->label('Gender'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
-                <button type="button" class="btn btn-success save-btn" data-name="gender"
-                        data-modal="change-gender">Save</button>
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
                 <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
             </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
@@ -208,11 +171,12 @@ $this->registerJs($JS);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <?php $timezoneForm = ActiveForm::begin(['action' => 'user/change-timezone']); ?>
             <div class="modal-body text-left">
                 <?php
                 $timezones = TimeHelper::timezonesList();
 
-                echo Select2::widget([
+                echo $timezoneForm->field($profileModel, 'field')->widget(Select2::class, [
                     'name'    => 'change-timezone',
                     'value'   => '',
                     'data'    => array_combine(
@@ -223,15 +187,15 @@ $this->registerJs($JS);
                         'id'     => 'timezone-value',
                         'prompt' => '',
                     ],
-                ]);
+                ])->label('Timezone');
                 ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
-                <button type="button" class="btn btn-success save-btn" data-name="timezone"
-                        data-modal="change-timezone">Save</button>
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
                 <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
             </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
@@ -252,16 +216,25 @@ $this->registerJs($JS);
                                 </tr>
                                 <tr>
                                     <th class="align-middle">Email</th>
-                                    <td class="align-middle" id="email"><?= $model->email; ?></td>
+                                    <td class="align-middle" id="email">
+                                        <?php
+                                        echo $model->email;
+                                        if (!$model->is_authenticated) {
+                                            echo ' <b>(not confirmed)</b>';
+                                        }
+                                        ?>
+                                    </td>
                                     <td>
                                         <?= Html::button(
                                             '<i class="fas fa-edit"></i>',
                                             [
-                                                'class'      => 'btn btn-light edit-btn',
-                                                'title'      => 'Edit',
-                                                'style'      => ['float' => 'right'],
-                                                'data-name'  => 'email',
-                                                'data-modal' => 'change-email'
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'email',
+                                                'data-modal'  => 'change-email',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-email',
                                             ]); ?>
                                     </td>
                                 </tr>
@@ -323,7 +296,9 @@ $this->registerJs($JS);
                                                 'title'      => 'Edit',
                                                 'style'      => ['float' => 'right'],
                                                 'data-name'  => 'username',
-                                                'data-modal' => 'change-username'
+                                                'data-modal' => 'change-username',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-username',
                                             ]); ?>
                                     </td>
                                 </tr>
@@ -338,7 +313,9 @@ $this->registerJs($JS);
                                                 'title'      => 'Edit',
                                                 'style'      => ['float' => 'right'],
                                                 'data-name'  => 'name',
-                                                'data-modal' => 'change-name'
+                                                'data-modal' => 'change-name',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-name',
                                             ]); ?>
                                     </td>
                                 </tr>
@@ -355,7 +332,9 @@ $this->registerJs($JS);
                                                 'title'      => 'Edit',
                                                 'style'      => ['float' => 'right'],
                                                 'data-name'  => 'birthday',
-                                                'data-modal' => 'change-birthday'
+                                                'data-modal' => 'change-birthday',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-birthday',
                                             ]); ?>
                                     </td>
                                 </tr>
@@ -372,7 +351,9 @@ $this->registerJs($JS);
                                                 'title'      => 'Edit',
                                                 'style'      => ['float' => 'right'],
                                                 'data-name'  => 'gender',
-                                                'data-modal' => 'change-gender'
+                                                'data-modal' => 'change-gender',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-gender',
                                             ]); ?>
                                     </td>
                                 </tr>
@@ -387,7 +368,9 @@ $this->registerJs($JS);
                                                 'title'      => 'Edit',
                                                 'style'      => ['float' => 'right'],
                                                 'data-name'  => 'timezone',
-                                                'data-modal' => 'change-timezone'
+                                                'data-modal' => 'change-timezone',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-timezone',
                                             ]); ?>
                                     </td>
                                 </tr>
