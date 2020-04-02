@@ -152,7 +152,7 @@ $leftMenuItems = [
 	[
 		'title' => 'Data',
 		'icon' => 'fas fa-database',
-		'urls' => ['data/country', 'data/currency', 'data/language', 'data/payment-method'],
+		'urls' => ['data/country', 'data/currency', 'data/language', 'data/payment-method', 'data/gender', 'data/sexuality'],
 		'items' => [
 			[
 				'title' => 'Countries',
