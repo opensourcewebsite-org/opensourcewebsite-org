@@ -30,6 +30,8 @@ class AdminMessageFilterWhitelistController extends Controller
             return [];
         }
 
+        $this->getState()->setName(null);
+
         $phraseQuery = $chat->getWhitelistPhrases();
 
         $pagination = new Pagination([
@@ -42,10 +44,6 @@ class AdminMessageFilterWhitelistController extends Controller
 
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
-
-        $telegramUser = $this->getTelegramUser();
-        $telegramUser->getState()->setName(null);
-        $telegramUser->save();
 
         $chatTitle = $chat->title;
         $phrases = $phraseQuery->offset($pagination->offset)
