@@ -350,9 +350,11 @@ class SiteController extends Controller
         $user = SignupForm::confirmEmail($id, $auth_key);
 
         if (!empty($user)) {
-
-            //Add user rating for confirm email
-            $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            $user->is_authenticated = true;
+            if($user->save()) {
+                //Add user rating for confirm email
+                $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            }
         }
 
         if ($commit) {
