@@ -20,13 +20,10 @@ class AdminMessageFilterNewphraseController extends Controller
      */
     public function actionIndex($type = null, $chatId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(AdminMessageFilterNewphraseController::createRoute('update', [
+        $this->getState()->setName(AdminMessageFilterNewphraseController::createRoute('update', [
             'type' => $type,
             'chatId' => $chatId,
         ]));
-        $telegramUser->save();
 
         return [
             new EditMessageTextCommand(
@@ -74,14 +71,13 @@ class AdminMessageFilterNewphraseController extends Controller
             $phrase->save();
         }
 
-        $telegramUser->getState()->setName($type == Phrase::TYPE_BLACKLIST
+        $this->getState()->setName($type == Phrase::TYPE_BLACKLIST
             ? AdminMessageFilterBlacklistController::createRoute('index', [
                 'chatId' => $chatId,
             ])
             : AdminMessageFilterWhitelistController::createRoute('index', [
                 'chatId' => $chatId,
             ]));
-        $telegramUser->save();
 
         $this->module->dispatchRoute($update);
     }

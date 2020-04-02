@@ -21,10 +21,7 @@ class AdminMessageFilterPhraseController extends Controller
      */
     public function actionIndex($phraseId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(null);
-        $telegramUser->save();
+        $this->getState()->setName(null);
 
         $phrase = Phrase::findOne($phraseId);
 
@@ -127,12 +124,9 @@ class AdminMessageFilterPhraseController extends Controller
 
     public function actionCreate($phraseId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
+        $this->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
             'phraseId' => $phraseId,
         ]));
-        $telegramUser->save();
 
         return [
             new EditMessageTextCommand(
