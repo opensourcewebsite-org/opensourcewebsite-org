@@ -139,14 +139,14 @@ class UserController extends Controller
 
     public function actionChangeEmail()
     {
-        if(!Yii::$app->request->isPost) {
+        if (!Yii::$app->request->isPost) {
             return false;
         }
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('EditProfileForm');
         $user->email = $postData['field'];
         $user->is_authenticated = false;
-        if($user->save()) {
+        if ($user->save()) {
             $user->sendConfirmationEmail($user);
         }
         return $this->redirect('/account');
@@ -154,7 +154,7 @@ class UserController extends Controller
 
     public function actionChangeUsername()
     {
-        if(!Yii::$app->request->isPost) {
+        if (!Yii::$app->request->isPost) {
             return false;
         }
         $user = Yii::$app->user->identity;
@@ -167,7 +167,7 @@ class UserController extends Controller
 
     public function actionChangeName()
     {
-        if(!Yii::$app->request->isPost) {
+        if (!Yii::$app->request->isPost) {
             return false;
         }
         $user = Yii::$app->user->identity;
@@ -180,7 +180,7 @@ class UserController extends Controller
 
     public function actionChangeBirthday()
     {
-        if(!Yii::$app->request->isPost) {
+        if (!Yii::$app->request->isPost) {
             return false;
         }
         $user = Yii::$app->user->identity;
@@ -193,7 +193,7 @@ class UserController extends Controller
 
     public function actionChangeGender()
     {
-        if(!Yii::$app->request->isPost) {
+        if (!Yii::$app->request->isPost) {
             return false;
         }
         $user = Yii::$app->user->identity;
@@ -206,7 +206,7 @@ class UserController extends Controller
 
     public function actionChangeTimezone()
     {
-        if(!Yii::$app->request->isPost) {
+        if (!Yii::$app->request->isPost) {
             return false;
         }
         $user = Yii::$app->user->identity;

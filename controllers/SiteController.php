@@ -342,16 +342,16 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionConfirm($id = '', $auth_key = '')
+    public function actionConfirm($id = '', $authKey = '')
     {
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
 
-        $user = SignupForm::confirmEmail($id, $auth_key);
+        $user = SignupForm::confirmEmail($id, $authKey);
 
         if (!empty($user)) {
             $user->is_authenticated = true;
-            if($user->save()) {
+            if ($user->save()) {
                 //Add user rating for confirm email
                 $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
             }

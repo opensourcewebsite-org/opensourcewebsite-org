@@ -5,7 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\web\ServerErrorHttpException;
 
-class  EditProfileForm extends Model
+class EditProfileForm extends Model
 {
 
     public $field;
@@ -19,5 +19,4 @@ class  EditProfileForm extends Model
             ['field', 'required', 'message' => 'Fill the field!'],
         ];
     }
-
 }

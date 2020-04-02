@@ -235,7 +235,8 @@ foreach ($genderList as $key => $value) {
                                                 'data-modal'  => 'change-email',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-email',
-                                            ]); ?>
+                                            ]);
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -255,10 +256,9 @@ foreach ($genderList as $key => $value) {
                                 </tr>
                                 <tr>
                                     <th class="align-middle">Active Rating</th>
-                                    <td class="align-middle"><?= "<b>$activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ")"; ?></td>
+                                    <td class="align-middle"><?= "<b>$activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ')'; ?></td>
                                     <td></td>
                                 </tr>
-
                                 </tbody>
                             </table>
                         </div>
@@ -283,7 +283,6 @@ foreach ($genderList as $key => $value) {
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-
                                 <tr>
                                     <th class="align-middle">Username</th>
                                     <td class="align-middle"><b>@</b><span id="username"><?= $model->username;
@@ -292,14 +291,15 @@ foreach ($genderList as $key => $value) {
                                         <?= Html::button(
                                             '<i class="fas fa-edit"></i>',
                                             [
-                                                'class'      => 'btn btn-light edit-btn',
-                                                'title'      => 'Edit',
-                                                'style'      => ['float' => 'right'],
-                                                'data-name'  => 'username',
-                                                'data-modal' => 'change-username',
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'username',
+                                                'data-modal'  => 'change-username',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-username',
-                                            ]); ?>
+                                            ]);
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -309,33 +309,34 @@ foreach ($genderList as $key => $value) {
                                         <?= Html::button(
                                             '<i class="fas fa-edit"></i>',
                                             [
-                                                'class'      => 'btn btn-light edit-btn',
-                                                'title'      => 'Edit',
-                                                'style'      => ['float' => 'right'],
-                                                'data-name'  => 'name',
-                                                'data-modal' => 'change-name',
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'name',
+                                                'data-modal'  => 'change-name',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-name',
-                                            ]); ?>
+                                            ]);
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle">Birthday</th>
                                     <td class="align-middle" id="birthday"><?= date('m/d/Y', strtotime
-                                        ($model->birthday));
-                                        ?></td>
+                                        ($model->birthday)); ?></td>
                                     <td>
                                         <?= Html::button(
                                             '<i class="fas fa-edit"></i>',
                                             [
-                                                'class'      => 'btn btn-light edit-btn',
-                                                'title'      => 'Edit',
-                                                'style'      => ['float' => 'right'],
-                                                'data-name'  => 'birthday',
-                                                'data-modal' => 'change-birthday',
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'birthday',
+                                                'data-modal'  => 'change-birthday',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-birthday',
-                                            ]); ?>
+                                            ]);
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -347,14 +348,15 @@ foreach ($genderList as $key => $value) {
                                         <?= Html::button(
                                             '<i class="fas fa-edit"></i>',
                                             [
-                                                'class'      => 'btn btn-light edit-btn',
-                                                'title'      => 'Edit',
-                                                'style'      => ['float' => 'right'],
-                                                'data-name'  => 'gender',
-                                                'data-modal' => 'change-gender',
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'gender',
+                                                'data-modal'  => 'change-gender',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-gender',
-                                            ]); ?>
+                                            ]);
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -364,17 +366,17 @@ foreach ($genderList as $key => $value) {
                                         <?= Html::button(
                                             '<i class="fas fa-edit"></i>',
                                             [
-                                                'class'      => 'btn btn-light edit-btn',
-                                                'title'      => 'Edit',
-                                                'style'      => ['float' => 'right'],
-                                                'data-name'  => 'timezone',
-                                                'data-modal' => 'change-timezone',
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'timezone',
+                                                'data-modal'  => 'change-timezone',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-timezone',
-                                            ]); ?>
+                                            ]);
+                                        ?>
                                     </td>
                                 </tr>
-
                                 </tbody>
                             </table>
                         </div>
@@ -384,5 +386,3 @@ foreach ($genderList as $key => $value) {
         </div>
     </div>
 </div>
-
-
