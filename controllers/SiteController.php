@@ -338,11 +338,11 @@ class SiteController extends Controller
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param int $auth_key the user auth_key
+     * @param int $authKey the user auth_key
      *
      * @return string
      */
-    public function actionConfirm($id = '', $authKey = '')
+    public function actionConfirm(int $id, string $authKey)
     {
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
