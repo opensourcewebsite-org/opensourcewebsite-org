@@ -19,8 +19,8 @@ class m200330_085104_create_gender_table extends Migration
         ]);
 
         $genders = [
-            'Female',
             'Male',
+            'Female',
         ];
 
         foreach ($genders as $gender) {
