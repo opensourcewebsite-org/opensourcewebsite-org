@@ -4,6 +4,7 @@ namespace app\commands;
 
 use yii\console\Controller;
 use app\modules\bot\models\Bot;
+use Yii;
 
 /**
  * Class BotController
@@ -69,8 +70,8 @@ class BotController extends Controller
             $bot = new Bot();
 
             $botApi = new \TelegramBot\Api\BotApi($token);
-            if (isset(\Yii::$app->params['telegramProxy'])) {
-                $botApi->setProxy(\Yii::$app->params['telegramProxy']);
+            if (isset(Yii::$app->params['telegramProxy'])) {
+                $botApi->setProxy(Yii::$app->params['telegramProxy']);
             }
             $user = $botApi->getMe();
 
