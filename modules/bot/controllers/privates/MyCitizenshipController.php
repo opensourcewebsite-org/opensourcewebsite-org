@@ -66,6 +66,10 @@ class MyCitizenshipController extends Controller
                             'text' => Emoji::BACK,
                         ],
                         [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                        [
                             'callback_data' => self::createRoute('create-country'),
                             'text' => Emoji::ADD,
                         ],
