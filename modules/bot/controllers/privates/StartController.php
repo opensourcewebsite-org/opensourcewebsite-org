@@ -47,6 +47,12 @@ class StartController extends Controller
                     ],
                     [
                         [
+                            'url' => 'https://discord.gg/JstMPK',
+                            'text' => Yii::t('bot', 'Discord'),
+                        ],
+                    ],
+                    [
+                        [
                             'url' => 'https://gitter.im/opensourcewebsite-org',
                             'text' => Yii::t('bot', 'Gitter'),
                         ],
