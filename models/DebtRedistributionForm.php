@@ -42,7 +42,7 @@ class DebtRedistributionForm extends DebtRedistribution
     {
         parent::afterValidate();
 
-        if ($this->isMaxAmountDeny() && $this->isPriorityEmpty()) {
+        if (!$this->hasErrors() && $this->isMaxAmountDeny()) {
             $this->isSenseToStore = false;  //no sense to store default values
         }
     }

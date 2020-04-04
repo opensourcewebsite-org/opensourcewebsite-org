@@ -10,11 +10,13 @@ use yii\db\ActiveRecord;
  * @property int      $id
  * @property int      $from_user_id
  * @property int      $to_user_id
+ * @property int      $currency_id
  * @property int|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
- * @property int      $priority     "1" - the highest. "0" - no priority.
+ * @property int      $priority     "1" - the highest. "0" - no priority. //todo [#294][priority]
  *
  * @property User $fromUser
  * @property User $toUser
+ * @property Currency $currency
  */
 class DebtRedistribution extends ActiveRecord
 {
@@ -43,12 +45,18 @@ class DebtRedistribution extends ActiveRecord
     public function rules()
     {
         return [
-            [['priority', 'max_amount'], 'integer', 'min' => 0],
-            [['priority'], 'integer', 'max' => 255],
+            ['currency_id', 'required'],
+            //todo [#294][priority]
+//            ['priority', 'integer', 'min' => 0, 'max' => 255],
+//            ['priority', 'default', 'value' => self::PRIORITY_NO],
+
+            //max_amount:
+            ['max_amount', 'number', 'min' => 0],
             ['max_amount', $this->fnFormatMaxAmount(), 'skipOnEmpty' => false],
             ['priority'  , 'default', 'value' => self::PRIORITY_NO],
 
-            [['from_user_id', 'to_user_id'], 'unique', 'targetAttribute' => ['from_user_id', 'to_user_id']],
+            //db:
+            [['from_user_id', 'to_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['from_user_id', 'to_user_id', 'currency_id']],
         ];
     }
 
@@ -61,8 +69,8 @@ class DebtRedistribution extends ActiveRecord
             'id'           => 'ID',
             'from_user_id' => 'From User ID',
             'to_user_id'   => 'To User ID',
+            'currency_id'  => 'Currency',
             'max_amount'   => 'Max Amount',
-            'priority'     => 'Priority',
         ];
     }
 
@@ -84,10 +92,16 @@ class DebtRedistribution extends ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'to_user_id']);
     }
 
-    public function isPriorityEmpty(): bool
+    public function getCurrency()
     {
-        return $this->priority == self::PRIORITY_NO;
+        return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
+
+    //todo [#294][priority]
+//    public function isPriorityEmpty(): bool
+//    {
+//        return $this->priority == self::PRIORITY_NO;
+//    }
 
     public function isMaxAmountAny(): bool
     {

@@ -11,6 +11,8 @@ use Yii;
  * @property string $code
  * @property string $name
  * @property string $symbol
+ *
+ * @property DebtRedistribution[] $debtRedistributions
  */
 class Currency extends \yii\db\ActiveRecord
 {
@@ -46,5 +48,10 @@ class Currency extends \yii\db\ActiveRecord
             'name' => 'Name',
             'symbol' => 'Symbol',
         ];
+    }
+
+    public function getDebtRedistributions()
+    {
+        return $this->hasMany(DebtRedistribution::className(), ['currency_id' => 'id']);
     }
 }
