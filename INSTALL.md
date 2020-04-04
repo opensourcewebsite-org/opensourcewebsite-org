@@ -4,7 +4,7 @@
 
 - Copy file `.env.dist` to `.env` in the root directory
 - Set correct values in `.env` for your environment
-  - do the same with `/tests/bin/.env.dist` for test environment
+    - do the same with `/tests/bin/.env.dist` for test environment
 - Copy `config/params.dist.php` to `config/params.php`
 - Copy `config/web-local.dist.php` to `config/web-local.php`
 
