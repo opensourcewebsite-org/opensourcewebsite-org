@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use \app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;

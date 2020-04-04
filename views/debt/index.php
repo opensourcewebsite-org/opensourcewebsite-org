@@ -34,21 +34,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             [
                                 'label' => 'Currency',
-                                'value' => function ($data) {
+                                'value' => function (Debt $data) {
                                     return $data->currency->code ?? null;
                                 },
                                 'format' => 'html',
                             ],
                             [
                                 'label' => 'My Deposits',
-                                'value' => function ($data) {
+                                'value' => function (Debt $data) {
                                     return Html::a(DebtHelper::getDepositAmount($data->depositPending, $data->depositConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
                             ],
                             [
                                 'label' => 'My Credits',
-                                'value' => function ($data) {
+                                'value' => function (Debt $data) {
                                     return Html::a(DebtHelper::getCreditAmount($data->creditPending, $data->creditConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',

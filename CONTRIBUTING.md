@@ -46,7 +46,9 @@ When contributing to this repository, please first discuss the change you wish t
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
 - Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
-- Make your change. Add tests for your change. Make the tests pass.
+- Make your changes.
+  - Add tests if your changes contains new, testable behavior.
+  - Make the tests pass.
 - Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork) to the repository.
 
 #### Tips and tricks for using the Git
@@ -93,7 +95,11 @@ Both issue lists are sorted by total number of comments. While not perfect, numb
 
 You can help improve documentations/translations by making them more coherent, consistent, or readable, adding missing information, correcting factual errors, fixing typos.
 
-To do so, make changes to source files. Then open a pull request to apply your changes to master branch.
+Please read how [Internationalization (I18N)](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n) works.
+
+[All translations](https://github.com/opensourcewebsite-org/opensourcewebsite-org/tree/master/messages) are in source files.
+
+To do so, make changes to source files. Then open a pull request to apply your changes to `master` branch.
 
 To help our CI servers you should add `[ci skip]` to your documentation commit message to skip build on that commit. Please remember to use it for commits containing only documentation changes.
 
