@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
@@ -88,7 +88,7 @@ class AdminMessageFilterController extends Controller
                                 'callback_data' => AdminMessageFilterWhitelistController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => '✏️ ' . Yii::t('bot', 'Whitelist'),
+                                'text' => Yii::t('bot', 'Whitelist'),
                             ],
                         ],
                         [
@@ -96,7 +96,7 @@ class AdminMessageFilterController extends Controller
                                 'callback_data' => AdminMessageFilterBlacklistController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => '✏️ ' . Yii::t('bot', 'Blacklist'),
+                                'text' => Yii::t('bot', 'Blacklist'),
                             ],
                         ],
                         [

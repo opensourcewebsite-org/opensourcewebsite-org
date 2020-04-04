@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use app\modules\bot\components\response\SendMessageCommand;
+use app\modules\bot\components\response\commands\SendMessageCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use app\modules\bot\components\Controller as Controller;

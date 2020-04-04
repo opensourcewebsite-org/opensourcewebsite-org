@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class MenuController
@@ -19,72 +19,68 @@ class MenuController extends Controller
      */
     public function actionIndex()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Yii::t('bot', 'Profile')
-                            ],
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Yii::t('bot', 'Profile'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyRatingController::createRoute(),
+                            'text' => Yii::t('bot', 'Rating'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyReferralsController::createRoute(),
+                            'text' => Yii::t('bot', 'Referrals')
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => '🏗 ' . Yii::t('bot', 'Services')
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => AdminController::createRoute(),
+                            'text' => Yii::t('bot', 'Groups')
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => HelpController::createRoute(),
+                            'text' => Yii::t('bot', 'Commands')
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            [
-                                'callback_data' => MyRatingController::createRoute(),
-                                'text' => Yii::t('bot', 'Rating')
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => StartController::createRoute(),
+                            'text' => '👋',
                         ],
                         [
-                            [
-                                'callback_data' => MyReferralsController::createRoute(),
-                                'text' => Yii::t('bot', 'Referrals')
-                            ],
+                            'callback_data' => LanguageController::createRoute(),
+                            'text' => Emoji::LANGUAGE,
                         ],
-                        [
-                            [
-                                'callback_data' => ServicesController::createRoute(),
-                                'text' => '🏗 ' . Yii::t('bot', 'Services')
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminController::createRoute(),
-                                'text' => Yii::t('bot', 'Groups')
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => HelpController::createRoute(),
-                                'text' => Yii::t('bot', 'Commands')
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => StartController::createRoute(),
-                                'text' => '👋',
-                            ],
-                            [
-                                'callback_data' => MyLanguageController::createRoute(),
-                                'text' => '🗣',
-                            ],
-                        ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

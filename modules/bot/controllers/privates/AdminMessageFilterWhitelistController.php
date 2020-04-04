@@ -3,14 +3,14 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
 use yii\data\Pagination;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 
 /**
  * Class AdminMessageFilterWhitelistController
@@ -30,6 +30,8 @@ class AdminMessageFilterWhitelistController extends Controller
             return [];
         }
 
+        $this->getState()->setName(null);
+
         $phraseQuery = $chat->getWhitelistPhrases();
 
         $pagination = new Pagination([
@@ -42,10 +44,6 @@ class AdminMessageFilterWhitelistController extends Controller
 
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
-
-        $telegramUser = $this->getTelegramUser();
-        $telegramUser->getState()->setName(null);
-        $telegramUser->save();
 
         $chatTitle = $chat->title;
         $phrases = $phraseQuery->offset($pagination->offset)

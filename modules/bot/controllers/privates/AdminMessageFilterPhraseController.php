@@ -3,8 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
+use \app\modules\bot\components\response\commands\SendMessageCommand;
+use \app\modules\bot\components\response\commands\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Phrase;
@@ -21,10 +21,7 @@ class AdminMessageFilterPhraseController extends Controller
      */
     public function actionIndex($phraseId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(null);
-        $telegramUser->save();
+        $this->getState()->setName(null);
 
         $phrase = Phrase::findOne($phraseId);
 
@@ -127,12 +124,9 @@ class AdminMessageFilterPhraseController extends Controller
 
     public function actionCreate($phraseId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
+        $this->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
             'phraseId' => $phraseId,
         ]));
-        $telegramUser->save();
 
         return [
             new EditMessageTextCommand(

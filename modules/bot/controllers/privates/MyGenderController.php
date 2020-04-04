@@ -2,13 +2,14 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\Gender;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\SendMessageCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\models\User;
-use app\modules\bot\components\Controller as Controller;
+use app\models\User;
+use app\modules\bot\components\Controller;
+use yii\data\Pagination;
 
 /**
  * Class MyGenderController
@@ -20,90 +21,83 @@ class MyGenderController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($gender = null)
+    public function actionIndex($genderId = null)
     {
-        $update = $this->getUpdate();
         $user = $this->getUser();
 
-        if ($gender) {
-            if ($gender == 'male') {
-                $user->gender = User::MALE;
-            } elseif ($gender == 'female') {
-                $user->gender = User::FEMALE;
+        if (isset($genderId)) {
+            $gender = Gender::findOne($genderId);
+            if (isset($gender)) {
+                $user->gender_id = $gender->id;
+                $user->save();
             }
-            $user->save();
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'gender' => $user->gender,
+                    'gender' => isset($user->gender) ? $user->gender->name : null,
                 ]),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => '✏️',
-                            ],
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => self::createRoute('update'),
+                            'text' => Emoji::EDIT,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
-    public function actionUpdate()
+    public function actionUpdate($page = 1)
     {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        if ($this->getUpdate()->getCallbackQuery()) {
+        $genderQuery = Gender::find();
+        $pagination = new Pagination([
+            'totalCount' => $genderQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('update', [
+                'page' => $page,
+            ]);
+        });
+        $genders = $genderQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+        $genderRows = array_map(function ($gender) {
             return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $update->getCallbackQuery()->getMessage()->getMessageId(),
-                    $text = $this->render('update', [
-                        'gender' => $user->gender,
+                [
+                    'text' => Yii::t('bot', $gender->name),
+                    'callback_data' => self::createRoute('index', [
+                        'genderId' => $gender->id,
                     ]),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => self::createRoute('index', [
-                                        'gender' => 'male',
-                                    ]),
-                                    'text' => Yii::t('bot', 'Male'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute('index', [
-                                        'gender' => 'female',
-                                    ]),
-                                    'text' => Yii::t('bot', 'Female'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute(),
-                                    'text' => '🔙',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-                new AnswerCallbackQueryCommand(
-                    $update->getCallbackQuery()->getId()
-                ),
+                ],
             ];
-        }
+        }, $genders);
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $text = $this->render('update'),
+                array_merge($genderRows, [ $paginationButtons ], [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ])
+            )
+            ->build();
     }
 }

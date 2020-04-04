@@ -2,15 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Currency;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 
 /**
  * Class MyCurrencyController
@@ -20,49 +17,46 @@ use app\modules\bot\components\Controller as Controller;
 class MyCurrencyController extends Controller
 {
     /**
-     * @param null|string $currency
+     * @param null|string $currencyCode
      *
      * @return array
      */
-    public function actionIndex($currency = null)
+    public function actionIndex($currencyCode = null)
     {
-        $telegramUser = $this->getTelegramUser();
+        $user = $this->getUser();
 
-        $currencyModel = null;
-        if ($currency) {
-            $currencyModel = Currency::findOne(['code' => $currency]);
-            if ($currencyModel) {
-                if ($telegramUser) {
-                    $telegramUser->currency_code = $currency;
-                    $telegramUser->save();
+        $currency = null;
+        if ($currencyCode) {
+            $currency = Currency::findOne(['code' => $currencyCode]);
+            if ($currency) {
+                if ($user) {
+                    $user->currency_id = $currency->id;
+                    $user->save();
                 }
             }
         }
 
-        $currentCode = $telegramUser->currency_code;
-        $currentName = $currencyModel ? $currencyModel->name : Currency::findOne(['code' => $currentCode])->name;
+        $currency = $currency ?? $user->currency;
+        $currencyCode = isset($currency) ? $currency->code : null;
+        $currencyName = isset($currency) ? $currency->name : null;
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('index', compact('currencyModel', 'currentCode', 'currentName')),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('currencyCode', 'currencyName')),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => '🔙',
-                            ],
-                            [
-                                'callback_data' => MyCurrencyController::createRoute('list'),
-                                'text' => '✏️',
-                            ],
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                        [
+                            'callback_data' => MyCurrencyController::createRoute('list'),
+                            'text' => Emoji::EDIT,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     /**
@@ -72,8 +66,6 @@ class MyCurrencyController extends Controller
      */
     public function actionList($page = 1)
     {
-        $update = $this->getUpdate();
-
         $currencyQuery = Currency::find()->orderBy('code ASC');
         $pagination = new Pagination([
             'totalCount' => $currencyQuery->count(),
@@ -96,12 +88,11 @@ class MyCurrencyController extends Controller
             ]);
         });
         $buttons = [];
-
         if ($currencies) {
             foreach ($currencies as $currency) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('index', [
-                        'currency' => $currency->code,
+                        'currencyCode' => $currency->code,
                     ]),
                     'text' => strtoupper($currency->code) . ' - ' . $currency->name,
                 ];
@@ -113,23 +104,15 @@ class MyCurrencyController extends Controller
 
             $buttons[][] = [
                 'callback_data' => self::createRoute(),
-                'text' => '🔙',
+                'text' => Emoji::BACK,
             ];
         }
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('list'),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+                $buttons
+            )
+            ->build();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
 use Yii;
@@ -9,6 +10,7 @@ use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\UserState;
 use app\modules\bot\models\User as TelegramUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
@@ -18,6 +20,7 @@ use app\modules\bot\components\Controller;
 /**
  * OSW Bot module definition class
  * @link https://t.me/opensourcewebsite_bot
+ * @property CommandRouteResolver $commandRouteResolver
  */
 class Module extends \yii\base\Module
 {
@@ -56,6 +59,11 @@ class Module extends \yii\base\Module
      */
     public $user;
 
+    /**
+     * @var models\UserState
+     */
+    public $userState;
+
     public function init()
     {
         parent::init();
@@ -86,9 +94,11 @@ class Module extends \yii\base\Module
             }
 
             if ($this->initialize($this->update, $this->botInfo->id)) {
-                Yii::$app->language = $this->telegramUser->language_code;
+                Yii::$app->language = $this->telegramUser->language->code;
 
                 $result = $this->dispatchRoute($this->update);
+
+                $this->save();
             }
         }
         return $result;
@@ -230,12 +240,20 @@ class Module extends \yii\base\Module
 
             $this->user = $user;
             $this->telegramUser = $telegramUser;
+            $this->userState = UserState::fromUser($telegramUser);
             $this->telegramChat = $telegramChat;
 
             return true;
         }
 
         return false;
+    }
+
+    private function save()
+    {
+        $this->user->save();
+        $this->telegramChat->save();
+        $this->userState->save($this->telegramUser);
     }
 
     private function setupPaths($namespace)
@@ -254,12 +272,19 @@ class Module extends \yii\base\Module
         $result = false;
 
         $state = $this->telegramChat->isPrivate()
-            ? $this->telegramUser->getState()->getName()
+            ? $this->userState->getName()
             : null;
         $defaultRoute = $this->telegramChat->isPrivate()
             ? 'default/command-not-found'
             : 'message/index';
-        list($route, $params) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+        if (!$isStateRoute) {
+            $this->userState->setName(null);
+        }
+        /* Temporary solution for filter in groups */
+        if (!isset($route) && !$this->telegramChat->isPrivate()) {
+            $route = $defaultRoute;
+        }
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);

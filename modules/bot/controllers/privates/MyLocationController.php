@@ -2,12 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\SendLocationCommand;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\ReplyKeyboardManager;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class MyLocationController
@@ -24,54 +21,41 @@ class MyLocationController extends Controller
         $telegramUser = $this->getTelegramUser();
 
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('header'),
-                    [
-                        'parseMode' => $this->textFormat,
-                    ]
-                ),
-                new SendLocationCommand(
-                    $this->getTelegramChat()->chat_id,
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
+                    $this->render('header')
+                )
+                ->sendLocation(
                     $telegramUser->location_lat,
                     $telegramUser->location_lon
-                ),
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
+                )
+                ->sendMessage(
                     $this->render('footer'),
                     [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
+                        [
                             [
-                                [
-                                    'callback_data' => MyProfileController::createRoute(),
-                                    'text' => '🔙',
-                                ],
+                                'callback_data' => MyProfileController::createRoute(),
+                                'text' => Emoji::BACK,
                             ],
-                        ]),
+                        ],
                     ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('index'),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => MyProfileController::createRoute(),
-                                    'text' => '🔙',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
+                )
+                ->build();
         }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index'),
+                [
+                    [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionUpdate()

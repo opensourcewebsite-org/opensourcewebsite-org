@@ -2,13 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\modules\bot\components\response\EditMessageReplyMarkupCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use \app\models\User;
-use app\modules\bot\components\Controller as Controller;
+use app\models\User;
+use app\modules\bot\components\Controller;
 
 /**
  * Class MyBirthdayController
@@ -22,111 +20,95 @@ class MyBirthdayController extends Controller
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
 
         $birthday = $user->birthday;
 
-        if (!isset($birthday)) {
-            $telegramUser->getState()->setName(self::createRoute('create'));
-            $telegramUser->save();
+        if (isset($birthday)) {
+            try {
+                $birthday = (new \DateTime($birthday))->format(User::DATE_FORMAT);
+            } catch (\Exception $e) {
+            }
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('index', [
-                    'birthday' => isset($birthday)
-                        ? (new \DateTime($birthday))->format(User::DATE_FORMAT)
-                        : null,
-                ]),
+        if (!isset($birthday)) {
+            $this->getState()->setName(self::createRoute('create'));
+        }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('birthday')),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        (isset($birthday) ? [
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => '✏️',
-                            ]
-                        ] : []),
+                    array_merge(
                         [
+
                             [
                                 'callback_data' => MyProfileController::createRoute(),
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                         ],
-                    ]),
+                        (isset($birthday) ?
+                            [
+                                [
+                                    'callback_data' => self::createRoute('update'),
+                                    'text' => Emoji::EDIT,
+                                ]
+                            ]
+                            : [])
+                    ),
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionCreate()
     {
         $update = $this->getUpdate();
-        $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
 
         $text = $update->getMessage()->getText();
         if ($this->validateDate($text, User::DATE_FORMAT)) {
             $user->birthday = Yii::$app->formatter->format($text, 'date');
             $user->save();
-            $telegramUser->getState()->setName(null);
-            $telegramUser->save();
+            $this->getState()->setName(null);
             return $this->actionIndex();
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('update'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionUpdate()
     {
         $update = $this->getUpdate();
-        $telegramUser = $this->getTelegramUser();
 
-        $telegramUser->getState()->setName(self::createRoute('create'));
-        $telegramUser->save();
+        $this->getState()->setName(self::createRoute('create'));
 
-        return [
-            new EditMessageReplyMarkupCommand(
-                $this->getTelegramChat()->chat_id,
-                $update->getCallbackQuery()->getMessage()->getMessageId()
-            ),
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->removeInlineKeyboardMarkup()
+            ->sendMessage(
                 $this->render('update'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute(),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-            new AnswerCallbackQueryCommand(
-                $update->getCallbackQuery()->getId()
-            ),
-        ];
+            )
+            ->build();
     }
 
     private function validateDate($date, $format)

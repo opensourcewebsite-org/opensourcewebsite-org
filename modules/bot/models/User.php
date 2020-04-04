@@ -38,12 +38,14 @@ class User extends ActiveRecord
         $language = Language::findOne([
             'code' => $updateUser->getLanguageCode(),
         ]);
-        $languageCode = isset($language) ? $language->code : 'en';
+        if (!isset($language)) {
+            $language = Language::findOne([ 'code' => 'en' ]);
+        }
 
         $newUser = new User();
         $newUser->setAttributes([
             'provider_user_id' => $updateUser->getId(),
-            'language_code' => $languageCode,
+            'language_id' => $language->id,
             'is_authenticated' => true,
         ]);
 
@@ -71,6 +73,7 @@ class User extends ActiveRecord
                     'provider_user_blocked',
                     'location_at',
                     'last_message_at',
+                    'language_id',
                 ],
                 'integer',
             ],
@@ -80,14 +83,10 @@ class User extends ActiveRecord
                     'provider_user_name',
                     'provider_user_first_name',
                     'provider_user_last_name',
-                    'language_code',
-                    'currency_code',
                 ],
                 'string',
                 'max' => 255,
             ],
-            [['language_code'], 'default', 'value' => 'en'],
-            [['currency_code'], 'default', 'value' => 'USD'],
         ];
     }
 
@@ -117,40 +116,28 @@ class User extends ActiveRecord
     {
         if (!empty($this->provider_user_first_name) || !empty($this->provider_user_last_name)) {
             return trim($this->provider_user_first_name) . ' ' . trim($this->provider_user_last_name);
-        } elseif (!empty($this->provider_user_first_name)) {
+        }
+        if (!empty($this->provider_user_first_name)) {
             return trim($this->provider_user_first_name);
-        } elseif (!empty($this->provider_user_last_name)) {
+        }
+        if (!empty($this->provider_user_last_name)) {
             return trim($this->provider_user_last_name);
-        } elseif (!empty($this->provider_user_name)) {
+        }
+        if (!empty($this->provider_user_name)) {
             return trim($this->provider_user_name);
         }
-    }
-
-    public function getState()
-    {
-        if (!isset($this->stateObject)) {
-            $this->stateObject = isset($this->state)
-               ? UserState::fromJson($this->state)
-               : new UserState();
-        }
-        return $this->stateObject;
-    }
-
-    public function save($runValidation = true, $attributeNames = null)
-    {
-        $this->state = $this->getState()->toJson();
-        return parent::save($runValidation, $attributeNames);
+        return '';
     }
 
     public function getChats()
     {
-        return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
     }
 
     public function getAdministratedChats()
     {
-        return $this->hasMany(Chat::className(), ['id' => 'chat_id'])
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -158,6 +145,11 @@ class User extends ActiveRecord
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
         });
+    }
+
+    public function getLanguage()
+    {
+        return $this->hasOne(Language::class, [ 'id' => 'language_id' ]);
     }
 
     public function updateInfo($updateUser)

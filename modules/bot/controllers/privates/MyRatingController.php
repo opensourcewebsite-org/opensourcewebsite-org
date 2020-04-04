@@ -2,14 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
-use \app\modules\bot\components\response\AnswerCallbackQueryCommand;
-use \app\models\Rating;
-use \app\components\Converter;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller as Controller;
+use app\models\Rating;
+use app\components\Converter;
+use app\modules\bot\components\Controller;
 
 /**
  * Class MyRatingController
@@ -23,33 +21,29 @@ class MyRatingController extends Controller
      */
     public function actionIndex()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->renderRating(),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => '📱',
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                         ],
-                    ]),
+                    ],
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     private function renderRating()

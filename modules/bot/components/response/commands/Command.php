@@ -1,30 +1,30 @@
 <?php
-namespace app\modules\bot\components\response;
+namespace app\modules\bot\components\response\commands;
 
-use \TelegramBot\Api\BotApi;
+use TelegramBot\Api\BotApi;
 
 abstract class Command
 {
     private $fields = [];
 
-    protected function __construct($array)
+    protected function __construct(array $array = [])
     {
         foreach ($array as $key => $value) {
             $this->{$key} = $value;
         }
     }
 
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->fields[$name] ?? null;
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $this->fields[$name] = $value;
     }
 
-    public abstract function send(BotApi $botApi);
+    abstract public function send(BotApi $botApi);
 
     protected function getOptionalProperty($name, $defaultValue)
     {
