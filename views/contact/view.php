@@ -82,8 +82,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
 $this->registerJs(<<<JS
 /**
  * @param jqXHR
- * @param {?string} textStatus 
- * @param {?string} errorThrown 
+ * @param {?string} textStatus
+ * @param {?string} errorThrown
  */
 function osw_alertOnAjaxError(jqXHR, textStatus, errorThrown) {
     let errTitle = textStatus ? textStatus : jqXHR.statusText;

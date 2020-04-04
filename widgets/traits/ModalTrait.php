@@ -42,7 +42,8 @@ trait ModalTrait
         $this->jsLinkFooterButtonToForm();
     }
 
-    private function jsLinkFooterButtonToForm() {
+    private function jsLinkFooterButtonToForm()
+    {
         $this->on(Widget::EVENT_AFTER_RUN, function () {
             $this->view->registerJs("
                 jQuery('#$this->id').on('click', '.modal-footer button[type=\"submit\"]', function (event) {
@@ -52,8 +53,8 @@ trait ModalTrait
 
                     event.preventDefault();
                     event.stopPropagation();
-                    jQuery('#$this->id').find('form').submit();        
-                    
+                    jQuery('#$this->id').find('form').submit();
+
                     return false;
                 });"
             );

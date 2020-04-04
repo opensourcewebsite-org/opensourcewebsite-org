@@ -86,8 +86,8 @@ function warnOnDeleteDebtRedistributionSettings() {
     if (!oldUser || oldUser === newUser) {
         return true;
     }
-    
-	return confirm("{$aMsg['save-warn-debt']}".replace('{user}', oldUser));
+
+    return confirm("{$aMsg['save-warn-debt']}".replace('{user}', oldUser));
 }
 JS
 );

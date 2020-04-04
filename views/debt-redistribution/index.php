@@ -34,7 +34,7 @@ $modalFooter.= '<a class="btn btn-secondary" href="#" data-dismiss="modal">' . Y
                 jQuery(this).modal("toggle");
                 return;
             }
-            
+
             let header = jQuery(this).find(".modal-header");
             header.children(":not(.close)").remove();
             header.append(jQuery("#headerForModal").children());
@@ -54,14 +54,14 @@ $modalFooter.= '<a class="btn btn-secondary" href="#" data-dismiss="modal">' . Y
                 });
             }
         }"),
-        ModalAjax::EVENT_MODAL_SUBMIT_COMPLETE => new JsExpression("function(event, xhr, status) {
+        ModalAjax::EVENT_MODAL_SUBMIT_COMPLETE => new JsExpression('function(event, xhr, status) {
             if (xhr.status >= 400) {
                 osw_alertOnAjaxError(xhr);
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
             }
-        }"),
+        }'),
     ],
 ]);?>
 
@@ -79,13 +79,13 @@ $modalFooter.= '<a class="btn btn-secondary" href="#" data-dismiss="modal">' . Y
 
         <p class="text-right">
             <?= Html::a(
-                    Yii::t('app', 'Create'),
-                    ['/debt-redistribution/form', 'contactId' => $contact->id],
-                    [
-                        'data-pjax' => '0',
-                        'class'     => 'btn-action btn btn-success',
-                    ]
-                ); ?>
+                Yii::t('app', 'Create'),
+                ['/debt-redistribution/form', 'contactId' => $contact->id],
+                [
+                    'data-pjax' => '0',
+                    'class'     => 'btn-action btn btn-success',
+                ]
+            ); ?>
         </p>
 
         <?= GridView::widget([
