@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use Yii;
+use app\models\queries\CurrencyQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "currency".
@@ -14,7 +15,7 @@ use Yii;
  *
  * @property DebtRedistribution[] $debtRedistributions
  */
-class Currency extends \yii\db\ActiveRecord
+class Currency extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -35,6 +36,11 @@ class Currency extends \yii\db\ActiveRecord
             [['symbol'], 'string', 'max' => 4],
             [['code'], 'unique'],
         ];
+    }
+
+    public static function find()
+    {
+        return new CurrencyQuery(get_called_class());
     }
 
     /**

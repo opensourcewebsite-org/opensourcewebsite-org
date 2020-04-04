@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use app\models\queries\ContactQuery;
+use yii\base\Exception;
 use yii\db\ActiveRecord;
+use yii\helpers\VarDumper;
 
 /**
  * This is the model class for table "contact".
@@ -13,7 +16,7 @@ use yii\db\ActiveRecord;
  * @property string $name
  *
  * @property User $linkedUser
- * @property DebtRedistribution $debtRedistribution
+ * @property DebtRedistribution[] $debtRedistributions
  */
 class Contact extends ActiveRecord
 {
@@ -87,9 +90,9 @@ class Contact extends ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'link_user_id']);
     }
 
-    public function getDebtRedistribution()
+    public function getDebtRedistributions()
     {
-        return $this->hasOne(DebtRedistribution::className(), [
+        return $this->hasMany(DebtRedistribution::className(), [
             'from_user_id' => 'user_id',
             'to_user_id'   => 'link_user_id',
         ]);
@@ -122,5 +125,39 @@ class Contact extends ActiveRecord
     public static function find()
     {
         return new ContactQuery(get_called_class());
+    }
+
+    public function transactions()
+    {
+        return [self::SCENARIO_DEFAULT => self::OP_DELETE];
+    }
+
+    /**
+     * @throws Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function afterDelete()
+    {
+        $this->deleteRelations();
+        parent::afterDelete();
+    }
+
+    /**
+     * @throws Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    private function deleteRelations(): void
+    {
+        foreach ($this->debtRedistributions as $model) {
+            if (!$model->delete()) {
+                throw new Exception(VarDumper::dumpAsString([
+                    'message'    => 'Fail to delete ' . $model::className(),
+                    'errors'     => $model->errors,
+                    'attributes' => $model->attributes,
+                ]));
+            }
+        }
     }
 }

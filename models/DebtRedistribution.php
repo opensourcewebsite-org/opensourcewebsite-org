@@ -2,7 +2,9 @@
 
 namespace app\models;
 
+use app\models\queries\DebtRedistributionQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "debt_redistribution".
@@ -33,12 +35,6 @@ class DebtRedistribution extends ActiveRecord
         return 'debt_redistribution';
     }
 
-    public function init()
-    {
-        $this->loadDefaultValues();
-        parent::init();
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -53,10 +49,10 @@ class DebtRedistribution extends ActiveRecord
             //max_amount:
             ['max_amount', 'number', 'min' => 0],
             ['max_amount', $this->fnFormatMaxAmount(), 'skipOnEmpty' => false],
-            ['priority'  , 'default', 'value' => self::PRIORITY_NO],
 
             //db:
             [['from_user_id', 'to_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['from_user_id', 'to_user_id', 'currency_id']],
+            ['currency_id', 'exist', 'targetRelation' => 'currency'],
         ];
     }
 
@@ -77,9 +73,20 @@ class DebtRedistribution extends ActiveRecord
     public function attributeHints()
     {
         return [
-            'max_amount' => '<ul><li>"" (empty field) - no limit - allow any amount.</li><li>"0" - limit is 0, so deny to redistribute.</li></ul>',
-            'priority'   => '<ul><li>"1" - the highest.</li><li>"0" - no priority.</li></ul>',
+            'max_amount' => Html::ul([
+                '"0" - limit is 0, so deny to redistribute. Default value.',
+                '"" (empty field) - no limit - allow any amount.'
+            ]),
+//            'priority'   => '<ul><li>"0" - no priority.</li><li>"1" - the highest.</li></ul>', //todo [#294][priority]
         ];
+    }
+
+    /**
+     * @return DebtRedistributionQuery
+     */
+    public static function find()
+    {
+        return new DebtRedistributionQuery(get_called_class());
     }
 
     public function getFromUser()

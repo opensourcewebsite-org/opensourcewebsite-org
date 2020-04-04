@@ -44,45 +44,53 @@ class DebtRedistributionFormTest extends Unit
         parent::_after();
     }
 
+    /**
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function testFindAndSave()
     {
-        $model = new DebtRedistributionForm();
+        $model = DebtRedistributionForm::factory();
         $model->load([
-            'contactId'  => 1,
-            'max_amount' => 15,
-//            'priority'   => 5, //todo [#294][priority]
+            'contactId'   => 1,
+            'currency_id' => 1,
+            'max_amount'  => 15,
         ], '');
         expect('save() is success', $model->save())->true(); // create any for test
 
-        $model = DebtRedistributionForm::getModel($model->id);
+        $model = DebtRedistributionForm::findModel($model->id);
         expect('DebtRedistributionForm::getModel() works fine', $model)->notEmpty();
         expect('attribute "max_amount" is correct', $model->max_amount)->equals(15);
-//        expect('attribute "priority" is correct', $model->priority)->equals(5);//todo [#294][priority]
+        expect('attribute "currency_id" is correct', $model->currency_id)->equals(1);
 
         $model->load([
-            'contactId'  => 1,
-            'max_amount' => 20,
-//            'priority'   => 15,//todo [#294][priority]
+            'contactId'   => 1,
+            'currency_id' => 2,
+            'max_amount'  => 20,
         ], '');
         expect('save() is success', $model->save())->true();
 
-        $model = DebtRedistributionForm::getModel($model->id);
+        $model = DebtRedistributionForm::findModel($model->id);
         expect('DebtRedistributionForm::getModel() works fine', $model)->notEmpty();
         expect('attribute "max_amount" is correct', $model->max_amount)->equals(20);
-//        expect('attribute "priority" is correct', $model->priority)->equals(15);//todo [#294][priority]
+        expect('attribute "currency_id" is correct', $model->currency_id)->equals(2);
     }
 
+    /**
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
     public function testIsSenseToStore()
     {
-        $model = new DebtRedistributionForm();
+        $model = DebtRedistributionForm::factory();
         $model->load([
-            'contactId'  => 1,
-            'max_amount' => DebtRedistributionForm::MAX_AMOUNT_DENY,
-//            'priority'   => DebtRedistributionForm::PRIORITY_NO,//todo [#294][priority]
+            'contactId'   => 1,
+            'currency_id' => 1,
+            'max_amount'  => DebtRedistributionForm::MAX_AMOUNT_DENY,
         ], '');
 
-        expect('save() is success', $model->save())->true();
-        expect('model is still NewRecord, because no sense to store default values', $model->isNewRecord)->true();
+        expect('save() is false, because no sense to store default values', $model->save())->false();
 
         $model->max_amount = 9; //any value not '0'
         expect('save() is success', $model->save())->true();
@@ -92,15 +100,23 @@ class DebtRedistributionFormTest extends Unit
         $model->max_amount = DebtRedistributionForm::MAX_AMOUNT_DENY;
         expect('save() is success', $model->save())->true();
         $exists = DebtRedistributionForm::find()->where(['id' => $model->id])->exists();
-        expect('model is NOT exist in DB, because no sense to store default values', $exists)->false();
+        expect('model is NOT exist in DB, because no sense to store default values - it was deleted', $exists)->false();
     }
 
     /**
+     * @param $valid
+     * @param $data
+     * @param $newAttributes
+     * @param array $errorAttr
+     *
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     *
      * @dataProvider getData
      */
     public function testValidation($valid, $data, $newAttributes, $errorAttr = [])
     {
-        $model = new DebtRedistributionForm();
+        $model = DebtRedistributionForm::factory();
         $model->load($data, '');
 
         expect('validate()', $model->validate())->equals($valid);
@@ -120,7 +136,6 @@ class DebtRedistributionFormTest extends Unit
         }
     }
 
-    //todo add currency
     public function getData(): array
     {
         return [
@@ -138,28 +153,23 @@ class DebtRedistributionFormTest extends Unit
 //            ],
             "max_amount: '' => null" => [
                 'valid' => true,
-                ['contactId' => 1, 'max_amount' => ''  , /*'priority' => 0*/],//todo [#294][priority]
-                ['contactId' => 1, 'max_amount' => null, /*'priority' => 0*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => ''  ],
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => null],
             ],
             'max_amount: null => null' => [
                 'valid' => true,
-                ['contactId' => 1, 'max_amount' => null, /*'priority' => 0*/],//todo [#294][priority]
-                ['contactId' => 1, 'max_amount' => null, /*'priority' => 0*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => null],
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => null],
             ],
-            'not empty: 5, 0'          => [
+            'not empty: 5'          => [
                 'valid' => true,
-                ['contactId' => 1, 'max_amount' => 5, /*'priority' => 0*/],//todo [#294][priority]
-                ['contactId' => 1, 'max_amount' => 5, /*'priority' => 0*/],//todo [#294][priority]
-            ],
-            'not empty: 0, 5'                         => [
-                'valid' => true,
-                ['contactId' => 1, 'max_amount' => 0, /*'priority' => 5*/],//todo [#294][priority]
-                ['contactId' => 1, 'max_amount' => 0, /*'priority' => 5*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 5],
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 5],
             ],
             'max_amount can be decimal'                         => [
                 'valid' => true,
-                ['contactId' => 1, 'max_amount' => 5.4, /*'priority' => 5*/],//todo [#294][priority]
-                ['contactId' => 1, 'max_amount' => 5.4, /*'priority' => 5*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 5.4],
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 5.4],
             ],
             //todo [#294][priority]
 //            'priority can be up to 255'                         => [
@@ -169,9 +179,9 @@ class DebtRedistributionFormTest extends Unit
 //            ],
 
             //INVALID:
-            'invalid: -5, -5'                         => [
+            'invalid: -5'                         => [
                 'valid' => false,
-                ['contactId' => 1, 'max_amount' => -5, /*'priority' => -5*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => -5, /*'priority' => -5*/],//todo [#294][priority]
                 [],
                 ['max_amount', /*'priority'*/],//todo [#294][priority]
             ],
@@ -184,43 +194,64 @@ class DebtRedistributionFormTest extends Unit
 //            ],
             'invalid: is not number'                      => [
                 'valid' => false,
-                ['contactId' => 1, 'max_amount' => 'text', /*'priority' => 'text'*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 'text', /*'priority' => 'text'*/],//todo [#294][priority]
                 [],
                 ['max_amount', /*'priority'*/],//todo [#294][priority]
             ],
+            //currency
+            "invalid: currency_id = ''"               => [
+                'valid' => false,
+                ['contactId' => 1, 'currency_id' => '', 'max_amount' => 5],
+                [],
+                ['currency_id'],
+            ],
+            'invalid: currency_id = null'               => [
+                'valid' => false,
+                ['contactId' => 1, 'currency_id' => null, 'max_amount' => 5],
+                [],
+                ['currency_id'],
+            ],
+            'invalid: currency_id = set, but not exist' => [
+                'valid' => false,
+                ['contactId' => 1, 'currency_id' => 99999, 'max_amount' => 5],
+                [],
+                ['currency_id'],
+            ],
+
+            //contact
             "invalid: contactId = ''"               => [
                 'valid' => false,
-                ['contactId' => '', 'max_amount' => 5],
+                ['contactId' => '', 'currency_id' => 1, 'max_amount' => 5],
                 [],
                 ['contactId'],
             ],
             'invalid: contactId = null'               => [
                 'valid' => false,
-                ['contactId' => null, 'max_amount' => 5],
+                ['contactId' => null, 'currency_id' => 1, 'max_amount' => 5],
                 [],
                 ['contactId'],
             ],
             'invalid: contactId = set, but not exist' => [
                 'valid' => false,
-                ['contactId' => 999, 'max_amount' => 5],
+                ['contactId' => 999, 'currency_id' => 1, 'max_amount' => 5],
                 [],
                 ['contactId'],
             ],
             'invalid: `contact` belongs not to current user' => [
                 'valid' => false,
-                ['contactId' => 4, 'max_amount' => 5],
+                ['contactId' => 4, 'currency_id' => 1, 'max_amount' => 5],
                 [],
                 ['contactId'],
             ],
             'invalid: `contact`.`link_user_id` is empty' => [
                 'valid' => false,
-                ['contactId' => 2, 'max_amount' => 5],
+                ['contactId' => 2, 'currency_id' => 1, 'max_amount' => 5],
                 [],
                 ['contactId'],
             ],
             'invalid: `contact`.`link_user_id` is NOT empty, but not exist' => [
                 'valid' => false,
-                ['contactId' => 3, 'max_amount' => 5],
+                ['contactId' => 3, 'currency_id' => 1, 'max_amount' => 5],
                 [],
                 ['contactId'],
             ],

@@ -3,39 +3,85 @@
 namespace app\models;
 
 use Yii;
+use yii\web\NotFoundHttpException;
 
 class DebtRedistributionForm extends DebtRedistribution
 {
     public $contactId;
 
-    /** @var Contact */
-    private $contact;
     private $isSenseToStore = true;
+
+    /**
+     * use {@see DebtRedistributionForm::factory()} instead
+     *
+     * {@inheritDoc}
+     *
+     * @param array $config
+     */
+    protected function __construct($config = [])
+    {
+        parent::__construct($config);
+    }
+
+    /**
+     * @param int|null|DebtRedistribution|Contact $data
+     *
+     * @return self
+     */
+    public static function factory($data = null): self
+    {
+        $model = new self();
+        $model->loadDefaultValues();
+
+        if ($data instanceof DebtRedistribution) {
+            $model->setAttributes($data->attributes, false);
+        } elseif ($data instanceof Contact) {
+            $model->contactId = $data->id;
+        } elseif (is_numeric($data)) {
+            $model->contactId = $data;
+        }
+
+        return $model;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return null|self
+     * @throws NotFoundHttpException
+     */
+    public static function findModel($id): ?self
+    {
+        return self::find()
+            ->where(['id' => $id])
+            ->fromUser()
+            ->one();
+    }
 
     public function rules()
     {
+        $msg = Yii::t('app', 'You are trying to save default values. Just close this form.');
+
         return array_merge(parent::rules(), [
-            [['contactId'], 'required'],
-            [['contactId'], $this->fnValidateContact()],
+            ['id', 'integer', 'min' => 1],
+
+            ['contactId', 'required',
+                'when'       => static function (self $model) { return !$model->id; },
+                'whenClient' => 'function () {return false;}', //no sense to check it on client
+            ],
+            ['contactId', $this->fnValidateContact(), 'skipOnEmpty' => true],
+
+            /** this rule is only for UI behavior - to explain user why this particular case will not saved.
+             * if you remove it - backend logic will not changed
+             * to change backend logic - {@see self::$isSenseToStore}
+             */
+            ['max_amount', 'required',
+                'when'       => [$this, 'getIsNewRecord'],
+                'whenClient' => 'function () {return false;}',
+                'isEmpty'    => function () { return $this->isMaxAmountDeny(); },
+                'message'    => $msg,
+            ],
         ]);
-    }
-
-    public static function getModel($id = null): DebtRedistributionForm
-    {
-        if ($id && ($model = DebtRedistributionForm::findOne($id)) !== null) {
-            return $model;
-        }
-
-        return new DebtRedistributionForm();
-    }
-
-    public function loadContact(Contact $contact): void
-    {
-        $this->contactId = $contact->id;
-
-        if ($contact->debtRedistribution) {
-            $this->setAttributes($contact->debtRedistribution->attributes, false);
-        }
     }
 
     public function afterValidate()
@@ -75,20 +121,16 @@ class DebtRedistributionForm extends DebtRedistribution
     private function fnValidateContact(): callable
     {
         return function () {
-            $this->contact = Contact::find()
-                ->where(['id' => $this->contactId])
-                ->userOwner()
-                ->virtual(false)
-                ->one();
+            $contact = Contact::find()->forDebtRedistribution($this->contactId)->one();
 
-            if (!$this->contact || !$this->contact->linkedUser) {
+            if (!$contact || !$contact->linkedUser) {
                 $this->addError('contactId', 'Contact is wrong. Reload page, please.');
                 return;
             }
 
-            $this->from_user_id = $this->contact->user_id;
-            $this->to_user_id   = $this->contact->link_user_id;
-            $this->populateRelation('toUser', $this->contact->linkedUser);
+            $this->from_user_id = $contact->user_id;
+            $this->to_user_id   = $contact->link_user_id;
+            $this->populateRelation('toUser', $contact->linkedUser);
         };
     }
 }
