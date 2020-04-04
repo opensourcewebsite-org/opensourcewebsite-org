@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\components;
 
-use TelegramBot\Api\Types\Update;
 use Yii;
+use TelegramBot\Api\Types\Update;
 use yii\base\Component;
 
 /**
@@ -27,6 +27,7 @@ class CommandRouteResolver extends Component
     {
         $route = null;
         $params = [];
+        $isStateRoute = false;
 
         foreach ($this->commandResolvers as $commandResolver) {
             $commandText = $commandResolver->resolveCommand($update);
@@ -43,9 +44,12 @@ class CommandRouteResolver extends Component
 
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
+            $isStateRoute = true;
         }
 
-        return [ $route, $params ];
+        Yii::warning('Input: ' . ($commandText ?? '') . ', State: ' . ($state) .', Resolved route: ' . ($route ?? ''));
+
+        return [ $route, $params, $isStateRoute ];
     }
 
     /**

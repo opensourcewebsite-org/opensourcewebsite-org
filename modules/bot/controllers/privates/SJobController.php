@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\Controller;
 
 /**
  * Class SJobController
@@ -14,37 +14,44 @@ use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
  */
 class SJobController extends Controller
 {
-    /**
-     * @return array
-     */
     public function actionIndex()
-	{
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('index'),
+    {
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index', [
+                    'isNotificationsEnabled' => true,
+                ]),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Yii::t('bot', 'Contribution'),
-                            ],
+                            'text' => Yii::t('bot', 'Resumes'),
+                            'callback_data' => ResumesController::createRoute(),
+                        ],
+                    ],
+                    [
+                        [
+                            'text' => Yii::t('bot', 'Vacancies'),
+                            'callback_data' => CompaniesController::createRoute(),
+                        ],
+                    ],
+                    [
+                        [
+                            'text' => Yii::t('bot', 'Companies'),
+                            'callback_data' => CompaniesController::createRoute(),
+                        ],
+                    ],
+                    [
+                        [
+                            'text' => Emoji::BACK,
+                            'callback_data' => ServicesController::createRoute(),
                         ],
                         [
-                            [
-                                'callback_data' => ServicesController::createRoute(),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => '📱',
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

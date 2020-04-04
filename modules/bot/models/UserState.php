@@ -2,39 +2,56 @@
 
 namespace app\modules\bot\models;
 
+/**
+ * Class UserState
+ * @package app\modules\bot\models
+ */
 class UserState
 {
     private $fields = [];
 
-    public function getName()
+    private function __construct()
     {
-        return isset($this->fields['name']) ? $this->fields['name'] : null;
+        $fields['intermediate'] = [];
     }
 
-    public function setName($value)
+    public function getName()
+    {
+        return $this->fields['name'] ?? null;
+    }
+
+    public function setName(?string $value)
     {
         $this->fields['name'] = $value;
     }
 
-    public function getEmail()
+    public function getIntermediateField(string $name, $defaultValue)
     {
-        return isset($this->fields['email']) ? $this->fields['email'] : null;
+        return $this->fields['intermediate'][$name] ?? null;
     }
 
-    public function setEmail($value)
+    public function setIntermediateField(string $name, ?string $value)
     {
-        $this->fields['email'] = $value;
+        $this->fields['intermediate'][$name] = $value;
     }
 
-    public function toJson()
+    public function save(User $user)
     {
-        return json_encode($this->fields);
+        $user->state = json_encode($this->fields);
+        return $user->save();
     }
 
-    public static function fromJson($json)
+    public function reset()
+    {
+        $this->fields = [];
+    }
+
+    public static function fromUser(User $user)
     {
         $state = new UserState();
-        $state->fields = json_decode($json, true);
+        if (!empty($user->state)) {
+            $state->fields = json_decode($user->state, true);
+        }
         return $state;
     }
 }

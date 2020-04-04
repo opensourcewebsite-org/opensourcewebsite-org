@@ -19,9 +19,6 @@
     <!-- @see http://phpmd.org/rules/codesize.html#cyclomaticcomplexity -->
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity"/>
 
-    <!-- @see http://phpmd.org/rules/codesize.html#npathcomplexity -->
-    <rule ref="rulesets/codesize.xml/NPathComplexity"/>
-
     <!-- @see http://phpmd.org/rules/codesize.html#excessivemethodlength -->
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength"/>
 
@@ -51,15 +48,13 @@
     <rule ref="rulesets/controversial.xml/Superglobals"/>
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcaseclassname -->
-    <!-- TODO: Temporarily disabled due to /modules/bot/controllers -->
-    <!-- <rule ref="rulesets/controversial.xml/CamelCaseClassName"/> -->
+    <rule ref="rulesets/controversial.xml/CamelCaseClassName"/>
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcasepropertyname -->
     <rule ref="rulesets/controversial.xml/CamelCasePropertyName"/>
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcasemethodname -->
-    <!-- TODO: Temporarily disabled due to /modules/bot/controllers -->
-    <!-- <rule ref="rulesets/controversial.xml/CamelCaseMethodName"/> -->
+    <rule ref="rulesets/controversial.xml/CamelCaseMethodName"/>
 
     <!-- @see http://phpmd.org/rules/controversial.html#camelcaseparametername -->
     <rule ref="rulesets/controversial.xml/CamelCaseParameterName"/>

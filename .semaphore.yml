@@ -1,9 +1,11 @@
+# For more PHP information and examples, see
+# https://docs.semaphoreci.com/article/84-language-php
 version: v1.0
 name: Initial Pipeline
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1604
+    os_image: ubuntu1804
 global_job_config:
     env_vars:
       - name: CC_TEST_REPORTER_ID
@@ -21,6 +23,8 @@ blocks:
             - checkout
             - sem-version php 7.2
             - cache restore
+            - php --version
+            - pecl install xdebug
             - sem-service start mysql 5.7
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
             - composer install --prefer-dist --no-interaction
@@ -29,7 +33,7 @@ blocks:
             - cp config/params.dist.php config/params.php
             - cp config/web-local.dist.php config/web-local.php
             - mysql --version
-            - mysql -h 127.0.0.1 -P 3306 -u root -e 'CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+            - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
             - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             - chmod +x ./cc-test-reporter
             - ./cc-test-reporter before-build

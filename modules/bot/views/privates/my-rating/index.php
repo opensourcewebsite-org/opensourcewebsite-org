@@ -1,9 +1,9 @@
 <b><?= Yii::t('bot', 'Your Rating') ?></b><br/><br/>
 
-<b><?= Yii::t('bot', 'Rank') ?>:</b> <b><?= $ranking[0] ?></b> <?= \Yii::t('bot', 'of') ?> <?= $ranking[1] ?><br/>
-<b><?= Yii::t('bot', 'Voting Power') ?>:</b> <b><?= $overall_rating[2] ?>%</b> <?= \Yii::t('bot', 'of') ?> 100%<br/>
-<b><?= Yii::t('bot', 'Rating') ?>:</b> <b><?= $overall_rating[0] ?></b> <?= \Yii::t('bot', 'of') ?> <?= $overall_rating[1] ?><br/>
-<b><?= Yii::t('bot', 'Active Rating') ?>:</b> <b><?= $active_rating ?></b> (<?= \Yii::t('bot', 'in the last {0,number} days', 30) ?>)<br/>
+<b><?= Yii::t('bot', 'Rank') ?>:</b> <b><?= $ranking[0] ?></b> <?= Yii::t('bot', 'of') ?> <?= $ranking[1] ?><br/>
+<b><?= Yii::t('bot', 'Voting Power') ?>:</b> <b><?= $overall_rating[2] ?>%</b> <?= Yii::t('bot', 'of') ?> 100%<br/>
+<b><?= Yii::t('bot', 'Rating') ?>:</b> <b><?= $overall_rating[0] ?></b> <?= Yii::t('bot', 'of') ?> <?= $overall_rating[1] ?><br/>
+<b><?= Yii::t('bot', 'Active Rating') ?>:</b> <b><?= $active_rating ?></b> (<?= Yii::t('bot', 'in the last {0,number} days', 30) ?>)<br/>
 <br/>
 <?= Yii::t('bot', 'Rating provides') ?>:<br/>
 <br/>
