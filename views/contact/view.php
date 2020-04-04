@@ -70,6 +70,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 },
                             ],
                             'name',
+                            'debt_redistribution_priority',
                         ],
                     ]); ?>
                 </div>

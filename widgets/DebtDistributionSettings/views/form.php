@@ -39,11 +39,6 @@ $model   = $context->debtRed;
             <?= $form->field($model, 'max_amount')->textInput(['type' => 'number']); ?>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <?php /*= $form->field($model, 'priority')->textInput(['type' => 'number']);*/ //todo [#294][priority] ?>
-        </div>
-    </div>
 
     <button type="submit" style="display:none;"></button><!-- to allow to submit form on `enter` key -->
 <?php ActiveForm::end() ?>

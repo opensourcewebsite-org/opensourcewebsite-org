@@ -140,17 +140,6 @@ class DebtRedistributionFormTest extends Unit
     {
         return [
             //VALID:
-            //todo [#294][priority]
-//            "priority: '' => 0"        => [
-//                'valid' => true,
-//                ['contactId' => 1, 'max_amount' => 50, 'priority' => ''],
-//                ['contactId' => 1, 'max_amount' => 50, 'priority' => 0 ],
-//            ],
-//            'priority: null => 0'      => [
-//                'valid' => true,
-//                ['contactId' => 1, 'max_amount' => 50, 'priority' => null],
-//                ['contactId' => 1, 'max_amount' => 50, 'priority' => 0   ],
-//            ],
             "max_amount: '' => null" => [
                 'valid' => true,
                 ['contactId' => 1, 'currency_id' => 1, 'max_amount' => ''  ],
@@ -171,32 +160,19 @@ class DebtRedistributionFormTest extends Unit
                 ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 5.4],
                 ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 5.4],
             ],
-            //todo [#294][priority]
-//            'priority can be up to 255'                         => [
-//                'valid' => true,
-//                ['contactId' => 1, 'max_amount' => 5, 'priority' => 255],
-//                ['contactId' => 1, 'max_amount' => 5, 'priority' => 255],
-//            ],
 
             //INVALID:
             'invalid: -5'                         => [
                 'valid' => false,
-                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => -5, /*'priority' => -5*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => -5],
                 [],
-                ['max_amount', /*'priority'*/],//todo [#294][priority]
+                ['max_amount'],
             ],
-            //todo [#294][priority]
-//            'invalid: priority is higher than 255'                         => [
-//                'valid' => false,
-//                ['contactId' => 1, 'max_amount' => 9999999, 'priority' => 256],
-//                [],
-//                ['priority'],
-//            ],
             'invalid: is not number'                      => [
                 'valid' => false,
-                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 'text', /*'priority' => 'text'*/],//todo [#294][priority]
+                ['contactId' => 1, 'currency_id' => 1, 'max_amount' => 'text'],
                 [],
-                ['max_amount', /*'priority'*/],//todo [#294][priority]
+                ['max_amount'],
             ],
             //currency
             "invalid: currency_id = ''"               => [

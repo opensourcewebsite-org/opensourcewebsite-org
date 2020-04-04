@@ -14,7 +14,6 @@ use yii\helpers\Html;
  * @property int      $to_user_id
  * @property int      $currency_id
  * @property int|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
- * @property int      $priority     "1" - the highest. "0" - no priority. //todo [#294][priority]
  *
  * @property User $fromUser
  * @property User $toUser
@@ -24,8 +23,6 @@ class DebtRedistribution extends ActiveRecord
 {
     public const MAX_AMOUNT_ANY  = null;
     public const MAX_AMOUNT_DENY = 0;
-
-    public const PRIORITY_NO = 0;
 
     /**
      * {@inheritdoc}
@@ -42,9 +39,6 @@ class DebtRedistribution extends ActiveRecord
     {
         return [
             ['currency_id', 'required'],
-            //todo [#294][priority]
-//            ['priority', 'integer', 'min' => 0, 'max' => 255],
-//            ['priority', 'default', 'value' => self::PRIORITY_NO],
 
             //max_amount:
             ['max_amount', 'number', 'min' => 0],
@@ -77,7 +71,6 @@ class DebtRedistribution extends ActiveRecord
                 '"0" - limit is 0, so deny to redistribute. Default value.',
                 '"" (empty field) - no limit - allow any amount.'
             ]),
-//            'priority'   => '<ul><li>"0" - no priority.</li><li>"1" - the highest.</li></ul>', //todo [#294][priority]
         ];
     }
 
@@ -103,12 +96,6 @@ class DebtRedistribution extends ActiveRecord
     {
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
-
-    //todo [#294][priority]
-//    public function isPriorityEmpty(): bool
-//    {
-//        return $this->priority == self::PRIORITY_NO;
-//    }
 
     public function isMaxAmountAny(): bool
     {

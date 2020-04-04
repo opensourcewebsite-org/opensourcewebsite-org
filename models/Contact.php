@@ -5,6 +5,7 @@ namespace app\models;
 use app\models\queries\ContactQuery;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use yii\helpers\VarDumper;
 
 /**
@@ -14,12 +15,14 @@ use yii\helpers\VarDumper;
  * @property int $user_id
  * @property int $link_user_id
  * @property string $name
+ * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority.
  *
  * @property User $linkedUser
  * @property DebtRedistribution[] $debtRedistributions
  */
 class Contact extends ActiveRecord
 {
+    public const DEBT_REDISTRIBUTION_PRIORITY_NO = 0;
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
@@ -44,11 +47,16 @@ class Contact extends ActiveRecord
             ['userIdOrName', 'validateUserExistence'],
             [['user_id', 'link_user_id'], 'integer'],
             [['name'], 'string', 'max' => 255],
-            ['name', 'required', 'when' => function ($model) {
+            ['name', 'required',
+                'when' => static function (self $model) {
                     return empty($model->userIdOrName);
-                }, 'whenClient' => "function (attribute, value) {
-                return $('#contact-useridorname').val() == '';
-            }"],
+                },
+                'whenClient' => "function (attribute, value) {
+                    return $('#contact-useridorname').val() == '';
+                }",
+            ],
+            ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => 255],
+            ['debt_redistribution_priority', 'default', 'value' => self::DEBT_REDISTRIBUTION_PRIORITY_NO],
         ];
     }
 
@@ -63,6 +71,17 @@ class Contact extends ActiveRecord
             'link_user_id' => 'Link User ID',
             'name' => 'Name',
             'userIdOrName' => 'User ID / Username',
+        ];
+    }
+
+    public function attributeHints()
+    {
+        return [
+            'debt_redistribution_priority' => Html::ul([
+                '"0" - no priority.',
+                '"1" - the highest.',
+                "Note: it has no affect, if field \"{$this->getAttributeLabel('userIdOrName')}\" is empty",
+            ]),
         ];
     }
 
@@ -119,7 +138,17 @@ class Contact extends ActiveRecord
 
     public function canHaveDebtRedistribution(): bool
     {
-        return (bool)$this->link_user_id;
+        return !$this->isVirtual();
+    }
+
+    public function isVirtual(): bool
+    {
+        return !$this->link_user_id;
+    }
+
+    public function isPriorityEmpty(): bool
+    {
+        return $this->debt_redistribution_priority == self::DEBT_REDISTRIBUTION_PRIORITY_NO;
     }
 
     public static function find()
@@ -129,7 +158,7 @@ class Contact extends ActiveRecord
 
     public function transactions()
     {
-        return [self::SCENARIO_DEFAULT => self::OP_DELETE];
+        return [self::SCENARIO_DEFAULT => self::OP_DELETE | self::OP_UPDATE];
     }
 
     /**
@@ -139,8 +168,27 @@ class Contact extends ActiveRecord
      */
     public function afterDelete()
     {
-        $this->deleteRelations();
+        $this->deleteDebtRedistributions($this->debtRedistributions);
         parent::afterDelete();
+    }
+
+    /**
+     * @param bool $insert
+     *
+     * @return bool
+     * @throws Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        $this->deleteOldUserSettings();
+
+        return true;
     }
 
     /**
@@ -148,9 +196,28 @@ class Contact extends ActiveRecord
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    private function deleteRelations(): void
+    private function deleteOldUserSettings(): void
     {
-        foreach ($this->debtRedistributions as $model) {
+        $oldId = $this->getOldAttribute('link_user_id');
+        if ($oldId && $this->isAttributeChanged('link_user_id')) {
+            $aModel = DebtRedistribution::find()
+                ->fromUser($this->user_id)
+                ->toUser($oldId)
+                ->all();
+            $this->deleteDebtRedistributions($aModel);
+        }
+    }
+
+    /**
+     * @param DebtRedistribution[] $aModel
+     *
+     * @throws Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    private function deleteDebtRedistributions($aModel): void
+    {
+        foreach ($aModel as $model) {
             if (!$model->delete()) {
                 throw new Exception(VarDumper::dumpAsString([
                     'message'    => 'Fail to delete ' . $model::className(),
@@ -159,5 +226,10 @@ class Contact extends ActiveRecord
                 ]));
             }
         }
+    }
+
+    public function getUserIdOrName()
+    {
+        return empty($this->linkedUser->username) ? $this->link_user_id : $this->linkedUser->username;
     }
 }

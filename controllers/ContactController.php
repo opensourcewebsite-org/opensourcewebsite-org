@@ -81,6 +81,7 @@ class ContactController extends Controller
     public function actionCreate()
     {
         $model = new Contact();
+        $model->loadDefaultValues();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
@@ -130,9 +131,7 @@ class ContactController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if (!empty($model->linkedUser)) {
-            $model->userIdOrName = !empty($model->linkedUser->username) ? $model->linkedUser->username : $model->linkedUser->id;
-        }
+        $model->userIdOrName = $model->getUserIdOrName();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
