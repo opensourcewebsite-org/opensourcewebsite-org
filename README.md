@@ -16,7 +16,7 @@
 
 [![Telegram Bot](https://img.shields.io/badge/Telegram-bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
 [![Chat on Slack](https://img.shields.io/badge/Slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
-[![Chat on Discord](https://img.shields.io/badge/Discord-chat-CC2B5E.svg?style=flat-square&logo=discord)](https://discord.gg/JstMPK)
+[![Chat on Discord](https://img.shields.io/badge/Discord-chat-CC2B5E.svg?style=flat-square&logo=discord)](https://discord.gg/94WpSPJ)
 [![Chat on Gitter](https://img.shields.io/badge/Gitter-chat-CC2B5E.svg?style=flat-square&logo=gitter)](https://gitter.im/opensourcewebsite-org)
 
 [![Tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fopensourcewebsite.org)](https://twitter.com/intent/tweet?text=OpenSourceWebsite+(OSW)+-+online+community+managed+by+users+using+electronic+voting+and+modifying+source+code.&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource,community,socialnetwork,digitalfuture)
@@ -68,4 +68,4 @@ This project is open source and available freely under the [MIT license](LICENSE
 
 ## Questions and Suggestions
 
-Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/JstMPK), [Gitter](https://gitter.im/opensourcewebsite-org) or [email support](mailto:hello@opensourcewebsite.org).
+Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org) or [email support](mailto:hello@opensourcewebsite.org).
