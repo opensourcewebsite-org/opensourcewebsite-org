@@ -41,6 +41,14 @@ class AdminChatController extends Controller
                             'replyMarkup' => new InlineKeyboardMarkup([
                                 [
                                     [
+                                        'callback_data' => AdminJoinHiderController::createRoute('index', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => Yii::t('bot', 'Join Hider'),
+                                    ],
+                                ],
+                                [
+                                    [
                                         'callback_data' => AdminMessageFilterController::createRoute('index', [
                                             'chatId' => $chatId,
                                         ]),
@@ -49,10 +57,18 @@ class AdminChatController extends Controller
                                 ],
                                 [
                                     [
-                                        'callback_data' => AdminJoinHiderController::createRoute('index', [
+                                        'callback_data' => AdminVoteBanController::createRoute('index', [
                                             'chatId' => $chatId,
                                         ]),
-                                        'text' => Yii::t('bot', 'Join Hider'),
+                                        'text' => '🏗 ' . Yii::t('bot', 'Vote Ban'),
+                                    ],
+                                ],
+                                [
+                                    [
+                                        'callback_data' => AdminStarTopController::createRoute('index', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => '🏗 ' . Yii::t('bot', 'Star Top'),
                                     ],
                                 ],
                                 [
