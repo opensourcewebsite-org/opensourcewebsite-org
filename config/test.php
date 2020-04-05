@@ -2,7 +2,7 @@
 
 use Dotenv\Dotenv;
 
-$dotenv = new Dotenv(__DIR__ . '/../tests/bin/');
+$dotenv = new Dotenv(__DIR__, '/../.env.test');
 $dotenv->load();
 
 $params = require __DIR__ . '/params.php';
