@@ -147,7 +147,7 @@ To add a column with integer values between 0-255, use `$this->tinyInteger()->un
 
 To add a column with integer values in the range 0-65535, use `$this->smallInteger()->unsigned()`.
 
-To add a column with date values in most cases, you need to use the data type `$this->integer()->unsigned()`. Exceptions - if the column will be actively used in mysql requests as a date.
+To add a column with date values in most cases, use the data type `$this->integer()->unsigned()`. Exceptions - if the column will be actively used in mysql requests as a date.
 
 Usually, database tables are named in the singular for listing any objects. For example `user`, but not `users`.
 
