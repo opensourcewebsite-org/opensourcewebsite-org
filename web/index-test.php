@@ -8,7 +8,7 @@ if (!in_array(@$_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
 }
 require __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = new Dotenv('../tests/bin/');
+$dotenv = new Dotenv(__DIR__, '../.env.test');
 $dotenv->load();
 
 defined('YII_DEBUG') || define('YII_DEBUG', getenv('YII_DEBUG'));
