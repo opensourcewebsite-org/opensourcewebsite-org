@@ -1,4 +1,10 @@
 <?php
+
+use Dotenv\Dotenv;
+
+$dotenv = new Dotenv(__DIR__ . '/../tests/bin/');
+$dotenv->load();
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/test_db.php';
 
@@ -36,6 +42,13 @@ return [
                 'domain' => 'localhost',
             ],
             */
+        ],
+        'i18n' => [
+            'translations' => [
+                '*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                ],
+            ],
         ],
     ],
     'params' => $params,

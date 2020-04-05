@@ -8,10 +8,19 @@
  * @license http://www.yiiframework.com/license/
  */
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+use Dotenv\Dotenv;
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+$dotenv = new Dotenv(__DIR__, '/../../.env.test');
+$dotenv->load();
+
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'test');
 
-require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../vendor/yiisoft/yii2/Yii.php';
 
 $config = yii\helpers\ArrayHelper::merge(
