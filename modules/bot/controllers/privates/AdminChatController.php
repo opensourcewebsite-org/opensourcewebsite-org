@@ -8,6 +8,7 @@ use app\modules\bot\components\response\commands\EditMessageTextCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class AdminChatController
@@ -30,6 +31,7 @@ class AdminChatController extends Controller
 
             $chatTitle = $chat->title;
 
+            // TODO refactoring
             if ($this->getUpdate()->getCallbackQuery()) {
                 return [
                     new EditMessageTextCommand(
@@ -76,6 +78,16 @@ class AdminChatController extends Controller
                                         'callback_data' => AdminController::createRoute(),
                                         'text' => '🔙',
                                     ],
+                                    [
+                                        'callback_data' => MenuController::createRoute(),
+                                        'text' => Emoji::MENU,
+                                    ],
+                                    [
+                                        'callback_data' => self::createRoute('refresh', [
+                                            'chatId' => $chatId,
+                                        ]),
+                                        'text' => '🔄',
+                                    ],
                                 ],
                             ]),
                         ]
@@ -115,6 +127,21 @@ class AdminChatController extends Controller
                         ]
                     ),
                 ];
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function actionRefresh($chatId = null)
+    {
+        // TODO add refresh for selected group
+        if ($chatId) {
+            $chat = Chat::findOne($chatId);
+
+            if (!isset($chat)) {
+                return [];
             }
         }
     }
