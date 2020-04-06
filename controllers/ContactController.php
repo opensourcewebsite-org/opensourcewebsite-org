@@ -47,12 +47,9 @@ class ContactController extends Controller
      */
     public function actionIndex($view = Contact::VIEW_USER)
     {
-        $query = Contact::find()->andWhere(['user_id' => Yii::$app->user->id]);
-        if ((int) $view === Contact::VIEW_USER) {
-            $query->andWhere(['NOT', ['link_user_id' => null]]);
-        } else {
-            $query->andWhere(['link_user_id' => null]);
-        }
+        $query = Contact::find()
+            ->userOwner()
+            ->virtual((int)$view !== Contact::VIEW_USER);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -84,6 +81,7 @@ class ContactController extends Controller
     public function actionCreate()
     {
         $model = new Contact();
+        $model->loadDefaultValues();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
@@ -133,9 +131,7 @@ class ContactController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if (!empty($model->linkedUser)) {
-            $model->userIdOrName = !empty($model->linkedUser->username) ? $model->linkedUser->username : $model->linkedUser->id;
-        }
+        $model->userIdOrName = $model->getUserIdOrName();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
@@ -195,7 +191,7 @@ class ContactController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Contact::find()->andWhere(['id' => $id, 'user_id' => Yii::$app->user->id])->one()) !== null) {
+        if (($model = Contact::find()->andWhere(['id' => $id])->userOwner()->one()) !== null) {
             return $model;
         }
 

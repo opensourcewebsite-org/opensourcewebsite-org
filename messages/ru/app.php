@@ -41,4 +41,6 @@ return [
     'Advanced' => 'Продвинутый',
     'Proficient' => 'Профессиональный',
     'Native' => 'Родной',
+    'Debt Redistribution' => 'Перераспределение долгов',
+    'Debt Redistribution for user "#{userId}"' => 'Перераспределение долгов для Пользователя "#{userId}"',
 ];
