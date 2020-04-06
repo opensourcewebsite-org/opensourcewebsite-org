@@ -87,7 +87,7 @@ class DefaultController extends FixtureController
 
         /** @var ARGenerator $fixtureRand */
         $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);
-        $this->stdout($fixtureRand::className(true) . ' ');
+        $this->stdout($fixtureRand::className(true) . PHP_EOL);
         parent::loadFixtures([$fixtureRand]);
 
         sleep($this->interval);

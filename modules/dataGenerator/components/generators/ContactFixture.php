@@ -4,6 +4,7 @@ namespace app\modules\dataGenerator\components\generators;
 
 use app\models\Contact;
 use app\models\User;
+use Faker\Provider\en_US\Person;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
@@ -11,6 +12,11 @@ use yii\validators\NumberValidator;
 
 class ContactFixture extends ARGenerator
 {
+    protected function providers(): array
+    {
+        return [Person::class];
+    }
+
     /**
      * @return Contact|null
      * @throws ARGeneratorException
@@ -54,7 +60,8 @@ class ContactFixture extends ARGenerator
 
         if (!$userIdFrom) {
             $class = self::className(true);
-            $msg = "\n$class: creation skipped. Either no active User, or all Users have full Contacts.";
+            $msg = "\n$class: creation skipped. ";
+            $msg .= "Either no active User, or all Users have full set of Contacts.\n";
             $msg .= "\nIt's not error - few iterations later new User will be generated.\n";
             Yii::$app->controller->stdout($msg, Console::BG_GREY);
 
