@@ -39,7 +39,7 @@ class UserFixture extends ARGenerator
      * @return User
      * @throws ARGeneratorException
      */
-    protected function factoryModel(SignupForm $modelForm = null): ActiveRecord
+    protected function factoryModel(SignupForm $modelForm = null): ?ActiveRecord
     {
         $modelForm = $modelForm ?? new SignupForm();
 

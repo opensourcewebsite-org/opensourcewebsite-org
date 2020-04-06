@@ -33,18 +33,30 @@ abstract class ARGenerator extends Fixture
     /**
      * @throws ARGeneratorException
      */
-    public function load(): ActiveRecord
+    public function load(): ?ActiveRecord
     {
         $model = $this->factoryModel();
 
-        if ($model->save()) {
-            return $model;
+        if ($model && !$model->save()) {
+            throw new ARGeneratorException($model);
         }
 
-        throw new ARGeneratorException($model);
+        return $model;
     }
 
-    abstract protected function factoryModel(): ActiveRecord;
+    public static function className($short = false)
+    {
+        if ($short) {
+            $classFull  = explode('\\', parent::className());
+            $classShort = end($classFull);
+
+            return str_replace('Fixture', '', $classShort);
+        }
+
+        return parent::className();
+    }
+
+    abstract protected function factoryModel(): ?ActiveRecord;
 
     /**
      * Override it, if you need to specify some generators.

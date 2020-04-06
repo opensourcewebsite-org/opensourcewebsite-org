@@ -63,7 +63,6 @@ class DefaultController extends FixtureController
         }
         $this->outputLogState();
 
-        $this->output('[PROCESS] Loading fixtures:', [Console::FG_YELLOW, Console::BOLD]);
         return parent::actionLoad($fixturesInput);
     }
 
@@ -80,17 +79,18 @@ class DefaultController extends FixtureController
      */
     public function loadFixtures($fixtures = null)
     {
+        static $isFirst = true;
+        if ($isFirst) {
+            $isFirst = false;
+            $this->output("\n[PROCESS] Loading fixtures:", [Console::FG_YELLOW, Console::BOLD]);
+        }
+
         /** @var ARGenerator $fixtureRand */
         $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);
-
-        $classFull  = explode('\\', $fixtureRand::className());
-        $classShort = end($classFull);
-        $this->stdout("$classShort ");
-
+        $this->stdout($fixtureRand::className(true) . ' ');
         parent::loadFixtures([$fixtureRand]);
 
         sleep($this->interval);
-
         $this->loadFixtures($fixtures);
     }
 
