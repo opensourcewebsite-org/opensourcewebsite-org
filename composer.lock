@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b36c41f5ad78c0aaaa4f8314e89ce6fd",
+    "content-hash": "f32aade0c633378d67383011b306dd51",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -71,7 +71,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "git@github.com:RobinHerbots/Inputmask.git",
+                "url": "https://github.com/RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
