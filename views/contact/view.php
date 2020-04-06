@@ -1,7 +1,11 @@
 <?php
 
+use app\widgets\ModalAjax;
 use yii\helpers\Html;
 use app\models\Contact;
+use yii\helpers\Url;
+use yii\web\JsExpression;
+use yii\web\View;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -18,6 +22,33 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
+                        <?php if ($model->canHaveDebtRedistribution()) { ?>
+                            <li class="nav-item align-self-center mr-4">
+                                <?= ModalAjax::widget([
+                                    'id'           => 'modal-debt-redistribution-table',
+                                    //`overflow-y` fix scroll after closing of sub-modal
+                                    'options'      => ['style' => 'overflow-y:scroll;'],
+                                    'header'       => Yii::t('app', 'Debt Redistribution'),
+                                    'toggleButton' => [
+                                        'label' => Yii::t('app', 'Debt Redistribution'),
+                                        'class' => 'btn btn-light',
+                                    ],
+                                    'url'          => Url::to(['/debt-redistribution', 'contactId' => $model->id]),
+                                    'ajaxSubmit'   => false,
+                                    'events'       => [
+                                        ModalAjax::EVENT_MODAL_SHOW_COMPLETE => new JsExpression('
+                                            function(event, xhr, textStatus) {
+                                                if (xhr.status >= 400) {
+                                                    jQuery(this).modal("toggle");
+                                                    osw_alertOnAjaxError(xhr, textStatus);
+                                                }
+                                            }
+                                        '),
+                                    ],
+                                ]);
+                                ?>
+                            </li>
+                        <?php } ?>
                         <li class="nav-item align-self-center mr-4">
                             <?= Html::a('<i class="fa fa-edit"></i>', ['contact/update', 'id' => $model->id], [
                                 'class' => 'btn btn-light',
@@ -32,13 +63,14 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                         'attributes' => [
                             [
                                 'label' => 'User ID / Username',
-                                'value' => function ($model) {
+                                'value' => static function (Contact $model) {
                                     if (!empty($model->linkedUser)) {
                                         return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
                                     }
-                                }
+                                },
                             ],
                             'name',
+                            'debt_redistribution_priority',
                         ],
                     ]); ?>
                 </div>
@@ -46,3 +78,24 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         </div>
     </div>
 </div>
+<?php
+$this->registerJs(<<<JS
+/**
+ * @param jqXHR
+ * @param {?string} textStatus
+ * @param {?string} errorThrown
+ */
+function osw_alertOnAjaxError(jqXHR, textStatus, errorThrown) {
+    let errTitle = textStatus ? textStatus : jqXHR.statusText;
+    if (errorThrown) {
+        errTitle += "\\n" + errorThrown;
+    }
+    errTitle += "\\nReload page, please.";
+    if (!jqXHR.responseJSON && jqXHR.responseText) {
+        errTitle += "\\n\\n" + jqXHR.responseText;
+    }
+    alert(errTitle);
+    console.log(errTitle, jqXHR.responseJSON ? jqXHR.responseJSON : jqXHR.responseText);
+}
+JS
+, View::POS_END);

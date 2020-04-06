@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\components\Converter;
+use app\models\queries\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -23,6 +24,11 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $name
+ * @property string $birthday
+ * @property string $timezone
+ * @property integer $referrer_id
+ * @property bool $is_authenticated
+ * @property bool $gender
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -103,6 +109,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
+    }
+
+    public function setActive(): void
+    {
+        $this->is_authenticated = true;
+        $this->status           = self::STATUS_ACTIVE;
     }
 
     /**
@@ -580,7 +592,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return UserQuery
      */
     public function getReferrer()
     {
@@ -630,5 +642,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function getCitizenships()
     {
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 }

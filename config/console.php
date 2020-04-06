@@ -54,6 +54,11 @@ $config = [
         ],
     ],
     'params' => $params,
+    'modules' => [
+        'dataGenerator' => [
+            'class' => 'app\modules\dataGenerator\Module',
+        ],
+    ],
     'controllerMap' => [
         'fixture' => [
             'class' => FixtureController::class,
