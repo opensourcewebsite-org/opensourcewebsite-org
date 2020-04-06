@@ -19,6 +19,7 @@
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
+        "ext-PDO": "*",
         "yiisoft/yii2": "~2.0.32",
         "yiisoft/yii2-bootstrap": "^2.0",
         "yiisoft/yii2-swiftmailer": "^2.0",
@@ -32,7 +33,8 @@
         "telegram-bot/api": "^2.3",
 		"longman/telegram-bot": "^0.61",
         "kartik-v/yii2-widget-datepicker": "^1.4",
-        "janisto/yii2-timepicker": "^1.1"
+        "janisto/yii2-timepicker": "^1.1",
+        "loveorigami/yii2-modal-ajax": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
@@ -40,7 +42,8 @@
         "yiisoft/yii2-faker": "^2.0",
         "codeception/base": "^2.2.3",
         "codeception/verify": "^1.0.0",
-        "codeception/specify": "^0.4.6"
+        "codeception/specify": "^0.4.6",
+        "fzaninotto/faker": "~1.4"
     },
     "config": {
         "process-timeout": 1800,
