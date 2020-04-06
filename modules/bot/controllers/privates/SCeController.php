@@ -34,29 +34,17 @@ class SCeController extends Controller
                                 'callback_data' => self::createRoute('order'),
                                 'text' => 'USD/THB',
                             ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '🙋‍♂️ 3',
-                            ],
                         ],
                         [
                             [
                                 'callback_data' => self::createRoute('order'),
                                 'text' => 'USD/RUB',
                             ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '🙋‍♂️ 0',
-                            ],
                         ],
                         [
                             [
                                 'callback_data' => self::createRoute('order'),
                                 'text' => '❌ ' . 'THB/RUB',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '🙋‍♂️ 0',
                             ],
                         ],
                         [
@@ -91,6 +79,10 @@ class SCeController extends Controller
                             [
                                 'callback_data' => MenuController::createRoute(),
                                 'text' => '📱',
+                            ],
+                            [
+                                'callback_data' => self::createRoute('offer'),
+                                'text' => '🙋‍♂️ 3',
                             ],
                             [
                                 'callback_data' => self::createRoute('order-create'),
@@ -242,6 +234,12 @@ class SCeController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('order-edit'),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-selling-currency'),
+                            'text' => 'Name',
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('order-selling-currency'),

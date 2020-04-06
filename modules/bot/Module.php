@@ -2,6 +2,7 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
 use Yii;
@@ -19,6 +20,7 @@ use app\modules\bot\components\Controller;
 /**
  * OSW Bot module definition class
  * @link https://t.me/opensourcewebsite_bot
+ * @property CommandRouteResolver $commandRouteResolver
  */
 class Module extends \yii\base\Module
 {
@@ -278,6 +280,10 @@ class Module extends \yii\base\Module
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
         if (!$isStateRoute) {
             $this->userState->setName(null);
+        }
+        /* Temporary solution for filter in groups */
+        if (!isset($route) && !$this->telegramChat->isPrivate()) {
+            $route = $defaultRoute;
         }
         if ($route) {
             try {

@@ -136,65 +136,80 @@ use yii\helpers\Html;
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
-        <p>
-          <b>Economics</b>
-        </p>
-        <ul>
-          <li>International money transfers</li>
-          <li>Crowdfunding</li>
-          <li>Work and personnel search</li>
-          <li>Freelance marketplace</li>
-          <li>Sharing and collaborative consumption</li>
-          <li>Real-estate marketplace</li>
-          <li>Advertising platform</li>
-          <li>Currencies monitoring</li>
-          <li>Local exchange of fiat and electronic currencies</li>
-        </ul>
-      </div>
-      <div class="col-md-12">
-        <p>
-          <b>Personal interests and hobbies</b>
-        </p>
-        <ul>
-          <li>Genealogy and genealogical tree</li>
-          <li>Food delivery</li>
-          <li>Hotel, Hospitality and B&B</li>
-          <li>Medicine and Health</li>
-          <li>Sport and Fitness</li>
-          <li>Inventory and reviews of books and films</li>
-        </ul>
-      </div>
-      <div class="col-md-12">
-        <p>
-          <b>Technical</b>
-        </p>
-        <ul>
-          <li>Custom database and storage</li>
-          <li>OAuth</li>
-          <li>API documentation service</li>
-          <li>Open Data Aggregator</li>
-          <li>API services directory</li>
-          <li>Medicine and Health</li>
-          <li>Sport and Fitness</li>
-          <li>Inventory and reviews of books and films</li>
-          <li>Local exchange of fiat and electronic currencies</li>
-          <li>Crowdfunding</li>
-        </ul>
-      </div>
-      <div class="col-md-12">
-        <p>
-          <b>Social</b>
-        </p>
-        <ul>
-          <li>Social networking</li>
-          <li>Dating</li>
-          <li>Blogs</li>
-          <li>Forums</li>
-          <li>Services for digital nomads</li>
-          <li>Global catalog for commercial companies, non-profit companies, for charitable foundations</li>
-        </ul>
-      </div>
+        <div class="col-md-12">
+            <p>
+                <b>Social</b>
+            </p>
+            <ul>
+                <li>Social networking</li>
+                <li>Dating</li>
+                <li>Blogs</li>
+                <li>Forums</li>
+                <li>Services for digital nomads</li>
+                <li>Global catalog for commercial companies, non-profit companies, for charitable foundations</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Personal interests and hobbies</b>
+            </p>
+            <ul>
+                <li>Genealogy and genealogical tree</li>
+                <li>Food delivery</li>
+                <li>Hotel, Hospitality and B&B</li>
+                <li>Medicine and Health</li>
+                <li>Sport and Fitness</li>
+                <li>Inventory and reviews of books and films</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Economics</b>
+            </p>
+            <ul>
+                <li>International money transfers</li>
+                <li>Crowdfunding</li>
+                <li>Work and personnel search</li>
+                <li>Freelance marketplace</li>
+                <li>Sharing and collaborative consumption</li>
+                <li>Real-estate marketplace</li>
+                <li>Advertising platform</li>
+                <li>Currencies monitoring</li>
+                <li>Local exchange of fiat and electronic currencies</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Business</b>
+            </p>
+            <ul>
+                <li>Business management</li>
+                <li>Project management</li>
+                <li>Product management</li>
+                <li>CRM</li>
+                <li>ERP</li>
+                <li>Workplaces</li>
+                <li>Working schedules</li>
+                <li>Accounting</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Technical</b>
+            </p>
+            <ul>
+                <li>Custom database and storage</li>
+                <li>OAuth</li>
+                <li>API documentation service</li>
+                <li>Open Data Aggregator</li>
+                <li>API services directory</li>
+                <li>Medicine and Health</li>
+                <li>Sport and Fitness</li>
+                <li>Inventory and reviews of books and films</li>
+                <li>Local exchange of fiat and electronic currencies</li>
+                <li>Crowdfunding</li>
+            </ul>
+        </div>
     </div>
   </div>
 </section>

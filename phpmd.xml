@@ -19,9 +19,6 @@
     <!-- @see http://phpmd.org/rules/codesize.html#cyclomaticcomplexity -->
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity"/>
 
-    <!-- @see http://phpmd.org/rules/codesize.html#npathcomplexity -->
-    <rule ref="rulesets/codesize.xml/NPathComplexity"/>
-
     <!-- @see http://phpmd.org/rules/codesize.html#excessivemethodlength -->
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength"/>
 

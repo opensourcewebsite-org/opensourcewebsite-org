@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
@@ -6,6 +7,11 @@ use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\modules\bot\components\Controller;
 
+/**
+ * Class SJobController
+ *
+ * @package app\modules\bot\controllers
+ */
 class SJobController extends Controller
 {
     public function actionIndex()
@@ -38,6 +44,10 @@ class SJobController extends Controller
                         [
                             'text' => Emoji::BACK,
                             'callback_data' => ServicesController::createRoute(),
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => '📱',
                         ],
                     ],
                 ]

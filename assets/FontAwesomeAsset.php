@@ -11,6 +11,6 @@ use yii\web\AssetBundle;
 class FontAwesomeAsset extends AssetBundle
 {
 	public $css = [
-        '//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css',
+        '//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css',
     ];
 }

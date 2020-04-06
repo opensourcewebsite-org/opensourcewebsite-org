@@ -33,6 +33,7 @@ tests/_support/_generated
 /.vagrant
 
 .env
+.env.test
 
 /config/web-local.php
 /config/params.php
