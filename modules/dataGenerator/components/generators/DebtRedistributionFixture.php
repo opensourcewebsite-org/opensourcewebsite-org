@@ -86,5 +86,4 @@ class DebtRedistributionFixture extends ARGenerator
 
         return $contact + ['currency_id' => $currencyId];
     }
-
 }
