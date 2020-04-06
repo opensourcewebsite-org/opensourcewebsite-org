@@ -46,8 +46,8 @@ class DefaultController extends FixtureController
      * # load all available model fixtures found under 'app\modules\dataGenerator\components\generators'
      * yii dataGenerator "*"
      *
-     * # load all model fixtures except User and Contact
-     * yii dataGenerator "*, -User, -Contact"
+     * # load all model fixtures except User and Contact, with 5 seconds interval
+     * yii dataGenerator "*, -User, -Contact" --interval=5
      * ```
      *
      * @param array $fixturesInput
