@@ -145,3 +145,10 @@ a.desc:after {
     -ms-flex-align: center;
     align-items: center;
 }
+
+.modal-fix .modal-header .close {
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
