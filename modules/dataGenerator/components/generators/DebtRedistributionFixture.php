@@ -58,7 +58,7 @@ class DebtRedistributionFixture extends ARGenerator
             ->queryOne();
 
         if (empty($contact)) {
-            $class = self::className(true);
+            $class = self::classNameModel();
             $msg   = "\n$class: creation skipped. ";
             $msg   .= "Either no Contact exists, or all Contacts have full set of DebtRedistributions.\n";
             $msg   .= "It's not error - few iterations later new Contact will be generated.\n";

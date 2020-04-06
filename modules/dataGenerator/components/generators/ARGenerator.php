@@ -44,16 +44,12 @@ abstract class ARGenerator extends Fixture
         return $model;
     }
 
-    public static function className($short = false)
+    public static function classNameModel()
     {
-        if ($short) {
-            $classFull  = explode('\\', parent::className());
-            $classShort = end($classFull);
+        $classFull  = explode('\\', self::class);
+        $classShort = end($classFull);
 
-            return str_replace('Fixture', '', $classShort);
-        }
-
-        return parent::className();
+        return str_replace('Fixture', '', $classShort);
     }
 
     abstract protected function factoryModel(): ?ActiveRecord;

@@ -59,7 +59,7 @@ class ContactFixture extends ARGenerator
             ->scalar();
 
         if (!$userIdFrom) {
-            $class = self::className(true);
+            $class = self::classNameModel();
             $msg = "\n$class: creation skipped. ";
             $msg .= "Either no active User, or all Users have full set of Contacts.\n";
             $msg .= "\nIt's not error - few iterations later new User will be generated.\n";
