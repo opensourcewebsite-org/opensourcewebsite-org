@@ -2,8 +2,10 @@
 
 use Dotenv\Dotenv;
 
-$dotenv = new Dotenv(__DIR__, '/../.env.test');
-$dotenv->load();
+if (!getenv('ENV_TRAVIS')) {
+    $dotenv = new Dotenv(__DIR__, '/../.env.test');
+    $dotenv->load();
+}
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/test_db.php';
