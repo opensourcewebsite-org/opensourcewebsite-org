@@ -23,6 +23,11 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $name
+ * @property string $birthday
+ * @property string $timezone
+ * @property integer $referrer_id
+ * @property bool $is_authenticated
+ * @property bool $gender
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -103,6 +108,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
+    }
+
+    public function setActive(): void
+    {
+        $this->is_authenticated = true;
+        $this->status           = self::STATUS_ACTIVE;
     }
 
     /**
