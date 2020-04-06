@@ -14,6 +14,9 @@ if (isset($username)) {
 if (isset($gender)) {
     echo Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender) . '<br/>';
 }
+if (isset($sexuality)) {
+    echo Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $sexuality) . '<br/>';
+}
 if (isset($birthday)) {
     echo Yii::t('bot', 'Birthday') . ': ' . $birthday . '<br/>';
 }
