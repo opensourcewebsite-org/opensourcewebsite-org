@@ -81,7 +81,8 @@ $("#delete-contact").on("click", function(event) {
 $('#$form->id').on('beforeSubmit', warnOnDeleteDebtRedistributionSettings);
 
 function warnOnDeleteDebtRedistributionSettings() {
-    let newUser = $('#contact-useridorname').val() + '';
+    let inputUser = $('#contact-useridorname');
+    let newUser = inputUser.val() + '';
     let oldUser = inputUser.attr('data-old-value') + '';
     if (!oldUser || oldUser === newUser) {
         return true;
