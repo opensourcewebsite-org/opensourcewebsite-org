@@ -346,7 +346,7 @@ class SiteController extends Controller
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param int $authKey the user authKey
+     * @param string $authKey the user authKey
      *
      * @return string
      */

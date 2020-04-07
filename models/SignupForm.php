@@ -60,7 +60,7 @@ class SignupForm extends Model
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param int $authKey the user authKey
+     * @param string $authKey the user authKey
      *
      * @return User|null the saved model or null if saving fails
      */
