@@ -36,7 +36,10 @@ $model   = $context->debtRed;
             ]); ?>
         </div>
         <div class="col-8">
-            <?= $form->field($model, 'max_amount')->textInput(['type' => 'number']); ?>
+            <?= $form->field($model, 'max_amount')->textInput([
+                'type'        => 'number',
+                'placeholder' => Yii::t('app', 'No limit'),
+            ]); ?>
         </div>
     </div>
 
