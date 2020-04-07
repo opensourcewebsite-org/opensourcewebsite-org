@@ -9,6 +9,8 @@ use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
 use app\models\User;
+use app\models\Currency;
+use app\models\Sexuality;
 use app\modules\bot\models\User as BotUser;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
@@ -318,6 +320,10 @@ class SiteController extends Controller
 
         $genderList = Gender::find()->indexBy('id')->all();
 
+        $currencyList = Currency::find()->indexBy('id')->all();
+
+        $sexualityList = Sexuality::find()->indexBy('id')->all();
+
         return $this->render('account', [
             'model' => $model,
             'activeRating' => $activeRating,
@@ -330,7 +336,9 @@ class SiteController extends Controller
                 'rank' => $rank,
                 'total' => $total,
             ],
-            'genderList' => $genderList
+            'genderList' => $genderList,
+            'currencyList' => $currencyList,
+            'sexualityList' => $sexualityList,
         ]);
     }
 

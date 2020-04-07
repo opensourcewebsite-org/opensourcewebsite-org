@@ -143,8 +143,8 @@ class UserController extends Controller
             return false;
         }
         $user = Yii::$app->user->identity;
-        $postData = Yii::$app->request->post('EditProfileForm');
-        $user->email = $postData['field'];
+        $postData = Yii::$app->request->post('Email');
+        $user->email = $postData['email'];
         $user->is_authenticated = false;
         if ($user->save()) {
             $user->sendConfirmationEmail($user);
@@ -158,8 +158,8 @@ class UserController extends Controller
             return false;
         }
         $user = Yii::$app->user->identity;
-        $postData = Yii::$app->request->post('EditProfileForm');
-        $user->username = $postData['field'];
+        $postData = Yii::$app->request->post('Username');
+        $user->username = $postData['username'];
         $user->save();
 
         return $this->redirect('/account');
@@ -171,8 +171,8 @@ class UserController extends Controller
             return false;
         }
         $user = Yii::$app->user->identity;
-        $postData = Yii::$app->request->post('EditProfileForm');
-        $user->name = $postData['field'];
+        $postData = Yii::$app->request->post('Name');
+        $user->name = $postData['name'];
         $user->save();
 
         return $this->redirect('/account');
@@ -184,8 +184,8 @@ class UserController extends Controller
             return false;
         }
         $user = Yii::$app->user->identity;
-        $postData = Yii::$app->request->post('EditProfileForm');
-        $user->birthday = date('Y-m-d', strtotime($postData['field']));
+        $postData = Yii::$app->request->post('Birthday');
+        $user->birthday = date('Y-m-d', strtotime($postData['birthday']));
         $user->save();
 
         return $this->redirect('/account');
@@ -197,8 +197,8 @@ class UserController extends Controller
             return false;
         }
         $user = Yii::$app->user->identity;
-        $postData = Yii::$app->request->post('EditProfileForm');
-        $user->gender_id = $postData['field'];
+        $postData = Yii::$app->request->post('Gender');
+        $user->gender_id = $postData['gender'];
         $user->save();
 
         return $this->redirect('/account');
@@ -210,8 +210,34 @@ class UserController extends Controller
             return false;
         }
         $user = Yii::$app->user->identity;
-        $postData = Yii::$app->request->post('EditProfileForm');
-        $user->timezone = $postData['field'];
+        $postData = Yii::$app->request->post('Timezone');
+        $user->timezone = $postData['timezone'];
+        $user->save();
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeCurrency()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Currency');
+        $user->currency_id = $postData['currency'];
+        $user->save();
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeSexuality()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Sexuality');
+        $user->sexuality_id = $postData['sexuality'];
         $user->save();
 
         return $this->redirect('/account');

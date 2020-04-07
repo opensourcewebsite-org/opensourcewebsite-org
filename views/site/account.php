@@ -5,7 +5,14 @@ use kartik\date\DatePicker;
 use app\components\helpers\TimeHelper;
 use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
-use app\models\EditProfileForm;
+use app\models\profile\Email;
+use app\models\profile\Username;
+use app\models\profile\Name;
+use app\models\profile\Birthday;
+use app\models\profile\Gender;
+use app\models\profile\Timezone;
+use app\models\profile\Currency;
+use app\models\profile\Sexuality;
 
 /* @var $this yii\web\View */
 $this->title = 'Account';
@@ -18,19 +25,45 @@ $editProfileUrl = Yii::$app->urlManager->createUrl('user/edit-profile');
 $genders = [];
 
 /**
+ * Список для выбора валюты пользователя
+ */
+$currencies = [];
+
+/**
+ * Список для выбора валюты пользователя
+ */
+$sexualities = [];
+
+/**
  * Текущий пол пользователя
  */
 $userGender = '';
-
-/**
- * Модель для заполнения (проверки) полей профиля
- */
-$profileModel = new EditProfileForm();
-
 foreach ($genderList as $key => $value) {
     $genders[$key] = $value->name;
     if ($key == $model->gender_id) {
         $userGender = $value->name;
+    }
+}
+
+/**
+ * Текущая валюта пользователя
+ */
+$userCurrency = '';
+foreach ($currencyList as $key => $value) {
+    $currencies[$key] = $value->name;
+    if ($key == $model->currency_id) {
+        $userCurrency = $value->name;
+    }
+}
+
+/**
+ * Текущая ориентация пользователя
+ */
+$userSexuality = '';
+foreach ($sexualityList as $key => $value) {
+    $sexualities[$key] = $value->name;
+    if ($key == $model->sexuality_id) {
+        $userSexuality = $value->name;
     }
 }
 ?>
@@ -44,9 +77,12 @@ foreach ($genderList as $key => $value) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $emailForm = ActiveForm::begin(['action' => 'user/change-email']); ?>
+            <?php
+            $emailModel = new Email;
+            $emailForm = ActiveForm::begin(['action' => 'user/change-email']);
+            ?>
                 <div class="modal-body text-left">
-                    <?= $emailForm->field($profileModel, 'field')->input('email')->label('Email'); ?>
+                    <?= $emailForm->field($emailModel, 'email')->input('email')->label('Email'); ?>
                     <div class="error"></div>
                 </div>
                 <div class="card-footer text-left">
@@ -68,9 +104,12 @@ foreach ($genderList as $key => $value) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $usernameForm = ActiveForm::begin(['action' => 'user/change-username']); ?>
+            <?php
+            $usernameModel = new Username;
+            $usernameForm = ActiveForm::begin(['action' => 'user/change-username']);
+            ?>
             <div class="modal-body text-left">
-                <?= $usernameForm->field($profileModel, 'field')->textInput()->label('Username'); ?>
+                <?= $usernameForm->field($usernameModel, 'username')->textInput()->label('Username'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
@@ -92,9 +131,12 @@ foreach ($genderList as $key => $value) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $nameForm = ActiveForm::begin(['action' => 'user/change-name']); ?>
+            <?php
+            $nameModel = new Name;
+            $nameForm = ActiveForm::begin(['action' => 'user/change-name']);
+            ?>
             <div class="modal-body text-left">
-                <?= $nameForm->field($profileModel, 'field')->textInput()->label('Name'); ?>
+                <?= $nameForm->field($nameModel, 'name')->textInput()->label('Name'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
@@ -116,9 +158,12 @@ foreach ($genderList as $key => $value) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $birthdayForm = ActiveForm::begin(['action' => 'user/change-birthday']); ?>
+            <?php
+            $birthdayModel = new Birthday;
+            $birthdayForm = ActiveForm::begin(['action' => 'user/change-birthday']);
+            ?>
             <div class="modal-body text-left">
-                <?= $birthdayForm->field($profileModel, 'field')->widget(DatePicker::class, [
+                <?= $birthdayForm->field($birthdayModel, 'birthday')->widget(DatePicker::class, [
                     'name'          => 'birthday',
                     'id'            => 'birthday-value',
                     'pluginOptions' => [
@@ -147,9 +192,39 @@ foreach ($genderList as $key => $value) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $genderForm = ActiveForm::begin(['action' => 'user/change-gender']); ?>
+            <?php
+            $genderModel = new Gender;
+            $genderForm = ActiveForm::begin(['action' => 'user/change-gender']);
+            ?>
             <div class="modal-body text-left">
-                <?= $genderForm->field($profileModel, 'field')->dropDownList($genders)->label('Gender'); ?>
+                <?= $genderForm->field($genderModel, 'gender')->dropDownList($genders)->label('Gender'); ?>
+                <div class="error"></div>
+            </div>
+            <div class="card-footer text-left">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
+            </div>
+            <?php ActiveForm::end(); ?>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для sexuality -->
+<div class="modal fade" id="change-sexuality" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change sexuality</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <?php
+            $sexualityModel = new Sexuality;
+            $sexualityForm = ActiveForm::begin(['action' => 'user/change-sexuality']);
+            ?>
+            <div class="modal-body text-left">
+                <?= $sexualityForm->field($sexualityModel, 'sexuality')->dropDownList($sexualities)->label('Sexuality'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
@@ -171,12 +246,15 @@ foreach ($genderList as $key => $value) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <?php $timezoneForm = ActiveForm::begin(['action' => 'user/change-timezone']); ?>
+            <?php
+            $timezoneModel = new Timezone;
+            $timezoneForm = ActiveForm::begin(['action' => 'user/change-timezone']);
+            ?>
             <div class="modal-body text-left">
                 <?php
                 $timezones = TimeHelper::timezonesList();
 
-                echo $timezoneForm->field($profileModel, 'field')->widget(Select2::class, [
+                echo $timezoneForm->field($timezoneModel, 'timezone')->widget(Select2::class, [
                     'name'    => 'change-timezone',
                     'value'   => '',
                     'data'    => array_combine(
@@ -189,6 +267,33 @@ foreach ($genderList as $key => $value) {
                     ],
                 ])->label('Timezone');
                 ?>
+                <div class="error"></div>
+            </div>
+            <div class="card-footer text-left">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
+            </div>
+            <?php ActiveForm::end(); ?>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для currency -->
+<div class="modal fade" id="change-currency" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change currency</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <?php
+            $currencyModel = new Currency;
+            $currencyForm = ActiveForm::begin(['action' => 'user/change-currency']);
+            ?>
+            <div class="modal-body text-left">
+                <?= $currencyForm->field($currencyModel, 'currency')->dropDownList($currencies)->label('Currency'); ?>
                 <div class="error"></div>
             </div>
             <div class="card-footer text-left">
@@ -360,6 +465,26 @@ foreach ($genderList as $key => $value) {
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th class="align-middle">Sexuality</th>
+                                    <td class="align-middle" id="sexuality">
+                                        <?= $userSexuality; ?>
+                                    </td>
+                                    <td>
+                                        <?= Html::button(
+                                            '<i class="fas fa-edit"></i>',
+                                            [
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'sexuality',
+                                                'data-modal'  => 'change-sexuality',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-sexuality',
+                                            ]);
+                                        ?>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th class="align-middle">Timezone</th>
                                     <td class="align-middle" id="timezone"><?= $model->timezone; ?></td>
                                     <td>
@@ -373,6 +498,26 @@ foreach ($genderList as $key => $value) {
                                                 'data-modal'  => 'change-timezone',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#change-timezone',
+                                            ]);
+                                        ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="align-middle">Currency</th>
+                                    <td class="align-middle" id="currency">
+                                        <?= $userCurrency; ?>
+                                    </td>
+                                    <td>
+                                        <?= Html::button(
+                                            '<i class="fas fa-edit"></i>',
+                                            [
+                                                'class'       => 'btn btn-light edit-btn',
+                                                'title'       => 'Edit',
+                                                'style'       => ['float' => 'right'],
+                                                'data-name'   => 'currency',
+                                                'data-modal'  => 'change-currency',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#change-currency',
                                             ]);
                                         ?>
                                     </td>
