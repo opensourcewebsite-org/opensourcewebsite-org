@@ -69,8 +69,7 @@ class DefaultController extends FixtureController
     public function actionUnload(array $fixturesInput = [])
     {
         //we don't need this action
-        $this->stdout('This action is not supported');
-        return ExitCode::OK;
+        throw new Exception('This action is not supported');
     }
 
     /**

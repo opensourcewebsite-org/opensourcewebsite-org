@@ -9,8 +9,6 @@ use yii\db\ActiveRecord;
 
 class UserFixture extends ARGenerator
 {
-    private const PASSWORD = 'DataGenerator_0@';
-
     protected function providers(): array
     {
         return [Internet::class];
@@ -47,7 +45,7 @@ class UserFixture extends ARGenerator
         //  1. Module dataGenerator designed to run continuously. So we should optimize memory, not CPU.
         //  2. SignupForm::validate() will check is email unique anyway.
         $modelForm->email    = self::getFaker()->freeEmail;
-        $modelForm->password = self::PASSWORD;
+        $modelForm->password = $modelForm->email;
 
         if ($modelForm->validate()) {
             return $modelForm->factoryUser();

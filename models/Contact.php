@@ -22,7 +22,7 @@ use yii\helpers\VarDumper;
  */
 class Contact extends ActiveRecord
 {
-    public const DEBT_REDISTRIBUTION_PRIORITY_NO = 0;
+    public const DEBT_REDISTRIBUTION_PRIORITY_NO = null;
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
@@ -56,7 +56,7 @@ class Contact extends ActiveRecord
                 }",
             ],
             ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => 255],
-            ['debt_redistribution_priority', 'default', 'value' => self::DEBT_REDISTRIBUTION_PRIORITY_NO],
+            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
         ];
     }
 
@@ -200,24 +200,24 @@ class Contact extends ActiveRecord
     {
         $oldId = $this->getOldAttribute('link_user_id');
         if ($oldId && $this->isAttributeChanged('link_user_id')) {
-            $aModel = DebtRedistribution::find()
+            $models = DebtRedistribution::find()
                 ->fromUser($this->user_id)
                 ->toUser($oldId)
                 ->all();
-            $this->deleteDebtRedistributions($aModel);
+            $this->deleteDebtRedistributions($models);
         }
     }
 
     /**
-     * @param DebtRedistribution[] $aModel
+     * @param DebtRedistribution[] $models
      *
      * @throws Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    private function deleteDebtRedistributions($aModel): void
+    private function deleteDebtRedistributions($models): void
     {
-        foreach ($aModel as $model) {
+        foreach ($models as $model) {
             if (!$model->delete()) {
                 throw new Exception(VarDumper::dumpAsString([
                     'message'    => 'Fail to delete ' . $model::className(),

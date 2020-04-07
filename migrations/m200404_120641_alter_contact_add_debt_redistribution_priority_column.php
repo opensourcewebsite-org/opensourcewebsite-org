@@ -12,11 +12,7 @@ class m200404_120641_alter_contact_add_debt_redistribution_priority_column exten
      */
     public function safeUp()
     {
-        $this->addColumn(
-            'contact',
-            'debt_redistribution_priority',
-            $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)
-        );
+        $this->addColumn('contact', 'debt_redistribution_priority', $this->tinyInteger()->unsigned());
     }
 
     /**
