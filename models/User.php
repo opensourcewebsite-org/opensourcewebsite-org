@@ -59,7 +59,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
             ['name', 'string'],
-            [['gender_id', 'currency_id'], 'integer'],
+            [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
             ['email', 'email'],
             [['timezone'], 'default', 'value' => 'UTC'],
         ];
@@ -613,6 +613,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function getGender()
     {
         return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
+    }
+
+    public function getSexuality()
+    {
+        return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
     }
 
     public function getCurrency()
