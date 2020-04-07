@@ -4,7 +4,6 @@ namespace app\models;
 
 use app\models\queries\DebtRedistributionQuery;
 use yii\db\ActiveRecord;
-use yii\helpers\Html;
 
 /**
  * This is the model class for table "debt_redistribution".
@@ -21,7 +20,9 @@ use yii\helpers\Html;
  */
 class DebtRedistribution extends ActiveRecord
 {
+    /** @var null no limit - allow any amount. */
     public const MAX_AMOUNT_ANY  = null;
+    /** @var int limit is 0, so deny to redistribute. Default value. */
     public const MAX_AMOUNT_DENY = 0;
 
     /**
@@ -61,16 +62,6 @@ class DebtRedistribution extends ActiveRecord
             'to_user_id'   => 'To User ID',
             'currency_id'  => 'Currency',
             'max_amount'   => 'Max Amount',
-        ];
-    }
-
-    public function attributeHints()
-    {
-        return [
-            'max_amount' => Html::ul([
-                '"0" - limit is 0, so deny to redistribute. Default value.',
-                '"" (empty field) - no limit - allow any amount.'
-            ]),
         ];
     }
 

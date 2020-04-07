@@ -78,7 +78,6 @@ class Contact extends ActiveRecord
     {
         return [
             'debt_redistribution_priority' => Html::ul([
-                '"0" - no priority.',
                 '"1" - the highest.',
                 "Note: it has no affect, if field \"{$this->getAttributeLabel('userIdOrName')}\" is empty",
             ]),

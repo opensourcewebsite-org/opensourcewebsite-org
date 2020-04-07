@@ -10,5 +10,5 @@ class Module extends \yii\base\Module
     /**
      * {@inheritdoc}
      */
-    public $controllerNamespace = 'app\modules\dataGenerator\controllers';
+    public $controllerNamespace = 'app\modules\dataGenerator\commands';
 }
