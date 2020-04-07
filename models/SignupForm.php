@@ -45,10 +45,7 @@ class SignupForm extends Model
             return null;
         }
 
-        $user = new User();
-        $user->email = $this->email;
-        $user->setPassword($this->password);
-        $user->generateAuthKey();
+        $user = $this->factoryUser();
 
         //If referrer exists then add referrer id in user table
         $referrerID = ReferrerHelper::getReferrerIdFromCookie();
@@ -72,12 +69,21 @@ class SignupForm extends Model
         $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
 
         if ($user && $user->validateAuthKey($authKey)) {
-            $user->is_authenticated = true;
-            $user->status = User::STATUS_ACTIVE;
+            $user->setActive();
             if ($user->save()) {
                 return $user;
             }
         }
         return null;
+    }
+
+    public function factoryUser(): User
+    {
+        $user = new User();
+        $user->email = $this->email;
+        $user->setPassword($this->password);
+        $user->generateAuthKey();
+
+        return $user;
     }
 }
