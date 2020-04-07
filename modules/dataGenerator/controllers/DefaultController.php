@@ -85,13 +85,14 @@ class DefaultController extends FixtureController
             $this->output("\n[PROCESS] Loading fixtures:", [Console::FG_YELLOW, Console::BOLD]);
         }
 
-        /** @var ARGenerator $fixtureRand */
-        $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);
-        $this->stdout($fixtureRand::classNameModel() . PHP_EOL);
-        parent::loadFixtures([$fixtureRand]);
 
-        sleep($this->interval);
-        $this->loadFixtures($fixtures);
+        while(true) {
+            /** @var ARGenerator $fixtureRand */
+            $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);
+            $this->stdout($fixtureRand::classNameModel() . PHP_EOL);
+            parent::loadFixtures([$fixtureRand]);
+            sleep($this->interval);
+        }
     }
 
     public function stdout($string)

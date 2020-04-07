@@ -49,7 +49,7 @@ class DebtRedistributionFixture extends ARGenerator
         $contact = Contact::find()
             ->select('contact.user_id, contact.link_user_id, COUNT(debt_redistribution.currency_id) AS n_currency')
             ->joinWith('debtRedistributions')
-            ->where('contact.link_user_id IS NOT NULL')
+            ->virtual(false)
             ->groupBy('contact.user_id, contact.link_user_id')
             ->having('n_currency < :currencyQty', [':currencyQty' => $currencyQty])
             ->orderBy('n_currency')
@@ -67,6 +67,7 @@ class DebtRedistributionFixture extends ARGenerator
             return [];
         }
 
+        /** @var int $currencyId Currency, that was not used in DebtRedistributions yet */
         $currencyId = Currency::find()
             ->select('currency.id')
             ->joinWith([

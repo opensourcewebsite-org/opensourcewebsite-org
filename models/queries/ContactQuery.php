@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\Contact;
+use app\models\queries\traits\RandomTrait;
 use Yii;
 use yii\db\ActiveQuery;
 
@@ -16,6 +17,8 @@ use yii\db\ActiveQuery;
  */
 class ContactQuery extends ActiveQuery
 {
+    use RandomTrait;
+
     /**
      * @return self
      */

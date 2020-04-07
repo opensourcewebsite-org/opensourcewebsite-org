@@ -69,6 +69,7 @@ class ContactFixture extends ARGenerator
         }
 
         /** @noinspection MissedParamInspection */
+        /** @var int $userIdTo user, with whom $userIdFrom has no contact yet */
         $userIdTo = User::find()
             ->select('user.id')
             ->join('LEFT JOIN', 'contact', 'user.id = contact.link_user_id AND contact.user_id = :userIdFrom')

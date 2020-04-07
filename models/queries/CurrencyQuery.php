@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\Currency;
+use app\models\queries\traits\RandomTrait;
 use yii\db\ActiveQuery;
 
 /**
@@ -15,6 +16,8 @@ use yii\db\ActiveQuery;
  */
 class CurrencyQuery extends ActiveQuery
 {
+    use RandomTrait;
+
     /**
      * @param int      $fromUserId
      * @param int      $toUserId

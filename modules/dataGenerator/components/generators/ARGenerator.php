@@ -46,7 +46,7 @@ abstract class ARGenerator extends Fixture
 
     public static function classNameModel()
     {
-        $classFull  = explode('\\', self::class);
+        $classFull  = explode('\\', static::class);
         $classShort = end($classFull);
 
         return str_replace('Fixture', '', $classShort);
