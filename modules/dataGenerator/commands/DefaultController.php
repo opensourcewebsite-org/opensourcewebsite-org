@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\dataGenerator\controllers;
+namespace app\modules\dataGenerator\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\modules\dataGenerator\components\generators\ARGenerator;
