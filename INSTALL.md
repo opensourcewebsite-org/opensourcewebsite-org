@@ -50,16 +50,16 @@ php yii fixture/unload "*"
 ## Data Generator
 
 - Module `dataGenerator` is available only in `console` app.
-- This module designed for dev environment only. 
+- This module designed for dev environment only.
 So, you may need to run `composer install --dev` first.
 - You can see help instructions here: `yii dataGenerator/default/load -h`
 - Default usage is next: `yii dataGenerator "*"`
     - _all models with default interval = `2` sec_
 - Advanced usage: `yii dataGenerator "*, -Contact" --interval=5`
     - _all models except `Contact` with interval = `5` sec_
-- Controller extends from `\yii\console\controllers\FixtureController`. 
-So this part of documentation - 
-[Loading fixtures](https://www.yiiframework.com/doc/guide/2.0/en/test-fixtures#loading-fixtures) - 
+- Controller extends from `\yii\console\controllers\FixtureController`.
+So this part of documentation -
+[Loading fixtures](https://www.yiiframework.com/doc/guide/2.0/en/test-fixtures#loading-fixtures) -
 can be used to understand command syntax.
 - Available fixtures: `User`, `Contact`, `Debt`, `DebtRedistribution`
 - You can easily add new fixtures into dir `modules\dataGenerator\components\generators`
