@@ -63,16 +63,7 @@ class CronController extends Controller
      */
     public function actionIndex()
     {
-        if (!$this->log) {
-            CustomConsole::output(
-                CustomConsole::ansiFormat(
-                    'LOGS MUTED (user param --log)',
-                    [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
-                ),
-                ['logs' => true]
-            );
-        }
-
+        $this->outputLogState();
         $this->_cronJobs = CronJobConsole::find()->all();
 
         if (empty($this->_cronJobs)) {
@@ -81,12 +72,9 @@ class CronController extends Controller
 
         while (true) {
             $session = Yii::$app->security->generateRandomString();
-            CustomConsole::output(
-                CustomConsole::ansiFormat(
-                    "[OPEN] session id: {$session}",
-                    [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
-                ),
-                ['logs' => $this->log]
+            $this->output(
+                "[OPEN] session id: $session",
+                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
             );
 
             /** @var CronJobConsole $script */
@@ -97,12 +85,9 @@ class CronController extends Controller
 
                 $job = static::PREFIX . $script->name . static::POSTFIX;
 
-                CustomConsole::output(
-                    CustomConsole::ansiFormat(
-                        "[PROCESS] Started script: {$script->name}",
-                        [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
-                    ),
-                    ['logs' => $this->log]
+                $this->output(
+                    "[PROCESS] Started script: $script->name",
+                    [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
                 );
 
                 /** @var ControllerLogTrait|ICronChained $controller */
@@ -112,27 +97,18 @@ class CronController extends Controller
 
                 CronJob::updateAll(['updated_at' => time()], ['name' => $script->name]);
 
-                CustomConsole::output(
-                    CustomConsole::ansiFormat(
-                        "[OK]script {$script->name} finished ",
-                        [CustomConsole::FG_GREEN, CustomConsole::BOLD]
-                    ),
-                    ['logs' => $this->log]
+                $this->output(
+                    "[OK]script $script->name finished ",
+                    [CustomConsole::FG_GREEN, CustomConsole::BOLD]
                 );
             }
 
-            CustomConsole::output(
-                CustomConsole::ansiFormat(
-                    "[CLOSED] session id: {$session}",
-                    [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
-                ),
-                ['logs' => $this->log]
+            $this->output(
+                "[CLOSED] session id: $session",
+                [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
             );
 
-            CustomConsole::output(
-                '',
-                ['logs' => $this->log]
-            );
+            $this->output();
 
             sleep(static::INTERVAL);
         }
