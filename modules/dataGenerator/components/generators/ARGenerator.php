@@ -10,7 +10,7 @@ use yii\test\Fixture;
 abstract class ARGenerator extends Fixture
 {
     /** @var Generator */
-    static private $_faker;
+    static private $faker;
 
     /**
      * magic getter for `$this->faker`
@@ -18,11 +18,11 @@ abstract class ARGenerator extends Fixture
      */
     public static function getFaker(): Generator
     {
-        if (!self::$_faker) {
-            self::$_faker = Factory::create();
+        if (!self::$faker) {
+            self::$faker = Factory::create();
         }
 
-        return self::$_faker;
+        return self::$faker;
     }
 
     public function init()
