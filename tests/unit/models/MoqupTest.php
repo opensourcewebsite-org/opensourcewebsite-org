@@ -2,9 +2,45 @@
 
 namespace tests\models;
 
+use app\tests\fixtures\CssFixture;
+use app\tests\fixtures\MoqupFixture;
+use app\tests\fixtures\UserFixture;
+use app\tests\fixtures\UserMoqupFollowFixture;
 
 class MoqupTest extends \Codeception\Test\Unit
 {
+    /**
+     * @var $tester \UnitTester
+     */
+    protected $tester;
+
+    protected function _before()
+    {
+        $this->loadFixtures();
+    }
+
+    public function loadFixtures()
+    {
+        $this->tester->haveFixtures([
+            'moqup' => [
+                'class' => MoqupFixture::className(),
+                'dataFile' => codecept_data_dir() . 'moqup.php',
+            ],
+            'user' => [
+                'class' => UserFixture::className(),
+                'dataFile' => codecept_data_dir() . 'user.php',
+            ],
+            'css' => [
+                'class' => CssFixture::className(),
+                'dataFile' => codecept_data_dir() . 'css.php',
+            ],
+            'user_moqup_follow' => [
+                'class' => UserMoqupFollowFixture::className(),
+                'dataFile' => codecept_data_dir() . 'user_moqup_follow.php',
+            ],
+        ]);
+    }
+
     public function testGetUser()
     {
         $moqup = $this->tester->grabFixture('moqup', 0);
