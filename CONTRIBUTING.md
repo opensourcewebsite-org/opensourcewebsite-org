@@ -46,6 +46,9 @@ When contributing to this repository, please first discuss the change you wish t
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
 - Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
+    - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
+    - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+    - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
 - Make your changes.
   - Add tests if your changes contains new, testable behavior.
   - Make the tests pass.
@@ -62,6 +65,7 @@ Unsure where to begin contributing to OpenSourceWebsite? You can start by lookin
 
 * [Beginner issues](beginner) - issues which should only require a few lines of code, and a test or two.
 * [Help wanted issues](help-wanted) - issues which should be a bit more involved than `beginner` issues.
+* [Refactor issues](refactor) - find in project's code comments with key word "`REVIEW`" (case sensitive). You will find there a description of the problem, and suggestions to resolve it. 
 
 Both issue lists are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
 

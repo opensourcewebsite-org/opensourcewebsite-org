@@ -606,6 +606,11 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
+        //REVIEW [ref] it is very bad way. NEVER set default conditions for whole app.
+        //  there are exist very-very rare cases, when it is really necessary to do.
+        //  Why: this condition useful, only when user with role 'User' is logged on.
+        //       but what if user with role 'Admin' is logged on?
+        //       Btw in console app `Yii::$app->user` is not exist at all!
     }
 
     public function getDisplayName()
