@@ -77,6 +77,9 @@ class ContactController extends Controller
      * Creates a new Contact model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     *
+     * REVIEW [ref] methods actionCreate and actionUpdate has a lot of duplicated code. Merge logic in common functions
+     *        [ref] validation logic should not be implemented in controller. Move it into Contact::rules()
      */
     public function actionCreate()
     {
