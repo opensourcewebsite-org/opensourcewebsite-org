@@ -19,32 +19,23 @@ class ContactQuery extends ActiveQuery
 {
     use RandomTrait;
 
-    /**
-     * @return self
-     */
-    public function virtual(bool $isVirtual)
+    public function virtual(bool $isVirtual, $method = 'andWhere'): self
     {
         if ($isVirtual) {
-            $this->andWhere(['contact.link_user_id' => null]);
+            $this->$method(['contact.link_user_id' => null]);
         } else {
-            $this->andWhere(['IS NOT', 'contact.link_user_id', null]);
+            $this->$method(['IS NOT', 'contact.link_user_id', null]);
         }
 
         return $this;
     }
 
-    /**
-     * @return self
-     */
-    public function userOwner($id = null)
+    public function userOwner($id = null, $method = 'andWhere'): self
     {
-        return $this->andWhere(['contact.user_id' => $id ?? Yii::$app->user->id]);
+        return $this->$method(['contact.user_id' => $id ?? Yii::$app->user->id]);
     }
 
-    /**
-     * @return self
-     */
-    public function forDebtRedistribution($contactId)
+    public function forDebtRedistribution($contactId): self
     {
         return $this
             ->where(['id' => $contactId])
