@@ -61,6 +61,15 @@ class AdminVoteBanController extends Controller
                             ],
                         ],
                         [
+                            // TODO add limit feature
+                            [
+                                'callback_data' => self::createRoute('index', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => '🏗 ' . Yii::t('bot', 'Limit') . ': ' . 5,
+                            ],
+                        ],
+                        [
                             [
                                 'callback_data' => AdminChatController::createRoute('index', [
                                     'chatId' => $chatId,

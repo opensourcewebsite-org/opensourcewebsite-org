@@ -229,7 +229,7 @@ use yii\helpers\Html;
           <ul>
               <li><?= Yii::t('app', 'The power of user vote when voting for new features or changing existing features of the Website') ?>.</li>
               <li><?= Yii::t('app', 'More possibilities and less limits when using of the Website') ?>.</li>
-              <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of the Website, which is distributed proportionally among all users in accordance with the value of their User Ratings') ?>.</li>
+              <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of the Website, which is distributed proportionally among all users in accordance with the value of their Ratings') ?>.</li>
           </ul>
         </div>
         <div class="col-md-12">
@@ -258,7 +258,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p class="text-muted"><?= Yii::t('app', 'Your donations increase your User Rating on the Website') ?>.</p>
+        <p class="text-muted"><?= Yii::t('app', 'Your donations increase your Rating in our community') ?>.</p>
       </div>
       <div class="col-md-12">
         <ul>
@@ -282,7 +282,7 @@ use yii\helpers\Html;
     </div>
       <div class="row">
         <div class="col-md-12">
-          <p class="text-muted"><?= Yii::t('app', 'Your contributions increase your User Rating on the Website') ?>.</p>
+          <p class="text-muted"><?= Yii::t('app', 'Your contributions increase your Rating in our community') ?>.</p>
         </div>
         <div class="col-md-12">
           <p class="text-muted"><?= Yii::t('app', 'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas') ?>: open source development, open data, editorial and translation work, UI/UX web design, social media and communications.</p>
