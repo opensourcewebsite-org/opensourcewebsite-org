@@ -102,7 +102,7 @@ class DebtRedistributionController extends Controller
     /**
      * @param $id
      *
-     * @return Response
+     * @return mixed
      * @throws NotFoundHttpException
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
