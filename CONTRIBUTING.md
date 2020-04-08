@@ -46,6 +46,9 @@ When contributing to this repository, please first discuss the change you wish t
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
 - Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
+    - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
+    - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+    - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
 - Make your changes.
   - Add tests if your changes contains new, testable behavior.
   - Make the tests pass.
