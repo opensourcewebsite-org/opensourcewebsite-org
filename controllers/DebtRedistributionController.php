@@ -12,6 +12,7 @@ use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * DebtRedistributionController implements the CRUD actions for DebtRedistribution model.
@@ -50,7 +51,7 @@ class DebtRedistributionController extends Controller
     /**
      * @param null $id
      *
-     * @return \yii\web\Response
+     * @return Response
      * @throws NotFoundHttpException
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -60,8 +61,6 @@ class DebtRedistributionController extends Controller
         $model = $id ? $this->findModel($id) : DebtRedistributionForm::factory();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->addFlash('success', Yii::t('app', 'Success')); //todo remove
-
             return $this->asJson(['success' => true]);
         }
 
@@ -74,14 +73,19 @@ class DebtRedistributionController extends Controller
     }
 
     /**
-     * @param $contactId
+     * @param int|Contact $contactId
      *
      * @return string
      * @throws NotFoundHttpException
      */
     public function actionIndex($contactId)
     {
-        $contact = Contact::find()->forDebtRedistribution($contactId)->one();
+        if ($contactId instanceof Contact) {
+            $contact = $contactId;
+        } else {
+            $contact = Contact::find()->forDebtRedistribution($contactId)->one();
+        }
+
         if (!$contact) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
@@ -98,14 +102,19 @@ class DebtRedistributionController extends Controller
     /**
      * @param $id
      *
-     * @return \yii\web\Response
+     * @return Response
      * @throws NotFoundHttpException
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->delete();
+
+        if (Yii::$app->request->isAjax) {
+            return $this->actionIndex($model->contact);
+        }
 
         return $this->redirect(Yii::$app->request->referrer);
     }
