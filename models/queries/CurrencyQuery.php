@@ -25,7 +25,7 @@ class CurrencyQuery extends ActiveQuery
      *
      * @return self
      */
-    public function excludeExistedInDebtRedistribution($fromUserId, $toUserId, $modelId = null)
+    public function excludeExistedInDebtRedistribution($fromUserId, $toUserId, $modelId = null): self
     {
         $condition = ['debt_redistribution.id' => null];
         if ($modelId) {
@@ -40,5 +40,10 @@ class CurrencyQuery extends ActiveQuery
                 },
             ])
             ->andWhere($condition);
+    }
+
+    public function code($code): self
+    {
+        return $this->andWhere(['currency.code' => $code]);
     }
 }

@@ -3,7 +3,7 @@
 namespace app\modules\dataGenerator\components\generators;
 
 use app\models\Contact;
-use app\models\Currency;
+use app\modules\dataGenerator\models\Currency;
 use app\models\Debt;
 use app\models\SignupForm;
 use app\models\User;
