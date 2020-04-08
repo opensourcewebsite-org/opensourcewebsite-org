@@ -62,6 +62,7 @@ Unsure where to begin contributing to OpenSourceWebsite? You can start by lookin
 
 * [Beginner issues](beginner) - issues which should only require a few lines of code, and a test or two.
 * [Help wanted issues](help-wanted) - issues which should be a bit more involved than `beginner` issues.
+* [Refactor issues](refactor) - find in project's code comments with key word "`REVIEW`" (case sensitive). You will find there a description of the problem, and suggestions to resolve it. 
 
 Both issue lists are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
 
