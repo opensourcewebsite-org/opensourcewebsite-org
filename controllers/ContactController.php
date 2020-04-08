@@ -79,7 +79,7 @@ class ContactController extends Controller
      * @return mixed
      *
      * REVIEW [ref] methods actionCreate and actionUpdate has a lot of duplicated code. Merge logic in common functions
-     *        [ref] validation logic should not be implemented in controller. Move it into Contact::rules()
+     *        [ref] validation logic should not be implemented in controller. Move it into Model::rules()
      */
     public function actionCreate()
     {
