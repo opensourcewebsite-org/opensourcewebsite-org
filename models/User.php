@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\components\Converter;
+use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
@@ -27,8 +28,15 @@ use yii\web\IdentityInterface;
  * @property string $birthday
  * @property string $timezone
  * @property integer $referrer_id
+ * @property integer $gender_id
+ * @property integer $currency_id
+ * @property integer $sexuality_id
  * @property bool $is_authenticated
  * @property bool $gender
+ *
+ * @property Contact $contact
+ * @property Contact[] $contactsFromMe
+ * @property Contact[] $contactsToMe
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -599,10 +607,7 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getContact()
+    public function getContact(): ContactQuery
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
@@ -611,6 +616,16 @@ class User extends ActiveRecord implements IdentityInterface
         //  Why: this condition useful, only when user with role 'User' is logged on.
         //       but what if user with role 'Admin' is logged on?
         //       Btw in console app `Yii::$app->user` is not exist at all!
+    }
+
+    public function getContactsFromMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['user_id' => 'id']);
+    }
+
+    public function getContactsToMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
     public function getDisplayName()
