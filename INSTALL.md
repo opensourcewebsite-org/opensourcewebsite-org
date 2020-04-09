@@ -95,13 +95,3 @@ Disable Telegram webhooks for all bots with `status` = 1:
 ```
 php yii bot/disable-all
 ```
-
-## IDE
-
-Your IDE should understand key-word "`REVIEW`" in similar way
-as key-word "`TODO`" - highlight text on the same and following lines.
-
-* **PHPStorm:**
-    * go to: `File | Settings | Editor | TODO`
-    * enable checkbox "`Treat indent text on the following lines as part of the same TODO`"
-    * add pattern `\bREVIEW\b.*` and enable checkbox "`Case sensitive`"
