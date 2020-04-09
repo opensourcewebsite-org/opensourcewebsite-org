@@ -15,11 +15,6 @@ class UserStatistic
     const AGE = 'age';
     const YEAR_OF_BIRTH = 'year_of_birth';
 
-    const AGE_JUNIOR = '"<18"';
-    const AGE_MIDDLE = '"18-35"';
-    const AGE_SENIOR = '"36-60"';
-    const AGE_OLD = '>60';
-
     /**
      * @param string $type
      * @return ArrayDataProvider
@@ -43,19 +38,21 @@ class UserStatistic
      */
     protected function age()
     {
-        $statistics = User::find()
+        $models = User::find()
             ->active()
             ->statisticAge()
             ->asArray()
             ->all();
 
+        $uniqueCount = array_count_values(array_column($models, 'age'));
+
         return new ArrayDataProvider([
-            'allModels' => $this->prepareAgeModels($statistics[0]),
+            'allModels' => $this->prepareAgeModels($uniqueCount),
             'pagination' => [
                 'pageSize' => 10,
             ],
             'sort' => [
-                'attributes' => ['count'],
+                'attributes' => ['count', 'age'],
             ],
         ]);
     }
@@ -98,7 +95,7 @@ class UserStatistic
                 ],
             ],
             'pagination' => [
-                'pageSize' => 3,
+                'pageSize' => 10,
             ],
         ]);
     }

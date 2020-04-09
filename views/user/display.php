@@ -28,12 +28,14 @@ use yii\data\ArrayDataProvider;
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item">
                             <?= Html::a(Yii::t('app', 'Age'), ['user/display', 'type' => UserStatistic::AGE], [
-                                'class' => 'nav-link show active'
+                                'class' => 'nav-link show ' .
+                                (Yii::$app->request->get('type', 'age') === UserStatistic::AGE ? 'active' : '')
                             ]); ?>
                         </li>
                         <li class="nav-item">
                             <?= Html::a(Yii::t('app', 'Year of birth'), ['user/display', 'type' => UserStatistic::YEAR_OF_BIRTH], [
-                                'class' => 'nav-link show'
+                                'class' => 'nav-link show ' .
+                                (Yii::$app->request->get('type') === UserStatistic::YEAR_OF_BIRTH ? 'active' : '')
                             ]); ?>
                         </li>
                     </ul>

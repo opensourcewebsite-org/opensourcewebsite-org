@@ -31,9 +31,7 @@ class UserQuery extends ActiveQuery
 
     public function statisticAge()
     {
-        return $this->select('(SUM(CASE WHEN id < 101 THEN 1 ELSE 0 END)) AS '.UserStatistic::AGE_JUNIOR)
-            ->addSelect('(SUM(CASE WHEN id >= 101 AND id < 103 THEN 1 ELSE 0 END)) AS '.UserStatistic::AGE_MIDDLE)
-            ->addSelect('(SUM(CASE WHEN id >= 103 THEN 1 ELSE 0 END)) AS '.UserStatistic::AGE_SENIOR);
+        return $this->select('(YEAR(CURDATE()) - YEAR(birthday)) AS age');
     }
 
     public function statisticYearOfBirth()
