@@ -17,6 +17,7 @@ class UserStatistic
     const YEAR_OF_BIRTH = 'year_of_birth';
     const GENDER = 'gender';
     const SEXUALITY = 'sexuality';
+    const CURRENCY = 'currency';
 
     /**
      * @param string $type
@@ -36,6 +37,9 @@ class UserStatistic
                 break;
             case self::SEXUALITY:
                 return $this->sexuality();
+                break;
+            case self::CURRENCY:
+                return $this->currency();
                 break;
             default:
                 break;
@@ -164,7 +168,7 @@ class UserStatistic
         $uniqueCount = array_count_values(array_column($models, 'sexuality'));
 
         return new ArrayDataProvider([
-            'allModels' => $this->prepareGenderModels($uniqueCount),
+            'allModels' => $this->prepareSexualityModels($uniqueCount),
             'pagination' => [
                 'pageSize' => 10,
             ],
@@ -184,6 +188,46 @@ class UserStatistic
         foreach ($data as $sexuality => $count) {
             $result[] = [
                 'sexuality' => $sexuality,
+                'count' => $count,
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * @return ArrayDataProvider
+     */
+    protected function currency()
+    {
+        $models = User::find()
+            ->addSelect('(CASE WHEN c.code IS NULL THEN "Not specified" ELSE c.code END) AS currency')
+            ->join('left join', 'currency c', 'user.currency_id=c.id')
+            ->asArray()
+            ->all();
+
+        $uniqueCount = array_count_values(array_column($models, 'currency'));
+
+        return new ArrayDataProvider([
+            'allModels' => $this->prepareCurrencyModels($uniqueCount),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'attributes' => ['count', 'currency'],
+            ],
+        ]);
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    protected function prepareCurrencyModels($data)
+    {
+        $result = [];
+        foreach ($data as $currency => $count) {
+            $result[] = [
+                'currency' => $currency,
                 'count' => $count,
             ];
         }
