@@ -1,11 +1,15 @@
 <?php
 use yii\helpers\Html;
 use app\models\UserStatistic;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
+use yii\base\View;
+use yii\data\ArrayDataProvider;
 
 /**
- * @var $this \yii\base\View
+ * @var $this View
  * @var $confirmedUsersCount int
- * @var $dataProvider \yii\data\ArrayDataProvider
+ * @var $dataProvider ArrayDataProvider
  */
 ?>
 <div class="info-box">
@@ -27,11 +31,36 @@ use app\models\UserStatistic;
                                 'class' => 'nav-link show active'
                             ]); ?>
                         </li>
+                        <li class="nav-item">
+                            <?= Html::a(Yii::t('app', 'Year of birth'), ['user/display', 'type' => UserStatistic::YEAR_OF_BIRTH], [
+                                'class' => 'nav-link show'
+                            ]); ?>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body p-0">
-                    <?= $this->render('parts/_age', ['dataProvider' => $dataProvider]) ?>
+                    <?php Pjax::begin([
+                        'id' => 'statistic'
+                    ]);
+                    echo GridView::widget([
+                        'id' => 'ages',
+                        'dataProvider' => $dataProvider,
+                        'layout' => "{items}<div class='pagination pagination-sm no-margin pull-right'>{pager}</div><div class='card-footer clearfix'></div>",
+                        'tableOptions' => ['class' => 'table table-condensed table-hover'],
+                        'pager' => [
+                            'class' => '\yii\widgets\LinkPager',
+                            'linkOptions' => [
+                                'class' => 'page-link'
+                            ],
+                            'pageCssClass' => 'page-item',
+                            'disabledListItemSubTagOptions' => ['tag' => 'a', 'class' => 'disabled page-link']
+                        ]
+                    ]);
+                    Pjax::end();
+                    ?>
+
                 </div>
+
             </div>
         </div>
     </div>

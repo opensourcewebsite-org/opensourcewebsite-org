@@ -13,6 +13,7 @@ use yii\data\ArrayDataProvider;
 class UserStatistic
 {
     const AGE = 'age';
+    const YEAR_OF_BIRTH = 'year_of_birth';
 
     const AGE_JUNIOR = '"<18"';
     const AGE_MIDDLE = '"18-35"';
@@ -27,7 +28,10 @@ class UserStatistic
     {
         switch ($type) {
             case self::AGE:
-                return $this->ageStatistics();
+                return $this->age();
+                break;
+            case self::YEAR_OF_BIRTH:
+                return $this->yearOfBirth();
                 break;
             default:
                 break;
@@ -35,12 +39,15 @@ class UserStatistic
     }
 
     /**
-     *
      * @return ArrayDataProvider
      */
-    public  function ageStatistics()
+    protected function age()
     {
-        $statistics = User::find()->active()->statisticAge()->asArray()->all();
+        $statistics = User::find()
+            ->active()
+            ->statisticAge()
+            ->asArray()
+            ->all();
 
         return new ArrayDataProvider([
             'allModels' => $this->prepareAgeModels($statistics[0]),
@@ -48,7 +55,7 @@ class UserStatistic
                 'pageSize' => 10,
             ],
             'sort' => [
-                'attributes' => ['id', 'count'],
+                'attributes' => ['count'],
             ],
         ]);
     }
@@ -62,14 +69,37 @@ class UserStatistic
     protected function prepareAgeModels($data)
     {
         $result = [];
-        $counter = 0;
         foreach ($data as $age => $count) {
             $result[] = [
-                'id' => ++$counter,
                 'age' => $age,
                 'count' => $count,
             ];
         }
         return $result;
+    }
+
+    /**
+     * @return ArrayDataProvider
+     */
+    protected function yearOfBirth()
+    {
+        $models = User::find()
+            ->active()
+            ->statisticYearOfBirth()
+            ->asArray()
+            ->all();
+
+        return new ArrayDataProvider([
+            'allModels' => $models,
+            'sort' => [
+                'attributes' => ['year', 'count'],
+                'defaultOrder' => [
+                    'count' => SORT_DESC,
+                ],
+            ],
+            'pagination' => [
+                'pageSize' => 3,
+            ],
+        ]);
     }
 }
