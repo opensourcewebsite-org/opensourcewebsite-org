@@ -37,6 +37,11 @@ use yii\data\ArrayDataProvider;
                                 'class' => 'nav-link show ' .
                                 (Yii::$app->request->get('type') === UserStatistic::YEAR_OF_BIRTH ? 'active' : '')
                             ]); ?>
+                        <li class="nav-item">
+                            <?= Html::a(Yii::t('app', 'Gender'), ['user/display', 'type' => UserStatistic::GENDER], [
+                                'class' => 'nav-link show ' .
+                                    (Yii::$app->request->get('type') === UserStatistic::GENDER ? 'active' : '')
+                            ]); ?>
                         </li>
                     </ul>
                 </div>

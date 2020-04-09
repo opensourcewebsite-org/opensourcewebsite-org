@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\data\ArrayDataProvider;
+use yii\helpers\VarDumper;
 
 /**
  * Class UserStatistic
@@ -14,6 +15,7 @@ class UserStatistic
 {
     const AGE = 'age';
     const YEAR_OF_BIRTH = 'year_of_birth';
+    const GENDER = 'gender';
 
     /**
      * @param string $type
@@ -27,6 +29,9 @@ class UserStatistic
                 break;
             case self::YEAR_OF_BIRTH:
                 return $this->yearOfBirth();
+                break;
+            case self::GENDER:
+                return $this->gender();
                 break;
             default:
                 break;
@@ -99,4 +104,45 @@ class UserStatistic
             ],
         ]);
     }
+
+    /**
+     * @return ArrayDataProvider
+     */
+    protected function gender()
+    {
+        $models = User::find()
+            ->addSelect('g.name as gender')
+            ->join('left join', 'gender g', 'user.gender_id=g.id')
+            ->asArray()
+            ->all();
+
+        $uniqueCount = array_count_values(array_column($models, 'gender'));
+
+        return new ArrayDataProvider([
+            'allModels' => $this->prepareGenderModels($uniqueCount),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'attributes' => ['count', 'age'],
+            ],
+        ]);
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    protected function prepareGenderModels($data)
+    {
+        $result = [];
+        foreach ($data as $gender => $count) {
+            $result[] = [
+                'gender' => $gender,
+                'count' => $count,
+            ];
+        }
+        return $result;
+    }
 }
+
