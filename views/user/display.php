@@ -43,6 +43,12 @@ use yii\data\ArrayDataProvider;
                                     (Yii::$app->request->get('type') === UserStatistic::GENDER ? 'active' : '')
                             ]); ?>
                         </li>
+                        <li class="nav-item">
+                            <?= Html::a(Yii::t('app', 'Sexuality'), ['user/display', 'type' => UserStatistic::SEXUALITY], [
+                                'class' => 'nav-link show ' .
+                                    (Yii::$app->request->get('type') === UserStatistic::SEXUALITY ? 'active' : '')
+                            ]); ?>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body p-0">

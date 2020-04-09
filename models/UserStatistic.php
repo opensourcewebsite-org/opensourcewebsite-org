@@ -16,6 +16,7 @@ class UserStatistic
     const AGE = 'age';
     const YEAR_OF_BIRTH = 'year_of_birth';
     const GENDER = 'gender';
+    const SEXUALITY = 'sexuality';
 
     /**
      * @param string $type
@@ -32,6 +33,9 @@ class UserStatistic
                 break;
             case self::GENDER:
                 return $this->gender();
+                break;
+            case self::SEXUALITY:
+                return $this->sexuality();
                 break;
             default:
                 break;
@@ -112,6 +116,7 @@ class UserStatistic
     {
         $models = User::find()
             ->addSelect('g.name as gender')
+            ->addSelect('(CASE WHEN g.name IS NULL THEN "Not specified" ELSE g.name END) as gender')
             ->join('left join', 'gender g', 'user.gender_id=g.id')
             ->asArray()
             ->all();
@@ -124,7 +129,7 @@ class UserStatistic
                 'pageSize' => 10,
             ],
             'sort' => [
-                'attributes' => ['count', 'age'],
+                'attributes' => ['count', 'gender'],
             ],
         ]);
     }
@@ -139,6 +144,46 @@ class UserStatistic
         foreach ($data as $gender => $count) {
             $result[] = [
                 'gender' => $gender,
+                'count' => $count,
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * @return ArrayDataProvider
+     */
+    protected function sexuality()
+    {
+        $models = User::find()
+            ->addSelect('(CASE WHEN s.name IS NULL THEN "Not specified" ELSE s.name END) as sexuality')
+            ->join('left join', 'sexuality s', 'user.sexuality_id=s.id')
+            ->asArray()
+            ->all();
+
+        $uniqueCount = array_count_values(array_column($models, 'sexuality'));
+
+        return new ArrayDataProvider([
+            'allModels' => $this->prepareGenderModels($uniqueCount),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'attributes' => ['count', 'sexuality'],
+            ],
+        ]);
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    protected function prepareSexualityModels($data)
+    {
+        $result = [];
+        foreach ($data as $sexuality => $count) {
+            $result[] = [
+                'sexuality' => $sexuality,
                 'count' => $count,
             ];
         }
