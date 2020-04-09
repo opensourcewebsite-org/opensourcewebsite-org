@@ -21,8 +21,8 @@ Web-server can be accessed at http://localhost:8000
 #### Without Docker
 
 - Install [MySQL +5.7.X](https://www.mysql.com)
-- Create a new MySQL database ("opensourcewebsite" by default) with an "utf8mb4_unicode_ci" collation for your environment
-- Create a new MySQL database ("opensourcewebsite_test" by default) with an "utf8mb4_unicode_ci" collation for test environment
+- Create a new MySQL InnoDB database ("opensourcewebsite" by default) with an "utf8mb4_unicode_ci" collation for your environment
+- Create a new MySQL InnoDB database ("opensourcewebsite_test" by default) with an "utf8mb4_unicode_ci" collation for test environment
 - Setup your web-server root folder to `web`
 - Install [PHP +7.2.X](https://www.php.net)
 - Install [XDebug](https://xdebug.org) for test environment
