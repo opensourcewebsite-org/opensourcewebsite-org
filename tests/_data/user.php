@@ -37,4 +37,16 @@ return [
         'created_at' => time(),
         'updated_at' => time(),
     ],
+    [
+        'id' => 103,
+        'username' => 'testuser',
+        'auth_key' => 'test103key',
+        'password_hash' => Yii::$app->security->generatePasswordHash('testuser'),
+        'email' => 'testuser@example.com',
+        'is_authenticated' => 0,
+        'status' => 10,
+        'referrer_id' => 100,
+        'created_at' => time(),
+        'updated_at' => time(),
+    ],
 ];
