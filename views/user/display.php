@@ -19,7 +19,9 @@ use yii\data\ArrayDataProvider;
         <span class="info-box-number"><?php echo $confirmedUsersCount; ?></span>
     </div>
 </div>
-
+<?php Pjax::begin([
+    'id' => 'statistic'
+])?>
 <div class="user-statistics">
     <div class="row">
         <div class="col-12">
@@ -76,9 +78,10 @@ use yii\data\ArrayDataProvider;
                     </ul>
                 </div>
                 <div class="card-body p-0">
-                    <?php Pjax::begin([
-                        'id' => 'statistic'
-                    ]);
+                    <?php
+//                    Pjax::begin([
+//                        'id' => 'statistic'
+//                    ]);
                     echo GridView::widget([
                         'id' => 'ages',
                         'dataProvider' => $dataProvider,
@@ -93,7 +96,7 @@ use yii\data\ArrayDataProvider;
                             'disabledListItemSubTagOptions' => ['tag' => 'a', 'class' => 'disabled page-link']
                         ]
                     ]);
-                    Pjax::end();
+//                    Pjax::end();
                     ?>
 
                 </div>
@@ -102,3 +105,4 @@ use yii\data\ArrayDataProvider;
         </div>
     </div>
 </div>
+<?php Pjax::end()?>

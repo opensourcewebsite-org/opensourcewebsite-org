@@ -25,12 +25,9 @@ class UserStatistic
      * @param string $type
      * @return ArrayDataProvider
      */
-    public function get(string $type)
+    public function getDataProvider(string $type)
     {
         switch ($type) {
-            case self::AGE:
-                return $this->age();
-                break;
             case self::YEAR_OF_BIRTH:
                 return $this->yearOfBirth();
                 break;
@@ -53,6 +50,7 @@ class UserStatistic
                 return $this->citizenship();
                 break;
             default:
+                return $this->age();
                 break;
         }
     }
@@ -64,39 +62,11 @@ class UserStatistic
     {
         $models = User::find()
             ->active()
-            ->statisticAge()
+            ->age()
             ->asArray()
             ->all();
 
-        $uniqueCount = array_count_values(array_column($models, 'age'));
-
-        return new ArrayDataProvider([
-            'allModels' => $this->prepareAgeModels($uniqueCount),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'attributes' => ['count', 'age'],
-            ],
-        ]);
-    }
-
-    /**
-     * Prepare result array.
-     *
-     * @param $data
-     * @return array
-     */
-    protected function prepareAgeModels($data)
-    {
-        $result = [];
-        foreach ($data as $age => $count) {
-            $result[] = [
-                'age' => $age,
-                'count' => $count,
-            ];
-        }
-        return $result;
+        return $this->dataProvider($models);
     }
 
     /**
@@ -110,18 +80,7 @@ class UserStatistic
             ->asArray()
             ->all();
 
-        return new ArrayDataProvider([
-            'allModels' => $models,
-            'sort' => [
-                'attributes' => ['year', 'count'],
-                'defaultOrder' => [
-                    'count' => SORT_DESC,
-                ],
-            ],
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
+        return $this->dataProvider($models);
     }
 
     /**
@@ -130,39 +89,11 @@ class UserStatistic
     protected function gender()
     {
         $models = User::find()
-            ->addSelect('g.name as gender')
-            ->addSelect('(CASE WHEN g.name IS NULL THEN "Not specified" ELSE g.name END) as gender')
-            ->join('left join', 'gender g', 'user.gender_id=g.id')
+            ->gender()
             ->asArray()
             ->all();
 
-        $uniqueCount = array_count_values(array_column($models, 'gender'));
-
-        return new ArrayDataProvider([
-            'allModels' => $this->prepareGenderModels($uniqueCount),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'attributes' => ['count', 'gender'],
-            ],
-        ]);
-    }
-
-    /**
-     * @param $data
-     * @return array
-     */
-    protected function prepareGenderModels($data)
-    {
-        $result = [];
-        foreach ($data as $gender => $count) {
-            $result[] = [
-                'gender' => $gender,
-                'count' => $count,
-            ];
-        }
-        return $result;
+        return $this->dataProvider($models);
     }
 
     /**
@@ -171,38 +102,11 @@ class UserStatistic
     protected function sexuality()
     {
         $models = User::find()
-            ->addSelect('(CASE WHEN s.name IS NULL THEN "Not specified" ELSE s.name END) as sexuality')
-            ->join('left join', 'sexuality s', 'user.sexuality_id=s.id')
+            ->sexuality()
             ->asArray()
             ->all();
 
-        $uniqueCount = array_count_values(array_column($models, 'sexuality'));
-
-        return new ArrayDataProvider([
-            'allModels' => $this->prepareSexualityModels($uniqueCount),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'attributes' => ['count', 'sexuality'],
-            ],
-        ]);
-    }
-
-    /**
-     * @param $data
-     * @return array
-     */
-    protected function prepareSexualityModels($data)
-    {
-        $result = [];
-        foreach ($data as $sexuality => $count) {
-            $result[] = [
-                'sexuality' => $sexuality,
-                'count' => $count,
-            ];
-        }
-        return $result;
+        return $this->dataProvider($models);
     }
 
     /**
@@ -211,60 +115,21 @@ class UserStatistic
     protected function currency()
     {
         $models = User::find()
-            ->addSelect('(CASE WHEN c.code IS NULL THEN "Not specified" ELSE c.code END) AS currency')
-            ->join('left join', 'currency c', 'user.currency_id=c.id')
+            ->currency()
             ->asArray()
             ->all();
 
-        $uniqueCount = array_count_values(array_column($models, 'currency'));
-
-        return new ArrayDataProvider([
-            'allModels' => $this->prepareCurrencyModels($uniqueCount),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'attributes' => ['count', 'currency'],
-            ],
-        ]);
-    }
-
-    /**
-     * @param $data
-     * @return array
-     */
-    protected function prepareCurrencyModels($data)
-    {
-        $result = [];
-        foreach ($data as $currency => $count) {
-            $result[] = [
-                'currency' => $currency,
-                'count' => $count,
-            ];
-        }
-        return $result;
+        return $this->dataProvider($models);
     }
 
     protected function interfaceLanguage()
     {
         $models = User::find()
-            ->addSelect('l.name as lang, count(*) as count')
-            ->join('inner join', 'bot_user b', 'b.user_id=user.id')
-            ->join('inner join', 'language l', 'l.id=b.language_id')
-            ->groupBy('lang')
-            ->orderBy('count DESC')
+            ->interfaceLanguage()
             ->asArray()
             ->all();
 
-        return new ArrayDataProvider([
-            'allModels' => $models,
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'attributes' => ['count', 'currency'],
-            ],
-        ]);
+        return $this->dataProvider($models);
     }
 
     /**
@@ -273,12 +138,7 @@ class UserStatistic
     protected function languageAndLevel()
     {
         $models = User::find()
-            ->addSelect('l.name as lang, lev.description as level, count(*) as count')
-            ->join('inner join', 'user_language ul', 'ul.user_id=user.id')
-            ->join('inner join', 'language l', 'l.id=ul.language_id')
-            ->join('inner join', 'language_level lev', 'lev.id=ul.language_level_id')
-            ->groupBy('level, lang')
-            ->orderBy('count DESC')
+            ->languageAndLevel()
             ->asArray()
             ->all();
 
@@ -308,31 +168,48 @@ class UserStatistic
                 'pageSize' => 10,
             ],
             'sort' => [
-                'attributes' => ['count', 'currency'],
+                'attributes' => ! empty($result) ? array_keys(current($result)) : [],
             ],
         ]);
     }
 
+    /**
+     * @return ArrayDataProvider
+     */
     protected function citizenship()
     {
         $models = User::find()
-            ->select('country.name as country, count(*) as count')
-            ->join('inner join', 'user_citizenship uc', 'uc.user_id=user.id')
-            ->join('inner join', 'country', 'country.id=uc.country_id')
-            ->orderBy('count ASC')
-            ->groupBy('country')
+            ->citizenship()
             ->asArray()
             ->all();
 
+        return $this->dataProvider($models);
+    }
+
+    /**
+     * @param $models
+     * @return ArrayDataProvider
+     */
+    protected function dataProvider(array $models): ArrayDataProvider
+    {
         return new ArrayDataProvider([
             'allModels' => $models,
             'pagination' => [
                 'pageSize' => 10,
             ],
             'sort' => [
-                'attributes' => ['country', 'count'],
+                'attributes' => $this->sortAttributes($models),
             ],
         ]);
+    }
+
+    /**
+     * @param array $models
+     * @return array
+     */
+    private function sortAttributes(array $models): array
+    {
+        return ! empty($models) ? array_keys($models[0]) : [];
     }
 
     /**

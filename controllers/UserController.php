@@ -58,7 +58,7 @@ class UserController extends Controller
             ->count();
 
         $userStatistics = new UserStatistic();
-        $dataProvider = $userStatistics->get($type);
+        $dataProvider = $userStatistics->getDataProvider($type);
 
         return $this->render('display', [
             'confirmedUsersCount' => $confirmedUsersCount,
