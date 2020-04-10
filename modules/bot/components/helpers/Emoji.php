@@ -11,4 +11,5 @@ class Emoji
     public const MENU = '📱';
     public const DELETE = '🗑';
     public const LANGUAGE = '🌐';
+    public const CLEAN = '🧹';
 }

@@ -2,10 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Phrase;
 
@@ -21,92 +19,56 @@ class AdminMessageFilterPhraseController extends Controller
      */
     public function actionIndex($phraseId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(null);
-        $telegramUser->save();
+        $this->getState()->setName(null);
 
         $phrase = Phrase::findOne($phraseId);
-
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index', compact('phrase')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => $phrase->isTypeBlack()
-                                        ? AdminMessageFilterBlacklistController::createRoute('index', [
-                                            'chatId' => $phrase->chat_id,
-                                        ])
-                                        : AdminMessageFilterWhitelistController::createRoute('index', [
-                                            'chatId' => $phrase->chat_id,
-                                        ]),
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('create', [
-                                        'phraseId' => $phraseId,
-                                    ]),
-                                    'text' => '✏️',
-                                ],
-                                [
-                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('delete', [
-                                        'phraseId' => $phraseId,
-                                    ]),
-                                    'text' => '🗑',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('index', compact('phrase')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => $phrase->isTypeBlack()
-                                        ? AdminMessageFilterBlacklistController::createRoute('index', [
-                                            'chatId' => $phrase->chat_id,
-                                        ])
-                                        : AdminMessageFilterWhitelistController::createRoute('index', [
-                                            'chatId' => $phrase->chat_id,
-                                        ]),
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('create', [
-                                        'phraseId' => $phraseId,
-                                    ]),
-                                    'text' => '✏️',
-                                ],
-                                [
-                                    'callback_data' => AdminMessageFilterPhraseController::createRoute('delete', [
-                                        'phraseId' => $phraseId,
-                                    ]),
-                                    'text' => '🗑',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
+        if (isset($phrase)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
         }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('phrase')),
+                [
+                    [
+                        [
+                            'callback_data' => $phrase->isTypeBlack()
+                                ? AdminMessageFilterBlacklistController::createRoute('index', [
+                                    'chatId' => $phrase->chat_id,
+                                ])
+                                : AdminMessageFilterWhitelistController::createRoute('index', [
+                                    'chatId' => $phrase->chat_id,
+                                ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => AdminMessageFilterPhraseController::createRoute('create', [
+                                'phraseId' => $phraseId,
+                            ]),
+                            'text' => Emoji::EDIT,
+                        ],
+                        [
+                            'callback_data' => AdminMessageFilterPhraseController::createRoute('delete', [
+                                'phraseId' => $phraseId,
+                            ]),
+                            'text' => Emoji::DELETE,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionDelete($phraseId = null)
     {
         $phrase = Phrase::findOne($phraseId);
+        if (isset($phrase)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         $chatId = $phrase->chat_id;
 
@@ -127,42 +89,39 @@ class AdminMessageFilterPhraseController extends Controller
 
     public function actionCreate($phraseId = null)
     {
-        $telegramUser = $this->getTelegramUser();
-
-        $telegramUser->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
+        $this->getState()->setName(AdminMessageFilterPhraseController::createRoute('update', [
             'phraseId' => $phraseId,
         ]));
-        $telegramUser->save();
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('create'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
+                    [
                         [
-                            [
-                                'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
-                                    'phraseId' => $phraseId,
-                                ]),
-                                'text' => '🔙',
-                            ],
+                            'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
+                                'phraseId' => $phraseId,
+                            ]),
+                            'text' => Emoji::BACK,
                         ],
-                    ]),
+                    ],
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionUpdate($phraseId = null)
     {
-        $update = $this->getUpdate();
+        $phrase = Phrase::findOne($phraseId);
+        if (isset($phrase)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         $phrase = Phrase::findOne($phraseId);
 
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (!Phrase::find()->where([
             'chat_id' => $phrase->chat_id,
@@ -174,5 +133,9 @@ class AdminMessageFilterPhraseController extends Controller
 
             return $this->actionIndex($phraseId);
         }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->answerCallbackQuery()
+            ->build();
     }
 }

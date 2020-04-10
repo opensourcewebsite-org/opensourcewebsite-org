@@ -102,6 +102,14 @@ class Controller extends \yii\web\Controller
     }
 
     /**
+     * @return mixed
+     */
+    protected function getRequest()
+    {
+        return $this->module->getRequest();
+    }
+
+    /**
      * @param string $actionName
      * @param array $params
      * @return string

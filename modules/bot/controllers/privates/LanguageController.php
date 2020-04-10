@@ -69,42 +69,27 @@ class LanguageController extends Controller
      */
     public function actionList($page = 1)
     {
-        $languageQuery = Language::find()->orderBy('code ASC');
-        $pagination = new Pagination([
-            'totalCount' => $languageQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $languages = $languageQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('list', [
-                'page' => $page,
-            ]);
-        });
-
-        $languageRows = array_map(function ($language) {
-            return [
-                [
+        $languageButtons = PaginationButtons::buildFromQuery(
+            Language::find()->orderBy('code ASC'),
+            function ($page) {
+                return self::createRoute('list', [
+                    'page' => $page,
+                ]);
+            },
+            function (Language $language) {
+                return [
                     'callback_data' => self::createRoute('index', [
                         'languageCode' => $language->code,
                     ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name,
-                ]
-            ];
-        }, $languages);
+                ];
+            }, $page
+        );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('list'),
-                array_merge($languageRows, [ $paginationButtons ], [
+                array_merge($languageButtons, [
                     [
                         [
                             'callback_data' => self::createRoute(),

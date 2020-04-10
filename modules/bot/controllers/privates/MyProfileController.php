@@ -2,13 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\UserCitizenship;
+use app\models\UserLanguage;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\modules\bot\components\Controller;
-use app\models\Currency;
-use app\models\Language;
-use app\components\helpers\TimeHelper;
 
 /**
  * Class MyProfileController
@@ -24,10 +23,7 @@ class MyProfileController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
         $user = $this->getUser();
-        $timezones = TimeHelper::timezonesList();
-
         $currency = $user->currency;
-        $interfaceLanguage = $telegramUser->language;
 
         $params = [
             'firstName' => $telegramUser->provider_user_first_name,
@@ -36,11 +32,11 @@ class MyProfileController extends Controller
             'gender' => isset($user->gender) ? $user->gender->name : null,
             'birthday' => $user->birthday,
             'currency' => isset($currency) ? "{$currency->name} ({$currency->code})" : null,
-            'timezone' => $timezones[$user->timezone],
-            'languages' => array_map(function ($userLanguage) {
+            'timezone' => '(UTC ' . $user->timezone->getUTCOffset() . ') ' . $user->timezone->location,
+            'languages' => array_map(function (UserLanguage $userLanguage) {
                 return $userLanguage->getDisplayName();
             }, $user->languages),
-            'citizenships' => array_map(function($citizenship) {
+            'citizenships' => array_map(function(UserCitizenship $citizenship) {
                 return $citizenship->country->name;
             }, $user->citizenships),
         ];

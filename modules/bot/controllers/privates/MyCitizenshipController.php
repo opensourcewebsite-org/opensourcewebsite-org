@@ -24,42 +24,28 @@ class MyCitizenshipController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $citizenshipsQuery = $this->getUser()->getCitizenships();
-        $pagination = new Pagination([
-            'totalCount' => $citizenshipsQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
-        $citizenships = $citizenshipsQuery
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-        $citizenshipRows = array_map(function ($citizenship) use ($page) {
-            return [
-                [
+        $citizenshipButtons = PaginationButtons::buildFromQuery(
+            $this->getUser()->getCitizenships(),
+            function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            },
+            function ($citizenship) {
+                return [
                     'text' => $citizenship->country->name,
                     'callback_data' => self::createRoute('show', [
                         'countryId' => $citizenship->country->id,
                     ]),
-                ],
-            ];
-        }, $citizenships);
+                ];
+            },
+            $page
+        );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($citizenshipRows, [ $paginationButtons ], [
+                array_merge($citizenshipButtons, [
                     [
                         [
                             'callback_data' => MyProfileController::createRoute(),
@@ -77,42 +63,28 @@ class MyCitizenshipController extends Controller
 
     public function actionCreateCountry($page = 1)
     {
-        $countriesQuery = Country::find();
-        $pagination = new Pagination([
-            'totalCount' => $countriesQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('create-country', [
-                'page' => $page,
-            ]);
-        });
-
-        $countries = $countriesQuery
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-        $countryRows = array_map(function ($country) use ($page) {
-            return [
-                [
+        $countryButtons = PaginationButtons::buildFromQuery(
+            Country::find(),
+            function ($page) {
+                return self::createRoute('create-country', [
+                    'page' => $page,
+                ]);
+            },
+            function (Country $country) {
+                return [
                     'text' => $country->name,
                     'callback_data' => self::createRoute('create', [
                         'countryId' => $country->id,
                     ]),
-                ],
-            ];
-        }, $countries);
+                ];
+            },
+            $page
+        );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-country'),
-                array_merge($countryRows, [ $paginationButtons ], [
+                array_merge($countryButtons, [
                     [
                         [
                             'text' => Emoji::BACK,

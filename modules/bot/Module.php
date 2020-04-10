@@ -2,6 +2,7 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
 use Yii;
@@ -15,10 +16,12 @@ use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
 use app\modules\bot\components\Controller;
+use yii\web\Request;
 
 /**
  * OSW Bot module definition class
  * @link https://t.me/opensourcewebsite_bot
+ * @property-read CommandRouteResolver $commandRouteResolver
  */
 class Module extends \yii\base\Module
 {
@@ -36,6 +39,11 @@ class Module extends \yii\base\Module
      * @var array
      */
     private $updateHandlers = [];
+
+    /**
+     * @var Request
+     */
+    private $request;
 
     /**
      * @var models\User
@@ -275,13 +283,10 @@ class Module extends \yii\base\Module
         $defaultRoute = $this->telegramChat->isPrivate()
             ? 'default/command-not-found'
             : 'message/index';
-        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
-        if (!$isStateRoute) {
-            $this->userState->setName(null);
-        }
-        if ($route) {
+        $this->request = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+        if ($this->request) {
             try {
-                $commands = $this->runAction($route, $params);
+                $commands = $this->runAction($this->request->getRoute(), $this->request->getParams());
             } catch (InvalidRouteException $e) {
                 $commands = $this->runAction($defaultRoute);
             }
@@ -291,7 +296,7 @@ class Module extends \yii\base\Module
                     try {
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {
-                        Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
+                        Yii::error("[{$this->request->getRoute()}] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
                     }
                 }
 
@@ -305,5 +310,10 @@ class Module extends \yii\base\Module
     public function getBotName()
     {
         return $this->botInfo->name;
+    }
+
+    public function getRequest()
+    {
+        return $this->request;
     }
 }

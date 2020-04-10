@@ -2,9 +2,22 @@
 
 namespace app\models;
 
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
+/**
+ * Class Vacancy
+ * @package app\models
+ * @property-read Company $company
+ * @property-read Currency $currency
+ * @property-read Gender $gender
+ * @property int $status
+ * @property double $hourly_rate
+ * @property string $name
+ * @property string $requirements
+ * @property string $conditions
+ * @property string $responsibilities
+ * @property int $id
+ */
 class Vacancy extends ActiveRecord
 {
     public static function tableName()
@@ -30,8 +43,7 @@ class Vacancy extends ActiveRecord
                 [
                     'location_lat',
                     'location_lon',
-                    'min_hourly_rate',
-                    'max_hourly_rate',
+                    'hourly_rate',
                 ],
                 'double'
             ],
@@ -58,6 +70,7 @@ class Vacancy extends ActiveRecord
                     'requirements',
                     'conditions',
                     'responsibilities',
+                    'hourly_rate',
                 ],
                 'required',
             ],

@@ -4,6 +4,16 @@ namespace app\models;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
+/**
+ * Class Company
+ * @package app\models
+ * @property-read $vacancies
+ * @property string $name
+ * @property string $description
+ * @property string $url
+ * @property string $address
+ * @property-read int $id
+ */
 class Company extends ActiveRecord
 {
     public static function tableName()
@@ -14,7 +24,7 @@ class Company extends ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
@@ -28,14 +38,24 @@ class Company extends ActiveRecord
         ];
     }
 
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'url' => 'Website link',
+        ]);
+    }
+
     public function getMembers()
     {
-        return $this->hasMany(User::className(), ['id', 'user_id'])
+        return $this->hasMany(User::class, ['id', 'user_id'])
             ->viaTable('company_user', ['company_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getVacancies()
     {
-        return $this->hasMany(Vacancy::className(), ['company_id' => 'id']);
+        return $this->hasMany(Vacancy::class, ['company_id' => 'id']);
     }
 }

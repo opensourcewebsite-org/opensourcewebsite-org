@@ -2,14 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\commands\SendMessageCommand;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\Phrase;
-use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 
 /**
@@ -25,95 +22,56 @@ class AdminMessageFilterBlacklistController extends Controller
     public function actionIndex($chatId = null, $page = 1)
     {
         $chat = Chat::findOne($chatId);
-
         if (!isset($chat)) {
-            return [];
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        $phraseQuery = $chat->getBlacklistPhrases();
-
-        $pagination = new Pagination([
-            'totalCount' => $phraseQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-        ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
-
-        $telegramUser = $this->getTelegramUser();
-        $telegramUser->getState()->setName(null);
-        $telegramUser->save();
+        $this->getState()->setName(null);
 
         $chatTitle = $chat->title;
-        $phrases = $phraseQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-            return self::createRoute('index', [
-                'chatId' => $chatId,
-                'page' => $page,
-            ]);
-        });
-        $buttons = [];
-
-        if ($phrases) {
-            foreach ($phrases as $phrase) {
-                $buttons[][] = [
+        $phraseButtons = PaginationButtons::buildFromQuery(
+            $chat->getBlacklistPhrases(),
+            function ($page) use ($chatId) {
+                return self::createRoute('index', [
+                    'chatId' => $chatId,
+                    'page' => $page,
+                ]);
+            },
+            function (Phrase $phrase) {
+                return [
                     'callback_data' => AdminMessageFilterPhraseController::createRoute('index', [
                         'phraseId' => $phrase->id,
                     ]),
                     'text' => $phrase->text
                 ];
-            }
+            },
+            $page
+        );
 
-            if ($paginationButtons) {
-                $buttons[] = $paginationButtons;
-            }
-        }
-
-        $buttons[] = [
-            [
-                'callback_data' => AdminMessageFilterController::createRoute('index', [
-                    'chatId' => $chatId,
-                ]),
-                'text' => '🔙',
-            ],
-            [
-                'callback_data' => AdminMessageFilterNewphraseController::createRoute('index', [
-                    'type' => Phrase::TYPE_BLACKLIST,
-                    'chatId' => $chatId,
-                ]),
-                'text' => '➕',
-            ],
-        ];
-
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index', compact('chatTitle')),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('chatTitle')),
+                array_merge($phraseButtons, [
                     [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
+                        [
+                            'callback_data' => AdminMessageFilterController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => AdminMessageFilterNewphraseController::createRoute('index', [
+                                'type' => Phrase::TYPE_BLACKLIST,
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::ADD,
+                        ],
                     ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('index', compact('chatTitle')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        }
+                ])
+            )
+            ->build();
     }
 }

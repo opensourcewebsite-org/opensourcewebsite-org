@@ -3,6 +3,8 @@
 namespace app\modules\bot\components\helpers;
 
 use yii\data\Pagination;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * Class PaginationButtons
@@ -12,13 +14,35 @@ use yii\data\Pagination;
 class PaginationButtons
 {
     /**
-     * @param Pagination $pagination
+     * @param ActiveQuery $query
      * @param callable $routeCallback
+     * @param callable $buttonCallback
+     * @param int $page
+     * @param int $pageSize
      * @return array
      */
-    public static function build(Pagination $pagination, callable $routeCallback)
+    public static function buildFromQuery(ActiveQuery $query, callable $routeCallback, callable $buttonCallback, int $page = 1, int $pageSize = 9)
     {
-        $buttons = [];
+        $pagination = self::generatePagination($query->count(), $page, $pageSize);
+        $items = $query
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+        return self::build($items, $routeCallback, $buttonCallback, $pagination);
+    }
+
+    /**
+     * @param array $items
+     * @param callable $routeCallback
+     * @param callable $buttonCallback
+     * @param Pagination $pagination
+     * @return array
+     */
+    private static function build(array $items, callable $routeCallback, callable $buttonCallback, Pagination $pagination)
+    {
+        $buttons = array_map(function ($item) use ($buttonCallback) {
+            return [ $buttonCallback($item) ];
+        }, $items);
 
         if ($pagination->pageCount > 1) {
             $currentPage = $pagination->page + 1;
@@ -26,19 +50,34 @@ class PaginationButtons
             $nextPage = ($currentPage + 1) <= $pagination->pageCount ? $currentPage + 1 : 1;
 
             $buttons[] = [
-                'callback_data' => $routeCallback($previousPage),
-                'text' => '<',
-            ];
-            $buttons[] = [
-                'callback_data' => $routeCallback($currentPage),
-                'text' => $currentPage . '/' . $pagination->pageCount,
-            ];
-            $buttons[] = [
-                'callback_data' => $routeCallback($nextPage),
-                'text' => '>',
+                [
+                    'callback_data' => $routeCallback($previousPage),
+                    'text' => '<',
+                ],
+                [
+                    'callback_data' => $routeCallback($currentPage),
+                    'text' => $currentPage . '/' . $pagination->pageCount,
+                ],
+                [
+                    'callback_data' => $routeCallback($nextPage),
+                    'text' => '>',
+                ]
             ];
         }
 
         return $buttons;
+    }
+
+    private static function generatePagination(int $itemsCount, int $page, int $pageSize)
+    {
+        return new Pagination([
+            'totalCount' => $itemsCount,
+            'pageSize' => $pageSize,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
     }
 }

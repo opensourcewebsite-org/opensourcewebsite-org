@@ -35,6 +35,11 @@ class UserState
         $this->fields['intermediate'][$name] = $value;
     }
 
+    public function isIntermediateFieldExists(string $name)
+    {
+        return array_key_exists($name, $this->fields['intermediate']);
+    }
+
     public function save(User $user)
     {
         $user->state = json_encode($this->fields);
