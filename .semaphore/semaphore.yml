@@ -40,7 +40,7 @@ blocks:
             - ./tests/bin/yii migrate --interactive=0 -c
             - ./tests/bin/yii fixture/load '*' --interactive=0
             - ./vendor/bin/codecept run unit --coverage --coverage-xml
-            - mv tests/_output/coverage.xml clover.xml
+            - cp tests/_output/coverage.xml clover.xml
             - ./cc-test-reporter format-coverage --prefix tests/_output/
             - ./cc-test-reporter after-build -d --coverage-input-type clover --id 12345 --exit-code 0
 

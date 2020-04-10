@@ -4,9 +4,8 @@ namespace app\controllers;
 
 use app\components\helpers\ReferrerHelper;
 use app\models\EditProfileForm;
-use app\models\Rating;
+use app\models\UserStatistic;
 use Yii;
-use app\models\Moqup;
 use app\models\User;
 use app\models\UserMoqupFollow;
 use yii\web\Controller;
@@ -48,14 +47,22 @@ class UserController extends Controller
 
     /**
      * Lists all User models.
+     *
+     * @param string $type
      * @return mixed
      */
-    public function actionDisplay()
+    public function actionDisplay($type = 'age')
     {
-        $confirmed_users = User::findAll(['is_authenticated' => true]);
+        $confirmedUsersCount = User::find()
+            ->authenticated()
+            ->count();
+
+        $userStatistics = new UserStatistic();
+        $dataProvider = $userStatistics->getDataProvider($type);
 
         return $this->render('display', [
-            'confirmed_users' => count($confirmed_users),
+            'confirmedUsersCount' => $confirmedUsersCount,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
