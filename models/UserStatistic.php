@@ -18,7 +18,7 @@ class UserStatistic
     const SEXUALITY = 'sexuality';
     const CURRENCY = 'currency';
     const INTERFACE_LANGUAGE = 'interfaceLanguage';
-    const LANGUAGE_AND_LEVEL = 'languageLevel   ';
+    const LANGUAGE_AND_LEVEL = 'languageLevel';
     const CITIZENSHIP = 'citizenship';
 
     /**
