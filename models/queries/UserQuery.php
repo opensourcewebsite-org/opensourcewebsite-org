@@ -105,7 +105,7 @@ class UserQuery extends ActiveQuery
      */
     public function interfaceLanguage()
     {
-        return $this->addSelect('l.name as lang, count(*) as count')
+        return $this->addSelect('l.name_ascii as lang, count(*) as count')
             ->join('inner join', 'bot_user b', 'b.user_id=user.id')
             ->join('inner join', 'language l', 'l.id=b.language_id')
             ->groupBy('lang')
