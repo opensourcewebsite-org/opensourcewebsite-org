@@ -3,9 +3,7 @@
 namespace app\models\queries;
 
 use app\models\User;
-use app\models\UserStatistic;
 use yii\db\ActiveQuery;
-use yii\db\Expression;
 
 /**
  * This is the ActiveQuery class for [[\app\models\User]].

@@ -79,9 +79,6 @@ use yii\data\ArrayDataProvider;
                 </div>
                 <div class="card-body p-0">
                     <?php
-//                    Pjax::begin([
-//                        'id' => 'statistic'
-//                    ]);
                     echo GridView::widget([
                         'id' => 'ages',
                         'dataProvider' => $dataProvider,
@@ -96,7 +93,6 @@ use yii\data\ArrayDataProvider;
                             'disabledListItemSubTagOptions' => ['tag' => 'a', 'class' => 'disabled page-link']
                         ]
                     ]);
-//                    Pjax::end();
                     ?>
 
                 </div>
