@@ -26,11 +26,12 @@ use yii\web\IdentityInterface;
  * @property string $password write-only password
  * @property string $name
  * @property string $birthday
- * @property string $timezone
+ * @property-read Timezone $timezone
  * @property integer $referrer_id
  * @property integer $gender_id
  * @property integer $currency_id
  * @property integer $sexuality_id
+ * @property integer $timezone_id
  * @property bool $is_authenticated
  * @property bool $gender
  *
@@ -75,7 +76,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['name', 'string'],
             [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
             ['email', 'email'],
-            [['timezone'], 'default', 'value' => 'UTC'],
+            [['timezone_id'], 'default', 'value' => Timezone::findOne([ 'location' => 'UTC' ])->id ],
         ];
     }
 
@@ -671,5 +672,10 @@ class User extends ActiveRecord implements IdentityInterface
     public static function find()
     {
         return new UserQuery(get_called_class());
+    }
+
+    public function getTimezone()
+    {
+        return $this->hasOne(Timezone::class, ['id' => 'timezone_id']);
     }
 }

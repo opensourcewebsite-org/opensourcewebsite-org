@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\Timezone;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\Controller;
 use yii\data\Pagination;
-use app\modules\bot\components\Controller as Controller;
-use app\components\helpers\TimeHelper;
 
 /**
  * Class MyTimezoneController
@@ -17,24 +17,23 @@ use app\components\helpers\TimeHelper;
 class MyTimezoneController extends Controller
 {
     /**
+     * @param null $timezoneId
      * @return array
      */
-    public function actionIndex($timezone = null)
+    public function actionIndex($timezoneId = null)
     {
         $user = $this->getUser();
-        $timezones = TimeHelper::timezonesList();
 
-        if ($timezone) {
-            if (array_key_exists($timezone, $timezones)) {
-                $user->timezone = $timezone;
-                $user->save();
-            }
+        $timezone = Timezone::findOne($timezoneId);
+        if (isset($timezone)) {
+            $user->timezone_id = $timezone->id;
+            $user->save();
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => $timezones[$user->timezone],
+                    'timezone' => '(UTC ' . $user->timezone->getUTCOffset() . ') ' . $user->timezone->location,
                 ]),
                 [
                     [
@@ -54,55 +53,47 @@ class MyTimezoneController extends Controller
 
     public function actionList($page = 22)
     {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        $timezones = TimeHelper::timezonesList();
-
+        $query = Timezone::find()->orderBy('offset, location');
         $pagination = new Pagination([
-            'totalCount' => count($timezones),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
-
-        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit);
-
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('list', [
                 'page' => $page,
             ]);
         });
-        $buttons = [];
-
-        if ($timezones) {
-            foreach ($timezones as $timezone => $fullName) {
-                $buttons[][] = [
-                    'text' => $fullName,
+        $timezones = $query
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+        $timezoneRows = array_map(function (Timezone $timezone) {
+            return [
+                [
+                    'text' => '(UTC ' . $timezone->getUTCOffset() . ') ' . $timezone->location,
                     'callback_data' => self::createRoute('index', [
-                        'timezone' => $timezone,
+                        'timezoneId' => $timezone->id,
                     ]),
-                ];
-            }
-
-            if ($paginationButtons) {
-                $buttons[] = $paginationButtons;
-            }
-
-            $buttons[][] = [
-                'callback_data' => self::createRoute(),
-                'text' => Emoji::BACK,
+                ]
             ];
-        }
+        }, $timezones);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $text = $this->render('list'),
-                $buttons
+                array_merge($timezoneRows, [ $paginationButtons ], [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ])
             )
             ->build();
     }
