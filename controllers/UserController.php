@@ -144,16 +144,122 @@ class UserController extends Controller
         return $this->render('profile', ['model' => $user]);
     }
 
-    public function actionEditProfile()
+    public function actionChangeEmail()
     {
-        $model = new EditProfileForm(Yii::$app->user->identity);
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Email');
+        $user->email = $postData['email'];
+        $user->is_authenticated = false;
+        if ($user->validate() && $user->save()) {
+            $user->sendConfirmationEmail($user);
+        }
+        return $this->redirect('/account');
+    }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect('/site/account');
+    public function actionChangeUsername()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Username');
+        $user->username = $postData['username'];
+        if ($user->validate()) {
+            $user->save();
+        }
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeName()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Name');
+        $user->name = $postData['name'];
+        if ($user->validate()) {
+            $user->save();
         }
 
-        return $this->render('edit-profile', [
-            'model' => $model,
-        ]);
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeBirthday()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Birthday');
+        $user->birthday = date('Y-m-d', strtotime($postData['birthday']));
+        if ($user->validate()) {
+            $user->save();
+        }
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeGender()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Gender');
+        $user->gender_id = $postData['gender'];
+        if ($user->validate()) {
+            $user->save();
+        }
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeTimezone()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Timezone');
+        $user->timezone = $postData['timezone'];
+        if ($user->validate()) {
+            $user->save();
+        }
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeCurrency()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Currency');
+        $user->currency_id = $postData['currency'];
+        if ($user->validate()) {
+            $user->save();
+        }
+
+        return $this->redirect('/account');
+    }
+
+    public function actionChangeSexuality()
+    {
+        if (!Yii::$app->request->isPost) {
+            return false;
+        }
+        $user = Yii::$app->user->identity;
+        $postData = Yii::$app->request->post('Sexuality');
+        $user->sexuality_id = $postData['sexuality'];
+        if ($user->validate()) {
+            $user->save();
+        }
+
+        return $this->redirect('/account');
     }
 }
