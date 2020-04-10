@@ -1,5 +1,4 @@
 # https://travis-ci.org
-
 env:
   global:
     - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
@@ -55,7 +54,7 @@ script:
   - ./vendor/bin/codecept run unit --coverage --coverage-xml
 
 after_script:
-  - mv tests/_output/coverage.xml clover.xml
+  - cp tests/_output/coverage.xml clover.xml
   - ./cc-test-reporter format-coverage --prefix tests/_output/
   - ./cc-test-reporter after-build -d --coverage-input-type clover --id 12345 --exit-code $TRAVIS_TEST_RESULT
 

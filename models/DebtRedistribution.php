@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use yii\db\ActiveRecord;
 
@@ -17,6 +18,7 @@ use yii\db\ActiveRecord;
  * @property User $fromUser
  * @property User $toUser
  * @property Currency $currency
+ * @property Contact $contact
  */
 class DebtRedistribution extends ActiveRecord
 {
@@ -86,6 +88,14 @@ class DebtRedistribution extends ActiveRecord
     public function getCurrency()
     {
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
+    }
+
+    public function getContact(): ContactQuery
+    {
+        return $this->hasOne(Contact::className(), [
+            'user_id'      => 'from_user_id',
+            'link_user_id' => 'to_user_id',
+        ]);
     }
 
     public function isMaxAmountAny(): bool

@@ -46,6 +46,9 @@ When contributing to this repository, please first discuss the change you wish t
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
 - Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
+    - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
+    - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+    - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
 - Make your changes.
   - Add tests if your changes contains new, testable behavior.
   - Make the tests pass.
@@ -58,12 +61,10 @@ When contributing to this repository, please first discuss the change you wish t
 
 ### Your First Code Contribution
 
-Unsure where to begin contributing to OpenSourceWebsite? You can start by looking through these `beginner` and `help-wanted` issues:
+Unsure where to begin contributing to OpenSourceWebsite? You can start by looking through these issues:
 
-* [Beginner issues](beginner) - issues which should only require a few lines of code, and a test or two.
-* [Help wanted issues](help-wanted) - issues which should be a bit more involved than `beginner` issues.
-
-Both issue lists are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
+* [Beginner issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+sort%3Acomments-desc) - issues which should only require a few lines of code, and a test or two. Issues are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
+* TODO issues - find comments with keyword `TODO` in the source code, with a description of a issue, and suggestions to resolve it.
 
 ### Pull request process
 
@@ -126,12 +127,12 @@ Recommended IDE:
   * [Atom](https://atom.io)
     * [Atom package for Yii Framework 2](https://atom.io/packages/atom-yii2)
     * [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
-	* [Atom package for PHP Linter](https://atom.io/packages/linter-php)
+    * [Atom package for PHP Linter](https://atom.io/packages/linter-php)
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
     * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window "Before commit > Perform SonarLint analysis".
-	* Yii 2 code styles for import to PhpStorm - [download](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml). Save the file and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
+    * Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
   * [Eclipse](https://www.eclipse.org)
-	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
+  	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
 
 #### Yii 2 migration files
 

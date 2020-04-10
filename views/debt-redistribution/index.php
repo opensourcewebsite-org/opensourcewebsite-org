@@ -124,7 +124,7 @@ $modalFooter.= '<a class="btn btn-secondary" href="#" data-dismiss="modal">' . Y
                                 'title'        => Yii::t('yii', 'Delete'),
                                 'aria-label'   => Yii::t('yii', 'Delete'),
                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-pjax'    => '0',
+                                'data-pjax'    => '1',
                                 'data-method'  => 'post',
                                 'class'        => 'btn-action',
                             ]);
