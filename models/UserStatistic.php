@@ -13,12 +13,12 @@ use yii\data\ArrayDataProvider;
 class UserStatistic
 {
     const AGE = 'age';
-    const YEAR_OF_BIRTH = 'year_of_birth';
+    const YEAR_OF_BIRTH = 'yearOfBirth';
     const GENDER = 'gender';
     const SEXUALITY = 'sexuality';
     const CURRENCY = 'currency';
-    const INTERFACE_LANGUAGE = 'interface_language';
-    const LANGUAGE_AND_LEVEL = 'language_level';
+    const INTERFACE_LANGUAGE = 'interfaceLanguage';
+    const LANGUAGE_AND_LEVEL = 'languageLevel   ';
     const CITIZENSHIP = 'citizenship';
 
     /**
@@ -27,73 +27,42 @@ class UserStatistic
      */
     public function getDataProvider(string $type)
     {
-        switch ($type) {
-            case self::YEAR_OF_BIRTH:
-                return $this->yearOfBirth();
-                break;
-            case self::GENDER:
-                return $this->gender();
-                break;
-            case self::SEXUALITY:
-                return $this->sexuality();
-                break;
-            case self::CURRENCY:
-                return $this->currency();
-                break;
-            case self::INTERFACE_LANGUAGE:
-                return $this->interfaceLanguage();
-                break;
-            case self::LANGUAGE_AND_LEVEL:
-                return $this->languageAndLevel();
-                break;
-            case self::CITIZENSHIP:
-                return $this->citizenship();
-                break;
-            default:
-                return $this->age();
-                break;
-        }
+        return $this->dataProvider($type);
     }
 
     /**
-     * @return ArrayDataProvider
+     * @return array
      */
     protected function age()
     {
-        $models = User::find()
+        return User::find()
             ->active()
             ->age()
             ->asArray()
             ->all();
-
-        return $this->dataProvider($models);
     }
 
     /**
-     * @return ArrayDataProvider
+     * @return array
      */
     protected function yearOfBirth()
     {
-        $models = User::find()
+        return User::find()
             ->active()
             ->statisticYearOfBirth()
             ->asArray()
             ->all();
-
-        return $this->dataProvider($models);
     }
 
     /**
-     * @return ArrayDataProvider
+     * @return array
      */
     protected function gender()
     {
-        $models = User::find()
+        return User::find()
             ->gender()
             ->asArray()
             ->all();
-
-        return $this->dataProvider($models);
     }
 
     /**
@@ -101,12 +70,10 @@ class UserStatistic
      */
     protected function sexuality()
     {
-        $models = User::find()
+        return User::find()
             ->sexuality()
             ->asArray()
             ->all();
-
-        return $this->dataProvider($models);
     }
 
     /**
@@ -114,28 +81,27 @@ class UserStatistic
      */
     protected function currency()
     {
-        $models = User::find()
+        return User::find()
             ->currency()
             ->asArray()
             ->all();
-
-        return $this->dataProvider($models);
-    }
-
-    protected function interfaceLanguage()
-    {
-        $models = User::find()
-            ->interfaceLanguage()
-            ->asArray()
-            ->all();
-
-        return $this->dataProvider($models);
     }
 
     /**
-     * @return ArrayDataProvider
+     * @return array
      */
-    protected function languageAndLevel()
+    protected function interfaceLanguage()
+    {
+        return User::find()
+            ->interfaceLanguage()
+            ->asArray()
+            ->all();
+    }
+
+    /**
+     * @return array
+     */
+    protected function languageLevel()
     {
         $models = User::find()
             ->languageAndLevel()
@@ -156,42 +122,33 @@ class UserStatistic
             }
 
             if (! array_key_exists($level, $result[$lang])) {
-                $result[$lang][$level] = $count;
-            } else {
-                $result[$lang][$level] += $count;
+                $result[$lang][$level] = 0;
             }
+            $result[$lang][$level] += $count;
         }
 
-        return new ArrayDataProvider([
-            'allModels' => $result,
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'attributes' => ! empty($result) ? array_keys(current($result)) : [],
-            ],
-        ]);
+        return $result;
     }
 
     /**
-     * @return ArrayDataProvider
+     * @return array
      */
     protected function citizenship()
     {
-        $models = User::find()
+        return User::find()
             ->citizenship()
             ->asArray()
             ->all();
-
-        return $this->dataProvider($models);
     }
 
     /**
-     * @param $models
+     * @param $type string
      * @return ArrayDataProvider
      */
-    protected function dataProvider(array $models): ArrayDataProvider
+    protected function dataProvider(string $type): ArrayDataProvider
     {
+        $models = call_user_func([$this, $type]);
+
         return new ArrayDataProvider([
             'allModels' => $models,
             'pagination' => [
@@ -209,7 +166,7 @@ class UserStatistic
      */
     private function sortAttributes(array $models): array
     {
-        return ! empty($models) ? array_keys($models[0]) : [];
+        return isset($models[0]) ? array_keys($models[0]) : [];
     }
 
     /**
@@ -226,4 +183,3 @@ class UserStatistic
         return array_column($levels, 'description');
     }
 }
-

@@ -62,14 +62,14 @@ class UserQuery extends ActiveQuery
      */
     public function gender()
     {
-       return $this->select('g.name AS gender')
-           ->addSelect('(CASE WHEN g.name IS NULL THEN "Not specified" ELSE g.name END) as gender')
-           ->addSelect('COUNT(*) AS count')
-           ->join('LEFT JOIN', 'gender g', 'user.gender_id=g.id')
-           ->groupBy('gender')
-           ->orderBy([
+        return $this->select('g.name AS gender')
+            ->addSelect('(CASE WHEN g.name IS NULL THEN "Not specified" ELSE g.name END) as gender')
+            ->addSelect('COUNT(*) AS count')
+            ->join('LEFT JOIN', 'gender g', 'user.gender_id=g.id')
+            ->groupBy('gender')
+            ->orderBy([
                'count' => SORT_DESC
-           ]);
+            ]);
     }
 
     /**
