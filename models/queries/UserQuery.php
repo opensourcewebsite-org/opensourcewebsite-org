@@ -31,7 +31,8 @@ class UserQuery extends ActiveQuery
 
     public function statisticAge()
     {
-        return $this->select('(YEAR(CURDATE()) - YEAR(birthday)) AS age');
+        return $this->select('(YEAR(CURDATE()) - YEAR(birthday)) AS age')
+            ->andHaving(['not', ['age' => null]]);
     }
 
     public function statisticYearOfBirth()

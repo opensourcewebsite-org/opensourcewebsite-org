@@ -18,6 +18,7 @@ class UserStatistic
     const GENDER = 'gender';
     const SEXUALITY = 'sexuality';
     const CURRENCY = 'currency';
+    const INTERFACE_LANGUAGE = 'interface_language';
 
     /**
      * @param string $type
@@ -40,6 +41,9 @@ class UserStatistic
                 break;
             case self::CURRENCY:
                 return $this->currency();
+                break;
+            case self::INTERFACE_LANGUAGE:
+                return $this->interfaceLanguage();
                 break;
             default:
                 break;
@@ -232,6 +236,28 @@ class UserStatistic
             ];
         }
         return $result;
+    }
+
+    protected function interfaceLanguage()
+    {
+        $models = User::find()
+            ->addSelect('l.name as lang, count(*) as count')
+            ->join('inner join', 'bot_user b', 'b.user_id=user.id')
+            ->join('inner join', 'language l', 'l.id=b.language_id')
+            ->groupBy('lang')
+            ->orderBy('count DESC')
+            ->asArray()
+            ->all();
+
+        return new ArrayDataProvider([
+            'allModels' => $models,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'attributes' => ['count', 'currency'],
+            ],
+        ]);
     }
 }
 
