@@ -3,6 +3,7 @@
 namespace app\modules\dataGenerator\components\generators;
 
 use app\models\Contact;
+use app\models\queries\ContactQuery;
 use app\models\User;
 use Faker\Provider\en_US\Person;
 use Yii;
@@ -50,7 +51,9 @@ class ContactFixture extends ARGenerator
         /** @var int $userIdFrom user, who can has additional Contact */
         $userIdFrom = User::find()
             ->select('user.id, count(contact.id) as n_contact')
-            ->join('LEFT JOIN', 'contact', 'user.id = contact.user_id AND contact.link_user_id IS NOT NULL')
+            ->joinWith(['contactsFromMe' => static function (ContactQuery $query) {
+                $query->virtual(false, 'andOnCondition');
+            }])
             ->active()
             ->groupBy('user.id')
             ->having('n_contact < :nUser', [':nUser' => $userQty])
@@ -68,15 +71,15 @@ class ContactFixture extends ARGenerator
             return [];
         }
 
-        /** @noinspection MissedParamInspection */
         /** @var int $userIdTo user, with whom $userIdFrom has no contact yet */
         $userIdTo = User::find()
             ->select('user.id')
-            ->join('LEFT JOIN', 'contact', 'user.id = contact.link_user_id AND contact.user_id = :userIdFrom')
+            ->joinWith(['contactsToMe' => static function (ContactQuery $query) use ($userIdFrom) {
+                $query->userOwner($userIdFrom, 'andOnCondition');
+            }])
             ->active()
-            ->andWhere('user.id <> :userIdFrom')
+            ->andWhere('user.id <> :userIdFrom', [':userIdFrom' => $userIdFrom])
             ->limit(1)
-            ->params([':userIdFrom' => $userIdFrom])
             ->scalar();
 
         if (!$userIdTo) {
@@ -86,7 +89,7 @@ class ContactFixture extends ARGenerator
         return [$userIdFrom, $userIdTo];
     }
 
-    private function setDRP(Contact $model)
+    private function setDRP(Contact $model): void
     {
         $hasValidator = false;
 

@@ -59,6 +59,11 @@ class Debt extends ActiveRecord
     {
         return [
             [['currency_id', 'amount'], 'required'],
+            //REVIEW [ref] These fields ('user', 'direction', and other public fields in this class)
+            //       we need only on frontend form.
+            //       For this purpose you should create DebtForm model with all these fields and their rules.
+            //       Why: in all other places, except page /debt/create, we DON'T need these rules and fields
+            //            (e.g. in console app)
             [['user', 'direction'], 'required', 'on' => self::SCENARIO_FORM],
             [['from_user_id', 'to_user_id', 'currency_id', 'amount', 'status'], 'integer'],
             [['valid_from_date', 'valid_from_time', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],

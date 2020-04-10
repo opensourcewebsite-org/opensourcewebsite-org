@@ -31,7 +31,6 @@ class DebtRedistributionForm extends DebtRedistribution
     public static function factory($data = null): self
     {
         $model = new self();
-        $model->loadDefaultValues();
 
         if ($data instanceof DebtRedistribution) {
             $model->setAttributes($data->attributes, false);

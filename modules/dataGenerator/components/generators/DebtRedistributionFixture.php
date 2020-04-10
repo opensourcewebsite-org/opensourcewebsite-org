@@ -3,7 +3,7 @@
 namespace app\modules\dataGenerator\components\generators;
 
 use app\models\Contact;
-use app\models\Currency;
+use app\modules\dataGenerator\models\Currency;
 use app\models\DebtRedistribution;
 use app\models\queries\DebtRedistributionQuery;
 use Yii;
@@ -71,12 +71,12 @@ class DebtRedistributionFixture extends ARGenerator
         $currencyId = Currency::find()
             ->select('currency.id')
             ->joinWith([
-                'debtRedistributions' => function (DebtRedistributionQuery $q) use ($contact) {
+                'debtRedistributions' => static function (DebtRedistributionQuery $q) use ($contact) {
                     $q->fromUser($contact['user_id'], 'andOnCondition');
                     $q->toUser($contact['link_user_id'], 'andOnCondition');
                 },
             ])
-            ->where('debt_redistribution.id IS NULL')
+            ->andWhere('debt_redistribution.id IS NULL')
             ->limit(1)
             ->scalar();
 
