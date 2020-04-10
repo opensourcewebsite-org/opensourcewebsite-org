@@ -160,7 +160,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Username');
         $user->username = $postData['username'];
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
         return $this->redirect('/account');
@@ -174,7 +174,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Name');
         $user->name = $postData['name'];
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
 
@@ -189,7 +189,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Birthday');
         $user->birthday = date('Y-m-d', strtotime($postData['birthday']));
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
 
@@ -204,7 +204,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Gender');
         $user->gender_id = $postData['gender'];
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
 
@@ -219,7 +219,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Timezone');
         $user->timezone = $postData['timezone'];
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
 
@@ -234,7 +234,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Currency');
         $user->currency_id = $postData['currency'];
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
 
@@ -249,7 +249,7 @@ class UserController extends Controller
         $user = Yii::$app->user->identity;
         $postData = Yii::$app->request->post('Sexuality');
         $user->sexuality_id = $postData['sexuality'];
-        if($user->validate()) {
+        if ($user->validate()) {
             $user->save();
         }
 
