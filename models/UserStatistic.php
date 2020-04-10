@@ -3,7 +3,6 @@
 namespace app\models;
 
 use yii\data\ArrayDataProvider;
-use yii\helpers\VarDumper;
 
 /**
  * Class UserStatistic
@@ -19,6 +18,7 @@ class UserStatistic
     const SEXUALITY = 'sexuality';
     const CURRENCY = 'currency';
     const INTERFACE_LANGUAGE = 'interface_language';
+    const LANGUAGE_AND_LEVEL = 'language_level';
 
     /**
      * @param string $type
@@ -44,6 +44,9 @@ class UserStatistic
                 break;
             case self::INTERFACE_LANGUAGE:
                 return $this->interfaceLanguage();
+                break;
+            case self::LANGUAGE_AND_LEVEL:
+                return $this->languageAndLevel();
                 break;
             default:
                 break;
@@ -258,6 +261,66 @@ class UserStatistic
                 'attributes' => ['count', 'currency'],
             ],
         ]);
+    }
+
+    /**
+     * @return ArrayDataProvider
+     */
+    protected function languageAndLevel()
+    {
+        $models = User::find()
+            ->addSelect('l.name as lang, lev.description as level, count(*) as count')
+            ->join('inner join', 'user_language ul', 'ul.user_id=user.id')
+            ->join('inner join', 'language l', 'l.id=ul.language_id')
+            ->join('inner join', 'language_level lev', 'lev.id=ul.language_level_id')
+            ->groupBy('level, lang')
+            ->orderBy('count DESC')
+            ->asArray()
+            ->all();
+
+        $levels = $this->langLevels();
+        $levels = array_merge(['lang'], $levels);
+        $keys = array_fill_keys($levels, null);
+
+        $result = [];
+        foreach ($models as $model) {
+            [$lang, $level, $count] = array_values($model);
+
+            if (! array_key_exists($lang, $result)) {
+                $result[$lang] = $keys;
+                $result[$lang]['lang'] = $lang;
+            }
+
+            if (! array_key_exists($level, $result[$lang])) {
+                $result[$lang][$level] = $count;
+            } else {
+                $result[$lang][$level] += $count;
+            }
+        }
+
+        return new ArrayDataProvider([
+            'allModels' => $result,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'attributes' => ['count', 'currency'],
+            ],
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    private function langLevels(): array
+    {
+        $levels = LanguageLevel::find()
+            ->select('description')
+            ->distinct()
+            ->asArray()
+            ->all();
+
+        return array_column($levels, 'description');
     }
 }
 

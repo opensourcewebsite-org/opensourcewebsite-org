@@ -37,7 +37,10 @@ class UserQuery extends ActiveQuery
 
     public function statisticYearOfBirth()
     {
-        return $this->select('YEAR(birthday) AS year, COUNT(*) AS count')->groupBy('year')->orderBy([
+        return $this->select('YEAR(birthday) AS year, COUNT(*) AS count')
+            ->andHaving(['not', ['year' => null]])
+            ->groupBy('year')
+            ->orderBy([
             'count' => SORT_DESC
         ]);
     }
