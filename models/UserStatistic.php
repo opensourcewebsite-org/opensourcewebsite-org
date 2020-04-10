@@ -19,6 +19,7 @@ class UserStatistic
     const CURRENCY = 'currency';
     const INTERFACE_LANGUAGE = 'interface_language';
     const LANGUAGE_AND_LEVEL = 'language_level';
+    const CITIZENSHIP = 'citizenship';
 
     /**
      * @param string $type
@@ -47,6 +48,9 @@ class UserStatistic
                 break;
             case self::LANGUAGE_AND_LEVEL:
                 return $this->languageAndLevel();
+                break;
+            case self::CITIZENSHIP:
+                return $this->citizenship();
                 break;
             default:
                 break;
@@ -305,6 +309,28 @@ class UserStatistic
             ],
             'sort' => [
                 'attributes' => ['count', 'currency'],
+            ],
+        ]);
+    }
+
+    protected function citizenship()
+    {
+        $models = User::find()
+            ->select('country.name as country, count(*) as count')
+            ->join('inner join', 'user_citizenship uc', 'uc.user_id=user.id')
+            ->join('inner join', 'country', 'country.id=uc.country_id')
+            ->orderBy('count ASC')
+            ->groupBy('country')
+            ->asArray()
+            ->all();
+
+        return new ArrayDataProvider([
+            'allModels' => $models,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'attributes' => ['country', 'count'],
             ],
         ]);
     }
