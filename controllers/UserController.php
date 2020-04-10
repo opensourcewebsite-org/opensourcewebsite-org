@@ -53,15 +53,13 @@ class UserController extends Controller
      */
     public function actionDisplay($type = 'age')
     {
-        $confirmedUsersCount = User::find()
-            ->authenticated()
-            ->count();
+        $usersCount = User::find()->count();
 
         $userStatistics = new UserStatistic();
         $dataProvider = $userStatistics->getDataProvider($type);
 
         return $this->render('display', [
-            'confirmedUsersCount' => $confirmedUsersCount,
+            'usersCount' => $usersCount,
             'dataProvider' => $dataProvider,
         ]);
     }
