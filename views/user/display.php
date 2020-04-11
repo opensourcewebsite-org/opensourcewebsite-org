@@ -8,7 +8,7 @@ use yii\data\ArrayDataProvider;
 
 /**
  * @var $this View
- * @var $confirmedUsersCount int
+ * @var $usersCount int
  * @var $dataProvider ArrayDataProvider
  */
 ?>
@@ -16,7 +16,7 @@ use yii\data\ArrayDataProvider;
     <span class="info-box-icon bg-info"><i class="fa fa-users"></i></span>
     <div class="info-box-content">
         <span class="info-box-text">Registered Users</span>
-        <span class="info-box-number"><?php echo $confirmedUsersCount; ?></span>
+        <span class="info-box-number"><?php echo $usersCount; ?></span>
     </div>
 </div>
 <?php Pjax::begin([
