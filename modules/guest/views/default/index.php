@@ -136,65 +136,80 @@ use yii\helpers\Html;
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
-        <p>
-          <b>Economics</b>
-        </p>
-        <ul>
-          <li>International money transfers</li>
-          <li>Crowdfunding</li>
-          <li>Work and personnel search</li>
-          <li>Freelance marketplace</li>
-          <li>Sharing and collaborative consumption</li>
-          <li>Real-estate marketplace</li>
-          <li>Advertising platform</li>
-          <li>Currencies monitoring</li>
-          <li>Local exchange of fiat and electronic currencies</li>
-        </ul>
-      </div>
-      <div class="col-md-12">
-        <p>
-          <b>Personal interests and hobbies</b>
-        </p>
-        <ul>
-          <li>Genealogy and genealogical tree</li>
-          <li>Food delivery</li>
-          <li>Hotel, Hospitality and B&B</li>
-          <li>Medicine and Health</li>
-          <li>Sport and Fitness</li>
-          <li>Inventory and reviews of books and films</li>
-        </ul>
-      </div>
-      <div class="col-md-12">
-        <p>
-          <b>Technical</b>
-        </p>
-        <ul>
-          <li>Custom database and storage</li>
-          <li>OAuth</li>
-          <li>API documentation service</li>
-          <li>Open Data Aggregator</li>
-          <li>API services directory</li>
-          <li>Medicine and Health</li>
-          <li>Sport and Fitness</li>
-          <li>Inventory and reviews of books and films</li>
-          <li>Local exchange of fiat and electronic currencies</li>
-          <li>Crowdfunding</li>
-        </ul>
-      </div>
-      <div class="col-md-12">
-        <p>
-          <b>Social</b>
-        </p>
-        <ul>
-          <li>Social networking</li>
-          <li>Dating</li>
-          <li>Blogs</li>
-          <li>Forums</li>
-          <li>Services for digital nomads</li>
-          <li>Global catalog for commercial companies, non-profit companies, for charitable foundations</li>
-        </ul>
-      </div>
+        <div class="col-md-12">
+            <p>
+                <b>Social</b>
+            </p>
+            <ul>
+                <li>Social networking</li>
+                <li>Dating</li>
+                <li>Blogs</li>
+                <li>Forums</li>
+                <li>Services for digital nomads</li>
+                <li>Global catalog for commercial companies, non-profit companies, for charitable foundations</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Personal interests and hobbies</b>
+            </p>
+            <ul>
+                <li>Genealogy and genealogical tree</li>
+                <li>Food delivery</li>
+                <li>Hotel, Hospitality and B&B</li>
+                <li>Medicine and Health</li>
+                <li>Sport and Fitness</li>
+                <li>Inventory and reviews of books and films</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Economics</b>
+            </p>
+            <ul>
+                <li>International money transfers</li>
+                <li>Crowdfunding</li>
+                <li>Work and personnel search</li>
+                <li>Freelance marketplace</li>
+                <li>Sharing and collaborative consumption</li>
+                <li>Real-estate marketplace</li>
+                <li>Advertising platform</li>
+                <li>Currencies monitoring</li>
+                <li>Local exchange of fiat and electronic currencies</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Business</b>
+            </p>
+            <ul>
+                <li>Business management</li>
+                <li>Project management</li>
+                <li>Product management</li>
+                <li>CRM</li>
+                <li>ERP</li>
+                <li>Workplaces</li>
+                <li>Working schedules</li>
+                <li>Accounting</li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <b>Technical</b>
+            </p>
+            <ul>
+                <li>Custom database and storage</li>
+                <li>OAuth</li>
+                <li>API documentation service</li>
+                <li>Open Data Aggregator</li>
+                <li>API services directory</li>
+                <li>Medicine and Health</li>
+                <li>Sport and Fitness</li>
+                <li>Inventory and reviews of books and films</li>
+                <li>Local exchange of fiat and electronic currencies</li>
+                <li>Crowdfunding</li>
+            </ul>
+        </div>
     </div>
   </div>
 </section>
@@ -214,7 +229,7 @@ use yii\helpers\Html;
           <ul>
               <li><?= Yii::t('app', 'The power of user vote when voting for new features or changing existing features of the Website') ?>.</li>
               <li><?= Yii::t('app', 'More possibilities and less limits when using of the Website') ?>.</li>
-              <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of the Website, which is distributed proportionally among all users in accordance with the value of their User Ratings') ?>.</li>
+              <li><?= Yii::t('app', 'Passive income, such as dividends from the profits of the Website, which is distributed proportionally among all users in accordance with the value of their Ratings') ?>.</li>
           </ul>
         </div>
         <div class="col-md-12">
@@ -243,7 +258,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p class="text-muted"><?= Yii::t('app', 'Your donations increase your User Rating on the Website') ?>.</p>
+        <p class="text-muted"><?= Yii::t('app', 'Your donations increase your Rating in our community') ?>.</p>
       </div>
       <div class="col-md-12">
         <ul>
@@ -267,7 +282,7 @@ use yii\helpers\Html;
     </div>
       <div class="row">
         <div class="col-md-12">
-          <p class="text-muted"><?= Yii::t('app', 'Your contributions increase your User Rating on the Website') ?>.</p>
+          <p class="text-muted"><?= Yii::t('app', 'Your contributions increase your Rating in our community') ?>.</p>
         </div>
         <div class="col-md-12">
           <p class="text-muted"><?= Yii::t('app', 'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas') ?>: open source development, open data, editorial and translation work, UI/UX web design, social media and communications.</p>

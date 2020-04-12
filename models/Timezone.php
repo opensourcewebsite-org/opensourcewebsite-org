@@ -8,7 +8,6 @@ use yii\db\ActiveRecord;
  * Class Timezone
  * @package app\models
  * @property integer $offset
- * @property string $location
  */
 class Timezone extends ActiveRecord
 {
@@ -20,13 +19,18 @@ class Timezone extends ActiveRecord
     public function rules()
     {
         return [
-            [ [ 'location' ], 'string' ],
             [ [ 'offset' ], 'integer' ],
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getUTCOffset()
     {
-        return ($this->offset < 0 ? '-' : '+') . date('H:i', $this->offset);
+        if ($this->offset == 0) {
+            return 'UTC';
+        }
+        return 'UTC ' . ($this->offset < 0 ? '-' : '+') . date('H:i', abs($this->offset));
     }
 }

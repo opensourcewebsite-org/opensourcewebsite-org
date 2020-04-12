@@ -32,7 +32,7 @@ class MyTimezoneController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => '(UTC ' . $user->timezone->getUTCOffset() . ') ' . $user->timezone->location,
+                    'timezone' => $user->timezone->getUTCOffset(),
                 ]),
                 [
                     [
@@ -53,7 +53,7 @@ class MyTimezoneController extends Controller
     public function actionList($page = 22)
     {
         $timezoneButtons = PaginationButtons::buildFromQuery(
-            Timezone::find()->orderBy('offset, location'),
+            Timezone::find()->orderBy('offset'),
             function ($page) {
                 return self::createRoute('list', [
                     'page' => $page,
@@ -61,7 +61,7 @@ class MyTimezoneController extends Controller
             },
             function (Timezone $timezone) {
                 return [
-                    'text' => '(UTC ' . $timezone->getUTCOffset() . ') ' . $timezone->location,
+                    'text' => $timezone->getUTCOffset(),
                     'callback_data' => self::createRoute('index', [
                         'timezoneId' => $timezone->id,
                     ]),

@@ -7,9 +7,7 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use \app\models\User;
 use app\modules\bot\components\Controller;
-use yii\data\Pagination;
 
 /**
  * Class MyGenderController
@@ -65,7 +63,7 @@ class MyGenderController extends Controller
             },
             function (Gender $gender) {
                 return [
-                    'text' => $gender->name,
+                    'text' => Yii::t('bot', $gender->name),
                     'callback_data' => self::createRoute('index', [
                         'genderId' => $gender->id,
                     ]),

@@ -1,9 +1,7 @@
 # https://travis-ci.org
-
 env:
   global:
     - CC_TEST_REPORTER_ID=16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
-    - DB_NAME=test
 
 language: php
 
@@ -38,25 +36,25 @@ before_install:
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction
-  - cp .env.dist .env
+  - cp .env.test.dist .env.test
   - cp config/params.dist.php config/params.php
   - cp config/web-local.dist.php config/web-local.php
 
 before_script:
   - pip install --user codecov
   - mysql --version
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-  - php yii migrate --interactive=0 -c
+  - ./tests/bin/yii migrate --interactive=0 -c
 
 script:
   - ./tests/bin/yii fixture/load '*' --interactive=0
   - ./vendor/bin/codecept run unit --coverage --coverage-xml
 
 after_script:
-  - mv tests/_output/coverage.xml clover.xml
+  - cp tests/_output/coverage.xml clover.xml
   - ./cc-test-reporter format-coverage --prefix tests/_output/
   - ./cc-test-reporter after-build -d --coverage-input-type clover --id 12345 --exit-code $TRAVIS_TEST_RESULT
 

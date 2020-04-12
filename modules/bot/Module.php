@@ -5,6 +5,7 @@ namespace app\modules\bot;
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
+use app\modules\bot\components\request\Request;
 use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
@@ -16,7 +17,6 @@ use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
 use app\modules\bot\components\Controller;
-use yii\web\Request;
 
 /**
  * OSW Bot module definition class
@@ -284,6 +284,10 @@ class Module extends \yii\base\Module
             ? 'default/command-not-found'
             : 'message/index';
         $this->request = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+        /* Temporary solution for filter in groups */
+        if (!isset($this->request) && !$this->telegramChat->isPrivate()) {
+            $this->request = Request::fromRouteAndParams($defaultRoute, []);
+        }
         if ($this->request) {
             try {
                 $commands = $this->runAction($this->request->getRoute(), $this->request->getParams());

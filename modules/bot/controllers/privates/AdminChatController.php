@@ -35,14 +35,6 @@ class AdminChatController extends Controller
                 [
                     [
                         [
-                            'callback_data' => AdminMessageFilterController::createRoute('index', [
-                                'chatId' => $chatId,
-                            ]),
-                            'text' => Yii::t('bot', 'Message Filter'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => AdminJoinHiderController::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
@@ -51,12 +43,65 @@ class AdminChatController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => AdminMessageFilterController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Message Filter'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => AdminVoteBanController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => '🏗 ' . Yii::t('bot', 'Vote Ban'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => AdminStarTopController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => '🏗 ' . Yii::t('bot', 'Star Top'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => AdminController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('refresh', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::REFRESH,
                         ],
                     ],
                 ]
             )
+            ->build();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionRefresh($chatId = null)
+    {
+        // TODO add refresh for selected group
+        if ($chatId) {
+            $chat = Chat::findOne($chatId);
+
+            if (isset($chat)) {
+
+            }
+        }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->answerCallbackQuery()
             ->build();
     }
 }

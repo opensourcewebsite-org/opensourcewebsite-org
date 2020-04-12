@@ -4,7 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\response\ResponseBuilder;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
 use app\modules\bot\models\Phrase;
 
 /**

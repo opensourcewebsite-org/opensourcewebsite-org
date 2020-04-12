@@ -77,7 +77,7 @@ class AdminMessageFilterController extends Controller
                             'callback_data' => AdminMessageFilterWhitelistController::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Whitelist'),
+                            'text' => Yii::t('bot', 'Whitelist'),
                         ],
                     ],
                     [
@@ -85,7 +85,7 @@ class AdminMessageFilterController extends Controller
                             'callback_data' => AdminMessageFilterBlacklistController::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Blacklist'),
+                            'text' => Yii::t('bot', 'Blacklist'),
                         ],
                     ],
                     [

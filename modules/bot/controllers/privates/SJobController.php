@@ -1,9 +1,9 @@
 <?php
+
 namespace app\modules\bot\controllers\privates;
 
 use app\models\Company;
 use app\models\Currency;
-use app\models\Language;
 use app\models\Vacancy;
 use app\modules\bot\components\CrudController;
 use app\modules\bot\components\helpers\Emoji;
@@ -11,10 +11,13 @@ use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
-use app\modules\bot\components\Controller;
 use yii\db\ActiveRecord;
-use yii\db\StaleObjectException;
 
+/**
+ * Class SJobController
+ *
+ * @package app\modules\bot\controllers
+ */
 class SJobController extends CrudController
 {
     protected function rules()
@@ -82,6 +85,10 @@ class SJobController extends CrudController
                         [
                             'text' => Emoji::BACK,
                             'callback_data' => ServicesController::createRoute(),
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => '📱',
                         ],
                     ],
                 ]

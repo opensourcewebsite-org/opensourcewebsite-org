@@ -65,12 +65,11 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                         'format' => 'relativeTime',
                     ],
                     [
-                        'value' => function ($data) {
-                            $status = '';
-                            if ((int) $data->status === Debt::STATUS_PENDING) {
-                                $status = '<span class="badge badge-warning">Pending</span>';
+                        'value' => function (Debt $data) {
+                            if ($data->isStatusPending()) {
+                                return '<span class="badge badge-warning">Pending</span>';
                             }
-                            return $status;
+                            return '';
                         },
                         'format' => 'html',
                     ],

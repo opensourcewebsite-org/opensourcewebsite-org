@@ -3,9 +3,12 @@
 namespace app\models;
 
 use app\components\Converter;
+use app\models\queries\ContactQuery;
+use app\models\queries\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -23,7 +26,20 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $name
+ * @property string $birthday
+ * @property-read Timezone $timezone
+ * @property-read Gender $gender
+ * @property-read Sexuality $sexuality
  * @property integer $timezone_id
+ * @property integer $referrer_id
+ * @property integer $gender_id
+ * @property integer $currency_id
+ * @property integer $sexuality_id
+ * @property bool $is_authenticated
+ *
+ * @property Contact $contact
+ * @property Contact[] $contactsFromMe
+ * @property Contact[] $contactsToMe
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -60,9 +76,9 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
             ['name', 'string'],
-            [['gender_id', 'currency_id'], 'integer'],
+            [['gender_id', 'sexuality_id', 'currency_id', 'timezone_id'], 'integer'],
             ['email', 'email'],
-            [['timezone_id'], 'default', 'value' => Timezone::findOne([ 'location' => 'UTC' ])->id ],
+            [['timezone_id'], 'default', 'value' => Timezone::findOne([ 'offset' => 0 ])->id ],
         ];
     }
 
@@ -104,6 +120,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
+    }
+
+    public function setActive(): void
+    {
+        $this->is_authenticated = true;
+        $this->status           = self::STATUS_ACTIVE;
     }
 
     /**
@@ -264,7 +286,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getMoqups()
     {
@@ -280,7 +302,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getIssues()
     {
@@ -296,7 +318,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroup()
     {
@@ -312,7 +334,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroupMember()
     {
@@ -320,7 +342,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroupCommand()
     {
@@ -328,7 +350,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroupBot()
     {
@@ -352,7 +374,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getFollowedMoqups()
     {
@@ -488,7 +510,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getRatings()
     {
@@ -570,7 +592,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getReferrals(int $level = 1)
     {
@@ -581,20 +603,32 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return UserQuery
      */
     public function getReferrer()
     {
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getContact()
+    public function getContact(): ContactQuery
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
+        //REVIEW [ref] it is very bad way. NEVER set default conditions for whole app.
+        //  there are exist very-very rare cases, when it is really necessary to do.
+        //  Why: this condition useful, only when user with role 'User' is logged on.
+        //       but what if user with role 'Admin' is logged on?
+        //       Btw in console app `Yii::$app->user` is not exist at all!
+    }
+
+    public function getContactsFromMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['user_id' => 'id']);
+    }
+
+    public function getContactsToMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
     public function getDisplayName()
@@ -613,6 +647,11 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
     }
 
+    public function getSexuality()
+    {
+        return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
+    }
+
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
@@ -628,6 +667,18 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
     }
 
+    /**
+     * {@inheritdoc}
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
+    }
+
+    /**
+     * @return ActiveQuery
+     */
     public function getTimezone()
     {
         return $this->hasOne(Timezone::class, [ 'id' => 'timezone_id' ]);

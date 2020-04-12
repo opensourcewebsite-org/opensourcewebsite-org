@@ -30,9 +30,10 @@ class MyProfileController extends Controller
             'lastName' => $telegramUser->provider_user_last_name,
             'username' => $telegramUser->provider_user_name,
             'gender' => isset($user->gender) ? $user->gender->name : null,
+            'sexuality' => isset($user->sexuality) ? $user->sexuality->name : null,
             'birthday' => $user->birthday,
             'currency' => isset($currency) ? "{$currency->name} ({$currency->code})" : null,
-            'timezone' => '(UTC ' . $user->timezone->getUTCOffset() . ') ' . $user->timezone->location,
+            'timezone' => $user->timezone->getUTCOffset(),
             'languages' => array_map(function (UserLanguage $userLanguage) {
                 return $userLanguage->getDisplayName();
             }, $user->languages),
@@ -67,6 +68,12 @@ class MyProfileController extends Controller
                         [
                             'callback_data' => MyGenderController::createRoute(),
                             'text' => Yii::t('bot', 'Gender'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MySexualityController::createRoute(),
+                            'text' => Yii::t('bot', 'Sexuality'),
                         ],
                     ],
                     [
