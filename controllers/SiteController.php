@@ -318,11 +318,6 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
-
-        $currencyList = Currency::find()->indexBy('id')->all();
-
-        $sexualityList = Sexuality::find()->indexBy('id')->all();
-
         return $this->render('account', [
             'model' => $model,
             'activeRating' => $activeRating,
