@@ -13,7 +13,7 @@ class Name extends Model
     public $name;
 
     /** @var User */
-    private $_user;
+    private $currentName;
 
     public function rules()
     {
@@ -33,15 +33,12 @@ class Name extends Model
 
     public function init()
     {
-        parent::init();
-
-        $this->_user = Yii::$app->user;
-        $this->name = $this->_user->identity->name;
+        $this->currentName = Yii::$app->user->identity->name;
     }
 
     public function validateNameString()
     {
-        if ($this->name == $this->_user->name) {
+        if ($this->name == $this->currentName) {
             return;
         }
 

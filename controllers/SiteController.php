@@ -318,7 +318,6 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
-        $genderList = Gender::find()->indexBy('id')->all();
 
         $currencyList = Currency::find()->indexBy('id')->all();
 
@@ -336,9 +335,6 @@ class SiteController extends Controller
                 'rank' => $rank,
                 'total' => $total,
             ],
-            'genderList' => $genderList,
-            'currencyList' => $currencyList,
-            'sexualityList' => $sexualityList,
         ]);
     }
 
@@ -346,16 +342,16 @@ class SiteController extends Controller
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param string $authKey the user authKey
+     * @param string $auth_key the user auth_key
      *
      * @return string
      */
-    public function actionConfirm(int $id, string $authKey)
+    public function actionConfirm(int $id, string $auth_key)
     {
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
 
-        $user = SignupForm::confirmEmail($id, $authKey);
+        $user = SignupForm::confirmEmail($id, $auth_key);
 
         if (!empty($user)) {
             $user->is_authenticated = true;

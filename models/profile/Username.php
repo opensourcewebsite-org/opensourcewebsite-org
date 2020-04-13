@@ -12,8 +12,7 @@ class Username extends Model
     /** @var string */
     public $username;
 
-    /** @var User */
-    private $_user;
+    public $currentUsername;
 
     public function rules()
     {
@@ -25,6 +24,11 @@ class Username extends Model
         ];
     }
 
+    public function init()
+    {
+        $this->currentUsername = Yii::$app->user->identity->username;
+    }
+
     public function attributeLabels()
     {
         return [
@@ -32,28 +36,17 @@ class Username extends Model
         ];
     }
 
-    public function init()
-    {
-        parent::init();
-
-        $this->_user = Yii::$app->user;
-        $this->username = $this->_user->identity->username;
-    }
-
     public function validateUsernameUnique()
     {
-        if (!strcasecmp($this->username, $this->_user->username)) {
-            return;
-        }
-
         if (is_numeric($this->username)) {
             $this->addError('username', 'User name can\'t be number');
-            return;
         }
 
-        $user = User::findOne(['username' => $this->username]);
-        if ($user) {
-            $this->addError('username', 'User name must be unique.');
+        if (strcasecmp($this->currentUsername, $this->username) !== 0) {
+            $isUserInDB = User::findOne(['username' => $this->username]);
+            if ($isUserInDB) {
+                $this->addError('username', 'User name must be unique.');
+            }
         }
     }
 }

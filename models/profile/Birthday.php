@@ -13,7 +13,7 @@ class Birthday extends Model
     {
         return [
             ['birthday', 'required'],
-            ['birthday', 'date'],
+            ['birthday', 'date', 'format' => 'mm/dd/yyyy'],
         ];
     }
 }
