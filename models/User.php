@@ -114,9 +114,9 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey)
+    public function validateAuthKey($auth_key)
     {
-        return $this->getAuthKey() === $authKey;
+        return $this->getAuthKey() === $auth_key;
     }
 
     public function setActive(): void
@@ -572,8 +572,11 @@ class User extends ActiveRecord implements IdentityInterface
                 'user_id' => $id,
                 'type' => $ratingType,
             ]);
-        }
 
+            if ($rating !== null) {
+                $commit = true;
+            }
+        }
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
