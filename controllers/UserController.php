@@ -4,17 +4,9 @@ namespace app\controllers;
 
 use app\components\helpers\ReferrerHelper;
 use app\models\EditProfileForm;
-use app\models\profile\Birthday;
-use app\models\profile\Email;
-use app\models\profile\Gender as GenderModel;
 use app\models\Gender;
-use app\models\profile\Currency as CurrencyModel;
 use app\models\Currency;
-use app\models\profile\Sexuality as SexualityModel;
-use app\models\profile\Timezone;
 use app\models\Sexuality;
-use app\models\profile\Name;
-use app\models\profile\Username;
 use app\models\UserStatistic;
 use Yii;
 use app\models\User;
