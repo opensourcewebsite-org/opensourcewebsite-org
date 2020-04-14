@@ -25,6 +25,8 @@ use yii\web\NotFoundHttpException;
 
 class UserController extends Controller
 {
+    public $user;
+
     /**
      * {@inheritdoc}
      */
@@ -54,6 +56,11 @@ class UserController extends Controller
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
+    }
+
+    public function init()
+    {
+        $this->user = Yii::$app->user->identity;
     }
 
     /**
@@ -155,166 +162,147 @@ class UserController extends Controller
 
     public function actionChangeEmail()
     {
-        $emailModel = new Email;
-
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-email', ['emailModel' => $emailModel]);
+            return $this->render('fields/change-email', ['emailModel' => $this->user]);
         }
 
-        $emailModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->email = $emailModel->email;
-        $user->is_authenticated = false;
+        $this->user->load(Yii::$app->request->post());
+        $this->user->is_authenticated = false;
 
-        if ($user->validate() && $emailModel->validate() && $user->save()) {
-            $user->sendConfirmationEmail($user);
+        if ($this->user->validate() && $this->user->save()) {
+            $this->user->sendConfirmationEmail($this->user);
             Yii::$app->session->setFlash('success', 'Check your email.');
             return $this->redirect('/account');
-        } else {
-            Yii::$app->session->setFlash('warning', 'Email is already in use!');
-            return $this->render('fields/change-email', ['emailModel' => $emailModel]);
         }
+
+        return $this->render('fields/change-email', ['emailModel' => $this->user]);
     }
 
     public function actionChangeUsername()
     {
-        $usernameModel = new Username;
-
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-username', ['usernameModel' => $usernameModel]);
+            return $this->render('fields/change-username', ['usernameModel' => $this->user]);
         }
 
-        $usernameModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->username = $usernameModel->username;
-        if ($user->validate() && $usernameModel->validate() && $user->save()) {
+        $this->user->load(Yii::$app->request->post());
+
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Username changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-username', ['usernameModel' => $usernameModel]);
+            return $this->render('fields/change-username', ['usernameModel' => $this->user]);
         }
     }
 
     public function actionChangeName()
     {
-        $nameModel = new Name;
-
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-name', ['nameModel' => $nameModel]);
+            return $this->render('fields/change-name', ['nameModel' => $this->user]);
         }
 
-        $nameModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->name = $nameModel->name;
-        if ($user->validate() && $nameModel->validate() && $user->save()) {
+        $this->user->load(Yii::$app->request->post());
+
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Name changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-name', ['nameModel' => $nameModel]);
+            return $this->render('fields/change-name', ['nameModel' => $this->user]);
         }
     }
 
     public function actionChangeBirthday()
     {
-        $birthdayModel = new Birthday;
 
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-birthday', ['birthdayModel' => $birthdayModel]);
+            return $this->render('fields/change-birthday', ['birthdayModel' => $this->user]);
         }
 
-        $birthdayModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->birthday = date('Y-m-d', strtotime($birthdayModel->birthday));
-        if ($user->validate() && $birthdayModel->validate() && $user->save()) {
+        $this->user->load(Yii::$app->request->post());
+        $this->user->birthday = Yii::$app->formatter->asDate($this->user->birthday);
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Birthday changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-birthday', ['birthdayModel' => $birthdayModel]);
+            return $this->render('fields/change-birthday', ['birthdayModel' => $this->user]);
         }
     }
 
     public function actionChangeGender()
     {
-        $genderModel = new GenderModel;
-
         if (!Yii::$app->request->isPost) {
             $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-gender', ['genderModel' => $genderModel, 'genders' => $genders]);
+            return $this->render('fields/change-gender', ['genderModel' => $this->user, 'genders' => $genders]);
         }
 
-        $genderModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->gender_id = $genderModel->gender;
-        if ($user->validate() && $genderModel->validate() && $user->save()) {
+        $postData = Yii::$app->request->post('User');
+        $gender_id = $postData['gender'];
+        $this->user->gender_id = $gender_id;
+
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Gender changed.');
             return $this->redirect('/account');
         } else {
             $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-gender', ['genderModel' => $genderModel, 'genders' => $genders]);
+            return $this->render('fields/change-gender', ['genderModel' => $this->user, 'genders' => $genders]);
         }
     }
 
     public function actionChangeTimezone()
     {
-        $timezoneModel = new Timezone;
-
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-timezone', ['timezoneModel' => $timezoneModel]);
+            return $this->render('fields/change-timezone', ['timezoneModel' => $this->user]);
         }
 
-        $timezoneModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->timezone = $timezoneModel->timezone;
-        if ($user->validate() && $timezoneModel->validate() && $user->save()) {
+        $this->user->load(Yii::$app->request->post());
+
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Timezone changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-timezone', ['timezoneModel' => $timezoneModel]);
+            return $this->render('fields/change-timezone', ['timezoneModel' => $this->user]);
         }
     }
 
     public function actionChangeCurrency()
     {
-        $currencyModel = new CurrencyModel;
-
         if (!Yii::$app->request->isPost) {
             $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['currencyModel' => $currencyModel, 'currencies' =>
+            return $this->render('fields/change-currency', ['currencyModel' => $this->user, 'currencies' =>
                 $currencies]);
         }
 
-        $currencyModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->currency_id = $currencyModel->currency;
-        if ($user->validate() && $currencyModel->validate() && $user->save()) {
+        $postData = Yii::$app->request->post('User');
+        $currency_id = $postData['currency'];
+        $this->user->currency_id = $currency_id;
+
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Currency changed.');
             return $this->redirect('/account');
         } else {
             $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['currencyModel' => $currencyModel, 'currencies' =>
+            return $this->render('fields/change-currency', ['currencyModel' => $this->user, 'currencies' =>
                 $currencies]);
         }
     }
 
     public function actionChangeSexuality()
     {
-        $sexualityModel = new SexualityModel;
-
         if (!Yii::$app->request->isPost) {
             $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-sexuality', ['sexualityModel' => $sexualityModel, 'sexualities' =>
+            return $this->render('fields/change-sexuality', ['sexualityModel' => $this->user, 'sexualities' =>
                 $sexualities]);
         }
 
-        $sexualityModel->load(Yii::$app->request->post());
-        $user = Yii::$app->user->identity;
-        $user->sexuality_id = $sexualityModel->sexuality;
-        if ($user->validate() && $sexualityModel->validate() && $user->save()) {
+        $postData = Yii::$app->request->post('User');
+        $sexuality_id = $postData['sexuality'];
+        $this->user->sexuality_id = $sexuality_id;
+
+        if ($this->user->validate() && $this->user->save()) {
             Yii::$app->session->setFlash('success', 'Sexuality changed.');
             return $this->redirect('/account');
         } else {
             $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-sexuality', ['sexualityModel' => $sexualityModel, 'sexualities' =>
+            return $this->render('fields/change-sexuality', ['sexualityModel' => $this->user, 'sexualities' =>
                 $sexualities]);
         }
     }
