@@ -27,7 +27,7 @@ blocks:
             - php -m
             - sem-service start mysql 5.7
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
-            - composer install --prefer-dist --no-interaction
+            - composer install --prefer-dist --no-interaction --no-plugins
             - cache store
             - cp .env.test.dist .env.test
             - cp config/params.dist.php config/params.php

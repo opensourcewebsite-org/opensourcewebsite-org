@@ -35,7 +35,7 @@ before_install:
 
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - travis_retry composer install --prefer-dist --no-interaction
+  - travis_retry composer install --prefer-dist --no-interaction --no-plugins
   - cp .env.test.dist .env.test
   - cp config/params.dist.php config/params.php
   - cp config/web-local.dist.php config/web-local.php
