@@ -45,6 +45,8 @@ class User extends ActiveRecord implements IdentityInterface
 
     const DATE_FORMAT = 'd.m.Y';
 
+    public $currentUsername;
+
     /**
      * {@inheritdoc}
      */
@@ -69,14 +71,85 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
-            ['name', 'string'],
             [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
+
+            ['status',
+                'default',
+                'value' => self::STATUS_ACTIVE],
+            ['status',
+                'in',
+                'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+
             ['email', 'email'],
+            ['email', 'required'],
+            ['email',
+                'unique',
+                'message' => 'Email must be unique.'
+            ],
+
+            ['username', 'required'],
+            ['username', 'trim'],
+            ['username',
+                'match',
+                'pattern' => '/^[a-zA-Z0-9_]+$/i',
+                'message' => 'Username must contain letters, numbers and _'
+            ],
+            ['username', 'validateUsernameUnique'],
+
+            ['name', 'string'],
+            ['name', 'required'],
+            ['name', 'trim'],
+            ['name', 'validateNameString'],
+
+            ['birthday', 'required'],
+            ['birthday', 'date'],
+
             [['timezone'], 'default', 'value' => 'UTC'],
+            ['timezone', 'required'],
+
+            ['gender', 'required'],
+
+            ['currency', 'required'],
+
+            ['sexuality', 'required'],
+
+
+
         ];
+    }
+
+    /*
+     * Username validation
+     */
+    public function validateUsernameUnique()
+    {
+        $oldUsername = $this->getOldAttribute('username');
+        if (is_numeric($this->username)) {
+            $this->addError('username', 'User name can\'t be number');
+        }
+
+        if (strcasecmp($oldUsername, $this->username) !== 0) {
+            $isUserInDB = User::findOne(['username' => $this->username]);
+            if ($isUserInDB) {
+                $this->addError('username', 'User name must be unique.');
+            }
+        }
+    }
+
+    /*
+     * Name validation
+     */
+    public function validateNameString()
+    {
+        $oldName = $this->getOldAttribute('name');
+        if ($this->name == $oldName) {
+            return;
+        }
+
+        if (is_numeric($this->name)) {
+            $this->addError('name', 'Name can\'t be number');
+        }
     }
 
     /**
@@ -114,9 +187,9 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey)
+    public function validateAuthKey($auth_key)
     {
-        return $this->getAuthKey() === $authKey;
+        return $this->getAuthKey() === $auth_key;
     }
 
     public function setActive(): void
@@ -572,8 +645,11 @@ class User extends ActiveRecord implements IdentityInterface
                 'user_id' => $id,
                 'type' => $ratingType,
             ]);
-        }
 
+            if ($rating !== null) {
+                $commit = true;
+            }
+        }
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
