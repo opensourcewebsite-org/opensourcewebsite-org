@@ -45,8 +45,6 @@ class User extends ActiveRecord implements IdentityInterface
 
     const DATE_FORMAT = 'd.m.Y';
 
-    public $currentUsername;
-
     /**
      * {@inheritdoc}
      */
@@ -71,8 +69,15 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            [
+                ['email', 'timezone',],
+                'required'
+            ],
+
             ['is_authenticated', 'boolean'],
             [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
+            ['birthday', 'date'],
+            [['timezone'], 'default', 'value' => 'UTC'],
 
             ['status',
                 'default',
@@ -82,14 +87,12 @@ class User extends ActiveRecord implements IdentityInterface
                 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
 
             ['email', 'email'],
-            ['email', 'required'],
             ['email',
                 'unique',
                 'message' => 'Email must be unique.'
             ],
             ['email', 'validateEmail'],
 
-            ['username', 'required'],
             ['username', 'trim'],
             ['username',
                 'match',
@@ -99,24 +102,16 @@ class User extends ActiveRecord implements IdentityInterface
             ['username', 'validateUsernameUnique'],
 
             ['name', 'string'],
-            ['name', 'required'],
             ['name', 'trim'],
             ['name', 'validateNameString'],
+        ];
+    }
 
-            ['birthday', 'required'],
-            ['birthday', 'date'],
-
-            [['timezone'], 'default', 'value' => 'UTC'],
-            ['timezone', 'required'],
-
-            ['gender', 'required'],
-
-            ['currency', 'required'],
-
-            ['sexuality', 'required'],
-
-
-
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'Username (optional)',
+            'name' => 'Name (optional)',
         ];
     }
 
