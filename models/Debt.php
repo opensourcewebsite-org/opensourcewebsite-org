@@ -2,7 +2,9 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
+use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -11,15 +13,15 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "debt".
  *
  * @property int $id
- * @property int $from_user_id
- * @property int $to_user_id
+ * @property int $from_user_id  this user should return money to $to_user_id
+ * @property int $to_user_id    this user will receive money from $from_user_id
  * @property int $currency_id
  * @property int $amount
  * @property int $status
  * @property string $valid_from_date
  * @property string $valid_from_time
  * @property int $created_at
- * @property int $created_by
+ * @property int $created_by    {@see self::isCreatedByUser()}
  * @property int $updated_at
  * @property int $updated_by
  *
@@ -36,6 +38,8 @@ class Debt extends ActiveRecord
     public const DIRECTION_CREDIT  = 2;
 
     public const SCENARIO_FORM = 'form';
+
+    public const EVENT_AFTER_CONFIRMATION = 'after_confirmation';
 
     public $user;
     public $direction;
@@ -158,6 +162,11 @@ class Debt extends ActiveRecord
         return (int)$this->status === Debt::STATUS_PENDING;
     }
 
+    public function isStatusConfirm()
+    {
+        return !$this->isStatusPending();
+    }
+
     public function setUsersFromContact($contactUserId, $contactLinkedUserId)
     {
         if ($this->isStatusPending()) {
@@ -175,7 +184,7 @@ class Debt extends ActiveRecord
             $this->setUsersFromContact(Yii::$app->user->id, $this->user);
 
             if (!empty($this->valid_from_date)) {
-                $validFromDate = \DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
+                $validFromDate = DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
                 $this->valid_from_date = $validFromDate->format('Y-m-d');
             }
         }
@@ -186,5 +195,60 @@ class Debt extends ActiveRecord
     public static function mapStatus()
     {
         return [self::STATUS_PENDING, self::STATUS_CONFIRM];
+    }
+
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
+            self::SCENARIO_FORM    => self::OP_ALL,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \Throwable
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        $this->triggerAfterAffectBalance($insert, $changedAttributes);
+        parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * Debt::$created_by possible values:
+     *  <li>`user.id` - if created by User.
+     *  <li>NULL - if created by script (e.g. todo [#294] {@see DebtDeduction})
+     *
+     * @return bool TRUE - by User. FALSE - by script
+     */
+    public function isCreatedByUser(): bool
+    {
+        if ($this->isNewRecord) {
+            throw new InvalidCallException('Field Debt::$created_by is always NULL while isNewRecord');
+        }
+
+        return (bool)$this->created_by;
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    private function triggerAfterAffectBalance(bool $insert, array $changedAttributes): void
+    {
+        if ($insert) {
+            $isStatusChanged = true;
+        } elseif (!isset($changedAttributes['status'])) {
+            $isStatusChanged = false;
+        } else {
+            $isStatusChanged = (int)$changedAttributes['status'] !== (int)$this->status;
+        }
+
+        if ($isStatusChanged && $this->isStatusConfirm()) {
+            //tme [#294] if (cron) {$this->created_by === NULL}
+            DebtBalance::onDebtConfirmation($this);
+            $this->trigger(self::EVENT_AFTER_CONFIRMATION);
+        }
     }
 }
