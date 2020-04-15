@@ -2,33 +2,30 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\date\DatePicker;
 
-/* @var $this yii\web\View */
-/* @var $issue \app\models\EditProfileForm */
-/* @var $form yii\widgets\ActiveForm */
 
 ?>
 <div class="profile-form">
-    <?php $form = ActiveForm::begin(); ?>
+    <?php
+    $sexualityForm = ActiveForm::begin();
+    ?>
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit Profile') ?>
+                        <?= Yii::t('app', 'Edit sexuality') ?>
                     </h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'username', [
-                                'template' => '{label}<div class="input-group"><div class="input-group-prepend"><span class="input-group-text">@</span></div>{input}</div>{hint}{error}'
-                            ])->textInput(['maxlength' => true, 'autocomplete' => 'off']); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => $model->getUserId()]); ?>
+                            <?= $sexualityForm->field($user, 'sexuality')->dropDownList($sexualities, ['value' =>
+                                Yii::$app->user->identity->sexuality->id])
+                                ->label
+                            ('Sexuality')
+                            ; ?>
                         </div>
                     </div>
                 </div>
