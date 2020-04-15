@@ -161,7 +161,7 @@ class UserController extends Controller
         $this->user->load(Yii::$app->request->post());
         $this->user->is_authenticated = false;
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             $this->user->sendConfirmationEmail($this->user);
             Yii::$app->session->setFlash('success', 'Check your email.');
             return $this->redirect('/account');
@@ -178,7 +178,7 @@ class UserController extends Controller
 
         $this->user->load(Yii::$app->request->post());
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Username changed.');
             return $this->redirect('/account');
         } else {
@@ -194,7 +194,7 @@ class UserController extends Controller
 
         $this->user->load(Yii::$app->request->post());
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Name changed.');
             return $this->redirect('/account');
         } else {
@@ -211,7 +211,7 @@ class UserController extends Controller
 
         $this->user->load(Yii::$app->request->post());
         $this->user->birthday = Yii::$app->formatter->asDate($this->user->birthday);
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Birthday changed.');
             return $this->redirect('/account');
         } else {
@@ -230,7 +230,7 @@ class UserController extends Controller
         $gender_id = $postData['gender'];
         $this->user->gender_id = $gender_id;
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Gender changed.');
             return $this->redirect('/account');
         } else {
@@ -247,7 +247,7 @@ class UserController extends Controller
 
         $this->user->load(Yii::$app->request->post());
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Timezone changed.');
             return $this->redirect('/account');
         } else {
@@ -267,7 +267,7 @@ class UserController extends Controller
         $currency_id = $postData['currency'];
         $this->user->currency_id = $currency_id;
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Currency changed.');
             return $this->redirect('/account');
         } else {
@@ -289,7 +289,7 @@ class UserController extends Controller
         $sexuality_id = $postData['sexuality'];
         $this->user->sexuality_id = $sexuality_id;
 
-        if ($this->user->validate() && $this->user->save()) {
+        if ($this->user->save()) {
             Yii::$app->session->setFlash('success', 'Sexuality changed.');
             return $this->redirect('/account');
         } else {
