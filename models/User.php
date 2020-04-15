@@ -97,7 +97,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['username',
                 'match',
                 'pattern' => '/^[a-zA-Z0-9_]+$/i',
-                'message' => 'Username must contain letters, numbers and _'
+                'message' => 'Username can contain only letters, numbers and \'_\' symbols'
             ],
             ['username', 'validateUsernameUnique'],
 
