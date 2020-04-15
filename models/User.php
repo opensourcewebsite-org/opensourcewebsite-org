@@ -107,14 +107,6 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    public function attributeLabels()
-    {
-        return [
-            'username' => 'Username (optional)',
-            'name' => 'Name (optional)',
-        ];
-    }
-
     /*
      * Email validation
      */
@@ -330,6 +322,8 @@ class User extends ActiveRecord implements IdentityInterface
             'id' => 'ID',
             'email' => 'Email',
             'rating' => 'Social Rating',
+            'username' => 'Username (optional)',
+            'name' => 'Name (optional)',
         ];
     }
 
