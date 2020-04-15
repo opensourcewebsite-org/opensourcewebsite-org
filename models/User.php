@@ -87,6 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
                 'unique',
                 'message' => 'Email must be unique.'
             ],
+            ['email', 'validateEmail'],
 
             ['username', 'required'],
             ['username', 'trim'],
@@ -117,6 +118,17 @@ class User extends ActiveRecord implements IdentityInterface
 
 
         ];
+    }
+
+    /*
+     * Email validation
+     */
+    public function validateEmail()
+    {
+        $oldEmail = $this->getOldAttribute('email');
+        if ($this->email == $oldEmail) {
+            $this->addError('email', 'This is your current email!');
+        }
     }
 
     /*
