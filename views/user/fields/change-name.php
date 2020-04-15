@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $nameForm->field($nameModel, 'name')->textInput(['value' =>
+                            <?= $nameForm->field($user, 'name')->textInput(['value' =>
                                 Yii::$app->user->identity->name])->label('Name'); ?>
                         </div>
                     </div>

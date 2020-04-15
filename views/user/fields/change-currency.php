@@ -21,7 +21,7 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $currencyForm->field($currencyModel, 'currency')->dropDownList($currencies, ['value' =>
+                            <?= $currencyForm->field($user, 'currency')->dropDownList($currencies, ['value' =>
                                 Yii::$app->user->identity->currency->id])
                                 ->label
                             ('Currency')

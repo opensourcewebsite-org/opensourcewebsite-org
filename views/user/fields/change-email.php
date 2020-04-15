@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $emailForm->field($emailModel, 'email')->input('email', ['value' =>
+                            <?= $emailForm->field($user, 'email')->input('email', ['value' =>
                                 Yii::$app->user->identity->email])->label('Email'); ?>
                         </div>
                     </div>

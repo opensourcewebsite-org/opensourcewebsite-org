@@ -25,7 +25,7 @@ use kartik\select2\Select2;
                             <?php
                             $timezones = TimeHelper::timezonesList();
 
-                            echo $timezoneForm->field($timezoneModel, 'timezone')->widget(Select2::class, [
+                            echo $timezoneForm->field($user, 'timezone')->widget(Select2::class, [
                                 'name'    => 'change-timezone',
                                 'value'   => Yii::$app->user->identity->timezone,
                                 'data'    => array_combine(

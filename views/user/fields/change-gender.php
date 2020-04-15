@@ -21,7 +21,7 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $genderForm->field($genderModel, 'gender')->dropDownList($genders, ['value' =>
+                            <?= $genderForm->field($user, 'gender')->dropDownList($genders, ['value' =>
                                 Yii::$app->user->identity->gender->id])
                                 ->label
                             ('Gender')

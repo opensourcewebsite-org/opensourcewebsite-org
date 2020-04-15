@@ -22,7 +22,7 @@ use kartik\date\DatePicker;
                     <div class="row">
                         <div class="col">
                             <?=
-                            $birthdayForm->field($birthdayModel, 'birthday')->widget(DatePicker::class, [
+                            $birthdayForm->field($user, 'birthday')->widget(DatePicker::class, [
                                 'name'          => 'birthday',
                                 'id'            => 'birthday-value',
                                 'pluginOptions' => [

@@ -17,7 +17,7 @@ use yii\web\NotFoundHttpException;
 
 class UserController extends Controller
 {
-    public $user;
+    private $user;
 
     /**
      * {@inheritdoc}
@@ -155,7 +155,7 @@ class UserController extends Controller
     public function actionChangeEmail()
     {
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-email', ['emailModel' => $this->user]);
+            return $this->render('fields/change-email', ['user' => $this->user]);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -167,13 +167,13 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        return $this->render('fields/change-email', ['emailModel' => $this->user]);
+        return $this->render('fields/change-email', ['user' => $this->user]);
     }
 
     public function actionChangeUsername()
     {
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-username', ['usernameModel' => $this->user]);
+            return $this->render('fields/change-username', ['user' => $this->user]);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -182,14 +182,14 @@ class UserController extends Controller
             Yii::$app->session->setFlash('success', 'Username changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-username', ['usernameModel' => $this->user]);
+            return $this->render('fields/change-username', ['user' => $this->user]);
         }
     }
 
     public function actionChangeName()
     {
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-name', ['nameModel' => $this->user]);
+            return $this->render('fields/change-name', ['user' => $this->user]);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -198,7 +198,7 @@ class UserController extends Controller
             Yii::$app->session->setFlash('success', 'Name changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-name', ['nameModel' => $this->user]);
+            return $this->render('fields/change-name', ['user' => $this->user]);
         }
     }
 
@@ -206,7 +206,7 @@ class UserController extends Controller
     {
 
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-birthday', ['birthdayModel' => $this->user]);
+            return $this->render('fields/change-birthday', ['user' => $this->user]);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -215,7 +215,7 @@ class UserController extends Controller
             Yii::$app->session->setFlash('success', 'Birthday changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-birthday', ['birthdayModel' => $this->user]);
+            return $this->render('fields/change-birthday', ['user' => $this->user]);
         }
     }
 
@@ -223,7 +223,7 @@ class UserController extends Controller
     {
         if (!Yii::$app->request->isPost) {
             $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-gender', ['genderModel' => $this->user, 'genders' => $genders]);
+            return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
         }
 
         $postData = Yii::$app->request->post('User');
@@ -235,14 +235,14 @@ class UserController extends Controller
             return $this->redirect('/account');
         } else {
             $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-gender', ['genderModel' => $this->user, 'genders' => $genders]);
+            return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
         }
     }
 
     public function actionChangeTimezone()
     {
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-timezone', ['timezoneModel' => $this->user]);
+            return $this->render('fields/change-timezone', ['user' => $this->user]);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -251,7 +251,7 @@ class UserController extends Controller
             Yii::$app->session->setFlash('success', 'Timezone changed.');
             return $this->redirect('/account');
         } else {
-            return $this->render('fields/change-timezone', ['timezoneModel' => $this->user]);
+            return $this->render('fields/change-timezone', ['user' => $this->user]);
         }
     }
 
@@ -259,7 +259,7 @@ class UserController extends Controller
     {
         if (!Yii::$app->request->isPost) {
             $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['currencyModel' => $this->user, 'currencies' =>
+            return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' =>
                 $currencies]);
         }
 
@@ -272,7 +272,7 @@ class UserController extends Controller
             return $this->redirect('/account');
         } else {
             $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['currencyModel' => $this->user, 'currencies' =>
+            return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' =>
                 $currencies]);
         }
     }
@@ -281,7 +281,7 @@ class UserController extends Controller
     {
         if (!Yii::$app->request->isPost) {
             $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-sexuality', ['sexualityModel' => $this->user, 'sexualities' =>
+            return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' =>
                 $sexualities]);
         }
 
@@ -294,7 +294,7 @@ class UserController extends Controller
             return $this->redirect('/account');
         } else {
             $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-sexuality', ['sexualityModel' => $this->user, 'sexualities' =>
+            return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' =>
                 $sexualities]);
         }
     }
