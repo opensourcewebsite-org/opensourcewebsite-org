@@ -44,11 +44,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             [
                                 'label' => 'Name',
-                                'value' => function ($data) {
+                                'value' => function (Contact $data) {
                                     return Html::a($data->getContactName(), ['/contact/view', 'id' => $data->id]);
                                 },
                                 'format' => 'html',
                             ],
+                            [
+                                'attribute' => 'is_real',
+                                'value' => function ($model) {
+                                    return $model->is_real ? 'Real' : '';
+                                },
+                                'format' => 'html',
+                            ],
+                            'vote_delegation_priority',
+                            'debt_redistribution_priority',
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',

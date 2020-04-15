@@ -29,11 +29,13 @@ use yii\behaviors\TimestampBehavior;
  */
 class Debt extends ActiveRecord
 {
-    const STATUS_PENDING = 0;
-    const STATUS_CONFIRM = 1;
-    const DIRECTION_DEPOSIT = 1;
-    const DIRECTION_CREDIT = 2;
-    const SCENARIO_STATUS_CONFIRM = 'status-confirm';
+    public const STATUS_PENDING = 0;
+    public const STATUS_CONFIRM = 1;
+
+    public const DIRECTION_DEPOSIT = 1;
+    public const DIRECTION_CREDIT  = 2;
+
+    public const SCENARIO_FORM = 'form';
 
     public $user;
     public $direction;
@@ -57,7 +59,12 @@ class Debt extends ActiveRecord
     {
         return [
             [['currency_id', 'amount'], 'required'],
-            [['user', 'direction'], 'required', 'on' => 'default'],
+            //REVIEW [ref] These fields ('user', 'direction', and other public fields in this class)
+            //       we need only on frontend form.
+            //       For this purpose you should create DebtForm model with all these fields and their rules.
+            //       Why: in all other places, except page /debt/create, we DON'T need these rules and fields
+            //            (e.g. in console app)
+            [['user', 'direction'], 'required', 'on' => self::SCENARIO_FORM],
             [['from_user_id', 'to_user_id', 'currency_id', 'amount', 'status'], 'integer'],
             [['valid_from_date', 'valid_from_time', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
         ];
@@ -100,13 +107,6 @@ class Debt extends ActiveRecord
         ];
     }
 
-    public function scenarios()
-    {
-        $scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_STATUS_CONFIRM] = [];
-        return $scenarios;
-    }
-
     public function getFromUser()
     {
         return $this->hasOne(User::className(), ['id' => 'from_user_id']);
@@ -140,9 +140,9 @@ class Debt extends ActiveRecord
 
     public function canConfirmDebt($direction)
     {
-        $canConfirmDebt = ((int) $this->status === Debt::STATUS_PENDING) && ((int) $this->created_by !== (int) $this->from_user_id);
+        $canConfirmDebt = $this->isStatusPending() && ((int) $this->created_by !== (int) $this->from_user_id);
         if ((int) $direction === self::DIRECTION_DEPOSIT) {
-            $canConfirmDebt = ((int) $this->status === Debt::STATUS_PENDING) && ((int) $this->created_by !== (int) $this->to_user_id);
+            $canConfirmDebt = $this->isStatusPending() && ((int) $this->created_by !== (int) $this->to_user_id);
         }
 
         return $canConfirmDebt;
@@ -150,19 +150,29 @@ class Debt extends ActiveRecord
 
     public function canCancelDebt()
     {
-        return ((int) $this->status === Debt::STATUS_PENDING && (((int) $this->from_user_id === Yii::$app->user->id) || ((int) $this->to_user_id === Yii::$app->user->id)));
+        return ($this->isStatusPending() && (((int) $this->from_user_id === Yii::$app->user->id) || ((int) $this->to_user_id === Yii::$app->user->id)));
+    }
+
+    public function isStatusPending()
+    {
+        return (int)$this->status === Debt::STATUS_PENDING;
+    }
+
+    public function setUsersFromContact($contactUserId, $contactLinkedUserId)
+    {
+        if ($this->isStatusPending()) {
+            $this->from_user_id = $contactLinkedUserId;
+            $this->to_user_id   = $contactUserId;
+        } else {
+            $this->from_user_id = $contactUserId;
+            $this->to_user_id   = $contactLinkedUserId;
+        }
     }
 
     public function beforeSave($insert)
     {
-        if ($insert) {
-            $this->from_user_id = Yii::$app->user->id;
-            $this->to_user_id = $this->user;
-
-            if ((int) $this->direction === self::DIRECTION_DEPOSIT) {
-                $this->from_user_id = $this->user;
-                $this->to_user_id = Yii::$app->user->id;
-            }
+        if ($this->scenario === self::SCENARIO_FORM) {
+            $this->setUsersFromContact(Yii::$app->user->id, $this->user);
 
             if (!empty($this->valid_from_date)) {
                 $validFromDate = \DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
@@ -171,5 +181,10 @@ class Debt extends ActiveRecord
         }
 
         return parent::beforeSave($insert);
+    }
+
+    public static function mapStatus()
+    {
+        return [self::STATUS_PENDING, self::STATUS_CONFIRM];
     }
 }

@@ -3,6 +3,8 @@ version: "2"
 checks:
   file-lines:
     enabled: false
+  method-count:
+    enabled: false
   method-complexity:
     enabled: false
   method-lines:
@@ -45,17 +47,29 @@ plugins:
         enabled: false
       PhanUndeclaredProperty:
         enabled: false
+      PhanUnreferencedUseNormal:
+        enabled: false
   phpcodesniffer:
     enabled: true
     config:
       file_extensions: "php"
       standard: "PSR1,PSR2,Yii2"
       encoding: utf-8
+    checks:
+      Yii2 Properties PrivatePropertiesUnderscore NoUnderscore:
+        enabled: false
+      Generic Files LineLength TooLong:
+        enabled: false
   phpmd:
     enabled: true
     config:
       file_extensions: "php"
       rulesets: "unusedcode,codesize,naming,phpmd.xml"
+    checks:
+      Design/LongParameterList:
+        enabled: false
+      Naming/ShortVariable:
+        enabled: false
   sonar-php:
     enabled: true
     config:

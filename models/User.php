@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\components\Converter;
+use app\models\queries\ContactQuery;
+use app\models\queries\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -23,14 +25,23 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $name
+ * @property string $birthday
+ * @property string $timezone
+ * @property integer $referrer_id
+ * @property integer $gender_id
+ * @property integer $currency_id
+ * @property integer $sexuality_id
+ * @property bool $is_authenticated
+ * @property bool $gender
+ *
+ * @property Contact $contact
+ * @property Contact[] $contactsFromMe
+ * @property Contact[] $contactsToMe
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
-
-    const FEMALE = 0;
-    const MALE = 1;
 
     const DATE_FORMAT = 'd.m.Y';
 
@@ -62,9 +73,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
             ['name', 'string'],
-            [['id'], 'integer'],
+            [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
             ['email', 'email'],
-            [['gender'], 'boolean'],
             [['timezone'], 'default', 'value' => 'UTC'],
         ];
     }
@@ -107,6 +117,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
+    }
+
+    public function setActive(): void
+    {
+        $this->is_authenticated = true;
+        $this->status           = self::STATUS_ACTIVE;
     }
 
     /**
@@ -584,24 +600,76 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return UserQuery
      */
     public function getReferrer()
     {
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getContact()
+    public function getContact(): ContactQuery
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
+        //REVIEW [ref] it is very bad way. NEVER set default conditions for whole app.
+        //  there are exist very-very rare cases, when it is really necessary to do.
+        //  Why: this condition useful, only when user with role 'User' is logged on.
+        //       but what if user with role 'Admin' is logged on?
+        //       Btw in console app `Yii::$app->user` is not exist at all!
+    }
+
+    public function getContactsFromMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['user_id' => 'id']);
+    }
+
+    public function getContactsToMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
     public function getDisplayName()
     {
         return $this->contact->getContactName();
+    }
+
+    public function getCompanies()
+    {
+        return $this->hasMany(Company::class, ['id' => 'company_id'])
+            ->viaTable('company_user', ['user_id' => 'id']);
+    }
+
+    public function getGender()
+    {
+        return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
+    }
+
+    public function getSexuality()
+    {
+        return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
+    }
+
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+    }
+
+    public function getLanguages()
+    {
+        return $this->hasMany(UserLanguage::class, [ 'user_id' => 'id' ]);
+    }
+
+    public function getCitizenships()
+    {
+        return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 }

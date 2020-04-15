@@ -17,12 +17,29 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'userIdOrName')->textInput()->label('User ID / Username (optional)'); ?>
+                            <?= $form->field($model, 'userIdOrName')
+                                ->textInput(['data-old-value' => $model->getUserIdOrName()])
+                                ->label('User ID / Username (optional)'); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'name')->textInput()->label('Name (optional)'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'is_real')->checkbox(); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Vote Delegation Priority (optional)'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Debt Redistribution Priority (optional)'); ?>
                         </div>
                     </div>
                 </div>
@@ -44,20 +61,44 @@ use yii\widgets\ActiveForm;
     </div>
     <?php ActiveForm::end(); ?>
 </div>
-<?php $this->registerJs('$("#delete-contact").on("click", function(event) {
+<?php
+
+$urlRedirect = Yii::$app->urlManager->createUrl(['/contact']);
+$aMsg = [
+    'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this contact?'),
+    'delete-error'   => Yii::t('app', 'Sorry, there was an error while trying to delete the contact.'),
+    'save-warn-debt' => Yii::t('app', "WARNING!\\n You have changed User.\\n All Debt Redistribution settings related to User \\\"{user}\\\" will be deleted!"),
+];
+
+$this->registerJs(<<<JS
+$("#delete-contact").on("click", function(event) {
     event.preventDefault();
     var url = $(this).attr("href");
 
-    if (confirm("' . Yii::t('app', 'Are you sure you want to delete this contact?') . '")) {
+    if (confirm("{$aMsg['delete-confirm']}")) {
         $.post(url, {}, function(result) {
             if (result == "1") {
-                location.href = "' . Yii::$app->urlManager->createUrl(['/contact']) . '";
-            }
-            else {
-                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the contact.') . '");
+                location.href = "$urlRedirect";
+            } else {
+                alert("{$aMsg['delete-error']}");
             }
         });
     }
-    
+
     return false;
-});'); ?>
+});
+
+$('#$form->id').on('beforeSubmit', warnOnDeleteDebtRedistributionSettings);
+
+function warnOnDeleteDebtRedistributionSettings() {
+    let inputUser = $('#contact-useridorname');
+    let newUser = inputUser.val() + '';
+    let oldUser = inputUser.attr('data-old-value') + '';
+    if (!oldUser || oldUser === newUser) {
+        return true;
+    }
+
+    return confirm("{$aMsg['save-warn-debt']}".replace('{user}', oldUser));
+}
+JS
+);

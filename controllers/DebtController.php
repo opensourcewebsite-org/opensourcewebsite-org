@@ -116,17 +116,19 @@ class DebtController extends Controller
     public function actionCreate()
     {
         $model = new Debt();
+        $model->scenario = Debt::SCENARIO_FORM;
+
         $user = User::find()
             ->joinWith('contact')
-            ->andWhere(['status' => User::STATUS_ACTIVE])
+            ->active()
             ->andWhere(['NOT', ['link_user_id' => null]])
             ->all();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->status = ($model->direction == Debt::DIRECTION_CREDIT ? Debt::STATUS_CONFIRM : Debt::STATUS_PENDING);
-            $model->save();
-            $direction = ($model->to_user_id === Yii::$app->user->id) ? Debt::DIRECTION_DEPOSIT : Debt::DIRECTION_CREDIT;
-            return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $model->currency_id]);
+            $model->status = ($model->direction == Debt::DIRECTION_DEPOSIT ? Debt::STATUS_PENDING : Debt::STATUS_CONFIRM);
+            if ($model->save()) {
+                return $this->redirect(['view', 'direction' => $model->direction, 'currencyId' => $model->currency_id]);
+            }
         }
 
         return $this->render('create', [
@@ -155,7 +157,6 @@ class DebtController extends Controller
     public function actionConfirm($id, $direction, $currencyId)
     {
         $model = $this->findModel($id);
-        $model->scenario = Debt::SCENARIO_STATUS_CONFIRM;
         $model->status = Debt::STATUS_CONFIRM;
         $model->save();
 

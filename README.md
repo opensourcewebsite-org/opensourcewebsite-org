@@ -16,11 +16,14 @@
 
 [![Telegram Bot](https://img.shields.io/badge/Telegram-bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
 [![Chat on Slack](https://img.shields.io/badge/Slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
+[![Chat on Discord](https://img.shields.io/badge/Discord-chat-CC2B5E.svg?style=flat-square&logo=discord)](https://discord.gg/94WpSPJ)
 [![Chat on Gitter](https://img.shields.io/badge/Gitter-chat-CC2B5E.svg?style=flat-square&logo=gitter)](https://gitter.im/opensourcewebsite-org)
+
+[![Tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fopensourcewebsite.org)](https://twitter.com/intent/tweet?text=OpenSourceWebsite+(OSW)+-+online+community+managed+by+users+using+electronic+voting+and+modifying+source+code.&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource,community,socialnetwork,digitalfuture)
 
 <h1 align="center">OpenSourceWebsite</h1>
 
-OpenSourceWebsite (OSW) - online community. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot
+OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot. Join us and be part of the digital future!
 
 The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org).
 
@@ -33,9 +36,15 @@ This project and everyone participating in it is governed by the [Code of Conduc
 This project exists thanks to all the people who contribute.
 <a href="https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors"><img src="https://opencollective.com/opensourcewebsite/contributors.svg?width=890&button=false" /></a>
 
+Your contributions increase your Rating in our community.
+
 Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## Donate
+
+This project exists thanks to all the people who donate.
+
+Your donations increase your Rating in our community.
 
 Become a financial contributor and help us sustain our community. [Read more](DONATE.md).
 
@@ -49,16 +58,22 @@ Please read through our [Installation Instructions](INSTALL.md).
 
 ## Continuous Integration
 
-Any commit pushed to a branch `master` gets deployed to [opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).
+Any commit pushed to a branch `master` gets deployed to [https://opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).
 
-## API Documentation
+## API Documentation (in development)
 
 Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
+
+## Feedback
+
+If you find a bug or have an idea to make this code better feel free to [open an issue](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues), or [create a pull request](https://github.com/opensourcewebsite-org/opensourcewebsite-org/pulls).
+
+Please report all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
+
+## Questions and Suggestions
+
+Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org) or [email support](mailto:hello@opensourcewebsite.org).
 
 ## License
 
 This project is open source and available freely under the [MIT license](LICENSE.md).
-
-## Questions and Suggestions
-
-Join [our Gitter](https://gitter.im/opensourcewebsite-org), [our Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJiMzlkYmUwY2QxZTZhZGZiMzdiNmFmOGJhNDkxOTM4MDg1MDE4YmFhMWMyZWVjZjhlZmFhNjlhY2MzMDMxMTE) or [email support](mailto:hello@opensourcewebsite.org).
