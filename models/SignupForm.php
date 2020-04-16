@@ -64,7 +64,7 @@ class SignupForm extends Model
      *
      * @return User|null the saved model or null if saving fails
      */
-    public static function confirmEmail(int $id, string $auth_key)
+    public static function confirmEmail(int $id, string $authKey)
     {
         $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
 
