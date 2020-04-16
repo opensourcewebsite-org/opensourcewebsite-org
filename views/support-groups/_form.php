@@ -25,7 +25,7 @@ use yii\widgets\ActiveForm;
                     'name'          => 'SupportGroupLanguage',
                     'theme'         => Select2::THEME_MATERIAL,
                     'data'          => ArrayHelper::map($languages, 'code', 'name_ascii'),
-                    'value'         => $model->isNewRecord || empty($langs)
+                    'value'         => $model->isNewRecord
                         ? 'en'
                         : ArrayHelper::getColumn($langs, 'language_code'),
                     'options'       => [
