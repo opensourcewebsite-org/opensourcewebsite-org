@@ -68,7 +68,7 @@ class SignupForm extends Model
     {
         $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
 
-        if ($user && $user->validateAuthKey($auth_key)) {
+        if ($user && $user->validateAuthKey($authKey)) {
             $user->setActive();
             if ($user->save()) {
                 return $user;
