@@ -413,14 +413,14 @@ class SupportGroupsController extends Controller
             ]);
         }
 
-        $supportGroupLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
+        $languageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
         $supportGroupLanguages = [];
         try {
             $this->supportComponent->storeSupportGroup($model, $requestData, $languages);
             $command = $this->supportComponent->createSupportGroupCommand($model->id);
             $supportGroupLanguages = $this->supportComponent->createSupportGroupLanguages(
                 $model->id,
-                $supportGroupLanguageCodes
+                $languageCodes
             );
 
             foreach ($supportGroupLanguages as $supportGroupLanguage) {

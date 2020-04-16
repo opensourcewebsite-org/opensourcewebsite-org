@@ -11,19 +11,19 @@ class Keeper
 
     /**
      * @param models\SupportGroup $model
-     * @param array $requestData
+     * @param array $data
      * @param array $languages
      * @throws \Exception
      */
-    public function storeSupportGroup(models\SupportGroup $model, array $requestData, array $languages)
+    public function storeSupportGroup(models\SupportGroup $model, array $data, array $languages)
     {
-        $supportGroupLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
+        $requestLanguageCodes = helpers\ArrayHelper::getValue($data, 'SupportGroupLanguage', []);
 
         $existingLanguage = helpers\ArrayHelper::findFirst(
-            $supportGroupLanguageCodes,
-            function ($supportGroupLanguageCode) use ($languages) {
+            $requestLanguageCodes,
+            function ($languageCode) use ($languages) {
                 $languageCodes = helpers\ArrayHelper::getColumn($languages, 'code');
-                return in_array($supportGroupLanguageCode, $languageCodes);
+                return in_array($languageCode, $languageCodes);
             }
         );
         if (empty($existingLanguage)) {
@@ -31,7 +31,7 @@ class Keeper
             throw new LanguageException();
         }
 
-        if (!$model->load($requestData)
+        if (!$model->load($data)
             || !$model->save()
         ) {
             throw new \Exception();
