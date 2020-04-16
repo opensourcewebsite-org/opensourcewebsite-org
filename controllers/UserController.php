@@ -52,6 +52,7 @@ class UserController extends Controller
 
     public function init()
     {
+        parent::int();
         $this->user = Yii::$app->user->identity;
     }
 
@@ -159,15 +160,16 @@ class UserController extends Controller
         }
 
         $this->user->load(Yii::$app->request->post());
-        $this->user->is_authenticated = false;
-
-        if($this->user->email == $this->user->getOldAttribute('email')) {
-            return $this->render('fields/change-email', ['user' => $this->user]);
+        $isEmailChanged = $this->user->isAttributeChanged('email');
+        if($isEmailChanged) {
+            $this->user->is_authenticated = false;
         }
 
         if ($this->user->save()) {
-            $this->user->sendConfirmationEmail($this->user);
-            Yii::$app->session->setFlash('success', 'Check your email.');
+            if($isEmailChanged) {
+                $this->user->sendConfirmationEmail($this->user);
+                Yii::$app->session->setFlash('success', 'Check your email.');
+            }
             return $this->redirect('/account');
         }
 
