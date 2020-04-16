@@ -60,15 +60,15 @@ class SignupForm extends Model
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param string $authKey the user authKey
+     * @param string $auth_key the user auth_key
      *
      * @return User|null the saved model or null if saving fails
      */
-    public static function confirmEmail($id, $authKey)
+    public static function confirmEmail(int $id, string $auth_key)
     {
         $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
 
-        if ($user && $user->validateAuthKey($authKey)) {
+        if ($user && $user->validateAuthKey($auth_key)) {
             $user->setActive();
             if ($user->save()) {
                 return $user;
