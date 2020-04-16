@@ -43,7 +43,6 @@ class SupportGroupsController extends Controller
 
     public function init()
     {
-        // @TODO needs to create DependencyManager which will initiating in controllers
         $this->supportComponent = new SupportGroupComponent\Keeper();
     }
 
