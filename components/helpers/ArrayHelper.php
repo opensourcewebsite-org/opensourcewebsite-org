@@ -2,7 +2,7 @@
 
 namespace app\components\helpers;
 
-use yii;
+use Yii;
 
 class ArrayHelper extends yii\helpers\ArrayHelper
 {

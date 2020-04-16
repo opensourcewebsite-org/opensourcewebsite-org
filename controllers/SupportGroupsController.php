@@ -407,30 +407,30 @@ class SupportGroupsController extends Controller
         $requestData = Yii::$app->request->post();
         if (empty($requestData)) {
             return $this->render('create', [
-                'model'     => $model,
-                'langs'     => [],
+                'model' => $model,
+                'langs' => [],
                 'languages' => $languages,
             ]);
         }
 
         $sgLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
-        $sgLanguages = [];
+        $supportGroupLanguages = [];
         try {
             $this->supportComponent->storeSupportGroup($model, $requestData, $languages);
             $command = $this->supportComponent->createSupportGroupCommand($model->id);
-            $sgLanguages = $this->supportComponent->createSupportGroupLanguages($model->id, $sgLanguageCodes);
+            $supportGroupLanguages = $this->supportComponent->createSupportGroupLanguages($model->id, $sgLanguageCodes);
 
-            foreach ($sgLanguages as $sqLanguage) {
+            foreach ($supportGroupLanguages as $supportGroupLanguage) {
                 $this->supportComponent->createSupportGroupCommandText(
                     $command->id,
-                    $sqLanguage->language->code,
+                    $supportGroupLanguage->language->code,
                     Yii::t('app', 'Welcome to OpenSourceWebsite.org') . '!'
                 );
             }
         } catch (\Exception $e) {
             return $this->render('create', [
-                'model'     => $model,
-                'langs'     => $sgLanguages,
+                'model' => $model,
+                'langs' => $supportGroupLanguages,
                 'languages' => $languages,
             ]);
         }
@@ -461,8 +461,8 @@ class SupportGroupsController extends Controller
 
         if (empty($requestData)) {
             return $this->render('update', [
-                'model'     => $model,
-                'langs'     => $langs,
+                'model' => $model,
+                'langs' => $langs,
                 'languages' => $languages,
             ]);
         }
@@ -476,8 +476,8 @@ class SupportGroupsController extends Controller
             );
         } catch (\Exception $e) {
             return $this->render('update', [
-                'model'     => $model,
-                'langs'     => $langs,
+                'model' => $model,
+                'langs' => $langs,
                 'languages' => $languages,
             ]);
         }
