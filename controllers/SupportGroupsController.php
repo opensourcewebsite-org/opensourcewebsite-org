@@ -462,27 +462,26 @@ class SupportGroupsController extends Controller
         $languages = Language::find()->all();
         $requestData = Yii::$app->request->post();
 
-        if (empty($requestData)) {
+        $renderUpdate = function (SupportGroup $model, array $langs, array $languages = []) {
             return $this->render('update', [
                 'model' => $model,
                 'langs' => $langs,
                 'languages' => $languages,
             ]);
+        };
+
+        if (empty($requestData)) {
+            return $renderUpdate($model, $langs, $languages);
         }
 
         try {
             $this->supportComponent->storeSupportGroup($model, $requestData, $languages);
             $this->supportComponent->removeAllSupportGroupLanguagesBySupportGroupId(intval($id));
-            $this->supportComponent->createSupportGroupLanguages(
-                $model->id,
-                helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', [])
-            );
+            $this->supportComponent->createSupportGroupLanguages($model->id, helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []));
+        } catch (SupportGroupComponent\exceptions\LanguageException $e) {
+            return $renderUpdate($model, $langs);
         } catch (\Exception $e) {
-            return $this->render('update', [
-                'model' => $model,
-                'langs' => $langs,
-                'languages' => $languages,
-            ]);
+            return $renderUpdate($model, $langs, $languages);
         }
 
         return $this->redirect(['index']);
