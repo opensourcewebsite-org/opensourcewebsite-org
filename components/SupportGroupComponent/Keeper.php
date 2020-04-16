@@ -16,13 +16,13 @@ class Keeper
      */
     public function storeSupportGroup(models\SupportGroup $model, array $requestData, array $languages)
     {
-        $sgLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
+        $supportGroupLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
 
         $existingLanguage = helpers\ArrayHelper::findFirst(
-            $sgLanguageCodes,
-            function ($sgLanguageCode) use ($languages) {
+            $supportGroupLanguageCodes,
+            function ($supportGroupLanguageCode) use ($languages) {
                 $languageCodes = helpers\ArrayHelper::getColumn($languages, 'code');
-                return in_array($sgLanguageCode, $languageCodes);
+                return in_array($supportGroupLanguageCode, $languageCodes);
             }
         );
         if (empty($existingLanguage)) {
