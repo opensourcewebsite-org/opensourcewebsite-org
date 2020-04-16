@@ -413,14 +413,14 @@ class SupportGroupsController extends Controller
             ]);
         }
 
-        $supportGroupLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
+        $languageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
         $supportGroupLanguages = [];
         try {
             $this->supportComponent->storeSupportGroup($model, $requestData, $languages);
             $command = $this->supportComponent->createSupportGroupCommand($model->id);
             $supportGroupLanguages = $this->supportComponent->createSupportGroupLanguages(
                 $model->id,
-                $supportGroupLanguageCodes
+                $languageCodes
             );
 
             foreach ($supportGroupLanguages as $supportGroupLanguage) {
@@ -462,27 +462,26 @@ class SupportGroupsController extends Controller
         $languages = Language::find()->all();
         $requestData = Yii::$app->request->post();
 
-        if (empty($requestData)) {
+        $renderUpdate = function (SupportGroup $model, array $languages, array $langs = []) {
             return $this->render('update', [
                 'model' => $model,
                 'langs' => $langs,
                 'languages' => $languages,
             ]);
+        };
+
+        if (empty($requestData)) {
+            return $renderUpdate($model, $languages, $langs);
         }
 
         try {
             $this->supportComponent->storeSupportGroup($model, $requestData, $languages);
             $this->supportComponent->removeAllSupportGroupLanguagesBySupportGroupId(intval($id));
-            $this->supportComponent->createSupportGroupLanguages(
-                $model->id,
-                helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', [])
-            );
+            $this->supportComponent->createSupportGroupLanguages($model->id, helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []));
+        } catch (SupportGroupComponent\exceptions\LanguageException $e) {
+            return $renderUpdate($model, $languages);
         } catch (\Exception $e) {
-            return $this->render('update', [
-                'model' => $model,
-                'langs' => $langs,
-                'languages' => $languages,
-            ]);
+            return $renderUpdate($model, $languages, $langs);
         }
 
         return $this->redirect(['index']);
