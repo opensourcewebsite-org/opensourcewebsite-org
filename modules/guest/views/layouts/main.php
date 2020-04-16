@@ -55,10 +55,10 @@ $this->beginBody();
 
             <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <div class="search-container">
-                <input type="text" placeholder="Search..">
+                <input type="text" id="search-lang" onkeyup="getLanguage()" placeholder="Search..">
                 <button type="button"><i class="fa fa-search"></i></button>
               </div>
-
+                <div class="dropdown-container">
                 <?php
                 //List of language options
                 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
@@ -70,7 +70,7 @@ $this->beginBody();
                         echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
                     }
                 } ?>
-
+                </div>
             </div>
           </div>
         </li>
@@ -123,6 +123,20 @@ $this->beginBody();
     </footer>
 
 <?php $this->endBody() ?>
+<script>
+    function getLanguage() {
+        let input = document.getElementById("search-lang");
+        let filter = input.value.toLowerCase();
+        let nodes = document.getElementsByClassName('dropdown-item');
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                nodes[i].style.display = "block";
+            } else {
+                nodes[i].style.display = "none";
+            }
+        }
+    }
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>
