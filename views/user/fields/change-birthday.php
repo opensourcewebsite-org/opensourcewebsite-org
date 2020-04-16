@@ -21,14 +21,16 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $birthdayForm->field($user, 'birthday')->widget(DatePicker::class, [
+                            <?= DatePicker::widget([
+                                'model'         => $user,
                                 'name'          => 'birthday',
                                 'id'            => 'birthday-value',
+                                'value'         => Yii::$app->formatter->asDate($user->birthday, 'php:m/d/Y'),
                                 'pluginOptions' => [
-                                    'autoclose' => true,
-                                    'format'    => 'mm/dd/yyyy',
+                                    'autoclose'   => true,
+                                    'format'      => 'mm/dd/yyyy',
                                 ],
-                            ])->label('Birthday'); ?>
+                            ]); ?>
                         </div>
                     </div>
                 </div>

@@ -211,8 +211,8 @@ class UserController extends Controller
             return $this->render('fields/change-birthday', ['user' => $this->user]);
         }
 
-        $this->user->load(Yii::$app->request->post());
-        $this->user->birthday = Yii::$app->formatter->asDate($this->user->birthday);
+        $this->user->birthday = Yii::$app->formatter->asDate(Yii::$app->request->post('birthday'));
+
         if ($this->user->save()) {
             return $this->redirect('/account');
         }
