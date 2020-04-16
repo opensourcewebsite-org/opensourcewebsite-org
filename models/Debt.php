@@ -63,7 +63,7 @@ class Debt extends ActiveRecord
     {
         return [
             [['currency_id', 'amount'], 'required'],
-            //REVIEW [ref] These fields ('user', 'direction', and other public fields in this class)
+            //TODO [ref] These fields ('user', 'direction', and other public fields in this class)
             //       we need only on frontend form.
             //       For this purpose you should create DebtForm model with all these fields and their rules.
             //       Why: in all other places, except page /debt/create, we DON'T need these rules and fields
@@ -103,7 +103,7 @@ class Debt extends ActiveRecord
                 'createdAtAttribute' => 'created_at',
                 'updatedAtAttribute' => 'updated_at',
             ],
-            [
+            'blameable' => [
                 'class' => BlameableBehavior::className(),
                 'createdByAttribute' => 'created_by',
                 'updatedByAttribute' => 'updated_by',
