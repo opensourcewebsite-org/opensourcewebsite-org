@@ -11,7 +11,7 @@ use Yii;
  * @property int $support_group_id
  * @property string $language_code
  *
- * @property Language $languageCode
+ * @property Language $language
  */
 class SupportGroupLanguage extends \yii\db\ActiveRecord
 {
@@ -56,7 +56,7 @@ class SupportGroupLanguage extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLanguageCode()
+    public function getLanguage()
     {
         return $this->hasOne(Language::className(), ['code' => 'language_code']);
     }
