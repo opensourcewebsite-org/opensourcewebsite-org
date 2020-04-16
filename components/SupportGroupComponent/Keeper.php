@@ -3,6 +3,7 @@
 namespace app\components\SupportGroupComponent;
 
 use app\components\helpers;
+use app\components\SupportGroupComponent\exceptions\LanguageException;
 use app\models;
 
 class Keeper
@@ -10,29 +11,31 @@ class Keeper
 
     /**
      * @param models\SupportGroup $model
-     * @param array $requestData
+     * @param array $data
      * @param array $languages
      * @throws \Exception
      */
-    public function storeSupportGroup(models\SupportGroup $model, array $requestData, array $languages)
+    public function storeSupportGroup(models\SupportGroup $model, array $data, array $languages)
     {
-        $supportGroupLanguageCodes = helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []);
+        $requestLanguageCodes = helpers\ArrayHelper::getValue($data, 'SupportGroupLanguage', []);
 
         $existingLanguage = helpers\ArrayHelper::findFirst(
-            $supportGroupLanguageCodes,
-            function ($supportGroupLanguageCode) use ($languages) {
+            $requestLanguageCodes,
+            function ($languageCode) use ($languages) {
                 $languageCodes = helpers\ArrayHelper::getColumn($languages, 'code');
-                return in_array($supportGroupLanguageCode, $languageCodes);
+                return in_array($languageCode, $languageCodes);
             }
         );
-        if (empty($existingLanguage)) {
-            $model->addError('title', 'Languages cannot be empty');
+        if (!$model->load($data)) {
             throw new \Exception();
         }
 
-        if (!$model->load($requestData)
-            || !$model->save()
-        ) {
+        if (empty($existingLanguage)) {
+            $model->addError('title', 'Languages cannot be empty');
+            throw new LanguageException();
+        }
+
+        if (!$model->save()) {
             throw new \Exception();
         }
     }
