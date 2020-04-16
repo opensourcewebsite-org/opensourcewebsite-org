@@ -26,14 +26,16 @@ class Keeper
                 return in_array($languageCode, $languageCodes);
             }
         );
+        if (!$model->load($data)) {
+            throw new \Exception();
+        }
+
         if (empty($existingLanguage)) {
             $model->addError('title', 'Languages cannot be empty');
             throw new LanguageException();
         }
 
-        if (!$model->load($data)
-            || !$model->save()
-        ) {
+        if (!$model->save()) {
             throw new \Exception();
         }
     }
