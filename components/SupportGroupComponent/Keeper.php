@@ -3,6 +3,7 @@
 namespace app\components\SupportGroupComponent;
 
 use app\components\helpers;
+use app\components\SupportGroupComponent\exceptions\LanguageException;
 use app\models;
 
 class Keeper
@@ -27,7 +28,7 @@ class Keeper
         );
         if (empty($existingLanguage)) {
             $model->addError('title', 'Languages cannot be empty');
-            throw new \Exception();
+            throw new LanguageException();
         }
 
         if (!$model->load($requestData)
