@@ -161,6 +161,10 @@ class UserController extends Controller
         $this->user->load(Yii::$app->request->post());
         $this->user->is_authenticated = false;
 
+        if($this->user->email == $this->user->getOldAttribute('email')) {
+            return $this->render('fields/change-email', ['user' => $this->user]);
+        }
+
         if ($this->user->save()) {
             $this->user->sendConfirmationEmail($this->user);
             Yii::$app->session->setFlash('success', 'Check your email.');
@@ -179,11 +183,10 @@ class UserController extends Controller
         $this->user->load(Yii::$app->request->post());
 
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Username changed.');
             return $this->redirect('/account');
-        } else {
-            return $this->render('fields/change-username', ['user' => $this->user]);
         }
+
+        return $this->render('fields/change-username', ['user' => $this->user]);
     }
 
     public function actionChangeName()
@@ -195,11 +198,10 @@ class UserController extends Controller
         $this->user->load(Yii::$app->request->post());
 
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Name changed.');
             return $this->redirect('/account');
-        } else {
-            return $this->render('fields/change-name', ['user' => $this->user]);
         }
+
+        return $this->render('fields/change-name', ['user' => $this->user]);
     }
 
     public function actionChangeBirthday()
@@ -212,11 +214,10 @@ class UserController extends Controller
         $this->user->load(Yii::$app->request->post());
         $this->user->birthday = Yii::$app->formatter->asDate($this->user->birthday);
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Birthday changed.');
             return $this->redirect('/account');
-        } else {
-            return $this->render('fields/change-birthday', ['user' => $this->user]);
         }
+
+        return $this->render('fields/change-birthday', ['user' => $this->user]);
     }
 
     public function actionChangeGender()
@@ -226,17 +227,14 @@ class UserController extends Controller
             return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
         }
 
-        $postData = Yii::$app->request->post('User');
-        $gender_id = $postData['gender'];
-        $this->user->gender_id = $gender_id;
+        $this->user->load(Yii::$app->request->post());
 
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Gender changed.');
             return $this->redirect('/account');
-        } else {
-            $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
         }
+
+        $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
     }
 
     public function actionChangeTimezone()
@@ -248,33 +246,27 @@ class UserController extends Controller
         $this->user->load(Yii::$app->request->post());
 
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Timezone changed.');
             return $this->redirect('/account');
-        } else {
-            return $this->render('fields/change-timezone', ['user' => $this->user]);
         }
+
+        return $this->render('fields/change-timezone', ['user' => $this->user]);
     }
 
     public function actionChangeCurrency()
     {
         if (!Yii::$app->request->isPost) {
             $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' =>
-                $currencies]);
+            return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' => $currencies]);
         }
 
-        $postData = Yii::$app->request->post('User');
-        $currency_id = $postData['currency'];
-        $this->user->currency_id = $currency_id;
+        $this->user->load(Yii::$app->request->post());
 
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Currency changed.');
             return $this->redirect('/account');
-        } else {
-            $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' =>
-                $currencies]);
         }
+
+        $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' => $currencies]);
     }
 
     public function actionChangeSexuality()
@@ -285,17 +277,13 @@ class UserController extends Controller
                 $sexualities]);
         }
 
-        $postData = Yii::$app->request->post('User');
-        $sexuality_id = $postData['sexuality'];
-        $this->user->sexuality_id = $sexuality_id;
+        $this->user->load(Yii::$app->request->post());
 
         if ($this->user->save()) {
-            Yii::$app->session->setFlash('success', 'Sexuality changed.');
             return $this->redirect('/account');
-        } else {
-            $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' =>
-                $sexualities]);
         }
+
+        $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' => $sexualities]);
     }
 }

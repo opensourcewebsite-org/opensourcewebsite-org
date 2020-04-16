@@ -21,26 +21,24 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?=
-                            $birthdayForm->field($user, 'birthday')->widget(DatePicker::class, [
+                            <?= $birthdayForm->field($user, 'birthday')->widget(DatePicker::class, [
                                 'name'          => 'birthday',
                                 'id'            => 'birthday-value',
                                 'pluginOptions' => [
                                     'autoclose' => true,
                                     'format'    => 'mm/dd/yyyy',
                                 ],
-                            ])->label('Birthday');
-                            ?>
-
+                            ])->label('Birthday'); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'], [
-                        'class' => 'btn btn-secondary',
-                        'title' => Yii::t('app', 'Cancel'),
-                    ]); ?>
+                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
+                        [
+                            'class' => 'btn btn-secondary',
+                            'title' => Yii::t('app', 'Cancel')
+                        ]); ?>
                 </div>
             </div>
         </div>

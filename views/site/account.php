@@ -90,8 +90,7 @@ $this->title = 'Account';
                                 <tbody>
                                 <tr>
                                     <th class="align-middle">Username</th>
-                                    <td class="align-middle"><b>@</b><span id="username"><?= $model->username;
-                                            ?></span></td>
+                                    <td class="align-middle"><b>@</b><span id="username"><?= $model->username; ?></span></td>
                                     <td>
                                         <?= Html::button(
                                             '<a href="/user/change-username" class="fas fa-edit"></a>',

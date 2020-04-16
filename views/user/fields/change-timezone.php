@@ -24,7 +24,6 @@ use kartik\select2\Select2;
                         <div class="col">
                             <?php
                             $timezones = TimeHelper::timezonesList();
-
                             echo $timezoneForm->field($user, 'timezone')->widget(Select2::class, [
                                 'name'    => 'change-timezone',
                                 'value'   => Yii::$app->user->identity->timezone,
@@ -36,17 +35,17 @@ use kartik\select2\Select2;
                                     'id'     => 'timezone-value',
                                     'prompt' => '',
                                 ],
-                            ])->label('Timezone');
-                            ?>
+                            ])->label('Timezone'); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'], [
-                        'class' => 'btn btn-secondary',
-                        'title' => Yii::t('app', 'Cancel'),
-                    ]); ?>
+                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
+                        [
+                            'class' => 'btn btn-secondary',
+                            'title' => Yii::t('app', 'Cancel')
+                        ]); ?>
                 </div>
             </div>
         </div>
