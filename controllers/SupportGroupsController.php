@@ -477,7 +477,10 @@ class SupportGroupsController extends Controller
         try {
             $this->supportComponent->storeSupportGroup($model, $requestData, $languages);
             $this->supportComponent->removeAllSupportGroupLanguagesBySupportGroupId(intval($id));
-            $this->supportComponent->createSupportGroupLanguages($model->id, helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', []));
+            $this->supportComponent->createSupportGroupLanguages(
+                $model->id,
+                helpers\ArrayHelper::getValue($requestData, 'SupportGroupLanguage', [])
+            );
         } catch (SupportGroupComponent\exceptions\LanguageException $e) {
             return $renderUpdate($model, $languages);
         } catch (\Exception $e) {
