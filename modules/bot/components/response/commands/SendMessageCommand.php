@@ -3,6 +3,7 @@ namespace app\modules\bot\components\response\commands;
 
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\HttpException;
 
 class SendMessageCommand extends MessageTextCommand
 {
@@ -13,16 +14,29 @@ class SendMessageCommand extends MessageTextCommand
         $this->chatId = $chatId;
     }
 
+	/**
+     * On success, the sent \TelegramBot\Api\Types\Message is returned.
+     *
+	*/
     public function send(BotApi $botApi)
     {
-        $botApi->sendMessage(
-            $this->chatId,
-            $this->text,
-            $this->getOptionalProperty('parseMode', null),
-            $this->getOptionalProperty('disablePreview', false),
-            $this->getOptionalProperty('replyToMessageId', null),
-            $this->getOptionalProperty('replyMarkup', null),
-            $this->getOptionalProperty('disableNotification', false)
-        );
+		$answer=false;
+		try{
+			$answer = $botApi->sendMessage(
+				$this->chatId,
+				$this->text,
+				$this->getOptionalProperty('parseMode', null),
+				$this->getOptionalProperty('disablePreview', false),
+				$this->getOptionalProperty('replyToMessageId', null),
+				$this->getOptionalProperty('replyMarkup', null),
+				$this->getOptionalProperty('disableNotification', false)
+			);
+		}catch(HttpException $e){
+			if (YII_ENV_DEV) {
+				throw $e;
+			}
+		}
+		
+		return $answer;
     }
 }
