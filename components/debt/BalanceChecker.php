@@ -12,7 +12,7 @@ class BalanceChecker extends Component
     /**
      * @throws \yii\db\Exception
      */
-    public function validate(): ?array
+    public function run(): ?array
     {
         $sumOfAllDebt = $this->findSumOfAllDebt();
 
@@ -20,7 +20,7 @@ class BalanceChecker extends Component
             return null;
         }
 
-        return $this->_validate($sumOfAllDebt);
+        return $this->validate($sumOfAllDebt);
     }
 
     /**
@@ -42,20 +42,20 @@ class BalanceChecker extends Component
         $rows = Yii::$app->db->createCommand($sql, [':confirm' => Debt::STATUS_CONFIRM])->queryAll();
 
         foreach ($rows as $row) {
-            $cId     = $row['currency_id'];
+            $cId = $row['currency_id'];
             $fromUID = $row['from_user_id'];
-            $toUID   = $row['to_user_id'];
+            $toUID = $row['to_user_id'];
 
             $data[$cId][$fromUID][$toUID] = [
                 'debt_sum' => $row['debt_sum'],
-                'balance'  => $row['balance'],
+                'balance' => $row['balance'],
             ];
         }
 
         return $data;
     }
 
-    private function _validate(array $sumOfAllDebt): array
+    private function validate(array $sumOfAllDebt): array
     {
         $errors            = [];
         $processedBalances = [];

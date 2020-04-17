@@ -102,9 +102,9 @@ class DebtFixture extends ARGenerator
         //looks like $currencyId should always be not empty. But, just in case, let's check it too.
         if (empty($contact) || !$currencyId) {
             $class = self::classNameModel();
-            $msg   = "\n$class: creation skipped. No Contact exists\n";
-            $msg   .= "It's not error - few iterations later new Contact will be generated.\n";
-            Yii::$app->controller->stdout($msg, Console::BG_GREY);
+            $message = "\n$class: creation skipped. No Contact exists\n";
+            $message .= "It's not error - few iterations later new Contact will be generated.\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];
         }

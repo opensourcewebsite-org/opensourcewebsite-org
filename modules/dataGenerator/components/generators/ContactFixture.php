@@ -63,10 +63,10 @@ class ContactFixture extends ARGenerator
 
         if (empty($usersFrom)) {
             $class = self::classNameModel();
-            $msg = "\n$class: creation skipped. ";
-            $msg .= "Either no active User, or all Users have full set of Contacts.\n";
-            $msg .= "\nIt's not error - few iterations later new User will be generated.\n";
-            Yii::$app->controller->stdout($msg, Console::BG_GREY);
+            $message = "\n$class: creation skipped. ";
+            $message .= "Either no active User, or all Users have full set of Contacts.\n";
+            $message .= "\nIt's not error - few iterations later new User will be generated.\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];
         }

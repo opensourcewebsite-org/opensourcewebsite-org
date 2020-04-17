@@ -228,9 +228,9 @@ class DebtBalance extends ActiveRecord
         self::$allowExecute = false;
 
         if (!$res) {
-            $msg = "Unexpected error occurred: Fail to save DebtBalance.\n";
-            $msg .= 'DebtBalance::$errors = ' . print_r($this->errors, true);
-            throw new Exception($msg);
+            $message = "Unexpected error occurred: Fail to save DebtBalance.\n";
+            $message .= 'DebtBalance::$errors = ' . print_r($this->errors, true);
+            throw new Exception($message);
         }
     }
 
@@ -345,16 +345,16 @@ class DebtBalance extends ActiveRecord
             return;
         }
 
-        $msg = "Any change of this table requires `SELECT FOR UPDATE` to be done before it.\n";
-        $msg .= " To ensure it, was restricted access to all execute methods (save(), delete(), updateAll(), etc.).\n";
-        $msg .= " The app design expect only 2 reasons to save|delete balance:\n";
-        $msg .= "     `Debt::EVENT_AFTER_CONFIRMATION`  &  `\app\components\debt\Reduction::cantReduceBalance()`.\n";
-        $msg .= "---\n";
-        $msg .= "If you REALLY need new way to do it - create new method in `DebtBalance`\n";
-        $msg .= " and before any change call `SELECT FOR UPDATE` for rows, you want to insert|update|delete.\n";
-        $msg .= " You should never allow to call any execute method as public - to avoid bugs in future development.\n";
+        $message = "Any change of this table requires `SELECT FOR UPDATE` to be done before it.\n";
+        $message .= " To ensure it, was restricted access to all execute methods (save(), delete(), updateAll(), etc.).\n";
+        $message .= " The app design expect only 2 reasons to save|delete balance:\n";
+        $message .= "     `Debt::EVENT_AFTER_CONFIRMATION`  &  `\app\components\debt\Reduction::cantReduceBalance()`.\n";
+        $message .= "---\n";
+        $message .= "If you REALLY need new way to do it - create new method in `DebtBalance`\n";
+        $message .= " and before any change call `SELECT FOR UPDATE` for rows, you want to insert|update|delete.\n";
+        $message .= " You should never allow to call any execute method as public - to avoid bugs in future development.\n";
 
-        throw new NotSupportedException($msg);
+        throw new NotSupportedException($message);
     }
 
     private static function requireTransaction(): void

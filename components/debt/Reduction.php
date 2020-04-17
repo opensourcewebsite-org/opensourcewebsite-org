@@ -225,9 +225,9 @@ class Reduction extends Component
                 $debt->group  = $group;
 
                 if (!$debt->save()) {
-                    $msg = "Unexpected error occurred: Fail to save Debt.\n";
-                    $msg .= 'Debt::$errors = ' . print_r($debt->errors, true);
-                    throw new Exception($msg);
+                    $message = "Unexpected error occurred: Fail to save Debt.\n";
+                    $message .= 'Debt::$errors = ' . print_r($debt->errors, true);
+                    throw new Exception($message);
                 }
             }
 
@@ -247,16 +247,16 @@ class Reduction extends Component
         };
     }
 
-    private static function log($msg, $format = [])
+    private static function log($message, $format = [])
     {
-        $msg .= PHP_EOL;
+        $message .= PHP_EOL;
 
         if (empty($format)) {
             if (self::LOG_ALL) {
-                Console::stdout($msg);
+                Console::stdout($message);
             }
         } else {
-            Console::stdout(Console::ansiFormat($msg, $format));
+            Console::stdout(Console::ansiFormat($message, $format));
         }
     }
 }

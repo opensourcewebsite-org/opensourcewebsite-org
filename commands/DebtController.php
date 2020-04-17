@@ -35,16 +35,16 @@ class DebtController extends Controller
         $this->log = true;
         $this->outputLogState();
 
-        $errors = (new BalanceChecker)->validate();
+        $errors = (new BalanceChecker)->run();
 
         if (null === $errors) {
             $this->output('There are no appropriate rows in DB table `debt`. Nothing to analyze.', [Console::BG_GREY]);
         } elseif (empty($errors)) {
             $this->output('SUCCESS: no bugs found.', [Console::FG_GREEN]);
         } else {
-            $n = count($errors);
-            $msg = "ERROR: found $n data collisions!\n" . VarDumper::dumpAsString($errors);
-            $this->output($msg, [Console::FG_RED]);
+            $count = count($errors);
+            $message = "ERROR: found $count data collisions!\n" . VarDumper::dumpAsString($errors);
+            $this->output($message, [Console::FG_RED]);
         }
     }
 
