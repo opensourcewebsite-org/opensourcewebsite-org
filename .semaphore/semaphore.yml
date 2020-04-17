@@ -1,16 +1,11 @@
 # For more PHP information and examples, see
 # https://docs.semaphoreci.com/article/84-language-php
 version: v1.0
-name: Initial Pipeline
+name: Main Pipeline
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
-global_job_config:
-    env_vars:
-      - name: CC_TEST_REPORTER_ID
-        value: 16cae375508978df766d6cc58509c88f446739cc23a30cfdfd823ff921097f5f
-
 blocks:
   - name: __build
     dependencies: []
@@ -27,6 +22,7 @@ blocks:
             - php -m
             - sem-service start mysql 5.7
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
+            - composer self-update
             - composer install --prefer-dist --no-interaction
             - cache store
             - cp .env.test.dist .env.test
@@ -34,22 +30,6 @@ blocks:
             - cp config/web-local.dist.php config/web-local.php
             - mysql --version
             - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-            - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            - chmod +x ./cc-test-reporter
-            - ./cc-test-reporter before-build
             - ./tests/bin/yii migrate --interactive=0 -c
             - ./tests/bin/yii fixture/load '*' --interactive=0
             - ./vendor/bin/codecept run unit --coverage --coverage-xml
-            - cp tests/_output/coverage.xml clover.xml
-            - ./cc-test-reporter format-coverage --prefix tests/_output/
-            - ./cc-test-reporter after-build -d --coverage-input-type clover --id 12345 --exit-code 0
-
-  - name: __test
-    dependencies: [__build]
-    task:
-      jobs:
-        - name: test
-          commands:
-            - checkout
-            - pip install codecov
-            - codecov

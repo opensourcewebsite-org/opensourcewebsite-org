@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-$this->title = 'Account';
+$this->title = Yii::t('app', 'Account');
 ?>
 
 <div class="user-profile-form">
@@ -47,7 +47,7 @@ $this->title = 'Account';
     ?>
     <div class="row">
         <div class="col-md-6">
-            <h1>Profile</h1>
+            <h2><?= Yii::t('app', 'Profile') ?></h2>
         </div>
         <div class="col-md-6">
             <?= Html::a('<i class="fas fa-edit"></i>', ['user/edit-profile'], [
