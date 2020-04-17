@@ -12,8 +12,8 @@ use yii\db\ActiveQuery;
  *
  * @see Contact
  *
- * @method  all() Contact[]
- * @method  one() Contact|array|null
+ * @method Contact[]          all()
+ * @method null|array|Contact one()
  */
 class ContactQuery extends ActiveQuery
 {
