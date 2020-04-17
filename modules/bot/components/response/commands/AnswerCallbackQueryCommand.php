@@ -17,18 +17,19 @@ class AnswerCallbackQueryCommand extends MessageTextCommand
 
     public function send(BotApi $botApi)
     {
-		$answer=false;
-		
-		try{
-			$answer = $botApi->answerCallbackQuery(
-				$this->callbackQueryId,
-				$this->getOptionalProperty('text', null),
-				$this->getOptionalProperty('showAlert', false));		
-		}catch(HttpException $e){
-			if (YII_ENV_DEV) {
-				throw $e;
-			}
-		}
-		return $answer;
+        $answer=false;
+
+        try {
+            $answer = $botApi->answerCallbackQuery(
+                $this->callbackQueryId,
+                $this->getOptionalProperty('text', null),
+                $this->getOptionalProperty('showAlert', false)
+            );
+        } catch (HttpException $e) {
+            if (YII_ENV_DEV) {
+                throw $e;
+            }
+        }
+        return $answer;
     }
 }

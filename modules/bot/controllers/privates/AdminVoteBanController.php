@@ -24,9 +24,6 @@ class AdminVoteBanController extends Controller
      */
     public function actionIndex($chatId = null)
     {
-		
-		
-		
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
@@ -49,13 +46,13 @@ class AdminVoteBanController extends Controller
 
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::VOTE_BAN_STATUS_ON);
-		
-		$voteLimitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT); 
-		$voteLimit =  isset($voteLimitSetting) ? $voteLimitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
-		
-		return ResponseBuilder::fromUpdate($this->getUpdate())
-			->editMessageTextOrSendMessage(
-				$this->render('index', compact('chatTitle')),
+
+        $voteLimitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
+        $voteLimit =  isset($voteLimitSetting) ? $voteLimitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('chatTitle')),
                 [
                         [
                             [
@@ -82,11 +79,10 @@ class AdminVoteBanController extends Controller
                                 'text' => '🔙',
                             ],
                         ]
-                   
+
                 ]
-			)
-			->build();
-       
+            )
+            ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -109,11 +105,12 @@ class AdminVoteBanController extends Controller
 
         return $this->actionIndex($chatId);
     }
-	
-	public function actionEnterLimit($chatId = null){
-		$this->getState()->setName(self::createRoute('update-limit', [
+
+    public function actionEnterLimit($chatId = null)
+    {
+        $this->getState()->setName(self::createRoute('update-limit', [
             'chatId' => $chatId,
-		]));
+        ]));
 
         return [
             new EditMessageTextCommand(
@@ -125,7 +122,7 @@ class AdminVoteBanController extends Controller
                     'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
-                                'callback_data' => self::createRoute('index',['chatId' => $chatId]),
+                                'callback_data' => self::createRoute('index', ['chatId' => $chatId]),
                                 'text' => '🔙',
                             ],
                         ],
@@ -133,34 +130,33 @@ class AdminVoteBanController extends Controller
                 ]
             ),
         ];
-	}
-	
-	public function actionUpdateLimit($chatId = null)
+    }
+
+    public function actionUpdateLimit($chatId = null)
     {
-		
         $update = $this->getUpdate();
         $telegramUser = $this->getTelegramUser();
-		$message = $update->getMessage();
-		$value =  (int) $message->getText();
-		
-		
-		$chat = Chat::findOne($chatId);
-		$statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
-		
-		
-		if( !(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ( $value >= ChatSetting::VOTE_BAN_LIMIT_MIN ))){
-			try{
-				(new DeleteMessageCommand($this->getTelegramChat()->chat_id, $message->getMessageId()))->send($this->botApi);
-			}catch(HttpException $e){
-				//do nothing
-			}
-			return false;
-		}
-		#$value = ($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ( $value >= ChatSetting::VOTE_BAN_LIMIT_MIN ) ? $value : (
-		#	isset($statusSetting) ? $statusSetting -> value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT 
-		#);
-		
-		
+        $message = $update->getMessage();
+        $value =  (int) $message->getText();
+
+
+        $chat = Chat::findOne($chatId);
+        $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
+
+
+        if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
+            try {
+                (new DeleteMessageCommand($this->getTelegramChat()->chat_id, $message->getMessageId()))->send($this->botApi);
+            } catch (HttpException $e) {
+                //do nothing
+            }
+            return false;
+        }
+        #$value = ($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ( $value >= ChatSetting::VOTE_BAN_LIMIT_MIN ) ? $value : (
+        #	isset($statusSetting) ? $statusSetting -> value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT
+        #);
+
+
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();
 
@@ -170,19 +166,17 @@ class AdminVoteBanController extends Controller
                 'value' => (string) $value,
             ]);
 
-            $statusSetting->save();						
-        }else{
-			$statusSetting->value= (string) $value;
-			$statusSetting->save();
-		}
+            $statusSetting->save();
+        } else {
+            $statusSetting->value= (string) $value;
+            $statusSetting->save();
+        }
 
-		
+
         $this->getState()->setName(self::createRoute('index', [
             'chatId' => $chatId,
-		]));
-		
-		$this->module->dispatchRoute($update);
-		
+        ]));
+
+        $this->module->dispatchRoute($update);
     }
-		
 }

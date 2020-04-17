@@ -16,20 +16,19 @@ class DeleteMessageCommand extends Command
 
     public function send(BotApi $botApi)
     {
-		$answer=false;
-		
-		try{
-			$answer = $botApi->deleteMessage(
-				$this->chatId,
-				$this->messageId
-			);
-		}catch(HttpException $e){
-			if (YII_ENV_DEV) {
-				throw $e;
-			}
-		}
-		
-		return $answer;
-    }
+        $answer=false;
 
+        try {
+            $answer = $botApi->deleteMessage(
+                $this->chatId,
+                $this->messageId
+            );
+        } catch (HttpException $e) {
+            if (YII_ENV_DEV) {
+                throw $e;
+            }
+        }
+
+        return $answer;
+    }
 }

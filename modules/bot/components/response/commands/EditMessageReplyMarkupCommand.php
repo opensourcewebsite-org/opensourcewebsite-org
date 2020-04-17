@@ -18,20 +18,20 @@ class EditMessageReplyMarkupCommand extends Command
 
     public function send(BotApi $botApi)
     {
-		$answer=false;
-		try{
-			$answer = $botApi->editMessageReplyMarkup(
-				$this->chatId,
-				$this->messageId,
-				$this->getOptionalProperty('replyMarkup', null),
-				$this->getOptionalProperty('inlineMessageId', null)
-			);
-		}catch(HttpException $e){
-			if (YII_ENV_DEV) {
-				throw $e;
-			}
-		}
-		
-		return $answer;
+        $answer=false;
+        try {
+            $answer = $botApi->editMessageReplyMarkup(
+                $this->chatId,
+                $this->messageId,
+                $this->getOptionalProperty('replyMarkup', null),
+                $this->getOptionalProperty('inlineMessageId', null)
+            );
+        } catch (HttpException $e) {
+            if (YII_ENV_DEV) {
+                throw $e;
+            }
+        }
+
+        return $answer;
     }
 }

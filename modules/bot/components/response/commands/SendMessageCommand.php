@@ -14,29 +14,29 @@ class SendMessageCommand extends MessageTextCommand
         $this->chatId = $chatId;
     }
 
-	/**
+    /**
      * On success, the sent \TelegramBot\Api\Types\Message is returned.
      *
-	*/
+    */
     public function send(BotApi $botApi)
     {
-		$answer=false;
-		try{
-			$answer = $botApi->sendMessage(
-				$this->chatId,
-				$this->text,
-				$this->getOptionalProperty('parseMode', null),
-				$this->getOptionalProperty('disablePreview', false),
-				$this->getOptionalProperty('replyToMessageId', null),
-				$this->getOptionalProperty('replyMarkup', null),
-				$this->getOptionalProperty('disableNotification', false)
-			);
-		}catch(HttpException $e){
-			if (YII_ENV_DEV) {
-				throw $e;
-			}
-		}
-		
-		return $answer;
+        $answer=false;
+        try {
+            $answer = $botApi->sendMessage(
+                $this->chatId,
+                $this->text,
+                $this->getOptionalProperty('parseMode', null),
+                $this->getOptionalProperty('disablePreview', false),
+                $this->getOptionalProperty('replyToMessageId', null),
+                $this->getOptionalProperty('replyMarkup', null),
+                $this->getOptionalProperty('disableNotification', false)
+            );
+        } catch (HttpException $e) {
+            if (YII_ENV_DEV) {
+                throw $e;
+            }
+        }
+
+        return $answer;
     }
 }

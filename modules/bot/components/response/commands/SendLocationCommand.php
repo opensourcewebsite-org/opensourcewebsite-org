@@ -17,23 +17,23 @@ class SendLocationCommand extends Command
 
     public function send(BotApi $botApi)
     {
-		$answer=false;
-		try{
-			$answer = $botApi->sendLocation(
-				$this->chatId,
-				$this->latitude,
-				$this->longitude,
-				$this->getOptionalProperty('replyToMessageId', null),
-				$this->getOptionalProperty('replyMarkup', null),
-				$this->getOptionalProperty('disableNotification', false),
-				$this->getOptionalProperty('livePeriod', null)
-			);
-		}catch(HttpException $e){
-			if (YII_ENV_DEV) {
-				throw $e;
-			}
-		}
-		
-		return $answer;
+        $answer=false;
+        try {
+            $answer = $botApi->sendLocation(
+                $this->chatId,
+                $this->latitude,
+                $this->longitude,
+                $this->getOptionalProperty('replyToMessageId', null),
+                $this->getOptionalProperty('replyMarkup', null),
+                $this->getOptionalProperty('disableNotification', false),
+                $this->getOptionalProperty('livePeriod', null)
+            );
+        } catch (HttpException $e) {
+            if (YII_ENV_DEV) {
+                throw $e;
+            }
+        }
+
+        return $answer;
     }
 }
