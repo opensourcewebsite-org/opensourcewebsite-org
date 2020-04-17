@@ -163,7 +163,7 @@ class UserController extends Controller
         $postData = Yii::$app->request->post('User');
         $email = $postData['email'];
 
-        if (!$email == $this->user->email) {
+        if ($email !== $this->user->email) {
             $changeEmailRequest = new ChangeEmailRequest();
             $changeEmailRequest->setAttributes([
                 'email' => $email,
