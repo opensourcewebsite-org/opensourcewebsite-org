@@ -3,6 +3,7 @@ namespace app\modules\bot\components\response\commands;
 
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\HttpException;
 
 class AnswerCallbackQueryCommand extends MessageTextCommand
 {
@@ -16,10 +17,18 @@ class AnswerCallbackQueryCommand extends MessageTextCommand
 
     public function send(BotApi $botApi)
     {
-        return $botApi->answerCallbackQuery(
-            $this->callbackQueryId,
-            $this->getOptionalProperty('text', null),
-            $this->getOptionalProperty('showAlert', false)
-        );
+		$answer=false;
+		
+		try{
+			$answer = $botApi->answerCallbackQuery(
+				$this->callbackQueryId,
+				$this->getOptionalProperty('text', null),
+				$this->getOptionalProperty('showAlert', false));		
+		}catch(HttpException $e){
+			if (YII_ENV_DEV) {
+				throw $e;
+			}
+		}
+		return $answer;
     }
 }
