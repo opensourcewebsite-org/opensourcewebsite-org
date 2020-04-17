@@ -1,0 +1,1 @@
+<?=Yii::t('bot', '🔫 {user} has been kicked — the only way to get this user back is for admins to manualy unban in chat settings.<br/><br/>Voters who chose to kick:<br/>{voters}', ['user'=>$user,'voters'=>$voters]);
