@@ -68,7 +68,7 @@ class AdminVoteBanController extends Controller
                                 'callback_data' => self::createRoute('enter-limit', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => '🏗 ' . Yii::t('bot', 'Limit') . ': ' . $voteLimit,
+                                'text' => Yii::t('bot', 'Limit') . ': ' . $voteLimit,
                             ],
                         ],
                         [
