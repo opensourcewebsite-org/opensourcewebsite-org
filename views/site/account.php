@@ -45,22 +45,22 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Rank</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Rank'); ?></th>
                                     <td class="align-middle"><?= "<b>$ranking[rank]</b> of $ranking[total]"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Voting Power</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Voting Power'); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[percent]%</b> of 100%"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Rating</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Rating'); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[rating]</b> of $overallRating[totalRating]"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Active Rating</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Active Rating'); ?></th>
                                     <td class="align-middle"><?= "<b>$model->activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ')'; ?></td>
                                     <td></td>
                                 </tr>
@@ -89,7 +89,7 @@ $this->title = Yii::t('app', 'Account');
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
                                 <tr>
-                                    <th class="align-middle">Username</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Username'); ?></th>
                                     <td class="align-middle"><b>@</b><span id="username"><?= $model->username; ?></span></td>
                                     <td>
                                         <?= Html::button(
@@ -103,7 +103,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Name</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Name'); ?></th>
                                     <td class="align-middle" id="name"><?= $model->name ?? $model->id; ?></td>
                                     <td>
                                         <?= Html::button(
@@ -117,7 +117,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Birthday</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Birthday'); ?></th>
                                     <td class="align-middle" id="birthday"><?= date('m/d/Y', strtotime
                                         ($model->birthday)); ?></td>
                                     <td>
@@ -132,7 +132,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Gender</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Gender'); ?></th>
                                     <td class="align-middle" id="gender">
                                         <?= $model->gender->name; ?>
                                     </td>
@@ -148,7 +148,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Sexuality</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Sexuality'); ?></th>
                                     <td class="align-middle" id="sexuality">
                                         <?= $model->sexuality->name; ?>
                                     </td>
@@ -164,7 +164,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Timezone</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Timezone'); ?></th>
                                     <td class="align-middle" id="timezone"><?= $model->timezone; ?></td>
                                     <td>
                                         <?= Html::button(
@@ -178,7 +178,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Currency</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
                                         <?= $model->currency->name; ?>
                                     </td>
