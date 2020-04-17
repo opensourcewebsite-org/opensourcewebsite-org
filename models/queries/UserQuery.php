@@ -9,8 +9,8 @@ use yii\db\ActiveQuery;
  * This is the ActiveQuery class for [[\app\models\User]].
  *
  * @see User
- * @method  all() User[]
- * @method  one() User|array|null
+ * @method User[]          all()
+ * @method null|array|User one()
  */
 class UserQuery extends ActiveQuery
 {

@@ -9,6 +9,8 @@ use app\models\SignupForm;
 use app\models\User;
 use Faker\Provider\DateTime;
 use Yii;
+use yii\base\Event;
+use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Exception;
 use yii\helpers\Console;
@@ -57,8 +59,14 @@ class DebtFixture extends ARGenerator
 
         $model = new Debt();
 
-        $model->created_by      = $users['user_id'];
-        $model->updated_by      = $users['user_id'];
+        /** @var BlameableBehavior $blameable */
+        $blameable = $model->behaviors['blameable'];
+        $blameable->defaultValue = static function (Event $event) {
+            /** @var Debt $model */
+            $model = $event->sender->owner;
+            return $model->from_user_id;
+        };
+
         $model->currency_id     = $users['currency_id'];
         $model->valid_from_date = $date ? $date->format('Y-m-d') : null;
         $model->amount          = self::getFaker()->valid(static function ($v) { return (bool)$v; })->randomNumber();
