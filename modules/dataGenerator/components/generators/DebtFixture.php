@@ -17,11 +17,6 @@ use yii\helpers\Console;
 
 class DebtFixture extends ARGenerator
 {
-    private const DATE_BETWEEN = [
-        'min' => '-1 days',
-        'max' => '+30 days',
-    ];
-
     /**
      * @throws ARGeneratorException
      */
@@ -53,10 +48,6 @@ class DebtFixture extends ARGenerator
             return null;
         }
 
-        $dateMin = self::DATE_BETWEEN['min'];
-        $dateMax = self::DATE_BETWEEN['max'];
-        $date    = self::getFaker()->optional()->dateTimeBetween($dateMin, $dateMax);
-
         $model = new Debt();
 
         /** @var BlameableBehavior $blameable */
@@ -68,7 +59,7 @@ class DebtFixture extends ARGenerator
         };
 
         $model->currency_id     = $users['currency_id'];
-        $model->amount          = self::getFaker()->valid(static function ($v) { return (bool)$v; })->randomNumber();
+        $model->amount          = self::getFaker()->valid(static function ($v) { return (bool)$v; })->randomFloat(2);
         $model->status          = self::getFaker()->randomElement(Debt::mapStatus());
         $model->setUsersFromContact($users['user_id'], $users['link_user_id']);
 

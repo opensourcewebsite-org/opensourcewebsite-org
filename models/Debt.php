@@ -4,7 +4,6 @@ namespace app\models;
 
 use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
-use DateTime;
 use Yii;
 use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
@@ -71,7 +70,8 @@ class Debt extends ActiveRecord
             //       Why: in all other places, except page /debt/create, we DON'T need these rules and fields
             //            (e.g. in console app)
             [['user', 'direction'], 'required', 'on' => self::SCENARIO_FORM],
-            [['from_user_id', 'to_user_id', 'currency_id', 'amount', 'status'], 'integer'],
+            [['from_user_id', 'to_user_id', 'currency_id', 'status'], 'integer'],
+            ['amount', 'number', 'min' => 0],
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
         ];
     }
