@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\components\response\commands;
 
+use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\HttpException;
 
@@ -29,9 +30,7 @@ class SendLocationCommand extends Command
                 $this->getOptionalProperty('livePeriod', null)
             );
         } catch (HttpException $e) {
-            if (YII_ENV_DEV) {
-                throw $e;
-            }
+            Yii::warning($e);
         }
 
         return $answer;

@@ -13,7 +13,7 @@ class m200417_062702_create_bot_voteban_vote_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%bot_voteban_vote}}', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey()->unsigned(),
             'provider_voter_id' => $this->integer()->unsigned()->notNull(),
             'provider_candidate_id' => $this->integer()->unsigned()->notNull(),
             'chat_id' => $this->integer()->unsigned()->notNull(),

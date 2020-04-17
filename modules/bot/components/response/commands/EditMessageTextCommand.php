@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\components\response\commands;
 
+use Yii;
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\HttpException;
@@ -33,9 +34,7 @@ class EditMessageTextCommand extends MessageTextCommand
                 $this->getOptionalProperty('inlineMessageId', null)
             );
         } catch (HttpException $e) {
-            if (YII_ENV_DEV) {
-                throw $e;
-            }
+            Yii::warning($e);
         }
 
         return $answer;

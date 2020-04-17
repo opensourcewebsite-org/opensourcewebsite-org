@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\components\response\commands;
 
+use Yii;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\HttpException;
@@ -27,9 +28,7 @@ class EditMessageReplyMarkupCommand extends Command
                 $this->getOptionalProperty('inlineMessageId', null)
             );
         } catch (HttpException $e) {
-            if (YII_ENV_DEV) {
-                throw $e;
-            }
+            Yii::warning($e);
         }
 
         return $answer;

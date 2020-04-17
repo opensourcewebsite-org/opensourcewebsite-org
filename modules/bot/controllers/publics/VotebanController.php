@@ -11,8 +11,8 @@ use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\components\response\ResponseBuilder;
 use yii\helpers\ArrayHelper;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\VotebanVotes;
-use app\modules\bot\models\VotebanVotings;
+use app\modules\bot\models\VotebanVote;
+use app\modules\bot\models\VotebanVoting;
 use TelegramBot\Api\HttpException;
 
 /**
@@ -102,7 +102,7 @@ class VotebanController extends Controller
             return $this->sendMyselfVoteError();
         }
 
-        $currentUserVote=VotebanVotes::find()
+        $currentUserVote=VotebanVote::find()
                         ->where(['provider_voter_id'=>$user->provider_user_id,'chat_id'=>$chat_id,'provider_candidate_id'=>$candidate_id])
                         ->one();
 
@@ -110,8 +110,8 @@ class VotebanController extends Controller
 
         if ($this->getUpdate()->getCallbackQuery() !== null) {
             $votingFormID=$this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId();
-            $voting=VotebanVotings::find()
-                        ->where(['votingform_message_id'=>$votingFormID])
+            $voting=VotebanVoting::find()
+                        ->where(['voting_message_id'=>$votingFormID])
                         ->one();
 
             if ($voting) {
@@ -133,7 +133,7 @@ class VotebanController extends Controller
             }
         } else {
             if (($this->getUpdate()->getMessage()!== null) or (($this->getUpdate()->getCallbackQuery() !== null) && isset($voting) && $voting)) {
-                $currentUserVote=new VotebanVotes();
+                $currentUserVote=new VotebanVote();
                 $currentUserVote->load([
                     $currentUserVote->formName()=>[
                         'provider_voter_id'=>$user->provider_user_id,
@@ -153,12 +153,12 @@ class VotebanController extends Controller
         $limitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
         $votesLimit = isset($limitSetting) ? $limitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
 
-        $kickVotes=VotebanVotes::find()->where(['provider_candidate_id'=>$candidate_id,'chat_id'=>$chat_id,'vote'=>self::VOTING_POWER])->count();
-        $saveVotes=VotebanVotes::find()->where(['provider_candidate_id'=>$candidate_id,'chat_id'=>$chat_id,'vote'=>-self::VOTING_POWER])->count();
+        $kickVotes=VotebanVote::find()->where(['provider_candidate_id'=>$candidate_id,'chat_id'=>$chat_id,'vote'=>self::VOTING_POWER])->count();
+        $saveVotes=VotebanVote::find()->where(['provider_candidate_id'=>$candidate_id,'chat_id'=>$chat_id,'vote'=>-self::VOTING_POWER])->count();
 
-        if ($kickVotes == $votesLimit) {
+        if ($kickVotes >= $votesLimit) {
             return $this->kickUser($candidate_id);
-        } elseif ($saveVotes == $votesLimit) {
+        } elseif ($saveVotes >= $votesLimit) {
             return $this->saveUser($candidate_id);
         } else {
             $command =  array_pop(ResponseBuilder::fromUpdate($this->getUpdate())
@@ -171,13 +171,13 @@ class VotebanController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('user-kick', ['user_id'=>$candidate_id]),
-                                'text' => Yii::t('bot', '🔫 Kick').' ('.$kickVotes.'/'.$votesLimit.')',
+                                'text' => '🔫'.' '.Yii::t('bot', 'Kick').' ('.$kickVotes.'/'.$votesLimit.')',
                             ],
                         ],
                         [
                             [
                                 'callback_data' => self::createRoute('user-save', ['user_id'=>$candidate_id]),
-                                'text' => Yii::t('bot', '👼 Save').' ('.$saveVotes.'/'.$votesLimit.')',
+                                'text' => '👼'.Yii::t('bot', 'Save').' ('.$saveVotes.'/'.$votesLimit.')',
                             ],
                         ]
                     ]
@@ -193,14 +193,14 @@ class VotebanController extends Controller
                 $sender =$votingInitMessage->getFrom();
                 $candidate = $spamMessage->getFrom();
 
-                $voting = new VotebanVotings();
+                $voting = new VotebanVoting();
                 $voting->load([
                         $voting->formName()=>[
                             'provider_candidate_id'=>$candidate_id,
                             'provider_starter_id' => $sender->getId(),
                             'candidate_message_id'=>$spamMessage->getMessageId(),
                             'chat_id'=>$chat_id,
-                            'votingform_message_id'=>$message->getMessageId(),
+                            'voting_message_id'=>$message->getMessageId(),
                         ]
                     ]);
                 $voting->save();
@@ -220,14 +220,14 @@ class VotebanController extends Controller
     private function kickUser($user_id)
     {
         $chat=$this->getTelegramChat();
-        $spamMessages=VotebanVotings::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id])->select('candidate_message_id')->groupBy('candidate_message_id')->asArray()->column();
+        $spamMessages=VotebanVoting::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id])->select('candidate_message_id')->groupBy('candidate_message_id')->asArray()->column();
         $chat_id=$chat->chat_id;
         foreach ($spamMessages as $message_id) {
             $deleteMessageCommand = new DeleteMessageCommand($chat_id, $message_id);
             $deleteMessageCommand->send($this->botApi);
         }
 
-        $votersIds=VotebanVotes::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id,'vote'=>self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
+        $votersIds=VotebanVote::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id,'vote'=>self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
         $votersNames=$this->getProviderUsernamesByIds($votersIds);
         $this->clearUserVoteHistory($user_id);
         $this->botApi->kickChatMember($chat_id, $user_id);
@@ -250,7 +250,7 @@ class VotebanController extends Controller
     private function saveUser($user_id)
     {
         $chat=$this->getTelegramChat();
-        $votersIds=VotebanVotes::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id,'vote'=>-self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
+        $votersIds=VotebanVote::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id,'vote'=>-self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
         $votersNames=$this->getProviderUsernamesByIds($votersIds);
         $this->clearUserVoteHistory($user_id);
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -267,7 +267,7 @@ class VotebanController extends Controller
     private function clearUserVoteHistory($user_id)
     {
         $chat=$this->getTelegramChat();
-        $votingFormsIDs=VotebanVotings::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id])->select('votingform_message_id')->asArray()->column();
+        $votingFormsIDs=VotebanVoting::find()->where(['provider_candidate_id'=>$user_id,'chat_id'=>$chat->id])->select('voting_message_id')->asArray()->column();
 
         foreach ($votingFormsIDs as $votingFormID) {
             $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingFormID);
@@ -275,12 +275,12 @@ class VotebanController extends Controller
         }
 
 
-        VotebanVotes::deleteAll([
+        VotebanVote::deleteAll([
             'chat_id' => $this->getTelegramChat()->id,
             'provider_candidate_id'=>$user_id
         ]);
 
-        VotebanVotings::deleteAll([
+        VotebanVoting::deleteAll([
             'chat_id' => $this->getTelegramChat()->id,
             'provider_candidate_id'=>$user_id
         ]);

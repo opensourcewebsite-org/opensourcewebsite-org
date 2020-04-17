@@ -13,15 +13,15 @@ class m200417_062654_create_bot_voteban_voting_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%bot_voteban_voting}}', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey()->unsigned(),
             'provider_starter_id' => $this->integer()->unsigned()->notNull(),
             'provider_candidate_id' => $this->integer()->unsigned()->notNull(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
-            'votingform_message_id' => $this->integer()->unsigned()->notNull(),
+            'voting_message_id' => $this->integer()->unsigned()->notNull(),
             'candidate_message_id' => $this->integer()->unsigned()->notNull(),
         ]);
 
-        $this->createIndex('idx-starter-candidate-chat-message', '{{%bot_voteban_voting}}', ['provider_candidate_id','chat_id','votingform_message_id','provider_starter_id'], true);
+        $this->createIndex('idx-starter-candidate-chat-message', '{{%bot_voteban_voting}}', ['provider_candidate_id','chat_id','voting_message_id','provider_starter_id'], true);
         $this->addForeignKey(
             'fk-bot_voteban_voting-chat_id',
             '{{%bot_voteban_voting}}',

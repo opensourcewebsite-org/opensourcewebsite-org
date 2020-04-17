@@ -5,7 +5,7 @@ namespace app\modules\bot\models;
 use Yii;
 
 /**
- * This is the model class for table "bot_voteban_votes".
+ * This is the model class for table "bot_voteban_vote".
  *
  * @property int $id
  * @property int $provider_voter_id
@@ -13,14 +13,14 @@ use Yii;
  * @property int $chat_id
  * @property int $vote
  */
-class VotebanVotes extends \yii\db\ActiveRecord
+class VotebanVote extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bot_voteban_votes';
+        return 'bot_voteban_vote';
     }
 
     /**

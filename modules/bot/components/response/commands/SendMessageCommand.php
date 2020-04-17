@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\components\response\commands;
 
+use Yii;
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\HttpException;
@@ -10,7 +11,6 @@ class SendMessageCommand extends MessageTextCommand
     public function __construct(string $chatId, MessageText $messageText, array $optionalParams = [])
     {
         parent::__construct($messageText, $optionalParams);
-
         $this->chatId = $chatId;
     }
 
@@ -32,11 +32,8 @@ class SendMessageCommand extends MessageTextCommand
                 $this->getOptionalProperty('disableNotification', false)
             );
         } catch (HttpException $e) {
-            if (YII_ENV_DEV) {
-                throw $e;
-            }
+            Yii::warning($e);
         }
-
         return $answer;
     }
 }
