@@ -33,6 +33,9 @@ plugins:
       config: .eslintrc
   fixme:
     enabled: true
+    checks:
+      TODO:
+        enabled: false
   git-legal:
     enabled: true
   markdownlint:
@@ -76,6 +79,8 @@ plugins:
       minimum_severity: critical
     checks:
       php:S1192:
+        enabled: false
+      php:S3776:
         enabled: false
   stylelint:
     enabled: true
