@@ -14,7 +14,9 @@ use yii\helpers\Console;
 
 class Reduction extends Component
 {
-    private const LOG_ALL = YII_DEBUG;
+    public $printConsoleLog = false;
+    /** @var callable|null */
+    public $logger;
 
     /**
      * @throws \Throwable
@@ -22,7 +24,7 @@ class Reduction extends Component
     public function run(): void
     {
         while ($firstChainMember = $this->findDebtBalanceFirstMember()) {
-            self::log('------');
+            $this->log('--- Starting search Circled Chain ---');
 
             $circledChain = $this->findCircledChain($firstChainMember->from_user_id, [$firstChainMember]);
 
@@ -64,12 +66,12 @@ class Reduction extends Component
     {
         $chainsWithMiddleMember = [];
         foreach ($chainMembers as $chainMember) {
-            self::log("$level. " . implode(':', $chainMember->primaryKey));
+            $this->log("$level. " . implode(':', $chainMember->primaryKey), [], true);
 
             $middleChainMembers = $this->findBalanceChains($firstFromUID, $chainMember);
 
             if (empty($middleChainMembers)) {
-                self::log('    dead end');
+                $this->log('    dead end fork', [], true);
                 continue; //if $chainMember has no "middle" members - it is dead end chain. It cannot has "last" member
             }
             $chainsWithMiddleMember[] = $middleChainMembers;
@@ -124,7 +126,7 @@ class Reduction extends Component
     private function getCircledChain($middleChainMembers): ?DebtBalance
     {
         foreach ($middleChainMembers as $middle) {
-            self::log('    middle    ' . implode(':', $middle->primaryKey));
+            $this->log('    middle    ' . implode(':', $middle->primaryKey), [], true);
 
             if (!empty($middle->chainMembers)) {
                 return $middle; // if it has at least one "last" chain member - then chain is circled
@@ -193,7 +195,7 @@ class Reduction extends Component
             }
         }
 
-        self::log('    last      ' . implode(':', $lastMemberBest->primaryKey));
+        $this->log('    last      ' . implode(':', $lastMemberBest->primaryKey), [], true);
         return $lastMemberBest;
     }
 
@@ -202,10 +204,11 @@ class Reduction extends Component
      */
     private function reduceCircledChainAmount(array $chainMembers): callable
     {
-        return static function () use ($chainMembers) {
+        return function () use ($chainMembers) {
             $chainMembersRefreshed = DebtBalance::findAllForUpdate($chainMembers);
 
-            if (count($chainMembersRefreshed) != count($chainMembers)) {
+            $count = count($chainMembersRefreshed);
+            if ($count != count($chainMembers)) {
                 return; //some of balances we need, became zero or changed direction. This chain is not circled anymore
             }
 
@@ -236,27 +239,39 @@ class Reduction extends Component
                 $chainLog[] = implode(':', $balance->primaryKey);
             }
 
-            self::log("amount=$minAmount   group=$group     " . implode(' -> ', $chainLog), [Console::BG_GREEN]);
+            $this->log("amount=$minAmount   group=$group     " . implode(' -> ', $chainLog), [Console::BG_GREEN], true);
+
+            $message = "Created chain. Amount=$debt->amount {$debt->currency->code}; Count of Debts=$count;";
+            $message .= ' Count of Users=' . ($count + 1);
+            $this->log($message);
         };
     }
 
     private function cantReduceBalance(DebtBalance $balance): callable
     {
+        $this->log('Found 0 debt chains');
+
         return static function () use ($balance) {
             DebtBalance::unsetProcessedAt($balance);
         };
     }
 
-    private static function log($message, $format = [])
+    private function log($message, $format = [], $consoleOnly = false)
     {
         $message .= PHP_EOL;
 
-        if (empty($format)) {
-            if (self::LOG_ALL) {
-                Console::stdout($message);
-            }
-        } else {
-            Console::stdout(Console::ansiFormat($message, $format));
+        if ($this->logger && !$consoleOnly) {
+            call_user_func($this->logger, $message, $format);
         }
+
+        if (!$this->printConsoleLog) {
+            return;
+        }
+
+        if (!empty($format)) {
+            $message = Console::ansiFormat($message, $format);
+        }
+
+        Console::stdout($message);
     }
 }

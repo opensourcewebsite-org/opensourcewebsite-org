@@ -91,6 +91,10 @@ class DebtController extends Controller implements ICronChained
         $class = Reduction::class;
         $this->output("Running $class ...");
 
-        (new Reduction())->run();
+        $reduction = new Reduction();
+        $reduction->logger = function ($message, $format = []) {
+            $this->output($message, $format);
+        };
+        $reduction->run();
     }
 }
