@@ -11,8 +11,8 @@ use yii\db\ActiveQuery;
  *
  * @see DebtRedistribution
  *
- * @method  all() DebtRedistribution[]
- * @method  one() DebtRedistribution|array|null
+ * @method DebtRedistribution[]          all()
+ * @method null|array|DebtRedistribution one()
  */
 class DebtRedistributionQuery extends ActiveQuery
 {

@@ -11,8 +11,8 @@ use yii\db\ActiveQuery;
  *
  * @see Currency
  *
- * @method  all() Currency[]
- * @method  one() Currency|array|null
+ * @method Currency[]          all()
+ * @method null|array|Currency one()
  */
 class CurrencyQuery extends ActiveQuery
 {
