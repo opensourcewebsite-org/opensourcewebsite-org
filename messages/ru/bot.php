@@ -201,14 +201,13 @@ return [
     'To start a vote, send a reply “/voteban” to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ "/voteban" на сообщение любого участника группы',
     'Administrators cannot be banned' => 'Администраторы не могут быть забанены',
     'allows members to leave likes and dislikes for any member of the group' => 'позволяет участникам оставлять лайки и дизлайки для любого участника группы',
-    'Sexuality' => 'Сексуальность',
-    'Your Sexuality' => 'Ваша сексуальность',
-    'Choose your sexuality' => 'Выберите вашу сексуальность', 
+    'Sexuality' => 'Сексуальная ориентация',
+    'Your Sexuality' => 'Ваша сексуальная ориентация',
+    'Choose your sexuality' => 'Выберите вашу сексуальную ориентацию',
 	'👼 {user} has been saved — no kick for you this time.<br/><br/>Voters who chose to save:<br/>{voters}'=>'👼 {user} спасен — в этот раз его не кикнули.<br/><br/>Проголосовавшие за спасение:<br/>{voters}',
 	'🔫 {user} has been kicked — the only way to get this user back is for admins to manualy unban in chat settings.<br/><br/>Voters who chose to kick:<br/>{voters}'=>'🔫 {user} кикнут — вернуть этого пользователя можно только разбаном в настройках чата.<br/><br/>Проголосовавшие за кик:<br/>{voters}',
 	'{user} would like to kick {candidate}. Do you agree?'=>'{user} хочет кикнуть {candidate} из чата. Согласны?',
 	'Enter minimal number of voters to kick a user'=>'Введите минимальное количество голосов для кика пользователя',
 	'🔫 Kick'=>'🔫 Кикнуть',
 	'👼 Save'=>'👼 Простить'
-	
 ];

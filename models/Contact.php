@@ -26,7 +26,7 @@ class Contact extends ActiveRecord
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
-    
+
     public $userIdOrName;
 
     /**
@@ -45,7 +45,7 @@ class Contact extends ActiveRecord
         return [
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
-            [['user_id', 'link_user_id'], 'integer'],
+            [['user_id', 'link_user_id', 'is_real'], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required',
                 'when' => static function (self $model) {
@@ -57,6 +57,8 @@ class Contact extends ActiveRecord
             ],
             ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => 255],
             ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
+            ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
+            ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
         ];
     }
 
@@ -78,6 +80,10 @@ class Contact extends ActiveRecord
     {
         return [
             'debt_redistribution_priority' => Html::ul([
+                '"1" - the highest.',
+                "Note: it has no affect, if field \"{$this->getAttributeLabel('userIdOrName')}\" is empty",
+            ]),
+            'vote_delegation_priority' => Html::ul([
                 '"1" - the highest.',
                 "Note: it has no affect, if field \"{$this->getAttributeLabel('userIdOrName')}\" is empty",
             ]),
