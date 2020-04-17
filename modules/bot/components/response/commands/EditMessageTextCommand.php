@@ -1,8 +1,10 @@
 <?php
 namespace app\modules\bot\components\response\commands;
 
+use Yii;
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\HttpException;
 
 class EditMessageTextCommand extends MessageTextCommand
 {
@@ -14,16 +16,27 @@ class EditMessageTextCommand extends MessageTextCommand
         $this->messageId = $messageId;
     }
 
+    /**
+     * On success, the sent \TelegramBot\Api\Types\Message is returned.
+     *
+    */
     public function send(BotApi $botApi)
     {
-        return $botApi->editMessageText(
-            $this->chatId,
-            $this->messageId,
-            $this->text,
-            $this->getOptionalProperty('parseMode', null),
-            $this->getOptionalProperty('disablePreview', false),
-            $this->getOptionalProperty('replyMarkup', null),
-            $this->getOptionalProperty('inlineMessageId', null)
-        );
+        $answer=false;
+        try {
+            $answer = $botApi->editMessageText(
+                $this->chatId,
+                $this->messageId,
+                $this->text,
+                $this->getOptionalProperty('parseMode', null),
+                $this->getOptionalProperty('disablePreview', false),
+                $this->getOptionalProperty('replyMarkup', null),
+                $this->getOptionalProperty('inlineMessageId', null)
+            );
+        } catch (HttpException $e) {
+            Yii::warning($e);
+        }
+
+        return $answer;
     }
 }
