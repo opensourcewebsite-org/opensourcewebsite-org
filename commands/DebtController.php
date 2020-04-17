@@ -4,6 +4,7 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\components\debt\BalanceChecker;
+use app\components\debt\Reduction;
 use yii\console\Controller;
 use yii\helpers\Console;
 use yii\helpers\VarDumper;
@@ -11,6 +12,8 @@ use yii\helpers\VarDumper;
 class DebtController extends Controller
 {
     use ControllerLogTrait;
+
+    private const RESOLVE_INTERVAL = 2;
 
     /**
      * {@inheritdoc}
@@ -44,4 +47,17 @@ class DebtController extends Controller
             $this->output($msg, [Console::FG_RED]);
         }
     }
+
+    /**
+     * @throws \Throwable
+     */
+    public function actionResolve()
+    {
+        while (true) {
+            (new Reduction())->run();
+            sleep(self::RESOLVE_INTERVAL);
+            $this->stdout('.');
+        }
+    }
+
 }

@@ -32,4 +32,47 @@ class DebtBalanceQuery extends ActiveQuery
             'to_user_id'   => $users,
         ]);
     }
+
+    /**
+     * @param array|int $id
+     * @param string $operand
+     *
+     * @return DebtBalanceQuery
+     */
+    public function userTo($id, $operand = 'IN'): self
+    {
+        return $this->andWhere([$operand, 'debt_balance.to_user_id', $id]);
+    }
+
+    public function notResolved(): self
+    {
+        return $this->andWhere('debt_balance.processed_at IS NOT NULL');
+    }
+
+    public function amountNotEmpty($alias = 'debt_balance'): self
+    {
+        return DebtBalance::STORE_EMPTY_AMOUNT ? $this->andWhere("{{{$alias}}}.amount <> 0") : $this;
+    }
+
+    /**
+     * @param DebtBalance[] $balances
+     * @param string $operand
+     *
+     * @return DebtBalanceQuery
+     */
+    public function balances($balances, $operand = 'IN'): self
+    {
+        $columns = ['debt_balance.currency_id', 'debt_balance.from_user_id', 'debt_balance.to_user_id'];
+
+        $params = [];
+        foreach ($balances as $balance) {
+            $params[] = [
+                'debt_balance.currency_id'  => $balance->currency_id,
+                'debt_balance.from_user_id' => $balance->from_user_id,
+                'debt_balance.to_user_id'   => $balance->to_user_id,
+            ];
+        }
+
+        return $this->andWhere([$operand, $columns, $params]);
+    }
 }

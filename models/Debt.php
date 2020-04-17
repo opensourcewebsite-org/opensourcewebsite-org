@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\models\queries\CurrencyQuery;
+use app\models\queries\DebtBalanceQuery;
 use DateTime;
 use Yii;
 use yii\base\InvalidCallException;
@@ -24,10 +26,12 @@ use yii\behaviors\TimestampBehavior;
  * @property int $created_by    {@see self::isCreatedByUser()}
  * @property int $updated_at
  * @property int $updated_by
+ * @property float $group       NULL - if created by User. TIMESTAMP - if created by script {@see \app\components\debt\Reduction}
  *
- * @property User $toUser
- * @property User $fromUser
- * @property Currency $currency
+ * @property User        $toUser
+ * @property User        $fromUser
+ * @property Currency    $currency
+ * @property DebtBalance $debtBalance
  */
 class Debt extends ActiveRecord
 {
@@ -121,9 +125,24 @@ class Debt extends ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'to_user_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery|CurrencyQuery
+     */
     public function getCurrency()
     {
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|DebtBalanceQuery
+     */
+    public function getDebtBalance()
+    {
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id'  => 'currency_id',
+            'from_user_id' => 'from_user_id',
+            'to_user_id'   => 'to_user_id',
+        ]);
     }
 
     public function getUserDisplayName($direction)
@@ -192,6 +211,29 @@ class Debt extends ActiveRecord
         return parent::beforeSave($insert);
     }
 
+    /**
+     * @param DebtBalance $balance
+     * @param int         $amount '-' (negative) will decrease Balance amount.
+     *                            '+' (positive) will increase.
+     */
+    public static function factoryChangeBalance(DebtBalance $balance, $amount): ?self
+    {
+        if (!$amount) {
+            return null;
+        }
+
+        $model = new Debt();
+
+        $model->currency_id  = $balance->currency_id;
+        $model->from_user_id = ($amount > 0) ? $balance->from_user_id : $balance->to_user_id;
+        $model->to_user_id   = ($amount > 0) ? $balance->to_user_id : $balance->from_user_id;
+        $model->amount       = abs($amount);
+        $model->populateRelation('debtBalance', $balance);
+
+        return $model;
+    }
+
+
     public static function mapStatus()
     {
         return [self::STATUS_PENDING, self::STATUS_CONFIRM];
@@ -219,7 +261,7 @@ class Debt extends ActiveRecord
     /**
      * Debt::$created_by possible values:
      *  <li>`user.id` - if created by User.
-     *  <li>NULL - if created by script (e.g. todo [#294] {@see DebtDeduction})
+     *  <li>NULL - if created by script (e.g. {@see \app\components\debt\Reduction})
      *
      * @return bool TRUE - by User. FALSE - by script
      */
@@ -246,7 +288,6 @@ class Debt extends ActiveRecord
         }
 
         if ($isStatusChanged && $this->isStatusConfirm()) {
-            //tme [#294] if (cron) {$this->created_by === NULL}
             DebtBalance::onDebtConfirmation($this);
             $this->trigger(self::EVENT_AFTER_CONFIRMATION);
         }
