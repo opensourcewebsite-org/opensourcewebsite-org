@@ -20,8 +20,6 @@ use yii\behaviors\TimestampBehavior;
  * @property int $currency_id
  * @property int $amount
  * @property int $status
- * @property string $valid_from_date
- * @property string $valid_from_time
  * @property int $created_at
  * @property int $created_by    {@see self::isCreatedByUser()}
  * @property int $updated_at
@@ -74,7 +72,7 @@ class Debt extends ActiveRecord
             //            (e.g. in console app)
             [['user', 'direction'], 'required', 'on' => self::SCENARIO_FORM],
             [['from_user_id', 'to_user_id', 'currency_id', 'amount', 'status'], 'integer'],
-            [['valid_from_date', 'valid_from_time', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+            [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
         ];
     }
 
@@ -90,8 +88,6 @@ class Debt extends ActiveRecord
             'currency_id' => 'Currency',
             'amount' => 'Amount',
             'status' => 'Status',
-            'valid_from_date' => 'Valid From Date',
-            'valid_from_time' => 'Valid From Time',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
@@ -201,11 +197,6 @@ class Debt extends ActiveRecord
     {
         if ($this->scenario === self::SCENARIO_FORM) {
             $this->setUsersFromContact(Yii::$app->user->id, $this->user);
-
-            if (!empty($this->valid_from_date)) {
-                $validFromDate = DateTime::createFromFormat('m/d/yy', $this->valid_from_date);
-                $this->valid_from_date = $validFromDate->format('Y-m-d');
-            }
         }
 
         return parent::beforeSave($insert);

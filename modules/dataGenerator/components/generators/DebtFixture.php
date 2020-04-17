@@ -68,14 +68,9 @@ class DebtFixture extends ARGenerator
         };
 
         $model->currency_id     = $users['currency_id'];
-        $model->valid_from_date = $date ? $date->format('Y-m-d') : null;
         $model->amount          = self::getFaker()->valid(static function ($v) { return (bool)$v; })->randomNumber();
         $model->status          = self::getFaker()->randomElement(Debt::mapStatus());
         $model->setUsersFromContact($users['user_id'], $users['link_user_id']);
-
-        if ($model->valid_from_date) {
-            $model->valid_from_time = self::getFaker()->optional()->time('H:i:s', '23:59:59');
-        }
 
         return $model;
     }
