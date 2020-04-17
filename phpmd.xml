@@ -81,9 +81,6 @@
     <!-- @see http://phpmd.org/rules/design.html#couplingbetweenobjects -->
     <rule ref="rulesets/design.xml/CouplingBetweenObjects"/>
 
-    <!-- @see http://phpmd.org/rules/naming.html#longvariable -->
-    <rule ref="rulesets/naming.xml/LongVariable"/>
-
     <!-- @see http://phpmd.org/rules/naming.html#shortmethodname -->
     <rule ref="rulesets/naming.xml/ShortMethodName"/>
 
