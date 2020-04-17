@@ -23,10 +23,10 @@ class ChatSetting extends ActiveRecord
 
     public const VOTE_BAN_STATUS_ON = 'on';
     public const VOTE_BAN_STATUS_OFF = 'off';
-	
-	public const VOTE_BAN_LIMIT_DEFAULT = 5;
-	public const VOTE_BAN_LIMIT_MIN = 2;
-	public const VOTE_BAN_LIMIT_MAX = 100;
+
+    public const VOTE_BAN_LIMIT_DEFAULT = 5;
+    public const VOTE_BAN_LIMIT_MIN = 2;
+    public const VOTE_BAN_LIMIT_MAX = 100;
 
     public const STAR_TOP_STATUS_ON = 'on';
     public const STAR_TOP_STATUS_OFF = 'off';
