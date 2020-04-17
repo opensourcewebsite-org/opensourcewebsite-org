@@ -38,7 +38,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-email" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -96,7 +96,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-username" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -110,7 +110,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-name" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -125,7 +125,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-birthday" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -141,7 +141,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-gender" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -157,7 +157,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-sexuality" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -171,7 +171,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-timezone" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>
@@ -187,7 +187,7 @@ $this->title = Yii::t('app', 'Account');
                                             '<a href="/user/change-currency" class="fas fa-edit"></a>',
                                             [
                                                 'class'       => 'btn btn-light edit-btn',
-                                                'title'       => 'Edit',
+                                                'title'       => Yii::t('app', 'Edit'),
                                                 'style'       => ['float' => 'right'],
                                             ]);
                                         ?>

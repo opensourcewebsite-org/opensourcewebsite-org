@@ -21,6 +21,7 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
+                            <?= Html::label(Yii::t('app', 'Birthday'), 'birthday-value'); ?>
                             <?= DatePicker::widget([
                                 'model'         => $user,
                                 'name'          => 'birthday',
@@ -35,7 +36,11 @@ use kartik\date\DatePicker;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'),
+                        [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')
+                        ]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
                         [
                             'class' => 'btn btn-secondary',

@@ -19,12 +19,17 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $emailForm->field($user, 'email')->input('email', ['value' => Yii::$app->user->identity->email])->label('Email'); ?>
+                            <?= $emailForm->field($user, 'email')->input('email', ['value' =>
+                                Yii::$app->user->identity->email])->label(Yii::t('app', 'Email')); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'),
+                        [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')
+                        ]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
                         [
                             'class' => 'btn btn-secondary',

@@ -22,12 +22,16 @@ use kartik\date\DatePicker;
                     <div class="row">
                         <div class="col">
                             <?= $genderForm->field($user, 'gender_id')->dropDownList($genders, ['value' =>
-                                Yii::$app->user->identity->gender->id])->label('Gender'); ?>
+                                Yii::$app->user->identity->gender->id])->label(Yii::t('app', 'Gender')); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'),
+                        [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')
+                        ]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
                         [
                             'class' => 'btn btn-secondary',

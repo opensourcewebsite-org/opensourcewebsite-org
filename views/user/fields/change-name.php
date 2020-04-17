@@ -19,12 +19,17 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $nameForm->field($user, 'name')->textInput(['value' => Yii::$app->user->identity->name])->label('Name'); ?>
+                            <?= $nameForm->field($user, 'name')->textInput(['value' =>
+                                Yii::$app->user->identity->name])->label(Yii::t('app', 'Name')); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'),
+                        [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')
+                        ]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
                         [
                             'class' => 'btn btn-secondary',

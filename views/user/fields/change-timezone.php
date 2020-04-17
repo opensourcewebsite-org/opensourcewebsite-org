@@ -35,12 +35,16 @@ use kartik\select2\Select2;
                                     'id'     => 'timezone-value',
                                     'prompt' => '',
                                 ],
-                            ])->label('Timezone'); ?>
+                            ])->label(Yii::t('app', 'Timezone')); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'),
+                        [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')
+                        ]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
                         [
                             'class' => 'btn btn-secondary',
