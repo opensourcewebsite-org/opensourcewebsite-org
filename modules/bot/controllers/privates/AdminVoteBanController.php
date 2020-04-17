@@ -135,7 +135,6 @@ class AdminVoteBanController extends Controller
     public function actionUpdateLimit($chatId = null)
     {
         $update = $this->getUpdate();
-        $telegramUser = $this->getTelegramUser();
         $message = $update->getMessage();
         $value =  (int) $message->getText();
 
@@ -159,7 +158,6 @@ class AdminVoteBanController extends Controller
 
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();
-
             $statusSetting->setAttributes([
                 'chat_id' => $chatId,
                 'setting' => ChatSetting::VOTE_BAN_LIMIT,
