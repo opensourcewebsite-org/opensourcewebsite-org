@@ -43,4 +43,7 @@ return [
     'Native' => 'Родной',
     'Debt Redistribution' => 'Перераспределение долгов',
     'Debt Redistribution for user "#{userId}"' => 'Перераспределение долгов для Пользователя "#{userId}"',
+    'Loyalty program' => 'Программа лояльности',
+    'Logout' => 'Выход',
+    'Profile' => 'Профиль',
 ];

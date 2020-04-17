@@ -5,8 +5,8 @@ use kartik\date\DatePicker;
 use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
-$this->title = 'Account';
 
+$this->title = Yii::t('app', 'Account');
 ?>
 
 <div class="account-index">
@@ -77,7 +77,7 @@ $this->title = 'Account';
 <div class="profile-index">
     <div class="row">
         <div class="col-md-12">
-            <h2 style="padding-top: 30px; padding-bottom: 15px">Profile</h2>
+            <h2 style="padding-top: 30px; padding-bottom: 15px"><?= Yii::t('app', 'Profile') ?></h2>
         </div>
     </div>
     <div class="row">
