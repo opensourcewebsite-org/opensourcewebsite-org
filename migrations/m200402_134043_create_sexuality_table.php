@@ -18,9 +18,8 @@ class m200402_134043_create_sexuality_table extends Migration
         ]);
 
         $sexualities = [
-            'Straight',
-            'Gay',
-            'Lesbian',
+            'Heterosexual',
+            'Homosexual',
             'Bisexual',
         ];
 

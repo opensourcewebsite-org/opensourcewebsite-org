@@ -3,7 +3,7 @@
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-$this->title = 'Account';
+$this->title = Yii::t('app', 'Account');
 ?>
 
 <div class="user-profile-form">
