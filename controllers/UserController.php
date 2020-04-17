@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\helpers\ReferrerHelper;
+use app\models\ChangeEmailRequest;
 use app\models\EditProfileForm;
 use app\models\Gender;
 use app\models\Currency;
@@ -159,18 +160,23 @@ class UserController extends Controller
             return $this->render('fields/change-email', ['user' => $this->user]);
         }
 
-        $this->user->load(Yii::$app->request->post());
-        $isEmailChanged = $this->user->isAttributeChanged('email');
-        if($isEmailChanged) {
-            $this->user->is_authenticated = false;
-        }
+        $postData = Yii::$app->request->post('User');
+        $email = $postData['email'];
 
-        if ($this->user->save()) {
-            if($isEmailChanged) {
-                $this->user->sendConfirmationEmail($this->user);
-                Yii::$app->session->setFlash('success', 'Check your email.');
+        if (!$email == $this->user->email) {
+            $changeEmailRequest = new ChangeEmailRequest();
+            $changeEmailRequest->setAttributes([
+                'email' => $email,
+                'user_id' => $this->user->id,
+                'token' => Yii::$app->security->generateRandomString(),
+            ]);
+
+            if ($changeEmailRequest->save()) {
+                if ($changeEmailRequest->sendEmail()) {
+                    Yii::$app->session->setFlash('success', 'Check your new email.');
+                }
+                return $this->redirect('/account');
             }
-            return $this->redirect('/account');
         }
 
         return $this->render('fields/change-email', ['user' => $this->user]);
