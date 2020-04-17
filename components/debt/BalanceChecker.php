@@ -42,11 +42,11 @@ class BalanceChecker extends Component
         $rows = Yii::$app->db->createCommand($sql, [':confirm' => Debt::STATUS_CONFIRM])->queryAll();
 
         foreach ($rows as $row) {
-            $cId = $row['currency_id'];
+            $currencyId = $row['currency_id'];
             $fromUID = $row['from_user_id'];
             $toUID = $row['to_user_id'];
 
-            $data[$cId][$fromUID][$toUID] = [
+            $data[$currencyId][$fromUID][$toUID] = [
                 'debt_sum' => $row['debt_sum'],
                 'balance' => $row['balance'],
             ];
