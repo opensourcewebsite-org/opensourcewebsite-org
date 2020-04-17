@@ -48,7 +48,7 @@ class ContactFixture extends ARGenerator
     {
         $userQty = User::find()->active()->count();
 
-        /** @var [] $usersFrom users, who can has additional Contact */
+        /** @var array $usersFrom users, who can has additional Contact */
         $usersFrom = User::find()
             ->select('user.id, count(contact.id) as n_contact')
             ->joinWith(['contactsFromMe' => static function (ContactQuery $query) {
@@ -73,7 +73,7 @@ class ContactFixture extends ARGenerator
 
         $userIdFrom = self::getFaker()->randomElement($usersFrom);
 
-        /** @var [] $usersTo user, with whom $userIdFrom has no contact yet */
+        /** @var array $usersTo user, with whom $userIdFrom has no contact yet */
         $usersTo = User::find()
             ->select('user.id')
             ->joinWith(['contactsToMe' => static function (ContactQuery $query) use ($userIdFrom) {
