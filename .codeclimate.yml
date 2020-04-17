@@ -77,6 +77,8 @@ plugins:
     checks:
       php:S1192:
         enabled: false
+      php:S3776:
+        enabled: false
   stylelint:
     enabled: true
 exclude_patterns:
