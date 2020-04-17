@@ -33,6 +33,9 @@ plugins:
       config: .eslintrc
   fixme:
     enabled: true
+    checks:
+      TODO:
+        enabled: false
   git-legal:
     enabled: true
   markdownlint:
