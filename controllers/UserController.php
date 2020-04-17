@@ -52,7 +52,7 @@ class UserController extends Controller
 
     public function init()
     {
-        parent::int();
+        parent::init();
         $this->user = Yii::$app->user->identity;
     }
 
