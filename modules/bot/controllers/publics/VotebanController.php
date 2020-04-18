@@ -31,19 +31,25 @@ class VotebanController extends Controller
     public function actionIndex()
     {
         $result = null;
+        $votingInitMessage = $this->getUpdate()->getMessage();
+        $spamMessage = $votingInitMessage->getReplyToMessage();
+        $chat = $this->getTelegramChat();
+        $isVotebanOn = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS)->value;
 
-        if (!$this->isDenyInitVoteban()) {
-            $votingInitMessage = $this->getUpdate()->getMessage();
-            $spamMessage = $votingInitMessage->getReplyToMessage();
-            if (isset($spamMessage)) {
-                $candidate = $spamMessage->getFrom();
-            }
-            if (isset($candidate)) {
-                $result = $this->actionUserKick($candidate->getId());
-            }
+        $ignoreMessage = (!$spamMessage) || ($isVotebanOn != ChatSetting::VOTE_BAN_STATUS_ON);
+        if ($ignoreMessage) {
+            $result = $this->sendIgnoreMessageError();
         }
 
-        return isset($result) ? $result : $this->sendUndefinedError();
+        $voter = $votingInitMessage->getFrom();
+        $candidate = $spamMessage->getFrom();
+        $hasVotebanRights = !isset($result) && !$this->isDenyInitVoteban($voter, $candidate);
+        if ($hasVotebanRights) {
+            $result = $this->actionUserKick($candidate->getId());
+        }
+
+        $result = isset($result) ? $result : $this->sendUndefinedError();
+        return $result;
     }
 
     /**
@@ -69,50 +75,21 @@ class VotebanController extends Controller
     *
     * @return boolean
     */
-    private function isDenyInitVoteban()
+    private function isDenyInitVoteban($voter, $candidate)
     {
         $initVotingError = null;
         $chat = $this->getTelegramChat();
-        $isVotebanOn = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS)->value;
 
-        if ($isVotebanOn != ChatSetting::VOTE_BAN_STATUS_ON) {
-            $initVotingError = $this->sendVotebanIsOffError();
+        $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingInitMessage->getMessageId());
+        $deleteMessageCommand->send($this->botApi);
+
+        if ($user->getId() == $candidate->getId()) {
+            $initVotingError = $this->sendMyselfVoteError();
         }
 
-        $votingInitMessage = $this->getUpdate()->getMessage();
-        $spamMessage = $votingInitMessage->getReplyToMessage();
-
-        if (!isset($initVotingError) && !$spamMessage) {
-            $initVotingError = $this->sendIsNoReplyMessageError();
-        }
-
-        if (!isset($initVotingError) && isset($votingInitMessage)) {
-            $user = $votingInitMessage->getFrom();
-        }
-
-        if (!isset($initVotingError) && isset($spamMessage)) {
-            $candidate = $spamMessage->getFrom();
-        }
-
-        if (!(isset($initVotingError)) && isset($votingInitMessage)) {
-            $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingInitMessage->getMessageId());
-            $deleteMessageCommand->send($this->botApi);
-        }
-
-        if (!isset($initVotingError)) {
-            $userError = true;
-            if ($user && $candidate) {
-                $userError = false;
-                if ($user->getId() == $candidate->getId()) {
-                    $initVotingError = $this->sendMyselfVoteError();
-                }
-                if (!isset($initVotingError) && $this->isCandidateChatAdmin($candidate->getId(), $chat->chat_id)) {
-                    $initVotingError = $this->sendCandidateIsAdminError();
-                }
-            }
-            if ($userError) {
-                $initVotingError = $this->sendUserUndefinedError();
-            }
+        $candidateIsAdmin = !isset($initVotingError) && $this->isCandidateChatAdmin($candidate->getId(), $chat->chat_id);
+        if ($candidateIsAdmin) {
+            $initVotingError = $this->sendCandidateIsAdminError();
         }
 
         return isset($initVotingError) ? true : false;
@@ -193,6 +170,8 @@ class VotebanController extends Controller
     */
     private function createVotingFormCommand($starterName, $candidateId, $kickVotes, $saveVotes)
     {
+        $chat = $this->getTelegramChat();
+        $limitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
         $votesLimit = isset($limitSetting) ? $limitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
         $candidateName = $this->getProviderUsernameById($candidateId);
 
@@ -252,11 +231,12 @@ class VotebanController extends Controller
     **/
     private function getExistingOrCreateVoting()
     {
-        $existingVoting = $this->getExistingVotingFromCallback();
-        if (!$existingVoting) {
-            $existingVoting = $this->createVotingFromMessage();
+        $voting = $this->getExistingVotingFromCallback();
+
+        if (!$voting->id) {
+            $voting = $this->createVotingFromMessage();
         }
-        return $existingVoting;
+        return $voting;
     }
     /**
     *
@@ -354,7 +334,7 @@ class VotebanController extends Controller
     {
         $chat = $this->getTelegramChat();
         $votingMessagesIDs = VotebanVoting::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id])->select('voting_message_id')->asArray()->column();
-        Yii::warning($votingMessagesIDs);
+
         foreach ($votingMessagesIDs as $votingMessageID) {
             $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingMessageID);
             $deleteMessageCommand->send($this->botApi);
@@ -423,15 +403,9 @@ class VotebanController extends Controller
         return [];
     }
 
-    private function sendVotebanIsOffError()
+    private function sendIgnoreMessageError()
     {
-        Yii::warning('Voteban feature is off');
-        return [];
-    }
-
-    private function sendIsNoReplyMessageError()
-    {
-        Yii::warning('Voteban is not reply mesasge');
+        Yii::warning('Ignore message');
         return [];
     }
 
