@@ -104,33 +104,18 @@ class VotebanController extends Controller
     private function voteUser($candidateId, $vote)
     {
         $votingResult = null;
-        $chatId = $this->getTelegramChat()->id;
 
+        $chatId = $this->getTelegramChat()->id;
         $user = $this->getTelegramUser();
         $voterId = $user->provider_user_id;
+
         if ($voterId == $candidateId) {
             $votingResult = $this->sendMyselfVoteError();
         }
 
         if (!isset($votingResult)) {
             $voting = $this->getExistingOrCreateVoting();
-        }
-
-        if (!isset($votingResult) && !isset($voting)) {
-            $votingResult = $this->sendUndefinedError();
-        }
-
-        if (!isset($votingResult)) {
             $currentUserVote = $this->getExistingOrCreateVote($voterId, $chatId, $candidateId);
-            if ($currentUserVote->vote == $vote) {
-                $votingResult = $this->alreadyVotedError();
-            }
-        }
-
-        if (!isset($votingResult)) {
-            $currentUserVote->vote = $vote;
-            $currentUserVote->save();
-
             $currentUserVote->vote = $vote;
             $currentUserVote->save();
 
@@ -140,25 +125,24 @@ class VotebanController extends Controller
 
             $kickVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => self::VOTING_POWER])->count();
             $saveVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => -self::VOTING_POWER])->count();
+        }
 
-            if ($kickVotes >= $votesLimit) {
-                $votingResult = $this->kickUser($candidateId);
+        if (!$voting->id) {
+            $starter = $this->getProviderUsernameById($voting->provider_starter_id);
+            $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
+            $message = $command->send($this->botApi);
+            if ($message) {
+                $voting->voting_message_id = $message->getMessageId();
+                $voting->save();
             }
+            $votingResult = [];
+        }
 
-            if (!isset($votingResult) && ($saveVotes >= $votesLimit)) {
-                $votingResult = $this->saveUser($candidateId);
-            }
-
-            if (!isset($votingResult)) {
-                $starter = $this->getProviderUsernameById($voting->provider_starter_id);
-                $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
-                $message = $command->send($this->botApi);
-                if ($message) {
-                    $voting->voting_message_id = $message->getMessageId();
-                    $voting->save();
-                }
-                $votingResult = [];
-            }
+        if ($kickVotes >= $votesLimit) {
+            $votingResult = $this->kickUser($candidateId);
+        }
+        if ($saveVotes >= $votesLimit) {
+            $votingResult = $this->saveUser($candidateId);
         }
 
         $votingResult = isset($votingResult) ? $votingResult : [];
