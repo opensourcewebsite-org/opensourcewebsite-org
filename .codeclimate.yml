@@ -59,7 +59,7 @@ plugins:
     config:
       file_extensions: "php"
       encoding: utf-8
-      standard: "PSR12,Yii2,phpcs.xml"
+      standard: "PSR1,PSR2,Yii2,phpcs.xml" # add PSR12 when codeclimate installs it
     checks:
       Yii2 Properties PrivatePropertiesUnderscore NoUnderscore:
         enabled: false
