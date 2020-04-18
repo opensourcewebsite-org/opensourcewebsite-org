@@ -53,18 +53,14 @@ class VotebanController extends Controller
             $candidate = $spamMessage->getFrom();
         }
 
-        if (!isset($initVotingError)) {
-            if (isset($user) && isset($candidate)) {
-                if ($user->getId() == $candidate->getId()) {
-                    $initVotingError = $this->sendMyselfVoteError();
-                }
-            } else {
-                $initVotingError = $this->sendUserUndefinedError();
+        if (!isset($initVotingError) && (!isset($user) || !isset($candidate))) {
+            $initVotingError = $this->sendUserUndefinedError();
+        } else {
+            if ($user->getId() == $candidate->getId()) {
+                $initVotingError = $this->sendMyselfVoteError();
+            } elseif ($this->isCandidateChatAdmin($candidate->getId(), $chat->chat_id)) {
+                $initVotingError = $this->sendCandidateIsAdminError();
             }
-        }
-
-        if (!isset($initVotingError) && $this->isCandidateChatAdmin($candidate->getId(), $chat->chat_id)) {
-            $initVotingError = $this->sendCandidateIsAdminError();
         }
 
         if (!(isset($initVotingError)) && isset($votingInitMessage)) {
@@ -74,9 +70,9 @@ class VotebanController extends Controller
 
         if (isset($initVotingError)) {
             return $initVotingError;
-        } else {
-            return $this->actionUserKick($candidate->getId());
         }
+
+        return $this->actionUserKick($candidate->getId());
     }
 
     /**
@@ -124,14 +120,14 @@ class VotebanController extends Controller
         if (!isset($votingResult)) {
             $currentUserVote = $this->getExistingOrCreateVote($voterId, $chatId, $candidateId);
             if ($currentUserVote->vote == $vote) {
-                $votingResult = $this->AlreadyVotedError();
-            } else {
-                $currentUserVote->vote = $vote;
-                $currentUserVote->save();
+                $votingResult = $this->alreadyVotedError();
             }
         }
 
         if (!isset($votingResult)) {
+            $currentUserVote->vote = $vote;
+            $currentUserVote->save();
+
             $currentUserVote->vote = $vote;
             $currentUserVote->save();
 
@@ -162,7 +158,7 @@ class VotebanController extends Controller
 
     /**
     *
-    * @return array
+    * @return MessageTextCommand
     */
     private function createVotingFormCommand($starterName, $candidateName, $candidateId, $kickVotes, $saveVotes, $votesLimit)
     {
@@ -259,12 +255,13 @@ class VotebanController extends Controller
     */
     private function getExistingVotingFromCallback()
     {
-        $voting = null;
         if ($this->isCallbackQuery()) {
             $votingMessageID = $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId();
             $voting = VotebanVoting::find()
                         ->where(['voting_message_id' => $votingMessageID])
                         ->one();
+        } else {
+            $voting = new VotebanVoting();
         }
         return $voting;
     }
@@ -408,7 +405,7 @@ class VotebanController extends Controller
         return [];
     }
 
-    private function AlreadyVotedError()
+    private function alreadyVotedError()
     {
         Yii::warning('User already voted');
         return null;
