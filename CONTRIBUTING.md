@@ -45,10 +45,11 @@ When contributing to this repository, please first discuss the change you wish t
 - Make sure you have a [GitHub account](https://github.com/login).
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
-- Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
+- [Fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
     - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
     - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
     - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
+- When working on an issue, create a new branch from `master` named for issue number. Name the branch `issue/<issue-number>`. For example `issue/22` for fixing issue #22.
 - Make your changes.
   - Add tests if your changes contains new, testable behavior.
   - Make the tests pass.
@@ -108,16 +109,19 @@ To help our CI servers you should add `[ci skip]` to your documentation commit m
 
 ### Git Commit Messages
 
+- Include an issue number to the beginning of the first line (if applicable)
+
+Example `#234 YOUR_COMMIT_NAME`
+
 - Use the present tense ("Add feature" not "Added feature")
 - Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+- In case changing only texts or documentations include `[ci skip]` to the end of the first line
 - Limit the first line to 72 characters or less
 - Reference issues and pull requests liberally after the first line
-- When only changing documentation, include `[ci skip]` in the commit title
-- When there is a issue, include issue number in the commit title (for example: #234 YOUR_COMMIT_NAME).
 
 ### Documentation Style Guide
 
-All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/)
+All `*.md` files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/).
 
 ### PHP Style Guide
 
