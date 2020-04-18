@@ -8,6 +8,9 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller as Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\components\response\commands\DeleteMessageCommand;
+
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class AdminVoteBanController
@@ -44,14 +47,13 @@ class AdminVoteBanController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::VOTE_BAN_STATUS_ON);
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        $voteLimitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
+        $voteLimit =  isset($voteLimitSetting) ? $voteLimitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => self::createRoute('update', [
@@ -63,10 +65,10 @@ class AdminVoteBanController extends Controller
                         [
                             // TODO add limit feature
                             [
-                                'callback_data' => self::createRoute('index', [
+                                'callback_data' => self::createRoute('enter-limit', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => '🏗 ' . Yii::t('bot', 'Limit') . ': ' . 5,
+                                'text' => Yii::t('bot', 'Limit') . ': ' . $voteLimit,
                             ],
                         ],
                         [
@@ -77,10 +79,10 @@ class AdminVoteBanController extends Controller
                                 'text' => '🔙',
                             ],
                         ]
-                    ]),
+
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -102,5 +104,70 @@ class AdminVoteBanController extends Controller
         $statusSetting->save();
 
         return $this->actionIndex($chatId);
+    }
+
+    public function actionEnterLimit($chatId = null)
+    {
+        $this->getState()->setName(self::createRoute('update-limit', [
+            'chatId' => $chatId,
+        ]));
+
+        return [
+            new EditMessageTextCommand(
+                $this->getTelegramChat()->chat_id,
+                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->render('update-limit'),
+                [
+                    'parseMode' => $this->textFormat,
+                    'replyMarkup' => new InlineKeyboardMarkup([
+                        [
+                            [
+                                'callback_data' => self::createRoute('index', ['chatId' => $chatId]),
+                                'text' => '🔙',
+                            ],
+                        ],
+                    ]),
+                ]
+            ),
+        ];
+    }
+
+    public function actionUpdateLimit($chatId = null)
+    {
+        $update = $this->getUpdate();
+        $message = $update->getMessage();
+        $value =  (int) $message->getText();
+
+
+        $chat = Chat::findOne($chatId);
+        $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
+
+
+        if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
+            try {
+                (new DeleteMessageCommand($this->getTelegramChat()->chat_id, $message->getMessageId()))->send($this->botApi);
+            } catch (HttpException $e) {
+                //do nothing
+            }
+            return false;
+        }
+
+
+        if (!isset($statusSetting)) {
+            $statusSetting = new ChatSetting();
+            $statusSetting->setAttributes([
+                'chat_id' => $chatId,
+                'setting' => ChatSetting::VOTE_BAN_LIMIT,
+            ]);
+        }
+        $statusSetting->value= (string) $value;
+        $statusSetting->save();
+
+
+        $this->getState()->setName(self::createRoute('index', [
+            'chatId' => $chatId,
+        ]));
+
+        $this->module->dispatchRoute($update);
     }
 }
