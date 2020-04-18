@@ -84,6 +84,7 @@ plugins:
   sonar-php:
     enabled: true
     config:
+      file_extensions: "php"
       minimum_severity: critical
     checks:
       php:S1192:

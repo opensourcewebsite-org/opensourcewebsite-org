@@ -4,8 +4,8 @@
         PHPCS custom rule set for checking code quality
     </description>
 
-    <rule ref="PSR12"/>
-
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
     <rule ref="Yii2"/>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
