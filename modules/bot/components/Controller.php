@@ -143,8 +143,7 @@ class Controller extends \yii\web\Controller
      */
     private function prepareMessageText($text)
     {
-        if ($this->textFormat == 'html')
-        {
+        if ($this->textFormat == 'html') {
             $text = str_replace(["\n", "\r\n"], '', $text);
             $text = preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
         }
