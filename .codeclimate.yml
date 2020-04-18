@@ -58,8 +58,8 @@ plugins:
     enabled: true
     config:
       file_extensions: "php"
-      standard: "PSR1,PSR2,Yii2"
       encoding: utf-8
+      standard: "PSR12,Yii2,phpcs.xml"
     checks:
       Yii2 Properties PrivatePropertiesUnderscore NoUnderscore:
         enabled: false

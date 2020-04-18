@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<ruleset name="Yii2 PHPMD rule set"
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="PHPMD rule set"
          xmlns="http://pmd.sf.net/ruleset/1.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
