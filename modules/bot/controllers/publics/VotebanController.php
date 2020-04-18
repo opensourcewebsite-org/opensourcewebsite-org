@@ -180,8 +180,6 @@ class VotebanController extends Controller
             if (isset($votingInitMessage)) {
                 $spamMessage = $votingInitMessage->getReplyToMessage();
                 $sender = $votingInitMessage->getFrom();
-                $candidate = $spamMessage->getFrom();
-
                 $voting = new VotebanVoting();
                 $voting->load([
                         $voting->formName() => [
@@ -207,8 +205,8 @@ class VotebanController extends Controller
         $chat = $this->getTelegramChat();
         $spamMessages = VotebanVoting::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id])->select('candidate_message_id')->groupBy('candidate_message_id')->asArray()->column();
         $chatId = $chat->chat_id;
-        foreach ($spamMessages as $message_id) {
-            $deleteMessageCommand = new DeleteMessageCommand($chatId, $message_id);
+        foreach ($spamMessages as $messageId) {
+            $deleteMessageCommand = new DeleteMessageCommand($chatId, $messageId);
             $deleteMessageCommand->send($this->botApi);
         }
 
@@ -302,14 +300,12 @@ class VotebanController extends Controller
             })
         );
     }
+
     private function sendAdminError()
     {
         return [];
     }
-    private function sendAlreadyVotedError()
-    {
-        return [];
-    }
+
     private function sendMyselfVoteError()
     {
         return [];
