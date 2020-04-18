@@ -80,10 +80,11 @@ class VotebanController extends Controller
         $initVotingError = null;
         $chat = $this->getTelegramChat();
 
+        $votingInitMessage = $this->getUpdate()->getMessage();
         $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingInitMessage->getMessageId());
         $deleteMessageCommand->send($this->botApi);
 
-        if ($user->getId() == $candidate->getId()) {
+        if ($voter->getId() == $candidate->getId()) {
             $initVotingError = $this->sendMyselfVoteError();
         }
 
