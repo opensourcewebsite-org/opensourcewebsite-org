@@ -35,6 +35,7 @@ class CronController extends Controller
     static protected $map = [
         'WikipediaParser',
         'WikinewsParser',
+        'Debt',
     ];
 
     /**
@@ -67,6 +68,7 @@ class CronController extends Controller
         $this->_cronJobs = CronJobConsole::find()->all();
 
         if (empty($this->_cronJobs)) {
+            //TODO bug: `web` Exception throwed in `console` app
             throw new NotFoundHttpException;
         }
 

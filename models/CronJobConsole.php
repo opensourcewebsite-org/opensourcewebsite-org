@@ -65,6 +65,7 @@ class CronJobConsole extends CronJob
                 ]);
 
                 if ($model->validate() && !$model->save()) {
+                    //TODO bug: `web` Exception throwed in `console` app
                     throw new ServerErrorHttpException(implode(', ', $model->getErrors()));
                 }
             }
