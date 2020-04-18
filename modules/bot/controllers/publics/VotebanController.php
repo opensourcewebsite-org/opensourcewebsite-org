@@ -30,6 +30,47 @@ class VotebanController extends Controller
 
     public function actionIndex()
     {
+        $result = null;
+
+        if (!$this->isDenyInitVoteban()) {
+            $votingInitMessage = $this->getUpdate()->getMessage();
+            $spamMessage = $votingInitMessage->getReplyToMessage();
+            if (isset($spamMessage)) {
+                $candidate = $spamMessage->getFrom();
+            }
+            if (isset($candidate)) {
+                $result = $this->actionUserKick($candidate->getId());
+            }
+        }
+
+        return isset($result) ? $result : $this->sendUndefinedError();
+    }
+
+    /**
+    *
+    * @return array
+    */
+
+    public function actionUserKick($userId)
+    {
+        return $this->voteUser($userId, self::VOTING_POWER);
+    }
+
+    /**
+     * @return array
+     */
+
+    public function actionUserSave($userId)
+    {
+        return $this->voteUser($userId, -self::VOTING_POWER);
+    }
+
+    /**
+    *
+    * @return boolean
+    */
+    private function isDenyInitVoteban()
+    {
         $initVotingError = null;
         $chat = $this->getTelegramChat();
         $isVotebanOn = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS)->value;
@@ -74,39 +115,9 @@ class VotebanController extends Controller
             }
         }
 
-        $result = [];
-        if (isset($initVotingError)) {
-            $result = $initVotingError;
-        }
-
-        if (!isset($initVotingError) && isset($candidate)) {
-            $result = $this->actionUserKick($candidate->getId());
-        }
-
-        if (!$result) {
-            $result = $this->sendUndefinedError();
-        }
-
-        return $result;
+        return isset($initVotingError) ? true : false;
     }
 
-    /**
-     * @return array
-     */
-
-    public function actionUserKick($userId)
-    {
-        return $this->voteUser($userId, self::VOTING_POWER);
-    }
-
-    /**
-     * @return array
-     */
-
-    public function actionUserSave($userId)
-    {
-        return $this->voteUser($userId, -self::VOTING_POWER);
-    }
 
     /**
      * @return array
@@ -160,7 +171,7 @@ class VotebanController extends Controller
                 $votingResult = $this->saveUser($candidateId);
             }
 
-            if (!isset($votingResult) && ($saveVotes >= $votesLimit)) {
+            if (!isset($votingResult)) {
                 $starter = $this->getProviderUsernameById($voting->provider_starter_id);
                 $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
                 $message = $command->send($this->botApi);
@@ -399,6 +410,7 @@ class VotebanController extends Controller
     {
         return $this->getUpdate()->getCallbackQuery() !== null;
     }
+
     private function sendCandidateIsAdminError()
     {
         Yii::warning('Voteban admin attempt');
