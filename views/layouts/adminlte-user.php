@@ -44,6 +44,10 @@ $this->registerCss('#search-lang{
 }');
 =======
     border-bottom: 1px solid #eee;');
+<<<<<<< HEAD
+>>>>>>> Добавлен JS код для упрощение выборки языка на странице аккаунта
+=======
+
 >>>>>>> Добавлен JS код для упрощение выборки языка на странице аккаунта
 $this->registerJs("
     $('#lang-menu').prepend('".Html::tag("li", Html::input("text", null, null,["id" => "search-lang","placeholder" => "Search.."]))."');
