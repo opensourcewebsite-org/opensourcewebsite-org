@@ -7,7 +7,7 @@
          xsi:noNamespaceSchemaLocation="
                      http://pmd.sf.net/ruleset_xml_schema.xsd">
     <description>
-        Yii2 PHPMD custom rule set for checking code quality
+        PHPMD custom rule set for checking code quality
     </description>
 
     <!-- @see https://phpmd.org/rules/cleancode.html#booleanargumentflag -->
@@ -15,9 +15,6 @@
 
     <!-- @see https://phpmd.org/rules/cleancode.html#elseexpression -->
     <rule ref="rulesets/cleancode.xml/ElseExpression"/>
-
-    <!-- @see http://phpmd.org/rules/codesize.html#cyclomaticcomplexity -->
-    <rule ref="rulesets/codesize.xml/CyclomaticComplexity"/>
 
     <!-- @see http://phpmd.org/rules/codesize.html#excessivemethodlength -->
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength"/>

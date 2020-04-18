@@ -71,7 +71,13 @@ plugins:
       file_extensions: "php"
       rulesets: "unusedcode,codesize,naming,phpmd.xml"
     checks:
+      CyclomaticComplexity:
+        enabled: false
+      Design/LongMethod:
+        enabled: false
       Design/LongParameterList:
+        enabled: false
+      Design/NpathComplexity:
         enabled: false
       Naming/ShortVariable:
         enabled: false
