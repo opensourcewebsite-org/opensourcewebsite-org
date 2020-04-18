@@ -116,7 +116,6 @@ class VotebanController extends Controller
     {
         $votingResult = null;
         $chatId = $this->getTelegramChat()->id;
-        $username = $this->getProviderUsernameById($candidateId);
 
         $user = $this->getTelegramUser();
         $voterId = $user->provider_user_id;
@@ -157,14 +156,13 @@ class VotebanController extends Controller
                 $votingResult = $this->kickUser($candidateId);
             }
 
-
             if (!isset($votingResult) && ($saveVotes >= $votesLimit)) {
                 $votingResult = $this->saveUser($candidateId);
             }
 
             if (!isset($votingResult) && ($saveVotes >= $votesLimit)) {
                 $starter = $this->getProviderUsernameById($voting->provider_starter_id);
-                $command = $this->createVotingFormCommand($starter, $username, $candidateId, $kickVotes, $saveVotes, $votesLimit);
+                $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
                 $message = $command->send($this->botApi);
                 if ($message) {
                     $voting->voting_message_id = $message->getMessageId();
@@ -182,8 +180,11 @@ class VotebanController extends Controller
     *
     * @return MessageTextCommand
     */
-    private function createVotingFormCommand($starterName, $candidateName, $candidateId, $kickVotes, $saveVotes, $votesLimit)
+    private function createVotingFormCommand($starterName, $candidateId, $kickVotes, $saveVotes)
     {
+        $votesLimit = isset($limitSetting) ? $limitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
+        $candidateName = $this->getProviderUsernameById($candidateId);
+
         $commands=ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
