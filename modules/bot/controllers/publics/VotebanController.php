@@ -125,26 +125,26 @@ class VotebanController extends Controller
 
             $kickVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => self::VOTING_POWER])->count();
             $saveVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => -self::VOTING_POWER])->count();
-        }
 
-        if (!$voting->id) {
             $starter = $this->getProviderUsernameById($voting->provider_starter_id);
             $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
             $message = $command->send($this->botApi);
-            if ($message) {
-                $voting->voting_message_id = $message->getMessageId();
-                $voting->save();
+
+            if (!$voting->id) {
+                if ($message) {
+                    $voting->voting_message_id = $message->getMessageId();
+                    $voting->save();
+                }
+                $votingResult = [];
             }
-            $votingResult = [];
-        }
 
-        if ($kickVotes >= $votesLimit) {
-            $votingResult = $this->kickUser($candidateId);
+            if ($kickVotes >= $votesLimit) {
+                $votingResult = $this->kickUser($candidateId);
+            }
+            if ($saveVotes >= $votesLimit) {
+                $votingResult = $this->saveUser($candidateId);
+            }
         }
-        if ($saveVotes >= $votesLimit) {
-            $votingResult = $this->saveUser($candidateId);
-        }
-
         $votingResult = isset($votingResult) ? $votingResult : [];
         return $votingResult;
     }
@@ -392,18 +392,6 @@ class VotebanController extends Controller
     {
         Yii::warning('Ignore message');
         return [];
-    }
-
-    private function sendUserUndefinedError()
-    {
-        Yii::error('Undefined user voteban error');
-        return [];
-    }
-
-    private function alreadyVotedError()
-    {
-        Yii::warning('User already voted');
-        return null;
     }
 
     private function sendUndefinedError()
