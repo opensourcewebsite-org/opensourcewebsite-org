@@ -17,9 +17,7 @@ class DeleteMessageCommand extends Command
 
     public function send(BotApi $botApi)
     {
-        $answer=false;
-        Yii::warning(new HttpException('test'), 'test1');
-        Yii::warning('xxx', 'test1');
+        $answer = false;
         try {
             $answer = $botApi->deleteMessage(
                 $this->chatId,

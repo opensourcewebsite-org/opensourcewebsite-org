@@ -1,1 +1,1 @@
-<?=Yii::t('bot', '👼 {user} has been saved — no kick for you this time.<br/><br/>Voters who chose to save:<br/>{voters}', ['user'=>$user,'voters'=>$voters]);
+👼 <?=Yii::t('bot', '{user} has been saved — no kick for you this time', ['user'=>$user])?>.<br/><br/><?=Yii::t('bot', 'Voters who chose to save')?>:<br/><?=$voters?>

@@ -18,7 +18,7 @@ class SendLocationCommand extends Command
 
     public function send(BotApi $botApi)
     {
-        $answer=false;
+        $answer = false;
         try {
             $answer = $botApi->sendLocation(
                 $this->chatId,
@@ -32,7 +32,6 @@ class SendLocationCommand extends Command
         } catch (HttpException $e) {
             Yii::warning($e);
         }
-
         return $answer;
     }
 }

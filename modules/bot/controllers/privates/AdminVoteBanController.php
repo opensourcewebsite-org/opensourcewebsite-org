@@ -151,9 +151,6 @@ class AdminVoteBanController extends Controller
             }
             return false;
         }
-        #$value = ($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ( $value >= ChatSetting::VOTE_BAN_LIMIT_MIN ) ? $value : (
-        #	isset($statusSetting) ? $statusSetting -> value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT
-        #);
 
 
         if (!isset($statusSetting)) {
@@ -161,14 +158,10 @@ class AdminVoteBanController extends Controller
             $statusSetting->setAttributes([
                 'chat_id' => $chatId,
                 'setting' => ChatSetting::VOTE_BAN_LIMIT,
-                'value' => (string) $value,
             ]);
-
-            $statusSetting->save();
-        } else {
-            $statusSetting->value= (string) $value;
-            $statusSetting->save();
         }
+        $statusSetting->value= (string) $value;
+        $statusSetting->save();
 
 
         $this->getState()->setName(self::createRoute('index', [

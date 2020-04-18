@@ -19,7 +19,7 @@ class EditMessageReplyMarkupCommand extends Command
 
     public function send(BotApi $botApi)
     {
-        $answer=false;
+        $answer = false;
         try {
             $answer = $botApi->editMessageReplyMarkup(
                 $this->chatId,

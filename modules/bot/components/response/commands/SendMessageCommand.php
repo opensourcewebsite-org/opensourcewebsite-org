@@ -20,7 +20,7 @@ class SendMessageCommand extends MessageTextCommand
     */
     public function send(BotApi $botApi)
     {
-        $answer=false;
+        $answer = false;
         try {
             $answer = $botApi->sendMessage(
                 $this->chatId,
