@@ -16,7 +16,7 @@ use yii\widgets\ActiveForm;
         <div class="card-body p-0">
             <?php $form = ActiveForm::begin(); ?>
             <div class="col-3 p-3">
-                <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'title')->textInput(['maxlength' => true, 'required' => true]) ?>
             </div>
 
             <div class="p-3">
