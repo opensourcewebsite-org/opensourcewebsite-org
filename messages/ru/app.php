@@ -46,4 +46,32 @@ return [
     'Loyalty program' => 'Программа лояльности',
     'Logout' => 'Выход',
     'Profile' => 'Профиль',
+    'Rank' => 'Ранг',
+    'Voting Power' => 'Сила голоса',
+    'Rating' => 'Рейтинг',
+    'Active Rating' => 'Активный рейтинг',
+    'Username' => 'Имя пользователя',
+    'Name' => 'Имя',
+    'Birthday' => 'День рождения',
+    'Gender' => 'Пол',
+    'Sexuality' => 'Сексуальная ориентация',
+    'Timezone' => 'Часовой пояс',
+    'Currency' => 'Валюта',
+    'Save' => 'Сохранить',
+    'Cancel' => 'Отменить',
+    'Edit email' => 'Изменить email',
+    'Edit birthday' => 'Изменить день рождения',
+    'Edit currency' => 'Изменить валюту',
+    'Edit gender' => 'Изменить пол',
+    'Edit name' => 'Изменить имя',
+    'Edit sexuality' => 'Изменить сексуальную ориентацию',
+    'Edit timezone' => 'Изменить часовой пояс',
+    'Edit username' => 'Изменить имя пользователя',
+    'Edit' => 'Изменить',
+
+
+
+
+
+
 ];
