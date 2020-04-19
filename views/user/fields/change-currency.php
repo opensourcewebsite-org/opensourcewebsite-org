@@ -21,14 +21,16 @@ use yii\widgets\ActiveForm;
                     <div class="row">
                         <div class="col">
                             <?= $currencyForm->field($user, 'currency_id')->widget(
-                                Select2::class, [
+                                Select2::class,
+                                [
                                     'name'    => 'change-currency',
                                     'value'   => Yii::$app->user->identity->currency ?? '',
                                     'data'    => $currencies,
                                     'options' => [
                                         'id'     => 'currency-value',
                                         'prompt' => '',
-                                    ]])->label(Yii::t('app', 'Currency')); ?>
+                                    ]
+                                ])->label(Yii::t('app', 'Currency')); ?>
                         </div>
                     </div>
                 </div>

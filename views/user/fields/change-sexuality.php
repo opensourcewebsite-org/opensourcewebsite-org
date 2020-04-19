@@ -21,14 +21,16 @@ use yii\widgets\ActiveForm;
                     <div class="row">
                         <div class="col">
                             <?= $sexualityForm->field($user, 'sexuality_id')->widget(
-                                Select2::class, [
+                                Select2::class,
+                                [
                                     'name'    => 'change-sexuality',
                                     'value'   => Yii::$app->user->identity->sexuality ?? '',
                                     'data'    => $sexualities,
                                     'options' => [
                                         'id'     => 'sexuality-value',
                                         'prompt' => '',
-                                    ]])->label(Yii::t('app', 'Sexuality')); ?>
+                                    ]
+                                ])->label(Yii::t('app', 'Sexuality')); ?>
                         </div>
                     </div>
                 </div>
