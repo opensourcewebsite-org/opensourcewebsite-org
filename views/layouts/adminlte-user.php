@@ -57,7 +57,6 @@ $this->registerJs("
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
-
 if (!empty($languages)) {
 	foreach ($languages as $lang) {
 		//Check if the language is the active
