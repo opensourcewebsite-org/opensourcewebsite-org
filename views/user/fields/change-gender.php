@@ -15,7 +15,7 @@ use kartik\date\DatePicker;
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit gender') ?>
+                        <?= Yii::t('app', 'Edit gender'); ?>
                     </h3>
                 </div>
                 <div class="card-body">
@@ -27,16 +27,12 @@ use kartik\date\DatePicker;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'),
-                        [
+                    <?= Html::submitButton(Yii::t('app', 'Save'), [
                             'class' => 'btn btn-success',
-                            'title' => Yii::t('app', 'Save')
-                        ]) ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'],
-                        [
+                            'title' => Yii::t('app', 'Save')]); ?>
+                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'], [
                             'class' => 'btn btn-secondary',
-                            'title' => Yii::t('app', 'Cancel')
-                        ]); ?>
+                            'title' => Yii::t('app', 'Cancel')]); ?>
                 </div>
             </div>
         </div>
