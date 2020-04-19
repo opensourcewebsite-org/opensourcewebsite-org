@@ -59,7 +59,7 @@ class DebtRedistributionForm extends DebtRedistribution
 
     public function rules()
     {
-        $msg = Yii::t('app', 'You are trying to save default values. Just close this form.');
+        $message = Yii::t('app', 'You are trying to save default values. Just close this form.');
 
         return array_merge(parent::rules(), [
             ['id', 'integer', 'min' => 1],
@@ -78,7 +78,7 @@ class DebtRedistributionForm extends DebtRedistribution
                 'when'       => [$this, 'getIsNewRecord'],
                 'whenClient' => 'function () {return false;}',
                 'isEmpty'    => function () { return $this->isMaxAmountDeny(); },
-                'message'    => $msg,
+                'message'    => $message,
             ],
         ]);
     }

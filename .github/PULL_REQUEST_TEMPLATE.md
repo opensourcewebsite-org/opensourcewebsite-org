@@ -1,7 +1,11 @@
-### Requirements
+<!--
 
 * Filling out the template is required. Any pull request that does not include enough information to be reviewed in a timely manner may be closed at the maintainers' discretion.
-* All new code requires tests to ensure against regressions
+* Pull requests that do not solve an existing issue are essentially un-prioritized – don't expect these to be addressed quickly.
+* Try not to pollute your pull request with unintended changes–keep them simple and small.
+* All new code requires tests to ensure against regressions (if applicable).
+
+-->
 
 ### Description of the Change
 
@@ -29,11 +33,11 @@ We must be able to understand the design of your change from this description. I
 
 What process did you follow to verify that your change has the desired effects?
 
-- How did you verify that all new functionality works as expected?
-- How did you verify that all changed functionality works as expected?
-- How did you verify that the change has not introduced any regressions?
-
 Describe the actions you performed (e.g., buttons you clicked, text you typed, commands you ran, etc.), and describe the results you observed.
+
+Try to share which browsers your code has been tested in before submitting a pull request.
+
+Include screenshots and animated GIFs in your pull request whenever possible.
 
 -->
 

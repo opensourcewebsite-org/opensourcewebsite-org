@@ -45,11 +45,14 @@ When contributing to this repository, please first discuss the change you wish t
 - Make sure you have a [GitHub account](https://github.com/login).
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
-- Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
+- [Fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
     - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
     - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
     - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
+- When working on an issue, create a new branch from `master` named for issue number. Name the branch `issue/<issue-number>`. For example `issue/22` for fixing issue #22.
 - Make your changes.
+  - Follow the [Style Guides](#style-guides).
+  - [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/).
   - Add tests if your changes contains new, testable behavior.
   - Make the tests pass.
 - Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork) to the repository.
@@ -66,17 +69,6 @@ Unsure where to begin contributing to OpenSourceWebsite? You can start by lookin
 * [Beginner issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+sort%3Acomments-desc) - issues which should only require a few lines of code, and a test or two. Issues are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
 * TODO issues - find comments with keyword `TODO` in the source code, with a description of a issue, and suggestions to resolve it.
 
-### Pull request process
-
-- Fill in [the required template](PULL_REQUEST_TEMPLATE.md).
-- Do not include issue numbers in the pull request title.
-- Ensure the pull request description clearly describes the problem and solution. Include the relevant issue number if applicable.
-- Pull requests that do not solve an existing issue are essentially un-prioritized–don't expect these to be addressed quickly.
-- Try not to pollute your pull request with unintended changes–keep them simple and small.
-- Try to share which browsers your code has been tested in before submitting a pull request.
-- Include screenshots and animated GIFs in your pull request whenever possible.
-- Follow the [Style Guides](#style-guides).
-- [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/).
 
 ### Making Changes
 
@@ -108,16 +100,19 @@ To help our CI servers you should add `[ci skip]` to your documentation commit m
 
 ### Git Commit Messages
 
+- Include an issue number to the beginning of the first line (if applicable)
+
+Example `#234 YOUR_COMMIT_NAME`
+
 - Use the present tense ("Add feature" not "Added feature")
 - Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+- In case changing only texts or documentations include `[ci skip]` to the end of the first line
 - Limit the first line to 72 characters or less
 - Reference issues and pull requests liberally after the first line
-- When only changing documentation, include `[ci skip]` in the commit title
-- When there is a issue, include issue number in the commit title (for example: #234 YOUR_COMMIT_NAME).
 
 ### Documentation Style Guide
 
-All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/)
+All `*.md` files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/).
 
 ### PHP Style Guide
 

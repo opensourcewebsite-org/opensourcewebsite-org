@@ -57,21 +57,6 @@ use janisto\timepicker\TimePicker;
                             ]); ?>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <?= $form->field($model, 'valid_from_date')->widget(DatePicker::classname(), [
-                                'pluginOptions' => [
-                                    'autoclose' => true,
-                                    'format' => 'mm/dd/yyyy',
-                                ],
-                            ])->label('Valid From Date (optional)'); ?>
-                        </div>
-                        <div class="col">
-                            <?= $form->field($model, 'valid_from_time')->widget(TimePicker::classname(), [
-                                'mode' => 'time',
-                            ])->label('Valid From Time (optional)'); ?>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-footer">
                     <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']); ?>
