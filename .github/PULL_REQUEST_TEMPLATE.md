@@ -1,19 +1,9 @@
 <!--
 
 * Filling out the template is required. Any pull request that does not include enough information to be reviewed in a timely manner may be closed at the maintainers' discretion.
-<<<<<<< HEAD
-<<<<<<< HEAD:.github/PULL_REQUEST_TEMPLATE.md
-* All new code requires tests to ensure against regressions (if applicable)
-=======
 * Pull requests that do not solve an existing issue are essentially un-prioritized – don't expect these to be addressed quickly.
 * Try not to pollute your pull request with unintended changes–keep them simple and small.
 * All new code requires tests to ensure against regressions (if applicable).
->>>>>>> be3fce25a153ac10f2baaec7e6f2f54184d37233:PULL_REQUEST_TEMPLATE.md
-=======
-* Pull requests that do not solve an existing issue are essentially un-prioritized – don't expect these to be addressed quickly.
-* Try not to pollute your pull request with unintended changes–keep them simple and small.
-* All new code requires tests to ensure against regressions (if applicable).
->>>>>>> Добавлен JS код для упрощение выборки языка на странице аккаунта
 
 -->
 
