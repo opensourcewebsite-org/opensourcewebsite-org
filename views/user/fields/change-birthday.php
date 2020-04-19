@@ -26,10 +26,10 @@ use kartik\date\DatePicker;
                                 'model'         => $user,
                                 'name'          => 'birthday',
                                 'id'            => 'birthday-value',
-                                'value'         => Yii::$app->formatter->asDate($user->birthday, 'php:m/d/Y'),
+                                'value'         => Yii::$app->formatter->asDate($user->birthday, 'php:Y/m/d'),
                                 'pluginOptions' => [
                                     'autoclose'   => true,
-                                    'format'      => 'mm/dd/yyyy',
+                                    'format'      => 'yyyy/mm/dd',
                                 ],
                             ]); ?>
                         </div>
