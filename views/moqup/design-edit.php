@@ -74,12 +74,10 @@ AceEditorAsset::register($this);
         </div>
     </div>
     <div class="card-footer">
-        <?= Html::submitButton(Yii::t('app', 'Save'),
-                        [
+        <?= Html::submitButton(Yii::t('app', 'Save'), [
                             'class' => 'btn btn-success',
-                            'title' => Yii::t('app', 'Save')
-                        ]) ?>
-        <?= Html::a(Yii::t('app', 'Cancel'), ['moqup/design-list'], ['class' => 'btn btn-secondary']) ?>
+                            'title' => Yii::t('app', 'Save')]); ?>
+        <?= Html::a(Yii::t('app', 'Cancel'), ['moqup/design-list'], ['class' => 'btn btn-secondary']); ?>
 
         <?php if (!$moqup->isNewRecord): ?>
             <?= Html::a(Yii::t('app', 'Delete'), '#', [
