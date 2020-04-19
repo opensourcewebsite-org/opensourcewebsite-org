@@ -3,7 +3,6 @@
 use app\components\helpers\TimeHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\date\DatePicker;
 use kartik\select2\Select2;
 
 ?>
@@ -34,8 +33,7 @@ use kartik\select2\Select2;
                                 'options' => [
                                     'id'     => 'timezone-value',
                                     'prompt' => '',
-                                ],
-                            ])->label(Yii::t('app', 'Timezone')); ?>
+                                ]])->label(Yii::t('app', 'Timezone')); ?>
                         </div>
                     </div>
                 </div>
