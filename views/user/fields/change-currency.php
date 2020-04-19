@@ -1,9 +1,8 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\date\DatePicker;
-
 
 ?>
 <div class="profile-form">
@@ -21,8 +20,17 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $currencyForm->field($user, 'currency_id')->dropDownList($currencies, ['value' =>
-                                Yii::$app->user->identity->currency->id])->label(Yii::t('app', 'Currency')); ?>
+                            <?= $currencyForm->field($user, 'currency_id')->widget(
+                                Select2::class,
+                                [
+                                    'name'    => 'change-currency',
+                                    'value'   => Yii::$app->user->identity->currency ?? '',
+                                    'data'    => $currencies,
+                                    'options' => [
+                                        'id'     => 'currency-value',
+                                        'prompt' => '',
+                                    ]
+                                ])->label(Yii::t('app', 'Currency')); ?>
                         </div>
                     </div>
                 </div>
