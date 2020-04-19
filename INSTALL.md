@@ -72,7 +72,7 @@ New generators for models can be added to the folder `modules\dataGenerator\comp
 ## Run tests
 
 - Run `php tests/bin/yii migrate`
-- Run `php vendor/codeception/base/codecept run`
+- Run `php vendor/codeception/base/codecept run` or `php vendor/codeception/base/codecept run --coverage --coverage-xml --coverage-html`
 
 ## Telegram bots
 

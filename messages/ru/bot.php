@@ -201,7 +201,7 @@ return [
     'To start a vote, send a reply “/voteban” to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ "/voteban" на сообщение любого участника группы',
     'Administrators cannot be banned' => 'Администраторы не могут быть забанены',
     'allows members to leave likes and dislikes for any member of the group' => 'позволяет участникам оставлять лайки и дизлайки для любого участника группы',
-    'Sexuality' => 'Сексуальность',
-    'Your Sexuality' => 'Ваша сексуальность',
-    'Choose your sexuality' => 'Выберите вашу сексуальность',
+    'Sexuality' => 'Сексуальная ориентация',
+    'Your Sexuality' => 'Ваша сексуальная ориентация',
+    'Choose your sexuality' => 'Выберите вашу сексуальную ориентацию',
 ];

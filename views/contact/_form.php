@@ -29,12 +29,24 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number']); ?>
+                            <?= $form->field($model, 'is_real')->checkbox(); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Vote Delegation Priority (optional)'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Debt Redistribution Priority (optional)'); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'), [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/contact'], [
                         'class' => 'btn btn-secondary',
                         'title' => Yii::t('app', 'Cancel'),
@@ -74,7 +86,7 @@ $("#delete-contact").on("click", function(event) {
             }
         });
     }
-    
+
     return false;
 });
 

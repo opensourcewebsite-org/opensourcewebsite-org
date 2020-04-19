@@ -38,7 +38,11 @@ This project exists thanks to all the people who contribute.
 
 Your contributions increase your Rating in our community.
 
-Please read through our [Contributing Guidelines](CONTRIBUTING.md).
+Please read through our [Contributing Guidelines](CONTRIBUTING.md), [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
+
+To request a new feature, submit a bug report, give us feedback, start a design discussion or have an idea to make this code better feel free to [open an issue](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues), or [create a pull request](https://github.com/opensourcewebsite-org/opensourcewebsite-org/pulls).
+
+Please report all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
 
 ## Donate
 
@@ -48,30 +52,18 @@ Your donations increase your Rating in our community.
 
 Become a financial contributor and help us sustain our community. [Read more](DONATE.md).
 
-## Architecture
-
-Please read through our [Architecture Overview](ARCHITECTURE.md).
-
-## Installation
-
-Please read through our [Installation Instructions](INSTALL.md).
-
 ## Continuous Integration
 
 Any commit pushed to a branch `master` gets deployed to [https://opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).
 
-## API Documentation
+## API Documentation (in development)
 
 Please read through our [API Documentation](https://github.com/opensourcewebsite-org/api-opensourcewebsite-org/).
-
-## Security reports
-
-Please report all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
-
-## License
-
-This project is open source and available freely under the [MIT license](LICENSE.md).
 
 ## Questions and Suggestions
 
 Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org) or [email support](mailto:hello@opensourcewebsite.org).
+
+## License
+
+This project is open source and available freely under the [MIT license](LICENSE.md).

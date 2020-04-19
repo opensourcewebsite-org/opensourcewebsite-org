@@ -49,6 +49,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'html',
                             ],
+                            [
+                                'attribute' => 'is_real',
+                                'value' => function ($model) {
+                                    return $model->is_real ? 'Real' : '';
+                                },
+                                'format' => 'html',
+                            ],
+                            'vote_delegation_priority',
                             'debt_redistribution_priority',
                             [
                                 'class' => ActionColumn::class,
