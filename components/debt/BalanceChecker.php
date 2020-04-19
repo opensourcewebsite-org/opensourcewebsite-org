@@ -26,6 +26,23 @@ class BalanceChecker extends Component
     /**
      * @throws \yii\db\Exception
      */
+    public static function checkDebtReductionUniqueGroup(): array
+    {
+        $sql = '
+        SELECT d1.id
+        FROM debt as d1
+            JOIN debt as d2 ON d1.from_user_id IN (d2.from_user_id, d2.to_user_id)
+                           AND d1.to_user_id IN (d2.from_user_id, d2.to_user_id)
+                           AND d1.id <> d2.id 
+                           AND d1.`group` = d2.`group`  
+        WHERE d1.`group` IS NOT NULL';
+
+        return Yii::$app->db->createCommand($sql)->queryColumn();
+    }
+
+    /**
+     * @throws \yii\db\Exception
+     */
     private function findSumOfAllDebt(): array
     {
         $sql = '

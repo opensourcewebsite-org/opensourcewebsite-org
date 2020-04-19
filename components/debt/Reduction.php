@@ -258,8 +258,6 @@ class Reduction extends Component
 
     private function log($message, $format = [], $consoleOnly = false)
     {
-        $message .= PHP_EOL;
-
         if ($this->logger && !$consoleOnly) {
             call_user_func($this->logger, $message, $format);
         }
@@ -268,6 +266,7 @@ class Reduction extends Component
             return;
         }
 
+        $message .= PHP_EOL;
         if (!empty($format)) {
             $message = Console::ansiFormat($message, $format);
         }
