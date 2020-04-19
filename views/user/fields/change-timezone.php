@@ -33,8 +33,7 @@ use kartik\select2\Select2;
                                 'options' => [
                                     'id'     => 'timezone-value',
                                     'prompt' => '',
-                                ],
-                            ])->label(Yii::t('app', 'Timezone')); ?>
+                                ]])->label(Yii::t('app', 'Timezone')); ?>
                         </div>
                     </div>
                 </div>

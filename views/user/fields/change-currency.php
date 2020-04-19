@@ -28,8 +28,7 @@ use yii\widgets\ActiveForm;
                                     'options' => [
                                         'id'     => 'currency-value',
                                         'prompt' => '',
-                                    ]
-                            ])->label(Yii::t('app', 'Currency')); ?>
+                                    ]])->label(Yii::t('app', 'Currency')); ?>
                         </div>
                     </div>
                 </div>

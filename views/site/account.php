@@ -108,9 +108,7 @@ $this->title = Yii::t('app', 'Account');
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Birthday'); ?></th>
-                                    <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' : date('Y/m/d',
-                                            strtotime
-                                        ($model->birthday)); ?></td>
+                                    <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' : date('Y/m/d', strtotime($model->birthday)); ?></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-birthday" class="fas fa-edit"></a>', [
                                                 'class' => 'btn btn-light edit-btn',

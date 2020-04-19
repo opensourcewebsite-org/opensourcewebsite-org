@@ -28,8 +28,7 @@ use yii\widgets\ActiveForm;
                                     'options' => [
                                         'id'     => 'gender-value',
                                         'prompt' => '',
-                                    ]
-                                ])->label(Yii::t('app', 'Gender')); ?>
+                                    ]])->label(Yii::t('app', 'Gender')); ?>
                         </div>
                     </div>
                 </div>
