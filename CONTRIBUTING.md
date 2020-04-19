@@ -4,41 +4,7 @@ First off, thanks for taking the time to contribute!
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## Request a new feature, give us feedback or start a design discussion
-
-- **Ensure the feature was not already reported** by searching on GitHub under [Issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one.
-
-- If you're unable to find an open issue addressing the feature, [open a new one](hhttps://github.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating an enhancement suggestion, please include as many details as possible, including the steps that you imagine you would take if the feature you're requesting existed.
-
-### What is a (Good) feature request
-
-- **Use a clear and descriptive title** for the issue to identify the suggestion.
-- **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
-- **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code](https://guides.github.com/features/mastering-markdown/).
-- **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
-- **Include screenshots and animated GIFs** which help you demonstrate the steps or point out the part of Website which the suggestion is related to. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
-- **Explain why this enhancement would be useful** to most Website users.
-- **List some other websites where this enhancement exists.**
-
-## Submit a bug report
-
-- **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one. If you find a closed issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
-
-- If you're unable to find an open issue addressing the problem, [open a new one](hhttps://github.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating a bug report, please include as many details as possible, the information it asks for helps us resolve issues faster.
-
-### What is a (Good) bug report
-
-- **Use a clear and descriptive title** for the issue to identify the problem.
-- **Describe the exact steps which reproduce the problem** in as many details as possible. When listing steps, **don't just say what you did, but explain how you did it**.
-- **Provide specific examples to demonstrate the steps**. Include links to files or GitHub/GitLab projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code](https://guides.github.com/features/mastering-markdown/).
-- **Describe the behavior you observed after following the steps** and point out what exactly is the problem with that behavior.
-- **Explain which behavior you expected to see instead and why.**
-- **Include screenshots and animated GIFs** which show you following the described steps and clearly demonstrate the problem. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
-- **If the problem wasn't triggered by a specific action**, describe what you were doing before the problem happened and share more information using the guidelines below.
-
-## Contribute to the core code or fix bugs
-
-### Getting Started
+## Getting Started
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the core team before making a change.
 
@@ -57,32 +23,23 @@ When contributing to this repository, please first discuss the change you wish t
   - Make the tests pass.
 - Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork) to the repository.
 
-#### Tips and tricks for using the Git
+### Tips and tricks for using the Git
 
 - [GitHub Cheat Sheet](https://github.com/tiimgreen/github-cheat-sheet)
 - [git-tips](https://github.com/git-tips/tips)
 
-### Your First Code Contribution
-
-Unsure where to begin contributing to OpenSourceWebsite? You can start by looking through these issues:
-
-* [Beginner issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+sort%3Acomments-desc) - issues which should only require a few lines of code, and a test or two. Issues are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
-* TODO issues - find comments with keyword `TODO` in the source code, with a description of a issue, and suggestions to resolve it.
-
-
-### Making Changes
-
-### Writing translatable code
-
-### Making Trivial Changes
-
-### Submitting Changes
-
-### Revert Policy
-
 ### Key branches
 
 - `master` is the latest, deployed version
+
+## Contribute to the core code or bug fixes
+
+### Your First Code Contribution
+
+Start by looking through these issues:
+
+- [Beginner issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+sort%3Acomments-desc) - issues which should only require a few lines of code, and a test or two. Issues are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
+- TODO issues - find comments with keyword `TODO` in the source code, with a description of a issue, and suggestions to resolve it.
 
 ## Contribute/translate to documentations or messages
 
