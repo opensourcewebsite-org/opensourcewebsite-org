@@ -3,7 +3,6 @@
 use app\components\helpers\TimeHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\date\DatePicker;
 use kartik\select2\Select2;
 
 ?>

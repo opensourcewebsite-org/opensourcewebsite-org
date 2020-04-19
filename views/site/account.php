@@ -86,7 +86,9 @@ $this->title = Yii::t('app', 'Account');
                                 <tbody>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Username'); ?></th>
-                                    <td class="align-middle"><b>@</b><span id="username"><?= $model->username; ?></span></td>
+                                    <td class="align-middle"><b>@</b><span id="username"><?= empty($model->username)
+                                                ? $model->id : $model->username;
+                                    ?></span></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-username" class="fas fa-edit"></a>', [
                                                 'class' => 'btn btn-light edit-btn',
@@ -106,7 +108,9 @@ $this->title = Yii::t('app', 'Account');
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Birthday'); ?></th>
-                                    <td class="align-middle" id="birthday"><?= date('m/d/Y', strtotime($model->birthday)); ?></td>
+                                    <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' : date('Y/m/d',
+                                            strtotime
+                                        ($model->birthday)); ?></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-birthday" class="fas fa-edit"></a>', [
                                                 'class' => 'btn btn-light edit-btn',
@@ -117,7 +121,7 @@ $this->title = Yii::t('app', 'Account');
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Gender'); ?></th>
                                     <td class="align-middle" id="gender">
-                                        <?= $model->gender->name; ?>
+                                        <?= $model->gender->name ?? ''; ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-gender" class="fas fa-edit"></a>', [
@@ -129,7 +133,7 @@ $this->title = Yii::t('app', 'Account');
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Sexuality'); ?></th>
                                     <td class="align-middle" id="sexuality">
-                                        <?= $model->sexuality->name; ?>
+                                        <?= $model->sexuality->name ?? ''; ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-sexuality" class="fas fa-edit"></a>', [
@@ -151,7 +155,7 @@ $this->title = Yii::t('app', 'Account');
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
-                                        <?= $model->currency->name; ?>
+                                        <?= $model->currency->name  ?? ''; ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-currency" class="fas fa-edit"></a>', [

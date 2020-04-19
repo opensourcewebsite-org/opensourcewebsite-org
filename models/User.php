@@ -70,7 +70,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [
-                ['email', 'timezone',],
+                ['email'],
                 'required'
             ],
 
@@ -330,7 +330,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function sendConfirmationEmail($user)
     {
-        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'auth_key' => $user->auth_key]);
+        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'authKey' =>
+            $user->auth_key]);
 
         return Yii::$app
             ->mailer
