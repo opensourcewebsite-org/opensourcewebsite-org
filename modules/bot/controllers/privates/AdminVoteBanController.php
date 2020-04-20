@@ -111,8 +111,18 @@ class AdminVoteBanController extends Controller
             'chatId' => $chatId,
         ]));
         return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->sendMessage(
-                $this->render('update-limit')
+            ->editMessageTextOrSendMessage(
+                $this->render('update-limit'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => '🔙',
+                        ],
+                    ]
+                ]
             )
             ->build();
     }
