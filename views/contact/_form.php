@@ -96,7 +96,7 @@ function warnOnDeleteDebtRedistributionSettings() {
     let inputUser = $('#contact-useridorname');
     let newUser = inputUser.val() + '';
     let oldUser = inputUser.attr('data-old-value') + '';
-    if (!oldUser || oldUser === newUser) {
+    if (!oldUser || oldUser === 'undefined' || oldUser === newUser) {
         return true;
     }
 
