@@ -111,25 +111,11 @@ class AdminVoteBanController extends Controller
         $this->getState()->setName(self::createRoute('update-limit', [
             'chatId' => $chatId,
         ]));
-
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                $this->render('update-limit'),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
-                        [
-                            [
-                                'callback_data' => self::createRoute('index', ['chatId' => $chatId]),
-                                'text' => '🔙',
-                            ],
-                        ],
-                    ]),
-                ]
-            ),
-        ];
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->sendMessage(
+                $this->render('update-limit')
+            )
+            ->build();
     }
 
     public function actionUpdateLimit($chatId = null)
@@ -142,16 +128,11 @@ class AdminVoteBanController extends Controller
         $chat = Chat::findOne($chatId);
         $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
 
-
         if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
-            try {
-                (new DeleteMessageCommand($this->getTelegramChat()->chat_id, $message->getMessageId()))->send($this->botApi);
-            } catch (HttpException $e) {
-                //do nothing
-            }
-            return false;
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->deleteMessage($message)
+                ->build();
         }
-
 
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();

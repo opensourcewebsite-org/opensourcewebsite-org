@@ -41,11 +41,13 @@ class VotebanController extends Controller
             $result = $this->sendIgnoreMessageError();
         }
 
-        $voter = $votingInitMessage->getFrom();
-        $candidate = $spamMessage->getFrom();
-        $hasVotebanRights = !isset($result) && !$this->isDenyInitVoteban($voter, $candidate);
-        if ($hasVotebanRights) {
-            $result = $this->actionUserKick($candidate->getId());
+        if (!isset($result)) {
+            $voter = $votingInitMessage->getFrom();
+            $candidate = $spamMessage->getFrom();
+            $hasVotebanRights = !isset($result) && !$this->isDenyInitVoteban($voter, $candidate);
+            if ($hasVotebanRights) {
+                $result = $this->actionUserKick($candidate->getId());
+            }
         }
 
         $result = isset($result) ? $result : $this->sendUndefinedError();
@@ -82,7 +84,7 @@ class VotebanController extends Controller
 
         $votingInitMessage = $this->getUpdate()->getMessage();
         $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingInitMessage->getMessageId());
-        $deleteMessageCommand->send($this->botApi);
+        $deleteMessageCommand->send($this->getBotApi());
 
         if ($voter->getId() == $candidate->getId()) {
             $initVotingError = $this->sendMyselfVoteError();
@@ -128,7 +130,7 @@ class VotebanController extends Controller
 
             $starter = $this->getProviderUsernameById($voting->provider_starter_id);
             $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
-            $message = $command->send($this->botApi);
+            $message = $command->send($this->getBotApi());
 
             if (!$voting->id) {
                 if ($message) {
@@ -277,13 +279,13 @@ class VotebanController extends Controller
         $chatId = $chat->chat_id;
         foreach ($spamMessages as $messageId) {
             $deleteMessageCommand = new DeleteMessageCommand($chatId, $messageId);
-            $deleteMessageCommand->send($this->botApi);
+            $deleteMessageCommand->send($this->getBotApi());
         }
 
         $votersIds = VotebanVote::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id,'vote' => self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
         $votersNames = $this->getProviderUsernamesByIds($votersIds);
         $this->clearUserVoteHistory($userId);
-        $this->botApi->kickChatMember($chatId, $userId);
+        $this->getBotApi()->kickChatMember($chatId, $userId);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendMessage(
@@ -322,7 +324,7 @@ class VotebanController extends Controller
 
         foreach ($votingMessagesIDs as $votingMessageID) {
             $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingMessageID);
-            $deleteMessageCommand->send($this->botApi);
+            $deleteMessageCommand->send($this->getBotApi());
         }
 
         VotebanVote::deleteAll([
@@ -351,7 +353,7 @@ class VotebanController extends Controller
     private function getProviderUsernameById($userId)
     {
         try {
-            return $this->botApi->getChatMember(
+            return $this->getBotApi()->getChatMember(
                 $this->getTelegramChat()->chat_id,
                 $userId
             )->getUser()->getUsername();
@@ -362,7 +364,7 @@ class VotebanController extends Controller
 
     private function isCandidateChatAdmin($userId, $chatId)
     {
-        $administrators = $this->botApi->getChatAdministrators($chatId);
+        $administrators = $this->getBotApi()->getChatAdministrators($chatId);
         return in_array(
             $userId,
             ArrayHelper::getColumn($administrators, function ($el) {
