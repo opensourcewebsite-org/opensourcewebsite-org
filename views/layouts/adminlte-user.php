@@ -25,6 +25,37 @@ $this->registerCss('#lang-menu{
 	max-height: 200px;
 }');
 
+$this->registerCss('#search-lang{
+    display: block;
+    width: 100%;
+    padding: .25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #eee;
+}');
+
+$this->registerJs("
+    $('#lang-menu').prepend('".Html::tag("li", Html::input("text", null, null,["id" => "search-lang","placeholder" => "Search.."]))."');
+    $('#search-lang')
+        .keyup(function() {
+            var input = $(this).val();
+            var filter = input.toLowerCase();
+            var nodes = $('.dropdown-item');
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                    nodes[i].style.display = 'block';
+                } else {
+                    nodes[i].style.display = 'none';
+                }
+            }
+        })
+        .keyup();
+");
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
