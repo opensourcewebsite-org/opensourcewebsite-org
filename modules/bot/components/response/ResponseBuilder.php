@@ -4,6 +4,7 @@ namespace app\modules\bot\components\response;
 
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
+use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
 use app\modules\bot\components\response\commands\SendLocationCommand;
@@ -148,6 +149,23 @@ class ResponseBuilder
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
                     'disablePreview' => $disablePreview,
                 ]
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @param MessageText $messageText
+     * @return $this
+     */
+    public function deleteMessage(MessageText $messageText)
+    {
+        $chat = $messageTex->getChat();
+        $chatId = $chat->getId();
+
+        if (!is_null($chatId)) {
+            $this->commands[] = new DeleteMessageCommand(
+                $messageText
             );
         }
         return $this;
