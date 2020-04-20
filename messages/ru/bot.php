@@ -206,7 +206,7 @@ return [
     'Choose your sexuality' => 'Выберите вашу сексуальную ориентацию',
     '{user} has been saved — no kick for you this time' => '{user} спасен — в этот раз его не кикнули',
     'Voters who chose to save' => 'Проголосовавшие за спасение',
-    '{user} has been kicked — the only way to get this user back is for admins to manualy unban in chat settings'=>'{user} кикнут — вернуть этого пользователя можно только разбаном в настройках чата',
+    '{user} has been kicked — the only way to get this user back is for admins to manualy unban in group settings'=>'{user} кикнут — вернуть этого пользователя можно только разбаном в настройках группы',
     'Voters who chose to kick' =>'Проголосовавшие за кик',
     '{user} would like to kick {candidate}'=>'{user} хочет кикнуть {candidate} из чата',
     'Do you agree' => 'Согласны',
