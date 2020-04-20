@@ -3,7 +3,6 @@
 use app\components\helpers\TimeHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\date\DatePicker;
 use kartik\select2\Select2;
 
 ?>
@@ -24,18 +23,20 @@ use kartik\select2\Select2;
                         <div class="col">
                             <?php
                             $timezones = TimeHelper::timezonesList();
-                            echo $timezoneForm->field($user, 'timezone')->widget(Select2::class, [
-                                'name'    => 'change-timezone',
-                                'value'   => Yii::$app->user->identity->timezone,
-                                'data'    => array_combine(
-                                    array_values($timezones),
-                                    array_values($timezones)
-                                ),
-                                'options' => [
-                                    'id'     => 'timezone-value',
-                                    'prompt' => '',
-                                ],
-                            ])->label(Yii::t('app', 'Timezone')); ?>
+                            echo $timezoneForm->field($user, 'timezone')->widget(
+                                Select2::class,
+                                [
+                                    'name'    => 'change-timezone',
+                                    'value'   => Yii::$app->user->identity->timezone,
+                                    'data'    => array_combine(
+                                        array_values($timezones),
+                                        array_values($timezones)
+                                    ),
+                                    'options' => [
+                                        'id'     => 'timezone-value',
+                                        'prompt' => '',
+                                    ]
+                                ])->label(Yii::t('app', 'Timezone')); ?>
                         </div>
                     </div>
                 </div>

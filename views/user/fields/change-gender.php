@@ -1,9 +1,8 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\date\DatePicker;
-
 
 ?>
 <div class="profile-form">
@@ -21,8 +20,17 @@ use kartik\date\DatePicker;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $genderForm->field($user, 'gender_id')->dropDownList($genders, ['value' =>
-                                Yii::$app->user->identity->gender->id])->label(Yii::t('app', 'Gender')); ?>
+                            <?= $genderForm->field($user, 'gender_id')->widget(
+                                Select2::class,
+                                [
+                                    'name'    => 'change-gender',
+                                    'value'   => Yii::$app->user->identity->gender ?? '',
+                                    'data'    => $genders,
+                                    'options' => [
+                                        'id'     => 'gender-value',
+                                        'prompt' => '',
+                                    ]
+                                ])->label(Yii::t('app', 'Gender')); ?>
                         </div>
                     </div>
                 </div>

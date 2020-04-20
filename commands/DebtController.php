@@ -34,6 +34,7 @@ class DebtController extends Controller implements ICronChained
         $this->log = true;
         $this->outputLogState();
 
+        $this->output("Check #1. Data collision between DB tables `debt` and `debt_balance`:");
         $errors = (new BalanceChecker)->run();
 
         if (null === $errors) {
@@ -43,6 +44,16 @@ class DebtController extends Controller implements ICronChained
         } else {
             $count = count($errors);
             $message = "ERROR: found $count data collisions!\n" . VarDumper::dumpAsString($errors);
+            $this->output($message, [Console::FG_RED]);
+        }
+
+        $this->output("\n\nCheck #2. Duplicated users in same generated group of debts:");
+        $invalidDebts = BalanceChecker::checkDebtReductionUniqueGroup();
+        if (empty($invalidDebts)) {
+            $this->output('SUCCESS: no bugs found.', [Console::FG_GREEN]);
+        } else {
+            $count = count($invalidDebts);
+            $message = "ERROR: found $count invalid debts! Their ID:\n" . VarDumper::dumpAsString($invalidDebts);
             $this->output($message, [Console::FG_RED]);
         }
     }
@@ -96,5 +107,7 @@ class DebtController extends Controller implements ICronChained
             $this->output($message, $format);
         };
         $reduction->run();
+
+        $this->output("Finished $class");
     }
 }
