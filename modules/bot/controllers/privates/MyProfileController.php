@@ -27,7 +27,6 @@ class MyProfileController extends Controller
         $timezones = TimeHelper::timezonesList();
 
         $currency = $user->currency;
-        $interfaceLanguage = $telegramUser->language;
 
         $params = [
             'firstName' => $telegramUser->provider_user_first_name,

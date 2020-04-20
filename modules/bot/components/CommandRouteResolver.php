@@ -155,7 +155,7 @@ class CommandRouteResolver extends Component
             $paramsKeyValues = explode('&', $query);
             foreach ($paramsKeyValues as $keyValue) {
                 list($key, $value) = explode('=', $keyValue);
-                $params[$key] = $value;
+                $params[$key] = urldecode($value);
             }
         }
 
