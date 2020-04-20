@@ -53,10 +53,10 @@ class SignupFormTest extends Unit
 
     public function testIsSignupConfirmationEmailSend()
     {
-        $this->model = new SignupForm([
+        $this->model = new SignupForm(['attributes' => [
             'email' => 'user2@example.com',
             'password' => 'webmaster',
-        ]);
+        ]]);
 
         $user = $this->model->signup();
         expect_that($user->sendConfirmationEmail($user));
