@@ -24,7 +24,6 @@ $this->registerCss('#lang-menu{
 	overflow: auto;
 	max-height: 200px;
 }');
-
 $this->registerCss('#search-lang{
     display: block;
     width: 100%;
@@ -38,7 +37,6 @@ $this->registerCss('#search-lang{
     border: 0;
     border-bottom: 1px solid #eee;
 }');
-
 $this->registerJs("
     $('#lang-menu').prepend('".Html::tag("li", Html::input("text", null, null,["id" => "search-lang","placeholder" => "Search.."]))."');
     $('#search-lang')
