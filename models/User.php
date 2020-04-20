@@ -99,6 +99,7 @@ class User extends ActiveRecord implements IdentityInterface
                 'message' => 'Username can contain only letters, numbers and \'_\' symbols'
             ],
             ['username', 'validateUsernameUnique'],
+            ['username', 'default', 'value' => null],
 
             ['name', 'string'],
             ['name', 'trim'],
