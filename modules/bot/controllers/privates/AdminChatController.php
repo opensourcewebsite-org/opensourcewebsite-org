@@ -62,7 +62,7 @@ class AdminChatController extends Controller
                                         'callback_data' => AdminVoteBanController::createRoute('index', [
                                             'chatId' => $chatId,
                                         ]),
-                                        'text' => '🏗 ' . Yii::t('bot', 'Vote Ban'),
+                                        'text' => Yii::t('bot', 'Vote Ban'),
                                     ],
                                 ],
                                 [
