@@ -38,16 +38,14 @@ class VotebanController extends Controller
 
         $ignoreMessage = (!$spamMessage) || ($isVotebanOn != ChatSetting::VOTE_BAN_STATUS_ON);
         if ($ignoreMessage) {
-            $result = $this->sendIgnoreMessageError();
+            return $this->sendIgnoreMessageError();
         }
 
-        if (!isset($result)) {
-            $voter = $votingInitMessage->getFrom();
-            $candidate = $spamMessage->getFrom();
-            $hasVotebanRights = !isset($result) && !$this->isDenyInitVoteban($voter, $candidate);
-            if ($hasVotebanRights) {
-                $result = $this->actionUserKick($candidate->getId());
-            }
+        $voter = $votingInitMessage->getFrom();
+        $candidate = $spamMessage->getFrom();
+        $hasVotebanRights = !isset($result) && !$this->isDenyInitVoteban($voter, $candidate);
+        if ($hasVotebanRights) {
+            $result = $this->actionUserKick($candidate->getId());
         }
 
         $result = isset($result) ? $result : $this->sendUndefinedError();
