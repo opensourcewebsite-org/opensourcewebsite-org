@@ -158,15 +158,12 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @return $this
      */
-    public function deleteMessage(MessageText $messageText)
+    public function deleteMessage()
     {
-        $chat = $messageText->getChat();
-        $chatId = $chat->getId();
-
-        if (!is_null($chatId)) {
+        if ($message = $this->update->getMessage()) {
             $this->commands[] = new DeleteMessageCommand(
-                $chatId,
-                $messageText->getMessageId()
+                $message->getChat()->getId(),
+                $message->getMessageId()
             );
         }
         return $this;
