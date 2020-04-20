@@ -138,7 +138,7 @@ class SignupFormTest extends Unit
         expect_that($user->addRating(Rating::CONFIRM_EMAIL, 1, false));
         expect($user->getRating())->equals(1);
 
-        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->false();
+        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->true();
         expect($user->getRating())->notEquals(2);
     }
 
