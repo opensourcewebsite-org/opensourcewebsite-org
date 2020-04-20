@@ -53,7 +53,8 @@ class SignupFormTest extends Unit
 
     public function testIsSignupConfirmationEmailSend()
     {
-        $this->model = new SignupForm([
+        $this->model = new SignupForm();
+        $this->model->setAttributes([
             'email' => 'user2@example.com',
             'password' => 'webmaster',
         ]);
@@ -137,7 +138,7 @@ class SignupFormTest extends Unit
         expect_that($user->addRating(Rating::CONFIRM_EMAIL, 1, false));
         expect($user->getRating())->equals(1);
 
-        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->false();
+        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->true();
         expect($user->getRating())->notEquals(2);
     }
 
