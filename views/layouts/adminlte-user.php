@@ -56,6 +56,7 @@ $this->registerJs("
         })
         .keyup();
 ");
+
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
@@ -68,6 +69,7 @@ if (!empty($languages)) {
 	}
 }
 ?>
+
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" style="font-size: 14px">
