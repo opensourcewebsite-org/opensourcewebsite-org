@@ -165,6 +165,7 @@ class ResponseBuilder
 
         if (!is_null($chatId)) {
             $this->commands[] = new DeleteMessageCommand(
+                $chatId,
                 $messageText
             );
         }
