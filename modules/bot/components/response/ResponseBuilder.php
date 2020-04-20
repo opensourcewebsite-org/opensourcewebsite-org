@@ -160,7 +160,7 @@ class ResponseBuilder
      */
     public function deleteMessage(MessageText $messageText)
     {
-        $chat = $messageTex->getChat();
+        $chat = $messageText->getChat();
         $chatId = $chat->getId();
 
         if (!is_null($chatId)) {
