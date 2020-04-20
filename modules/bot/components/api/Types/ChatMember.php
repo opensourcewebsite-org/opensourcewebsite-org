@@ -38,7 +38,7 @@ class ChatMember extends \TelegramBot\Api\Types\ChatMember
     /**
      * @return bool
      */
-    public function getIsMember()
+    public function isMember()
     {
         return $this->isMember;
     }
@@ -56,7 +56,7 @@ class ChatMember extends \TelegramBot\Api\Types\ChatMember
      */
     public function isActualChatMember()
     {
-        if (($this->getStatus() == ChatMemberModel::STATUS_LEFT) || ($this->getStatus() == ChatMemberModel::STATUS_KICKED) || (($this->getStatus() == ChatMemberModel::STATUS_RESTRICTED) && !$this->getIsMember())) {
+        if (($this->getStatus() == ChatMemberModel::STATUS_LEFT) || ($this->getStatus() == ChatMemberModel::STATUS_KICKED) || (($this->getStatus() == ChatMemberModel::STATUS_RESTRICTED) && !$this->isMember())) {
             return false;
         }
         return true;
