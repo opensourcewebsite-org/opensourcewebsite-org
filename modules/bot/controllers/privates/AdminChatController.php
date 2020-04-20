@@ -193,9 +193,9 @@ class AdminChatController extends Controller
                     ]);
 
                     $chatMember->save();
-                } else {
-                    $chat->unlink('users', $curAdmin, true);
+                    continue;
                 }
+                $chat->unlink('users', $curAdmin, true);
             }
         }
 
