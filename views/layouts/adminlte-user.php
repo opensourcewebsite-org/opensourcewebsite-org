@@ -23,7 +23,18 @@ AdminLteUserAsset::register($this);
 $this->registerCss('#lang-menu{
 	overflow: auto;
 	max-height: 200px;
-}');
+}#search-lang{
+    display: block;
+    width: 100%;
+    padding: .25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #eee;');
 
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
@@ -339,6 +350,25 @@ $leftMenuItems = [
 		</footer>
 	</div>
 <?php $this->endBody() ?>
+<script>
+    $(document).ready(function () {
+        $('#lang-menu').prepend('<?= Html::tag( 'div', Html::input( 'text', null, null,['id' => 'search-lang','placeholder' => 'Search..'] ) )?>');
+        $('#search-lang')
+            .keyup(function() {
+                var input = $(this).val();
+                var filter = input.toLowerCase();
+                var nodes = $('.dropdown-item');
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                        nodes[i].style.display = "block";
+                    } else {
+                        nodes[i].style.display = "none";
+                    }
+                }
+            })
+            .keyup();
+    })
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>
