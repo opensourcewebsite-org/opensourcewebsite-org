@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\publics;
 
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
 
@@ -20,13 +21,16 @@ class RefreshController extends Controller
     public function actionIndex()
     {
         $chat = $this->getTelegramChat();
+        $administratorUsers = [];
+        $currentUser = $this->getTelegramUser();
+        $currentUserIsAdmin = false;
+        $currentAdministrators = $chat->getAdministrators()->all();
 
         $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
-
-        $administratorUsers = [];
-
-        $currentAdministrators = $chat->getAdministrators()->all();
         foreach ($telegramAdministrators as $telegramAdministrator) {
+            if ($currentUser->provider_user_id == $telegramAdministrator->getUser()->getId()) {
+                $currentUserIsAdmin = true;
+            }
             $user = User::findOne(['provider_user_id' => $telegramAdministrator->getUser()->getId()]);
 
             if (!isset($user)) {
@@ -48,9 +52,7 @@ class RefreshController extends Controller
                     $currentAdministrator->provider_user_id
                 );
 
-                $isMember = $telegramChatMember->getIsMember() !== null ? $telegramChatMember->getIsMember() : false;
-
-                if ($isMember) {
+                if ($telegramChatMember->isActualChatMember()) {
                     $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $currentAdministrator->id]);
                     $chatMember->setAttributes([
                         'status' => $telegramChatMember->getStatus(),
@@ -63,15 +65,22 @@ class RefreshController extends Controller
             }
         }
 
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->render('index'),
-                [
-                    'parseMode' => $this->textFormat,
-                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
-                ]
-            ),
-        ];
+        $telegramChat = $this->getBotApi()->getChat($chat->chat_id);
+        if (!$telegramChat) {
+            $chat -> unlinkAll('phrases');
+            $chat -> unlinkAll('settings');
+            $chat -> unlinkAll('users');
+            $chat -> delete();
+        }
+
+        if (!$currentUserIsAdmin || !$telegramChat) {
+            return [];
+        }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
+                    $this->render('index')
+                )
+                ->build();
     }
 }
