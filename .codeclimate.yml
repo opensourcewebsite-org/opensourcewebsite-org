@@ -79,6 +79,8 @@ plugins:
         enabled: false
       Design/NpathComplexity:
         enabled: false
+      Design/WeightedMethodCount:
+        enabled: false
       Naming/ShortVariable:
         enabled: false
   sonar-php:
