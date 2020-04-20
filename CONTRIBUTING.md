@@ -15,6 +15,8 @@ When contributing to this repository, please first discuss the change you wish t
     - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
     - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
     - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
+      - `git pull upstream master`
+      - `git push -f origin master`
 - When working on an issue, create a new branch from `master` named for issue number. Name the branch `issue/<issue-number>`. For example `issue/22` for fixing issue #22.
 - Make your changes.
   - Follow the [Style Guides](#style-guides).
