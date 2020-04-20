@@ -129,7 +129,7 @@ class AdminVoteBanController extends Controller
 
         if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->deleteMessage($message)
+                ->deleteMessage()
                 ->build();
         }
 
