@@ -155,7 +155,6 @@ class ResponseBuilder
     }
 
     /**
-     * @param MessageText $messageText
      * @return $this
      */
     public function deleteMessage()
