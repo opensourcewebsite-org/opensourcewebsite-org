@@ -17,7 +17,7 @@ return [
     'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
     'Hello' => 'Здравствуйте',
     'Welcome' => 'Добро пожаловать',
-    'I am a free virtual personal assistant, multilingual and available everywhere where there is internet, I adhere to a privacy policy that guarantees 100% confidentiality for your personal data' => 'Я - бесплатный виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших персональных данных',
+    'I am a virtual personal assistant, multilingual and available everywhere where there is internet, I adhere to a privacy policy that guarantees 100% confidentiality for your personal data' => 'Я - виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших персональных данных',
     'The list of my features and services is constantly expanding, and the quality of service is growing' => 'Список моих возможностей и услуг постоянно расширяется, а качество обслуживания растет',
     'My code is open source and is a part of the online community OpenSourceWebsite' => 'Мой код находится в открытом доступе и является частью онлайн сообщества OpenSourceWebsite',
     'You can help the project by participating in its development or supporting it with donations' => 'Вы можете помочь проекту, участвуя в разработке и поддерживая пожертвованиями',
@@ -206,11 +206,12 @@ return [
     'Choose your sexuality' => 'Выберите вашу сексуальную ориентацию',
     '{user} has been saved — no kick for you this time' => '{user} спасен — в этот раз его не кикнули',
     'Voters who chose to save' => 'Проголосовавшие за спасение',
-    '{user} has been kicked — the only way to get this user back is for admins to manualy unban in chat settings'=>'{user} кикнут — вернуть этого пользователя можно только разбаном в настройках чата',
+    '{user} has been kicked — the only way to get this user back is for admins to manualy unban in group settings'=>'{user} кикнут — вернуть этого пользователя можно только разбаном в настройках группы',
     'Voters who chose to kick' =>'Проголосовавшие за кик',
     '{user} would like to kick {candidate}'=>'{user} хочет кикнуть {candidate} из чата',
     'Do you agree' => 'Согласны',
     'Enter minimal number of voters to kick a user'=>'Введите минимальное количество голосов для кика пользователя',
     'Kick'=>'Кикнуть',
-    'Save'=>'Простить'
+    'Save'=>'Простить',
+    'My functions for telegram groups' => 'Мои функции для телеграм групп',
 ];

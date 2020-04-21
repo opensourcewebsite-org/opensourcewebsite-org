@@ -4,93 +4,44 @@ First off, thanks for taking the time to contribute!
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## Request a new feature, give us feedback or start a design discussion
-
-- **Ensure the feature was not already reported** by searching on GitHub under [Issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one.
-
-- If you're unable to find an open issue addressing the feature, [open a new one](hhttps://github.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating an enhancement suggestion, please include as many details as possible, including the steps that you imagine you would take if the feature you're requesting existed.
-
-### What is a (Good) feature request
-
-- **Use a clear and descriptive title** for the issue to identify the suggestion.
-- **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
-- **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code](https://guides.github.com/features/mastering-markdown/).
-- **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
-- **Include screenshots and animated GIFs** which help you demonstrate the steps or point out the part of Website which the suggestion is related to. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
-- **Explain why this enhancement would be useful** to most Website users.
-- **List some other websites where this enhancement exists.**
-
-## Submit a bug report
-
-- **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues). If it has and the issue is still open, add a comment to the existing issue instead of opening a new one. If you find a closed issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
-
-- If you're unable to find an open issue addressing the problem, [open a new one](hhttps://github.com/opensourcewebsite-org/opensourcewebsite-org/issues/new). When you are creating a bug report, please include as many details as possible, the information it asks for helps us resolve issues faster.
-
-### What is a (Good) bug report
-
-- **Use a clear and descriptive title** for the issue to identify the problem.
-- **Describe the exact steps which reproduce the problem** in as many details as possible. When listing steps, **don't just say what you did, but explain how you did it**.
-- **Provide specific examples to demonstrate the steps**. Include links to files or GitHub/GitLab projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code](https://guides.github.com/features/mastering-markdown/).
-- **Describe the behavior you observed after following the steps** and point out what exactly is the problem with that behavior.
-- **Explain which behavior you expected to see instead and why.**
-- **Include screenshots and animated GIFs** which show you following the described steps and clearly demonstrate the problem. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
-- **If the problem wasn't triggered by a specific action**, describe what you were doing before the problem happened and share more information using the guidelines below.
-
-## Contribute to the core code or fix bugs
-
-### Getting Started
+## Getting Started
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the core team before making a change.
 
 - Make sure you have a [GitHub account](https://github.com/login).
 - Submit a GitHub issue for your issue if one does not already exist.
   - A issue is not necessary for trivial changes.
-- Create a new branch (preferred, if it is available) or [fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
+- [Fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
     - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
     - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
     - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
+      - `git pull upstream master`
+      - `git push -f origin master`
+- When working on an issue, create a new branch from `master` named for issue number. Name the branch `issue/<issue-number>`. For example `issue/22` for fixing issue #22.
 - Make your changes.
+  - Follow the [Style Guides](#style-guides).
+  - [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/).
   - Add tests if your changes contains new, testable behavior.
   - Make the tests pass.
 - Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork) to the repository.
 
-#### Tips and tricks for using the Git
+### Tips and tricks for using the Git
 
 - [GitHub Cheat Sheet](https://github.com/tiimgreen/github-cheat-sheet)
 - [git-tips](https://github.com/git-tips/tips)
 
-### Your First Code Contribution
-
-Unsure where to begin contributing to OpenSourceWebsite? You can start by looking through these issues:
-
-* [Beginner issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+sort%3Acomments-desc) - issues which should only require a few lines of code, and a test or two. Issues are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
-* TODO issues - find comments with keyword `TODO` in the source code, with a description of a issue, and suggestions to resolve it.
-
-### Pull request process
-
-- Fill in [the required template](PULL_REQUEST_TEMPLATE.md).
-- Do not include issue numbers in the pull request title.
-- Ensure the pull request description clearly describes the problem and solution. Include the relevant issue number if applicable.
-- Pull requests that do not solve an existing issue are essentially un-prioritized–don't expect these to be addressed quickly.
-- Try not to pollute your pull request with unintended changes–keep them simple and small.
-- Try to share which browsers your code has been tested in before submitting a pull request.
-- Include screenshots and animated GIFs in your pull request whenever possible.
-- Follow the [Style Guides](#style-guides).
-- [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/).
-
-### Making Changes
-
-### Writing translatable code
-
-### Making Trivial Changes
-
-### Submitting Changes
-
-### Revert Policy
-
 ### Key branches
 
 - `master` is the latest, deployed version
+
+## Contribute to the core code or bug fixes
+
+### Your First Code Contribution
+
+Start by looking through these issues:
+
+- [Beginner issues](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+sort%3Acomments-desc) - issues which should only require a few lines of code, and a test or two. Issues are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
+- TODO issues - find comments with keyword `TODO` in the source code, with a description of a issue, and suggestions to resolve it.
 
 ## Contribute/translate to documentations or messages
 
@@ -108,16 +59,19 @@ To help our CI servers you should add `[ci skip]` to your documentation commit m
 
 ### Git Commit Messages
 
+- Include an issue number to the beginning of the first line (if applicable)
+
+Example `#234 YOUR_COMMIT_NAME`
+
 - Use the present tense ("Add feature" not "Added feature")
 - Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+- In case changing only texts or documentations include `[ci skip]` to the end of the first line
 - Limit the first line to 72 characters or less
 - Reference issues and pull requests liberally after the first line
-- When only changing documentation, include `[ci skip]` in the commit title
-- When there is a issue, include issue number in the commit title (for example: #234 YOUR_COMMIT_NAME).
 
 ### Documentation Style Guide
 
-All \*.md files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/)
+All `*.md` files must adhere to [Markdown Syntax](https://www.markdownguide.org/basic-syntax/).
 
 ### PHP Style Guide
 

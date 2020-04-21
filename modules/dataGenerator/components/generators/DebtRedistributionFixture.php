@@ -59,10 +59,10 @@ class DebtRedistributionFixture extends ARGenerator
 
         if (empty($contact)) {
             $class = self::classNameModel();
-            $msg   = "\n$class: creation skipped. ";
-            $msg   .= "Either no Contact exists, or all Contacts have full set of DebtRedistributions.\n";
-            $msg   .= "It's not error - few iterations later new Contact will be generated.\n";
-            Yii::$app->controller->stdout($msg, Console::BG_GREY);
+            $message = "\n$class: creation skipped. ";
+            $message .= "Either no Contact exists, or all Contacts have full set of DebtRedistributions.\n";
+            $message .= "It's not error - few iterations later new Contact will be generated.\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];
         }
@@ -81,8 +81,8 @@ class DebtRedistributionFixture extends ARGenerator
             ->scalar();
 
         if (!$currencyId) {
-            $msg = 'Expected to find $currencyId. $contact=' . VarDumper::dumpAsString($contact);
-            throw new ARGeneratorException($msg);
+            $message = 'Expected to find $currencyId. $contact=' . VarDumper::dumpAsString($contact);
+            throw new ARGeneratorException($message);
         }
 
         return $contact + ['currency_id' => $currencyId];

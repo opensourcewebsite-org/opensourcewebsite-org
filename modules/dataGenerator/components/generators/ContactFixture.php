@@ -48,8 +48,8 @@ class ContactFixture extends ARGenerator
     {
         $userQty = User::find()->active()->count();
 
-        /** @var int $userIdFrom user, who can has additional Contact */
-        $userIdFrom = User::find()
+        /** @var array $usersFrom users, who can has additional Contact */
+        $usersFrom = User::find()
             ->select('user.id, count(contact.id) as n_contact')
             ->joinWith(['contactsFromMe' => static function (ContactQuery $query) {
                 $query->virtual(false, 'andOnCondition');
@@ -58,33 +58,36 @@ class ContactFixture extends ARGenerator
             ->groupBy('user.id')
             ->having('n_contact < :nUser', [':nUser' => $userQty])
             ->orderBy('n_contact')
-            ->limit(1)
-            ->scalar();
+            ->limit(30)
+            ->column();
 
-        if (!$userIdFrom) {
+        if (empty($usersFrom)) {
             $class = self::classNameModel();
-            $msg = "\n$class: creation skipped. ";
-            $msg .= "Either no active User, or all Users have full set of Contacts.\n";
-            $msg .= "\nIt's not error - few iterations later new User will be generated.\n";
-            Yii::$app->controller->stdout($msg, Console::BG_GREY);
+            $message = "\n$class: creation skipped. ";
+            $message .= "Either no active User, or all Users have full set of Contacts.\n";
+            $message .= "\nIt's not error - few iterations later new User will be generated.\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];
         }
 
-        /** @var int $userIdTo user, with whom $userIdFrom has no contact yet */
-        $userIdTo = User::find()
+        $userIdFrom = self::getFaker()->randomElement($usersFrom);
+
+        /** @var array $usersTo user, with whom $userIdFrom has no contact yet */
+        $usersTo = User::find()
             ->select('user.id')
             ->joinWith(['contactsToMe' => static function (ContactQuery $query) use ($userIdFrom) {
                 $query->userOwner($userIdFrom, 'andOnCondition');
             }])
             ->active()
             ->andWhere('user.id <> :userIdFrom', [':userIdFrom' => $userIdFrom])
-            ->limit(1)
-            ->scalar();
+            ->limit(30)
+            ->column();
 
-        if (!$userIdTo) {
+        if (empty($usersTo)) {
             throw new ARGeneratorException("Expected to find \$userIdTo. \$userIdFrom='$userIdFrom'");
         }
+        $userIdTo = self::getFaker()->randomElement($usersTo);
 
         return [$userIdFrom, $userIdTo];
     }
