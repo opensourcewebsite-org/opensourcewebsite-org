@@ -22,56 +22,56 @@ class RefreshController extends Controller
     public function actionIndex()
     {
         $chat = $this->getTelegramChat();
-        $telegramAdmins = $this->getBotApi()->getChatAdministrators($chat->chat_id);
-        $telegramAdminsIds = ArrayHelper::getColumn($telegramAdmins, function ($telegramAdmin) {
-            return $telegramAdmin->getUser()->getId();
+        $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
+        $telegramAdministratorsIds = ArrayHelper::getColumn($telegramAdministrators, function ($telegramAdministrator) {
+            return $telegramAdministrator->getUser()->getId();
         });
 
         $currentUser = $this->getTelegramUser();
-        $currentUserIsAdmin = false;
-        if (in_array($currentUser->provider_user_id, $telegramAdminsIds)) {
-            $currentUserIsAdmin = true;
+        $currentUserIsAdministrator = false;
+        if (in_array($currentUser->provider_user_id, $telegramAdministratorsIds)) {
+            $currentUserIsAdministrator = true;
         }
 
-        $curAdmins = $chat->getAdministrators()->all();
-        $curAdminsIndexdByIds = ArrayHelper::index($curAdmins, function ($curAdmins) {
-            return $curAdmins->provider_user_id;
+        $curAdministrators = $chat->getAdministrators()->all();
+        $curAdministratorsIndexdByIds = ArrayHelper::index($curAdministrators, function ($curAdministrator) {
+            return $curAdministrator->provider_user_id;
         });
-        $curAdminsIds = array_keys($curAdminsIndexdByIds);
+        $curAdministratorsIds = array_keys($curAdministratorsIndexdByIds);
 
-        $outdatedAdmins = $chat->getAdministrators()
-                            ->andWhere(['not',['provider_user_id'=>$telegramAdminsIds]])
+        $outdatedAdministrators = $chat->getAdministrators()
+                            ->andWhere(['not',['provider_user_id'=>$telegramAdministratorsIds]])
                             ->all();
 
-        foreach ($outdatedAdmins as $outdatedAdmin) {
+        foreach ($outdatedAdministrators as $outdatedAdministrator) {
             $telegramChatMember = $this->getBotApi()->getChatMember(
                 $chat->chat_id,
-                $outdatedAdmin->provider_user_id
+                $outdatedAdministrator->provider_user_id
             );
             if ($telegramChatMember->isActualChatMember()) {
-                $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $outdatedAdmin->id]);
+                $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $outdatedAdministrator->id]);
                 $chatMember->setAttributes([
                     'status' => $telegramChatMember->getStatus(),
                 ]);
                 $chatMember->save();
                 continue;
             }
-            $chat->unlink('users', $outdatedAdmin, true);
+            $chat->unlink('users', $outdatedAdministrator, true);
         }
 
-        $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdminsIds])->all(), 'provider_user_id');
-        foreach ($telegramAdmins as $telegramAdmin) {
-            $user = isset($users[$telegramAdmin->getUser()->getId()]) ? $users[$telegramAdmin->getUser()->getId()] : null;
+        $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdministratorsIds])->all(), 'provider_user_id');
+        foreach ($telegramAdministrators as $telegramAdministrator) {
+            $user = isset($users[$telegramAdministrator->getUser()->getId()]) ? $users[$telegramAdministrator->getUser()->getId()] : null;
             if (!isset($user)) {
-                $user = User::createUser($telegramAdmin->getUser());
-                $user->updateInfo($telegramAdmin->getUser());
+                $user = User::createUser($telegramAdministrator->getUser());
+                $user->updateInfo($telegramAdministrator->getUser());
             }
-            if (!in_array($user->provider_user_id, $curAdminsIds)) {
-                $user->link('chats', $chat, ['status' => $telegramAdmin->getStatus()]);
+            if (!in_array($user->provider_user_id, $curAdministratorsIds)) {
+                $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
 
-        if (!$currentUserIsAdmin) {
+        if (!$currentUserIsAdministrator) {
             $this->getState()->setName(self::createRoute('index'));
             return [];
         }
