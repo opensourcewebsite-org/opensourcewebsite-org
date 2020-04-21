@@ -23,9 +23,6 @@ use kartik\select2\Select2;
                         <div class="col">
                             <?php
                             $timezones = TimeHelper::timezonesList();
-                            foreach ($timezones as $timezone => $fullName) {
-                                $timezones[$timezone] = $fullName;
-                            }
 
                             echo $timezoneForm->field($user, 'timezone')->widget(
                                 Select2::class,

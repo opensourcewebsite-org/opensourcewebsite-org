@@ -1,12 +1,13 @@
 <?php
 
+use app\components\helpers\TimeHelper;
 use yii\helpers\Html;
-use kartik\date\DatePicker;
-use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Account');
+
+$timezones = TimeHelper::timezonesList();
 ?>
 
 <div class="account-index">
@@ -142,7 +143,8 @@ $this->title = Yii::t('app', 'Account');
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Timezone'); ?></th>
-                                    <td class="align-middle" id="timezone"><?= Yii::t('app', $model->timezone); ?></td>
+                                    <td class="align-middle" id="timezone"><?= Yii::t('app',
+                                            $timezones[$model->timezone]); ?></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-timezone" class="fas fa-edit"></a>', [
                                             'class' => 'btn btn-light edit-btn',
