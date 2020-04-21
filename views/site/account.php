@@ -35,9 +35,9 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-email" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -88,12 +88,12 @@ $this->title = Yii::t('app', 'Account');
                                     <th class="align-middle"><?= Yii::t('app', 'Username'); ?></th>
                                     <td class="align-middle"><b>@</b><span id="username"><?= empty($model->username)
                                                 ? $model->id : $model->username;
-                                    ?></span></td>
+                                            ?></span></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-username" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -101,9 +101,9 @@ $this->title = Yii::t('app', 'Account');
                                     <td class="align-middle" id="name"><?= $model->name ?? $model->id; ?></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-name" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -111,55 +111,55 @@ $this->title = Yii::t('app', 'Account');
                                     <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' : date('Y/m/d', strtotime($model->birthday)); ?></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-birthday" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Gender'); ?></th>
                                     <td class="align-middle" id="gender">
-                                        <?= $model->gender->name ?? ''; ?>
+                                        <?= Yii::t('app', $model->gender->name) ?? ''; ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-gender" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Sexuality'); ?></th>
                                     <td class="align-middle" id="sexuality">
-                                        <?= $model->sexuality->name ?? ''; ?>
+                                        <?= Yii::t('app', $model->sexuality->name) ?? ''; ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-sexuality" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Timezone'); ?></th>
-                                    <td class="align-middle" id="timezone"><?= $model->timezone; ?></td>
+                                    <td class="align-middle" id="timezone"><?= Yii::t('app', $model->timezone); ?></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-timezone" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
-                                        <?= $model->currency->name  ?? ''; ?>
+                                        <?= Yii::t('app', $model->currency->name)  ?? ''; ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-currency" class="fas fa-edit"></a>', [
-                                                'class' => 'btn btn-light edit-btn',
-                                                'title' => Yii::t('app', 'Edit'),
-                                                'style' => ['float' => 'right']]); ?>
+                                            'class' => 'btn btn-light edit-btn',
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'style' => ['float' => 'right']]); ?>
                                     </td>
                                 </tr>
                                 </tbody>
