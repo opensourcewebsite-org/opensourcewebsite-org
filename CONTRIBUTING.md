@@ -14,10 +14,15 @@ When contributing to this repository, please first discuss the change you wish t
 - [Fork](https://help.github.com/en/articles/working-with-forks) the repository on GitHub.
     - [Configuring a remote for a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
     - [Syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+      - `git fetch upstream`
+      - `git checkout master`
+      - `git merge upstream/master`
     - [Merging an upstream repository into your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-an-upstream-repository-into-your-fork)
+      - `git checkout master`
       - `git pull upstream master`
-      - `git push -f origin master`
-- When working on an issue, create a new branch from `master` named for issue number. Name the branch `issue/<issue-number>`. For example `issue/22` for fixing issue #22.
+      - Commit the merge
+      - `git push origin master`
+- When working on an issue, create a new branch from `master` named for issue number or custom name. Name the branch `issue/<issue-number>` or `issue/<custom-name>`. For example `issue/22` for fixing issue #22.
 - Make your changes.
   - Follow the [Style Guides](#style-guides).
   - [Avoid platform-dependent code](https://flight-manual.atom.io/hacking-atom/sections/cross-platform-compatibility/).
