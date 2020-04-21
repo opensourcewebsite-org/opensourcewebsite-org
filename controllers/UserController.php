@@ -291,7 +291,6 @@ class UserController extends Controller
         }
 
         if (!Yii::$app->request->isPost) {
-
             return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' =>
                 $sexualities]);
         }
