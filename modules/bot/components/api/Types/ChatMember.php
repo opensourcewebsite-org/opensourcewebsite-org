@@ -34,7 +34,6 @@ class ChatMember extends \TelegramBot\Api\Types\ChatMember
      */
     protected $isMember;
 
-
     /**
      * @return bool
      */
