@@ -89,10 +89,11 @@ class AdminChatController extends Controller
                         ],
                     ]
                 )->build();
-            } else {
-                return ResponseBuilder::fromUpdate($update)->editMessageTextOrSendMessage(
-                    $this->render('index', compact('chatTitle')),
-                    [
+            }
+
+            return ResponseBuilder::fromUpdate($update)->editMessageTextOrSendMessage(
+                $this->render('index', compact('chatTitle')),
+                [
                         [
                             [
                                 'callback_data' => AdminMessageFilterController::createRoute('index', [
@@ -116,8 +117,7 @@ class AdminChatController extends Controller
                             ],
                         ],
                     ]
-                );
-            }
+            )->build();
         }
     }
 
