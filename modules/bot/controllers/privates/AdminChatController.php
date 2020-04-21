@@ -147,10 +147,10 @@ class AdminChatController extends Controller
             $telegramChat = $this->getBotApi()->getChat($chat->chat_id);
         }
         if (!isset($telegramChat)) {
-            $chat -> unlinkAll('phrases');
-            $chat -> unlinkAll('settings');
-            $chat -> unlinkAll('users');
-            $chat -> delete();
+            $chat->unlinkAll('phrases');
+            $chat->unlinkAll('settings');
+            $chat->unlinkAll('users');
+            $chat->delete();
             $this->getState()->setName(self::createRoute('index'));
             return [];
         }
@@ -175,7 +175,7 @@ class AdminChatController extends Controller
         $curAdminsIds = array_keys($curAdminsIndexdByIds);
 
         $outdatedAdmins = $chat->getAdministrators()
-                            ->andWhere(['!','provider_user_id',$tmAdminsIds])
+                            ->andWhere(['not',['provider_user_id'=>$tmAdminsIds]])
                             ->all();
 
         foreach ($outdatedAdmins as $outdatedAdmin) {

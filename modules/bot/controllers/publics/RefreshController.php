@@ -40,7 +40,7 @@ class RefreshController extends Controller
         $curAdminsIds = array_keys($curAdminsIndexdByIds);
 
         $outdatedAdmins = $chat->getAdministrators()
-                            ->andWhere(['!','provider_user_id',$tmAdminsIds])
+                            ->andWhere(['not',['provider_user_id'=>$tmAdminsIds]])
                             ->all();
 
         foreach ($outdatedAdmins as $outdatedAdmin) {
