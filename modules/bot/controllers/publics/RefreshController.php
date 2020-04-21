@@ -73,9 +73,6 @@ class RefreshController extends Controller
 
         if (!$currentUserIsAdmin) {
             $this->getState()->setName(self::createRoute('index'));
-        }
-
-        if (!$currentUserIsAdmin || !$telegramChat) {
             return [];
         }
 

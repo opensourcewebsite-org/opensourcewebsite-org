@@ -143,12 +143,10 @@ class AdminChatController extends Controller
         if ($chatId) {
             $chat = Chat::findOne($chatId);
         }
-        if (!isset($chat)) {
-            return [];
+        if (isset($chat)) {
+            $telegramChat = $this->getBotApi()->getChat($chat->chat_id);
         }
-
-        $telegramChat = $this->getBotApi()->getChat($chat->chat_id);
-        if (!$telegramChat) {
+        if (!isset($telegramChat)) {
             $chat -> unlinkAll('phrases');
             $chat -> unlinkAll('settings');
             $chat -> unlinkAll('users');
@@ -156,6 +154,8 @@ class AdminChatController extends Controller
             $this->getState()->setName(self::createRoute('index'));
             return [];
         }
+
+
 
         $tmAdmins = $this->getBotApi()->getChatAdministrators($chat->chat_id);
         $tmAdminsIds = ArrayHelper::getColumn($tmAdmins, function ($el) {
