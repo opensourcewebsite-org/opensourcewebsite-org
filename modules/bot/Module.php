@@ -6,7 +6,7 @@ use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
 use Yii;
-use TelegramBot\Api\BotApi;
+use app\modules\bot\components\api\BotApi;
 use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
