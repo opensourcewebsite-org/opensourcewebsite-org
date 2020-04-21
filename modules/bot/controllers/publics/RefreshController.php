@@ -22,25 +22,25 @@ class RefreshController extends Controller
     public function actionIndex()
     {
         $chat = $this->getTelegramChat();
-        $tmAdmins = $this->getBotApi()->getChatAdministrators($chat->chat_id);
-        $tmAdminsIds = ArrayHelper::getColumn($tmAdmins, function ($el) {
-            return $el->getUser()->getId();
+        $telegramAdmins = $this->getBotApi()->getChatAdministrators($chat->chat_id);
+        $telegramAdminsIds = ArrayHelper::getColumn($telegramAdmins, function ($telegramAdmin) {
+            return $telegramAdmin->getUser()->getId();
         });
 
         $currentUser = $this->getTelegramUser();
         $currentUserIsAdmin = false;
-        if (in_array($currentUser->provider_user_id, $tmAdminsIds)) {
+        if (in_array($currentUser->provider_user_id, $telegramAdminsIds)) {
             $currentUserIsAdmin = true;
         }
 
         $curAdmins = $chat->getAdministrators()->all();
-        $curAdminsIndexdByIds = ArrayHelper::index($curAdmins, function ($el) {
-            return $el->provider_user_id;
+        $curAdminsIndexdByIds = ArrayHelper::index($curAdmins, function ($curAdmins) {
+            return $curAdmins->provider_user_id;
         });
         $curAdminsIds = array_keys($curAdminsIndexdByIds);
 
         $outdatedAdmins = $chat->getAdministrators()
-                            ->andWhere(['not',['provider_user_id'=>$tmAdminsIds]])
+                            ->andWhere(['not',['provider_user_id'=>$telegramAdminsIds]])
                             ->all();
 
         foreach ($outdatedAdmins as $outdatedAdmin) {
@@ -59,15 +59,15 @@ class RefreshController extends Controller
             $chat->unlink('users', $outdatedAdmin, true);
         }
 
-        $users = ArrayHelper::index(User::find(['provider_user_id' => $tmAdminsIds])->all(), 'provider_user_id');
-        foreach ($tmAdmins as $tmAdmin) {
-            $user = isset($users[$tmAdmin->getUser()->getId()]) ? $users[$tmAdmin->getUser()->getId()] : null;
+        $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdminsIds])->all(), 'provider_user_id');
+        foreach ($telegramAdmins as $telegramAdmin) {
+            $user = isset($users[$telegramAdmin->getUser()->getId()]) ? $users[$telegramAdmin->getUser()->getId()] : null;
             if (!isset($user)) {
-                $user = User::createUser($tmAdmin->getUser());
-                $user->updateInfo($tmAdmin->getUser());
+                $user = User::createUser($telegramAdmin->getUser());
+                $user->updateInfo($telegramAdmin->getUser());
             }
             if (!in_array($user->provider_user_id, $curAdminsIds)) {
-                $user->link('chats', $chat, ['status' => $tmAdmin->getStatus()]);
+                $user->link('chats', $chat, ['status' => $telegramAdmin->getStatus()]);
             }
         }
 
