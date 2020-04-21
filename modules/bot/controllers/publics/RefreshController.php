@@ -27,61 +27,52 @@ class RefreshController extends Controller
             return $el->getUser()->getId();
         });
 
-        $currentUserIsAdmin = false;
         $currentUser = $this->getTelegramUser();
+        $currentUserIsAdmin = false;
+        if (in_array($currentUser->provider_user_id, $tmAdminsIds)) {
+            $currentUserIsAdmin = true;
+        }
+
         $curAdmins = $chat->getAdministrators()->all();
         $curAdminsIndexdByIds = ArrayHelper::index($curAdmins, function ($el) {
             return $el->provider_user_id;
         });
         $curAdminsIds = array_keys($curAdminsIndexdByIds);
 
-        if (in_array($currentUser->provider_user_id, $curAdminsIds)) {
-            $currentUserIsAdmin = true;
+        $outdatedAdmins = $chat->getAdministrators()
+                            ->andWhere(['!','provider_user_id',$tmAdminsIds])
+                            ->all();
+
+        foreach ($outdatedAdmins as $outdatedAdmin) {
+            $telegramChatMember = $this->getBotApi()->getChatMember(
+                $chat->chat_id,
+                $outdatedAdmin->provider_user_id
+            );
+            if ($telegramChatMember->isActualChatMember()) {
+                $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $outdatedAdmin->id]);
+                $chatMember->setAttributes([
+                    'status' => $telegramChatMember->getStatus(),
+                ]);
+                $chatMember->save();
+                continue;
+            }
+            $chat->unlink('users', $outdatedAdmin, true);
         }
 
-        $administratorUsers = [];
         $users = ArrayHelper::index(User::find(['provider_user_id' => $tmAdminsIds])->all(), 'provider_user_id');
-
         foreach ($tmAdmins as $tmAdmin) {
             $user = isset($users[$tmAdmin->getUser()->getId()]) ? $users[$tmAdmin->getUser()->getId()] : null;
             if (!isset($user)) {
                 $user = User::createUser($tmAdmin->getUser());
                 $user->updateInfo($tmAdmin->getUser());
             }
-            $administratorUsers[] = $user;
             if (!in_array($user->provider_user_id, $curAdminsIds)) {
                 $user->link('chats', $chat, ['status' => $tmAdmin->getStatus()]);
             }
         }
 
-        foreach ($curAdmins as $curAdmin) {
-            if (!in_array($curAdmin->provider_user_id, $tmAdminsIds)) {
-                $telegramChatMember = $this->getBotApi()->getChatMember(
-                    $chat->chat_id,
-                    $curAdmin->provider_user_id
-                );
-
-                if ($telegramChatMember->isActualChatMember()) {
-                    $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $curAdmin->id]);
-                    $chatMember->setAttributes([
-                        'status' => $telegramChatMember->getStatus(),
-                    ]);
-
-                    $chatMember->save();
-                    continue;
-                }
-
-                $chat->unlink('users', $curAdmin, true);
-            }
-        }
-
-
-        $telegramChat = $this->getBotApi()->getChat($chat->chat_id);
-        if (!$telegramChat) {
-            $chat -> unlinkAll('phrases');
-            $chat -> unlinkAll('settings');
-            $chat -> unlinkAll('users');
-            $chat -> delete();
+        if (!$currentUserIsAdmin) {
+            $this->getState()->setName(self::createRoute('index'));
         }
 
         if (!$currentUserIsAdmin || !$telegramChat) {
