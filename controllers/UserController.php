@@ -93,7 +93,7 @@ class UserController extends Controller
             ]);
 
             if ($relation->save()) {
-               $withoutErrors = true;
+                $withoutErrors = true;
             }
         }
 
@@ -230,8 +230,12 @@ class UserController extends Controller
 
     public function actionChangeGender()
     {
+        $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        foreach ($genders as $key => $gender) {
+            $genders[$key] = Yii::t('app', $gender);
+        }
+
         if (!Yii::$app->request->isPost) {
-            $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
             return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
         }
 
@@ -241,7 +245,6 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
         return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
     }
 
@@ -262,8 +265,12 @@ class UserController extends Controller
 
     public function actionChangeCurrency()
     {
+        $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        foreach ($currencies as $key => $currency) {
+            $currencies[$key] = Yii::t('app', $currency);
+        }
+
         if (!Yii::$app->request->isPost) {
-            $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
             return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' => $currencies]);
         }
 
@@ -273,14 +280,18 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
         return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' => $currencies]);
     }
 
     public function actionChangeSexuality()
     {
+        $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        foreach ($sexualities as $key => $sexuality) {
+            $sexualities[$key] = Yii::t('app', $sexuality);
+        }
+
         if (!Yii::$app->request->isPost) {
-            $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+
             return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' =>
                 $sexualities]);
         }
@@ -291,7 +302,6 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
         return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' => $sexualities]);
     }
 }
