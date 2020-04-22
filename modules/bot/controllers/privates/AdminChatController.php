@@ -10,6 +10,7 @@ use app\modules\bot\models\ChatMember;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
+use TelegramBot\Api\HttpException;
 
 /**
  * Class AdminChatController
@@ -133,14 +134,25 @@ class AdminChatController extends Controller
         }
 
         if (isset($chat)) {
-            $telegramChat = $this->getBotApi()->getChat($chat->chat_id);
-            if (!isset($telegramChat)) {
-                $chat->unlinkAll('phrases');
-                $chat->unlinkAll('settings');
-                $chat->unlinkAll('users');
+            $isChatExists = true;
+
+            try {
+                $telegramChat = $this->getBotApi()->getChat(-1001496154711);
+            } catch (HttpException $e) {
+                if ($e->getCode() == 400) {
+                    $isChatExists = false;
+                }
+            }
+
+            if (!$isChatExists) {
+                $chat->unlinkAll('phrases', true);
+                $chat->unlinkAll('settings', true);
+                $chat->unlinkAll('users', true);
                 $chat->delete();
-                $this->getState()->setName(self::createRoute('index'));
-                return [];
+
+                return ResponseBuilder::fromUpdate($this->getUpdate())
+                    ->sendMessage($this->render('no-exist'))
+                    ->build();
             }
 
             $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
@@ -212,7 +224,11 @@ class AdminChatController extends Controller
                 )
                 ->build();
         }
-
+        if (!isset($chat)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->sendMessage($this->render('no-exist'))
+                ->build();
+        }
         return $result;
     }
 }
