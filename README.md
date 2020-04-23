@@ -1,7 +1,8 @@
-[![Home](https://img.shields.io/badge/home-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
-![License](https://img.shields.io/github/license/opensourcewebsite-org/opensourcewebsite-org?style=flat-square)
-[![first-timers-only](https://img.shields.io/badge/first--timers--only-friendly-blue.svg?style=flat-square)](https://www.firsttimersonly.com)
-[![opensource.guide](https://img.shields.io/badge/opensource.guide-friendly-blue.svg?style=flat-square)](https://opensource.guide)
+[![Website](https://img.shields.io/badge/Website-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
+[![Telegram Bot](https://img.shields.io/badge/Telegram_bot-opensourcewebsite__bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
+[![Slack](https://img.shields.io/badge/Slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
+[![Discord](https://img.shields.io/badge/Discord-chat-CC2B5E.svg?style=flat-square&logo=discord)](https://discord.gg/94WpSPJ)
+[![Gitter](https://img.shields.io/badge/Gitter-chat-CC2B5E.svg?style=flat-square&logo=gitter)](https://gitter.im/opensourcewebsite-org)
 
 [![Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?style=flat-square&branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org)
 [![Maintainability](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/maintainability?style=flat-square)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/maintainability)
@@ -11,13 +12,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/opensourcewebsite-org/opensourcewebsite-org/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org?branch=master)
 
 [![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
-[![PHP Version](https://img.shields.io/badge/PHP-%3E=7.2-blue.svg?style=flat-square)](https://www.php.net)
-[![MySQL Version](https://img.shields.io/badge/MySQL-%3E=5.7-blue.svg?style=flat-square)](https://www.mysql.com)
-
-[![Telegram Bot](https://img.shields.io/badge/Telegram-bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
-[![Chat on Slack](https://img.shields.io/badge/Slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
-[![Chat on Discord](https://img.shields.io/badge/Discord-chat-CC2B5E.svg?style=flat-square&logo=discord)](https://discord.gg/94WpSPJ)
-[![Chat on Gitter](https://img.shields.io/badge/Gitter-chat-CC2B5E.svg?style=flat-square&logo=gitter)](https://gitter.im/opensourcewebsite-org)
+[![PHP Version](https://img.shields.io/badge/PHP-7.2.X-blue.svg?style=flat-square&logo=php)](https://www.php.net)
+[![MySQL Version](https://img.shields.io/badge/MySQL-8.X-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
+[![MySQL Version](https://img.shields.io/badge/MySQL-5.7.X-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
 
 [![Tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fopensourcewebsite.org)](https://twitter.com/intent/tweet?text=OpenSourceWebsite+(OSW)+-+online+community+managed+by+users+using+electronic+voting+and+modifying+source+code.&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource,community,socialnetwork,digitalfuture)
 
