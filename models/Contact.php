@@ -27,7 +27,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 {
     use ByOwnerTrait;
 
-    public const DEBT_REDISTRIBUTION_PRIORITY_NO = null;
+    public const DEBT_REDISTRIBUTION_PRIORITY_NO = 0;
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
@@ -61,7 +61,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 }",
             ],
             ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => 255],
-            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
+            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: 0; }],
             ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
             ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
         ];
