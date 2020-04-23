@@ -73,6 +73,8 @@ plugins:
     checks:
       CyclomaticComplexity:
         enabled: false
+      Design/CouplingBetweenObjects:
+        enabled: false
       Design/LongMethod:
         enabled: false
       Design/LongParameterList:
@@ -80,6 +82,8 @@ plugins:
       Design/NpathComplexity:
         enabled: false
       Design/WeightedMethodCount:
+        enabled: false
+      Naming/LongVariable:
         enabled: false
       Naming/ShortVariable:
         enabled: false
