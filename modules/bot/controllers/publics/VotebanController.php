@@ -27,7 +27,7 @@ class VotebanController extends Controller
     const VOTING_POWER = 1;
 
     /**
-     * @return array
+     * @return boolean;
      */
 
     public function beforeAction($action)
