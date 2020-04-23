@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\interfaces\UserRelation\ByOwnerInterface;
+use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
@@ -17,11 +19,14 @@ use yii\helpers\VarDumper;
  * @property string $name
  * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority.
  *
+ * @property User $ownerUser
  * @property User $linkedUser
  * @property DebtRedistribution[] $debtRedistributions
  */
-class Contact extends ActiveRecord
+class Contact extends ActiveRecord implements ByOwnerInterface
 {
+    use ByOwnerTrait;
+
     public const DEBT_REDISTRIBUTION_PRIORITY_NO = null;
 
     const VIEW_USER = 1;
@@ -109,16 +114,11 @@ class Contact extends ActiveRecord
         }
     }
 
-    public function getLinkedUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'link_user_id']);
-    }
-
     public function getDebtRedistributions()
     {
         return $this->hasMany(DebtRedistribution::className(), [
-            'from_user_id' => 'user_id',
-            'to_user_id'   => 'link_user_id',
+            'link_user_id' => 'link_user_id',
+            'user_id' => 'user_id',
         ]);
     }
 
@@ -205,9 +205,11 @@ class Contact extends ActiveRecord
     {
         $oldId = $this->getOldAttribute('link_user_id');
         if ($oldId && $this->isAttributeChanged('link_user_id')) {
+            $modelOld = clone $this;
+            $modelOld->link_user_id = $oldId;
+
             $models = DebtRedistribution::find()
-                ->fromUser($this->user_id)
-                ->toUser($oldId)
+                ->usersByModelSource($modelOld)
                 ->all();
             $this->deleteDebtRedistributions($models);
         }
@@ -237,4 +239,5 @@ class Contact extends ActiveRecord
     {
         return empty($this->linkedUser->username) ? $this->link_user_id : $this->linkedUser->username;
     }
+
 }

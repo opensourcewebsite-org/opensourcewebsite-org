@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use Yii;
@@ -30,8 +32,10 @@ use yii\behaviors\TimestampBehavior;
  * @property Currency    $currency
  * @property DebtBalance $debtBalance
  */
-class Debt extends ActiveRecord
+class Debt extends ActiveRecord implements ByDebtInterface
 {
+    use ByDebtTrait;
+
     public const STATUS_PENDING = 0;
     public const STATUS_CONFIRM = 1;
 
@@ -109,16 +113,6 @@ class Debt extends ActiveRecord
                 'updatedByAttribute' => 'updated_by',
             ],
         ];
-    }
-
-    public function getFromUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'from_user_id']);
-    }
-
-    public function getToUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'to_user_id']);
     }
 
     /**

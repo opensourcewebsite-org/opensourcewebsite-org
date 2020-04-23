@@ -35,6 +35,11 @@ class ContactQuery extends ActiveQuery
         return $this->$method(['contact.user_id' => $id ?? Yii::$app->user->id]);
     }
 
+    public function userLinked($id, $method = 'andWhere'): self
+    {
+        return $this->$method(['contact.link_user_id' => $id]);
+    }
+
     public function forDebtRedistribution($contactId): self
     {
         return $this

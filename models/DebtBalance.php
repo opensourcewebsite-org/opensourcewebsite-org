@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\DebtBalanceQuery;
 use yii\base\Exception;
 use yii\base\InvalidCallException;
@@ -30,8 +32,10 @@ use yii\db\ActiveRecord;
  *                                              for relation {@see DebtBalance::getChainMembers()}
  *                                              in {@see Reduction::reduceCircledChainAmount()}
  */
-class DebtBalance extends ActiveRecord
+class DebtBalance extends ActiveRecord implements ByDebtInterface
 {
+    use ByDebtTrait;
+
     /**
      * Should script store zero amount in DB.
      *      FALSE - system will expect, that there are no row, where `debt_balance.amount = 0`.
@@ -79,26 +83,6 @@ class DebtBalance extends ActiveRecord
     public function getCurrency()
     {
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
-    }
-
-    /**
-     * Gets query for [[FromUser]].
-     *
-     * @return \yii\db\ActiveQuery|\app\models\queries\UserQuery
-     */
-    public function getFromUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'from_user_id']);
-    }
-
-    /**
-     * Gets query for [[ToUser]].
-     *
-     * @return \yii\db\ActiveQuery|\app\models\queries\UserQuery
-     */
-    public function getToUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'to_user_id']);
     }
 
     /**

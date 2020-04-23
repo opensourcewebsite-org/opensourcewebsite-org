@@ -2,26 +2,33 @@
 
 namespace app\models;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByOwnerInterface;
+use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
+use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtRedistributionQuery;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "debt_redistribution".
  *
  * @property int      $id
- * @property int      $from_user_id
- * @property int      $to_user_id
+ * @property int      $user_id          {@see ByOwnerInterface}, {@see ByDebtInterface}
+ * @property int      $link_user_id     {@see ByOwnerInterface}, {@see ByDebtInterface}
  * @property int      $currency_id
  * @property int|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
  *
- * @property User $fromUser
- * @property User $toUser
+ * @property User $ownerUser
+ * @property User $linkedUser
  * @property Currency $currency
  * @property Contact $contact
  */
-class DebtRedistribution extends ActiveRecord
+class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDebtInterface
 {
+    use ByOwnerTrait;
+
     /** @var null no limit - allow any amount. */
     public const MAX_AMOUNT_ANY  = null;
     /** @var int limit is 0, so deny to redistribute. Default value. */
@@ -48,7 +55,7 @@ class DebtRedistribution extends ActiveRecord
             ['max_amount', $this->fnFormatMaxAmount(), 'skipOnEmpty' => false],
 
             //db:
-            [['from_user_id', 'to_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['from_user_id', 'to_user_id', 'currency_id']],
+            'unique' => [['user_id', 'link_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['user_id', 'link_user_id', 'currency_id']],
             ['currency_id', 'exist', 'targetRelation' => 'currency'],
         ];
     }
@@ -60,8 +67,8 @@ class DebtRedistribution extends ActiveRecord
     {
         return [
             'id'           => 'ID',
-            'from_user_id' => 'From User ID',
-            'to_user_id'   => 'To User ID',
+            'user_id'      => 'User ID',
+            'link_user_id' => 'Link User ID',
             'currency_id'  => 'Currency',
             'max_amount'   => 'Max Amount',
         ];
@@ -75,26 +82,22 @@ class DebtRedistribution extends ActiveRecord
         return new DebtRedistributionQuery(get_called_class());
     }
 
-    public function getFromUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'from_user_id']);
-    }
-
-    public function getToUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'to_user_id']);
-    }
-
+    /**
+     * @return CurrencyQuery|ActiveQuery
+     */
     public function getCurrency()
     {
         return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
 
+    /**
+     * @return ContactQuery|ActiveQuery
+     */
     public function getContact(): ContactQuery
     {
         return $this->hasOne(Contact::className(), [
-            'user_id'      => 'from_user_id',
-            'link_user_id' => 'to_user_id',
+            'user_id' => 'user_id',
+            'link_user_id' => 'link_user_id',
         ]);
     }
 
@@ -108,10 +111,36 @@ class DebtRedistribution extends ActiveRecord
         return !$this->isMaxAmountAny() && ($this->max_amount == self::MAX_AMOUNT_DENY);
     }
 
+    /**
+     * @param ByOwnerInterface|ByDebtInterface $modelSource
+     */
+    public function setUsers($modelSource): self
+    {
+        if ($modelSource instanceof ByOwnerInterface) {
+            $this->user_id = $modelSource->getOwnerUID();
+            $this->link_user_id = $modelSource->getLinkedUID();
+        } else {
+            $this->user_id = $modelSource->getDebtReceiverUID();
+            $this->link_user_id = $modelSource->getDebtorUID();
+        }
+
+        return $this;
+    }
+
     private function fnFormatMaxAmount(): callable
     {
         return function () {
             $this->max_amount = $this->max_amount === '' ? null : $this->max_amount;
         };
+    }
+
+    public function getDebtorUID()
+    {
+        return $this->getLinkedUID();
+    }
+
+    public function getDebtReceiverUID()
+    {
+        return $this->getOwnerUID();
     }
 }

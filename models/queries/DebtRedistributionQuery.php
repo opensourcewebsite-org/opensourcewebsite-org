@@ -2,6 +2,8 @@
 
 namespace app\models\queries;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByOwnerInterface;
 use app\models\DebtRedistribution;
 use Yii;
 use yii\db\ActiveQuery;
@@ -16,19 +18,24 @@ use yii\db\ActiveQuery;
  */
 class DebtRedistributionQuery extends ActiveQuery
 {
-    /**
-     * @return self
-     */
-    public function fromUser($id = null, $method = 'andWhere')
+    public function userOwner($id = null, $method = 'andWhere'): self
     {
-        return $this->$method(['debt_redistribution.from_user_id' => $id ?? Yii::$app->user->id]);
+        return $this->$method(['debt_redistribution.user_id' => $id ?? Yii::$app->user->id]);
+    }
+
+    public function userLinked($id, $method = 'andWhere'): self
+    {
+        return $this->$method(['debt_redistribution.link_user_id' => $id]);
     }
 
     /**
-     * @return self
+     * @param ByOwnerInterface|ByDebtInterface $modelSource
      */
-    public function toUser($id, $method = 'andWhere')
+    public function usersByModelSource($modelSource, $method = 'andWhere'): self
     {
-        return $this->$method(['debt_redistribution.to_user_id' => $id]);
+        $model = (new DebtRedistribution())->setUsers($modelSource);
+
+        return $this->userOwner($model->user_id, $method)
+            ->userLinked($model->link_user_id, $method);
     }
 }
