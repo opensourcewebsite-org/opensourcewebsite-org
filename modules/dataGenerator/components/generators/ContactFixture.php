@@ -56,7 +56,7 @@ class ContactFixture extends ARGenerator
             }])
             ->active()
             ->groupBy('user.id')
-            ->having('n_contact < :nUser', [':nUser' => $userQty])
+            ->having('n_contact < :nUser', [':nUser' => $userQty - 1])
             ->orderBy('n_contact')
             ->limit(30)
             ->column();
@@ -80,7 +80,7 @@ class ContactFixture extends ARGenerator
                 $query->userOwner($userIdFrom, 'andOnCondition');
             }])
             ->active()
-            ->andWhere('user.id <> :userIdFrom', [':userIdFrom' => $userIdFrom])
+            ->andWhere('contact.id IS NULL AND user.id <> :userIdFrom', [':userIdFrom' => $userIdFrom])
             ->limit(30)
             ->column();
 
