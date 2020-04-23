@@ -27,9 +27,8 @@ class VotebanController extends Controller
     const VOTING_POWER = 1;
 
     /**
-     * @return boolean;
+     * @return boolean
      */
-
     public function beforeAction($action)
     {
         $chat = $this->getTelegramChat();
@@ -46,7 +45,6 @@ class VotebanController extends Controller
         }
         return true;
     }
-
 
     public function actionIndex()
     {
@@ -116,7 +114,6 @@ class VotebanController extends Controller
         return isset($initVotingError) ? true : false;
     }
 
-
     /**
      * @return array
      */
@@ -148,6 +145,7 @@ class VotebanController extends Controller
 
             $starter = $this->getProviderUsernameById($voting->provider_starter_id);
             $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
+            $command->replyToMessageId = $voting->id ? null : $voting->candidate_message_id;
             $message = $command->send($this->getBotApi());
 
             if (!$voting->id) {
@@ -201,11 +199,9 @@ class VotebanController extends Controller
                     ]
                 ]
             );
-        $replyMessageId = $this->getUpdate()->getMessage()->getReplyToMessage()->getMessageId();
 
         $commands = $commandBuilder->build();
         $command =  array_pop($commands);
-        $command->replyToMessageId = $replyMessageId;
         return $command;
     }
 
@@ -238,10 +234,10 @@ class VotebanController extends Controller
     **/
     private function getExistingOrCreateVoting()
     {
-        $voting = $this->getExistingVotingFromCallback();
+        $voting = $this->getExistingVotingFormCallback();
 
         if (!$voting->id) {
-            $voting = $this->createVotingFromMessage();
+            $voting = $this->createVotingFormMessage();
         }
         return $voting;
     }
@@ -249,7 +245,7 @@ class VotebanController extends Controller
     *
     * @return VotebanVoting
     */
-    private function createVotingFromMessage()
+    private function createVotingFormMessage()
     {
         $voting = null;
         $votingInitMessage = $this->getUpdate()->getMessage();
@@ -274,7 +270,7 @@ class VotebanController extends Controller
     /**
     * @return VotebanVoting
     */
-    private function getExistingVotingFromCallback()
+    private function getExistingVotingFormCallback()
     {
         if ($this->isCallbackQuery()) {
             $votingMessageID = $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId();
