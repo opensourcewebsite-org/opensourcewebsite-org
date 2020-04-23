@@ -137,7 +137,7 @@ class AdminChatController extends Controller
             $isChatExists = true;
 
             try {
-                $telegramChat = $this->getBotApi()->getChat(-1001496154711);
+                $this->getBotApi()->getChat($chatId);
             } catch (HttpException $e) {
                 if ($e->getCode() == 400) {
                     $isChatExists = false;
