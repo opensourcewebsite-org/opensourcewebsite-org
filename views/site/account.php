@@ -87,8 +87,8 @@ $timezones = TimeHelper::timezonesList();
                                 <tbody>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Username'); ?></th>
-                                    <td class="align-middle"><b>@</b><span id="username"><?= empty($model->username)
-                                                ? $model->id : $model->username;
+                                    <td class="align-middle"><span id="username"><?= empty($model->username)
+                                                ? '' : '<b>@</b>' . $model->username;
                                             ?></span></td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-username" class="fas fa-edit"></a>', [
