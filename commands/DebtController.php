@@ -5,12 +5,12 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\components\debt\BalanceChecker;
 use app\components\debt\Reduction;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 use yii\console\Controller;
 use yii\helpers\Console;
 use yii\helpers\VarDumper;
 
-class DebtController extends Controller implements ICronChained
+class DebtController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 

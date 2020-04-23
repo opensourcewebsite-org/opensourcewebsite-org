@@ -3,7 +3,7 @@
 namespace app\commands\traits;
 
 use app\components\CustomConsole;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 
 /**
  * Optionally, to extend controller options add next:
@@ -43,7 +43,7 @@ trait ControllerLogTrait
     {
         $options = ['logs' => $this->log];
 
-        if ($this instanceof ICronChained) {
+        if ($this instanceof CronChainedInterface) {
             $options['jobName'] = CustomConsole::convertName(get_class($this));
         }
         if (!empty($ansiFormat)) {
