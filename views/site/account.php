@@ -121,7 +121,7 @@ $timezones = TimeHelper::timezonesList();
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Gender'); ?></th>
                                     <td class="align-middle" id="gender">
-                                        <?= Yii::t('app', $model->gender->name) ?? ''; ?>
+                                        <?= Yii::t('app', $model->gender->name ?? ''); ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-gender" class="fas fa-edit"></a>', [
@@ -133,7 +133,7 @@ $timezones = TimeHelper::timezonesList();
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Sexuality'); ?></th>
                                     <td class="align-middle" id="sexuality">
-                                        <?= Yii::t('app', $model->sexuality->name) ?? ''; ?>
+                                        <?= Yii::t('app', $model->sexuality->name ?? ''); ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-sexuality" class="fas fa-edit"></a>', [
@@ -156,7 +156,7 @@ $timezones = TimeHelper::timezonesList();
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
-                                        <?= Yii::t('app', $model->currency->name)  ?? ''; ?>
+                                        <?= Yii::t('app', $model->currency->name ?? ''); ?>
                                     </td>
                                     <td>
                                         <?= Html::button('<a href="/user/change-currency" class="fas fa-edit"></a>', [
