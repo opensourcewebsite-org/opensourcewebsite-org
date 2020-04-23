@@ -7,7 +7,9 @@ use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\User;
 use app\modules\bot\models\VotebanVote;
 use app\modules\bot\models\VotebanVoting;
 use TelegramBot\Api\HttpException;
@@ -25,8 +27,26 @@ class VotebanController extends Controller
     const VOTING_POWER = 1;
 
     /**
-     * @return array
+     * @return boolean;
      */
+
+    public function beforeAction($action)
+    {
+        $chat = $this->getTelegramChat();
+        $chatId = $chat->chat_id;
+
+        $isBotAdmin = false;
+        $botUser = User::find()->where(['provider_user_name' => $this->getBotName()])->one();
+
+        if ($botUser) {
+            $isBotAdmin = ChatMember::find()->where(['chat_id' => $chat->id, 'user_id' => $botUser->id, 'status' => ChatMember::STATUS_ADMINISTRATOR])->exists();
+        }
+        if (!$isBotAdmin) {
+            return false;
+        }
+        return true;
+    }
+
 
     public function actionIndex()
     {
@@ -160,11 +180,11 @@ class VotebanController extends Controller
         $votesLimit = isset($limitSetting) ? $limitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
         $candidateName = $this->getProviderUsernameById($candidateId);
 
-        $commands=ResponseBuilder::fromUpdate($this->getUpdate())
+        $commandBuilder = ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'user' => '@' . $starterName,
-                    'candidate' => '@' . $candidateName
+                    'user' => $starterName,
+                    'candidate' => $candidateName
                 ]),
                 [
                     [
@@ -180,10 +200,12 @@ class VotebanController extends Controller
                         ],
                     ]
                 ]
-            )
-            ->build();
+            );
+        $replyMessageId = $this->getUpdate()->getMessage()->getReplyToMessage()->getMessageId();
 
+        $commands = $commandBuilder->build();
         $command =  array_pop($commands);
+        $command->replyToMessageId = $replyMessageId;
         return $command;
     }
 
@@ -288,7 +310,7 @@ class VotebanController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendMessage(
                 $this->render('user-kicked', [
-                    'user' => '@' . $this->getProviderUsernameById($userId),
+                    'user' => $this->getProviderUsernameById($userId),
                     'voters' => implode(', ', $votersNames)
                 ])
             )
@@ -308,7 +330,7 @@ class VotebanController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendMessage(
                 $this->render('user-saved', [
-                    'user' => '@' . $this->getProviderUsernameById($userId),
+                    'user' => $this->getProviderUsernameById($userId),
                     'voters' => implode(', ', $votersNames)
                 ])
             )
@@ -342,7 +364,7 @@ class VotebanController extends Controller
         foreach ($ids as $id) {
             $name = $this->getProviderUsernameById($id);
             if ($name) {
-                $names[] = '@' . $name;
+                $names[] = $name;
             }
         }
         return $names;
@@ -351,10 +373,13 @@ class VotebanController extends Controller
     private function getProviderUsernameById($userId)
     {
         try {
-            return $this->getBotApi()->getChatMember(
+            $user = $this->getBotApi()->getChatMember(
                 $this->getTelegramChat()->chat_id,
                 $userId
-            )->getUser()->getUsername();
+            )->getUser();
+            $nickname = $user->getUsername();
+            $username = $nickname ? '@' . $nickname : implode(' ', [$user->getFirstName(), $user->getLastName()]);
+            return $username;
         } catch (HttpException $e) {
             return '';
         }
