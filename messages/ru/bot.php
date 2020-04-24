@@ -213,6 +213,5 @@ return [
     'Enter minimal number of voters to kick a user'=>'Введите минимальное количество голосов для кика пользователя',
     'Kick'=>'Кикнуть',
     'Save'=>'Простить',
-    'My functions for telegram groups' => 'Мои функции для телеграм групп',
-    'Group is no more' => 'Этой группы больше нет'
+    'My functions for telegram groups' => 'Мои функции для телеграм групп'
 ];
