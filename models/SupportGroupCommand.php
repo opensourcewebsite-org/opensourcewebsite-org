@@ -128,7 +128,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
 
         foreach ($this->languages as $lang) {
             $navItems[] = [
-                'label'       => $lang->languageCode->name_ascii,
+                'label'       => $lang->language->name_ascii,
                 'url'         => '#tab_' . $lang->id,
                 'linkOptions' => [
                     'data-toggle' => 'tab',
