@@ -82,7 +82,7 @@ class AdminChatController extends Controller
                                 'text' => Emoji::MENU,
                             ],
                             [
-                                'callback_data' => AdminChatRefresh::createRoute('index', [
+                                'callback_data' => AdminChatRefreshController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => '🔄',

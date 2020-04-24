@@ -22,7 +22,7 @@ class AdminChatRefreshController extends Controller
     /**
      * @return array
      */
-    public function actionRefresh($chatId = null)
+    public function actionIndex($chatId = null)
     {
         $result = [];
         $isChatExists = true;
