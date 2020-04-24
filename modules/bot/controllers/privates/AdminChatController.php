@@ -68,7 +68,7 @@ class AdminChatController extends Controller
                                 'callback_data' => AdminStarTopController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => '🏗 ' . Yii::t('bot', 'Star Top'),
+                                'text' => Yii::t('bot', 'Star Top'),
                             ],
                         ],
                         [
