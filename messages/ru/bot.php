@@ -214,4 +214,5 @@ return [
     'Kick'=>'Кикнуть',
     'Save'=>'Простить',
     'My functions for telegram groups' => 'Мои функции для телеграм групп',
+    'Group is no more' => 'Этой группы больше нет'
 ];
