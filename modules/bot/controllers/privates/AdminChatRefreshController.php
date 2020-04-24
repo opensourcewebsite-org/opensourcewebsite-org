@@ -102,18 +102,9 @@ class AdminChatRefreshController extends Controller
             }
 
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->editMessageTextOrSendMessage(
+                ->answerCallbackQuery(
                     $this->render('index'),
-                    [
-                        [
-                            [
-                                'callback_data' => AdminChatController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => '🔙',
-                            ],
-                        ]
-                    ]
+                    true
                 )
                 ->build();
         }
