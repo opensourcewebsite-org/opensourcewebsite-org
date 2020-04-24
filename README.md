@@ -12,9 +12,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/opensourcewebsite-org/opensourcewebsite-org/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org?branch=master)
 
 [![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
-[![PHP Version](https://img.shields.io/badge/PHP-7.2.X-blue.svg?style=flat-square&logo=php)](https://www.php.net)
-[![MySQL Version](https://img.shields.io/badge/MySQL-8.X-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
-[![MySQL Version](https://img.shields.io/badge/MySQL-5.7.X-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
+[![PHP Version](https://img.shields.io/badge/PHP-7.2-blue.svg?style=flat-square&logo=php)](https://www.php.net)
+[![MySQL Version](https://img.shields.io/badge/MySQL-8-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
+[![MySQL Version](https://img.shields.io/badge/MySQL-5.7-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
 
 [![Tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fopensourcewebsite.org)](https://twitter.com/intent/tweet?text=OpenSourceWebsite+(OSW)+-+online+community+managed+by+users+using+electronic+voting+and+modifying+source+code.&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource,community,socialnetwork,digitalfuture)
 
