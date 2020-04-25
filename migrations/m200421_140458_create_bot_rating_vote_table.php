@@ -16,11 +16,11 @@ class m200421_140458_create_bot_rating_vote_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'message_id' => $this->integer()->unsigned()->notNull(),
-            'provier_user_id' => $this->integer()->unsigned()->notNull(),
-            'provier_voter_id' => $this->integer()->unsigned()->notNull(),
-            'vote' => $this->tinyInteger()->unsigned()->notNull(),
+            'provider_candidate_id' => $this->integer()->unsigned()->notNull(),
+            'provider_voter_id' => $this->integer()->unsigned()->notNull(),
+            'vote' => $this->tinyInteger()->notNull(),
         ]);
-        $this->createIndex('idx-chat-message-voter', '{{%bot_rating_vote}}', ['chat_id','message_id','provier_voter_id'], true);
+        $this->createIndex('idx-chat-message-voter', '{{%bot_rating_vote}}', ['chat_id','message_id','provider_voter_id'], true);
         $this->addForeignKey(
             'fk-bot_rating_vote-chat_id',
             '{{%bot_rating_vote}}',

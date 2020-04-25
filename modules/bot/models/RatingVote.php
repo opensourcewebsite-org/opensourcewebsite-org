@@ -10,8 +10,8 @@ use Yii;
  * @property int $id
  * @property int $chat_id
  * @property int $message_id
- * @property int $provier_user_id
- * @property int $provier_voter_id
+ * @property int $provider_candidate_id
+ * @property int $provider_voter_id
  * @property int $vote
  */
 class RatingVote extends \yii\db\ActiveRecord
@@ -30,9 +30,9 @@ class RatingVote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'message_id', 'provier_user_id', 'provier_voter_id', 'vote'], 'required'],
-            [['chat_id', 'message_id', 'provier_user_id', 'provier_voter_id', 'vote'], 'integer'],
-            [['chat_id', 'message_id', 'provier_voter_id'], 'unique', 'targetAttribute' => ['chat_id', 'message_id', 'provier_voter_id']],
+            [['chat_id', 'message_id', 'provider_candidate_id', 'provider_voter_id', 'vote'], 'required'],
+            [['chat_id', 'message_id', 'provider_candidate_id', 'provider_voter_id', 'vote'], 'integer'],
+            [['chat_id', 'message_id', 'provider_voter_id'], 'unique', 'targetAttribute' => ['chat_id', 'message_id', 'provider_voter_id']],
         ];
     }
 
@@ -45,8 +45,8 @@ class RatingVote extends \yii\db\ActiveRecord
             'id' => 'ID',
             'chat_id' => 'Chat ID',
             'message_id' => 'Message ID',
-            'provier_user_id' => 'Provier User ID',
-            'provier_voter_id' => 'Provier Voter ID',
+            'provider_candidate_id' => 'Provider Candidate ID',
+            'provider_voter_id' => 'Provider Voter ID',
             'vote' => 'Vote',
         ];
     }

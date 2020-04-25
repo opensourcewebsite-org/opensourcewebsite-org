@@ -1,1 +1,1 @@
-Do you realy want to do it ?
+Do you like this message?
