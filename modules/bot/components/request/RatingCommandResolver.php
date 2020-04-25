@@ -3,7 +3,7 @@
 namespace app\modules\bot\components\request;
 
 use TelegramBot\Api\Types\Update;
-use  app\modules\bot\controllers\publics\RatingController;
+use  app\modules\bot\controllers\publics\TopController;
 
 class RatingCommandResolver implements ICommandResolver
 {
@@ -15,7 +15,7 @@ class RatingCommandResolver implements ICommandResolver
             $commandText = $message->getText();
             $estimate = trim($commandText);
             if (in_array($estimate, ['+','-'])) {
-                $route = RatingController::createRoute('index', ['estimate' => $estimate]);
+                $route = TopController::createRoute('start', ['estimate' => $estimate]);
             }
         }
         return $route ?? null;
