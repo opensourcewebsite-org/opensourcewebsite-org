@@ -114,7 +114,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return SupportGroupLanguage
+     * @return SupportGroupLanguage[]
      */
     public function getLanguages()
     {
