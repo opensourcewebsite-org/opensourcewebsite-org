@@ -60,4 +60,12 @@ class SupportGroupLanguage extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Language::className(), ['code' => 'language_code']);
     }
+
+    /**
+     * @return string
+     */
+    public function getLanguageCode()
+    {
+        return $this->language->code;
+    }
 }

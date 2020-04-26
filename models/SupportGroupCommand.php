@@ -16,6 +16,8 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_at
  * @property int $updated_by
  * @property SupportGroupCommandText[] $reIndexTexts
+ * @property SupportGroupLanguage[] $languages
+ * @property string $languageCode
  *
  * @property SupportGroup $supportGroup
  * @property SupportGroupCommandText[] $supportGroupCommandTexts
@@ -112,7 +114,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return SupportGroupLanguage
      */
     public function getLanguages()
     {
