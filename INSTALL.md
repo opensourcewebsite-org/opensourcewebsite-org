@@ -20,11 +20,11 @@ Web-server can be accessed at http://localhost:8000
 
 #### Without Docker
 
-- Install [MySQL +5.7.X](https://www.mysql.com)
+- Install [MySQL 8.X](https://www.mysql.com) or [MySQL 5.7.X](https://www.mysql.com)
 - Create a new MySQL InnoDB database ("opensourcewebsite" by default) with an "utf8mb4_unicode_ci" collation for your environment
 - Create a new MySQL InnoDB database ("opensourcewebsite_test" by default) with an "utf8mb4_unicode_ci" collation for test environment
 - Setup your web-server root folder to `web`
-- Install [PHP +7.2.X](https://www.php.net)
+- Install [PHP 7.2.X](https://www.php.net)
 - Install [XDebug](https://xdebug.org) for test environment
 - Install [Composer](https://getcomposer.org)
 - Run `php composer.phar install`
@@ -55,9 +55,14 @@ Help instructions:
 php yii dataGenerator/default/load -h
 ```
 
-Basic usage (generates all models with a delay of 2 seconds):
+Basic usage (generates all available models with a delay of 2 seconds):
 ```
 php yii dataGenerator "*"`
+```
+
+Advanced usage (generates `User` and `Contact` models with a delay of 5 seconds):
+```
+php yii dataGenerator "User, Contact" --interval=5
 ```
 
 Advanced usage (generates all models except `Contact` with a delay of 5 seconds):

@@ -69,14 +69,70 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
-            ['name', 'string'],
             [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
-            ['email', 'email'],
+            ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 'UTC'],
+
+            ['status',
+                'default',
+                'value' => self::STATUS_ACTIVE],
+            ['status',
+                'in',
+                'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+
+            ['email', 'email'],
+            ['email',
+                'unique',
+                'message' => 'Email must be unique.'
+            ],
+
+            ['username', 'trim'],
+            ['username',
+                'match',
+                'pattern' => '/^[a-zA-Z0-9_]+$/i',
+                'message' => 'Username can contain only letters, numbers and \'_\' symbols'
+            ],
+            ['username', 'validateUsernameUnique'],
+            ['username', 'default', 'value' => null],
+
+            ['name', 'string'],
+            ['name', 'trim'],
+            ['name', 'validateNameString'],
         ];
+    }
+
+    /*
+     * Username validation
+     */
+    public function validateUsernameUnique()
+    {
+        $oldUsername = $this->getOldAttribute('username');
+        if (is_numeric($this->username)) {
+            $this->addError('username', 'User name can\'t be number');
+        }
+
+        if (strcasecmp($oldUsername, $this->username) !== 0) {
+            $isUserInDB = User::findOne(['username' => $this->username]);
+            if ($isUserInDB) {
+                $this->addError('username', 'User name must be unique.');
+            }
+        }
+    }
+
+    /*
+     * Name validation
+     */
+    public function validateNameString()
+    {
+        $oldName = $this->getOldAttribute('name');
+        if ($this->name == $oldName) {
+            return;
+        }
+
+        if (is_numeric($this->name)) {
+            $this->addError('name', 'Name can\'t be number');
+        }
     }
 
     /**
@@ -250,6 +306,8 @@ class User extends ActiveRecord implements IdentityInterface
             'id' => 'ID',
             'email' => 'Email',
             'rating' => 'Social Rating',
+            'username' => 'Username (optional)',
+            'name' => 'Name (optional)',
         ];
     }
 
@@ -268,7 +326,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function sendConfirmationEmail($user)
     {
-        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'auth_key' => $user->auth_key]);
+        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'authKey' =>
+            $user->auth_key]);
 
         return Yii::$app
             ->mailer
@@ -572,8 +631,11 @@ class User extends ActiveRecord implements IdentityInterface
                 'user_id' => $id,
                 'type' => $ratingType,
             ]);
-        }
 
+            if ($rating !== null) {
+                $commit = true;
+            }
+        }
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
@@ -611,7 +673,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
-        //REVIEW [ref] it is very bad way. NEVER set default conditions for whole app.
+        //TODO [ref] it is very bad way. NEVER set default conditions for whole app.
         //  there are exist very-very rare cases, when it is really necessary to do.
         //  Why: this condition useful, only when user with role 'User' is logged on.
         //       but what if user with role 'Admin' is logged on?

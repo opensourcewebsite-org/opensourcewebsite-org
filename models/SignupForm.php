@@ -10,7 +10,6 @@ use yii\base\Model;
  */
 class SignupForm extends Model
 {
-    public $username;
     public $email;
     public $password;
 
@@ -60,11 +59,11 @@ class SignupForm extends Model
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param string $authKey the user authKey
+     * @param string $authKey the user auth_key
      *
      * @return User|null the saved model or null if saving fails
      */
-    public static function confirmEmail($id, $authKey)
+    public static function confirmEmail(int $id, string $authKey)
     {
         $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
 

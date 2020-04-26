@@ -44,7 +44,9 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton(Yii::t('app', 'Save'), [
+                            'class' => 'btn btn-success',
+                            'title' => Yii::t('app', 'Save')]) ?>
                     <?= Html::a(Yii::t('app', 'Cancel'), ['/contact'], [
                         'class' => 'btn btn-secondary',
                         'title' => Yii::t('app', 'Cancel'),
@@ -94,7 +96,7 @@ function warnOnDeleteDebtRedistributionSettings() {
     let inputUser = $('#contact-useridorname');
     let newUser = inputUser.val() + '';
     let oldUser = inputUser.attr('data-old-value') + '';
-    if (!oldUser || oldUser === newUser) {
+    if (!oldUser || oldUser === 'undefined' || oldUser === newUser) {
         return true;
     }
 
