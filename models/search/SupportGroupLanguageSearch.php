@@ -20,7 +20,7 @@ class SupportGroupLanguageSearch extends SupportGroupLanguage
     {
         return [];
     }
-    
+
     /**
      * Creates data provider instance with search query applied
      *
