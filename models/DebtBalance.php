@@ -5,6 +5,7 @@ namespace app\models;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\DebtBalanceQuery;
+use app\models\traits\SelectForUpdateTrait;
 use yii\base\Exception;
 use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
@@ -35,6 +36,7 @@ use yii\db\ActiveRecord;
 class DebtBalance extends ActiveRecord implements ByDebtInterface
 {
     use ByDebtTrait;
+    use SelectForUpdateTrait;
 
     /**
      * Should script store zero amount in DB.
@@ -50,8 +52,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     /** @var bool {@see DebtBalance::requireAllowExecute()} */
     private static $allowExecute = false;
-
-    private $foundForUpdate = false;
 
     /**
      * {@inheritdoc}
@@ -101,7 +101,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
      */
     public function getChainMemberParent()
     {
-        /** @var [] $link empty array is not bug. {@see DebtBalance::chainMemberParent} */
+        /** @var [] $link empty array is not bug. {@see DebtBalance::$chainMemberParent} */
         $link = [];
         return $this->hasOne(self::className(), $link);
     }
@@ -165,12 +165,13 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             throw new InvalidCallException('Method require `Debt::isStatusConfirm() === TRUE`');
         }
 
-        if ($debt->isRelationPopulated('debtBalance') && $debt->debtBalance->foundForUpdate) {
+        if ($debt->isRelationPopulated('debtBalance') && $debt->debtBalance->isFoundForUpdate()) {
             $debtBalance = $debt->debtBalance;
         } else {
             //`FOR UPDATE` - necessary to avoid conflict. Because we can't just set `amount = amount + :debtAmount`.
             // We need possibility to switch values of `from_user_id` & `to_user_id`. And possibility to delete row.
-            $debtBalance = DebtBalance::findOneForUpdate($debt);
+            $query = DebtBalance::find()->debt($debt);
+            $debtBalance = DebtBalance::findOneForUpdate($query);
         }
 
         if ($debtBalance) {
@@ -216,53 +217,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             $message .= 'DebtBalance::$errors = ' . print_r($this->errors, true);
             throw new Exception($message);
         }
-    }
-
-    /**
-     * @param self[] $models
-     *
-     * @return DebtBalance[]
-     */
-    public static function findAllForUpdate($models): array
-    {
-        self::requireTransaction();
-
-        $sql = self::find()
-            ->balances($models)
-            ->createCommand()
-            ->getRawSql();
-
-        $modelsRefreshed = self::findBySql($sql . ' FOR UPDATE')->all();
-        foreach ($modelsRefreshed as $model) {
-            $model->foundForUpdate = true;
-        }
-
-        return $modelsRefreshed;
-    }
-
-    /**
-     * @param Debt|DebtBalance $model
-     *
-     * @return DebtBalance|null
-     */
-    private static function findOneForUpdate($model): ?self
-    {
-        self::requireTransaction();
-
-        $query = self::find();
-        if ($model instanceof DebtBalance) {
-            $query->where($model->getPrimaryKey(true));
-        } else {
-            $query->debt($model);
-        }
-        $sql = $query->createCommand()->getRawSql();
-
-        $balance = self::findBySql($sql . ' FOR UPDATE')->one();
-        if ($balance) {
-            $balance->foundForUpdate = true;
-        }
-
-        return $balance;
     }
 
     private function changeProcessed(Debt $debt): void
@@ -339,12 +293,5 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         $message .= " You should never allow to call any execute method as public - to avoid bugs in future development.\n";
 
         throw new NotSupportedException($message);
-    }
-
-    private static function requireTransaction(): void
-    {
-        if (!self::getDb()->getTransaction()) {
-            throw new InvalidCallException('The method must be called in DB transaction');
-        }
     }
 }
