@@ -45,8 +45,12 @@ class TopController extends Controller
 
     public function actionIndex()
     {
+        $chat = $this->getTelegramChat();
+        $chatId = $chat->chat_id;
+
         $tops = RatingVote::find()
             ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
+            ->where(['chat_id' => $chat->id])
             ->groupBy('provider_candidate_id')
             ->orderBy(['rating' => SORT_DESC])
             ->having(['>', 'rating', 0])
@@ -57,8 +61,8 @@ class TopController extends Controller
             return [];
         }
 
-        $deleteMessageCommand = new DeleteMessageCommand($this->getTelegramChat()->chat_id, $this->getUpdate()->getMessage()->getMessageId());
-        $deleteMessageCommand->send($this->getBotApi());
+        //$deleteMessageCommand = new DeleteMessageCommand($this->getTelegramChat()->chat_id, $this->getUpdate()->getMessage()->getMessageId());
+        //$deleteMessageCommand->send($this->getBotApi());
 
         foreach ($tops as  &$top) {
             $top['username'] = $this->getProviderUsernameById($top['provider_candidate_id']);
@@ -86,7 +90,7 @@ class TopController extends Controller
         $estimatedMessage = $message->getReplyToMessage();
         $estimatedMessageId = $estimatedMessage->getMessageId();
 
-        $canCreateVoting = isset($estimateValue) && $estimatedMessage;
+        $canCreateVoting = isset($estimateValue) && $estimatedMessage && !$estimatedMessage->getFrom()->isBot();
         if (!$canCreateVoting) {
             return [];
         }
@@ -96,8 +100,15 @@ class TopController extends Controller
         $sendMessageCommand = array_pop($this->getResultCommand($estimatedMessageId));
         $sendMessageCommand->replyToMessageId = $estimatedMessageId;
         $votingMessage = $sendMessageCommand->send($this->getBotApi());
-        if ($votingMessage) {
+
+        $voting = RatingVoting::find()->where(['candidate_message_id' => $estimatedMessageId, 'chat_id' => $chat->id])->one();
+        if ($voting) {
+            $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $voting->voting_message_id);
+            $deleteMessageCommand->send($this->getBotApi());
+        } else {
             $voting = new RatingVoting();
+        }
+        if ($votingMessage) {
             $voting->voting_message_id = $votingMessage->getMessageId();
             $voting->candidate_message_id = $estimatedMessageId;
             $voting->chat_id = $chat->id;
@@ -119,15 +130,6 @@ class TopController extends Controller
     {
         $this->AddOrChangeVote($messageId, self::VOTE_DISLIKE);
         return $this->getResultCommand($messageId);
-    }
-
-    public function send($text)
-    {
-        ResponseBuilder::fromUpdate($this->getUpdate())
-            ->sendMessage(
-                new \app\modules\bot\components\helpers\MessageText('text: '.$text)
-            )
-            ->build()[0]->send($this->getBotApi());
     }
 
     private function AddOrChangeVote(int $messageId, int $estimate)
@@ -170,27 +172,36 @@ class TopController extends Controller
 
         $likeVotes = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'vote' => self::VOTE_LIKE])->count();
         $dislikeVotes = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'vote' => self::VOTE_DISLIKE])->count();
+
+        $voteToGetCandidate = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
+        $candidateId = $voteToGetCandidate->provider_candidate_id;
+        $candidateRating = RatingVote::find()
+            ->where(['chat_id' => $chat->id, 'provider_candidate_id' => $candidateId])
+            ->sum('vote');
+
+        $candidate = $this->getProviderUsernameById($candidateId);
         $replyMarkup = [
             [
                 [
                     'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
-                    'text' => '👍 ' . Yii::t('bot', 'Like') . ' (' . $likeVotes . ')',
+                    //'text' => '👍 ' . Yii::t('bot', 'Like') . ' (' . $likeVotes . ')',
+                    'text' => '👍' . ' ' . $likeVotes,
                 ],
-            ],
-            [
                 [
                     'callback_data' => self::createRoute('dislike-message', ['messageId' => $messageId]),
-                    'text' => '👎 ' . Yii::t('bot', 'Disike') . ' (' . $dislikeVotes . ')',
+                    //'text' => '👎 ' . Yii::t('bot', 'Disike') . ' (' . $dislikeVotes . ')',
+                    'text' => '👎' . ' ' . $dislikeVotes,
                 ],
             ]
         ];
 
         $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
-            $this->render('vote'),
+            $this->render('vote', ['candidateRating' => $candidateRating, 'candidate' => $candidate]),
             $replyMarkup
         )->build();
 
-        /*$votingFormsQuery = RatingVoting::find()->where(['candidate_message_id' => $messageId, 'chat_id' => $chatId]);
+        /*
+        $votingFormsQuery = RatingVoting::find()->where(['candidate_message_id' => $messageId, 'chat_id' => $chatId]);
         if ($thisMessage = $this->getUpdate()->getMessage()) {
             $votingFormsQuery->andWhere(['!=','voting_message_id',$thisMessage->getMessageId()]);
         }
