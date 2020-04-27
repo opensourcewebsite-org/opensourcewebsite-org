@@ -268,13 +268,13 @@ class SupportGroupBotHandler extends BotApi
 
             $availableLanguagesName = SupportGroupLanguage::find()
                 ->where(['support_group_id' => $this->support_group_id])
-                ->with('languageCode')
+                ->with('language')
                 ->all();
 
             $availableLanguagesName = ArrayHelper::map(
                 $availableLanguagesName,
                 'language_code',
-                'languageCode.name'
+                'language.name'
             );
 
             foreach ($availableLanguages as $languageShow) {

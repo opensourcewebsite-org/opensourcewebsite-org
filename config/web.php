@@ -47,14 +47,14 @@ $config = [
                     'css' => [],
                 ],
                 'yii\bootstrap\BootstrapPluginAsset' => [
-					'js' => [
-						'//cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js',
-						'//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
-					],
+                    'js' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/2.3.3/umd/popper.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
+                    ],
                 ],
                 'yii\web\JqueryAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js',
                         '//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js',
                     ],
                     'jsOptions' => ['position' => View::POS_HEAD],
@@ -87,11 +87,11 @@ $config = [
             'useFileTransport' => YII_ENV_DEV,
         ],
         'log' => [
-			'flushInterval' => 1,
+            'flushInterval' => 1,
             'targets' => [
                 'file' => [
                     'class' => 'yii\log\FileTarget',
-					'exportInterval' => 1,
+                    'exportInterval' => 1,
                     'logFile' => '@runtime/logs/web.log',
                     'levels' => ['error'],
                     'logVars' => [],
@@ -105,14 +105,14 @@ $config = [
                 ],
                 'bad-requests' => [
                     'class' => 'yii\log\FileTarget',
-					'exportInterval' => 1,
+                    'exportInterval' => 1,
                     'categories' => ['yii\web\HttpException:400'],
                     'logFile' => '@runtime/logs/bad-requests.log',
-					'logVars' => [],
+                    'logVars' => [],
                 ],
                 'mail' => [
                     'class' => 'yii\log\EmailTarget',
-					'exportInterval' => 1,
+                    'exportInterval' => 1,
                     'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
                     'levels' => ['error'],
                     'logVars' => [],

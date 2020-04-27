@@ -92,6 +92,8 @@ Recommended IDE:
     * Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
   * [Eclipse](https://www.eclipse.org)
   	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
+  * [VS Code](https://code.visualstudio.com)
+  * [Sublime Text](https://www.sublimetext.com)
 
 #### Yii 2 migration files
 
@@ -119,6 +121,8 @@ Recommended IDE:
   * [Atom](https://atom.io)
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
   * [Eclipse](https://www.eclipse.org)
+  * [VS Code](https://code.visualstudio.com)
+  * [Sublime Text](https://www.sublimetext.com)
 
 - Prefer the object spread operator (`{...anotherObj}`) to `Object.assign()`
 - Inline `export`s with expressions whenever possible

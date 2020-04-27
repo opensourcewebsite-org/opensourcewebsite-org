@@ -16,6 +16,8 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_at
  * @property int $updated_by
  * @property SupportGroupCommandText[] $reIndexTexts
+ * @property SupportGroupLanguage[] $languages
+ * @property string $languageCode
  *
  * @property SupportGroup $supportGroup
  * @property SupportGroupCommandText[] $supportGroupCommandTexts
@@ -112,7 +114,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return SupportGroupLanguage[]
      */
     public function getLanguages()
     {
@@ -128,7 +130,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
 
         foreach ($this->languages as $lang) {
             $navItems[] = [
-                'label'       => $lang->languageCode->name_ascii,
+                'label'       => $lang->language->name_ascii,
                 'url'         => '#tab_' . $lang->id,
                 'linkOptions' => [
                     'data-toggle' => 'tab',

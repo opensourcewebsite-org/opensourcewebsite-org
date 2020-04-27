@@ -29,6 +29,22 @@ class VotebanController extends Controller
     /**
      * @return boolean
      */
+    public function beforeAction($action)
+    {
+        $chat = $this->getTelegramChat();
+        $chatId = $chat->chat_id;
+
+        $isBotAdmin = false;
+        $botUser = User::find()->where(['provider_user_name' => $this->getBotName()])->one();
+
+        if ($botUser) {
+            $isBotAdmin = ChatMember::find()->where(['chat_id' => $chat->id, 'user_id' => $botUser->id, 'status' => ChatMember::STATUS_ADMINISTRATOR])->exists();
+        }
+        if (!$isBotAdmin) {
+            return false;
+        }
+        return true;
+    }
 
     public function beforeAction($action)
     {
