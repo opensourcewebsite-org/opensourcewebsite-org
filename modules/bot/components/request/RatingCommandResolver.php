@@ -3,7 +3,7 @@
 namespace app\modules\bot\components\request;
 
 use TelegramBot\Api\Types\Update;
-use  app\modules\bot\controllers\publics\TopController;
+use app\modules\bot\controllers\publics\TopController;
 
 class RatingCommandResolver implements ICommandResolver
 {

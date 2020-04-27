@@ -26,7 +26,6 @@ class TopController extends Controller
     public function beforeAction($action)
     {
         $chat = $this->getTelegramChat();
-        $chatId = $chat->chat_id;
 
         $isBotAdmin = false;
         $botUser = User::find()->where(['provider_user_name' => $this->getBotName()])->one();
@@ -46,8 +45,6 @@ class TopController extends Controller
     public function actionIndex()
     {
         $chat = $this->getTelegramChat();
-        $chatId = $chat->chat_id;
-
         $tops = RatingVote::find()
             ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
             ->where(['chat_id' => $chat->id])
@@ -61,10 +58,7 @@ class TopController extends Controller
             return [];
         }
 
-        //$deleteMessageCommand = new DeleteMessageCommand($this->getTelegramChat()->chat_id, $this->getUpdate()->getMessage()->getMessageId());
-        //$deleteMessageCommand->send($this->getBotApi());
-
-        foreach ($tops as  &$top) {
+        foreach ($tops as &$top) {
             $top['username'] = $this->getProviderUsernameById($top['provider_candidate_id']);
         }
         return ResponseBuilder::fromUpdate($this->getUpdate())->sendMessage(
@@ -86,7 +80,6 @@ class TopController extends Controller
         $message = $update->getMessage();
         $messageId = $message->getMessageId();
         $chat = $this->getTelegramChat();
-        $chatId = $chat->chat_id;
         $estimatedMessage = $message->getReplyToMessage();
         $estimatedMessageId = $estimatedMessage->getMessageId();
 
@@ -95,9 +88,10 @@ class TopController extends Controller
             return [];
         }
 
-        $this->AddOrChangeVote($estimatedMessageId, $estimateValue);
+        $this->addOrChangeVote($estimatedMessageId, $estimateValue);
 
-        $sendMessageCommand = array_pop($this->getResultCommand($estimatedMessageId));
+        $resultCommand = $this->getResultCommand($estimatedMessageId);
+        $sendMessageCommand = array_pop($resultCommand);
         $sendMessageCommand->replyToMessageId = $estimatedMessageId;
         $votingMessage = $sendMessageCommand->send($this->getBotApi());
 
@@ -122,21 +116,20 @@ class TopController extends Controller
 
     public function actionLikeMessage($messageId)
     {
-        $this->AddOrChangeVote($messageId, self::VOTE_LIKE);
+        $this->addOrChangeVote($messageId, self::VOTE_LIKE);
         return $this->getResultCommand($messageId);
     }
 
     public function actionDislikeMessage($messageId)
     {
-        $this->AddOrChangeVote($messageId, self::VOTE_DISLIKE);
+        $this->addOrChangeVote($messageId, self::VOTE_DISLIKE);
         return $this->getResultCommand($messageId);
     }
 
-    private function AddOrChangeVote(int $messageId, int $estimate)
+    private function addOrChangeVote(int $messageId, int $estimate)
     {
         $chat = $this->getTelegramChat();
         $chatId = $chat->id;
-        $update = $this->getUpdate();
         $user = $this->getTelegramUser();
         $voterId = $user->provider_user_id;
         $thisMessage = $this->getUpdate()->getMessage();
