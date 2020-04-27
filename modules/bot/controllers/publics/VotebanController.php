@@ -431,13 +431,4 @@ class VotebanController extends Controller
         Yii::warning('Undefined voteban error');
         return [];
     }
-
-    public function send($text)
-    {
-        ResponseBuilder::fromUpdate($this->getUpdate())
-            ->sendMessage(
-                new \app\modules\bot\components\helpers\MessageText('text: '.$text)
-            )
-            ->build()[0]->send($this->getBotApi());
-    }
 }
