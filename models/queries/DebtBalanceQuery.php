@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\Debt;
+use app\models\queries\traits\SelfSearchTrait;
 use yii\db\ActiveQuery;
 use app\models\DebtBalance;
 
@@ -15,6 +16,8 @@ use app\models\DebtBalance;
  */
 class DebtBalanceQuery extends ActiveQuery
 {
+    use SelfSearchTrait;
+
     public function debt(Debt $debt): self
     {
         /**
@@ -55,24 +58,13 @@ class DebtBalanceQuery extends ActiveQuery
     }
 
     /**
-     * @param DebtBalance[] $balances
+     * @param DebtBalance[] $models
      * @param string $operand
      *
-     * @return DebtBalanceQuery
+     * @return self|ActiveQuery
      */
-    public function balances($balances, $operand = 'IN'): self
+    public function balances(array $models, string $operand = 'IN'): self
     {
-        $columns = ['debt_balance.currency_id', 'debt_balance.from_user_id', 'debt_balance.to_user_id'];
-
-        $params = [];
-        foreach ($balances as $balance) {
-            $params[] = [
-                'debt_balance.currency_id'  => $balance->currency_id,
-                'debt_balance.from_user_id' => $balance->from_user_id,
-                'debt_balance.to_user_id'   => $balance->to_user_id,
-            ];
-        }
-
-        return $this->andWhere([$operand, $columns, $params]);
+        return $this->models($models, $operand);
     }
 }
