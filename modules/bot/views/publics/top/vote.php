@@ -1,1 +1,1 @@
-Do you like this message? Sender: <?= $candidate; ?> (rating: <?= $candidateRating; ?>)
+<?= $voter; ?> <?= Yii::t('bot', 'would like to react'); ?> <?= $candidate; ?> (rating: <?= $candidateRating; ?>)
