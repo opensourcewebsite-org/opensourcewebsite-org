@@ -214,5 +214,5 @@ return [
     'Kick'=>'Кикнуть',
     'Save'=>'Простить',
     'My functions for telegram groups' => 'Мои функции для телеграм групп',
-    'The list of group administrators updated' => 'Обновлен список администраторов группы',
+    'The list of group administrators updated' => 'Обновлен писок администраторов группы',
 ];

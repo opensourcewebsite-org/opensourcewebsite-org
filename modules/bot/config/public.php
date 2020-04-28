@@ -15,6 +15,7 @@ return [
             ],
             'commandResolvers' => [
                 new SystemMessageCommandResolver(),
+                new RatingCommandResolver(),
                 new MessageCommandResolver(),
                 new CallbackQueryCommandResolver(),
             ],
