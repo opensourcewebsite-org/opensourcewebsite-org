@@ -12,12 +12,12 @@ class RatingCommandResolver implements ICommandResolver
         $message = $update->getMessage();
         if ($message) {
             $replyMessage = $message->getReplyToMessage();
-        }
-        if ($replyMessage) {
-            $commandText = $message->getText();
-            $estimate = trim($commandText);
-            if (in_array($estimate, ['+','-'])) {
-                $route = TopController::createRoute('start', ['estimate' => $estimate]);
+            if ($replyMessage) {
+                $commandText = $message->getText();
+                $estimate = trim($commandText);
+                if (in_array($estimate, ['+','-'])) {
+                    $route = TopController::createRoute('start', ['estimate' => $estimate]);
+                }
             }
         }
         return $route ?? null;

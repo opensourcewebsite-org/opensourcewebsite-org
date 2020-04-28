@@ -215,5 +215,10 @@ return [
     'Save'=>'Простить',
     'My functions for telegram groups' => 'Мои функции для телеграм групп',
     'The list of group administrators updated' => 'Обновлен список администраторов группы',
-    'would like to react' => 'хочет отреагировать на'
+    'would like to react' => 'хочет отреагировать на',
+    'Awesome members' => 'Классные участники',
+    'rating' => 'рейтинг',
+    'To start a vote, send a reply “+” or "-" to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ "+" или "-" на сообщение любого участника группы',
+    'Not applicable for bots' => 'Не применимо к ботам',
+    'send to the group to publish the list of members with votes' => 'отправьте в группу чтобы опубликовать список участников с голосами',
 ];
