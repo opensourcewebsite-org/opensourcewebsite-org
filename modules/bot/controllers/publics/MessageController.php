@@ -20,6 +20,7 @@ class MessageController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
+        \Yii::info(print_r($update->getMessage(),1),'xxxxx');
 
         $chat = $this->getTelegramChat();
 
