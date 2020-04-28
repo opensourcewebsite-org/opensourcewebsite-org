@@ -15,9 +15,6 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Message;
 use Yii;
 
-/**
- *
- */
 class TopController extends Controller
 {
     const VOTE_LIKE = 1;
@@ -108,11 +105,11 @@ class TopController extends Controller
             $voting->chat_id = $chat->id;
             $voting->save();
         }
+
         $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $messageId);
         $deleteMessageCommand->send($this->getBotApi());
         return [];
     }
-
 
     public function actionLikeMessage($messageId)
     {
@@ -177,12 +174,10 @@ class TopController extends Controller
             [
                 [
                     'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
-                    //'text' => '👍 ' . Yii::t('bot', 'Like') . ' (' . $likeVotes . ')',
                     'text' => '👍' . ' ' . $likeVotes,
                 ],
                 [
                     'callback_data' => self::createRoute('dislike-message', ['messageId' => $messageId]),
-                    //'text' => '👎 ' . Yii::t('bot', 'Disike') . ' (' . $dislikeVotes . ')',
                     'text' => '👎' . ' ' . $dislikeVotes,
                 ],
             ]
@@ -192,25 +187,6 @@ class TopController extends Controller
             $this->render('vote', ['candidateRating' => $candidateRating, 'candidate' => $candidate]),
             $replyMarkup
         )->build();
-
-        /*
-        $votingFormsQuery = RatingVoting::find()->where(['candidate_message_id' => $messageId, 'chat_id' => $chatId]);
-        if ($thisMessage = $this->getUpdate()->getMessage()) {
-            $votingFormsQuery->andWhere(['!=','voting_message_id',$thisMessage->getMessageId()]);
-        }
-        $votingForms = $votingFormsQuery->orderBy(['voting_message_id' => SORT_DESC])->limit(3)->all();
-
-        foreach ($votingForms as $votingForm) {
-            $editCommand= new EditMessageTextCommand(
-                $chat->chat_id,
-                $votingForm->voting_message_id,
-                $this->render('index'),
-                [
-                    'replyMarkup' => new InlineKeyboardMarkup($replyMarkup)
-                ]
-            );
-            $editCommand->send($this->getBotApi());
-        }*/
 
         return $commands;
     }
