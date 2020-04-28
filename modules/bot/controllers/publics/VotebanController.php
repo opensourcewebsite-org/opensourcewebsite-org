@@ -84,7 +84,7 @@ class VotebanController extends Controller
      * @return array
      */
 
-    public function actionUserSave($userId)
+    public function actionUserSave($userId = 0)
     {
         return $this->voteUser($userId, -self::VOTING_POWER);
     }
@@ -249,6 +249,9 @@ class VotebanController extends Controller
     {
         $voting = null;
         $votingInitMessage = $this->getUpdate()->getMessage();
+
+
+
         if (isset($votingInitMessage)) {
             $sender = $votingInitMessage->getFrom();
             $spamMessage = $votingInitMessage->getReplyToMessage();
@@ -263,6 +266,14 @@ class VotebanController extends Controller
                         'chat_id' => $chatId
                     ]
                 ]);
+
+            $sameVotingForm = VotebanVoting::find()->where(['provider_candidate_id' => $spamer->getId(),'chat_id' => $chatId])->one();
+
+            if ($sameVotingForm) {
+                $deleteMessageCommand = new DeleteMessageCommand($this->getTelegramChat()->chat_id, $sameVotingForm->voting_message_id);
+                $deleteMessageCommand->send($this->getBotApi());
+                $sameVotingForm->delete();
+            }
         }
         return $voting;
     }

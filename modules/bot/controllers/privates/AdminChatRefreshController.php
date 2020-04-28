@@ -97,18 +97,19 @@ class AdminChatRefreshController extends Controller
                 }
             }
 
-            if (!$currentUserIsAdministrator) {
-                $this->getState()->setName(AdminChatController::createRoute('index'));
-            }
-
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            if ($currentUserIsAdministrator) {
+                $result = ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery(
                     $this->render('index'),
                     true
                 )
                 ->build();
+            }
         }
 
-        return $this->run('admin/index');
+        if (!$result) {
+            $result = $this->run('admin/index');
+        }
+        return $result;
     }
 }
