@@ -1,5 +1,6 @@
 <?php
 
+use app\models\SupportGroupLanguage;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
@@ -39,9 +40,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'languageCode.name_ascii',
                     'format' => 'raw',
-                    'content' => function ($model) use ($searchModel) {
+                    'content' => function (SupportGroupLanguage $model) use ($searchModel) {
                         return Html::a(
-                            $model->languageCode->name_ascii,
+                            $model->language->name_ascii,
                             ['clients-list', 'id' => $searchModel->support_group_id, 'language' => $model->language_code]
                         );
                     }
