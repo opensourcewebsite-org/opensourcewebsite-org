@@ -13,9 +13,6 @@
     <!-- @see https://phpmd.org/rules/cleancode.html#booleanargumentflag -->
     <rule ref="rulesets/cleancode.xml/BooleanArgumentFlag"/>
 
-    <!-- @see https://phpmd.org/rules/cleancode.html#elseexpression -->
-    <rule ref="rulesets/cleancode.xml/ElseExpression"/>
-
     <!-- @see http://phpmd.org/rules/codesize.html#excessivemethodlength -->
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength"/>
 
