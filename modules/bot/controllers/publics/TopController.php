@@ -23,7 +23,6 @@ class TopController extends Controller
     public function beforeAction($action)
     {
         $chat = $this->getTelegramChat();
-
         $isBotAdmin = false;
         $botUser = User::find()->where(['provider_user_name' => $this->getBotName()])->one();
         if ($botUser) {
@@ -76,11 +75,12 @@ class TopController extends Controller
         $update = $this->getUpdate();
         $message = $update->getMessage();
         $messageId = $message->getMessageId();
+        $currentUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
         $estimatedMessage = $message->getReplyToMessage();
         $estimatedMessageId = $estimatedMessage->getMessageId();
 
-        $canCreateVoting = isset($estimateValue) && $estimatedMessage && !$estimatedMessage->getFrom()->isBot();
+        $canCreateVoting = isset($estimateValue) && $estimatedMessage && !$estimatedMessage->getFrom()->isBot() && ($currentUser->provider_user_id != $estimatedMessage->getFrom()->getId());
         if (!$canCreateVoting) {
             return [];
         }
@@ -92,13 +92,16 @@ class TopController extends Controller
         $sendMessageCommand->replyToMessageId = $estimatedMessageId;
         $votingMessage = $sendMessageCommand->send($this->getBotApi());
 
-        $voting = RatingVoting::find()->where(['candidate_message_id' => $estimatedMessageId, 'chat_id' => $chat->id])->one();
-        if ($voting) {
-            $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $voting->voting_message_id);
-            $deleteMessageCommand->send($this->getBotApi());
-        } else {
-            $voting = new RatingVoting();
+        $votings = RatingVoting::find()->where(['candidate_message_id' => $estimatedMessageId, 'chat_id' => $chat->id])->all();
+        if ($votings) {
+            foreach ($votings as $voting) {
+                $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $voting->voting_message_id);
+                $deleteMessageCommand->send($this->getBotApi());
+                $voting->delete();
+            }
         }
+
+        $voting = new RatingVoting();
         if ($votingMessage) {
             $voting->voting_message_id = $votingMessage->getMessageId();
             $voting->candidate_message_id = $estimatedMessageId;
@@ -113,14 +116,27 @@ class TopController extends Controller
 
     public function actionLikeMessage($messageId)
     {
+        if ($this->isItUserSelfVote($messageId)) {
+            return [];
+        }
         $this->addOrChangeVote($messageId, self::VOTE_LIKE);
         return $this->getResultCommand($messageId);
     }
 
     public function actionDislikeMessage($messageId)
     {
+        if ($this->isItUserSelfVote($messageId)) {
+            return [];
+        }
         $this->addOrChangeVote($messageId, self::VOTE_DISLIKE);
         return $this->getResultCommand($messageId);
+    }
+
+    private function isItUserSelfVote($messageId)
+    {
+        $chatId = $this->getTelegramChat()->id;
+        $user = $this->getTelegramUser();
+        return RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'provider_candidate_id' => $user->provider_user_id])->exists();
     }
 
     private function addOrChangeVote(int $messageId, int $estimate)

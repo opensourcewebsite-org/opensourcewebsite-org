@@ -4,6 +4,7 @@ use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryCommandResolver;
 use app\modules\bot\components\request\MessageCommandResolver;
 use app\modules\bot\components\request\SystemMessageCommandResolver;
+use app\modules\bot\components\request\RatingCommandResolver;
 
 return [
     'components' => [

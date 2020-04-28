@@ -10,7 +10,9 @@ class RatingCommandResolver implements ICommandResolver
     public function resolveCommand(Update $update)
     {
         $message = $update->getMessage();
-        $replyMessage = $message->getReplyToMessage();
+        if ($message) {
+            $replyMessage = $message->getReplyToMessage();
+        }
         if ($replyMessage) {
             $commandText = $message->getText();
             $estimate = trim($commandText);
