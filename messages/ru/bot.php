@@ -215,4 +215,5 @@ return [
     'Save'=>'Простить',
     'My functions for telegram groups' => 'Мои функции для телеграм групп',
     'The list of group administrators updated' => 'Обновлен список администраторов группы',
+    'would like to react' => 'хочет отреагировать на'
 ];
