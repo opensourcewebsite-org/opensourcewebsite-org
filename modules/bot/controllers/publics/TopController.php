@@ -105,6 +105,7 @@ class TopController extends Controller
         if ($votingMessage) {
             $voting->voting_message_id = $votingMessage->getMessageId();
             $voting->candidate_message_id = $estimatedMessageId;
+            $voting->provider_starter_id = $currentUser->provider_user_id;
             $voting->chat_id = $chat->id;
             $voting->save();
         }
@@ -200,17 +201,16 @@ class TopController extends Controller
         ];
 
         if ($this->getUpdate()->getCallbackQuery()) {
-            $commands = [];
-            $voting = RatingVoting::find()->where(['chat_id' => $chat->id, 'candidate_message_id' =>$messageId])->one();
-            $commands []= new \app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand($chat->chat_id, $voting->voting_message_id, new \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup($replyMarkup));
+            $voting = RatingVoting::find()->where(['chat_id' => $chat->id, 'candidate_message_id' => $messageId])->one();
+            $voterId = $voting->provider_starter_id;
         } else {
-            $voter = $this->getUpdate()->getMessage()->getFrom();
-            $voterName = $this->getProviderUsernameById($voter->getId());
-            $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
-                $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
-                $replyMarkup
-                )->build();
+            $voterId = $this->getUpdate()->getMessage()->getFrom()->getId();
         }
+        $voterName = $this->getProviderUsernameById($voterId);
+        $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
+            $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
+            $replyMarkup
+            )->build();
         return $commands;
     }
 

@@ -15,6 +15,7 @@ class m200421_140446_create_bot_rating_voting_table extends Migration
         $this->createTable('{{%bot_rating_voting}}', [
             'id' => $this->primaryKey()->unsigned(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
+            'provider_starter_id' => $this->integer()->unsigned()->notNull(),
             'candidate_message_id' => $this->integer()->unsigned()->notNull(),
             'voting_message_id' => $this->integer()->unsigned()->notNull(),
         ]);

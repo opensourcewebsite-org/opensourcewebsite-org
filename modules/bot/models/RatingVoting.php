@@ -28,8 +28,8 @@ class RatingVoting extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'candidate_message_id', 'voting_message_id'], 'required'],
-            [['chat_id', 'candidate_message_id', 'voting_message_id'], 'integer'],
+            [['chat_id', 'candidate_message_id', 'voting_message_id', 'provider_starter_id'], 'required'],
+            [['chat_id', 'candidate_message_id', 'voting_message_id', 'provider_starter_id'], 'integer'],
             [['chat_id', 'candidate_message_id', 'voting_message_id'], 'unique', 'targetAttribute' => ['chat_id', 'candidate_message_id', 'voting_message_id']],
         ];
     }
@@ -43,6 +43,7 @@ class RatingVoting extends \yii\db\ActiveRecord
             'id' => 'ID',
             'chat_id' => 'Chat ID',
             'candidate_message_id' => 'Candidate Message ID',
+            'provider_starter_id' => 'Provider Starter ID',
             'voting_message_id' => 'Voting Message ID',
         ];
     }
