@@ -87,6 +87,7 @@ Recommended IDE:
     * [Atom package for Yii Framework 2](https://atom.io/packages/atom-yii2)
     * [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
     * [Atom package for PHP Linter](https://atom.io/packages/linter-php)
+    * [Atom-Beautify package](https://atom.io/packages/atom-beautify)
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
     * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window "Before commit > Perform SonarLint analysis".
     * Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
