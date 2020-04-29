@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\ChatSetting;
 
 /**
@@ -20,7 +20,6 @@ class MessageController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
-        \Yii::info(print_r($update->getMessage(),1),'xxxxx');
 
         $chat = $this->getTelegramChat();
 
@@ -64,12 +63,9 @@ class MessageController extends Controller
         }
 
         if ($deleteMessage) {
-            return [
-                new DeleteMessageCommand(
-                    $update->getMessage()->getChat()->getId(),
-                    $update->getMessage()->getMessageId()
-                ),
-            ];
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->deleteMessage()
+                ->build();
         }
     }
 }

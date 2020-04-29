@@ -5,12 +5,10 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\commands\EditMessageTextCommand;
-use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Phrase;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use yii\data\Pagination;
 
 /**
@@ -63,14 +61,10 @@ class AdminMessageFilterController extends Controller
         $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
         $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => self::createRoute('status', [
@@ -111,10 +105,9 @@ class AdminMessageFilterController extends Controller
                                 'text' => '🔙',
                             ],
                         ]
-                    ]),
-                ]
-            ),
-        ];
+                    ]
+                )
+                ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -229,30 +222,12 @@ class AdminMessageFilterController extends Controller
             ],
         ];
 
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
                     $this->render('blacklist', compact('chatTitle')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('blacklist', compact('chatTitle')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        }
+                    $buttons
+                )
+                ->build();
     }
 
     /**
@@ -326,30 +301,12 @@ class AdminMessageFilterController extends Controller
             ],
         ];
 
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                     $this->render('whitelist', compact('chatTitle')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('whitelist', compact('chatTitle')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        }
+                    $buttons
+            )
+            ->build();
     }
 
     /**
@@ -362,14 +319,10 @@ class AdminMessageFilterController extends Controller
             'chatId' => $chatId,
         ]));
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('newphrase'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => $type == Phrase::TYPE_BLACKLIST
@@ -382,10 +335,9 @@ class AdminMessageFilterController extends Controller
                                 'text' => '🔙',
                             ],
                         ],
-                    ]),
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionNewphraseUpdate($type = null, $chatId = null)
@@ -428,15 +380,10 @@ class AdminMessageFilterController extends Controller
 
         $phrase = Phrase::findOne($phraseId);
 
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                     $this->render('phrase', compact('phrase')),
                     [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
                             [
                                 [
                                     'callback_data' => $phrase->isTypeBlack()
@@ -461,47 +408,9 @@ class AdminMessageFilterController extends Controller
                                     'text' => '🗑',
                                 ],
                             ],
-                        ]),
                     ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('phrase', compact('phrase')),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup([
-                            [
-                                [
-                                    'callback_data' => $phrase->isTypeBlack()
-                                        ? self::createRoute('blacklist', [
-                                            'chatId' => $phrase->chat_id,
-                                        ])
-                                        : self::createRoute('whitelist', [
-                                            'chatId' => $phrase->chat_id,
-                                        ]),
-                                    'text' => '🔙',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('phrase-create', [
-                                        'phraseId' => $phraseId,
-                                    ]),
-                                    'text' => '✏️',
-                                ],
-                                [
-                                    'callback_data' => self::createRoute('phrase-delete', [
-                                        'phraseId' => $phraseId,
-                                    ]),
-                                    'text' => '🗑',
-                                ],
-                            ],
-                        ]),
-                    ]
-                ),
-            ];
-        }
+                )
+                ->build();
     }
 
     public function actionPhraseDelete($phraseId = null)
@@ -531,14 +440,10 @@ class AdminMessageFilterController extends Controller
             'phraseId' => $phraseId,
         ]));
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('phrase-create'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => self::createRoute('phrase', [
@@ -547,10 +452,9 @@ class AdminMessageFilterController extends Controller
                                 'text' => '🔙',
                             ],
                         ],
-                    ]),
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionPhraseUpdate($phraseId = null)

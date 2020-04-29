@@ -14,6 +14,7 @@ use app\modules\bot\models\RatingVoting;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Message;
 use Yii;
+use yii\helpers\Html;
 
 class TopController extends Controller
 {
@@ -60,7 +61,12 @@ class TopController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())->sendMessage(
             $this->render('index', [
                 'users' => $tops
-            ])
+            ]),
+            [],
+            false,
+            [
+                'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId()
+            ]
         )->build();
     }
 
@@ -191,11 +197,11 @@ class TopController extends Controller
             [
                 [
                     'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
-                    'text' => '👍' . ' ' . $likeVotes,
+                    'text' => '👍' . ( $likeVotes !=0 ? ' ' . $likeVotes : ''),
                 ],
                 [
                     'callback_data' => self::createRoute('dislike-message', ['messageId' => $messageId]),
-                    'text' => '👎' . ' ' . $dislikeVotes,
+                    'text' => '👎' . ( $dislikeVotes !=0 ? ' ' . $dislikeVotes : ''),
                 ],
             ]
         ];
@@ -222,7 +228,7 @@ class TopController extends Controller
                 $userId
             )->getUser();
             $nickname = $user->getUsername();
-            $username = $nickname ? '@' . $nickname : implode(' ', [$user->getFirstName(), $user->getLastName()]);
+            $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]),'tg://user?id=' . $userId);
             return $username;
         } catch (HttpException $e) {
             return '';

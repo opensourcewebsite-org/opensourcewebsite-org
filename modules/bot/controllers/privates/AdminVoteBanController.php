@@ -3,13 +3,10 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
-use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class AdminVoteBanController
@@ -133,7 +130,6 @@ class AdminVoteBanController extends Controller
         $message = $update->getMessage();
         $value =  (int) $message->getText();
 
-
         $chat = Chat::findOne($chatId);
         $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
 
@@ -152,7 +148,6 @@ class AdminVoteBanController extends Controller
         }
         $statusSetting->value= (string) $value;
         $statusSetting->save();
-
 
         $this->getState()->setName(self::createRoute('index', [
             'chatId' => $chatId,
