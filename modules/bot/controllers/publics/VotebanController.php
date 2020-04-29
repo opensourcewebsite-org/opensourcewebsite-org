@@ -16,6 +16,7 @@ use TelegramBot\Api\HttpException;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 
 /**
  * Class VotebanController
@@ -381,7 +382,7 @@ class VotebanController extends Controller
                 $userId
             )->getUser();
             $nickname = $user->getUsername();
-            $username = $nickname ? '@' . $nickname : implode(' ', [$user->getFirstName(), $user->getLastName()]);
+            $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]),'tg://user?id=' . $userId);
             return $username;
         } catch (HttpException $e) {
             return '';
