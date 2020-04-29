@@ -71,6 +71,8 @@ plugins:
       file_extensions: "php"
       rulesets: "unusedcode,codesize,naming,phpmd.xml"
     checks:
+      CleanCode/ElseExpression:
+        enabled: false
       CyclomaticComplexity:
         enabled: false
       Design/CouplingBetweenObjects:
