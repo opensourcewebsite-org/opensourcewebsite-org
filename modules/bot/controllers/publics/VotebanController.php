@@ -320,18 +320,18 @@ class VotebanController extends Controller
             ])
             )
             ->build();
-        }
+    }
 
-        /**
-        * @return array
-        */
-        private function saveUser($userId)
-        {
-            $chat = $this->getTelegramChat();
-            $votersIds = VotebanVote::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id,'vote' => -self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
-            $votersNames = $this->getProviderUsernamesByIds($votersIds);
-            $this->clearUserVoteHistory($userId);
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+    /**
+    * @return array
+    */
+    private function saveUser($userId)
+    {
+        $chat = $this->getTelegramChat();
+        $votersIds = VotebanVote::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id,'vote' => -self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
+        $votersNames = $this->getProviderUsernamesByIds($votersIds);
+        $this->clearUserVoteHistory($userId);
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendMessage(
                 $this->render('user-saved', [
                     'user' => $this->getProviderUsernameById($userId),
@@ -339,93 +339,93 @@ class VotebanController extends Controller
                 ])
                 )
                 ->build();
-            }
+    }
 
-            private function clearUserVoteHistory($userId)
-            {
-                $chat = $this->getTelegramChat();
-                $votingMessagesIDs = VotebanVoting::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id])->select('voting_message_id')->asArray()->column();
+    private function clearUserVoteHistory($userId)
+    {
+        $chat = $this->getTelegramChat();
+        $votingMessagesIDs = VotebanVoting::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id])->select('voting_message_id')->asArray()->column();
 
-                foreach ($votingMessagesIDs as $votingMessageID) {
-                    $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingMessageID);
-                    $deleteMessageCommand->send($this->getBotApi());
-                }
+        foreach ($votingMessagesIDs as $votingMessageID) {
+            $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingMessageID);
+            $deleteMessageCommand->send($this->getBotApi());
+        }
 
-                VotebanVote::deleteAll([
+        VotebanVote::deleteAll([
                     'chat_id' => $this->getTelegramChat()->id,
                     'provider_candidate_id' => $userId
                 ]);
 
-                VotebanVoting::deleteAll([
+        VotebanVoting::deleteAll([
                     'chat_id' => $this->getTelegramChat()->id,
                     'provider_candidate_id' => $userId
                 ]);
-            }
+    }
 
-            private function getProviderUsernamesByIds(array $ids)
-            {
-                $names = [];
-                foreach ($ids as $id) {
-                    $name = $this->getProviderUsernameById($id);
-                    if ($name) {
-                        $names[] = $name;
-                    }
-                }
-                return $names;
+    private function getProviderUsernamesByIds(array $ids)
+    {
+        $names = [];
+        foreach ($ids as $id) {
+            $name = $this->getProviderUsernameById($id);
+            if ($name) {
+                $names[] = $name;
             }
+        }
+        return $names;
+    }
 
-            private function getProviderUsernameById($userId)
-            {
-                try {
-                    $user = $this->getBotApi()->getChatMember(
+    private function getProviderUsernameById($userId)
+    {
+        try {
+            $user = $this->getBotApi()->getChatMember(
                         $this->getTelegramChat()->chat_id,
                         $userId
                         )->getUser();
-                        $nickname = $user->getUsername();
-                        $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
-                        return $username;
-                    } catch (HttpException $e) {
-                        return '';
-                    }
-                }
+            $nickname = $user->getUsername();
+            $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
+            return $username;
+        } catch (HttpException $e) {
+            return '';
+        }
+    }
 
-                private function isCandidateChatAdmin($userId, $chatId)
-                {
-                    $administrators = $this->getBotApi()->getChatAdministrators($chatId);
-                    return in_array(
+    private function isCandidateChatAdmin($userId, $chatId)
+    {
+        $administrators = $this->getBotApi()->getChatAdministrators($chatId);
+        return in_array(
                         $userId,
                         ArrayHelper::getColumn($administrators, function ($el) {
                             return $el->getUser()->getId();
                         })
                     );
-                }
+    }
 
-                private function isCallbackQuery()
-                {
-                    return $this->getUpdate()->getCallbackQuery() !== null;
-                }
+    private function isCallbackQuery()
+    {
+        return $this->getUpdate()->getCallbackQuery() !== null;
+    }
 
-                private function sendCandidateIsAdminError()
-                {
-                    Yii::warning('Voteban admin attempt');
-                    return [];
-                }
+    private function sendCandidateIsAdminError()
+    {
+        Yii::warning('Voteban admin attempt');
+        return [];
+    }
 
-                private function sendMyselfVoteError()
-                {
-                    Yii::warning('Voteban himself attempt');
-                    return [];
-                }
+    private function sendMyselfVoteError()
+    {
+        Yii::warning('Voteban himself attempt');
+        return [];
+    }
 
-                private function sendIgnoreMessageError()
-                {
-                    Yii::warning('Ignore message');
-                    return [];
-                }
+    private function sendIgnoreMessageError()
+    {
+        Yii::warning('Ignore message');
+        return [];
+    }
 
-                private function sendUndefinedError()
-                {
-                    Yii::warning('Undefined voteban error');
-                    return [];
-                }
-            }
+    private function sendUndefinedError()
+    {
+        Yii::warning('Undefined voteban error');
+        return [];
+    }
+}

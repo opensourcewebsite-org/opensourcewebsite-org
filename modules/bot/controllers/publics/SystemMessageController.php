@@ -8,15 +8,15 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class SystemMessageController
- *
- * @package app\controllers\bot
- */
+* Class SystemMessageController
+*
+* @package app\controllers\bot
+*/
 class SystemMessageController extends Controller
 {
     /**
-     * @return array
-     */
+    * @return array
+    */
     public function actionIndex()
     {
         $chat = $this->getTelegramChat();
@@ -30,8 +30,8 @@ class SystemMessageController extends Controller
 
         if ($deleteMessage) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->deleteMessage()
-                ->build();
+            ->deleteMessage()
+            ->build();
         }
     }
 

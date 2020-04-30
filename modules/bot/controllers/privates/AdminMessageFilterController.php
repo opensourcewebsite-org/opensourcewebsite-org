@@ -108,66 +108,66 @@ class AdminMessageFilterController extends Controller
             ]
             )
             ->build();
+    }
+
+    public function actionUpdate($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
         }
 
-        public function actionUpdate($chatId = null)
-        {
-            $chat = Chat::findOne($chatId);
+        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
-            if (!isset($chat)) {
-                return [];
-            }
-
-            $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
-
-            if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
-                $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
-            } else {
-                $modeSetting->value = ChatSetting::FILTER_MODE_BLACKLIST;
-            }
-
-            $modeSetting->save();
-
-            return $this->actionIndex($chatId);
+        if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+            $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
+        } else {
+            $modeSetting->value = ChatSetting::FILTER_MODE_BLACKLIST;
         }
 
-        public function actionStatus($chatId = null)
-        {
-            $chat = Chat::findOne($chatId);
+        $modeSetting->save();
 
-            if (!isset($chat)) {
-                return [];
-            }
+        return $this->actionIndex($chatId);
+    }
 
-            $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
+    public function actionStatus($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
 
-            if ($statusSetting->value == ChatSetting::FILTER_STATUS_ON) {
-                $statusSetting->value = ChatSetting::FILTER_STATUS_OFF;
-            } else {
-                $statusSetting->value = ChatSetting::FILTER_STATUS_ON;
-            }
-
-            $statusSetting->save();
-
-            return $this->actionIndex($chatId);
+        if (!isset($chat)) {
+            return [];
         }
 
-        /**
-        * @return array
-        */
-        public function actionBlacklist($chatId = null, $page = 1)
-        {
-            $chat = Chat::findOne($chatId);
+        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
 
-            if (!isset($chat)) {
-                return [];
-            }
+        if ($statusSetting->value == ChatSetting::FILTER_STATUS_ON) {
+            $statusSetting->value = ChatSetting::FILTER_STATUS_OFF;
+        } else {
+            $statusSetting->value = ChatSetting::FILTER_STATUS_ON;
+        }
 
-            $this->getState()->setName(null);
+        $statusSetting->save();
 
-            $phraseQuery = $chat->getBlacklistPhrases();
+        return $this->actionIndex($chatId);
+    }
 
-            $pagination = new Pagination([
+    /**
+    * @return array
+    */
+    public function actionBlacklist($chatId = null, $page = 1)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $this->getState()->setName(null);
+
+        $phraseQuery = $chat->getBlacklistPhrases();
+
+        $pagination = new Pagination([
                 'totalCount' => $phraseQuery->count(),
                 'pageSize' => 9,
                 'params' => [
@@ -175,38 +175,38 @@ class AdminMessageFilterController extends Controller
                 ],
             ]);
 
-            $pagination->pageSizeParam = false;
-            $pagination->validatePage = true;
+        $pagination->pageSizeParam = false;
+        $pagination->validatePage = true;
 
-            $chatTitle = $chat->title;
-            $phrases = $phraseQuery->offset($pagination->offset)
+        $chatTitle = $chat->title;
+        $phrases = $phraseQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-                return self::createRoute('index', [
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+            return self::createRoute('index', [
                     'chatId' => $chatId,
                     'page' => $page,
                 ]);
-            });
-            $buttons = [];
+        });
+        $buttons = [];
 
-            if ($phrases) {
-                foreach ($phrases as $phrase) {
-                    $buttons[][] = [
+        if ($phrases) {
+            foreach ($phrases as $phrase) {
+                $buttons[][] = [
                         'callback_data' => self::createRoute('phrase', [
                             'phraseId' => $phrase->id,
                         ]),
                         'text' => $phrase->text
                     ];
-                }
-
-                if ($paginationButtons) {
-                    $buttons[] = $paginationButtons;
-                }
             }
 
-            $buttons[] = [
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
                 [
                     'callback_data' => self::createRoute('index', [
                         'chatId' => $chatId,
@@ -222,30 +222,30 @@ class AdminMessageFilterController extends Controller
                 ],
             ];
 
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('blacklist', compact('chatTitle')),
                 $buttons
                 )
                 ->build();
-            }
+    }
 
-            /**
-            * @return array
-            */
-            public function actionWhitelist($chatId = null, $page = 1)
-            {
-                $chat = Chat::findOne($chatId);
+    /**
+    * @return array
+    */
+    public function actionWhitelist($chatId = null, $page = 1)
+    {
+        $chat = Chat::findOne($chatId);
 
-                if (!isset($chat)) {
-                    return [];
-                }
+        if (!isset($chat)) {
+            return [];
+        }
 
-                $this->getState()->setName(null);
+        $this->getState()->setName(null);
 
-                $phraseQuery = $chat->getWhitelistPhrases();
+        $phraseQuery = $chat->getWhitelistPhrases();
 
-                $pagination = new Pagination([
+        $pagination = new Pagination([
                     'totalCount' => $phraseQuery->count(),
                     'pageSize' => 9,
                     'params' => [
@@ -253,39 +253,39 @@ class AdminMessageFilterController extends Controller
                     ],
                 ]);
 
-                $pagination->pageSizeParam = false;
-                $pagination->validatePage = true;
+        $pagination->pageSizeParam = false;
+        $pagination->validatePage = true;
 
-                $chatTitle = $chat->title;
-                $phrases = $phraseQuery->offset($pagination->offset)
+        $chatTitle = $chat->title;
+        $phrases = $phraseQuery->offset($pagination->offset)
                 ->limit($pagination->limit)
                 ->all();
 
-                $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-                    return self::createRoute('index',
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+            return self::createRoute('index',
                     [
                         'chatId' => $chatId,
                         'page' => $page,
                     ]);
-                });
-                $buttons = [];
+        });
+        $buttons = [];
 
-                if ($phrases) {
-                    foreach ($phrases as $phrase) {
-                        $buttons[][] = [
+        if ($phrases) {
+            foreach ($phrases as $phrase) {
+                $buttons[][] = [
                             'callback_data' => self::createRoute('phrase', [
                                 'phraseId' => $phrase->id,
                             ]),
                             'text' => $phrase->text
                         ];
-                    }
+            }
 
-                    if ($paginationButtons) {
-                        $buttons[] = $paginationButtons;
-                    }
-                }
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
 
-                $buttons[] = [
+        $buttons[] = [
                     [
                         'callback_data' => self::createRoute('index', [
                             'chatId' => $chatId,
@@ -301,25 +301,25 @@ class AdminMessageFilterController extends Controller
                     ],
                 ];
 
-                return ResponseBuilder::fromUpdate($this->getUpdate())
+        return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->editMessageTextOrSendMessage(
                     $this->render('whitelist', compact('chatTitle')),
                     $buttons
                     )
                     ->build();
-                }
+    }
 
-                /**
-                * @return array
-                */
-                public function actionNewphrase($type = null, $chatId = null)
-                {
-                    $this->getState()->setName(self::createRoute('newphrase-update', [
+    /**
+    * @return array
+    */
+    public function actionNewphrase($type = null, $chatId = null)
+    {
+        $this->getState()->setName(self::createRoute('newphrase-update', [
                         'type' => $type,
                         'chatId' => $chatId,
                     ]));
 
-                    return ResponseBuilder::fromUpdate($this->getUpdate())
+        return ResponseBuilder::fromUpdate($this->getUpdate())
                     ->editMessageTextOrSendMessage(
                         $this->render('newphrase'),
                         [
@@ -338,27 +338,27 @@ class AdminMessageFilterController extends Controller
                         ]
                         )
                         ->build();
-                    }
+    }
 
-                    public function actionNewphraseUpdate($type = null, $chatId = null)
-                    {
-                        $update = $this->getUpdate();
-                        $text = $update->getMessage()->getText();
+    public function actionNewphraseUpdate($type = null, $chatId = null)
+    {
+        $update = $this->getUpdate();
+        $text = $update->getMessage()->getText();
 
-                        if (!Phrase::find()->where(['type' => $type, 'chat_id' => $chatId, 'text' => $text])->exists()) {
-                            $phrase = new Phrase();
+        if (!Phrase::find()->where(['type' => $type, 'chat_id' => $chatId, 'text' => $text])->exists()) {
+            $phrase = new Phrase();
 
-                            $phrase->setAttributes([
+            $phrase->setAttributes([
                                 'chat_id' => $chatId,
                                 'type' => $type,
                                 'text' => $text,
                                 'created_by' => $this->getTelegramUser()->id,
                             ]);
 
-                            $phrase->save();
-                        }
+            $phrase->save();
+        }
 
-                        $this->getState()->setName($type == Phrase::TYPE_BLACKLIST
+        $this->getState()->setName($type == Phrase::TYPE_BLACKLIST
                         ? self::createRoute('blacklist', [
                             'chatId' => $chatId,
                         ])
@@ -366,19 +366,19 @@ class AdminMessageFilterController extends Controller
                             'chatId' => $chatId,
                         ]));
 
-                        $this->module->dispatchRoute($update);
-                    }
+        $this->module->dispatchRoute($update);
+    }
 
-                    /**
-                    * @return array
-                    */
-                    public function actionPhrase($phraseId = null)
-                    {
-                        $this->getState()->setName(null);
+    /**
+    * @return array
+    */
+    public function actionPhrase($phraseId = null)
+    {
+        $this->getState()->setName(null);
 
-                        $phrase = Phrase::findOne($phraseId);
+        $phrase = Phrase::findOne($phraseId);
 
-                        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return ResponseBuilder::fromUpdate($this->getUpdate())
                         ->editMessageTextOrSendMessage(
                             $this->render('phrase', compact('phrase')),
                             [
@@ -409,19 +409,19 @@ class AdminMessageFilterController extends Controller
                             ]
                             )
                             ->build();
-                        }
+    }
 
-                        public function actionPhraseDelete($phraseId = null)
-                        {
-                            $phrase = Phrase::findOne($phraseId);
+    public function actionPhraseDelete($phraseId = null)
+    {
+        $phrase = Phrase::findOne($phraseId);
 
-                            $chatId = $phrase->chat_id;
+        $chatId = $phrase->chat_id;
 
-                            $isTypeBlack = $phrase->isTypeBlack();
-                            $phrase->delete();
+        $isTypeBlack = $phrase->isTypeBlack();
+        $phrase->delete();
 
-                            $update = $this->getUpdate();
-                            $update->getCallbackQuery()->setData($isTypeBlack
+        $update = $this->getUpdate();
+        $update->getCallbackQuery()->setData($isTypeBlack
                             ? self::createRoute('blacklist', [
                                 'chatId' => $chatId,
                             ])
@@ -429,16 +429,16 @@ class AdminMessageFilterController extends Controller
                                 'chatId' => $chatId,
                             ]));
 
-                            $this->module->dispatchRoute($update);
-                        }
+        $this->module->dispatchRoute($update);
+    }
 
-                        public function actionPhraseCreate($phraseId = null)
-                        {
-                            $this->getState()->setName(self::createRoute('phrase-update', [
+    public function actionPhraseCreate($phraseId = null)
+    {
+        $this->getState()->setName(self::createRoute('phrase-update', [
                                 'phraseId' => $phraseId,
                             ]));
 
-                            return ResponseBuilder::fromUpdate($this->getUpdate())
+        return ResponseBuilder::fromUpdate($this->getUpdate())
                             ->editMessageTextOrSendMessage(
                                 $this->render('phrase-create'),
                                 [
@@ -453,25 +453,25 @@ class AdminMessageFilterController extends Controller
                                 ]
                                 )
                                 ->build();
-                            }
+    }
 
-                            public function actionPhraseUpdate($phraseId = null)
-                            {
-                                $update = $this->getUpdate();
+    public function actionPhraseUpdate($phraseId = null)
+    {
+        $update = $this->getUpdate();
 
-                                $phrase = Phrase::findOne($phraseId);
+        $phrase = Phrase::findOne($phraseId);
 
-                                $text = $update->getMessage()->getText();
+        $text = $update->getMessage()->getText();
 
-                                if (!Phrase::find()->where([
+        if (!Phrase::find()->where([
                                     'chat_id' => $phrase->chat_id,
                                     'text' => $text,
                                     'type' => $phrase->type
                                     ])->exists()) {
-                                        $phrase->text = $text;
-                                        $phrase->save();
+            $phrase->text = $text;
+            $phrase->save();
 
-                                        return $this->actionPhrase($phraseId);
-                                    }
-                                }
-                            }
+            return $this->actionPhrase($phraseId);
+        }
+    }
+}

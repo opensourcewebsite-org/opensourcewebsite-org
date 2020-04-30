@@ -68,132 +68,132 @@ class TopController extends Controller
                 'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId()
             ]
             )->build();
+    }
+
+    public function actionStart($estimate)
+    {
+        if ($estimate == '+') {
+            $estimateValue = self::VOTE_LIKE;
+        } elseif ($estimate == '-') {
+            $estimateValue = self::VOTE_DISLIKE;
         }
 
-        public function actionStart($estimate)
-        {
-            if ($estimate == '+') {
-                $estimateValue = self::VOTE_LIKE;
-            } elseif ($estimate == '-') {
-                $estimateValue = self::VOTE_DISLIKE;
-            }
+        $update = $this->getUpdate();
+        $message = $update->getMessage();
+        $messageId = $message->getMessageId();
+        $currentUser = $this->getTelegramUser();
+        $chat = $this->getTelegramChat();
+        $estimatedMessage = $message->getReplyToMessage();
+        $estimatedMessageId = $estimatedMessage->getMessageId();
 
-            $update = $this->getUpdate();
-            $message = $update->getMessage();
-            $messageId = $message->getMessageId();
-            $currentUser = $this->getTelegramUser();
-            $chat = $this->getTelegramChat();
-            $estimatedMessage = $message->getReplyToMessage();
-            $estimatedMessageId = $estimatedMessage->getMessageId();
-
-            $canCreateVoting = isset($estimateValue) && $estimatedMessage && !$estimatedMessage->getFrom()->isBot() && ($currentUser->provider_user_id != $estimatedMessage->getFrom()->getId());
-            if (!$canCreateVoting) {
-                return [];
-            }
-
-            $this->addOrChangeVote($estimatedMessageId, $estimateValue);
-
-            $resultCommand = $this->getResultCommand($estimatedMessageId);
-            $sendMessageCommand = array_pop($resultCommand);
-            $sendMessageCommand->replyToMessageId = $estimatedMessageId;
-            $votingMessage = $sendMessageCommand->send($this->getBotApi());
-
-            $votings = RatingVoting::find()->where(['candidate_message_id' => $estimatedMessageId, 'chat_id' => $chat->id])->all();
-            if ($votings) {
-                foreach ($votings as $voting) {
-                    $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $voting->voting_message_id);
-                    $deleteMessageCommand->send($this->getBotApi());
-                    $voting->delete();
-                }
-            }
-
-            $voting = new RatingVoting();
-            if ($votingMessage) {
-                $voting->voting_message_id = $votingMessage->getMessageId();
-                $voting->candidate_message_id = $estimatedMessageId;
-                $voting->provider_starter_id = $currentUser->provider_user_id;
-                $voting->chat_id = $chat->id;
-                $voting->save();
-            }
-
-            $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $messageId);
-            $deleteMessageCommand->send($this->getBotApi());
+        $canCreateVoting = isset($estimateValue) && $estimatedMessage && !$estimatedMessage->getFrom()->isBot() && ($currentUser->provider_user_id != $estimatedMessage->getFrom()->getId());
+        if (!$canCreateVoting) {
             return [];
         }
 
-        public function actionLikeMessage($messageId)
-        {
-            if ($this->isItUserSelfVote($messageId)) {
-                return [];
+        $this->addOrChangeVote($estimatedMessageId, $estimateValue);
+
+        $resultCommand = $this->getResultCommand($estimatedMessageId);
+        $sendMessageCommand = array_pop($resultCommand);
+        $sendMessageCommand->replyToMessageId = $estimatedMessageId;
+        $votingMessage = $sendMessageCommand->send($this->getBotApi());
+
+        $votings = RatingVoting::find()->where(['candidate_message_id' => $estimatedMessageId, 'chat_id' => $chat->id])->all();
+        if ($votings) {
+            foreach ($votings as $voting) {
+                $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $voting->voting_message_id);
+                $deleteMessageCommand->send($this->getBotApi());
+                $voting->delete();
             }
-            $this->addOrChangeVote($messageId, self::VOTE_LIKE);
-            return $this->getResultCommand($messageId);
         }
 
-        public function actionDislikeMessage($messageId)
-        {
-            if ($this->isItUserSelfVote($messageId)) {
-                return [];
-            }
-            $this->addOrChangeVote($messageId, self::VOTE_DISLIKE);
-            return $this->getResultCommand($messageId);
+        $voting = new RatingVoting();
+        if ($votingMessage) {
+            $voting->voting_message_id = $votingMessage->getMessageId();
+            $voting->candidate_message_id = $estimatedMessageId;
+            $voting->provider_starter_id = $currentUser->provider_user_id;
+            $voting->chat_id = $chat->id;
+            $voting->save();
         }
 
-        private function isItUserSelfVote($messageId)
-        {
-            $chatId = $this->getTelegramChat()->id;
-            $user = $this->getTelegramUser();
-            return RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'provider_candidate_id' => $user->provider_user_id])->exists();
+        $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $messageId);
+        $deleteMessageCommand->send($this->getBotApi());
+        return [];
+    }
+
+    public function actionLikeMessage($messageId)
+    {
+        if ($this->isItUserSelfVote($messageId)) {
+            return [];
+        }
+        $this->addOrChangeVote($messageId, self::VOTE_LIKE);
+        return $this->getResultCommand($messageId);
+    }
+
+    public function actionDislikeMessage($messageId)
+    {
+        if ($this->isItUserSelfVote($messageId)) {
+            return [];
+        }
+        $this->addOrChangeVote($messageId, self::VOTE_DISLIKE);
+        return $this->getResultCommand($messageId);
+    }
+
+    private function isItUserSelfVote($messageId)
+    {
+        $chatId = $this->getTelegramChat()->id;
+        $user = $this->getTelegramUser();
+        return RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'provider_candidate_id' => $user->provider_user_id])->exists();
+    }
+
+    private function addOrChangeVote(int $messageId, int $estimate)
+    {
+        $chat = $this->getTelegramChat();
+        $chatId = $chat->id;
+        $user = $this->getTelegramUser();
+        $voterId = $user->provider_user_id;
+        $thisMessage = $this->getUpdate()->getMessage();
+
+        if ($this->getUpdate()->getCallbackQuery()) {
+            $thisMessage = $this->getUpdate()->getCallbackQuery()->getMessage();
+            $anyMessageVote = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
+            $candidateId = $anyMessageVote->provider_candidate_id;
+        } else {
+            $estimatedMessage = $thisMessage->getReplyToMessage();
+            $candidateId = $estimatedMessage->getFrom()->getId();
         }
 
-        private function addOrChangeVote(int $messageId, int $estimate)
-        {
-            $chat = $this->getTelegramChat();
-            $chatId = $chat->id;
-            $user = $this->getTelegramUser();
-            $voterId = $user->provider_user_id;
-            $thisMessage = $this->getUpdate()->getMessage();
-
-            if ($this->getUpdate()->getCallbackQuery()) {
-                $thisMessage = $this->getUpdate()->getCallbackQuery()->getMessage();
-                $anyMessageVote = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
-                $candidateId = $anyMessageVote->provider_candidate_id;
-            } else {
-                $estimatedMessage = $thisMessage->getReplyToMessage();
-                $candidateId = $estimatedMessage->getFrom()->getId();
-            }
-
-            $vote = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'provider_voter_id' => $voterId])->one();
-            if (!$vote) {
-                $vote = new RatingVote();
-                $vote->message_id = $messageId;
-                $vote->provider_voter_id = $voterId;
-                $vote->provider_candidate_id = $candidateId;
-                $vote->chat_id = $chat->id;
-            }
-            if ($vote->vote != $estimate) {
-                $vote->vote = $estimate;
-                $vote->save();
-            }
-            return;
+        $vote = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'provider_voter_id' => $voterId])->one();
+        if (!$vote) {
+            $vote = new RatingVote();
+            $vote->message_id = $messageId;
+            $vote->provider_voter_id = $voterId;
+            $vote->provider_candidate_id = $candidateId;
+            $vote->chat_id = $chat->id;
         }
+        if ($vote->vote != $estimate) {
+            $vote->vote = $estimate;
+            $vote->save();
+        }
+        return;
+    }
 
-        private function getResultCommand($messageId)
-        {
-            $chat = $this->getTelegramChat();
-            $chatId = $chat->id;
+    private function getResultCommand($messageId)
+    {
+        $chat = $this->getTelegramChat();
+        $chatId = $chat->id;
 
-            $likeVotes = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'vote' => self::VOTE_LIKE])->count();
-            $dislikeVotes = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'vote' => self::VOTE_DISLIKE])->count();
+        $likeVotes = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'vote' => self::VOTE_LIKE])->count();
+        $dislikeVotes = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId, 'vote' => self::VOTE_DISLIKE])->count();
 
-            $voteToGetCandidate = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
-            $candidateId = $voteToGetCandidate->provider_candidate_id;
-            $candidateRating = RatingVote::find()
+        $voteToGetCandidate = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
+        $candidateId = $voteToGetCandidate->provider_candidate_id;
+        $candidateRating = RatingVote::find()
             ->where(['chat_id' => $chat->id, 'provider_candidate_id' => $candidateId])
             ->sum('vote');
 
-            $candidate = $this->getProviderUsernameById($candidateId);
-            $replyMarkup = [
+        $candidate = $this->getProviderUsernameById($candidateId);
+        $replyMarkup = [
                 [
                     [
                         'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
@@ -206,32 +206,32 @@ class TopController extends Controller
                 ]
             ];
 
-            if ($this->getUpdate()->getCallbackQuery()) {
-                $voting = RatingVoting::find()->where(['chat_id' => $chat->id, 'candidate_message_id' => $messageId])->one();
-                $voterId = $voting->provider_starter_id;
-            } else {
-                $voterId = $this->getUpdate()->getMessage()->getFrom()->getId();
-            }
-            $voterName = $this->getProviderUsernameById($voterId);
-            $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
+        if ($this->getUpdate()->getCallbackQuery()) {
+            $voting = RatingVoting::find()->where(['chat_id' => $chat->id, 'candidate_message_id' => $messageId])->one();
+            $voterId = $voting->provider_starter_id;
+        } else {
+            $voterId = $this->getUpdate()->getMessage()->getFrom()->getId();
+        }
+        $voterName = $this->getProviderUsernameById($voterId);
+        $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
                 $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
                 $replyMarkup
                 )->build();
-                return $commands;
-            }
+        return $commands;
+    }
 
-            private function getProviderUsernameById($userId)
-            {
-                try {
-                    $user = $this->getBotApi()->getChatMember(
+    private function getProviderUsernameById($userId)
+    {
+        try {
+            $user = $this->getBotApi()->getChatMember(
                         $this->getTelegramChat()->chat_id,
                         $userId
                         )->getUser();
-                        $nickname = $user->getUsername();
-                        $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
-                        return $username;
-                    } catch (HttpException $e) {
-                        return '';
-                    }
-                }
-            }
+            $nickname = $user->getUsername();
+            $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
+            return $username;
+        } catch (HttpException $e) {
+            return '';
+        }
+    }
+}
