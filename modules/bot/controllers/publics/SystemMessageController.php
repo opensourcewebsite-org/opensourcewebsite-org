@@ -19,8 +19,6 @@ class SystemMessageController extends Controller
      */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
-
         $chat = $this->getTelegramChat();
 
         $deleteMessage = false;
