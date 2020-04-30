@@ -14,6 +14,7 @@ use app\modules\bot\models\RatingVoting;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Message;
 use Yii;
+use yii\helpers\Html;
 
 class TopController extends Controller
 {
@@ -42,13 +43,13 @@ class TopController extends Controller
     {
         $chat = $this->getTelegramChat();
         $tops = RatingVote::find()
-            ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
-            ->where(['chat_id' => $chat->id])
-            ->groupBy('provider_candidate_id')
-            ->orderBy(['rating' => SORT_DESC])
-            ->having(['>', 'rating', 0])
-            ->asArray()
-            ->all();
+        ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
+        ->where(['chat_id' => $chat->id])
+        ->groupBy('provider_candidate_id')
+        ->orderBy(['rating' => SORT_DESC])
+        ->having(['>', 'rating', 0])
+        ->asArray()
+        ->all();
 
         if (!$tops) {
             return [];
@@ -60,8 +61,13 @@ class TopController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())->sendMessage(
             $this->render('index', [
                 'users' => $tops
-            ])
-        )->build();
+            ]),
+            [],
+            false,
+            [
+                'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId()
+            ]
+            )->build();
     }
 
     public function actionStart($estimate)
@@ -188,17 +194,17 @@ class TopController extends Controller
 
         $candidate = $this->getProviderUsernameById($candidateId);
         $replyMarkup = [
-            [
                 [
-                    'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
-                    'text' => '👍' . ' ' . $likeVotes,
-                ],
-                [
-                    'callback_data' => self::createRoute('dislike-message', ['messageId' => $messageId]),
-                    'text' => '👎' . ' ' . $dislikeVotes,
-                ],
-            ]
-        ];
+                    [
+                        'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
+                        'text' => '👍' . ( $likeVotes !=0 ? ' ' . $likeVotes : ''),
+                    ],
+                    [
+                        'callback_data' => self::createRoute('dislike-message', ['messageId' => $messageId]),
+                        'text' => '👎' . ( $dislikeVotes !=0 ? ' ' . $dislikeVotes : ''),
+                    ],
+                ]
+            ];
 
         if ($this->getUpdate()->getCallbackQuery()) {
             $voting = RatingVoting::find()->where(['chat_id' => $chat->id, 'candidate_message_id' => $messageId])->one();
@@ -208,9 +214,9 @@ class TopController extends Controller
         }
         $voterName = $this->getProviderUsernameById($voterId);
         $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
-            $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
-            $replyMarkup
-            )->build();
+                $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
+                $replyMarkup
+                )->build();
         return $commands;
     }
 
@@ -218,11 +224,11 @@ class TopController extends Controller
     {
         try {
             $user = $this->getBotApi()->getChatMember(
-                $this->getTelegramChat()->chat_id,
-                $userId
-            )->getUser();
+                        $this->getTelegramChat()->chat_id,
+                        $userId
+                        )->getUser();
             $nickname = $user->getUsername();
-            $username = $nickname ? '@' . $nickname : implode(' ', [$user->getFirstName(), $user->getLastName()]);
+            $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
             return $username;
         } catch (HttpException $e) {
             return '';

@@ -2,25 +2,23 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
 /**
- * Class SystemMessageController
- *
- * @package app\controllers\bot
- */
+* Class SystemMessageController
+*
+* @package app\controllers\bot
+*/
 class SystemMessageController extends Controller
 {
     /**
-     * @return array
-     */
+    * @return array
+    */
     public function actionIndex()
     {
-        $update = $this->getUpdate();
-
         $chat = $this->getTelegramChat();
 
         $deleteMessage = false;
@@ -31,12 +29,9 @@ class SystemMessageController extends Controller
         }
 
         if ($deleteMessage) {
-            return [
-                new DeleteMessageCommand(
-                    $update->getMessage()->getChat()->getId(),
-                    $update->getMessage()->getMessageId()
-                ),
-            ];
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->deleteMessage()
+            ->build();
         }
     }
 
