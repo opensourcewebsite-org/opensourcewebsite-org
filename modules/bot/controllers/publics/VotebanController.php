@@ -177,13 +177,16 @@ class VotebanController extends Controller
         $candidateName = $this->getProviderUsernameById($candidateId);
         $starterName = $this->getProviderUsernameById($starterId);
 
-        $ratings = ArrayHelper::map(RatingVote::find()
+        $ratings = ArrayHelper::map(
+            RatingVote::find()
             ->where(['provider_candidate_id' => [$starterId,$candidateId]])
             ->groupBy('provider_candidate_id')
             ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
             ->asArray()
             ->all(),
-        'provider_candidate_id','rating');
+            'provider_candidate_id',
+            'rating'
+        );
 
         $commandBuilder = ResponseBuilder::fromUpdate($this->getUpdate())
         ->editMessageTextOrSendMessage(

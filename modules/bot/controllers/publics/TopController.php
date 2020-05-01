@@ -211,17 +211,21 @@ class TopController extends Controller
             $voterId = $this->getUpdate()->getMessage()->getFrom()->getId();
         }
 
-        $ratings = ArrayHelper::map(RatingVote::find()
+        $ratings = ArrayHelper::map(
+            RatingVote::find()
             ->where(['provider_candidate_id' => [$voterId,$candidateId]])
             ->groupBy('provider_candidate_id')
             ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
             ->asArray()
             ->all(),
-        'provider_candidate_id','rating');
+            'provider_candidate_id',
+            'rating'
+        );
 
         $voterName = $this->getProviderUsernameById($voterId);
         $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
-            $this->render('vote',
+            $this->render(
+                'vote',
                 [
                     'voter' => $voterName,
                     'candidate' => $candidate,
