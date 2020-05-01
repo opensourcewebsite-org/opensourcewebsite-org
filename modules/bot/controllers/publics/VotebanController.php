@@ -352,14 +352,14 @@ class VotebanController extends Controller
         }
 
         VotebanVote::deleteAll([
-                    'chat_id' => $this->getTelegramChat()->id,
-                    'provider_candidate_id' => $userId
-                ]);
+            'chat_id' => $this->getTelegramChat()->id,
+            'provider_candidate_id' => $userId
+        ]);
 
         VotebanVoting::deleteAll([
-                    'chat_id' => $this->getTelegramChat()->id,
-                    'provider_candidate_id' => $userId
-                ]);
+            'chat_id' => $this->getTelegramChat()->id,
+            'provider_candidate_id' => $userId
+        ]);
     }
 
     private function getProviderUsernamesByIds(array $ids)
