@@ -15,6 +15,7 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Message;
 use Yii;
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 
 class TopController extends Controller
 {
@@ -188,9 +189,6 @@ class TopController extends Controller
 
         $voteToGetCandidate = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
         $candidateId = $voteToGetCandidate->provider_candidate_id;
-        $candidateRating = RatingVote::find()
-            ->where(['chat_id' => $chat->id, 'provider_candidate_id' => $candidateId])
-            ->sum('vote');
 
         $candidate = $this->getProviderUsernameById($candidateId);
         $replyMarkup = [
@@ -212,9 +210,29 @@ class TopController extends Controller
         } else {
             $voterId = $this->getUpdate()->getMessage()->getFrom()->getId();
         }
+
+        $ratings = ArrayHelper::map(
+            RatingVote::find()
+            ->where(['provider_candidate_id' => [$voterId,$candidateId]])
+            ->groupBy('provider_candidate_id')
+            ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
+            ->asArray()
+            ->all(),
+            'provider_candidate_id',
+            'rating'
+        );
+
         $voterName = $this->getProviderUsernameById($voterId);
         $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
-            $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
+            $this->render(
+                'vote',
+                [
+                    'voter' => $voterName,
+                    'candidate' => $candidate,
+                    'userRating' => $ratings[$voterId] ?? 0,
+                    'candidateRating' => $ratings[$candidateId] ?? 0,
+                ]
+            ),
             $replyMarkup
         )->build();
         return $commands;
