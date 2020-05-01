@@ -13,7 +13,7 @@ class MessageText
     private $text;
 
     /**
-     * @var string|null 
+     * @var string|null
      */
     private $parseMode;
 
