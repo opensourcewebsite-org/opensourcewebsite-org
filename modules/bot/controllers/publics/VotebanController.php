@@ -10,6 +10,7 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
+use app\modules\bot\models\RatingVote;
 use app\modules\bot\models\VotebanVote;
 use app\modules\bot\models\VotebanVoting;
 use TelegramBot\Api\HttpException;
@@ -141,8 +142,7 @@ class VotebanController extends Controller
             $kickVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => self::VOTING_POWER])->count();
             $saveVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => -self::VOTING_POWER])->count();
 
-            $starter = $this->getProviderUsernameById($voting->provider_starter_id);
-            $command = $this->createVotingFormCommand($starter, $candidateId, $kickVotes, $saveVotes);
+            $command = $this->createVotingFormCommand($voting->provider_starter_id, $candidateId, $kickVotes, $saveVotes);
             $command->replyToMessageId = $voting->id ? null : $voting->candidate_message_id;
             $message = $command->send($this->getBotApi());
 
@@ -169,18 +169,29 @@ class VotebanController extends Controller
     *
     * @return MessageTextCommand
     */
-    private function createVotingFormCommand($starterName, $candidateId, $kickVotes, $saveVotes)
+    private function createVotingFormCommand($starterId, $candidateId, $kickVotes, $saveVotes)
     {
         $chat = $this->getTelegramChat();
         $limitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
         $votesLimit = isset($limitSetting) ? $limitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
         $candidateName = $this->getProviderUsernameById($candidateId);
+        $starterName = $this->getProviderUsernameById($starterId);
+
+        $ratings = ArrayHelper::map(RatingVote::find()
+            ->where(['provider_candidate_id' => [$starterId,$candidateId]])
+            ->groupBy('provider_candidate_id')
+            ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
+            ->asArray()
+            ->all(),
+        'provider_candidate_id','rating');
 
         $commandBuilder = ResponseBuilder::fromUpdate($this->getUpdate())
         ->editMessageTextOrSendMessage(
             $this->render('index', [
                 'user' => $starterName,
-                'candidate' => $candidateName
+                'candidate' => $candidateName,
+                'userRating' => $ratings[$starterId] ?? 0,
+                'candidateRating' => $ratings[$candidateId] ?? 0,
             ]),
             [
                 [

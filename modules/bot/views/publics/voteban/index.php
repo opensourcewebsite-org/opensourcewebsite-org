@@ -1,1 +1,1 @@
-<?= Yii::t('bot', '{user} would like to kick {candidate}', ['user' => $user, 'candidate' => $candidate]) ?>. <?= Yii::t('bot', 'Do you agree') ?>?
+<?= $user; ?> <?= $userRating ? '(' . $userRating . ') ' : ''; ?><?= Yii::t('bot', 'would like to kick'); ?> <?= $candidate; ?><?= $candidateRating ? ' (' . $candidateRating . ')' : ''; ?>. <?= Yii::t('bot', 'Do you agree'); ?>?
