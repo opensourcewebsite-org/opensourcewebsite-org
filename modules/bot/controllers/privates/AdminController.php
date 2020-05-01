@@ -2,11 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\response\commands\EditMessageTextCommand;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\Controller;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use app\modules\bot\components\response\ResponseBuilder;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 
@@ -66,29 +64,11 @@ class AdminController extends Controller
             'text' => Emoji::MENU,
         ];
 
-        if ($this->getUpdate()->getCallbackQuery()) {
-            return [
-                new EditMessageTextCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
-                    $this->render('index'),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        } else {
-            return [
-                new SendMessageCommand(
-                    $this->getTelegramChat()->chat_id,
-                    $this->render('index'),
-                    [
-                        'parseMode' => $this->textFormat,
-                        'replyMarkup' => new InlineKeyboardMarkup($buttons),
-                    ]
-                ),
-            ];
-        }
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('index'),
+                $buttons
+            )
+            ->build();
     }
 }
