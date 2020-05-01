@@ -11,6 +11,7 @@ use app\modules\bot\components\response\commands\SendLocationCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Update;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class ResponseBuilder
@@ -46,7 +47,8 @@ class ResponseBuilder
     public function editMessageTextOrSendMessage(
         MessageText $messageText,
         array $replyMarkup = [],
-        bool $disablePreview = false
+        bool $disablePreview = false,
+        array $optionalParams = []
     ) {
         $commands = [];
 
@@ -61,13 +63,18 @@ class ResponseBuilder
                 ]
             );
         } elseif ($message = $this->update->getMessage()) {
-            $commands[] = new SendMessageCommand(
-                $message->getChat()->getId(),
-                $messageText,
+            $optionalParams = ArrayHelper::merge(
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
                     'disablePreview' => $disablePreview,
-                ]
+                ],
+                ArrayHelper::filter($optionalParams, ['replyToMessageId','disableNotification','parseMode'])
+            );
+
+            $commands[] = new SendMessageCommand(
+                $message->getChat()->getId(),
+                $messageText,
+                $optionalParams
             );
         }
         if (!empty($commands)) {
@@ -133,7 +140,7 @@ class ResponseBuilder
      * @param bool $disablePreview
      * @return $this
      */
-    public function sendMessage(MessageText $messageText, array $replyMarkup = null, bool $disablePreview = false)
+    public function sendMessage(MessageText $messageText, array $replyMarkup = null, bool $disablePreview = false, array $optionalParams = [])
     {
         $chatId = null;
         if ($message = $this->update->getMessage()) {
@@ -142,13 +149,18 @@ class ResponseBuilder
             $chatId = $callbackQuery->getMessage()->getChat()->getId();
         }
         if (!is_null($chatId)) {
-            $this->commands[] = new SendMessageCommand(
-                $chatId,
-                $messageText,
+            $optionalParams = ArrayHelper::merge(
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
                     'disablePreview' => $disablePreview,
-                ]
+                ],
+                ArrayHelper::filter($optionalParams, ['replyToMessageId','disableNotification','parseMode'])
+            );
+
+            $this->commands[] = new SendMessageCommand(
+                $chatId,
+                $messageText,
+                $optionalParams
             );
         }
         return $this;
