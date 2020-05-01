@@ -208,7 +208,7 @@ return [
     'Voters who chose to save' => 'Проголосовавшие за спасение',
     '{user} has been kicked — the only way to get this user back is for admins to manualy unban in group settings'=>'{user} кикнут — вернуть этого пользователя можно только разбаном в настройках группы',
     'Voters who chose to kick' =>'Проголосовавшие за кик',
-    '{user} would like to kick {candidate}'=>'{user} хочет кикнуть {candidate}',
+    'would like to kick'=>'хочет кикнуть',
     'Do you agree' => 'Согласны',
     'Enter minimal number of voters to kick a user'=>'Введите минимальное количество голосов для бана участника',
     'Kick'=>'Кикнуть',
