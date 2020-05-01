@@ -1,1 +1,1 @@
-<?= $voter; ?> <?= Yii::t('bot', 'would like to react'); ?> <?= $candidate; ?> (<?= Yii::t('bot', 'rating'); ?>: <?= $candidateRating; ?>)
+<?= Yii::t('bot', '{voter} reacted to a message from {candidate}', ['voter' => $voter, 'candidate' => $candidate]); ?> (<?= $candidateRating; ?>)
