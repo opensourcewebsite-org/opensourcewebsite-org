@@ -77,8 +77,8 @@ class AdminVoteBanController extends Controller
                 ]
 
             ]
-            )
-            ->build();
+        )
+        ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -120,8 +120,8 @@ class AdminVoteBanController extends Controller
                         ],
                     ]
                 ]
-                )
-                ->build();
+            )
+            ->build();
     }
 
     public function actionUpdateLimit($chatId = null)

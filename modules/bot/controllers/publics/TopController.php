@@ -214,9 +214,9 @@ class TopController extends Controller
         }
         $voterName = $this->getProviderUsernameById($voterId);
         $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
-                $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
-                $replyMarkup
-                )->build();
+            $this->render('vote', ['voter' => $voterName, 'candidateRating' => $candidateRating, 'candidate' => $candidate]),
+            $replyMarkup
+        )->build();
         return $commands;
     }
 
@@ -224,9 +224,9 @@ class TopController extends Controller
     {
         try {
             $user = $this->getBotApi()->getChatMember(
-                        $this->getTelegramChat()->chat_id,
-                        $userId
-                        )->getUser();
+                $this->getTelegramChat()->chat_id,
+                $userId
+            )->getUser();
             $nickname = $user->getUsername();
             $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
             return $username;

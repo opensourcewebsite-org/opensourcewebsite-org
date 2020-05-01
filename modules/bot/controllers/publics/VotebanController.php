@@ -318,8 +318,8 @@ class VotebanController extends Controller
                 'user' => $this->getProviderUsernameById($userId),
                 'voters' => implode(', ', $votersNames)
             ])
-            )
-            ->build();
+        )
+        ->build();
     }
 
     /**
@@ -337,8 +337,8 @@ class VotebanController extends Controller
                     'user' => $this->getProviderUsernameById($userId),
                     'voters' => implode(', ', $votersNames)
                 ])
-                )
-                ->build();
+            )
+            ->build();
     }
 
     private function clearUserVoteHistory($userId)
@@ -378,9 +378,9 @@ class VotebanController extends Controller
     {
         try {
             $user = $this->getBotApi()->getChatMember(
-                        $this->getTelegramChat()->chat_id,
-                        $userId
-                        )->getUser();
+                $this->getTelegramChat()->chat_id,
+                $userId
+            )->getUser();
             $nickname = $user->getUsername();
             $username = $nickname ? '@' . $nickname : Html::a(implode(' ', [$user->getFirstName(), $user->getLastName()]), 'tg://user?id=' . $userId);
             return $username;
@@ -393,11 +393,11 @@ class VotebanController extends Controller
     {
         $administrators = $this->getBotApi()->getChatAdministrators($chatId);
         return in_array(
-                        $userId,
-                        ArrayHelper::getColumn($administrators, function ($el) {
-                            return $el->getUser()->getId();
-                        })
-                    );
+            $userId,
+            ArrayHelper::getColumn($administrators, function ($el) {
+                return $el->getUser()->getId();
+            })
+        );
     }
 
     private function isCallbackQuery()

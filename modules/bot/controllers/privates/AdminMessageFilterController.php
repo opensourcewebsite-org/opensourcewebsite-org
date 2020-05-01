@@ -106,8 +106,8 @@ class AdminMessageFilterController extends Controller
                     ],
                 ]
             ]
-            )
-            ->build();
+        )
+        ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -226,8 +226,8 @@ class AdminMessageFilterController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('blacklist', compact('chatTitle')),
                 $buttons
-                )
-                ->build();
+            )
+            ->build();
     }
 
     /**
@@ -262,11 +262,10 @@ class AdminMessageFilterController extends Controller
                 ->all();
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-            return self::createRoute('index',
-                    [
-                        'chatId' => $chatId,
-                        'page' => $page,
-                    ]);
+            return self::createRoute('index',[
+                'chatId' => $chatId,
+                'page' => $page,
+            ]);
         });
         $buttons = [];
 
@@ -305,8 +304,8 @@ class AdminMessageFilterController extends Controller
                 ->editMessageTextOrSendMessage(
                     $this->render('whitelist', compact('chatTitle')),
                     $buttons
-                    )
-                    ->build();
+                )
+                ->build();
     }
 
     /**
@@ -407,8 +406,8 @@ class AdminMessageFilterController extends Controller
                                     ],
                                 ],
                             ]
-                            )
-                            ->build();
+                        )
+                        ->build();
     }
 
     public function actionPhraseDelete($phraseId = null)
@@ -451,8 +450,8 @@ class AdminMessageFilterController extends Controller
                                         ],
                                     ],
                                 ]
-                                )
-                                ->build();
+                            )
+                            ->build();
     }
 
     public function actionPhraseUpdate($phraseId = null)
