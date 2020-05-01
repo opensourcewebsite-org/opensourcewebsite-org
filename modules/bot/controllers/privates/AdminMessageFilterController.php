@@ -335,8 +335,8 @@ class AdminMessageFilterController extends Controller
                                 ],
                             ],
                         ]
-                        )
-                        ->build();
+                    )
+                    ->build();
     }
 
     public function actionNewphraseUpdate($type = null, $chatId = null)
