@@ -262,7 +262,7 @@ class AdminMessageFilterController extends Controller
                 ->all();
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-            return self::createRoute('index',[
+            return self::createRoute('index', [
                 'chatId' => $chatId,
                 'page' => $page,
             ]);
