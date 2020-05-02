@@ -1,13 +1,13 @@
 <?php
 namespace app\modules\bot\controllers\privates;
 
-use app\models\Currency;
-use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
+use app\models\Currency;
 use app\models\Vacancy;
 use app\models\Company;
 use app\modules\bot\components\FillablePropertiesController;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
