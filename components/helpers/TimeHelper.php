@@ -17,7 +17,7 @@ class TimeHelper
         $timestamp = time();
         foreach (timezone_identifiers_list() as $key => $zone) {
             date_default_timezone_set($zone);
-            $zones_array[str_replace(':', '', date('P', $timestamp))][$zone] = ' (UTC ' . date('P', $timestamp) . ') ' . $zone;
+            $zones_array[str_replace(':', '', date('P', $timestamp))][$zone] = ($zone != 'UTC' ? ' (UTC ' . date('P', $timestamp) . ') ' . $zone : $zone);
         }
         ksort($zones_array);
         foreach ($zones_array as $zones) {

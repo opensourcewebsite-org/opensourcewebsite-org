@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "payment_method_currency".
@@ -43,4 +44,5 @@ class PaymentMethodCurrency extends \yii\db\ActiveRecord
             'currency_id' => 'Currency ID',
         ];
     }
+
 }

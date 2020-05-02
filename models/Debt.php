@@ -22,6 +22,10 @@ use yii\behaviors\TimestampBehavior;
  * @property int $created_by
  * @property int $updated_at
  * @property int $updated_by
+ *
+ * @property User $toUser
+ * @property User $fromUser
+ * @property Currency $currency
  */
 class Debt extends ActiveRecord
 {

@@ -65,3 +65,5 @@ Disable Telegram webhooks for all bots with `status` = 1:
 ```
 php yii bot/disable-all
 ```
+
+## Run tests

@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use \app\modules\bot\components\response\SendMessageCommand;
-use \app\modules\bot\components\response\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\modules\bot\components\Controller;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller as Controller;
 use yii\data\Pagination;
-use app\modules\bot\helpers\PaginationButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
 
 /**
  * Class AdminController
@@ -23,9 +23,6 @@ class AdminController extends Controller
     public function actionIndex($page = 1)
     {
         $chatQuery = $this->getTelegramUser()->getAdministratedChats();
-
-        $buttons = [];
-        $currentRow = [];
 
         $pagination = new Pagination([
             'totalCount' => $chatQuery->count(),
@@ -42,12 +39,21 @@ class AdminController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build('/admin_', $pagination);
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
         $buttons = [];
 
         if ($chats) {
             foreach ($chats as $chat) {
-                $buttons[][] = ['callback_data' => '/admin_chat ' . $chat->id, 'text' => $chat->title];
+                $buttons[][] = [
+                    'callback_data' => AdminChatController::createRoute('index', [
+                        'chatId' => $chat->id,
+                    ]),
+                    'text' => $chat->title,
+                ];
             }
 
             if ($paginationButtons) {
@@ -56,11 +62,9 @@ class AdminController extends Controller
         }
 
         $buttons[][] = [
-            'callback_data' => '/menu',
-            'text' => '📱',
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
         ];
-
-        Yii::warning($buttons);
 
         if ($this->getUpdate()->getCallbackQuery()) {
             return [

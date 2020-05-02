@@ -1,0 +1,13 @@
+<b><?= $selling.'/'.$buying ?> offer</b><br/>
+<br/>
+Payment methods:<br/>
+
+<?  foreach ($paymentMethod as $value) {
+		if ($value['name'] == 'Cash') {
+			echo ' - ' . $value['name'] . '<br/>';
+		}
+	}
+	foreach ($paymentMethod as $value) {
+		if ($value['name'] !== 'Cash')
+		echo ' - ' . $value['name'] . '<br/>';
+} ?>
