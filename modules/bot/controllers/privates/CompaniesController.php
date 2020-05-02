@@ -4,11 +4,12 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\FillablePropertiesController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use Yii;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\models\Company;
+use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
+
 
 class CompaniesController extends FillablePropertiesController
 {

@@ -3,23 +3,23 @@
 namespace app\models;
 
 use Yii;
-use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "payment_method_currency".
+ * This is the model class for table "currency_exhange_order_payment_method".
  *
  * @property int $id
+ * @property int $order_id
  * @property int $payment_method_id
- * @property int $currency_id
+ * @property int $type
  */
-class PaymentMethodCurrency extends \yii\db\ActiveRecord
+class CurrencyExhangeOrderPaymentMethod extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'payment_method_currency';
+        return 'currency_exhange_order_payment_method';
     }
 
     /**
@@ -28,8 +28,8 @@ class PaymentMethodCurrency extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['payment_method_id', 'currency_id'], 'required'],
-            [['payment_method_id', 'currency_id'], 'integer'],
+            [['order_id', 'payment_method_id', 'type'], 'required'],
+            [['order_id', 'payment_method_id', 'type'], 'integer'],
         ];
     }
 
@@ -40,9 +40,9 @@ class PaymentMethodCurrency extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'order_id' => 'Order ID',
             'payment_method_id' => 'Payment Method ID',
-            'currency_id' => 'Currency ID',
+            'type' => 'Type',
         ];
     }
-
 }

@@ -47,4 +47,16 @@ class Currency extends \yii\db\ActiveRecord
             'symbol' => 'Symbol',
         ];
     }
+
+    public function getCodeById(int $id)
+    { 
+        $query = $this->findOne(['id' => $id]);
+        return $query['code'];
+    }
+
+    public function getPaymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::className(), ['id' => 'payment_method_id'])
+                ->viaTable('payment_method_currency', ['currency_id' => 'id']);
+    }
 }

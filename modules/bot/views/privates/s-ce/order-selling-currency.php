@@ -1,3 +1,3 @@
-<b>USD/THB order</b><br/>
+<b><?= $selling.'/'.$buying ?> order</b><br/>
 <br/>
-Sell: <b>USD</b><br/>
+Sell: <b><?= $selling ?></b><br/>

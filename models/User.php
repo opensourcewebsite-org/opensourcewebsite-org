@@ -626,4 +626,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
     }
+
+    public function getExchangeOrder()
+    {
+        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ]);
+    }
 }

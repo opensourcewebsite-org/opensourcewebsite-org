@@ -1,0 +1,1 @@
+<b><?= Yii::t('bot', 'Edit yuor optional name') ?></b>
