@@ -179,14 +179,12 @@ Select2Asset::register($this);
                                     <th class="align-middle"><?= Yii::t('app', 'Languages'); ?></th>
                                     <td class="align-middle" id="languages">
                                         <table>
-                                        <?php array_map(function($language) {
                                             $languageName = Language::findOne($language->language_id)->name;
-                                            $languageName = Yii::t('app', $languageName);;
-                                            $languageLvl = LanguageLevel::findOne($language->language_level_id)
-                                                ->description;
-                                            $languageLvl = Yii::t('app', $languageLvl);;
+                                            $languageName = Yii::t('app', $languageName);
+                                            $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
+                                            $languageLvl = Yii::t('app', $languageLvl);
 
-                                            echo  "<tr><td>$languageName - $languageLvl</td><td>".
+                                            echo  "<tr><td>$languageName - $languageLvl</td><td>" .
                                             ModalAjax::widget([
                                                 'id' => 'change-language' . $language->language_id,
                                                 'header' => Yii::t('app', 'Change language'),
@@ -199,9 +197,8 @@ Select2Asset::register($this);
                                                 'url' => Url::to(['user/change-language', 'id' => $language->language_id]),
                                                 'ajaxSubmit' => true,
                                             ])
-                                            ."</td></tr>
-";
-                                        }, $model->languages);
+                                            . "</td></tr>";
+                                            }, $model->languages);
                                         ?>
                                         </table>
                                     </td>
@@ -224,11 +221,11 @@ Select2Asset::register($this);
                                     <th class="align-middle"><?= Yii::t('app', 'Citizenships'); ?></th>
                                     <td class="align-middle" id="citizenships">
                                         <table>
-                                            <?php array_map(function($citizenship) {
+                                            <?php array_map(function ($citizenship) {
                                                 $citizenshipName = Country::findOne($citizenship->country_id)->name;
-                                                $citizenshipName = Yii::t('app', $citizenshipName);;
-                                                echo  "<tr><td>$citizenshipName</td><td>".
-                                                Html::a(Yii::t('app', Emoji::DELETE), '#', [
+                                                $citizenshipName = Yii::t('app', $citizenshipName);
+                                                echo  "<tr><td>$citizenshipName</td><td>" .
+                                                Html::a("<i class='fa fa-trash'></i>", '#', [
                                                 'class' => 'btn btn-danger float-right',
                                                 'onclick' => 'if (confirm("' . Yii::t('app', 'Are you sure you want to delete this citizenship?') . '")) {
                                                 $.post("' . (Yii::$app->urlManager->createUrl(['/user/delete-citizenship', 'id'
@@ -242,10 +239,8 @@ Select2Asset::register($this);
                                                 }
                                                 });
                                                 }',
-                                                ])
-                                                    ."</td></tr>
-";
-                                            }, $model->citizenships);
+                                                ]) . "</td></tr>";
+                                             }, $model->citizenships);
                                             ?>
                                         </table>
                                     </td>

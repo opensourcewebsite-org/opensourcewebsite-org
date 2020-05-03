@@ -315,15 +315,14 @@ class UserController extends Controller
      */
     public function actionChangeLanguage(int $id)
     {
-        $languages = array_map(function ($language){
+        $languages = array_map(function ($language) {
             return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
         }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $languageName = Language::findOne($id)->name;
 
         $languagesLvl = array_map(function ($languageLvl) {
-            return (isset($languageLvl->code) ? strtoupper($languageLvl->code) . ' - ' : '') . Yii::t('app',
-                    $languageLvl->description);
+            return (isset($languageLvl->code) ? strtoupper($languageLvl->code) . ' - ' : '') . Yii::t('app', $languageLvl->description);
         }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $userLanguageRecord = UserLanguage::find()->where([
@@ -331,7 +330,7 @@ class UserController extends Controller
             'language_id' => $id,
         ])->one();
 
-        if(Yii::$app->request->post()) {
+        if (Yii::$app->request->post()) {
             $postData = Yii::$app->request->post();
             $userLanguageRecord = $userLanguageRecord ?? new UserLanguage();
             $userLanguageRecord->setAttributes([
@@ -348,7 +347,6 @@ class UserController extends Controller
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('fields/change-language', ['user' => $this->user, 'languages' =>
                 $languages, 'languagesLvl' => $languagesLvl, 'userLanguageRecord' => $userLanguageRecord, 'languageName' => $languageName]);
-
         } else {
             return $this->render('fields/change-language', ['user' => $this->user, 'languages' => $languages, 'languagesLvl' => $languagesLvl, 'userLanguageRecord' => $userLanguageRecord, 'languageName' => $languageName]);
         }
@@ -395,7 +393,7 @@ class UserController extends Controller
     public function actionDeleteLanguage(int $id)
     {
         $language = UserLanguage::find()->where([ 'id' => $id, 'user_id' => $this->user->id ])->one();
-        if(!$language) {
+        if (!$language) {
             $this->redirect('/account');
         }
         try {
@@ -413,7 +411,7 @@ class UserController extends Controller
             return Yii::t('app', $citizenship->name);
         }, Country::find()->indexBy('id')->orderBy('code ASC')->all());
 
-        if(Yii::$app->request->post()) {
+        if (Yii::$app->request->post()) {
             $postData = Yii::$app->request->post();
 
             $userCitizenshipRecord = UserCitizenship::find()->where([
@@ -433,7 +431,6 @@ class UserController extends Controller
 
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('fields/add-citizenship', ['user' => $this->user, 'citizenships' => $citizenships]);
-
         } else {
             return $this->render('fields/add-citizenship', ['user' => $this->user, 'citizenships' => $citizenships]);
         }
@@ -442,7 +439,7 @@ class UserController extends Controller
     public function actionDeleteCitizenship(int $id)
     {
         $citizenship = UserCitizenship::find()->where([ 'country_id' => $id, 'user_id' => $this->user->id ])->one();
-        if(!$citizenship) {
+        if (!$citizenship) {
             $this->redirect('/account');
         }
         try {
