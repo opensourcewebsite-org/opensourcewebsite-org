@@ -77,4 +77,18 @@ return [
     'Your contributions increase your Rating in our community' => 'Ваша помощь повышает ваш рейтинг в нашем сообществе',
     'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas' => 'Мы принимаем добровольцев и стажеров, которые демонстрируют соответствующие навыки и проявляют большой интерес к одной или нескольким из следующих областей',
     'open source development, open data, editorial and translation work, UI/UX web design, social media and communications' => ' разработка с открытым исходным кодом, открытые данные, редакционная и переводческая работа, UI/UX веб-дизайн, социальные медиа и коммуникации',
+    'Language' => 'Язык',
+    'Languages' => 'Языки',
+    'Citizenships' => 'Гражданства',
+    'Citizenship' => 'Гражданство',
+    'Delete' => 'Удалить',
+    'Add language' => 'Добавить язык',
+    'Choose language' => 'Выберите язык',
+    'Choose level' => 'Выберите уровень владения',
+    'Add citizenship' => 'Добавить гражданство',
+    'Choose citizenship' => 'Выберите гражданство',
+    'Edit language' => 'Изменить язык',
+
+
+
 ];
