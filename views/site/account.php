@@ -1,13 +1,22 @@
 <?php
 
 use app\components\helpers\TimeHelper;
+use app\models\Country;
+use app\models\Language;
+use app\models\LanguageLevel;
+use app\modules\bot\components\helpers\Emoji;
 use yii\helpers\Html;
+use lo\widgets\modal\ModalAjax;
+use yii\helpers\Url;
+use kartik\select2\Select2Asset;
 
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Account');
 
 $timezones = TimeHelper::timezonesList();
+Select2Asset::register($this);
+
 ?>
 
 <div class="account-index">
@@ -163,6 +172,96 @@ $timezones = TimeHelper::timezonesList();
                                             'class' => 'btn btn-light edit-btn',
                                             'title' => Yii::t('app', 'Edit'),
                                             'style' => ['float' => 'right']]); ?>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th class="align-middle"><?= Yii::t('app', 'Languages'); ?></th>
+                                    <td class="align-middle" id="languages">
+                                        <table>
+                                        <?php array_map(function($language) {
+                                            $languageName = Language::findOne($language->language_id)->name;
+                                            $languageName = Yii::t('app', $languageName);;
+                                            $languageLvl = LanguageLevel::findOne($language->language_level_id)
+                                                ->description;
+                                            $languageLvl = Yii::t('app', $languageLvl);;
+
+                                            echo  "<tr><td>$languageName - $languageLvl</td><td>".
+                                            ModalAjax::widget([
+                                                'id' => 'change-language' . $language->language_id,
+                                                'header' => Yii::t('app', 'Change language'),
+                                                'closeButton' => false,
+                                                'toggleButton' => [
+                                                    'label' => '<a class="fas fa-edit"></a>',
+                                                    'class' => 'btn btn-light edit-btn',
+                                                    'style' =>  ['float' => 'right', 'color' => '#007bff'],
+                                                ],
+                                                'url' => Url::to(['user/change-language', 'id' => $language->language_id]),
+                                                'ajaxSubmit' => true,
+                                            ])
+                                            ."</td></tr>
+";
+                                        }, $model->languages);
+                                        ?>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <?= ModalAjax::widget([
+                                            'id' => 'add-language',
+                                            'header' => Yii::t('app', 'Add language'),
+                                            'closeButton' => false,
+                                            'toggleButton' => [
+                                                'label' => '<i class="fa fa-plus"></i>',
+                                                'class' => 'btn btn-outline-success',
+                                                'style' =>  ['float' => 'right'],
+                                            ],
+                                            'url' => Url::to(['user/add-language']),
+                                            'ajaxSubmit' => true,
+                                        ]);?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="align-middle"><?= Yii::t('app', 'Citizenships'); ?></th>
+                                    <td class="align-middle" id="citizenships">
+                                        <table>
+                                            <?php array_map(function($citizenship) {
+                                                $citizenshipName = Country::findOne($citizenship->country_id)->name;
+                                                $citizenshipName = Yii::t('app', $citizenshipName);;
+                                                echo  "<tr><td>$citizenshipName</td><td>".
+                                                Html::a(Yii::t('app', Emoji::DELETE), '#', [
+                                                'class' => 'btn btn-danger float-right',
+                                                'onclick' => 'if (confirm("' . Yii::t('app', 'Are you sure you want to delete this citizenship?') . '")) {
+                                                $.post("' . (Yii::$app->urlManager->createUrl(['/user/delete-citizenship', 'id'
+                                                => $citizenship->country_id])) . '", {}, function(result) {
+                                                if (result == "1") {
+                                                location.href="' . (Yii::$app->urlManager->createUrl(['/account'])) .
+                                                '";
+                                                }
+                                                else {
+                                                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the citizenship') . '");
+                                                }
+                                                });
+                                                }',
+                                                ])
+                                                    ."</td></tr>
+";
+                                            }, $model->citizenships);
+                                            ?>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <?= ModalAjax::widget([
+                                            'id' => 'add-citizenship',
+                                            'header' => Yii::t('app', 'Add citizenship'),
+                                            'closeButton' => false,
+                                            'toggleButton' => [
+                                                'label' => '<i class="fa fa-plus"></i>',
+                                                'class' => 'btn btn-outline-success',
+                                                'style' =>  ['float' => 'right'],
+                                            ],
+                                            'url' => Url::to(['user/add-citizenship']),
+                                            'ajaxSubmit' => true,
+                                        ]);?>
                                     </td>
                                 </tr>
                                 </tbody>
