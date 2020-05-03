@@ -4,6 +4,7 @@ use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\modules\bot\components\helpers\Emoji;
 use yii\helpers\Html;
 use lo\widgets\modal\ModalAjax;
 use yii\helpers\Url;
@@ -188,6 +189,8 @@ Select2Asset::register($this);
                                             echo  "<tr><td>$languageName - $languageLvl</td><td>".
                                             ModalAjax::widget([
                                                 'id' => 'change-language' . $language->language_id,
+                                                'header' => Yii::t('app', 'Change language'),
+                                                'closeButton' => false,
                                                 'toggleButton' => [
                                                     'label' => '<a class="fas fa-edit"></a>',
                                                     'class' => 'btn btn-light edit-btn',
@@ -205,6 +208,8 @@ Select2Asset::register($this);
                                     <td>
                                         <?= ModalAjax::widget([
                                             'id' => 'add-language',
+                                            'header' => Yii::t('app', 'Add language'),
+                                            'closeButton' => false,
                                             'toggleButton' => [
                                                 'label' => '<i class="fa fa-plus"></i>',
                                                 'class' => 'btn btn-outline-success',
@@ -223,10 +228,21 @@ Select2Asset::register($this);
                                                 $citizenshipName = Country::findOne($citizenship->country_id)->name;
                                                 $citizenshipName = Yii::t('app', $citizenshipName);;
                                                 echo  "<tr><td>$citizenshipName</td><td>".
-                                                    Html::a(Yii::t('app', 'Delete'), ['/user/delete-citizenship', 'id'
-                                                    => $citizenship->country_id], [
-                                                        'class' => 'btn btn-danger float-right',
-                                                    ])
+                                                Html::a(Yii::t('app', Emoji::DELETE), '#', [
+                                                'class' => 'btn btn-danger float-right',
+                                                'onclick' => 'if (confirm("' . Yii::t('app', 'Are you sure you want to delete this citizenship?') . '")) {
+                                                $.post("' . (Yii::$app->urlManager->createUrl(['/user/delete-citizenship', 'id'
+                                                => $citizenship->country_id])) . '", {}, function(result) {
+                                                if (result == "1") {
+                                                location.href="' . (Yii::$app->urlManager->createUrl(['/account'])) .
+                                                '";
+                                                }
+                                                else {
+                                                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the citizenship') . '");
+                                                }
+                                                });
+                                                }',
+                                                ])
                                                     ."</td></tr>
 ";
                                             }, $model->citizenships);
@@ -236,6 +252,8 @@ Select2Asset::register($this);
                                     <td>
                                         <?= ModalAjax::widget([
                                             'id' => 'add-citizenship',
+                                            'header' => Yii::t('app', 'Add citizenship'),
+                                            'closeButton' => false,
                                             'toggleButton' => [
                                                 'label' => '<i class="fa fa-plus"></i>',
                                                 'class' => 'btn btn-outline-success',

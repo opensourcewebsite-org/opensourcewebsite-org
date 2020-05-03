@@ -83,12 +83,13 @@ return [
     'Citizenship' => 'Гражданство',
     'Delete' => 'Удалить',
     'Add language' => 'Добавить язык',
-    'Choose language' => 'Выберите язык',
-    'Choose level' => 'Выберите уровень владения',
+    'Change language' => 'Изменить язык',
+    'Level' => 'Уровень владения',
     'Add citizenship' => 'Добавить гражданство',
-    'Choose citizenship' => 'Выберите гражданство',
     'Edit language' => 'Изменить язык',
-
-
+    'Are you sure you want to delete this language?' => 'Вы уверены, что хотите удалить этот язык?',
+    'Sorry, there was an error while trying to delete the language' => 'Просим прощения, возникла ошибка при удалении языка',
+    'Are you sure you want to delete this citizenship?' => 'Вы уверены, что хотите удалить это гражданство?',
+    'Sorry, there was an error while trying to delete the citizenship' => 'Просим прощения, возникла ошибка при удалении гражданства',
 
 ];

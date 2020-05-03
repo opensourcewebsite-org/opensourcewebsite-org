@@ -10,11 +10,6 @@ ActiveForm::begin();
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit language'); ?>
-                    </h3>
-                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
@@ -28,7 +23,7 @@ ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">
-                            <label><?= Yii::t('app', 'Choose level'); ?></label>
+                            <label><?= Yii::t('app', 'Level'); ?></label>
                                 <?= Select2::widget([
                                     'name' => 'lvl',
                                     'data' => $languagesLvl,
@@ -49,8 +44,20 @@ ActiveForm::begin();
                             'class' => 'btn btn-secondary',
                             'data-dismiss' => 'modal',
                             'title' => Yii::t('app', 'Cancel')]); ?>
-                    <?= Html::a(Yii::t('app', 'Delete'), ['/user/delete-language', 'id' => $userLanguageRecord->id], [
+                    <?= Html::a(Yii::t('app', 'Delete'), '#', [
                         'class' => 'btn btn-danger float-right',
+                        'onclick' => 'if (confirm("' . Yii::t('app', 'Are you sure you want to delete this language?') .
+                            '")) {
+                    $.post("' . (Yii::$app->urlManager->createUrl(['/user/delete-language', 'id' => $userLanguageRecord->id])) . '", {}, function(result) {
+                    if (result == "1") {
+                    location.href="' . (Yii::$app->urlManager->createUrl(['/account'])) .
+                            '";
+                    }
+                    else {
+                    alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the language') . '");
+                    }
+                    });
+                    }',
                     ]) ?>
                 </div>
             </div>

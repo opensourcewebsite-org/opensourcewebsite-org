@@ -11,15 +11,10 @@ ActiveForm::begin(); ?>
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Add citizenship'); ?>
-                    </h3>
-                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <label><?= Yii::t('app', 'Choose citizenship'); ?></label>
+                            <label><?= Yii::t('app', 'Citizenship'); ?></label>
                             <?= Select2::widget([
                                 'name' => 'country',
                                 'data' => $citizenships,
