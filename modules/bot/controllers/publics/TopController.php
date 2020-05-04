@@ -213,7 +213,7 @@ class TopController extends Controller
 
         $ratings = ArrayHelper::map(
             RatingVote::find()
-            ->where(['provider_candidate_id' => [$voterId,$candidateId]])
+            ->where(['provider_candidate_id' => [$voterId,$candidateId], 'chat_id' => $chat->id])
             ->groupBy('provider_candidate_id')
             ->select(['provider_candidate_id', 'rating' => 'sum(vote)'])
             ->asArray()
