@@ -1,7 +1,6 @@
 <?php
 
-use app\models\Language;
-use app\models\LanguageLevel;
+use app\widgets\buttons\Save;
 use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -30,6 +29,7 @@ ActiveForm::begin(); ?>
                     <?= Html::submitButton(Yii::t('app', 'Save'), [
                             'class' => 'btn btn-success',
                             'title' => Yii::t('app', 'Save')]); ?>
+                    <?=  Save::widget(); ?>
                     <?= Html::button(Yii::t('app', 'Cancel'), [
                             'class' => 'btn btn-secondary',
                             'data-dismiss' => 'modal',

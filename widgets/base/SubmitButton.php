@@ -7,7 +7,7 @@ use yii\helpers\Html;
 use yii\base\InvalidConfigException;
 use Yii;
 
-class LinkButton extends Widget
+class SubmitButton extends Widget
 {
 
     /**
@@ -73,6 +73,6 @@ class LinkButton extends Widget
             $this->params['data-confirm'] = Yii::t('yii', 'Are you sure you want to delete this item?');
         }
 
-        return Html::a($this->text, $this->url, $this->params);
+        return Html::button($this->text, $this->params);
     }
 }
