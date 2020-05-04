@@ -44,7 +44,7 @@ class DeleteButton extends Widget
         switch(strtolower($this->type)) {
             case 'delete':
                 $this->class .= 'btn btn-danger float-right';
-                $this->text = 'Delete';
+                $this->text = 'delete';
                 break;
 
             case 'trash':
