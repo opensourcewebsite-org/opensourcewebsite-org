@@ -4,7 +4,7 @@ use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
-use app\widgets\DeleteButton;
+use app\widgets\buttons\Trash;
 use yii\helpers\Html;
 use lo\widgets\modal\ModalAjax;
 use yii\helpers\Url;
@@ -179,7 +179,8 @@ Select2Asset::register($this);
                                     <th class="align-middle"><?= Yii::t('app', 'Languages'); ?></th>
                                     <td class="align-middle" id="languages">
                                         <table>
-                                            <?php array_map(function ($language) {
+                                            <?php
+                                            array_map(function ($language) {
                                                 $languageName = Language::findOne($language->language_id)->name;
                                                 $languageName = Yii::t('app', $languageName);
                                                 $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
@@ -201,8 +202,7 @@ Select2Asset::register($this);
                                                     'ajaxSubmit' => true,
                                                 ])
                                                 . '</td></tr>';
-                                            }, $model->languages);
-                                        ?>
+                                            }, $model->languages); ?>
                                         </table>
                                     </td>
                                     <td>
@@ -224,19 +224,18 @@ Select2Asset::register($this);
                                     <th class="align-middle"><?= Yii::t('app', 'Citizenships'); ?></th>
                                     <td class="align-middle" id="citizenships">
                                         <table>
-                                            <?php array_map(function ($citizenship) {
-                                                $citizenshipName = Country::findOne($citizenship->country_id)->name;
-                                                $citizenshipName = Yii::t('app', $citizenshipName);
-                                                echo  '<tr><td>' . $citizenshipName . '</td><td>' .
-                                                    DeleteButton::widget([
-                                                        'url' => [
-                                                            '/user/delete-citizenship',
-                                                            'id' => $citizenship->country_id
-                                                        ],
-                                                        'type' => 'trash'
-                                                    ]) . '</td></tr>';
-                                            }, $model->citizenships);
-                                            ?>
+                                            <?php
+                                            array_map(function ($citizenship) {
+                                                      $citizenshipName = Country::findOne($citizenship->country_id)->name;
+                                                      $citizenshipName = Yii::t('app', $citizenshipName);
+                                                      echo  '<tr><td>' . $citizenshipName . '</td><td>' .
+                                                          Trash::widget([
+                                                              'url' => [
+                                                                  '/user/delete-citizenship',
+                                                                  'id' => $citizenship->country_id
+                                                              ]
+                                                          ]) . '</td></tr>';
+                                            }, $model->citizenships); ?>
                                         </table>
                                     </td>
                                     <td>

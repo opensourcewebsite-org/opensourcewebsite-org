@@ -3,7 +3,7 @@
 use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use app\widgets\DeleteButton;
+use app\widgets\buttons\Delete;
 
 ActiveForm::begin();
 ?>
@@ -45,9 +45,8 @@ ActiveForm::begin();
                             'class' => 'btn btn-secondary',
                             'data-dismiss' => 'modal',
                             'title' => Yii::t('app', 'Cancel')]); ?>
-                    <?= DeleteButton::widget([
+                    <?= Delete::widget([
                         'url' => ['/user/delete-language', 'id' => $userLanguageRecord->id],
-                        'type' => 'delete',
                     ]) ?>
                 </div>
             </div>
