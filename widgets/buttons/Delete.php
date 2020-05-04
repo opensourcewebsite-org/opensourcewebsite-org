@@ -14,8 +14,7 @@ class Delete extends Button
 
         $this->addClass .= 'btn btn-danger float-right ';
 
-        $this->text = Yii::t('app' , 'Delete');
-
+        $this->text = Yii::t('app', 'Delete');
     }
 
     public function run()

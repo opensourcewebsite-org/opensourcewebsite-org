@@ -12,7 +12,6 @@ class Trash extends Button
         parent::init();
 
         $this->text = '<i class="far fa-trash-alt"></i>';
-
     }
 
     public function run()

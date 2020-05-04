@@ -46,10 +46,10 @@ class Button extends Widget
             $this->addStyle = '';
         }
 
-        $this->text = Yii::t('app' , 'Button');
+        $this->text = Yii::t('app', 'Button');
 
         if ($this->url == null) {
-            throw new InvalidConfigException(Yii::t('app' , "'url' property must be specified."));
+            throw new InvalidConfigException(Yii::t('app', "'url' property must be specified."));
         }
     }
 
