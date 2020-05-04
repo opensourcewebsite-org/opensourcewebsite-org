@@ -195,7 +195,9 @@ Select2Asset::register($this);
                                                         'class' => 'btn btn-light edit-btn',
                                                         'style' =>  ['float' => 'right', 'color' => '#007bff'],
                                                     ],
-                                                    'url' => Url::to(['user/change-language', 'id' => $language->language_id]),
+                                                    'url' => Url::to([
+                                                        'user/change-language',
+                                                        'id' => $language->language_id]),
                                                     'ajaxSubmit' => true,
                                                 ])
                                                 . '</td></tr>';
