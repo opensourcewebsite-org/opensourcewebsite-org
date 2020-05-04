@@ -344,7 +344,7 @@ class UserController extends Controller
     }
 
     /*
-     * Экшн для смены языков пользователя
+     * Action for changing language
      */
     public function actionChangeLanguage(int $id)
     {
@@ -399,8 +399,7 @@ class UserController extends Controller
         }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $languagesLvl = array_map(function ($languageLvl) {
-            return (isset($languageLvl->code) ? strtoupper($languageLvl->code) . ' - ' : '') . Yii::t('app',
-                    $languageLvl->description);
+            return (isset($languageLvl->code) ? strtoupper($languageLvl->code) . ' - ' : '') . Yii::t('app', $languageLvl->description);
         }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
         if (Yii::$app->request->post()) {
