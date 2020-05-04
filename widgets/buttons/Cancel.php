@@ -19,6 +19,6 @@ class Cancel extends Widget
         return Html::button(Yii::t('app', 'Cancel'), [
             'class' => 'btn btn-secondary',
             'data-dismiss' => 'modal',
-            'title' => Yii::t('app', 'Cancel')]);;
+            'title' => Yii::t('app', 'Cancel')]);
     }
 }

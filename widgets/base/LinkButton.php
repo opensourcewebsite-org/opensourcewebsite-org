@@ -55,7 +55,6 @@ class LinkButton extends Widget
         }
 
         $this->text = Yii::t('app', 'Button');
-
     }
 
     public function run()
@@ -69,7 +68,7 @@ class LinkButton extends Widget
             'style'        => $this->addStyle,
         ];
 
-        if($this->confirm == true) {
+        if ($this->confirm == true) {
             $this->params['data-confirm'] = Yii::t('yii', 'Are you sure you want to delete this item?');
         }
 
