@@ -179,7 +179,8 @@ Select2Asset::register($this);
                                     <th class="align-middle"><?= Yii::t('app', 'Languages'); ?></th>
                                     <td class="align-middle" id="languages">
                                         <table>
-                                            $languageName = Language::findOne($language->language_id)->name;
+                                            <?php array_map(function ($language) {
+                                                $languageName = Language::findOne($language->language_id)->name;
                                             $languageName = Yii::t('app', $languageName);
                                             $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
                                             $languageLvl = Yii::t('app', $languageLvl);
@@ -225,22 +226,16 @@ Select2Asset::register($this);
                                                 $citizenshipName = Country::findOne($citizenship->country_id)->name;
                                                 $citizenshipName = Yii::t('app', $citizenshipName);
                                                 echo  "<tr><td>$citizenshipName</td><td>" .
-                                                Html::a("<i class='fa fa-trash'></i>", '#', [
-                                                'class' => 'btn btn-danger float-right',
-                                                'onclick' => 'if (confirm("' . Yii::t('app', 'Are you sure you want to delete this citizenship?') . '")) {
-                                                $.post("' . (Yii::$app->urlManager->createUrl(['/user/delete-citizenship', 'id'
-                                                => $citizenship->country_id])) . '", {}, function(result) {
-                                                if (result == "1") {
-                                                location.href="' . (Yii::$app->urlManager->createUrl(['/account'])) .
-                                                '";
-                                                }
-                                                else {
-                                                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the citizenship') . '");
-                                                }
-                                                });
-                                                }',
-                                                ]) . "</td></tr>";
-                                             }, $model->citizenships);
+                                                    Html::a('<i class="fa fa-trash"></i>',
+                                                        ['/user/delete-citizenship', 'id' => $citizenship->country_id], [
+                                                        'title'        => Yii::t('yii', 'Delete'),
+                                                        'aria-label'   => Yii::t('yii', 'Delete'),
+                                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                                        'data-pjax'    => '1',
+                                                        'data-method'  => 'post',
+                                                        'class'        => 'btn-action',
+                                                    ]) . '</td></tr>';
+                                                }, $model->citizenships);
                                             ?>
                                         </table>
                                     </td>

@@ -44,20 +44,13 @@ ActiveForm::begin();
                             'class' => 'btn btn-secondary',
                             'data-dismiss' => 'modal',
                             'title' => Yii::t('app', 'Cancel')]); ?>
-                    <?= Html::a(Yii::t('app', 'Delete'), '#', [
-                        'class' => 'btn btn-danger float-right',
-                        'onclick' => 'if (confirm("' . Yii::t('app', 'Are you sure you want to delete this language?') .
-                            '")) {
-                    $.post("' . (Yii::$app->urlManager->createUrl(['/user/delete-language', 'id' => $userLanguageRecord->id])) . '", {}, function(result) {
-                    if (result == "1") {
-                    location.href="' . (Yii::$app->urlManager->createUrl(['/account'])) .
-                            '";
-                    }
-                    else {
-                    alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the language') . '");
-                    }
-                    });
-                    }',
+                    <?= Html::a(Yii::t('app', 'Delete'), ['/user/delete-language', 'id' => $userLanguageRecord->id], [
+                        'title'        => Yii::t('yii', 'Delete'),
+                        'aria-label'   => Yii::t('yii', 'Delete'),
+                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                        'data-pjax'    => '1',
+                        'data-method'  => 'post',
+                        'class'        => 'btn-action btn btn-danger float-right',
                     ]) ?>
                 </div>
             </div>
