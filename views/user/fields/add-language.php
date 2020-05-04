@@ -1,9 +1,8 @@
 <?php
 
-use app\models\Language;
-use app\models\LanguageLevel;
+use app\widgets\buttons\Save;
+use app\widgets\buttons\Cancel;
 use kartik\select2\Select2;
-use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 ActiveForm::begin(); ?>
@@ -39,13 +38,8 @@ ActiveForm::begin(); ?>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), [
-                            'class' => 'btn btn-success',
-                            'title' => Yii::t('app', 'Save')]); ?>
-                    <?= Html::button(Yii::t('app', 'Cancel'), [
-                            'class' => 'btn btn-secondary',
-                            'data-dismiss' => 'modal',
-                            'title' => Yii::t('app', 'Cancel')]); ?>
+                    <?= Save::widget(); ?>
+                    <?= Cancel::widget() ?>
                 </div>
             </div>
         </div>
