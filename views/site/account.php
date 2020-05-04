@@ -226,15 +226,15 @@ Select2Asset::register($this);
                                         <table>
                                             <?php
                                             array_map(function ($citizenship) {
-                                                      $citizenshipName = Country::findOne($citizenship->country_id)->name;
-                                                      $citizenshipName = Yii::t('app', $citizenshipName);
-                                                      echo  '<tr><td>' . $citizenshipName . '</td><td>' .
-                                                          Trash::widget([
-                                                              'url' => [
-                                                                  '/user/delete-citizenship',
-                                                                  'id' => $citizenship->country_id
-                                                              ]
-                                                          ]) . '</td></tr>';
+                                                  $citizenshipName = Country::findOne($citizenship->country_id)->name;
+                                                  $citizenshipName = Yii::t('app', $citizenshipName);
+                                                  echo  '<tr><td>' . $citizenshipName . '</td><td>' .
+                                                      Trash::widget([
+                                                          'url' => [
+                                                              '/user/delete-citizenship',
+                                                              'id' => $citizenship->country_id
+                                                          ]
+                                                      ]) . '</td></tr>';
                                             }, $model->citizenships); ?>
                                         </table>
                                     </td>
