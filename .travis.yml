@@ -4,7 +4,7 @@ php:
   - 7.2
 # faster builds on new travis setup not using sudo
 sudo: required
-dist: xenial
+dist: focal
 cache:
   directories:
     - $HOME/.composer/cache
