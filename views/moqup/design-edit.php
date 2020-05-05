@@ -1,6 +1,8 @@
 <?php
 /* @var $this \yii\web\View */
 
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\assets\AceEditorAsset;
@@ -74,10 +76,10 @@ AceEditorAsset::register($this);
         </div>
     </div>
     <div class="card-footer">
-        <?= Html::submitButton(Yii::t('app', 'Save'), [
-                            'class' => 'btn btn-success',
-                            'title' => Yii::t('app', 'Save')]); ?>
-        <?= Html::a(Yii::t('app', 'Cancel'), ['moqup/design-list'], ['class' => 'btn btn-secondary']); ?>
+        <?= Save::widget(); ?>
+        <?= Cancel::widget([
+            'url' => ['moqup/design-list'],
+        ]); ?>
 
         <?php if (!$moqup->isNewRecord): ?>
             <?= Html::a(Yii::t('app', 'Delete'), '#', [
