@@ -88,6 +88,7 @@ Recommended IDE:
     * [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
     * [Atom package for PHP Linter](https://atom.io/packages/linter-php)
     * [Atom-Beautify package](https://atom.io/packages/atom-beautify)
+      * [PHP-CS-Fixer beautifier](https://github.com/FriendsOfPHP/PHP-CS-Fixer#installation). To automatically beautify PHP code on file save check option Beautify On Save and select PHP-CS-Fixed as Default Beautifier in "File > Settings > Packages > atom-beautify > Settings > PHP". The beautifier uses .phpcs file in root directory of project.
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
     * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window "Before commit > Perform SonarLint analysis".
     * Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
@@ -95,6 +96,16 @@ Recommended IDE:
   	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
   * [VS Code](https://code.visualstudio.com)
   * [Sublime Text](https://www.sublimetext.com)
+
+Recommended PHP Beautifier for IDE: 
+  * [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer#installation). It uses .phpcs file in root directory
+    Instructions for using PHP-CS-Fixer with your IDE
+    * [Atom](https://github.com/Glavin001/atom-beautify)
+    * [NetBeans](http://plugins.netbeans.org/plugin/49042/php-cs-fixer)
+    * [PhpStorm](https://medium.com/@valeryan/how-to-configure-phpstorm-to-use-php-cs-fixer-1844991e521f)
+    * [Sublime Text](https://github.com/benmatselby/sublime-phpcs)
+    * [Vim](https://github.com/stephpy/vim-php-cs-fixer)
+    * [VS Code](https://github.com/junstyle/vscode-php-cs-fixer)
 
 #### Yii 2 migration files
 
