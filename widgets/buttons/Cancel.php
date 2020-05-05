@@ -16,7 +16,7 @@ class Cancel extends LinkButton
         $this->defaultOptions['data-dismiss'] = 'modal';
         $this->defaultOptions['title'] = Yii::t('app', 'Cancel');
 
-        if($this->text == null) {
+        if ($this->text == null) {
             $this->text = 'Cancel';
         }
     }

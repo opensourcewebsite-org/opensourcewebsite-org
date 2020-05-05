@@ -53,7 +53,7 @@ class PjaxButton extends Widget
             'confirmMessage' => 'Are you sure you want to delete this item?',
         ];
 
-        if($this->options == null) {
+        if ($this->options == null) {
             $this->options = [];
         }
     }

@@ -43,7 +43,7 @@ class LinkButton extends Widget
             'class' => 'btn btn-action',
         ];
 
-        if($this->options == null) {
+        if ($this->options == null) {
             $this->options = [];
         }
     }
