@@ -2,23 +2,27 @@
 
 namespace app\widgets\buttons;
 
-use yii\helpers\Html;
-use yii\base\Widget;
+use app\widgets\base\LinkButton;
 use Yii;
 
-class Cancel extends Widget
+class Cancel extends LinkButton
 {
-
     public function init()
     {
         parent::init();
+
+        $this->defaultOptions['class'] = 'btn btn-secondary';
+        $this->defaultOptions['style'] = 'color: white;';
+        $this->defaultOptions['data-dismiss'] = 'modal';
+        $this->defaultOptions['title'] = Yii::t('app', 'Cancel');
+
+        if($this->text == null) {
+            $this->text = 'Cancel';
+        }
     }
 
     public function run()
     {
-        return Html::button(Yii::t('app', 'Cancel'), [
-            'class' => 'btn btn-secondary',
-            'data-dismiss' => 'modal',
-            'title' => Yii::t('app', 'Cancel')]);
+        return parent::run();
     }
 }

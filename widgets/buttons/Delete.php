@@ -2,10 +2,10 @@
 
 namespace app\widgets\buttons;
 
-use app\widgets\base\LinkButton;
+use app\widgets\base\PjaxButton;
 use Yii;
 
-class Delete extends LinkButton
+class Delete extends PjaxButton
 {
 
     public function init()
@@ -13,10 +13,12 @@ class Delete extends LinkButton
         parent::init();
 
         $this->confirm = true;
+        $this->defaultOptions['title'] = Yii::t('app', 'Delete');
+        $this->defaultOptions['class'] = 'btn btn-danger float-right';
 
-        $this->addClass .= 'btn btn-danger float-right ';
-
-        $this->text = Yii::t('app', 'Delete');
+        if($this->text == null) {
+            $this->text = 'Delete';
+        }
     }
 
     public function run()

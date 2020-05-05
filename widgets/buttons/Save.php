@@ -2,22 +2,27 @@
 
 namespace app\widgets\buttons;
 
-use yii\helpers\Html;
-use yii\base\Widget;
+use app\widgets\base\PjaxButton;
 use Yii;
 
-class Save extends Widget
+class Save extends PjaxButton
 {
 
     public function init()
     {
         parent::init();
+
+        $this->defaultOptions['class'] = 'btn btn-success';
+        $this->defaultOptions['style'] = 'color: white;';
+        $this->defaultOptions['title'] = Yii::t('app', 'Save');
+
+        if($this->text == null) {
+            $this->text = 'Save';
+        }
     }
 
     public function run()
     {
-        return Html::submitButton(Yii::t('app', 'Save'), [
-            'class' => 'btn btn-success',
-            'title' => Yii::t('app', 'Save')]);
+        return parent::run();
     }
 }

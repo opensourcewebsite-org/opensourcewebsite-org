@@ -1,14 +1,15 @@
 <?php
 
+use app\components\helpers\Icon;
 use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\widgets\buttons\Trash;
-use yii\helpers\Html;
 use lo\widgets\modal\ModalAjax;
 use yii\helpers\Url;
 use kartik\select2\Select2Asset;
+use app\widgets\buttons\Edit;
 
 /* @var $this yii\web\View */
 
@@ -44,10 +45,12 @@ Select2Asset::register($this);
                                         ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-email" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-email',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -100,20 +103,24 @@ Select2Asset::register($this);
                                                 ? '' : '<b>@</b>' . $model->username;
                                             ?></span></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-username" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-username',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('app', 'Name'); ?></th>
                                     <td class="align-middle" id="name"><?= $model->name ?? $model->id; ?></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-name" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-name',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -121,10 +128,12 @@ Select2Asset::register($this);
                                     <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' :
                                             Yii::$app->formatter->asDate($model->birthday); ?></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-birthday" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-birthday',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -133,10 +142,12 @@ Select2Asset::register($this);
                                         <?= Yii::t('app', $model->gender->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-gender" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-gender',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -145,10 +156,12 @@ Select2Asset::register($this);
                                         <?= Yii::t('app', $model->sexuality->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-sexuality" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-sexuality',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -156,10 +169,12 @@ Select2Asset::register($this);
                                     <td class="align-middle" id="timezone"><?= Yii::t('app',
                                             $timezones[$model->timezone]); ?></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-timezone" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-timezone',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -168,10 +183,12 @@ Select2Asset::register($this);
                                         <?= Yii::t('app', $model->currency->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-currency" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= Edit::widget([
+                                            'url' => '/user/change-currency',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
 
@@ -186,13 +203,13 @@ Select2Asset::register($this);
                                                 $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
                                                 $languageLvl = Yii::t('app', $languageLvl);
 
-                                                echo  "<tr><td>$languageName - $languageLvl</td><td>" .
-                                                ModalAjax::widget([
+                                                echo  '<tr><td>' . $languageName . ' - ' . $languageLvl . '</td><td>';
+                                                echo ModalAjax::widget([
                                                     'id' => 'change-language' . $language->language_id,
                                                     'header' => Yii::t('app', 'Change language'),
                                                     'closeButton' => false,
                                                     'toggleButton' => [
-                                                        'label' => '<a class="fas fa-edit"></a>',
+                                                        'label' => Icon::EDIT,
                                                         'class' => 'btn btn-light edit-btn',
                                                         'style' =>  ['float' => 'right', 'color' => '#007bff'],
                                                     ],
@@ -200,8 +217,8 @@ Select2Asset::register($this);
                                                         'user/change-language',
                                                         'id' => $language->language_id]),
                                                     'ajaxSubmit' => true,
-                                                ])
-                                                . '</td></tr>';
+                                                ]);
+                                                echo '</td></tr>';
                                             }, $model->languages); ?>
                                         </table>
                                     </td>
@@ -211,7 +228,7 @@ Select2Asset::register($this);
                                             'header' => Yii::t('app', 'Add language'),
                                             'closeButton' => false,
                                             'toggleButton' => [
-                                                'label' => '<i class="fa fa-plus"></i>',
+                                                'label' => Icon::ADD,
                                                 'class' => 'btn btn-outline-success',
                                                 'style' =>  ['float' => 'right'],
                                             ],
@@ -228,13 +245,14 @@ Select2Asset::register($this);
                                             array_map(function ($citizenship) {
                                                     $citizenshipName = Country::findOne($citizenship->country_id)->name;
                                                     $citizenshipName = Yii::t('app', $citizenshipName);
-                                                    echo '<tr><td>' . $citizenshipName . '</td><td>' .
-                                                        Trash::widget([
+                                                    echo '<tr><td>' . $citizenshipName . '</td><td>';
+                                                    echo Trash::widget([
                                                             'url' => [
                                                                 '/user/delete-citizenship',
                                                                 'id' => $citizenship->country_id
                                                             ]
-                                                        ]) . '</td></tr>';
+                                                        ]);
+                                                    echo '</td></tr>';
                                             }, $model->citizenships); ?>
                                         </table>
                                     </td>
@@ -244,7 +262,7 @@ Select2Asset::register($this);
                                             'header' => Yii::t('app', 'Add citizenship'),
                                             'closeButton' => false,
                                             'toggleButton' => [
-                                                'label' => '<i class="fa fa-plus"></i>',
+                                                'label' => Icon::ADD,
                                                 'class' => 'btn btn-outline-success',
                                                 'style' =>  ['float' => 'right'],
                                             ],

@@ -2,20 +2,19 @@
 
 namespace app\widgets\buttons;
 
+use app\widgets\base\LinkButton;
 use app\components\helpers\Icon;
-use app\widgets\base\PjaxButton;
 use Yii;
 
-class Trash extends PjaxButton
+class Edit extends LinkButton
 {
-
     public function init()
     {
         parent::init();
 
-        $this->confirm = true;
-        $this->text = Icon::TRASH;
-        $this->defaultOptions['title'] = Yii::t('app', 'Delete');
+        $this->text = Icon::EDIT;
+        $this->defaultOptions['title'] = 'Edit';
+        $this->defaultOptions['class'] = Yii::t('app', 'edit-btn');
     }
 
     public function run()

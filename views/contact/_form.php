@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Delete;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -44,17 +47,16 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), [
-                            'class' => 'btn btn-success',
-                            'title' => Yii::t('app', 'Save')]) ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/contact'], [
-                        'class' => 'btn btn-secondary',
-                        'title' => Yii::t('app', 'Cancel'),
+                    <?= Save::widget(); ?>
+                    <?= Cancel::widget([
+                        'url' => '/contact'
                     ]); ?>
                     <?php if (!$model->isNewRecord && $model->user_id === Yii::$app->user->id) : ?>
-                        <?= Html::a(Yii::t('app', 'Delete'), ['contact/delete/', 'id' => $model->id], [
-                            'class' => 'btn btn-danger float-right',
-                            'id' => 'delete-contact'
+                        <?= Delete::widget([
+                            'url' => ['contact/delete/', 'id' => $model->id],
+                            'options' => [
+                                'id' => 'delete-contact'
+                            ]
                         ]); ?>
                     <?php endif; ?>
                 </div>
