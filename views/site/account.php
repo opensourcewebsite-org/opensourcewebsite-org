@@ -6,7 +6,7 @@ use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\widgets\buttons\Trash;
-use lo\widgets\modal\ModalAjax;
+use app\widgets\ModalAjax;
 use yii\helpers\Url;
 use kartik\select2\Select2Asset;
 use app\widgets\buttons\Edit;
