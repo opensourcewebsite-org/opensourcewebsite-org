@@ -1,6 +1,8 @@
 <?php
 
+use app\widgets\buttons\Cancel;
 use app\widgets\buttons\Delete;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -61,8 +63,8 @@ use app\models\UserWikiToken;
                     ]) ?></p>
             </div>
             <div class="form-group">
-                <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
-                <?= Html::button(Yii::t('app', 'Close'), ['data-dismiss' => 'modal', 'class' => 'btn btn-default']) ?>
+                <?= Save::widget(); ?>
+                <?= Cancel::widget(); ?>
                 <?php if (!$model->isNewRecord) : ?>
                     <?= Delete::widget([
                         'url' => ['wiki-tokens/delete', 'id' => $model->id],
