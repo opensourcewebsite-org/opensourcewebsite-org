@@ -13,7 +13,7 @@ class Edit extends LinkButton
         parent::init();
 
         $this->text = Icon::EDIT;
-        $this->defaultOptions['title'] = Yii::t('app','Edit');
+        $this->defaultOptions['title'] = Yii::t('app', 'Edit');
         $this->defaultOptions['class'] = 'edit-btn';
     }
 
