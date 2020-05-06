@@ -32,7 +32,8 @@ class Linkable extends Widget
      */
     public $text;
 
-    public function init() {
+    public function init()
+    {
         parent::init();
 
         if ($this->options == null) {
@@ -44,7 +45,8 @@ class Linkable extends Widget
         }
     }
 
-    public function run() {
+    public function run()
+    {
         return Html::a(Yii::t('app', $this->text), $this->url, array_merge($this->defaultOptions, $this->options));
     }
 }
