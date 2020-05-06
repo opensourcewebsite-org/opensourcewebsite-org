@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Delete;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -31,16 +34,17 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                        <?=Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success'])?>
-                        <?=Html::a(Yii::t('app', 'Cancel'), ['/issue'], [
-                            'class' => 'btn btn-secondary',
-                            'title' => Yii::t('app', 'Cancel'),
-                        ]);?>
+                    <?= Save::widget(); ?>
+                    <?= Cancel::widget([
+                        'url' => '/issue'
+                    ]); ?>
                         <?php if((int) $issue->user_id === Yii::$app->user->identity->id && $issue->id != null && !$issue->hasIssuesVoteOfOthers($issue)):?>
-                            <?=Html::a(Yii::t('app', 'Delete'), ['issue/delete/', 'id' => $issue->id], [
-                                'class' => 'btn btn-danger float-right',
-                                'id' => 'delete-issue'
-                            ])?>
+                        <?= Delete::widget([
+                            'url' => ['issue/delete/', 'id' => $issue->id],
+                            'options' => [
+                                'id' => 'delete-issue',
+                            ]
+                        ]); ?>
                         <?php endif; ?>
                 </div>
                 </div>
@@ -63,6 +67,6 @@ $this->registerJs('$("#delete-issue").on("click", function(event) {
             }
         });
     }
-    
+
     return false;
 });');
