@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="form-group">
                     <?= Save::widget([
                         'text' => 'Change email',
-                        'options' => ['class' => 'btn btn-primary', 'name' => 'change-email-button']
+                        'options' => ['name' => 'change-email-button']
                     ]); ?>
                     <?= Cancel::widget([
                         'url' => ['site/login']

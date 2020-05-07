@@ -89,4 +89,5 @@ return [
     'Edit language' => 'Изменить язык',
     'Your browser doesn`t support cookies' => 'Ваш браузер не поддерживает куки',
     'Please, enable it in browser preferences for using all capabilities of Open Source Website' => 'Пожалуйста, включите их в настройках браузера для использования всех возможностей Open Source Website',
+    'Change email' => 'Изменить email'
 ];
