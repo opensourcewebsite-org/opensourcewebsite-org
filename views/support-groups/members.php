@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
             <?= Add::widget([
-                'url' => "#",
+                'url' => '#',
                 'options' => [
                     'title' => "New Member",
                     'data-toggle' => 'modal',
