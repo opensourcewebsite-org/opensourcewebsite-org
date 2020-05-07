@@ -75,7 +75,7 @@ class ContactController extends Controller
     {
         $model = $this->findModel($id);
 
-        if($model->link_user_id) {
+        if ($model->link_user_id) {
             $realConfirmations = Contact::find()->where([
                 'link_user_id' => $model->link_user_id,
                 'is_real' => 1
