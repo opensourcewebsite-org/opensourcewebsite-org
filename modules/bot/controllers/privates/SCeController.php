@@ -449,7 +449,7 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-selling-rate',[
+                $this->render('order-selling-rate', [
                     'selling_currency' => $sellingCode,
                     'buying_currency' => $buyingCode,
                     'selling_rate' => $order->selling_rate
@@ -487,7 +487,7 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-buying-rate',[
+                $this->render('order-buying-rate', [
                     'selling_currency' => $sellingCode,
                     'buying_currency' => $buyingCode,
                     'buying_rate' => $order->buying_rate
@@ -648,7 +648,7 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-selling-currency',[
+                $this->render('order-selling-currency', [
                     'selling' => $selling,
                     'buying' => $buying,
                 ]),
@@ -718,7 +718,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Payment methods'),
-                            'callback_data' => self::createRoute('order-currency-payment-methods',[
+                            'callback_data' => self::createRoute('order-currency-payment-methods', [
                                 'ordeId' => $orderId,
                                 'type' => $currencyType,
                             ]),
@@ -727,7 +727,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-edit',[
+                            'callback_data' => self::createRoute('order-edit', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -827,7 +827,7 @@ class SCeController extends FillablePropertiesController
         }
         asort($paymentMethodBottons);
 
-        $listMethod = array_map(function ($method){
+        $listMethod = array_map(function ($method) {
             return [
                 'name' => $method->name,
             ];
@@ -903,7 +903,7 @@ class SCeController extends FillablePropertiesController
                         ],
                         [
                             'text' => '🗑',
-                            'callback_data' => self::createRoute('order-selling-currency-payment-method-remove',[
+                            'callback_data' => self::createRoute('order-selling-currency-payment-method-remove', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -919,8 +919,6 @@ class SCeController extends FillablePropertiesController
      */
     public function actionOrderCurrencyPaymentMethodAdd($ordeId, $type)
     {
-        $user = $this->getUser();
-        $currency = new Currency();
         $paymentMethod = new PaymentMethod();
         $methodList = $paymentMethod::find()->all();
 
@@ -938,7 +936,7 @@ class SCeController extends FillablePropertiesController
 
         asort($resultMethodList);
 
-        $keyboardsPaymentMethod = [];
+        $keyPaymentMethod = [];
         foreach ($resultMethodList as $key => $value) {
             $text = [
                         [
@@ -950,10 +948,10 @@ class SCeController extends FillablePropertiesController
                             ]),
                         ],
                     ];
-            array_push($keyboardsPaymentMethod, $text);
+            array_push($keyPaymentMethod, $text);
         }
 
-        $keyboards = array_merge($keyboardsPaymentMethod, [
+        $keyboards = array_merge($keyPaymentMethod, [
             [
                 [
                     'text' => Emoji::BACK,
