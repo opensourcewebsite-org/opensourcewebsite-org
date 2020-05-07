@@ -1,6 +1,8 @@
 <?php
 
 use app\components\helpers\TimeHelper;
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
@@ -39,12 +41,10 @@ use kartik\select2\Select2;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), [
-                        'class' => 'btn btn-success',
-                        'title' => Yii::t('app', 'Save')]); ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'], [
-                        'class' => 'btn btn-secondary',
-                        'title' => Yii::t('app', 'Cancel')]); ?>
+                    <?= Save::widget(); ?>
+                    <?= Cancel::widget([
+                        'url' => ['/account']
+                    ]); ?>
                 </div>
             </div>
         </div>
