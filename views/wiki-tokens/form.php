@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Delete;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -35,7 +38,7 @@ use app\models\UserWikiToken;
                                 var language = $(this).children("option:selected").attr("data-code");
                                 var targetUsername = "https://" + language + ".wikipedia.org/wiki/Special:Preferences";
                                 var targetToken = "https://" + language + ".wikipedia.org/wiki/Special:Preferences#mw-prefsection-watchlist";
-                                
+
                                 $("#aUsername").attr("href", targetUsername).show();
                                 $("#aToken").attr("href", targetToken).show();
                             }',
@@ -46,7 +49,7 @@ use app\models\UserWikiToken;
             <div class="form-group">
                 <?= $form->field($model, 'wiki_username') ?>
                 <p><?= Html::a(Yii::t('app', 'Look your username here'), '', [
-                    'target' => '_blank', 
+                    'target' => '_blank',
                     'id' => 'aUsername',
                     'style' => 'display:none',
                     ]) ?></p>
@@ -58,17 +61,16 @@ use app\models\UserWikiToken;
                     'id' => 'aToken',
                     'style' => 'display:none',
                     ]) ?></p>
-            </div> 
+            </div>
             <div class="form-group">
-                <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
-                <?= Html::button(Yii::t('app', 'Close'), ['data-dismiss' => 'modal', 'class' => 'btn btn-default']) ?>
+                <?= Save::widget(); ?>
+                <?= Cancel::widget(); ?>
                 <?php if (!$model->isNewRecord) : ?>
-                    <?= Html::a(Yii::t('app', 'Delete'), ['wiki-tokens/delete', 'id' => $model->id], [
-                        'class' => 'btn btn-danger',
-                        'data-pjax' => '0',
-                        'data-confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                        'data-method' => 'post',
-                        'style' => ['float' => 'right'],
+                    <?= Delete::widget([
+                        'url' => ['wiki-tokens/delete', 'id' => $model->id],
+                        'options' => [
+                            'data-pjax' => '0',
+                        ]
                     ]); ?>
                 <?php endif; ?>
             </div>

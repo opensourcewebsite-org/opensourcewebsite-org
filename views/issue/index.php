@@ -2,8 +2,9 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use app\components\Converter;
+use app\widgets\buttons\Add;
 use app\components\helpers\IssuesHelper;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\IssueSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -64,9 +65,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="input-group-btn">
                                     <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 </div>
-                                <?= Html::a('<i class="fa fa-plus"></i>', ['issue/create'], [
-                                    'class' => 'btn btn-outline-success',
-                                    'title' => Yii::t('app', 'New Issue'),
+                                <?= Add::widget([
+                                    'url' => 'issue/create',
+                                    'options' => [
+                                        'title' => 'Create New'
+                                    ]
                                 ]); ?>
 
                             </form>
@@ -128,23 +131,3 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-
-
-<?php
-$this->registerJs('$(".delete-issue-anchor").on("click", function(event) {
-    event.preventDefault();
-    var url = $(this).attr("href");
-
-    if (confirm("' . Yii::t('app', 'Are you sure you want to delete this issue?') . '")) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.reload();
-            }
-            else {
-                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the issue.') . '");
-            }
-        });
-    }
-
-    return false;
-});');
