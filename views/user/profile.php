@@ -8,7 +8,6 @@ $this->title = Yii::t('app', 'Account');
 ?>
 
 <div class="user-profile-form">
-<<<<<<< HEAD
     <div class="row">
         <div class="col-12">
             <div class="card">
