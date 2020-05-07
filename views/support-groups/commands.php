@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\Add;
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Save;
 use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -18,12 +21,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
-            <a class="btn btn-success ml-3" href="#" title="Add command" data-toggle="modal" data-target="#exampleModalLong">New command</a>
+            <?= Add::widget([
+                'url' => '#',
+                'text' => 'New command',
+                'options' => [
+                    'title' => 'New command',
+                    'data-toggle' => 'modal',
+                    'data-target' => '#exampleModalLong'
+                ]
+            ]); ?>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Add command</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle"><?= Yii::t('app', 'Add command'); ?></h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -33,8 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= $form->field($command, 'is_default')->checkbox() ?>
                         </div>
                         <div class="card-footer text-left">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal">Cancel</a>
+                            <?= Save::widget(); ?>
+                            <?= Cancel::widget(); ?>
                         </div>
                     </div>
                 </div>
