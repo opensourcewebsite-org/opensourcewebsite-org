@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Add::widget([
                 'url' => '#',
                 'options' => [
-                    'title' => "New Member",
+                    'title' => 'New Member',
                     'data-toggle' => 'modal',
                     'data-target' => '#exampleModalLong',
                 ]
