@@ -74,6 +74,7 @@ class ContactController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+
         if($model->link_user_id) {
             $realConfirmations = Contact::find()->where([
                 'link_user_id' => $model->link_user_id,
