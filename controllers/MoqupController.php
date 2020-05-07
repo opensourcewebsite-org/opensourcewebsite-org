@@ -209,17 +209,13 @@ class MoqupController extends Controller
 
         if ($moqup != null) {
             if ($css != null) {
-                if (!$css->delete()) {
-                    return false;
-                }
+                $css->delete();
             }
 
-            if ($moqup->delete()) {
-                return true;
-            }
+            $moqup->delete();
         }
 
-        return false;
+        $this->redirect(['moqup/design-list']);
     }
 
     /**

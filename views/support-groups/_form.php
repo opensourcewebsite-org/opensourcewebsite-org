@@ -1,5 +1,7 @@
 <?php
 
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Save;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -38,8 +40,10 @@ use yii\widgets\ActiveForm;
             </div>
 
             <div class="card-footer">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-                <a class="btn btn-secondary" href="/support-groups">Cancel</a>
+                <?= Save::widget(); ?>
+                <?= Cancel::widget([
+                    'url' => '/support-groups'
+                ]); ?>
                 <?php if (!$model->isNewRecord) { ?>
                     <a class="btn btn-danger float-right" href="delete?id=<?= $model->id ?>" data-method="post">Delete</a>
                 <?php } ?>
