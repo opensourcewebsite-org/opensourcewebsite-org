@@ -227,30 +227,30 @@ Select2Asset::register($this);
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                 <?php
-                                 array_map(function ($language) {
-                                     $languageName = Language::findOne($language->language_id)->name;
-                                     $languageName = Yii::t('app', $languageName);
-                                     $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
-                                     $languageLvl = Yii::t('app', $languageLvl);
+                                <?php
+                                array_map(function ($language) {
+                                    $languageName = Language::findOne($language->language_id)->name;
+                                    $languageName = Yii::t('app', $languageName);
+                                    $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
+                                    $languageLvl = Yii::t('app', $languageLvl);
 
-                                     echo  '<tr><td>' . $languageName . '</td><td>' . $languageLvl . '</td><td>';
-                                     echo ModalAjax::widget([
-                                         'id' => 'change-language' . $language->language_id,
-                                         'header' => Yii::t('app', 'Change language'),
-                                         'closeButton' => false,
-                                         'toggleButton' => [
-                                             'label' => Icon::EDIT,
-                                             'class' => 'btn btn-light edit-btn',
-                                             'style' =>  ['float' => 'right', 'color' => '#007bff'],
-                                         ],
-                                         'url' => Url::to([
-                                             'user/change-language',
-                                             'id' => $language->language_id]),
-                                         'ajaxSubmit' => true,
-                                     ]);
-                                     echo '</td></tr>';
-                                 }, $model->languages); ?>
+                                    echo  '<tr><td>' . $languageName . '</td><td>' . $languageLvl . '</td><td>';
+                                    echo ModalAjax::widget([
+                                        'id' => 'change-language' . $language->language_id,
+                                        'header' => Yii::t('app', 'Change language'),
+                                        'closeButton' => false,
+                                        'toggleButton' => [
+                                            'label' => Icon::EDIT,
+                                            'class' => 'btn btn-light edit-btn',
+                                            'style' =>  ['float' => 'right', 'color' => '#007bff'],
+                                        ],
+                                        'url' => Url::to([
+                                            'user/change-language',
+                                            'id' => $language->language_id]),
+                                        'ajaxSubmit' => true,
+                                    ]);
+                                    echo '</td></tr>';
+                                }, $model->languages); ?>
                                 </tbody>
                             </table>
                         </div>

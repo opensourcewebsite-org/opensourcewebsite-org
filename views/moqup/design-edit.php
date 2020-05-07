@@ -83,11 +83,9 @@ AceEditorAsset::register($this);
         ]); ?>
 
         <?php if (!$moqup->isNewRecord): ?>
-            <?php
-            echo Delete::widget([
+            <?= Delete::widget([
                 'url' => ['moqup/design-delete/', 'id' => $moqup->id],
-            ]);
-           ?>
+                ]); ?>
         <?php endif; ?>
     </div>
 </div>

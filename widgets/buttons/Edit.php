@@ -12,7 +12,7 @@ class Edit extends LinkButton
     {
         parent::init();
 
-        if($this->text == null) {
+        if ($this->text == null) {
             $this->text = Icon::EDIT;
         }
         $this->defaultOptions['title'] = Yii::t('app', 'Edit');

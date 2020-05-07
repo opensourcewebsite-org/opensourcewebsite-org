@@ -20,10 +20,10 @@ use yii\bootstrap\ActiveForm;
         <div class="col-1 text-right">
             <?= Edit::widget([
                 'url' => '#',
-                 'options' => [
-                     'data-toggle' => 'modal',
-                     'data-target' => '#exampleModalLongEditCommand',
-                 ]
+                'options' => [
+                    'data-toggle' => 'modal',
+                    'data-target' => '#exampleModalLongEditCommand',
+                ]
             ]); ?>
             <?php $form = ActiveForm::begin() ?>
             <div class="modal fade" id="exampleModalLongEditCommand" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
