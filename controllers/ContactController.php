@@ -81,7 +81,7 @@ class ContactController extends Controller
                 'is_real' => 1
             ])->count();
         } else {
-            $realConfirmations = $model->is_real ? 1 : 0;
+            $realConfirmations = 0;
         }
 
         $params = [
