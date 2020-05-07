@@ -52,21 +52,3 @@ use yii\widgets\ActiveForm;
         </div>
     <?php ActiveForm::end();?>
 </div>
-<?php
-$this->registerJs('$("#delete-issue").on("click", function(event) {
-    event.preventDefault();
-    var url = $(this).attr("href");
-
-    if (confirm("' . Yii::t('app', 'Are you sure you want to delete this issue?') . '")) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.href = "'.Yii::$app->urlManager->createUrl(['/issue']).'";
-            }
-            else {
-                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the issue.') . '");
-            }
-        });
-    }
-
-    return false;
-});');

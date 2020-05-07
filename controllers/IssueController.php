@@ -51,14 +51,14 @@ class IssueController extends Controller
         $params = Yii::$app->request->queryParams;
         $searchModel = new IssueSearch();
         $dataProvider = $searchModel->search($params);
-        
+
         if ($viewYours) {
             $params['viewYours'] = true;
         }
 
         $countYours = Issue::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
         $countNew = Issue::getNewIssuesCount();
-        
+
         $maxIssueSetting = Setting::findOne(['key' => 'issue_quantity_value_per_one_rating']);
         $maxIssueValue = $maxIssueSetting->value;
 
@@ -163,12 +163,12 @@ class IssueController extends Controller
         //The user can edit / delete his issue only if there are no other users' votes for the appeal. the vote of the creator does not affect this condition.
         $uservotes = UserIssueVote::getIssueVoteCount($id, true);
         if ($uservotes > 0) {
-            return 0;
+            $this->redirect(['/issue']);
         }
 
         $issue = $this->findModel($id);
         $issue->delete();
-        return 1;
+        $this->redirect(['/issue']);
     }
 
     /**

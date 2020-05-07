@@ -131,23 +131,3 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-
-
-<?php
-$this->registerJs('$(".delete-issue-anchor").on("click", function(event) {
-    event.preventDefault();
-    var url = $(this).attr("href");
-
-    if (confirm("' . Yii::t('app', 'Are you sure you want to delete this issue?') . '")) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.reload();
-            }
-            else {
-                alert("' . Yii::t('app', 'Sorry, there was an error while trying to delete the issue.') . '");
-            }
-        });
-    }
-
-    return false;
-});');
