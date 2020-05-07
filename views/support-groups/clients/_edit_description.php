@@ -14,10 +14,10 @@ use yii\bootstrap\ActiveForm;
         <div class="col-12 text-right">
             <?= Edit::widget([
                 'url' => '#',
-                 'options' => [
-                     'data-toggle' => 'modal',
-                     'data-target' => '#commonModal'
-                 ]
+                'options' => [
+                    'data-toggle' => 'modal',
+                    'data-target' => '#commonModal'
+                ]
             ]); ?>
             <?php $form = ActiveForm::begin() ?>
             <div class="modal fade" id="commonModal" tabindex="-1" role="dialog" aria-labelledby="commonModalTitle" aria-hidden="true">
