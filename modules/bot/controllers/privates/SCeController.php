@@ -709,7 +709,7 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-buying-currency',[
+                $this->render('order-buying-currency', [
                     'selling' => $selling,
                     'buying' => $buying,
 

@@ -2,7 +2,7 @@
 <br/>
 <?= Yii::t('bot', 'Payment methods')?> :<br/>
 
-<?  foreach ($paymentMethod as $value) {
+<?php  foreach ($paymentMethod as $value) {
 		if ($value['name'] == 'Cash') {
 			echo ' - ' . $value['name'] . '<br/>';
 		}
@@ -12,4 +12,3 @@
 			echo ' - ' . $value['name'] . '<br/>';
 		}
     }
-?>
