@@ -48,8 +48,7 @@ class Currency extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getCodeById(int $id)
-    { 
+    public function getCodeById($id)
     {
         $query = $this->findOne(['id' => $id]);
         return $query['code'];

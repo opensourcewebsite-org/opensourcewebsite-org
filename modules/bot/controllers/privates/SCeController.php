@@ -140,11 +140,11 @@ class SCeController extends FillablePropertiesController
         $status = 'Status: ' . $text;
 
         $selling = $currency->getCodeById($order->selling_currency_id) . '/' .
-                   $currency->getCodeById($order->buying_currency_id) . ': ' .
-                   $order->selling_rate;
+                    $currency->getCodeById($order->buying_currency_id) . ': ' .
+                    $order->selling_rate;
         $buying = $currency->getCodeById($order->buying_currency_id) . '/' .
-                  $currency->getCodeById($order->selling_currency_id) . ': ' .
-                  $order->buying_rate;
+                    $currency->getCodeById($order->selling_currency_id) . ': ' .
+                    $order->buying_rate;
         $minAmount = number_format($order->selling_currency_min_amount, 2, '.', '');
         $maxAmount = number_format($order->selling_currency_max_amount, 2, '.', '');
 

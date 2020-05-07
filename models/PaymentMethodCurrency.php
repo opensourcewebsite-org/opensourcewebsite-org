@@ -32,7 +32,6 @@ class PaymentMethodCurrency extends \yii\db\ActiveRecord
             [['payment_method_id', 'currency_id'], 'integer'],
         ];
     }
-
     /**
      * {@inheritdoc}
      */
