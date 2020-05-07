@@ -319,12 +319,9 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
-        $realConfirmations = Contact::find()->where([
-            'link_user_id' => $model->id,
-            'is_real' => 1
-        ])->count();
+        $realConfirmations = $model->getContactsToMe()->where(['is_real' => 1])->count();
 
-        return $this->render('account', [
+        $params = [
             'model' => $model,
             'realConfirmations' => $realConfirmations,
             'activeRating' => $activeRating,
@@ -337,7 +334,8 @@ class SiteController extends Controller
                 'rank' => $rank,
                 'total' => $total,
             ],
-        ]);
+        ];
+        return $this->render('account', $params);
     }
 
     /**

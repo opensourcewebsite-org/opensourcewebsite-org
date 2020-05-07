@@ -20,12 +20,7 @@ $this->title = Yii::t('app', 'Account');
                 ],
                 [
                     'attribute' => 'Real Confirmations',
-                    'value' => function($model) {
-                        return Contact::find()->where([
-                            'link_user_id' => $model->id,
-                            'is_real' => 1
-                        ])->count();
-                    }
+                    'value' => $realConfirmations
                 ],
             ],
         ]);
