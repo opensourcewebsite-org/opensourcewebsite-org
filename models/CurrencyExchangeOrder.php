@@ -63,8 +63,14 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function getSellingCurrencyCode()
     {
-        return $this->hasOne(Currency::className(), ['selling_currency_id' => 'id']);
-        
+      return $this->hasOne(Currency::className(), ['selling_currency_id' => 'id']);
     }
-    
+
+     public function getPaymentMethods($type)
+    {
+        return $this->hasMany(PaymentMethod::className(), ['id' => 'payment_method_id'])
+                ->viaTable('currency_exhange_order_payment_method', ['order_id' => 'id'], function($query) use ($type){
+                    return $query->onCondition(['currency_exhange_order_payment_method.type' => $type]);
+                });
+    }
 }

@@ -13,10 +13,8 @@
 <br/>
 /my_location - <?= Yii::t('bot', 'Location') ?><br/>
 <br/>
-<?
-    if (!$telegramUser->provider_user_name) {
-    	echo Yii::t('bot', 'Set your nickname in your Telegram account');
+<? if (!$telegramUser->provider_user_name) {
+        echo Yii::t('bot', 'Set your nickname in your Telegram account');
     }
 ?>
-<br/>
-/my_profile - <?= Yii::t('bot', 'Profile') ?><br/>
+<br/>/my_profile - <?= Yii::t('bot', 'Profile') ?><br/>

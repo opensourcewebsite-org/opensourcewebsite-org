@@ -44,5 +44,4 @@ class PaymentMethodCurrency extends \yii\db\ActiveRecord
             'currency_id' => 'Currency ID',
         ];
     }
-
 }

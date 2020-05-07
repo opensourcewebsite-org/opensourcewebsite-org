@@ -50,6 +50,7 @@ class Currency extends \yii\db\ActiveRecord
 
     public function getCodeById(int $id)
     { 
+    {
         $query = $this->findOne(['id' => $id]);
         return $query['code'];
     }
@@ -58,5 +59,10 @@ class Currency extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PaymentMethod::className(), ['id' => 'payment_method_id'])
                 ->viaTable('payment_method_currency', ['currency_id' => 'id']);
+    }
+
+    public function getDebtRedistributions()
+    {
+        return $this->hasMany(DebtRedistribution::className(), ['currency_id' => 'id']);
     }
 }

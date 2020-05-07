@@ -12,7 +12,7 @@ class m200417_142101_add_optional_name_column_to_currency_exchange_order extends
      */
     public function safeUp()
     {
-        $this->addColumn('currency_exchange_order', 'optional_neme', $this->string());
+        $this->addColumn('currency_exchange_order', 'optional_name', $this->string());
     }
 
     /**
@@ -20,7 +20,6 @@ class m200417_142101_add_optional_name_column_to_currency_exchange_order extends
      */
     public function safeDown()
     {
-        $this->dropColumn('currency_exchange_order', 'optional_neme', $this->string());
+        $this->dropColumn('currency_exchange_order', 'optional_name', $this->string());
     }
-
 }

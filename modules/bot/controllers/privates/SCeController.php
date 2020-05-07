@@ -16,7 +16,6 @@ use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use Yii;
 
-
 /**
  * Class SCeController
  *
@@ -37,15 +36,10 @@ class SCeController extends FillablePropertiesController
      */
     public function actionIndex($page = 1)
 	{
-        //TODO PaginationButtons for orders
-
-        //TODO add this check for all controller actions, remove from actions
-
         $telegramUser = $this->getTelegramUser();
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
 
             $user = $this->getUser();
-
             $orderCount = $user->getExchangeOrder()->count();
             $pagination = new Pagination([
                 'totalCount' => $orderCount,
@@ -67,7 +61,7 @@ class SCeController extends FillablePropertiesController
                 ->limit($pagination->limit)
                 ->orderBy(['status' => SORT_DESC, 'selling_currency_id' => SORT_ASC])
                 ->all();
-            $keyboards = array_map(function($order) {
+            $keyboards = array_map(function ($order) {
                 $currency = new Currency();
                 $sellingCode = $currency->getCodeById($order->selling_currency_id);
                 $buyingCode = $currency->getCodeById($order->buying_currency_id);
@@ -75,7 +69,7 @@ class SCeController extends FillablePropertiesController
 
                 return [
                     [
-                        'text' => $status.$sellingCode . '/' . 
+                        'text' => $status . $sellingCode . '/' .
                             $buyingCode . ' ' . $order->optional_name,
                         'callback_data' => self::createRoute('order', [
                         'orderId' => $order->id,
@@ -139,35 +133,32 @@ class SCeController extends FillablePropertiesController
      */
     public function actionOrder($orderId)
     {
-        $user = $this->getUser();
         $currency = new Currency();
-
-        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
+        $order = CurrencyExchangeOrder::findOne($orderId);
 
         ($order->status == 1 ? $text = 'ON' : $text = 'OFF');
         $status = 'Status: ' . $text;
 
-        $selling = $currency->getCodeById($order->selling_currency_id).'/'.
-                   $currency->getCodeById($order->buying_currency_id).': '.
+        $selling = $currency->getCodeById($order->selling_currency_id) . '/' .
+                   $currency->getCodeById($order->buying_currency_id) . ': ' .
                    $order->selling_rate;
-
-        $buying = $currency->getCodeById($order->buying_currency_id).'/'.
-                  $currency->getCodeById($order->selling_currency_id).': '.
+        $buying = $currency->getCodeById($order->buying_currency_id) . '/' .
+                  $currency->getCodeById($order->selling_currency_id) . ': ' .
                   $order->buying_rate;
+        $minAmount = number_format($order->selling_currency_min_amount, 2, '.', '');
+        $maxAmount = number_format($order->selling_currency_max_amount, 2, '.', '');
 
+        $sellingPaymentMethod = $order->getPaymentMethods(1)->all();
+        $buyingPaymentMethod = $order->getPaymentMethods(2)->all();
 
-        $sellingCurrency = $currency::findOne($order->selling_currency_id);
-        $sellingPaymentMethod = $sellingCurrency->paymentMethods;
-        $sellingListMethod = array_map(function($method){
+        $sellingListMethod = array_map(function ($method) {
             return [
                 'name' => $method->name,
             ];
         }, $sellingPaymentMethod);
         asort($sellingListMethod);
 
-        $buyingCurrency = $currency::findOne($order->buying_currency_id);
-        $buyingPaymentMethod = $buyingCurrency->paymentMethods;
-        $buyingListMethod = array_map(function($method){
+        $buyingListMethod = array_map(function ($method) {
             return [
                 'name' => $method->name,
             ];
@@ -178,7 +169,7 @@ class SCeController extends FillablePropertiesController
             [
                 [
                     'text' => $status,
-                    'callback_data' => self::createRoute('order-status',[
+                    'callback_data' => self::createRoute('order-status', [
                         'orderId' => $orderId,
                     ]),
                 ],
@@ -192,7 +183,7 @@ class SCeController extends FillablePropertiesController
             [
                 [
                     'text' => $selling,
-                    'callback_data' => self::createRoute('order-selling-rate',[
+                    'callback_data' => self::createRoute('order-selling-rate', [
                         'orderId' => $orderId,
                     ]),
                 ],
@@ -200,7 +191,7 @@ class SCeController extends FillablePropertiesController
             [
                 [
                     'text' => $buying,
-                    'callback_data' => self::createRoute('order-buying-rate',[
+                    'callback_data' => self::createRoute('order-buying-rate', [
                         'orderId' => $orderId,
                     ]),
                 ],
@@ -216,13 +207,13 @@ class SCeController extends FillablePropertiesController
                 ],
                 [
                     'text' => Emoji::EDIT,
-                    'callback_data' => self::createRoute('order-edit',[
+                    'callback_data' => self::createRoute('order-edit', [
                         'orderId' => $orderId,
                     ]),
                 ],
                 [
                     'text' => Emoji::DELETE,
-                    'callback_data' => self::createRoute('order-remove',[
+                    'callback_data' => self::createRoute('order-remove', [
                         'orderId' => $orderId,
                     ]),
                 ],
@@ -234,8 +225,8 @@ class SCeController extends FillablePropertiesController
                 $this->render('order', [
                     'selling_currency' => $currency->getCodeById($order->selling_currency_id),
                     'buying_currency' => $currency->getCodeById($order->buying_currency_id),
-                    'selling_currency_min_amount' => $order->selling_currency_min_amount,
-                    'selling_currency_max_amount' => $order->selling_currency_max_amount,
+                    'selling_currency_min_amount' => $minAmount,
+                    'selling_currency_max_amount' => $maxAmount,
                     'optional_name' => $order->optional_name,
                     'sellingPaymentMethod' => $sellingListMethod,
                     'buyingPaymentMethod' => $buyingListMethod,
@@ -271,7 +262,7 @@ class SCeController extends FillablePropertiesController
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $keyboards = array_map(function($currency) {
+        $keyboards = array_map(function ($currency) {
             return [
                 [
                     'text' => $currency->name,
@@ -295,7 +286,7 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-create'), 
+                $this->render('order-create'),
                 $keyboards
             )
             ->build();
@@ -321,7 +312,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Name'),
-                            'callback_data' => self::createRoute('optional-name',[
+                            'callback_data' => self::createRoute('optional-name', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -329,7 +320,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => $selling,
-                            'callback_data' => self::createRoute('order-selling-currency',[
+                            'callback_data' => self::createRoute('order-selling-currency', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -337,17 +328,17 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => $buying,
-                            'callback_data' => self::createRoute('order-buying-currency',[
+                            'callback_data' => self::createRoute('order-buying-currency', [
                                 'orderId' => $orderId
                             ]),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('order',[
+                            'text' => Emoji::BACK,
+                            'callback_data' => self::createRoute('order', [
                                 'orderId' => $orderId
                             ]),
-                            'text' => Emoji::BACK,
                         ],
                     ],
                 ]
@@ -359,33 +350,33 @@ class SCeController extends FillablePropertiesController
      * Edit optional name view
      * view - order-optional-name
      */
-    public function actionOptionalName ($orderId)
+    public function actionOptionalName($orderId)
     {
+        $user = $this->getUser();
+        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-optional-name'),
+                $this->render('order-optional-name', [
+                    'optionalName' => $order->optional_name,
+                ]),
                 [
                     [
                         [
-                            'text' => Yii::t('bot', 'Enter name'),
-                            'callback_data' => self::createRoute('set-property',[
+                            'text' => Emoji::EDIT,
+                            'callback_data' => self::createRoute('set-property', [
                                 'id' => $orderId,
                                 'property' => 'optional_name',
                             ]),
                         ],
-                    ],
-                    [
                         [
-                            'text' => Yii::t('bot', 'Remove'),
-                            'callback_data' => self::createRoute('optional-name-remove',[
+                            'text' => Emoji::DELETE,
+                            'callback_data' => self::createRoute('optional-name-remove', [
                                 'orderId' => $orderId,
                             ]),
                         ],
-                    ],
-                    [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-edit',[
+                            'callback_data' => self::createRoute('order-edit', [
                                 'orderId' => $orderId
                             ]),
                         ],
@@ -394,14 +385,14 @@ class SCeController extends FillablePropertiesController
             )
             ->build();
     }
-    
+
     /**
      * Remove optional name and redirect on actionOrder
      */
-    public function actionOptionalNameRemove ($orderId)
+    public function actionOptionalNameRemove($orderId)
     {
         $user = $this->getUser();
-        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
+        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();///////////////////////
         if (isset($order)) {
             $order->optional_name = '';
         }
@@ -439,7 +430,6 @@ class SCeController extends FillablePropertiesController
 
         return $this->actionOrder($orderId);
     }
-    
     /**
      * Edit order selling rate and redirect on actionIndex
      * view - order-selling-rate
@@ -469,7 +459,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order',[
+                            'callback_data' => self::createRoute('order', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -478,7 +468,6 @@ class SCeController extends FillablePropertiesController
             )
             ->build();
     }
-
     /**
      * Edit order selling rate and redirect on actionIndex
      * view - order-buying-rate
@@ -508,7 +497,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order',[
+                            'callback_data' => self::createRoute('order', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -517,12 +506,11 @@ class SCeController extends FillablePropertiesController
             )
             ->build();
     }
-    
     /**
-     * Save method for OrderBuyingRate, OrderSellingRate, 
+     * Save method for OrderBuyingRate, OrderSellingRate,
      * OrderMinAmount and OrderMaxAmount and redirect on actionOrder
      */
-    public function actionAmountSave ($orderId, $param)
+    public function actionAmountSave($orderId, $param)
     {
         $update = $this->getUpdate();
         $user = $this->getUser();
@@ -530,7 +518,7 @@ class SCeController extends FillablePropertiesController
         $text = $update->getMessage()->getText();
         $numberFormat = str_replace(',', '.', $text);
         $number = floatval($numberFormat);
-        
+
         if ($number <= 9999999999) {
             $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
             switch ($param) {
@@ -553,9 +541,8 @@ class SCeController extends FillablePropertiesController
                     $number = number_format($number, 8, '.', '');
                     $order->selling_rate = $number;
                     break;
-                
             }
-        
+
             $order->save();
 
             return $this->actionOrder($orderId);
@@ -569,7 +556,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-selling-currency',[
+                            'callback_data' => self::createRoute('order-selling-currency', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -585,7 +572,7 @@ class SCeController extends FillablePropertiesController
      */
     public function actionMinAmount($orderId, $param)
     {
-        $update = $this->getUpdate();
+        //$update = $this->getUpdate();
         $this->getState()->setName(self::createRoute('amount-save', [
             'orderId' => $orderId,
             'param' => $param,
@@ -600,7 +587,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-selling-currency',[
+                            'callback_data' => self::createRoute('order-selling-currency', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -616,7 +603,7 @@ class SCeController extends FillablePropertiesController
      */
     public function actionMaxAmount($orderId, $param)
     {
-        $update = $this->getUpdate();
+        //$update = $this->getUpdate();
         $this->getState()->setName(self::createRoute('amount-save', [
             'orderId' => $orderId,
             'param' => $param,
@@ -631,7 +618,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-selling-currency',[
+                            'callback_data' => self::createRoute('order-selling-currency', [
                                 'orderId' => $orderId,
                             ]),
                         ],
@@ -653,8 +640,10 @@ class SCeController extends FillablePropertiesController
         $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
         $selling = $currency->getCodeById($order->selling_currency_id);
         $buying = $currency->getCodeById($order->buying_currency_id);
-        $minAmount = $order->selling_currency_min_amount;
-        $maxAmount = $order->selling_currency_max_amount;
+        $minAmount = number_format($order->selling_currency_min_amount, 2, '.', '');
+        $maxAmount = number_format($order->selling_currency_max_amount, 2, '.', '');
+
+        $currencyType = 1;
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -666,7 +655,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Min. amount: ') . $minAmount,
-                            'callback_data' => self::createRoute('min-amount',[
+                            'callback_data' => self::createRoute('min-amount', [
                                 'orderId' => $orderId,
                                 'param' => 'min',
                             ]),
@@ -675,7 +664,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Max. amount: ') . $maxAmount,
-                            'callback_data' => self::createRoute('max-amount',[
+                            'callback_data' => self::createRoute('max-amount', [
                                 'orderId' => $orderId,
                                 'param' => 'max',
                             ]),
@@ -684,16 +673,17 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Payment methods'),
-                            'callback_data' => self::createRoute('order-selling-currency-payment-methods',[
-                                'orderId' => $orderId,
+                            'callback_data' => self::createRoute('order-currency-payment-methods', [
+                                'ordeId' => $orderId,
+                                'type' => $currencyType,
                             ]),
                         ],
                     ],
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-edit',[
-                                'orderId' => $orderId
+                            'callback_data' => self::createRoute('order-edit', [
+                                'orderId' => $orderId,
                             ]),
                         ],
                     ],
@@ -714,6 +704,7 @@ class SCeController extends FillablePropertiesController
         $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
         $selling = $currency->getCodeById($order->selling_currency_id);
         $buying = $currency->getCodeById($order->buying_currency_id);
+        $currencyType = 2;
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -726,9 +717,10 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Payment methods'),
-                            'callback_data' => self::createRoute('order-selling-currency-payment-methods',[
-                                'orderId' => $orderId,
-                            ]), 
+                            'callback_data' => self::createRoute('order-currency-payment-methods',[
+                                'ordeId' => $orderId,
+                                'type' => $currencyType,
+                            ]),
                         ],
                     ],
                     [
@@ -792,19 +784,14 @@ class SCeController extends FillablePropertiesController
      * Edit currency payment metods screen
      * view - order-selling-currency-payment-methods
      */
-    public function actionOrderSellingCurrencyPaymentMethods($orderId)
+    public function actionOrderCurrencyPaymentMethods($ordeId, $type)
     {
-        $user = $this->getUser();
         $currency = new Currency();
-
-        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
-        $selling = $currency->getCodeById($order->selling_currency_id);
-        $buying = $currency->getCodeById($order->buying_currency_id);
-
-        $sellingCurrency = $currency::findOne($order->selling_currency_id);
-        $paymentMethod = $sellingCurrency->paymentMethods;
-
-        $cashMethod = array();
+        $currencyExchange = CurrencyExchangeOrder::findOne($ordeId);
+        $selling = $currency->getCodeById($currencyExchange->selling_currency_id);
+        $buying = $currency->getCodeById($currencyExchange->buying_currency_id);
+        $paymentMethod = $currencyExchange->getPaymentMethods($type)->all();
+        $cashMethod = [];
         foreach ($paymentMethod as $value) {
             $idInt = (int)$value['id'];
             if ($value['name'] == 'Cash') {
@@ -812,7 +799,7 @@ class SCeController extends FillablePropertiesController
                             [
                                 'text' => $value['name'],
                                 'callback_data' => self::createRoute('order-selling-currency-payment-method', [
-                                    'orderId' => $orderId,
+                                    'orderId' => $ordeId,
                                     'metodId' => $idInt,
                                 ]),
                             ],
@@ -821,7 +808,7 @@ class SCeController extends FillablePropertiesController
             }
         }
 
-        $paymentMethodBottons = array();
+        $paymentMethodBottons = [];
         foreach ($paymentMethod as $value) {
             $idInt = (int)$value['id'];
             if ($value['name'] !== 'Cash') {
@@ -839,7 +826,7 @@ class SCeController extends FillablePropertiesController
         }
         asort($paymentMethodBottons);
 
-        $listMethod = array_map(function($method){
+        $listMethod = array_map(function ($method){
             return [
                 'name' => $method->name,
             ];
@@ -849,28 +836,29 @@ class SCeController extends FillablePropertiesController
         $keyboards = array_merge($cashMethod, $paymentMethodBottons, [
             [
                 [
-                     'text' => Emoji::BACK,
-                    'callback_data' => self::createRoute('order-selling-currency',[
-                    'orderId' => $orderId,
+                    'text' => Emoji::BACK,
+                    'callback_data' => self::createRoute('order-edit', [
+                        'orderId' => $ordeId,
                     ]),
                 ],
                 [
                     'text' => Emoji::ADD,
-                    'callback_data' => self::createRoute('order-selling-currency-payment-method-add',[
-                        'orderId' => $orderId,
+                    'callback_data' => self::createRoute('order-currency-payment-method-add', [
+                        'ordeId' => $ordeId,
+                        'type' => $type
                     ]),
                 ],
             ],
         ]);
-        
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-selling-currency-payment-methods',[
+                $this->render('order-selling-currency-payment-methods', [
                     'selling' => $selling,
                     'buying' => $buying,
                     'paymentMethod' => $listMethod,
-                ]), $keyboards
+                ]),
+                $keyboards
             )
             ->build();
     }
@@ -928,37 +916,36 @@ class SCeController extends FillablePropertiesController
      * add payment method from currency
      * view - order-selling-currency-payment-method-add
      */
-    public function actionOrderSellingCurrencyPaymentMethodAdd($orderId)
+    public function actionOrderCurrencyPaymentMethodAdd($ordeId, $type)
     {
         $user = $this->getUser();
         $currency = new Currency();
         $paymentMethod = new PaymentMethod();
-
         $methodList = $paymentMethod::find()->all();
 
-        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();
-        $sellingCurrency = $currency::findOne($order->selling_currency_id);
-        $paymentMethod = $sellingCurrency->paymentMethods;
+        $currencyExchange = CurrencyExchangeOrder::findOne($ordeId);
+        $paymentMethod = $currencyExchange->getPaymentMethods($type)->all();
 
-        $arrayMethodList = array_map(function($method) {
+        $arrayMethodList = array_map(function ($method) {
             return $method->id = $method->name;
         }, $methodList);
-        $arrayPaymentMethod = array_map(function($method) {
+        $arrayPaymentMethod = array_map(function ($method) {
             return $method->id = $method->name;
-        },$paymentMethod);
+        }, $paymentMethod);
 
         $resultMethodList = array_diff($arrayMethodList, $arrayPaymentMethod);
 
         asort($resultMethodList);
 
-        $keyboardsPaymentMethod = array();
+        $keyboardsPaymentMethod = [];
         foreach ($resultMethodList as $key => $value) {
             $text = [
                         [
                             'text' => $value,
-                            'callback_data' => self::createRoute('order-selling-currency-payment-method-save', [
-                                'Id' => $orderId,
-                                'metodId' => $key
+                            'callback_data' => self::createRoute('order-currency-payment-method-save', [
+                                'id' => $ordeId,
+                                'metod' => $key,
+                                'type' => $type,
                             ]),
                         ],
                     ];
@@ -969,8 +956,8 @@ class SCeController extends FillablePropertiesController
             [
                 [
                     'text' => Emoji::BACK,
-                    'callback_data' => self::createRoute('order-selling-currency',[
-                    'orderId' => $orderId,
+                    'callback_data' => self::createRoute('order-edit', [
+                        'orderId' => $ordeId,
                     ]),
                 ],
             ],
@@ -979,8 +966,8 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-selling-currency-payment-method-add',[
-                ]),$keyboards
+                $this->render('order-selling-currency-payment-method-add'),
+                $keyboards
             )
             ->build();
     }
@@ -988,19 +975,18 @@ class SCeController extends FillablePropertiesController
     /**
      * method save payment method from currency
      */
-    public function actionOrderSellingCurrencyPaymentMethodSave($Id, $metodId)
+    public function actionOrderCurrencyPaymentMethodSave($id, $metod, $type)
     {
         $paymentMethod = new CurrencyExhangeOrderPaymentMethod();
-        if ($Id && $metodId) {
-            $paymentMethod->order_id = $Id;
-            $paymentMethod->payment_method_id = $metodId;
-            $paymentMethod->type = 1;
+        if ($id && $metod) {
+            $paymentMethod->order_id = $id;
+            $paymentMethod->payment_method_id = $metod;
+            $paymentMethod->type = $type;
             $paymentMethod->save();
 
             return $this->actionIndex();
         }
     }
-
 
     /**
      * @return array
@@ -1040,6 +1026,4 @@ class SCeController extends FillablePropertiesController
     {
         return $this->actionOrder($model->id);
     }
-
-    
 }
