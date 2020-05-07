@@ -72,7 +72,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             ],
                             [
                                 'attribute' => 'Real Confirmations',
-                                'value' => $realConfirmations
+                                'value' => $realConfirmations,
+                                'visible' => $model->link_user_id ? 1 : 0
                             ],
                             'name',
                             [
@@ -84,6 +85,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
                         ],
+                        'options' => ['class' => 'table table-hover detail-view']
                     ]); ?>
                 </div>
             </div>
