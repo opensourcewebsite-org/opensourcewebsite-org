@@ -391,8 +391,7 @@ class SCeController extends FillablePropertiesController
      */
     public function actionOptionalNameRemove($orderId)
     {
-        $user = $this->getUser();
-        $order = $user->getExchangeOrder()->where(['id' => $orderId])->one();///////////////////////
+        $order = CurrencyExchangeOrder::findOne($orderId);
         if (isset($order)) {
             $order->optional_name = '';
         }
@@ -541,6 +540,8 @@ class SCeController extends FillablePropertiesController
                     $number = number_format($number, 8, '.', '');
                     $order->selling_rate = $number;
                     break;
+                default:
+                    return $this->actionIndex();
             }
 
             $order->save();

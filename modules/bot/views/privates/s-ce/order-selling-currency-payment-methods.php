@@ -8,7 +8,8 @@
 		}
 	}
 	foreach ($paymentMethod as $value) {
-		if ($value['name'] !== 'Cash')
-		echo ' - ' . $value['name'] . '<br/>';
+		if ($value['name'] !== 'Cash') {
+			echo ' - ' . $value['name'] . '<br/>';
+		}
     }
 ?>

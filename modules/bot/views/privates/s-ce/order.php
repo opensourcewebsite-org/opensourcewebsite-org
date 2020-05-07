@@ -10,8 +10,9 @@
 		}
 	}
 	foreach ($sellingPaymentMethod as $value) {
-		if ($value['name'] !== 'Cash')
-		echo ' - ' . $value['name'] . '<br/>';
+		if ($value['name'] !== 'Cash') {
+			echo ' - ' . $value['name'] . '<br/>';
+		}
     }
 ?>
 <br/>
@@ -23,8 +24,9 @@
 		}
 	}
 	foreach ($buyingPaymentMethod as $value) {
-		if ($value['name'] !== 'Cash')
-		echo ' - ' . $value['name'] . '<br/>';
+		if ($value['name'] !== 'Cash') {
+			echo ' - ' . $value['name'] . '<br/>';
+		}
     }
 ?>
 <br/>
