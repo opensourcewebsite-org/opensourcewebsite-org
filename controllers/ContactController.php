@@ -52,6 +52,11 @@ class ContactController extends Controller
             ->virtual((int)$view !== Contact::VIEW_USER);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'name' => SORT_ASC
+                ]
+            ]
         ]);
 
         return $this->render('index', [
@@ -68,9 +73,22 @@ class ContactController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $model = $this->findModel($id);
+
+        if ($model->link_user_id) {
+            $realConfirmations = Contact::find()->where([
+                'link_user_id' => $model->link_user_id,
+                'is_real' => 1
+            ])->count();
+        } else {
+            $realConfirmations = $model->is_real ? 1 : 0;
+        }
+
+        $params = [
+            'model' => $model,
+            'realConfirmations' => $realConfirmations,
+        ];
+        return $this->render('view', $params);
     }
 
     /**
