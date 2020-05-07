@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             ],
                             [
                                 'attribute' => 'Real Confirmations',
-                                'value' => function($model) {
+                                'value' => function(Contact $model) {
                                     if (!empty($model->linkedUser)) {
                                         return Contact::find()->where([
                                             'link_user_id' => $model->linkedUser->id,

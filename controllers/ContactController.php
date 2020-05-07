@@ -52,6 +52,11 @@ class ContactController extends Controller
             ->virtual((int)$view !== Contact::VIEW_USER);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'name' => SORT_ASC
+                ]
+            ]
         ]);
 
         return $this->render('index', [

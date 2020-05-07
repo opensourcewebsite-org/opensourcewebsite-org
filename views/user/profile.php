@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Contact;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -12,11 +13,19 @@ $this->title = Yii::t('app', 'Account');
             'model' => $model,
             'attributes' => [
                 'id',
-                'name',
                 [
                     'label' => 'Username',
                     'value' => $model->username,
                     'visible' => (bool)$model->username
+                ],
+                [
+                    'attribute' => 'Real Confirmations',
+                    'value' => function($model) {
+                        return Contact::find()->where([
+                            'link_user_id' => $model->id,
+                            'is_real' => 1
+                        ])->count();
+                    }
                 ],
             ],
         ]);

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Contact;
 use app\models\Gender;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
@@ -318,8 +319,14 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
+        $realConfirmations = Contact::find()->where([
+            'link_user_id' => $model->id,
+            'is_real' => 1
+        ])->count();
+
         return $this->render('account', [
             'model' => $model,
+            'realConfirmations' => $realConfirmations,
             'activeRating' => $activeRating,
             'overallRating' => [
                 'rating' => $rating,
