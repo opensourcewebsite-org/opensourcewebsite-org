@@ -40,11 +40,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
             <?= Add::widget([
                 'url' => "#",
-                 'options' => [
-                     'title' => "New Member",
-                     'data-toggle' => 'modal',
-                     'data-target' => '#exampleModalLong',
-                 ]
+                'options' => [
+                    'title' => "New Member",
+                    'data-toggle' => 'modal',
+                    'data-target' => '#exampleModalLong',
+                ]
             ]); ?>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
