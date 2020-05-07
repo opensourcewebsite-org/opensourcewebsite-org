@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use app\modules\comment\models\MoqupComment;
 use app\modules\comment\Comment;
 use app\assets\AceEditorAsset;
+use app\widgets\buttons\Edit;
 
 $this->title = Yii::t('menu', 'View design');
 $followed = in_array($moqup->id, Yii::$app->user->identity->followedMoqupsId);
@@ -27,10 +28,9 @@ if (!empty($moqup)):
             </h3>
             <div class="ml-auto p-2">
                 <?php if ((int)$moqup->user_id === Yii::$app->user->identity->id) : ?>
-                <?= Html::a('<i class="fas fa-edit"></i>', ['moqup/design-edit', 'id' => $moqup->id], [
-                    'class' => 'btn btn-light',
-                    'title' => 'Edit',
-                ]) ?>
+                <?= Edit::widget([
+                    'url' => ['moqup/design-edit', 'id' => $moqup->id]
+                    ]); ?>
                 <?php endif; ?>
                 <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-code-branch'])
                     . Html::tag('span', $moqup->forksNumber, ['class' => 'badge badge-light ml-1']),
