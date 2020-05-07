@@ -68,6 +68,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
                                     }
                                 },
+                                'visible' => $model->link_user_id ? 1 : 0
+                            ],
+                            [
+                                'attribute' => 'Real Confirmations',
+                                'value' => $realConfirmations
                             ],
                             'name',
                             [
