@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\components\helpers\ReferrerHelper;
 use app\models\ChangeEmailRequest;
+use app\models\Contact;
 use app\models\EditProfileForm;
 use app\models\Gender;
 use app\models\Currency;
@@ -151,7 +152,16 @@ class UserController extends Controller
             return;
         }
 
-        return $this->render('profile', ['model' => $user]);
+        $realConfirmations = Contact::find()->where([
+            'link_user_id' => $user->id,
+            'is_real' => 1
+        ])->count();
+
+        $params = [
+            'model' => $user,
+            'realConfirmations' => $realConfirmations,
+        ];
+        return $this->render('profile', $params);
     }
 
     public function actionChangeEmail()
