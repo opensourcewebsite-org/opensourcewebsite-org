@@ -13,19 +13,25 @@ use Dotenv\Dotenv;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$dotenv = new Dotenv(__DIR__);
-$dotenv->load();
-
-defined('YII_DEBUG') or define('YII_DEBUG', (getenv('YII_DEBUG') == 'true') ? true : false);
-defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV') ?: 'prod');
-
-require __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
-
-if (!YII_ENV_DEV) {
+if (file_exists('.env')) {
+    $dotenv = new Dotenv(__DIR__);
+    $dotenv->load();
+} elseif (file_exists('.env.test')) {
+    $dotenv = new Dotenv(__DIR__, '.env.test');
+    $dotenv->load();
+} else {
     exit;
 }
 
+defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV') ?: 'requirements');
+
+if (YII_ENV != 'dev') {
+    exit;
+}
+
+require_once __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
 require_once __DIR__ . '/vendor/yiisoft/yii2/requirements/YiiRequirementChecker.php';
+
 $requirementsChecker = new YiiRequirementChecker();
 
 $gdMemo = $imagickMemo = 'Either GD PHP extension with FreeType support or ImageMagick PHP extension with PNG support is required for image CAPTCHA.';
