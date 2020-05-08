@@ -27,8 +27,6 @@
         "ext-json": "*",
         "ext-PDO": "*",
         "ext-intl": "*",
-        "ext-imagick": "*",
-        "ext-gd": "*",
         "ext-curl": "*",
         "ext-iconv": "*",
         "yiisoft/yii2": "~2.0.35",
