@@ -14,12 +14,23 @@
         "issues": "https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?state=open",
         "source": "https://github.com/opensourcewebsite-org/opensourcewebsite-org"
     },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/opensourcewebsite"
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
         "ext-PDO": "*",
+        "ext-intl": "*",
+        "ext-imagick": "*",
+        "ext-gd": "*",
+        "ext-curl": "*",
+        "ext-iconv": "*",
         "yiisoft/yii2": "~2.0.35",
         "yiisoft/yii2-bootstrap": "^2.0",
         "yiisoft/yii2-swiftmailer": "^2.0",
@@ -51,11 +62,18 @@
         "process-timeout": 1800,
         "fxp-asset": {
             "enabled": false
+        },
+        "platform": {
+            "php": "7.2"
         }
     },
     "scripts": {
+        "post-update-cmd": [
+            "@php requirements.php"
+        ],
         "post-install-cmd": [
-            "yii\\composer\\Installer::postInstall"
+            "yii\\composer\\Installer::postInstall",
+            "@php requirements.php"
         ],
         "post-create-project-cmd": [
             "yii\\composer\\Installer::postCreateProject",
@@ -67,6 +85,7 @@
             "setPermission": [
                 {
                     "runtime": "0777",
+                    "runtime/cache": "0777",
 					"runtime/logs": "0777",
 					"runtime/debug": "0777",
 					"runtime/mail": "0777",
@@ -77,7 +96,7 @@
         },
         "yii\\composer\\Installer::postInstall": {
             "generateCookieValidationKey": [
-                "config/web.php"
+                "config/web-local.php"
             ]
         }
     },
