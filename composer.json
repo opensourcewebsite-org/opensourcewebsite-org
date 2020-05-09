@@ -2,9 +2,11 @@
     "name": "opensourcewebsite/core",
     "description": "OpenSourceWebsite Core",
     "keywords": [
-        "osw",
         "opensourcewebsite",
+        "osw",
         "yii2",
+        "yii",
+        "php7",
         "php"
     ],
     "homepage": "https://opensourcewebsite.org",
