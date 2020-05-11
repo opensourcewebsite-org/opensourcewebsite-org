@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\Cancel;
+use app\widgets\buttons\Delete;
+use app\widgets\buttons\Save;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -22,15 +25,15 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']); ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['index', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type], [
-                        'class' => 'btn btn-secondary',
-                        'title' => Yii::t('app', 'Cancel'),
+                    <?= Save::widget(); ?>
+                    <?= Cancel::widget([
+                        'url' => ['index', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type]
                     ]); ?>
                     <?php if (!$model->isNewRecord) : ?>
-                        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id, 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type], [
-                            'class' => 'btn btn-danger float-right',
-                            'id' => 'delete-exchange-rate-command'
+                        <?= Delete::widget([
+                            'url' => ['delete', 'id' => $model->id, 'supportGroupExchangeRateId' =>
+                                $supportGroupExchangeRateId, 'type' => $type],
+                            'id' => 'delete-exchange-rate-command',
                         ]); ?>
                     <?php endif; ?>
                 </div>
@@ -53,6 +56,6 @@ use yii\widgets\ActiveForm;
             }
         });
     }
-    
+
     return false;
 });'); ?>
