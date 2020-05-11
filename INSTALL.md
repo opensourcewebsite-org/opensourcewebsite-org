@@ -1,18 +1,20 @@
 # Installation
 
+Please read through our [Contributing Guidelines](CONTRIBUTING.md).
+
 ## General setup
 
-- Copy file `.env.dist` to `.env` in the root directory
-- Set correct values in `.env` for your environment
-- Copy file `.env.test.dist` to `.env.test` in the root directory
-- Set correct values in `.env.test` for test environment
-- Copy `config/params.dist.php` to `config/params.php`
-- Copy `config/web-local.dist.php` to `config/web-local.php`
+- Copy file `.env.dist` to `.env`
+- Set correct values in `.env` file for your environment
+- Copy file `.env.test.dist` to `.env.test`
+- Set correct values in `.env.test` file for test environment
+- Copy file `config/params.dist.php` to `config/params.php`
+- Copy file `config/web-local.dist.php` to `config/web-local.php`
 
 #### Using Docker
 
 - Set `DB_HOST=db` in `.env` file
-- Run `docker-compose up -d` from root directory
+- Run `docker-compose up -d`
 - Run `docker-compose exec php composer install`
 - Run `docker-compose exec php ./yii migrate`
 

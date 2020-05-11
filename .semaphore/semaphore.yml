@@ -19,6 +19,7 @@ blocks:
             - php --version
             - pear config-set php_ini ~/.phpbrew/php/php-7.2/etc/php.ini
             - pecl install xdebug
+            - phpbrew ext install iconv
             - php -m
             - sem-service start mysql 5.7
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
