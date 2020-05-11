@@ -2,13 +2,15 @@
 <br/>
 <?= Yii::t('bot', 'Payment methods');?> :<br/>
 
-<?php  foreach ($paymentMethod as $value) {
-		if ($value['name'] == 'Cash') {
-			echo(' - ' . $value['name'] . '<br/>');
-		}
+<?php
+foreach ($paymentMethod as $value) {
+    if ($value['name'] == 'Cash') {
+        echo(' - ' . $value['name'] . '<br/>');
 	}
-	foreach ($paymentMethod as $value) {
-		if ($value['name'] !== 'Cash') {
-			echo(' - ' . $value['name'] . '<br/>');
-		}
-    }
+}
+foreach ($paymentMethod as $value) {
+    if ($value['name'] !== 'Cash') {
+		echo(' - ' . $value['name'] . '<br/>');
+	}
+}
+?>
