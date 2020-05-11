@@ -1,8 +1,8 @@
 <?php
 
 use app\models\DebtRedistribution;
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -19,8 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $pjaxId      = 'pjax-grid-debt-redistribution';
 $modalId     = 'modal-debt-redistribution-form';
-$modalFooter = Save::widget();
-$modalFooter.= Cancel::widget();
+$modalFooter = SaveButton::widget();
+$modalFooter.= CancelButton::widget();
 ?>
 
 <?= ModalAjax::widget([

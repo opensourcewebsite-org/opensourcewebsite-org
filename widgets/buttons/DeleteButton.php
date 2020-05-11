@@ -5,7 +5,7 @@ namespace app\widgets\buttons;
 use app\widgets\base\PjaxButton;
 use Yii;
 
-class Delete extends PjaxButton
+class DeleteButton extends PjaxButton
 {
 
     public function init()

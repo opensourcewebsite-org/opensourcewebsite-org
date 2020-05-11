@@ -1,7 +1,7 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -27,8 +27,8 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Save::widget(); ?>
-                    <?= Cancel::widget([
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget([
                         'url' => ['/account']
                     ]); ?>
                 </div>

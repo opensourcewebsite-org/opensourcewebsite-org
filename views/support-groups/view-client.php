@@ -1,6 +1,6 @@
 <?php
 
-use app\widgets\buttons\Save;
+use app\widgets\buttons\SaveButton;
 use yii\widgets\DetailView;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 if ($model->provider_bot_user_blocked == 0) {
                     $form = ActiveForm::begin();
                         echo $form->field($sendMessage, 'message')->textarea();
-                        echo Save::widget([
+                        echo SaveButton::widget([
                             'options' => [
                                 'style' => 'float: right;'
                             ]

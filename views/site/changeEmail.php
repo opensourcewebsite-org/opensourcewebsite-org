@@ -1,7 +1,7 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -28,11 +28,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="card-footer">
                 <div class="form-group">
-                    <?= Save::widget([
+                    <?= SaveButton::widget([
                         'text' => 'Change email',
                         'options' => ['name' => 'change-email-button']
                     ]); ?>
-                    <?= Cancel::widget([
+                    <?= CancelButton::widget([
                         'url' => ['site/login']
                     ]); ?>
                 </div>

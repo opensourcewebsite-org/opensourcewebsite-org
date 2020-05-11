@@ -6,7 +6,7 @@
 /* @var $model ResetPasswordForm */
 
 use app\models\ResetPasswordForm;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\SaveButton;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="card-footer">
                 <div class="form-group">
-                    <?= Save::widget(); ?>
+                    <?= SaveButton::widget(); ?>
                 </div>
             </div>
             <?php ActiveForm::end(); ?>

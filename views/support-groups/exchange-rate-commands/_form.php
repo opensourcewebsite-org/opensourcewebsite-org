@@ -1,8 +1,8 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Delete;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -25,12 +25,12 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Save::widget(); ?>
-                    <?= Cancel::widget([
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget([
                         'url' => ['index', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type]
                     ]); ?>
                     <?php if (!$model->isNewRecord) : ?>
-                        <?= Delete::widget([
+                        <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id, 'supportGroupExchangeRateId' =>
                                 $supportGroupExchangeRateId, 'type' => $type],
                             'id' => 'delete-exchange-rate-command',

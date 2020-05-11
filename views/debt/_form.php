@@ -1,8 +1,8 @@
 <?php
 
 use app\models\Debt;
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use kartik\date\DatePicker;
@@ -61,8 +61,8 @@ use janisto\timepicker\TimePicker;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Save::widget(); ?>
-                    <?= Cancel::widget([
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget([
                         'url' => ['/debt']
                     ]); ?>
                 </div>
