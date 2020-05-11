@@ -35,7 +35,7 @@ class SCeController extends FillablePropertiesController
      * view - index
      */
     public function actionIndex($page = 1)
-	{
+    {
         $telegramUser = $this->getTelegramUser();
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
 
@@ -709,7 +709,7 @@ class SCeController extends FillablePropertiesController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('order-buying-currency',[
+                $this->render('order-buying-currency', [
                     'selling' => $selling,
                     'buying' => $buying,
 
@@ -897,7 +897,7 @@ class SCeController extends FillablePropertiesController
                     [
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('order-selling-currency-payment-methods',[
+                            'callback_data' => self::createRoute('order-selling-currency-payment-methods', [
                                 'orderId' => $orderId,
                             ]),
                         ],
