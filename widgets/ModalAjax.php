@@ -4,7 +4,7 @@ namespace app\widgets;
 
 use app\widgets\traits\ModalTrait;
 
-class ModalAjax extends \lo\widgets\modal\ModalAjax
+class ModalAjax extends \ivankff\yii2ModalAjax\ModalAjax
 {
     use ModalTrait;
 
@@ -12,5 +12,12 @@ class ModalAjax extends \lo\widgets\modal\ModalAjax
     {
         parent::initOptions();
         $this->initOptionsExt();
+    }
+
+    public function init()
+    {
+        $this->bootstrapVersion = ModalAjax::BOOTSTRAP_VERSION_4;
+
+        parent::init();
     }
 }
