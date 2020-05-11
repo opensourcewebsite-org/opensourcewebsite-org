@@ -34,7 +34,7 @@
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
         "ivankff/yii2-modal-ajax": "*",
-        "yiisoft/yii2-bootstrap4": "~2.0.8"
+        "yiisoft/yii2-bootstrap4": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
