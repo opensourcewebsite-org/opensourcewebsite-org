@@ -231,10 +231,10 @@ Select2Asset::register($this);
                                 array_map(function ($language) {
                                     $languageName = Language::findOne($language->language_id)->name;
                                     $languageName = Yii::t('app', $languageName);
-                                    $languageLvl = LanguageLevel::findOne($language->language_level_id)->description;
-                                    $languageLvl = Yii::t('app', $languageLvl);
+                                    $languageLevel = LanguageLevel::findOne($language->language_level_id)->description;
+                                    $languageLevel = Yii::t('app', $languageLevel);
 
-                                    echo  '<tr><td>' . $languageName . '</td><td>' . $languageLvl . '</td><td>';
+                                    echo  '<tr><td>' . $languageName . '</td><td>' . $languageLevel . '</td><td>';
                                     echo ModalAjax::widget([
                                         'id' => 'change-language' . $language->language_id,
                                         'header' => Yii::t('app', 'Change language'),

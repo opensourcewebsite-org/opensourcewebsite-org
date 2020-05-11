@@ -27,10 +27,10 @@ ActiveForm::begin(); ?>
                         <div class="col">
                             <label><?= Yii::t('app', 'Level'); ?></label>
                             <?= Select2::widget([
-                                'name' => 'lvl',
-                                'data' => $languagesLvl,
+                                'name' => 'level',
+                                'data' => $languagesLevel,
                                 'options' => [
-                                    'id' => 'newLangLvl',
+                                    'id' => 'newLangLevel',
                                 ],
                             ]); ?>
                         </div>

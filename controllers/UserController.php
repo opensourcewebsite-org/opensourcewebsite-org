@@ -354,8 +354,8 @@ class UserController extends Controller
 
         $languageName = Language::findOne($id)->name;
 
-        $languagesLvl = array_map(function ($languageLvl) {
-            return (isset($languageLvl->code) ? strtoupper($languageLvl->code) . ' - ' : '') . Yii::t('app', $languageLvl->description);
+        $languagesLevel = array_map(function ($languageLevel) {
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('app', $languageLevel->description);
         }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $userLanguageRecord = UserLanguage::find()->where([
@@ -369,7 +369,7 @@ class UserController extends Controller
             $userLanguageRecord->setAttributes([
                 'user_id' => $this->user->id,
                 'language_id' => $id,
-                'language_level_id' => $postData['lvl']
+                'language_level_id' => $postData['level']
             ]);
 
             if ($userLanguageRecord->save()) {
@@ -380,7 +380,7 @@ class UserController extends Controller
         $renderParams = [
             'user' => $this->user,
             'languages' => $languages,
-            'languagesLvl' => $languagesLvl,
+            'languagesLevel' => $languagesLevel,
             'userLanguageRecord' => $userLanguageRecord,
             'languageName' => $languageName
         ];
@@ -398,8 +398,8 @@ class UserController extends Controller
             return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
         }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
-        $languagesLvl = array_map(function ($languageLvl) {
-            return (isset($languageLvl->code) ? strtoupper($languageLvl->code) . ' - ' : '') . Yii::t('app', $languageLvl->description);
+        $languagesLevel = array_map(function ($languageLevel) {
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('app', $languageLevel->description);
         }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
         if (Yii::$app->request->post()) {
@@ -413,7 +413,7 @@ class UserController extends Controller
             $userLanguageRecord->setAttributes([
                 'user_id' => $this->user->id,
                 'language_id' => $postData['language'],
-                'language_level_id' => $postData['lvl']
+                'language_level_id' => $postData['level']
             ]);
 
             if ($userLanguageRecord->save()) {
@@ -424,7 +424,7 @@ class UserController extends Controller
         $renderParams = [
             'user' => $this->user,
             'languages' => $languages,
-            'languagesLvl' => $languagesLvl,
+            'languagesLevel' => $languagesLevel,
         ];
 
         if (Yii::$app->request->isAjax) {
