@@ -1,8 +1,8 @@
 <?php
 
-use app\widgets\buttons\Add;
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\AddButton;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
-            <?= Add::widget([
+            <?= AddButton::widget([
                 'url' => '#',
                 'text' => 'New command',
                 'options' => [
@@ -44,8 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= $form->field($command, 'is_default')->checkbox() ?>
                         </div>
                         <div class="card-footer text-left">
-                            <?= Save::widget(); ?>
-                            <?= Cancel::widget(); ?>
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
                         </div>
                     </div>
                 </div>

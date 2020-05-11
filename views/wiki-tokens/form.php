@@ -1,8 +1,8 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Delete;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -63,10 +63,10 @@ use app\models\UserWikiToken;
                     ]) ?></p>
             </div>
             <div class="form-group">
-                <?= Save::widget(); ?>
-                <?= Cancel::widget(); ?>
+                <?= SaveButton::widget(); ?>
+                <?= CancelButton::widget(); ?>
                 <?php if (!$model->isNewRecord) : ?>
-                    <?= Delete::widget([
+                    <?= DeleteButton::widget([
                         'url' => ['wiki-tokens/delete', 'id' => $model->id],
                         'options' => [
                             'data-pjax' => '0',

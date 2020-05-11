@@ -1,6 +1,6 @@
 <?php
 
-use app\widgets\buttons\Edit;
+use app\widgets\buttons\EditButton;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
@@ -12,7 +12,7 @@ use yii\bootstrap\ActiveForm;
 <div class="card-header mb-3">
     <div class="row">
         <div class="col-12 text-right">
-            <?= Edit::widget([
+            <?= EditButton::widget([
                 'url' => '#',
                 'options' => [
                     'data-toggle' => 'modal',

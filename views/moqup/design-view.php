@@ -5,7 +5,7 @@ use yii\helpers\Html;
 use app\modules\comment\models\MoqupComment;
 use app\modules\comment\Comment;
 use app\assets\AceEditorAsset;
-use app\widgets\buttons\Edit;
+use app\widgets\buttons\EditButton;
 
 $this->title = Yii::t('menu', 'View design');
 $followed = in_array($moqup->id, Yii::$app->user->identity->followedMoqupsId);
@@ -28,7 +28,7 @@ if (!empty($moqup)):
             </h3>
             <div class="ml-auto p-2">
                 <?php if ((int)$moqup->user_id === Yii::$app->user->identity->id) : ?>
-                <?= Edit::widget([
+                <?= EditButton::widget([
                     'url' => ['moqup/design-edit', 'id' => $moqup->id]
                     ]); ?>
                 <?php endif; ?>

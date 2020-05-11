@@ -1,8 +1,8 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Delete;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -34,12 +34,12 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Save::widget(); ?>
-                    <?= Cancel::widget([
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget([
                         'url' => '/issue'
                     ]); ?>
                         <?php if((int) $issue->user_id === Yii::$app->user->identity->id && $issue->id != null && !$issue->hasIssuesVoteOfOthers($issue)):?>
-                        <?= Delete::widget([
+                        <?= DeleteButton::widget([
                             'url' => ['issue/delete/', 'id' => $issue->id],
                             'options' => [
                                 'id' => 'delete-issue',

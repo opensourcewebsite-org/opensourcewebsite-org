@@ -1,6 +1,6 @@
 <?php
 
-use app\widgets\buttons\Add;
+use app\widgets\buttons\AddButton;
 use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
-            <?= Add::widget([
+            <?= AddButton::widget([
                 'url' => '#',
                 'options' => [
                     'title' => 'New Member',

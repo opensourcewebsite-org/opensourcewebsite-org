@@ -1,6 +1,6 @@
 <?php
 
-use app\widgets\buttons\Add;
+use app\widgets\buttons\AddButton;
 use yii\bootstrap\ButtonDropdown;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $this->endBlock(); ?>
     <div class="card">
         <div class="card-header text-right">
-            <?= Add::widget([
+            <?= AddButton::widget([
                 'url' => ['create'],
                 'options' => [
                     'title' => 'New Support Group'

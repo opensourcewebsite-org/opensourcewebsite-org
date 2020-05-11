@@ -5,11 +5,11 @@ use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
-use app\widgets\buttons\Trash;
+use app\widgets\buttons\TrashButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Url;
 use kartik\select2\Select2Asset;
-use app\widgets\buttons\Edit;
+use app\widgets\buttons\EditButton;
 
 /* @var $this yii\web\View */
 
@@ -35,7 +35,7 @@ Select2Asset::register($this);
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Real confirmations'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Real confirmations'); ?></th>
                                     <td class="align-middle"><?= $realConfirmations; ?></td>
                                     <td></td>
                                 </tr>
@@ -50,7 +50,7 @@ Select2Asset::register($this);
                                         ?>
                                     </td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-email',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -59,22 +59,22 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Rank'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Rank'); ?></th>
                                     <td class="align-middle"><?= "<b>$ranking[rank]</b> of $ranking[total]"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Voting Power'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Voting Power'); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[percent]%</b> of 100%"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Rating'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Rating'); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[rating]</b> of $overallRating[totalRating]"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Active Rating'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Active Rating'); ?></th>
                                     <td class="align-middle"><?= "<b>$model->activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ')'; ?></td>
                                     <td></td>
                                 </tr>
@@ -103,12 +103,12 @@ Select2Asset::register($this);
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Username'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Username'); ?></th>
                                     <td class="align-middle"><span id="username"><?= empty($model->username)
                                                 ? '' : '<b>@</b>' . $model->username;
                                             ?></span></td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-username',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -117,10 +117,10 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Name'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Name'); ?></th>
                                     <td class="align-middle" id="name"><?= $model->name ?? $model->id; ?></td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-name',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -129,11 +129,11 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Birthday'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Birthday'); ?></th>
                                     <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' :
                                             Yii::$app->formatter->asDate($model->birthday); ?></td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-birthday',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -142,12 +142,12 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Gender'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Gender'); ?></th>
                                     <td class="align-middle" id="gender">
-                                        <?= Yii::t('app', $model->gender->name ?? ''); ?>
+                                        <?= Yii::t('user', $model->gender->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-gender',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -156,12 +156,12 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Sexuality'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Sexuality'); ?></th>
                                     <td class="align-middle" id="sexuality">
-                                        <?= Yii::t('app', $model->sexuality->name ?? ''); ?>
+                                        <?= Yii::t('user', $model->sexuality->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-sexuality',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -170,11 +170,11 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Timezone'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Timezone'); ?></th>
                                     <td class="align-middle" id="timezone"><?= Yii::t('app',
                                             $timezones[$model->timezone]); ?></td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-timezone',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -183,12 +183,12 @@ Select2Asset::register($this);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Currency'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
                                         <?= Yii::t('app', $model->currency->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Edit::widget([
+                                        <?= EditButton::widget([
                                             'url' => '/user/change-currency',
                                             'options' => [
                                                 'style' => 'float: right'
@@ -211,11 +211,11 @@ Select2Asset::register($this);
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Languages'); ?></h3>
+                    <h3 class="card-title"><?= Yii::t('user', 'Languages'); ?></h3>
                     <div class="card-tools">
                         <?= ModalAjax::widget([
                             'id' => 'add-language',
-                            'header' => Yii::t('app', 'Add language'),
+                            'header' => Yii::t('user', 'Add language'),
                             'closeButton' => false,
                             'toggleButton' => [
                                 'label' => Icon::ADD,
@@ -237,12 +237,12 @@ Select2Asset::register($this);
                                     $languageName = Language::findOne($language->language_id)->name;
                                     $languageName = Yii::t('app', $languageName);
                                     $languageLevel = LanguageLevel::findOne($language->language_level_id)->description;
-                                    $languageLevel = Yii::t('app', $languageLevel);
+                                    $languageLevel = Yii::t('user', $languageLevel);
 
-                                    echo  '<tr><td>' . $languageName . '</td><td>' . $languageLevel . '</td><td>';
+                                    echo  '<tr><td>' . $languageName . ' - ' . $languageLevel . '</td><td>';
                                     echo ModalAjax::widget([
                                         'id' => 'change-language' . $language->language_id,
-                                        'header' => Yii::t('app', 'Change language'),
+                                        'header' => Yii::t('user', 'Change language'),
                                         'closeButton' => false,
                                         'toggleButton' => [
                                             'label' => Icon::EDIT,
@@ -271,11 +271,11 @@ Select2Asset::register($this);
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Citizenships'); ?></h3>
+                    <h3 class="card-title"><?= Yii::t('user', 'Citizenships'); ?></h3>
                     <div class="card-tools">
                         <?= ModalAjax::widget([
                             'id' => 'add-citizenship',
-                            'header' => Yii::t('app', 'Add citizenship'),
+                            'header' => Yii::t('user', 'Add citizenship'),
                             'closeButton' => false,
                             'toggleButton' => [
                                 'label' => Icon::ADD,
@@ -295,9 +295,9 @@ Select2Asset::register($this);
                                 <?php
                                 array_map(function ($citizenship) {
                                     $citizenshipName = Country::findOne($citizenship->country_id)->name;
-                                    $citizenshipName = Yii::t('app', $citizenshipName);
+                                    $citizenshipName = Yii::t('user', $citizenshipName);
                                     echo '<tr><td>' . $citizenshipName . '</td><td>';
-                                    echo Trash::widget([
+                                    echo TrashButton::widget([
                                         'url' => [
                                             '/user/delete-citizenship',
                                             'id' => $citizenship->country_id,

@@ -3,9 +3,9 @@
 use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use app\widgets\buttons\Delete;
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 
 ActiveForm::begin();
 ?>
@@ -40,9 +40,9 @@ ActiveForm::begin();
                 </div>
                 </div>
                 <div class="card-footer">
-                    <?= Save::widget(); ?>
-                    <?= Cancel::widget(); ?>
-                    <?= Delete::widget([
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget(); ?>
+                    <?= DeleteButton::widget([
                         'url' => ['/user/delete-language', 'id' => $userLanguageRecord->id],
                     ]); ?>
                 </div>

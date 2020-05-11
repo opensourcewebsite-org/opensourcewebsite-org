@@ -1,8 +1,8 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Edit;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use app\models\SupportGroupCommandText;
@@ -17,7 +17,7 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
 ?>
 
     <div class="text-right">
-        <?= Edit::widget([
+        <?= EditButton::widget([
             'url' => '#',
             'options' => [
                 'data-toggle' => 'modal',
@@ -53,8 +53,8 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
                         ->label(false) ?>
                 </div>
                 <div class="card-footer text-left">
-                    <?= Save::widget(); ?>
-                    <?= Cancel::widget(); ?>
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget(); ?>
                 </div>
             </div>
         </div>
