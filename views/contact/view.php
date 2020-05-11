@@ -68,6 +68,12 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
                                     }
                                 },
+                                'visible' => $model->link_user_id ? 1 : 0
+                            ],
+                            [
+                                'attribute' => 'Real Confirmations',
+                                'value' => $realConfirmations,
+                                'visible' => $model->link_user_id ? 1 : 0
                             ],
                             'name',
                             [
@@ -79,6 +85,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
                         ],
+                        'options' => ['class' => 'table table-hover detail-view']
                     ]); ?>
                 </div>
             </div>
