@@ -1,6 +1,6 @@
 <?php
 
-use app\widgets\buttons\Add;
+use app\widgets\buttons\AddButton;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\bootstrap\ButtonDropdown;
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item align-self-center mr-4">
-                            <?= Add::widget([
+                            <?= AddButton::widget([
                                 'url' => ['support-group-exchange-rate/create', 'supportGroupId' => $supportGroupId],
                                 'options' => [
                                     'title' => 'New Exchange Rate',

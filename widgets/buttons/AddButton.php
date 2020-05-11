@@ -6,7 +6,7 @@ use app\components\helpers\Icon;
 use app\widgets\base\LinkButton;
 use Yii;
 
-class Add extends LinkButton
+class AddButton extends LinkButton
 {
     public function init()
     {

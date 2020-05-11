@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use app\widgets\buttons\Add;
+use app\widgets\buttons\AddButton;
 use app\components\helpers\IssuesHelper;
 
 /* @var $this yii\web\View */
@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="input-group-btn">
                                     <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 </div>
-                                <?= Add::widget([
+                                <?= AddButton::widget([
                                     'url' => 'issue/create',
                                     'options' => [
                                         'title' => 'Create New'

@@ -1,9 +1,9 @@
 <?php
 /* @var $this \yii\web\View */
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Delete;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\assets\AceEditorAsset;
@@ -77,13 +77,13 @@ AceEditorAsset::register($this);
         </div>
     </div>
     <div class="card-footer">
-        <?= Save::widget(); ?>
-        <?= Cancel::widget([
+        <?= SaveButton::widget(); ?>
+        <?= CancelButton::widget([
             'url' => ['moqup/design-list'],
         ]); ?>
 
         <?php if (!$moqup->isNewRecord): ?>
-            <?= Delete::widget([
+            <?= DeleteButton::widget([
                 'url' => ['moqup/design-delete/', 'id' => $moqup->id],
                 ]); ?>
         <?php endif; ?>

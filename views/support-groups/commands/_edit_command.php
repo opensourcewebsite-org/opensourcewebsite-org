@@ -1,9 +1,9 @@
 <?php
 
-use app\widgets\buttons\Cancel;
-use app\widgets\buttons\Delete;
-use app\widgets\buttons\Edit;
-use app\widgets\buttons\Save;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
@@ -18,7 +18,7 @@ use yii\bootstrap\ActiveForm;
             <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
         </div>
         <div class="col-1 text-right">
-            <?= Edit::widget([
+            <?= EditButton::widget([
                 'url' => '#',
                 'options' => [
                     'data-toggle' => 'modal',
@@ -43,9 +43,9 @@ use yii\bootstrap\ActiveForm;
                             ]) ?>
                         </div>
                         <div class="card-footer text-left">
-                            <?= Save::widget(); ?>
-                            <?= Cancel::widget(); ?>
-                            <?= Delete::widget([
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
+                            <?= DeleteButton::widget([
                                 'url' => ['command-delete', 'id' => $model->id]
                             ]); ?>
                         </div>
