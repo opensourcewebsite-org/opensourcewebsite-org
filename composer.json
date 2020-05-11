@@ -2,9 +2,11 @@
     "name": "opensourcewebsite/core",
     "description": "OpenSourceWebsite Core",
     "keywords": [
-        "osw",
         "opensourcewebsite",
+        "osw",
         "yii2",
+        "yii",
+        "php7",
         "php"
     ],
     "homepage": "https://opensourcewebsite.org",
@@ -14,13 +16,22 @@
         "issues": "https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues?state=open",
         "source": "https://github.com/opensourcewebsite-org/opensourcewebsite-org"
     },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/opensourcewebsite"
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
         "ext-PDO": "*",
-        "yiisoft/yii2": "~2.0.32",
+        "ext-intl": "*",
+        "ext-curl": "*",
+        "ext-iconv": "*",
+        "yiisoft/yii2": "~2.0.35",
         "yiisoft/yii2-bootstrap": "^2.0",
         "yiisoft/yii2-swiftmailer": "^2.0",
         "almasaeed2010/adminlte": "^3.0",
@@ -34,7 +45,8 @@
 		"longman/telegram-bot": "^0.61",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
-        "loveorigami/yii2-modal-ajax": "^3.8"
+        "loveorigami/yii2-modal-ajax": "^3.8",
+        "yiisoft/yii2-bootstrap4": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
@@ -43,17 +55,25 @@
         "codeception/base": "^3.1",
         "codeception/verify": "^1.3",
         "codeception/specify": "^1.3",
-        "fzaninotto/faker": "^1.9"
+        "fzaninotto/faker": "^1.9",
+        "friendsofphp/php-cs-fixer": "^2.16"
     },
     "config": {
         "process-timeout": 1800,
         "fxp-asset": {
             "enabled": false
+        },
+        "platform": {
+            "php": "7.2"
         }
     },
     "scripts": {
+        "post-update-cmd": [
+            "@php requirements.php"
+        ],
         "post-install-cmd": [
-            "yii\\composer\\Installer::postInstall"
+            "yii\\composer\\Installer::postInstall",
+            "@php requirements.php"
         ],
         "post-create-project-cmd": [
             "yii\\composer\\Installer::postCreateProject",
@@ -65,6 +85,7 @@
             "setPermission": [
                 {
                     "runtime": "0777",
+                    "runtime/cache": "0777",
 					"runtime/logs": "0777",
 					"runtime/debug": "0777",
 					"runtime/mail": "0777",
@@ -75,7 +96,7 @@
         },
         "yii\\composer\\Installer::postInstall": {
             "generateCookieValidationKey": [
-                "config/web.php"
+                "config/web-local.php"
             ]
         }
     },

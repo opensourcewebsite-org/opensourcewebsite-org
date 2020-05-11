@@ -4,6 +4,8 @@ First off, thanks for taking the time to contribute!
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
+Please read through [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
+
 ## Getting Started
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the core team before making a change.
@@ -88,13 +90,19 @@ Recommended IDE:
     * [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
     * [Atom package for PHP Linter](https://atom.io/packages/linter-php)
     * [Atom-Beautify package](https://atom.io/packages/atom-beautify)
+      * [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer). The beautifier uses `.php_cs` file.
+        * Go to "File > Settings > Packages > atom-beautify > Settings > PHP". To automatically beautify PHP code on file save toggle `Beautify On Save` option and select `PHP-CS-Fixer` as Default Beautifier.
+        * Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add Binary/Script Path like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
   * [PhpStorm](https://www.jetbrains.com/phpstorm/)
-    * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window "Before commit > Perform SonarLint analysis".
+    * [PHP-CS-Fixer](https://medium.com/@valeryan/how-to-configure-phpstorm-to-use-php-cs-fixer-1844991e521f)
+    * [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
     * Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
   * [Eclipse](https://www.eclipse.org)
   	* [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
   * [VS Code](https://code.visualstudio.com)
+    * [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
   * [Sublime Text](https://www.sublimetext.com)
+    * [PHP-CS-Fixer](https://github.com/benmatselby/sublime-phpcs)
 
 #### Yii 2 migration files
 

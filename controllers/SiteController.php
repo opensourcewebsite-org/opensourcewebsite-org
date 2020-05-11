@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Contact;
 use app\models\Gender;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
@@ -81,7 +82,7 @@ class SiteController extends Controller
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => 'app\actions\ErrorAction',
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
@@ -318,8 +319,11 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
-        return $this->render('account', [
+        $realConfirmations = $model->getContactsToMe()->where(['is_real' => 1])->count();
+
+        $params = [
             'model' => $model,
+            'realConfirmations' => $realConfirmations,
             'activeRating' => $activeRating,
             'overallRating' => [
                 'rating' => $rating,
@@ -330,7 +334,8 @@ class SiteController extends Controller
                 'rank' => $rank,
                 'total' => $total,
             ],
-        ]);
+        ];
+        return $this->render('account', $params);
     }
 
     /**
