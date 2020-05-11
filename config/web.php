@@ -48,7 +48,7 @@ $config = [
                 ],
                 'yii\bootstrap\BootstrapPluginAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/2.3.3/umd/popper.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.0/umd/popper.min.js',
                         '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
                     ],
                 ],
@@ -64,10 +64,6 @@ $config = [
                     'js' => ['//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'],
                 ],
             ],
-        ],
-        'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'je4dpj7-SEqGW0z6eo4nc8ezzyLGYwNm',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',

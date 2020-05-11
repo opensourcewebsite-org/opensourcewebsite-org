@@ -15,7 +15,8 @@ $this->title = $name;
     <h1><?= Html::encode($this->title); ?></h1>
 
     <div class="alert alert-danger">
-        <?= nl2br(Html::encode($message)); ?>
+        <?= nl2br(Html::encode($message)); ?>.<br>
+        <?= Yii::t('app', 'Your browser doesn`t support cookies'); ?>. <?= Yii::t('app', 'Please, enable it in browser preferences for using all capabilities of Open Source Website'); ?>.
     </div>
 
     <p>

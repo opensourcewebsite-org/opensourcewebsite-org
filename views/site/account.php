@@ -25,6 +25,11 @@ $timezones = TimeHelper::timezonesList();
                                     <td></td>
                                 </tr>
                                 <tr>
+                                    <th class="align-middle"><?= Yii::t('app', 'Real confirmations'); ?></th>
+                                    <td class="align-middle"><?= $realConfirmations; ?></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
                                     <th class="align-middle">Email</th>
                                     <td class="align-middle" id="email">
                                         <?php
