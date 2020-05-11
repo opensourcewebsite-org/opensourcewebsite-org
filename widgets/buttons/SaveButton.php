@@ -2,22 +2,22 @@
 
 namespace app\widgets\buttons;
 
-use app\widgets\base\LinkButton;
+use app\widgets\base\PjaxButton;
 use Yii;
 
-class Cancel extends LinkButton
+class SaveButton extends PjaxButton
 {
+
     public function init()
     {
         parent::init();
 
-        $this->defaultOptions['class'] = 'btn btn-secondary';
+        $this->defaultOptions['class'] = 'btn btn-success';
         $this->defaultOptions['style'] = 'color: white;';
-        $this->defaultOptions['data-dismiss'] = 'modal';
-        $this->defaultOptions['title'] = Yii::t('app', 'Cancel');
+        $this->defaultOptions['title'] = Yii::t('app', 'Save');
 
         if ($this->text == null) {
-            $this->text = 'Cancel';
+            $this->text = 'Save';
         }
     }
 

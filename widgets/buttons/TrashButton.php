@@ -6,7 +6,7 @@ use app\components\helpers\Icon;
 use app\widgets\base\PjaxButton;
 use Yii;
 
-class Trash extends PjaxButton
+class TrashButton extends PjaxButton
 {
 
     public function init()
