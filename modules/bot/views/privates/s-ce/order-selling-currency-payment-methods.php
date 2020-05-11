@@ -1,6 +1,6 @@
 <b><?= $selling . '/' . $buying?> offer</b><br/>
 <br/>
-<?= Yii::t('bot', 'Payment methods')?> :<br/>
+<?= Yii::t('bot', 'Payment methods');?> :<br/>
 
 <?php  foreach ($paymentMethod as $value) {
 		if ($value['name'] == 'Cash') {
