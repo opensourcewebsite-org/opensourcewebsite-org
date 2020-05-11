@@ -4,13 +4,13 @@ namespace app\widgets;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\bootstrap\BootstrapPluginAsset;
+use yii\bootstrap4\BootstrapPluginAsset;
 
 /**
  * NavBar renders a navbar HTML component.
  *
  */
-class NavBar extends \yii\bootstrap\Widget
+class NavBar extends \yii\bootstrap4\Widget
 {
     /**
      * @var array the HTML attributes for the widget container tag. The following special options are recognized:

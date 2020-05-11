@@ -6,7 +6,7 @@
 /* @var $model ResetPasswordForm */
 
 use app\models\ResetPasswordForm;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 
 $this->title = 'Reset password';

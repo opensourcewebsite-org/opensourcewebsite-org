@@ -1,6 +1,6 @@
 <?php
 
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

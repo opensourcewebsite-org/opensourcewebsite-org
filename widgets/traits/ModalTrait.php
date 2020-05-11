@@ -31,7 +31,11 @@ trait ModalTrait
 
         //Defaults:
 
-        if ($this->header && $this->header == strip_tags($this->header)) {
+        if (isset($this->title) && $this->title == strip_tags($this->title)) {
+            $this->title = "<h5 class='modal-title'>$this->title</h5>";
+        }
+
+        if (isset($this->header) && $this->header == strip_tags($this->header)) {
             $this->header = "<h5 class='modal-title'>$this->header</h5>";
         }
 

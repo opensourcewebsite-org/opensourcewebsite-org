@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
 use app\models\SupportGroupExchangeRateCommand;
 
 /* @var $this yii\web\View */

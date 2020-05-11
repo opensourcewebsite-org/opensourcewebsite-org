@@ -13,8 +13,7 @@ use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
-use yii\bootstrap\Modal;
-use app\models\Contact;
+use yii\bootstrap4\Modal;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -75,8 +74,8 @@ if (!empty($languages)) {
 			}',
 		],
 		'options' => ['class' => 'card-primary', 'tabindex' => false],
-		'header' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
-		'headerOptions' => ['class' => 'card-header'],
+		'title' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
+		'titleOptions' => ['class' => 'card-header'],
 		'bodyOptions' => ['id' => 'main-modal-body'],
 	]);
 	Modal::end(); ?>
@@ -143,12 +142,10 @@ if (!empty($languages)) {
 		echo Nav::widget([
 			'options' => ['class' => 'navbar-nav'],
 			'items' => $menuItemsLeft,
-			'dropDownCaret' => '',
 		]);
 		echo Nav::widget([
 			'options' => ['class' => 'navbar-nav ml-auto'],
 			'items' => $menuItemsRight,
-			'dropDownCaret' => '',
 		]);
 		NavBar::end();
 		?>

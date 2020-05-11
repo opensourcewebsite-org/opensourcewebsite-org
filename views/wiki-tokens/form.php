@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use app\models\UserWikiToken;
 
 /* @var View $this */
@@ -35,7 +35,7 @@ use app\models\UserWikiToken;
                                 var language = $(this).children("option:selected").attr("data-code");
                                 var targetUsername = "https://" + language + ".wikipedia.org/wiki/Special:Preferences";
                                 var targetToken = "https://" + language + ".wikipedia.org/wiki/Special:Preferences#mw-prefsection-watchlist";
-                                
+
                                 $("#aUsername").attr("href", targetUsername).show();
                                 $("#aToken").attr("href", targetToken).show();
                             }',
@@ -46,7 +46,7 @@ use app\models\UserWikiToken;
             <div class="form-group">
                 <?= $form->field($model, 'wiki_username') ?>
                 <p><?= Html::a(Yii::t('app', 'Look your username here'), '', [
-                    'target' => '_blank', 
+                    'target' => '_blank',
                     'id' => 'aUsername',
                     'style' => 'display:none',
                     ]) ?></p>
@@ -58,7 +58,7 @@ use app\models\UserWikiToken;
                     'id' => 'aToken',
                     'style' => 'display:none',
                     ]) ?></p>
-            </div> 
+            </div>
             <div class="form-group">
                 <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
                 <?= Html::button(Yii::t('app', 'Close'), ['data-dismiss' => 'modal', 'class' => 'btn btn-default']) ?>

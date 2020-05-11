@@ -7,12 +7,10 @@
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
-use yii\bootstrap\Modal;
 use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
-use cebe\gravatar\Gravatar;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -79,12 +77,10 @@ $this->beginBody();
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' => $menuItemsLeft,
-        'dropDownCaret'=>'',
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav ml-auto'],
         'items' => $menuItemsRight,
-        'dropDownCaret'=>'',
     ]);
     NavBar::end();
     ?>

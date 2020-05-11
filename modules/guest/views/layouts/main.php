@@ -6,13 +6,7 @@
 
 use app\assets\AgencyAsset;
 use app\assets\FontAwesomeAsset;
-use app\widgets\Alert;
-use yii\bootstrap\Modal;
-use app\widgets\Nav;
-use app\widgets\NavBar;
 use yii\helpers\Html;
-use yii\widgets\Breadcrumbs;
-use cebe\gravatar\Gravatar;
 
 AgencyAsset::register($this);
 FontAwesomeAsset::register($this);

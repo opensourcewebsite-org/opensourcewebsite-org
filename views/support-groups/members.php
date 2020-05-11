@@ -1,12 +1,13 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
+use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
+use yii\bootstrap4\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
@@ -28,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row mb-2">
             <div class="col">
                 <div class="alert alert-info" role="alert">
-                    <b>Support Group Members:</b> <?= Yii::$app->user->identity->supportGroupMemberCount ?>/<?= Yii::$app->user->identity->maxSupportGroupMember ?>. 
+                    <b>Support Group Members:</b> <?= Yii::$app->user->identity->supportGroupMemberCount ?>/<?= Yii::$app->user->identity->maxSupportGroupMember ?>.
                     (<?= $settingQty ?> per 1 User Rating)
                 </div>
             </div>
@@ -38,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
             <a class="btn btn-outline-success ml-3" href="#" title="New Member"  data-toggle="modal" data-target="#exampleModalLong"><i class="fa fa-plus"></i></a>
-            <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal fade" id="exampleModalLong" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">

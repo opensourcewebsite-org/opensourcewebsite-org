@@ -40,16 +40,18 @@ $config = [
             'linkAssets' => true,
             'appendTimestamp' => true,
             'bundles' => [
-                'yii\bootstrap\BootstrapAsset' => [
-                    'css' => ['//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css'],
+                'yii\bootstrap4\BootstrapAsset' => [
+                    'sourcePath' => null,
+                    'baseUrl' => 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1',
+                    'css' => [
+                        'css/bootstrap.min.css'
+                    ],
                 ],
-                'yii\bootstrap\BootstrapThemeAsset' => [
-                    'css' => [],
-                ],
-                'yii\bootstrap\BootstrapPluginAsset' => [
+                'yii\bootstrap4\BootstrapPluginAsset' => [
+                    'sourcePath' => null,
+                    'baseUrl' => 'https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1',
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/2.3.3/umd/popper.min.js',
-                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
+                        'js/bootstrap.bundle.min.js'
                     ],
                 ],
                 'yii\web\JqueryAsset' => [
