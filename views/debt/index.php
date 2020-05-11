@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Debt;
+use app\widgets\buttons\Add;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use app\components\helpers\DebtHelper;
@@ -19,9 +20,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item align-self-center mr-4">
-                            <?= Html::a('<i class="fa fa-plus"></i>', ['debt/create'], [
-                                'class' => 'btn btn-outline-success',
-                                'title' => Yii::t('app', 'New Debt'),
+                            <?= Add::widget([
+                                'url' => ['debt/create'],
+                                'options' => [
+                                    'title' => 'New Debt',
+                                ]
                             ]); ?>
                         </li>
                     </ul>
