@@ -1,5 +1,6 @@
 <?php
 
+use yii\widgets\ActiveForm;
 use app\widgets\buttons\AddButton;
 use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
@@ -7,7 +8,8 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
+use yii\bootstrap4\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */

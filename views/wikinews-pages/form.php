@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 
 /* @var View $this */
 

@@ -4,13 +4,13 @@ namespace app\widgets;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\bootstrap\BootstrapPluginAsset;
+use yii\bootstrap4\BootstrapPluginAsset;
 
 /**
  * NavBar renders a navbar HTML component.
  *
  */
-class NavBar extends \yii\bootstrap\Widget
+class NavBar extends \yii\bootstrap4\Widget
 {
     /**
      * @var array the HTML attributes for the widget container tag. The following special options are recognized:
@@ -27,7 +27,7 @@ class NavBar extends \yii\bootstrap\Widget
      *
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $containerOptions = [];
+    public $collapseOptions = [];
     /**
      * @var string|bool the text of the brand or false if it's not used. Note that this is not HTML-encoded.
      * @see https://getbootstrap.com/docs/3.3/components/#navbar
@@ -51,11 +51,6 @@ class NavBar extends \yii\bootstrap\Widget
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $brandOptions = [];
-    /**
-     * @var string HTML content to be added in navbar-header div, for example, mobile search form.
-     * @since 2.0.8
-     */
-    public $headerContent;
     /**
      * @var string text to show for screen readers for the button to toggle the navbar.
      */
@@ -100,7 +95,7 @@ class NavBar extends \yii\bootstrap\Widget
      */
     public function run()
     {
-        $tag = ArrayHelper::remove($this->containerOptions, 'tag', 'div');
+        $tag = ArrayHelper::remove($this->collapseOptions, 'tag', 'div');
         echo Html::endTag($tag);
         if ($this->renderInnerContainer) {
             echo Html::endTag('div');
@@ -122,7 +117,7 @@ class NavBar extends \yii\bootstrap\Widget
         return Html::button("{$screenReader}\n{$bar}\n{$bar}\n{$bar}", [
             'class' => 'navbar-toggle',
             'data-toggle' => 'collapse',
-            'data-target' => "#{$this->containerOptions['id']}",
+            'data-target' => "#{$this->collapseOptions['id']}",
         ]);
     }
 }
