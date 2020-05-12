@@ -1,5 +1,6 @@
 <?php
 
+use app\widgets\buttons\EditButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Html;
 use app\models\Contact;
@@ -50,9 +51,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             </li>
                         <?php } ?>
                         <li class="nav-item align-self-center mr-4">
-                            <?= Html::a('<i class="fa fa-edit"></i>', ['contact/update', 'id' => $model->id], [
-                                'class' => 'btn btn-light',
-                                'title' => Yii::t('app', 'Edit Contact'),
+                            <?= EditButton::widget([
+                                'url' => ['contact/update', 'id' => $model->id],
+                                'options' => [
+                                    'title' => 'Edit Contact'
+                                ]
                             ]); ?>
                         </li>
                     </ul>
