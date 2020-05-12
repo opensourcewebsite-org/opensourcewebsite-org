@@ -70,8 +70,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['is_authenticated', 'boolean'],
-            [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
-            ['birthday', 'date'],
+            ['name', 'string'],
+            [['gender_id', 'currency_id'], 'integer'],
+            ['email', 'email'],
+
             [['timezone'], 'default', 'value' => 'UTC'],
 
             ['status',
@@ -710,7 +712,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
     }
-
+  
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
@@ -725,7 +727,11 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
     }
-
+  
+    public function getExchangeOrder()
+    {
+        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ])
+    }
     /**
      * {@inheritdoc}
      * @return UserQuery the active query used by this AR class.
