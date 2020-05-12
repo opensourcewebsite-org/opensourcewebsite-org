@@ -7,6 +7,8 @@
 
 use app\models\ResetPasswordForm;
 use yii\bootstrap4\ActiveForm;
+use app\widgets\buttons\SaveButton;
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
 $this->title = 'Reset password';
@@ -30,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="card-footer">
                 <div class="form-group">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
+                    <?= SaveButton::widget(); ?>
                 </div>
             </div>
             <?php ActiveForm::end(); ?>

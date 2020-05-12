@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -60,15 +63,14 @@ use app\models\UserWikiToken;
                     ]) ?></p>
             </div>
             <div class="form-group">
-                <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
-                <?= Html::button(Yii::t('app', 'Close'), ['data-dismiss' => 'modal', 'class' => 'btn btn-default']) ?>
+                <?= SaveButton::widget(); ?>
+                <?= CancelButton::widget(); ?>
                 <?php if (!$model->isNewRecord) : ?>
-                    <?= Html::a(Yii::t('app', 'Delete'), ['wiki-tokens/delete', 'id' => $model->id], [
-                        'class' => 'btn btn-danger',
-                        'data-pjax' => '0',
-                        'data-confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                        'data-method' => 'post',
-                        'style' => ['float' => 'right'],
+                    <?= DeleteButton::widget([
+                        'url' => ['wiki-tokens/delete', 'id' => $model->id],
+                        'options' => [
+                            'data-pjax' => '0',
+                        ]
                     ]); ?>
                 <?php endif; ?>
             </div>

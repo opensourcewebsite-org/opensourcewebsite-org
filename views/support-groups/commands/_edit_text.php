@@ -1,5 +1,8 @@
 <?php
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 use app\models\SupportGroupCommandText;
@@ -14,8 +17,13 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
 ?>
 
     <div class="text-right">
-        <a class="btn btn-light" href="#" title="Edit" data-toggle="modal"
-           data-target="#modalLanguage<?= $lang->id ?>"><i class="fas fa-edit"></i></a>
+        <?= EditButton::widget([
+            'url' => '#',
+            'options' => [
+                'data-toggle' => 'modal',
+                'data-target' => '#modalLanguage' . $lang->id,
+            ]
+        ]); ?>
     </div>
 <?php $form = ActiveForm::begin([
     'action' => Url::to(['text-update', 'id' => (!$textModel) ? null : $textModel->id]),
@@ -45,8 +53,8 @@ $this->registerJsFile('https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.1
                         ->label(false) ?>
                 </div>
                 <div class="card-footer text-left">
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <a class="btn btn-secondary" href="#" data-dismiss="modal" title="Cancel">Cancel</a>
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget(); ?>
                 </div>
             </div>
         </div>
