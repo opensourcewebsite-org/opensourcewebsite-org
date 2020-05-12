@@ -48,7 +48,6 @@ $config = [
                 ],
                 'yii\bootstrap4\BootstrapPluginAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.0/umd/popper.min.js',
                         '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js',
                     ],
                 ],
