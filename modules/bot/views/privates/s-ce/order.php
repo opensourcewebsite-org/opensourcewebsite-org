@@ -5,31 +5,31 @@
 <?= Yii::t('bot', 'Amount') ?>: <?= $selling_currency_min_amount . ' - ' . $selling_currency_max_amount ?><br/>
 <?= Yii::t('bot', 'Payment methods') ?>:<br/>
 <?=
-	foreach ($sellingPaymentMethod as $value) {
-		if ($value['name'] == 'Cash') {
-			echo ' - ' . $value['name'] . '<br/>';
-		}
-	}
-	foreach ($sellingPaymentMethod as $value) {
-		if ($value['name'] !== 'Cash') {
-			echo ' - ' . $value['name'] . '<br/>';
-		}
+foreach ($sellingPaymentMethod as $value) {
+    if ($value['name'] == 'Cash') {
+        echo ' - ' . $value['name'] . '<br/>';
     }
+}
+foreach ($sellingPaymentMethod as $value) {
+    if ($value['name'] !== 'Cash') {
+        echo ' - ' . $value['name'] . '<br/>';
+    }
+}
 ?>
 <br/>
 <?= Yii::t('bot', 'Buy')?>: <b><?= $buying_currency?></b><br/>
 <?= Yii::t('bot', 'Payment methods') ?>:<br/>
 <?=
-	foreach ($buyingPaymentMethod as $value) {
-		if ($value['name'] == 'Cash') {
-			echo ' - ' . $value['name'] . '<br/>';
-		}
-	}
-	foreach ($buyingPaymentMethod as $value) {
-		if ($value['name'] !== 'Cash') {
-			echo ' - ' . $value['name'] . '<br/>';
-		}
+foreach ($buyingPaymentMethod as $value) {
+    if ($value['name'] == 'Cash') {
+        echo ' - ' . $value['name'] . '<br/>';
     }
+}
+foreach ($buyingPaymentMethod as $value) {
+    if ($value['name'] !== 'Cash') {
+        echo ' - ' . $value['name'] . '<br/>';
+    }
+}
 ?>
 <br/>
 <?= Yii::t('bot', 'This post is active for 14 more days. Check this post again before this term to automatically renew this.') ?>
