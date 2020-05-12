@@ -712,7 +712,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
     }
-  
+    
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
@@ -727,7 +727,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
     }
-  
+    
     public function getExchangeOrder()
     {
         return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ])
