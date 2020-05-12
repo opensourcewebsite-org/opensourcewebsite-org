@@ -32,7 +32,6 @@
         "ext-curl": "*",
         "ext-iconv": "*",
         "yiisoft/yii2": "~2.0.35",
-        "yiisoft/yii2-bootstrap": "^2.0",
         "yiisoft/yii2-swiftmailer": "^2.0",
         "almasaeed2010/adminlte": "^3.0",
         "cebe/yii2-gravatar": "^1.1",
@@ -42,10 +41,10 @@
         "npm-asset/ace-builds": "^1.4.1",
         "yiisoft/yii2-httpclient": "^2.0.0",
         "telegram-bot/api": "^2.3",
-		"longman/telegram-bot": "^0.61",
+        "longman/telegram-bot": "^0.61",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
-        "loveorigami/yii2-modal-ajax": "^3.8",
+        "ivankff/yii2-modal-ajax": "~4.1.0",
         "yiisoft/yii2-bootstrap4": "^2.0"
     },
     "require-dev": {
@@ -86,9 +85,9 @@
                 {
                     "runtime": "0777",
                     "runtime/cache": "0777",
-					"runtime/logs": "0777",
-					"runtime/debug": "0777",
-					"runtime/mail": "0777",
+                    "runtime/logs": "0777",
+                    "runtime/debug": "0777",
+                    "runtime/mail": "0777",
                     "web/assets": "0777",
                     "yii": "0755"
                 }

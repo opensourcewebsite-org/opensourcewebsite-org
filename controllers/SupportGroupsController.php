@@ -22,7 +22,7 @@ use TelegramBot\Api\BotApi;
 use TelegramBot\Api\HttpException;
 use Yii;
 use yii\base\Model;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;

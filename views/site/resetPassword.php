@@ -6,6 +6,7 @@
 /* @var $model ResetPasswordForm */
 
 use app\models\ResetPasswordForm;
+use yii\bootstrap4\ActiveForm;
 use app\widgets\buttons\SaveButton;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
