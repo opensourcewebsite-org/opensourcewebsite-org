@@ -4,7 +4,7 @@
 
 <?php
 if (!$telegramUser->location_lon && !$telegramUser->location_lat) {
-    echo (Yii::t('bot', 'Send your location'));
+    echo Yii::t('bot', 'Send your location');
 }
 ?>
 <br/>
@@ -12,7 +12,7 @@ if (!$telegramUser->location_lon && !$telegramUser->location_lat) {
 <br/>
 <?php
 if (!$telegramUser->provider_user_name) {
-    echo (Yii::t('bot', 'Set your nickname in your Telegram account'));
+    echo Yii::t('bot', 'Set your nickname in your Telegram account');
 }
 ?>
 <br/>/my_profile - <?= Yii::t('bot', 'Profile') ?><br/>
