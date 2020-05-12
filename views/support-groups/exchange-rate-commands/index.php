@@ -3,7 +3,7 @@
 use app\widgets\buttons\AddButton;
 use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
 use app\components\helpers\SupportGroupHelper;
 
 /* @var $this yii\web\View */

@@ -32,7 +32,6 @@
         "ext-curl": "*",
         "ext-iconv": "*",
         "yiisoft/yii2": "~2.0.35",
-        "yiisoft/yii2-bootstrap": "^2.0",
         "yiisoft/yii2-swiftmailer": "^2.0",
         "almasaeed2010/adminlte": "^3.0",
         "cebe/yii2-gravatar": "^1.1",
@@ -45,7 +44,7 @@
 		"longman/telegram-bot": "^0.61",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
-        "loveorigami/yii2-modal-ajax": "^3.8",
+        "ivankff/yii2-modal-ajax": "*",
         "yiisoft/yii2-bootstrap4": "^2.0"
     },
     "require-dev": {

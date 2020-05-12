@@ -1,12 +1,9 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
-use yii\bootstrap\ButtonDropdown;
-use yii\bootstrap\Modal;
+use yii\bootstrap4\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
@@ -28,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row mb-2">
             <div class="col">
                 <div class="alert alert-info" role="alert">
-                    <b>Support Group Bots:</b> <?= Yii::$app->user->identity->botsCount ?>/<?= Yii::$app->user->identity->maxBots ?>. 
+                    <b>Support Group Bots:</b> <?= Yii::$app->user->identity->botsCount ?>/<?= Yii::$app->user->identity->maxBots ?>.
                     (<?= $settingQty ?> per 1 User Rating)
                 </div>
             </div>

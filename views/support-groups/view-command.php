@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\bootstrap\Nav;
+use yii\bootstrap4\Nav;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
