@@ -38,7 +38,6 @@ class SCeController extends FillablePropertiesController
     {
         $telegramUser = $this->getTelegramUser();
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
-
             $user = $this->getUser();
             $orderCount = $user->getExchangeOrder()->count();
             $pagination = new Pagination([
@@ -112,13 +111,13 @@ class SCeController extends FillablePropertiesController
                     $this->render('no-requirements'),
                     [
                         [
-                          [
+                            [
                                 'text' => Emoji::BACK,
                                 'callback_data' => ServicesController::createRoute(),
                             ],
                             [
                                 'text' => Emoji::MENU,
-                                'callback_data' => MenuController::createRoute(), 
+                                'callback_data' => MenuController::createRoute(),
                             ],
                         ],
                     ]
