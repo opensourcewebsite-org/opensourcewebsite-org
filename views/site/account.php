@@ -8,7 +8,6 @@ use app\models\LanguageLevel;
 use app\widgets\buttons\TrashButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Url;
-use kartik\select2\Select2Asset;
 use app\widgets\buttons\EditButton;
 
 /* @var $this yii\web\View */
@@ -16,7 +15,6 @@ use app\widgets\buttons\EditButton;
 $this->title = Yii::t('app', 'Account');
 
 $timezones = TimeHelper::timezonesList();
-Select2Asset::register($this);
 
 ?>
 
