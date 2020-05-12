@@ -1,3 +1,3 @@
-<b>USD/THB order</b><br/>
+<b><?= $selling . '/' . $buying ?><?= Yii::t('bot', ' order') ?></b><br/>
 <br/>
-Buy: <b>THB</b><br/>
+<?= Yii::t('bot', 'Buy: ') ?><b><?= $buying ?></b><br/>
