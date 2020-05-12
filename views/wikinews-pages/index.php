@@ -9,6 +9,7 @@ use app\models\UserWikiToken;
 use app\models\UserWikiPage;
 use app\components\TitleColumn;
 use app\widgets\ModalAjax;
+
 /* @var $this \yii\web\View */
 
 $this->title = Yii::t('menu', 'Wikinews pages');
