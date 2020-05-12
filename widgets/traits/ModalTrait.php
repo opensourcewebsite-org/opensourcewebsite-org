@@ -5,7 +5,7 @@ namespace app\widgets\traits;
 use yii\base\Widget;
 
 /**
- * Fix and improvement for {@see \yii\bootstrap\Modal}
+ * Fix and improvement for {@see \yii\bootstrap4\Modal}
  *
  * Usage:
  * ```php
