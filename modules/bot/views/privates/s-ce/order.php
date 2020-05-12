@@ -1,4 +1,4 @@
-<b><?php echo($selling_currency . '/' . $buying_currency);?> order #1020304050</b><br/>
+<b><?php echo $selling_currency . '/' . $buying_currency;?> order #1020304050</b><br/>
 <b><?= ($optional_name !== '' ? Yii::t('bot', 'Optional name') . ': ' . $optional_name : '');?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Sell') ?>: <b><?= $selling_currency ?></b><br/>
