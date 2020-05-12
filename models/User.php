@@ -730,7 +730,7 @@ class User extends ActiveRecord implements IdentityInterface
     
     public function getExchangeOrder()
     {
-        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ])
+        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ]);
     }
     /**
      * {@inheritdoc}
