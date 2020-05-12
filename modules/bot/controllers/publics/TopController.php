@@ -31,10 +31,9 @@ class TopController extends Controller
             $isBotAdmin = ChatMember::find()->where(['chat_id' => $chat->id, 'user_id' => $botUser->id, 'status' => ChatMember::STATUS_ADMINISTRATOR])->exists();
         }
 
-        $starTopStatus = $chat->getSetting(ChatSetting::STAR_TOP_STATUS)->value;
-        $isStarTopOff = ($starTopStatus != ChatSetting::STAR_TOP_STATUS_ON);
+        $starTopStatus = $chat->getSetting(ChatSetting::STAR_TOP_STATUS);
 
-        if (($action->id != 'index') && (!$isBotAdmin || !parent::beforeAction($action) || $isStarTopOff)) {
+        if (($action->id != 'index') && (!$isBotAdmin || !parent::beforeAction($action) || !isset($starTopStatus) || ($starTopStatus->value != ChatSetting::STAR_TOP_STATUS_ON))) {
             return false;
         }
         return true;
