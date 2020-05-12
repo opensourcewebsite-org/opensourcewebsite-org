@@ -142,10 +142,12 @@ class VotebanController extends Controller
             $kickVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => self::VOTING_POWER])->count();
             $saveVotes = VotebanVote::find()->where(['provider_candidate_id' => $candidateId,'chat_id' => $chatId,'vote' => -self::VOTING_POWER])->count();
 
-            $command = $this->createVotingFormCommand($voting->provider_starter_id, $candidateId, $kickVotes, $saveVotes);
-            $command->replyToMessageId = $voting->id ? null : $voting->candidate_message_id;
-            $message = $command->send($this->getBotApi());
-
+            $isVotingFinished = ($kickVotes >= $votesLimit) || ($saveVotes >= $votesLimit);
+            if (!$isVotingFinished) {
+                $command = $this->createVotingFormCommand($voting->provider_starter_id, $candidateId, $kickVotes, $saveVotes);
+                $command->replyToMessageId = $voting->id ? null : $voting->candidate_message_id;
+                $message = $command->send($this->getBotApi());
+            }
             if (!$voting->id) {
                 if ($message) {
                     $voting->voting_message_id = $message->getMessageId();
