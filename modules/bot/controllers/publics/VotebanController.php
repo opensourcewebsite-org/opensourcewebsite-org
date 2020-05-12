@@ -54,7 +54,7 @@ class VotebanController extends Controller
         $votingInitMessage = $this->getUpdate()->getMessage();
         $spamMessage = $votingInitMessage->getReplyToMessage();
         $chat = $this->getTelegramChat();
-        $isVotebanOn = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS)->value;
+        $isVotebanOn = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS)->value ?: false;
 
         $ignoreMessage = (!$spamMessage) || ($isVotebanOn != ChatSetting::VOTE_BAN_STATUS_ON);
         if ($ignoreMessage) {
