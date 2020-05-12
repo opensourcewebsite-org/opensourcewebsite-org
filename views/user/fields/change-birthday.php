@@ -1,5 +1,7 @@
 <?php
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\date\DatePicker;
@@ -37,12 +39,10 @@ use kartik\date\DatePicker;
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= Html::submitButton(Yii::t('app', 'Save'), [
-                            'class' => 'btn btn-success',
-                            'title' => Yii::t('app', 'Save')]); ?>
-                    <?= Html::a(Yii::t('app', 'Cancel'), ['/account'], [
-                            'class' => 'btn btn-secondary',
-                            'title' => Yii::t('app', 'Cancel')]); ?>
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget([
+                        'url' => ['/account']
+                    ]); ?>
                 </div>
             </div>
         </div>
