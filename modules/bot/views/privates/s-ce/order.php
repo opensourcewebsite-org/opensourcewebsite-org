@@ -4,7 +4,7 @@
 <?= Yii::t('bot', 'Sell') ?>: <b><?= $selling_currency ?></b><br/>
 <?= Yii::t('bot', 'Amount') ?>: <?= $selling_currency_min_amount . ' - ' . $selling_currency_max_amount ?><br/>
 <?= Yii::t('bot', 'Payment methods') ?>:<br/>
-<?=
+<?php
 foreach ($sellingPaymentMethod as $value) {
     if ($value['name'] == 'Cash') {
         echo ' - ' . $value['name'] . '<br/>';
@@ -19,7 +19,7 @@ foreach ($sellingPaymentMethod as $value) {
 <br/>
 <?= Yii::t('bot', 'Buy')?>: <b><?= $buying_currency?></b><br/>
 <?= Yii::t('bot', 'Payment methods') ?>:<br/>
-<?=
+<?php
 foreach ($buyingPaymentMethod as $value) {
     if ($value['name'] == 'Cash') {
         echo ' - ' . $value['name'] . '<br/>';
