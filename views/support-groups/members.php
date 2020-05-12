@@ -1,8 +1,7 @@
 <?php
 
-use yii\widgets\ActiveForm;
 use app\widgets\buttons\AddButton;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;

@@ -1,5 +1,7 @@
 <?php
 
+use app\components\helpers\Icon;
+use app\widgets\ModalAjax;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -17,15 +19,18 @@ $countTokens = $tokensDataProvider->count;
     <div class="card-header d-flex p-0">
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <?= Html::button('<i class="fa fa-plus"></i>', [
-                    'class' => 'btn btn-outline-success',
-                    'title' => 'Add Wikipedia domains that you use',
-                    'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['wiki-tokens/create']) . '", {}, function (result){
-                    $("#main-modal-body").html(result);
-                    $("#main-modal-header").html("' . Yii::t('app', 'Setup your connection to wikipedia.org') . '").data("target", "' . Yii::$app->urlManager->createUrl(['wiki-tokens/create']) . '");
-                    $("#main-modal").modal("show");
-                })',
-                ]); ?>
+                <?= ModalAjax::widget([
+                    'id' => 'add-wikinews',
+                    'header' => Yii::t('user', 'Add wikinews page'),
+                    'closeButton' => false,
+                    'toggleButton' => [
+                        'label' => Icon::ADD,
+                        'class' => 'btn btn-outline-success',
+                        'style' =>  ['float' => 'right'],
+                    ],
+                    'url' => Url::to(['wiki-tokens/create']),
+                    'ajaxSubmit' => true,
+                ]);?>
             </li>
         </ul>
     </div>
@@ -61,7 +66,7 @@ $countTokens = $tokensDataProvider->count;
                         'value' => function ($model) use ($countTokens) {
                             $response = '';
                             $response .= Html::a('List', ['wikipedia-page/view/' . $model->language->code]);
-                            
+
                             $cantMissing = $model->countMissingPages;
 
                             if ($cantMissing > 0) {
@@ -70,8 +75,8 @@ $countTokens = $tokensDataProvider->count;
                                     'title' => 'Missing pages',
                                 ]);
                                 $response .= Html::a($spanMissing, [
-                                    'wikipedia-pages/missing', 
-                                    'userId' => $model->user_id, 
+                                    'wikipedia-pages/missing',
+                                    'userId' => $model->user_id,
                                     'languageId' => $model->language_id
                                 ]);
                             }
