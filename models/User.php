@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\components\Converter;
+use app\models\queries\ContactQuery;
+use app\models\queries\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -23,6 +25,18 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $name
+ * @property string $birthday
+ * @property string $timezone
+ * @property integer $referrer_id
+ * @property integer $gender_id
+ * @property integer $currency_id
+ * @property integer $sexuality_id
+ * @property bool $is_authenticated
+ * @property bool $gender
+ *
+ * @property Contact $contact
+ * @property Contact[] $contactsFromMe
+ * @property Contact[] $contactsToMe
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -55,14 +69,72 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
             ['name', 'string'],
             [['gender_id', 'currency_id'], 'integer'],
             ['email', 'email'],
+
             [['timezone'], 'default', 'value' => 'UTC'],
+
+            ['status',
+                'default',
+                'value' => self::STATUS_ACTIVE],
+            ['status',
+                'in',
+                'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+
+            ['email', 'email'],
+            ['email',
+                'unique',
+                'message' => 'Email must be unique.'
+            ],
+
+            ['username', 'trim'],
+            ['username',
+                'match',
+                'pattern' => '/^[a-zA-Z0-9_]+$/i',
+                'message' => 'Username can contain only letters, numbers and \'_\' symbols'
+            ],
+            ['username', 'validateUsernameUnique'],
+            ['username', 'default', 'value' => null],
+
+            ['name', 'string'],
+            ['name', 'trim'],
+            ['name', 'validateNameString'],
         ];
+    }
+
+    /*
+     * Username validation
+     */
+    public function validateUsernameUnique()
+    {
+        $oldUsername = $this->getOldAttribute('username');
+        if (is_numeric($this->username)) {
+            $this->addError('username', 'User name can\'t be number');
+        }
+
+        if (strcasecmp($oldUsername, $this->username) !== 0) {
+            $isUserInDB = User::findOne(['username' => $this->username]);
+            if ($isUserInDB) {
+                $this->addError('username', 'User name must be unique.');
+            }
+        }
+    }
+
+    /*
+     * Name validation
+     */
+    public function validateNameString()
+    {
+        $oldName = $this->getOldAttribute('name');
+        if ($this->name == $oldName) {
+            return;
+        }
+
+        if (is_numeric($this->name)) {
+            $this->addError('name', 'Name can\'t be number');
+        }
     }
 
     /**
@@ -103,6 +175,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
+    }
+
+    public function setActive(): void
+    {
+        $this->is_authenticated = true;
+        $this->status           = self::STATUS_ACTIVE;
     }
 
     /**
@@ -230,6 +308,8 @@ class User extends ActiveRecord implements IdentityInterface
             'id' => 'ID',
             'email' => 'Email',
             'rating' => 'Social Rating',
+            'username' => 'Username (optional)',
+            'name' => 'Name (optional)',
         ];
     }
 
@@ -248,7 +328,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function sendConfirmationEmail($user)
     {
-        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'auth_key' => $user->auth_key]);
+        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'authKey' =>
+            $user->auth_key]);
 
         return Yii::$app
             ->mailer
@@ -552,8 +633,11 @@ class User extends ActiveRecord implements IdentityInterface
                 'user_id' => $id,
                 'type' => $ratingType,
             ]);
-        }
 
+            if ($rating !== null) {
+                $commit = true;
+            }
+        }
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
@@ -580,20 +664,32 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return UserQuery
      */
     public function getReferrer()
     {
         return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getContact()
+    public function getContact(): ContactQuery
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
+        //TODO [ref] it is very bad way. NEVER set default conditions for whole app.
+        //  there are exist very-very rare cases, when it is really necessary to do.
+        //  Why: this condition useful, only when user with role 'User' is logged on.
+        //       but what if user with role 'Admin' is logged on?
+        //       Btw in console app `Yii::$app->user` is not exist at all!
+    }
+
+    public function getContactsFromMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['user_id' => 'id']);
+    }
+
+    public function getContactsToMe(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
     public function getDisplayName()
@@ -612,6 +708,11 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
     }
 
+    public function getSexuality()
+    {
+        return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
+    }
+  
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
@@ -626,9 +727,17 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
     }
-
+  
     public function getExchangeOrder()
     {
-        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ]);
+        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ])
+    }
+    /**
+     * {@inheritdoc}
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 }

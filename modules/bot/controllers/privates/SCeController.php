@@ -112,13 +112,13 @@ class SCeController extends FillablePropertiesController
                     $this->render('no-requirements'),
                     [
                         [
-                            [
+                          [
                                 'text' => Emoji::BACK,
                                 'callback_data' => ServicesController::createRoute(),
                             ],
                             [
                                 'text' => Emoji::MENU,
-                                'callback_data' => MenuController::createRoute(),
+                                'callback_data' => MenuController::createRoute(), 
                             ],
                         ],
                     ]
@@ -282,8 +282,6 @@ class SCeController extends FillablePropertiesController
                 ],
             ],
         ]);
-
-
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('order-create'),

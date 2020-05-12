@@ -1,5 +1,6 @@
 <?php
 
+use app\widgets\buttons\AddButton;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use app\models\Contact;
@@ -19,9 +20,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item align-self-center mr-4">
-                            <?= Html::a('<i class="fa fa-plus"></i>', ['contact/create'], [
-                                'class' => 'btn btn-outline-success',
-                                'title' => Yii::t('app', 'New Contact'),
+                            <?= AddButton::widget([
+                                'url' => ['contact/create'],
+                                'options' => [
+                                    'title' => 'New Contact',
+                                ]
                             ]); ?>
                         </li>
                         <li class="nav-item">
@@ -44,11 +47,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             [
                                 'label' => 'Name',
-                                'value' => function ($data) {
+                                'value' => function (Contact $data) {
                                     return Html::a($data->getContactName(), ['/contact/view', 'id' => $data->id]);
                                 },
                                 'format' => 'html',
                             ],
+                            [
+                                'attribute' => 'is_real',
+                                'value' => function ($model) {
+                                    return $model->is_real ? 'Real' : '';
+                                },
+                                'format' => 'html',
+                            ],
+                            'vote_delegation_priority',
+                            'debt_redistribution_priority',
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',

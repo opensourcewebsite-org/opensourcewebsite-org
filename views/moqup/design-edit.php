@@ -1,6 +1,9 @@
 <?php
 /* @var $this \yii\web\View */
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\assets\AceEditorAsset;
@@ -74,23 +77,15 @@ AceEditorAsset::register($this);
         </div>
     </div>
     <div class="card-footer">
-        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
-        <?= Html::a(Yii::t('app', 'Cancel'), ['moqup/design-list'], ['class' => 'btn btn-secondary']) ?>
+        <?= SaveButton::widget(); ?>
+        <?= CancelButton::widget([
+            'url' => ['moqup/design-list'],
+        ]); ?>
 
         <?php if (!$moqup->isNewRecord): ?>
-            <?= Html::a(Yii::t('app', 'Delete'), '#', [
-                'class' => 'btn btn-danger float-right',
-                'onclick' => 'if (confirm("' . Yii::t('moqup', 'Are you sure you want to delete this moqup?') . '")) {
-                    $.post("' . (Yii::$app->urlManager->createUrl(['moqup/design-delete/', 'id' => $moqup->id])) . '", {}, function(result) {
-                        if (result == "1") {
-                            location.href="' . (Yii::$app->urlManager->createUrl(['moqup/design-list', 'viewYours' => true])) . '";
-                        }
-                        else {
-                            alert("' . Yii::t('moqup', 'Sorry, there was an error while trying to delete the moqup') . '");
-                        }
-                    });
-                }',
-            ]) ?>
+            <?= DeleteButton::widget([
+                'url' => ['moqup/design-delete/', 'id' => $moqup->id],
+                ]); ?>
         <?php endif; ?>
     </div>
 </div>

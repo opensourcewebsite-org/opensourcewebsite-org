@@ -1,7 +1,11 @@
 # https://codeclimate.com
 version: "2"
 checks:
+  argument-count:
+    enabled: false
   file-lines:
+    enabled: false
+  method-count:
     enabled: false
   method-complexity:
     enabled: false
@@ -31,10 +35,16 @@ plugins:
       config: .eslintrc
   fixme:
     enabled: true
+    checks:
+      TODO:
+        enabled: false
   git-legal:
     enabled: true
   markdownlint:
     enabled: true
+    checks:
+      MD013:
+        enabled: false
   phan:
     enabled: true
     config:
@@ -45,21 +55,54 @@ plugins:
         enabled: false
       PhanUndeclaredProperty:
         enabled: false
+      PhanUnreferencedUseNormal:
+        enabled: false
   phpcodesniffer:
     enabled: true
     config:
       file_extensions: "php"
-      standard: "PSR1,PSR2,Yii2"
       encoding: utf-8
+      standard: "PSR1,PSR2,Yii2,phpcs.xml" # add PSR12 when codeclimate installs it
+    checks:
+      Yii2 Properties PrivatePropertiesUnderscore NoUnderscore:
+        enabled: false
+      Generic Files LineLength TooLong:
+        enabled: false
   phpmd:
     enabled: true
     config:
       file_extensions: "php"
       rulesets: "unusedcode,codesize,naming,phpmd.xml"
+    # https://phpmd.org/rules/
+    checks:
+      CleanCode/ElseExpression:
+        enabled: false
+      CyclomaticComplexity:
+        enabled: false
+      Design/CouplingBetweenObjects:
+        enabled: false
+      Design/LongMethod:
+        enabled: false
+      Design/LongParameterList:
+        enabled: false
+      Design/NpathComplexity:
+        enabled: false
+      Design/WeightedMethodCount:
+        enabled: false
+      Naming/LongVariable:
+        enabled: false
+      Naming/ShortVariable:
+        enabled: false
   sonar-php:
     enabled: true
     config:
+      file_extensions: "php"
       minimum_severity: critical
+    checks:
+      php:S1192:
+        enabled: false
+      php:S3776:
+        enabled: false
   stylelint:
     enabled: true
 exclude_patterns:

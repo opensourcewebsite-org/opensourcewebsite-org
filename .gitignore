@@ -33,8 +33,12 @@ tests/_support/_generated
 /.vagrant
 
 .env
+.env.test
 
 /config/web-local.php
 /config/params.php
 
 *views/layouts/analytics.php
+
+# php-cs-fixer itself is not needed
+php-cs-fixer.phar

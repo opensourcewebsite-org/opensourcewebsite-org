@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Debt;
+use app\widgets\buttons\AddButton;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use app\components\helpers\DebtHelper;
@@ -19,9 +20,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item align-self-center mr-4">
-                            <?= Html::a('<i class="fa fa-plus"></i>', ['debt/create'], [
-                                'class' => 'btn btn-outline-success',
-                                'title' => Yii::t('app', 'New Debt'),
+                            <?= AddButton::widget([
+                                'url' => ['debt/create'],
+                                'options' => [
+                                    'title' => 'New Debt',
+                                ]
                             ]); ?>
                         </li>
                     </ul>
@@ -34,21 +37,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             [
                                 'label' => 'Currency',
-                                'value' => function ($data) {
+                                'value' => function (Debt $data) {
                                     return $data->currency->code ?? null;
                                 },
                                 'format' => 'html',
                             ],
                             [
                                 'label' => 'My Deposits',
-                                'value' => function ($data) {
+                                'value' => function (Debt $data) {
                                     return Html::a(DebtHelper::getDepositAmount($data->depositPending, $data->depositConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
                             ],
                             [
                                 'label' => 'My Credits',
-                                'value' => function ($data) {
+                                'value' => function (Debt $data) {
                                     return Html::a(DebtHelper::getCreditAmount($data->creditPending, $data->creditConfirmed), ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',

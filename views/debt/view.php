@@ -58,19 +58,11 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                         'format' => 'relativeTime',
                     ],
                     [
-                        'label' => 'Valid',
-                        'value' => function ($data) {
-                            return $data->valid_from_date ?? null;
-                        },
-                        'format' => 'relativeTime',
-                    ],
-                    [
-                        'value' => function ($data) {
-                            $status = '';
-                            if ((int) $data->status === Debt::STATUS_PENDING) {
-                                $status = '<span class="badge badge-warning">Pending</span>';
+                        'value' => function (Debt $data) {
+                            if ($data->isStatusPending()) {
+                                return '<span class="badge badge-warning">Pending</span>';
                             }
-                            return $status;
+                            return '';
                         },
                         'format' => 'html',
                     ],

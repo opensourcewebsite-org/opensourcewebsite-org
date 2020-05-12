@@ -10,7 +10,6 @@ use yii\base\Model;
  */
 class SignupForm extends Model
 {
-    public $username;
     public $email;
     public $password;
 
@@ -45,10 +44,7 @@ class SignupForm extends Model
             return null;
         }
 
-        $user = new User();
-        $user->email = $this->email;
-        $user->setPassword($this->password);
-        $user->generateAuthKey();
+        $user = $this->factoryUser();
 
         //If referrer exists then add referrer id in user table
         $referrerID = ReferrerHelper::getReferrerIdFromCookie();
@@ -63,23 +59,30 @@ class SignupForm extends Model
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param int $auth_key the user auth_key
+     * @param string $authKey the user auth_key
      *
      * @return User|null the saved model or null if saving fails
      */
-    public static function confirmEmail($id, $auth_key)
+    public static function confirmEmail(int $id, string $authKey)
     {
-        if (!\Yii::$app->user->isGuest && \Yii::$app->user->id == $id) {
-            $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
+        $user = User::findOne(['id' => $id, 'is_authenticated' => false]);
 
-            if ($user && $user->validateAuthKey($auth_key)) {
-                $user->is_authenticated = true;
-                $user->status = User::STATUS_ACTIVE;
-                if ($user->save()) {
-                    return $user;
-                }
+        if ($user && $user->validateAuthKey($authKey)) {
+            $user->setActive();
+            if ($user->save()) {
+                return $user;
             }
         }
         return null;
+    }
+
+    public function factoryUser(): User
+    {
+        $user = new User();
+        $user->email = $this->email;
+        $user->setPassword($this->password);
+        $user->generateAuthKey();
+
+        return $user;
     }
 }

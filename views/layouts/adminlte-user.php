@@ -21,12 +21,24 @@ FontAwesomeAsset::register($this);
 AdminLteUserAsset::register($this);
 
 $this->registerCss('#lang-menu{
-	overflow: auto;
-	max-height: 200px;
-}');
+    overflow: auto;
+    min-width: 300px;
+    max-height: 200px;
+}#search-lang{
+    display: block;
+    width: 100%;
+    padding: .25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #eee;');
 
 //List of language options
-$languages = \app\models\Language::find()->all();
+$languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
 
 if (!empty($languages)) {
@@ -152,7 +164,7 @@ $leftMenuItems = [
 	[
 		'title' => 'Data',
 		'icon' => 'fas fa-database',
-		'urls' => ['data/country', 'data/currency', 'data/language', 'data/payment-method'],
+		'urls' => ['data/country', 'data/currency', 'data/language', 'data/payment-method', 'data/gender', 'data/sexuality'],
 		'items' => [
 			[
 				'title' => 'Countries',
@@ -177,6 +189,18 @@ $leftMenuItems = [
                 'icon' => 'far fa-circle',
                 'url' => 'data/payment-method',
                 'route' => 'data/payment-method',
+            ],
+            [
+                'title' => 'Genders',
+                'icon' => 'far fa-circle',
+                'url' => 'data/gender',
+                'route' => 'data/gender',
+            ],
+            [
+                'title' => 'Sexualities',
+                'icon' => 'far fa-circle',
+                'url' => 'data/sexuality',
+                'route' => 'data/sexuality',
             ],
 		],
 	],
@@ -319,13 +343,33 @@ $leftMenuItems = [
 
 		<footer class="main-footer">
 			<?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?> |
-			<?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
-			<?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
+            <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
+            <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?> |
+            <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
 			<?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
 			<?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
 		</footer>
 	</div>
 <?php $this->endBody() ?>
+<script>
+    $(document).ready(function () {
+        $('#lang-menu').prepend('<div><input type="text" id="search-lang" placeholder="Search.."></div>');
+        $('#search-lang')
+            .keyup(function() {
+                var input = $(this).val();
+                var filter = input.toLowerCase();
+                var nodes = $('.dropdown-item');
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                        nodes[i].style.display = "block";
+                    } else {
+                        nodes[i].style.display = "none";
+                    }
+                }
+            })
+            .keyup();
+    })
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>

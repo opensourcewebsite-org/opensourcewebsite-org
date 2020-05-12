@@ -53,7 +53,8 @@ class SignupFormTest extends Unit
 
     public function testIsSignupConfirmationEmailSend()
     {
-        $this->model = new SignupForm([
+        $this->model = new SignupForm();
+        $this->model->setAttributes([
             'email' => 'user2@example.com',
             'password' => 'webmaster',
         ]);
@@ -72,7 +73,7 @@ class SignupFormTest extends Unit
     public function testConfirmEmailWithoutLogin()
     {
         expect_that(\Yii::$app->user->isGuest);
-        expect_not(SignupForm::confirmEmail(102, 'test102key'));
+        expect_that(SignupForm::confirmEmail(102, 'test102key'));
     }
 
     public function testConfirmEmailWithWrongLogin()
@@ -116,14 +117,14 @@ class SignupFormTest extends Unit
     public function testConfirmEmailCorrect()
     {
         $this->model = new LoginForm([
-            'email' => 'newuser@example.com',
-            'password' => 'newuser',
+            'email' => 'testuser@example.com',
+            'password' => 'testuser',
         ]);
 
+        expect($user = SignupForm::confirmEmail(103, 'test103key'))->notNull();
         expect_that($this->model->login());
         expect_not(\Yii::$app->user->isGuest);
 
-        expect($user = SignupForm::confirmEmail(102, 'test102key'))->notNull();
         expect($user->is_authenticated)->equals(true);
         expect($user->status)->equals(User::STATUS_ACTIVE);
     }
@@ -137,12 +138,13 @@ class SignupFormTest extends Unit
         expect_that($user->addRating(Rating::CONFIRM_EMAIL, 1, false));
         expect($user->getRating())->equals(1);
 
-        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->false();
+        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->true();
         expect($user->getRating())->notEquals(2);
     }
 
     protected function _after()
     {
+        Rating::deleteAll();
         \Yii::$app->user->logout();
     }
 }

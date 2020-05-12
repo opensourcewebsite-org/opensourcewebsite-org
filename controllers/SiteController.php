@@ -2,12 +2,16 @@
 
 namespace app\controllers;
 
+use app\models\Contact;
+use app\models\Gender;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
 use app\models\User;
+use app\models\Currency;
+use app\models\Sexuality;
 use app\modules\bot\models\User as BotUser;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
@@ -30,14 +34,9 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account', 'confirm', 'resend-confirmation-email',
+                    'logout', 'design-list', 'design-view', 'design-edit', 'account',
                 ],
                 'rules' => [
-                    [
-                        'actions' => ['confirm', 'resend-confirmation-email'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
                     [
                         'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
                         'allow' => true,
@@ -83,7 +82,7 @@ class SiteController extends Controller
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => 'app\actions\ErrorAction',
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
@@ -150,8 +149,7 @@ class SiteController extends Controller
 
             if ($model->load($postData)) {
                 if ($user = $model->signup()) {
-                    if (Yii::$app->getUser()->login($user)) {
-                        $user->sendConfirmationEmail($user);
+                    if ($user->sendConfirmationEmail($user)) {
                         Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
 
                         return $this->redirect(['site/login']);
@@ -321,8 +319,11 @@ class SiteController extends Controller
 
         list($total, $rank) = Rating::getRank($model->getId());
 
-        return $this->render('account', [
+        $realConfirmations = $model->getContactsToMe()->where(['is_real' => 1])->count();
+
+        $params = [
             'model' => $model,
+            'realConfirmations' => $realConfirmations,
             'activeRating' => $activeRating,
             'overallRating' => [
                 'rating' => $rating,
@@ -332,29 +333,32 @@ class SiteController extends Controller
             'ranking' => [
                 'rank' => $rank,
                 'total' => $total,
-            ]
-        ]);
+            ],
+        ];
+        return $this->render('account', $params);
     }
 
     /**
      * Confirm user email.
      *
      * @param int $id the user id
-     * @param int $auth_key the user auth_key
+     * @param string $authKey the user auth_key
      *
      * @return string
      */
-    public function actionConfirm($id = '', $auth_key = '')
+    public function actionConfirm(int $id, string $authKey)
     {
         $transaction = Yii::$app->db->beginTransaction();
         $commit = false;
 
-        $user = SignupForm::confirmEmail($id, $auth_key);
+        $user = SignupForm::confirmEmail($id, $authKey);
 
         if (!empty($user)) {
-
-            //Add user rating for confirm email
-            $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            $user->is_authenticated = true;
+            if ($user->save()) {
+                //Add user rating for confirm email
+                $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
+            }
         }
 
         if ($commit) {

@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use \app\modules\bot\components\response\SendMessageCommand;
-use \TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class HelloController
@@ -19,14 +18,10 @@ class HelloController extends Controller
      */
     public function actionIndex()
     {
-        return [
-            new SendMessageCommand(
-                $this->getTelegramChat()->chat_id,
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
-                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'url' => 'https://t.me/opensourcewebsite_bot',
@@ -37,6 +32,24 @@ class HelloController extends Controller
                             [
                                 'url' => 'https://opensourcewebsite.org',
                                 'text' => Yii::t('bot', 'Website'),
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY',
+                                'text' => Yii::t('bot', 'Slack'),
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => 'https://discord.gg/94WpSPJ',
+                                'text' => Yii::t('bot', 'Discord'),
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => 'https://gitter.im/opensourcewebsite-org',
+                                'text' => Yii::t('bot', 'Gitter'),
                             ],
                         ],
                         [
@@ -55,9 +68,12 @@ class HelloController extends Controller
                                 'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
                             ],
                         ],
-                    ]),
+                ],
+                false,
+                [
+                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 }

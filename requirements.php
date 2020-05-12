@@ -4,46 +4,34 @@
  *
  * In order to run this script use the following console command:
  * php requirements.php
- *
- * In order to run this script from the web, you should copy it to the web root.
- * If you are using Linux you can create a hard link instead, using the following command:
- * ln ../requirements.php requirements.php
  */
 
-// you may need to adjust this path to the correct Yii framework path
-// uncomment and adjust the following line if Yii is not located at the default path
-//$frameworkPath = dirname(__FILE__) . '/vendor/yiisoft/yii2';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
+use Dotenv\Dotenv;
 
-if (!isset($frameworkPath)) {
-    $searchPaths = [
-        dirname(__FILE__) . '/vendor/yiisoft/yii2',
-        dirname(__FILE__) . '/../vendor/yiisoft/yii2',
-    ];
-    foreach ($searchPaths as $path) {
-        if (is_dir($path)) {
-            $frameworkPath = $path;
-            break;
-        }
-    }
+require __DIR__ . '/vendor/autoload.php';
+
+if (file_exists('.env')) {
+    $dotenv = new Dotenv(__DIR__);
+    $dotenv->load();
+} elseif (file_exists('.env.test')) {
+    $dotenv = new Dotenv(__DIR__, '.env.test');
+    $dotenv->load();
+} else {
+    exit;
 }
 
-if (!isset($frameworkPath) || !is_dir($frameworkPath)) {
-    $message = "<h1>Error</h1>\n\n"
-        . "<p><strong>The path to yii framework seems to be incorrect.</strong></p>\n"
-        . '<p>You need to install Yii framework via composer or adjust the framework path in file <abbr title="' . __FILE__ . '">' . basename(__FILE__) . "</abbr>.</p>\n"
-        . '<p>Please refer to the <abbr title="' . dirname(__FILE__) . "/README.md\">README</abbr> on how to install Yii.</p>\n";
+defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV') ?: 'requirements');
 
-    if (!empty($_SERVER['argv'])) {
-        // do not print HTML when used in console mode
-        echo strip_tags($message);
-    } else {
-        echo $message;
-    }
-    exit(1);
+if (YII_ENV != 'dev') {
+    exit;
 }
 
-require_once($frameworkPath . '/requirements/YiiRequirementChecker.php');
+require_once __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
+require_once __DIR__ . '/vendor/yiisoft/yii2/requirements/YiiRequirementChecker.php';
+
 $requirementsChecker = new YiiRequirementChecker();
 
 $gdMemo = $imagickMemo = 'Either GD PHP extension with FreeType support or ImageMagick PHP extension with PNG support is required for image CAPTCHA.';
@@ -80,35 +68,11 @@ $requirements = [
         'by' => 'All DB-related classes',
     ],
     [
-        'name' => 'PDO SQLite extension',
-        'mandatory' => false,
-        'condition' => extension_loaded('pdo_sqlite'),
-        'by' => 'All DB-related classes',
-        'memo' => 'Required for SQLite database.',
-    ],
-    [
         'name' => 'PDO MySQL extension',
         'mandatory' => false,
         'condition' => extension_loaded('pdo_mysql'),
-        'by' => 'All DB-related classes',
+        'by' => '<a href="https://www.php.net/manual/en/ref.pdo-mysql.php">PDO MySQL extension</a>',
         'memo' => 'Required for MySQL database.',
-    ],
-    [
-        'name' => 'PDO PostgreSQL extension',
-        'mandatory' => false,
-        'condition' => extension_loaded('pdo_pgsql'),
-        'by' => 'All DB-related classes',
-        'memo' => 'Required for PostgreSQL database.',
-    ],
-    // Cache :
-    [
-        'name' => 'Memcache extension',
-        'mandatory' => false,
-        'condition' => extension_loaded('memcache') || extension_loaded('memcached'),
-        'by' => '<a href="http://www.yiiframework.com/doc-2.0/yii-caching-memcache.html">MemCache</a>',
-        'memo' => extension_loaded('memcached')
-            ? 'To use memcached set <a href="http://www.yiiframework.com/doc-2.0/yii-caching-memcache.html#$useMemcached-detail">MemCache::useMemcached</a> to <code>true</code>.'
-            : '',
     ],
     // CAPTCHA:
     [
@@ -124,6 +88,13 @@ $requirements = [
         'condition' => $imagickOK,
         'by' => '<a href="http://www.yiiframework.com/doc-2.0/yii-captcha-captcha.html">Captcha</a>',
         'memo' => $imagickMemo,
+    ],
+    // JSON
+    [
+        'name' => 'JSON extension',
+        'mandatory' => true,
+        'condition' => extension_loaded('json'),
+        'by' => '<a href="https://www.php.net/manual/en/book.json.php">JSON extension</a>'
     ],
     // PHP ini :
     'phpExposePhp' => [
@@ -150,7 +121,7 @@ $requirements = [
 ];
 
 // OPcache check
-if (!version_compare(phpversion(), '5.5', '>=')) {
+if (!version_compare(phpversion(), '7.2', '>=')) {
     $requirements[] = [
         'name' => 'APC extension',
         'mandatory' => false,

@@ -16,6 +16,8 @@ use yii\helpers\ArrayHelper;
  * @property int $updated_at
  * @property int $updated_by
  * @property SupportGroupCommandText[] $reIndexTexts
+ * @property SupportGroupLanguage[] $languages
+ * @property string $languageCode
  *
  * @property SupportGroup $supportGroup
  * @property SupportGroupCommandText[] $supportGroupCommandTexts
@@ -55,8 +57,11 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
             [['support_group_id', 'is_default'], 'integer'],
             [['command'], 'unique', 'targetAttribute' => ['support_group_id', 'command']],
             [['command'], 'string', 'max' => 255],
-            [['support_group_id'], 'exist', 'skipOnError'     => true, 'targetClass' => SupportGroup::className(),
-                                            'targetAttribute' => ['support_group_id' => 'id'],
+            [
+                ['support_group_id'],
+                'exist',
+                'targetClass' => SupportGroup::class,
+                'targetAttribute' => ['support_group_id' => 'id'],
             ],
         ];
     }
@@ -109,7 +114,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return SupportGroupLanguage[]
      */
     public function getLanguages()
     {
@@ -125,7 +130,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
 
         foreach ($this->languages as $lang) {
             $navItems[] = [
-                'label'       => $lang->languageCode->name_ascii,
+                'label'       => $lang->language->name_ascii,
                 'url'         => '#tab_' . $lang->id,
                 'linkOptions' => [
                     'data-toggle' => 'tab',

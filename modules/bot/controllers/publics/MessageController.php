@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use \app\modules\bot\components\response\DeleteMessageCommand;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\ChatSetting;
 
 /**
@@ -63,12 +63,9 @@ class MessageController extends Controller
         }
 
         if ($deleteMessage) {
-            return [
-                new DeleteMessageCommand(
-                    $update->getMessage()->getChat()->getId(),
-                    $update->getMessage()->getMessageId()
-                ),
-            ];
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->deleteMessage()
+                ->build();
         }
     }
 }

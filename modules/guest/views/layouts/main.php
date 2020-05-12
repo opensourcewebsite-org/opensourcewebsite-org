@@ -55,30 +55,29 @@ $this->beginBody();
 
             <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <div class="search-container">
-                <input type="text" placeholder="Search..">
+                <input type="text" id="search-lang" onkeyup="getLanguage()" placeholder="Search..">
                 <button type="button"><i class="fa fa-search"></i></button>
               </div>
+                <div class="dropdown-container">
+                <?php
+                //List of language options
+                $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 
-              <?php
-                  //List of language options
-                  $languages = \app\models\Language::find()->all();
-
-                  if (!empty($languages)) {
-                      foreach ($languages as $language) {
-                          //Check if the language is the active
-                          $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
-                          echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$language->code]), ['class'=>['dropdown-item', $active]]);
-                      }
-                  }
-              ?>
-
+                if (!empty($languages)) {
+                    foreach ($languages as $language) {
+                        //Check if the language is the active
+                        $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
+                        echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
+                    }
+                } ?>
+                </div>
             </div>
           </div>
         </li>
 
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['site/login']) ?>">Account</a>
+          <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['site/login']) ?>"><?= Yii::t('app', 'Account') ?></a>
         </li>
       </ul>
     </div>
@@ -97,10 +96,13 @@ $this->beginBody();
                 <?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?>
               </li>
               <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?>
+                <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?>
               </li>
               <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?>
+                <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?>
+              </li>
+              <li class="list-inline-item">
+                <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?>
               </li>
               <li class="list-inline-item">
                 <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?>
@@ -121,6 +123,20 @@ $this->beginBody();
     </footer>
 
 <?php $this->endBody() ?>
+<script>
+    function getLanguage() {
+        let input = document.getElementById("search-lang");
+        let filter = input.value.toLowerCase();
+        let nodes = document.getElementsByClassName('dropdown-item');
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                nodes[i].style.display = "block";
+            } else {
+                nodes[i].style.display = "none";
+            }
+        }
+    }
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>
