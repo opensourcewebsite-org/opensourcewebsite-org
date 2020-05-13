@@ -46,11 +46,11 @@ use yii\widgets\ActiveForm;
                     'url' => '/support-groups'
                 ]); ?>
                 <?php
-                    if (!$model->isNewRecord) {
-                        echo DeleteButton::widget([
-                            'url' => ['delete', 'id' => $model->id]
-                        ]);
-                    }
+                if (!$model->isNewRecord) {
+                    echo DeleteButton::widget([
+                        'url' => ['delete', 'id' => $model->id]
+                    ]);
+                }
                 ?>
             </div>
             <?php ActiveForm::end(); ?>
