@@ -41,16 +41,16 @@ use yii\widgets\ActiveForm;
             </div>
 
             <div class="card-footer">
+                <?= SaveButton::widget(); ?>
+                <?= CancelButton::widget([
+                    'url' => '/support-groups'
+                ]); ?>
                 <?php
-                    echo SaveButton::widget();
-                    echo CancelButton::widget([
-                        'url' => '/support-groups'
+                if (!$model->isNewRecord) {
+                    echo DeleteButton::widget([
+                        'url' => ['delete', 'id' => $model->id]
                     ]);
-                    if (!$model->isNewRecord) {
-                        echo DeleteButton::widget([
-                            'url' => ['delete', 'id' => $model->id]
-                        ]);
-                    }
+                }
                 ?>
             </div>
             <?php ActiveForm::end(); ?>
