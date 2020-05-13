@@ -1,6 +1,8 @@
 <?php
 
 use app\widgets\buttons\AddButton;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\bootstrap4\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -65,8 +67,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             ])->label('User'); ?>
                         </div>
                         <div class="card-footer text-left">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
                         </div>
                     </div>
                 </div>

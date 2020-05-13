@@ -1,6 +1,8 @@
 <?php
 
+use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 
@@ -32,8 +34,8 @@ use yii\bootstrap4\ActiveForm;
                             <?= $form->field($model, 'description')->textarea() ?>
                         </div>
                         <div class="card-footer text-left">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" data-dismiss="modal">Cancel</a>
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
                         </div>
                     </div>
                 </div>
