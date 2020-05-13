@@ -2,7 +2,8 @@
 /* @var $this \yii\web\View */
 
 use app\widgets\buttons\CancelButton;
-use app\widgets\buttons\DeleteButton;use app\widgets\buttons\SaveButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 
 $this->title = Yii::t('menu', 'Edit design');
