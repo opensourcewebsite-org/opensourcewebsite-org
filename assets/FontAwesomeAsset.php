@@ -5,7 +5,7 @@ namespace app\assets;
 use yii\web\AssetBundle;
 
 /**
- * Awesome font css asset
+ * Font Awesome Asset
  * @link https://cdnjs.com/libraries/font-awesome
  */
 class FontAwesomeAsset extends AssetBundle
