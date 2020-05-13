@@ -81,6 +81,8 @@ plugins:
         enabled: false
       Design/CouplingBetweenObjects:
         enabled: false
+      Design/LongClass:
+        enabled: false
       Design/LongMethod:
         enabled: false
       Design/LongParameterList:
