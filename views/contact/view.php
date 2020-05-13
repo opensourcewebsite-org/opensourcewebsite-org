@@ -85,6 +85,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     return $model->is_real ? 'Yes' : 'No';
                                 }
                             ],
+                            'userRelation',
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
                         ],

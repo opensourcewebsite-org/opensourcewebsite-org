@@ -37,6 +37,15 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="row">
                         <div class="col">
+                            <?= $form->field($model, 'userRelation')->dropDownList([
+                                'Neutral' => 'Neutral',
+                                'Friend' => 'Friend',
+                                'Enemy' => 'Enemy',
+                            ]); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
                             <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Vote Delegation Priority (optional)'); ?>
                         </div>
                     </div>
