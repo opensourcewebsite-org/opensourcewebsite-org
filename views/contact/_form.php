@@ -37,7 +37,7 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'userRelation')->dropDownList([
+                            <?= $form->field($model, 'relation')->dropDownList([
                                 0 => 'Neutral',
                                 1 => 'Friend',
                                 2 => 'Enemy',

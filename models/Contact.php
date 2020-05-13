@@ -49,7 +49,7 @@ class Contact extends ActiveRecord
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
             [['user_id', 'link_user_id', 'is_real'], 'integer'],
-            [['userRelation', 'default', 'value' => self::NEUTRAL], 'integer'],
+            [['relation', 'default', 'value' => self::NEUTRAL], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required',
                 'when' => static function (self $model) {
