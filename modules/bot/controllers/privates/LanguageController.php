@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\models\Language;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -43,7 +43,7 @@ class LanguageController extends Controller
         $languageCode = isset($language) ? $language->code : null;
         $languageName = isset($language) ? $language->name : null;
         
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('languageCode', 'languageName')),
                 [
@@ -101,7 +101,7 @@ class LanguageController extends Controller
             ];
         }, $languages);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('list'),
                 array_merge($languageRows, [ $paginationButtons ], [

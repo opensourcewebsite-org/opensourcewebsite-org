@@ -5,7 +5,7 @@ use app\modules\bot\components\FillablePropertiesController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\models\Company;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
@@ -72,7 +72,7 @@ class CompaniesController extends FillablePropertiesController
             ],
         ]);
 
-        return ResponseBuilder::fromUpdate($update)
+        return $this->getResponseBuilder()($update)
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 $keyboards
@@ -82,7 +82,7 @@ class CompaniesController extends FillablePropertiesController
 
     public function actionUpdate($companyId)
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageReplyMarkup([
                     [
                         [
@@ -142,7 +142,7 @@ class CompaniesController extends FillablePropertiesController
             return [];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $company->name,

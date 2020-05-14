@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
@@ -35,7 +35,7 @@ class MyBirthdayController extends Controller
             $this->getState()->setName(self::createRoute('create'));
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('birthday')),
                 [
@@ -74,7 +74,7 @@ class MyBirthdayController extends Controller
             return $this->actionIndex();
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('update'),
                 [
@@ -95,7 +95,7 @@ class MyBirthdayController extends Controller
 
         $this->getState()->setName(self::createRoute('create'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->removeInlineKeyboardMarkup()
             ->sendMessage(
                 $this->render('update'),

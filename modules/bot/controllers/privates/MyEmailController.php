@@ -4,7 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\models\User;
 use app\models\MergeAccountsRequest;
@@ -32,7 +32,7 @@ class MyEmailController extends Controller
             $this->getState()->setName(self::createRoute('create'));
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'email' => $email,
@@ -96,7 +96,7 @@ class MyEmailController extends Controller
             }
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->sendMessage(
                 $this->render('create', [
                     'changeRequest' => $changeRequest,
@@ -130,7 +130,7 @@ class MyEmailController extends Controller
 
         $this->getState()->setName(self::createRoute('create'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->removeInlineKeyboardMarkup()
             ->sendMessage(
                 $this->render('update')
@@ -156,7 +156,7 @@ class MyEmailController extends Controller
                 ]);
                 // MergeAccountsRequest::sendEmail also call ActiveRecord::save method
                 if ($mergeAccountsRequest->sendEmail()) {
-                    return ResponseBuilder::fromUpdate($this->getUpdate())
+                    return $this->getResponseBuilder()($this->getUpdate())
                         ->editMessageTextOrSendMessage(
                             $this->render('merge-accounts'),
                             [
@@ -176,7 +176,7 @@ class MyEmailController extends Controller
             } else {
             }
         } else {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()($this->getUpdate())
                 ->answerCallbackQuery(
                     new MessageText(Yii::t('bot', 'This request has expired')),
                     true
@@ -194,7 +194,7 @@ class MyEmailController extends Controller
             $deleted = $mergeAccountsRequest->delete();
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->removeInlineKeyboardMarkup()
             ->answerCallbackQuery(
                 new MessageText(Yii::t('bot', $deleted

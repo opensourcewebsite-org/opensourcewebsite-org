@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 
 class ResumesController extends Controller
 {
@@ -14,7 +14,7 @@ class ResumesController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
