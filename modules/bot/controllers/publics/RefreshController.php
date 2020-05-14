@@ -76,7 +76,7 @@ class RefreshController extends Controller
             return [];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('index')
                 )

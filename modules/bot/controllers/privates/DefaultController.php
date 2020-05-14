@@ -4,7 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 
 /**
@@ -19,7 +19,7 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->sendMessage(
                 $this->render('/menu/index')
             )
@@ -31,7 +31,7 @@ class DefaultController extends Controller
      */
     public function actionCommandNotFound()
 	{
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->sendMessage(
                 $this->render('command-not-found'),
                 [

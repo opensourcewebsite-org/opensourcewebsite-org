@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
 use app\modules\bot\components\Controller as Controller;
@@ -31,7 +31,7 @@ class MyTimezoneController extends Controller
             }
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'timezone' => $timezones[$user->timezone],
@@ -99,7 +99,7 @@ class MyTimezoneController extends Controller
             ];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $text = $this->render('list'),
                 $buttons

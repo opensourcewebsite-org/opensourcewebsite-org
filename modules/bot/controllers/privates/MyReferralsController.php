@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\modules\bot\components\Controller;
 
@@ -27,7 +27,7 @@ class MyReferralsController extends Controller
         $botName = $this->getBotName();
         $botRefUrl = "https://t.me/$botName?start=$userId";
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'referralsCount' => $referralsCount,
