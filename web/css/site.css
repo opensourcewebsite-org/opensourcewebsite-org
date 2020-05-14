@@ -2,7 +2,9 @@ html,
 body {
     height: 100%;
 }
-
+body{
+    position: relative;
+}
 .wrap {
     min-height: 100%;
     height: auto;
