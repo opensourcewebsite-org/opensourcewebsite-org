@@ -6,7 +6,6 @@ use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 
-
 class ResumesController extends Controller
 {
     /**

@@ -19,7 +19,6 @@ class MessageController extends Controller
     public function actionIndex()
     {
         $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
         $chat = $this->getTelegramChat();
 
         $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);

@@ -79,8 +79,6 @@ class TopController extends Controller
             $estimateValue = self::VOTE_DISLIKE;
         }
 
-        $update = $this->getUpdate();
-
         $message = $this->getMessage();
         $messageId = $message->getMessageId();
         $currentUser = $this->getTelegramUser();

@@ -5,7 +5,6 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\Controller;
 
-
 /**
  * Class MyLocationController
  *
