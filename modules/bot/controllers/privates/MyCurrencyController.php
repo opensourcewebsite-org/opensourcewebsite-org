@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\models\Currency;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
@@ -40,7 +40,7 @@ class MyCurrencyController extends Controller
         $currencyCode = isset($currency) ? $currency->code : null;
         $currencyName = isset($currency) ? $currency->name : null;
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('currencyCode', 'currencyName')),
                 [
@@ -108,7 +108,7 @@ class MyCurrencyController extends Controller
             ];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('list'),
                 $buttons

@@ -45,7 +45,7 @@ class Module extends \yii\base\Module
     public $telegramUser;
 
     /**
-     * @var models\chat
+     * @var models\Chat
      */
     public $telegramChat;
 

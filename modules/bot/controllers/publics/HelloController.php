@@ -18,7 +18,7 @@ class HelloController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
@@ -71,7 +71,7 @@ class HelloController extends Controller
                 ],
                 false,
                 [
-                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
+                    'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
             ->build();
