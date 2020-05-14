@@ -51,7 +51,7 @@ class VotebanController extends Controller
     public function actionIndex()
     {
         $result = null;
-        $votingInitMessage = $this->getUpdate()->getMessage();
+        $votingInitMessage = $this->getMessage();
         $spamMessage = $votingInitMessage->getReplyToMessage();
         $chat = $this->getTelegramChat();
         $isVotebanOn = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS)->value;
@@ -98,7 +98,7 @@ class VotebanController extends Controller
         $initVotingError = null;
         $chat = $this->getTelegramChat();
 
-        $votingInitMessage = $this->getUpdate()->getMessage();
+        $votingInitMessage = $this->getMessage();
         $deleteMessageCommand = new DeleteMessageCommand($chat->chat_id, $votingInitMessage->getMessageId());
         $deleteMessageCommand->send($this->getBotApi());
 
@@ -188,7 +188,7 @@ class VotebanController extends Controller
             'rating'
         );
 
-        $commandBuilder = ResponseBuilder::fromUpdate($this->getUpdate())
+        $commandBuilder = $this->getResponseBuilder()
         ->editMessageTextOrSendMessage(
             $this->render('index', [
                 'user' => $starterName,
@@ -260,7 +260,7 @@ class VotebanController extends Controller
     private function createVotingFormMessage()
     {
         $voting = null;
-        $votingInitMessage = $this->getUpdate()->getMessage();
+        $votingInitMessage = $this->getMessage();
 
         if (isset($votingInitMessage)) {
             $sender = $votingInitMessage->getFrom();
@@ -296,7 +296,7 @@ class VotebanController extends Controller
     private function getExistingVotingFormCallback()
     {
         if ($this->isCallbackQuery()) {
-            $votingMessageID = $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId();
+            $votingMessageID = $this->getMessage()->getMessageId();
             $voting = VotebanVoting::find()
             ->where(['voting_message_id' => $votingMessageID])
             ->one();
@@ -326,7 +326,7 @@ class VotebanController extends Controller
         $this->clearUserVoteHistory($userId);
         $this->getBotApi()->kickChatMember($chatId, $userId);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
         ->sendMessage(
             $this->render('user-kicked', [
                 'user' => $this->getProviderUsernameById($userId),
@@ -345,7 +345,7 @@ class VotebanController extends Controller
         $votersIds = VotebanVote::find()->where(['provider_candidate_id' => $userId,'chat_id' => $chat->id,'vote' => -self::VOTING_POWER])->select('provider_voter_id')->asArray()->column();
         $votersNames = $this->getProviderUsernamesByIds($votersIds);
         $this->clearUserVoteHistory($userId);
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('user-saved', [
                     'user' => $this->getProviderUsernameById($userId),

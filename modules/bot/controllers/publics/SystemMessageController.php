@@ -29,7 +29,7 @@ class SystemMessageController extends Controller
         }
 
         if ($deleteMessage) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
             ->deleteMessage()
             ->build();
         }
@@ -41,7 +41,7 @@ class SystemMessageController extends Controller
 
         $chat->setAttributes([
             'type' => Chat::TYPE_SUPERGROUP,
-            'chat_id' => $this->getUpdate()->getMessage()->getMigrateToChatId(),
+            'chat_id' => $this->getMessage()->getMigrateToChatId(),
         ]);
 
         $chat->save();

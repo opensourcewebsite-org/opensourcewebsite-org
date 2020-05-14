@@ -20,7 +20,6 @@ class MessageController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
         $update = $this->getUpdate();
-
         $chat = $this->getTelegramChat();
 
         $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
@@ -32,7 +31,7 @@ class MessageController extends Controller
 
         $deleteMessage = false;
 
-        if ($update->getMessage()->getText() !== null) {
+        if ($this->getMessage()->getText() !== null) {
             $adminUser = $chat->getAdministrators()->where(['id' => $telegramUser->user_id])->one();
 
             if (!isset($adminUser)) {
@@ -42,7 +41,7 @@ class MessageController extends Controller
                     $phrases = $chat->getBlacklistPhrases()->all();
 
                     foreach ($phrases as $phrase) {
-                        if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
+                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
                             $deleteMessage = true;
                             break;
                         }
@@ -53,7 +52,7 @@ class MessageController extends Controller
                     $phrases = $chat->getWhitelistPhrases()->all();
 
                     foreach ($phrases as $phrase) {
-                        if (mb_stripos($update->getMessage()->getText(), $phrase->text) !== false) {
+                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
                             $deleteMessage = false;
                             break;
                         }
@@ -63,7 +62,7 @@ class MessageController extends Controller
         }
 
         if ($deleteMessage) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->deleteMessage()
                 ->build();
         }
