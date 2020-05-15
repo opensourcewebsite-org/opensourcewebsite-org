@@ -9,7 +9,7 @@ use app\models\Contact;
 $this->title = Yii::t('app', 'Update Contact: ' . $model->getContactName(), [
         'nameAttribute' => '' . $model->getContactName(),
     ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('common', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
 $this->params['breadcrumbs'][] = ['label' => $model->getContactName(), 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
