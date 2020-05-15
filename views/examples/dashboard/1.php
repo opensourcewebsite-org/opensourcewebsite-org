@@ -185,8 +185,8 @@ $this->registerJs($JS);
                             <li>
                                 <!-- drag handle -->
                                 <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <!-- checkbox -->
                                 <div  class="icheck-primary d-inline ml-2">
@@ -205,8 +205,8 @@ $this->registerJs($JS);
                             </li>
                             <li>
                     <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <div  class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
@@ -221,8 +221,8 @@ $this->registerJs($JS);
                             </li>
                             <li>
                     <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <div  class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo3" id="todoCheck3">
@@ -237,8 +237,8 @@ $this->registerJs($JS);
                             </li>
                             <li>
                     <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <div  class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo4" id="todoCheck4">
@@ -253,8 +253,8 @@ $this->registerJs($JS);
                             </li>
                             <li>
                     <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <div  class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo5" id="todoCheck5">
@@ -269,8 +269,8 @@ $this->registerJs($JS);
                             </li>
                             <li>
                     <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <div  class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo6" id="todoCheck6">
