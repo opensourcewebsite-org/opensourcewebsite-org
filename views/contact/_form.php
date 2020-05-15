@@ -22,12 +22,12 @@ use yii\widgets\ActiveForm;
                         <div class="col">
                             <?= $form->field($model, 'userIdOrName')
                                 ->textInput(['data-old-value' => $model->getUserIdOrName()])
-                                ->label('User ID / Username (optional)'); ?>
+                                ->label(Yii::t('app', 'User ID / Username (optional)')); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'name')->textInput()->label('Name (optional)'); ?>
+                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('app', 'Name (optional)')); ?>
                         </div>
                     </div>
                     <div class="row">
@@ -37,12 +37,17 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Vote Delegation Priority (optional)'); ?>
+                            <?= $form->field($model, 'relation')->dropDownList($relations)->label(Yii::t('app', 'Relation')); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label('Debt Redistribution Priority (optional)'); ?>
+                            <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label(Yii::t('app', 'Vote Delegation Priority (optional)')); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label(Yii::t('app', 'Debt Redistribution Priority (optional)')); ?>
                         </div>
                     </div>
                 </div>
