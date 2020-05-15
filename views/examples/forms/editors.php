@@ -39,8 +39,7 @@ $this->registerJs('$("#deign-edit-form").on("beforeValidate beforeSubmit", funct
     $("#css-css").val(cssVal);
 });');
 
-$this->registerJs('$("#trumbowyg").trumbowyg();
-');
+$this->registerJs('$("#trumbowyg").trumbowyg();');
 ?>
 <!DOCTYPE html>
 <html>

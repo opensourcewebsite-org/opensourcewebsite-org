@@ -472,7 +472,7 @@ $leftMenuItems = [
                                     </a>
                                     <ul class="nav nav-treeview">
                                         <?php foreach ($item['items'] as $subItem) : ?>
-                                            <?php if(isset($subItem['items'])) : ?>
+                                            <?php if (isset($subItem['items'])) : ?>
                                                 <li class="nav-item has-treeview  <?= in_array(Yii::$app->requestedRoute, $subItem['urls']) ? 'menu-open' : '' ?>">
                                                     <a href="#" class="nav-link">
                                                         <i class="nav-icon <?= $subItem['icon'] ?>"></i>

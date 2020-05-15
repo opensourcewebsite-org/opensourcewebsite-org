@@ -5,9 +5,9 @@ $this->title = Yii::t('app', 'General Elements');
 $this->params['breadcrumbs'][] = $this->title;
 
 $JS = <<<JS
-$(document).ready(function () {
-  bsCustomFileInput.init();
-});
+    $(document).ready(function () {
+        bsCustomFileInput.init();
+    });
 JS;
 
 $this->registerJs($JS);

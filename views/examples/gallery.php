@@ -5,20 +5,20 @@ $this->title = Yii::t('app', 'Gallery');
 $this->params['breadcrumbs'][] = $this->title;
 
 $JS = <<<JS
-  $(function () {
-    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-      event.preventDefault();
-      $(this).ekkoLightbox({
-        alwaysShowClose: true
-      });
-    });
+    $(function () {
+        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+            event.preventDefault();
+            $(this).ekkoLightbox({
+                alwaysShowClose: true
+            });
+        });
 
-    $('.filter-container').filterizr({gutterPixels: 3});
-    $('.btn[data-filter]').on('click', function() {
-      $('.btn[data-filter]').removeClass('active');
-      $(this).addClass('active');
-    });
-  })
+        $('.filter-container').filterizr({gutterPixels: 3});
+        $('.btn[data-filter]').on('click', function() {
+            $('.btn[data-filter]').removeClass('active');
+            $(this).addClass('active');
+        });
+    })
 JS;
 $this->registerJs($JS);
 ?>
