@@ -54,7 +54,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
                     <?= CancelButton::widget([
-                        'url' => 'index?view=1'
+                        'url' => '/contact'
                     ]); ?>
                     <?php if (!$model->isNewRecord && $model->user_id === Yii::$app->user->id) : ?>
                         <?= DeleteButton::widget([
