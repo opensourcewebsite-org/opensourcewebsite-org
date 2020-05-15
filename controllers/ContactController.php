@@ -16,7 +16,6 @@ use yii\web\NotFoundHttpException;
  */
 class ContactController extends Controller
 {
-
     /**
      * {@inheritdoc}
      */
