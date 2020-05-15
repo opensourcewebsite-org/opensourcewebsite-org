@@ -86,15 +86,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             ],
                             [
                                 'label' => Yii::t('app', 'Relation'),
-                                'value' =>  $model->relation, /*function ($model) {
-                                    foreach (Contact::RELATIONS as $item) {
-                                        foreach ($item as $key => $value) {
-                                            if ($key == $model->relation) {
-                                                return Yii::t('app', $value);
-                                            }
-                                        }
-                                    }
-                                }*/
+                                'value' => Yii::t('app', Contact::RELATIONS[$model->relation]['title']),
                             ],
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
