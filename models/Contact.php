@@ -5,7 +5,6 @@ namespace app\models;
 use app\models\queries\ContactQuery;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
 
@@ -27,20 +26,7 @@ class Contact extends ActiveRecord
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
-    const RELATIONS = [
-        [
-            'title' => 'Neutral',
-            'value' => 0,
-        ],
-        [
-            'title' => 'Friend',
-            'value' => 1,
-        ],
-        [
-            'title' => 'Enemy',
-            'value' => 2,
-        ],
-    ];
+    const RELATIONS = ['Neutral', 'Friend', 'Enemy',];
 
     public $userIdOrName;
 

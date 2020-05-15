@@ -87,7 +87,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             ],
                             [
                                 'label' => Yii::t('app', 'Relation'),
-                                'value' => Yii::t('app', Contact::RELATIONS[$model->relation]['title']),
+                                'value' => Yii::t('app', Contact::RELATIONS[$model->relation]),
                             ],
                             'vote_delegation_priority',
                             'debt_redistribution_priority',

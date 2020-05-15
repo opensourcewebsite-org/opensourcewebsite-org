@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => Yii::t('app', 'Relation'),
                                 'value' => function ($model) {
-                                    return Yii::t('app', Contact::RELATIONS[$model->relation]['title']);
+                                    return Yii::t('app', Contact::RELATIONS[$model->relation]);
                                 },
                                 'format' => 'html',
                             ],

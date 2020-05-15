@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'relations' => \yii\helpers\ArrayHelper::map(Contact::RELATIONS, 'value', 'title'),
+        'relations' => Contact::RELATIONS,
     ]); ?>
 
 </div>
