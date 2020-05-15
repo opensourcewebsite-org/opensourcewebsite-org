@@ -14,7 +14,7 @@ class SaveButton extends PjaxButton
 
         $this->defaultOptions['class'] = 'btn btn-success';
         $this->defaultOptions['style'] = 'color: white;';
-        $this->defaultOptions['title'] = Yii::t('app', 'Save');
+        $this->defaultOptions['title'] = Yii::t('common', 'Save');
 
         if ($this->text == null) {
             $this->text = 'Save';

@@ -24,7 +24,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p class="text-muted">OpenSourceWebsite (OSW) - <?= Yii::t('app', 'online community managed by users using electronic voting and modifying source code') ?>.</p>
+        <p class="text-muted">OpenSourceWebsite (OSW) - <?= Yii::t('common', 'online community managed by users using electronic voting and modifying source code') ?>.</p>
       </div>
     </div>
   </div>
@@ -125,7 +125,7 @@ use yii\helpers\Html;
     </div>
       <div class="row">
         <div class="col-md-12">
-          <p class="text-muted"><?= Yii::t('app', 'Rating provides') ?>:</p>
+            <p class="text-muted"><?= Yii::t('common', 'Rating provides') ?>:</p>
         </div>
         <div class="col-md-12">
           <ul>
@@ -179,7 +179,7 @@ use yii\helpers\Html;
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Contribution') ?></h2>
+        <h2 class="section-heading text-uppercase"><?= Yii::t('common', 'Contribution') ?></h2>
       </div>
     </div>
       <div class="row">
@@ -273,7 +273,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p align="center"><?= Html::a(Yii::t('app', 'Join us and be part of the digital future') . '!', Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
+        <p align="center"><?= Html::a(Yii::t('common', 'Join us and be part of the digital future') . '!', Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
       </div>
     </div>
   </div>
