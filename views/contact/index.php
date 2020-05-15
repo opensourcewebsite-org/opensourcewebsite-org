@@ -66,7 +66,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'html',
                             ],
-                           /* 'relation',*/
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
                             [
