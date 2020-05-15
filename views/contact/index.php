@@ -59,6 +59,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format' => 'html',
                             ],
+                            [
+                                'label' => Yii::t('app', 'Relation'),
+                                'value' => function ($model) {
+                                    return Yii::t('app', Contact::RELATIONS[$model->relation]);
+                                },
+                                'format' => 'html',
+                            ],
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
                             [

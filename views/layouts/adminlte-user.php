@@ -183,6 +183,12 @@ $leftMenuItems = [
                 'route' => '/data/currency',
             ],
             [
+                'title' => 'Genders',
+                'icon' => 'far fa-circle',
+                'url' => 'data/gender',
+                'route' => 'data/gender',
+            ],
+            [
                 'title' => 'Languages',
                 'icon' => 'far fa-circle',
                 'url' => 'data/language',
