@@ -24,7 +24,7 @@ use yii\helpers\Html;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p class="text-muted">OpenSourceWebsite (OSW) - <?= Yii::t('app', 'online community managed by users using electronic voting and modifying source code') ?>.</p>
+        <p class="text-muted">OpenSourceWebsite (OSW) - <?= Yii::t('common', 'online community managed by users using electronic voting and modifying source code') ?>.</p>
       </div>
     </div>
   </div>
@@ -179,7 +179,7 @@ use yii\helpers\Html;
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Contribution') ?></h2>
+        <h2 class="section-heading text-uppercase"><?= Yii::t('common', 'Contribution') ?></h2>
       </div>
     </div>
       <div class="row">

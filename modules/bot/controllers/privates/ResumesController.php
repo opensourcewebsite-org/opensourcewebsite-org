@@ -25,7 +25,7 @@ class ResumesController extends Controller
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => Yii::t('bot', 'Contribution'),
+                            'text' => Yii::t('common', 'Contribution'),
                         ],
                     ],
                     [
