@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'relations' => \yii\helpers\ArrayHelper::map(Contact::RELATIONS, 'value', 'title'),
     ]); ?>
 
 </div>
