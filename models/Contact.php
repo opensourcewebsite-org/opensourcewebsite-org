@@ -79,6 +79,7 @@ class Contact extends ActiveRecord
             'link_user_id' => 'Link User ID',
             'name' => Yii::t('user', 'Name'),
             'userIdOrName' => Yii::t('user', 'User ID') . ' / ' . Yii::t('user', 'Username'),
+            'is_real' => Yii::t('app', 'Is Real'),
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),

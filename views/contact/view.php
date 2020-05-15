@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             [
                                 'attribute' => 'is_real',
                                 'value' => function ($model) {
-                                    return $model->is_real ? 'Yes' : 'No';
+                                    return $model->is_real ? Yii::t('app', 'Yes') : Yii::t('app', 'No');
                                 }
                             ],
                             [

@@ -58,6 +58,7 @@ return [
     'User ID / Username (optional)' => 'ID пользователя / Имя пользователя (необязательно)',
     'Name (optional)' => 'Имя (необязательно)',
     'Is Real' => 'Реальный',
+    'Real' => 'Реальный',
     'Relation' => 'Отношение',
     'Neutral' => 'Нейтрал',
     'Friend' => 'Друг',
@@ -66,4 +67,6 @@ return [
     'Debt Redistribution Priority' => 'Приоритет перераспределения долга',
     'optional' => 'опционально',
     'No priority' => 'Без приоритета',
+    'Yes' => 'Да',
+    'No' => 'Нет',
 ];
