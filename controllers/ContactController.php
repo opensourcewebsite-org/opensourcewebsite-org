@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-use app\components\helpers\ArrayHelper;
 use Yii;
 use app\models\User;
 use app\models\Contact;

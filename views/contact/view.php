@@ -73,6 +73,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 },
                                 'visible' => $model->link_user_id ? 1 : 0
                             ],
+                            'name',
                             [
                                 'attribute' => 'Real Confirmations',
                                 'value' => $realConfirmations,
