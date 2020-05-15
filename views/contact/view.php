@@ -78,12 +78,15 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'value' => $realConfirmations,
                                 'visible' => $model->link_user_id ? 1 : 0
                             ],
-                            'name',
                             [
                                 'attribute' => 'is_real',
                                 'value' => function ($model) {
                                     return $model->is_real ? 'Yes' : 'No';
                                 }
+                            ],
+                            [
+                                'label' => Yii::t('app', 'Relation'),
+                                'value' => Yii::t('app', Contact::RELATIONS[$model->relation]['title']),
                             ],
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
