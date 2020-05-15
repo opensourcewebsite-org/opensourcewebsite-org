@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                         'model' => $model,
                         'attributes' => [
                             [
-                                'label' => 'User ID / Username',
+                                'attribute' => 'userIdOrName',
                                 'value' => static function (Contact $model) {
                                     if (!empty($model->linkedUser)) {
                                         return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
@@ -73,17 +73,22 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 },
                                 'visible' => $model->link_user_id ? 1 : 0
                             ],
+                            'name',
                             [
+                                'label' => Yii::t('user', 'Real confirmations'),
                                 'attribute' => 'Real Confirmations',
                                 'value' => $realConfirmations,
                                 'visible' => $model->link_user_id ? 1 : 0
                             ],
-                            'name',
                             [
                                 'attribute' => 'is_real',
                                 'value' => function ($model) {
                                     return $model->is_real ? 'Yes' : 'No';
                                 }
+                            ],
+                            [
+                                'label' => Yii::t('app', 'Relation'),
+                                'value' => Yii::t('app', Contact::RELATIONS[$model->relation]),
                             ],
                             'vote_delegation_priority',
                             'debt_redistribution_priority',
