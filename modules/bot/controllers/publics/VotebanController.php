@@ -209,7 +209,7 @@ class VotebanController extends Controller
                 [
                     [
                         'callback_data' => self::createRoute('user-save', ['userId' => $candidateId]),
-                        'text' => '👼' . Yii::t('common', 'Save') . ' (' . $saveVotes . '/' . $votesLimit . ')',
+                        'text' => '👼' . Yii::t('bot', 'Save') . ' (' . $saveVotes . '/' . $votesLimit . ')',
                     ],
                 ]
             ]
