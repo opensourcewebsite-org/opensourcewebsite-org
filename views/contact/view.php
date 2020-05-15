@@ -13,7 +13,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Contact */
 
 $this->title = Yii::t('app', 'View Contact');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('common', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
