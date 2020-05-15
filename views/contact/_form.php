@@ -22,12 +22,12 @@ use yii\widgets\ActiveForm;
                         <div class="col">
                             <?= $form->field($model, 'userIdOrName')
                                 ->textInput(['data-old-value' => $model->getUserIdOrName()])
-                                ->label(Yii::t('app', 'User ID / Username (optional)')); ?>
+                                ->label(Yii::t('user', 'User ID') . ' / ' . Yii::t('user', 'Username') . ' (' . Yii::t('app', 'optional') . ')'); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('app', 'Name (optional)')); ?>
+                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('user', 'Name') . ' (' . Yii::t('app', 'optional') . ')'); ?>
                         </div>
                     </div>
                     <div class="row">
@@ -37,17 +37,17 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'relation')->dropDownList($relations)->label(Yii::t('app', 'Relation')); ?>
+                            <?= $form->field($model, 'relation')->dropDownList($relations); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label(Yii::t('app', 'Vote Delegation Priority (optional)')); ?>
+                            <?= $form->field($model, 'vote_delegation_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label(Yii::t('app', 'Vote Delegation Priority') . ' (' . Yii::t('app', 'optional') . ')'); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label(Yii::t('app', 'Debt Redistribution Priority (optional)')); ?>
+                            <?= $form->field($model, 'debt_redistribution_priority')->textInput(['type' => 'number', 'placeholder' => Yii::t('app', 'No priority')])->label(Yii::t('app', 'Debt Redistribution Priority') . ' (' . Yii::t('app', 'optional') . ')'); ?>
                         </div>
                     </div>
                 </div>
@@ -74,8 +74,8 @@ use yii\widgets\ActiveForm;
 
 $urlRedirect = Yii::$app->urlManager->createUrl(['/contact']);
 $aMsg = [
-    'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this contact?'),
-    'delete-error'   => Yii::t('app', 'Sorry, there was an error while trying to delete the contact.'),
+    'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this contact') . '?',
+    'delete-error'   => Yii::t('app', 'Sorry, there was an error while trying to delete the contact') . '.',
     'save-warn-debt' => Yii::t('app', "WARNING!\\n You have changed User.\\n All Debt Redistribution settings related to User \\\"{user}\\\" will be deleted!"),
 ];
 

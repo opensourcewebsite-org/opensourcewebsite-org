@@ -176,6 +176,12 @@ $leftMenuItems = [
                 'route' => 'data/currency',
             ],
             [
+                'title' => 'Genders',
+                'icon' => 'far fa-circle',
+                'url' => 'data/gender',
+                'route' => 'data/gender',
+            ],
+            [
                 'title' => 'Languages',
                 'icon' => 'far fa-circle',
                 'url' => 'data/language',
@@ -186,12 +192,6 @@ $leftMenuItems = [
                 'icon' => 'far fa-circle',
                 'url' => 'data/payment-method',
                 'route' => 'data/payment-method',
-            ],
-            [
-                'title' => 'Genders',
-                'icon' => 'far fa-circle',
-                'url' => 'data/gender',
-                'route' => 'data/gender',
             ],
             [
                 'title' => 'Sexualities',

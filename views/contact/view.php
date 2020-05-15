@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                         'model' => $model,
                         'attributes' => [
                             [
-                                'label' => 'User ID / Username',
+                                'attribute' => 'userIdOrName',
                                 'value' => static function (Contact $model) {
                                     if (!empty($model->linkedUser)) {
                                         return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
@@ -75,6 +75,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             ],
                             'name',
                             [
+                                'label' => Yii::t('user', 'Real confirmations'),
                                 'attribute' => 'Real Confirmations',
                                 'value' => $realConfirmations,
                                 'visible' => $model->link_user_id ? 1 : 0

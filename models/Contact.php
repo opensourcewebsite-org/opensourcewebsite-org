@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use app\models\queries\ContactQuery;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
@@ -76,9 +77,11 @@ class Contact extends ActiveRecord
             'id' => 'ID',
             'user_id' => 'User ID',
             'link_user_id' => 'Link User ID',
-            'name' => 'Name',
-            'userIdOrName' => 'User ID / Username',
-            'relation' => 'Relation',
+            'name' => Yii::t('user', 'Name'),
+            'userIdOrName' => Yii::t('user', 'User ID') . ' / ' . Yii::t('user', 'Username'),
+            'relation' => Yii::t('app', 'Relation'),
+            'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
+            'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
         ];
     }
 
