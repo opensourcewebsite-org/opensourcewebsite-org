@@ -26,7 +26,7 @@ class MenuController extends Controller
                     [
                         [
                             'callback_data' => MyProfileController::createRoute(),
-                            'text' => Yii::t('bot', 'Profile'),
+                            'text' => Yii::t('common', 'Profile'),
                         ],
                     ],
                     [
@@ -66,7 +66,7 @@ class MenuController extends Controller
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                            'text' => '👨‍🚀 ' . Yii::t('common', 'Contribution'),
                         ],
                     ],
                     [
