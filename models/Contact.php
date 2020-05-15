@@ -26,6 +26,11 @@ class Contact extends ActiveRecord
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
+    const RELATIONS = [
+        0 => 'Neutral',
+        1 => 'Friend',
+        2 => 'Enemy',
+    ];
 
     public $userIdOrName;
 
@@ -45,7 +50,7 @@ class Contact extends ActiveRecord
         return [
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
-            [['user_id', 'link_user_id', 'is_real'], 'integer'],
+            [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required',
                 'when' => static function (self $model) {
@@ -73,6 +78,7 @@ class Contact extends ActiveRecord
             'link_user_id' => 'Link User ID',
             'name' => 'Name',
             'userIdOrName' => 'User ID / Username',
+            'relation' => 'Relation',
         ];
     }
 
