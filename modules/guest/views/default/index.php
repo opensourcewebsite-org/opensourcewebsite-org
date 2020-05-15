@@ -125,7 +125,7 @@ use yii\helpers\Html;
     </div>
       <div class="row">
         <div class="col-md-12">
-          <p class="text-muted"><?= Yii::t('common', 'Rating provides') ?>:</p>
+            <p class="text-muted"><?= Yii::t('common', 'Rating provides') ?>:</p>
         </div>
         <div class="col-md-12">
           <ul>
