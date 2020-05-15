@@ -26,7 +26,11 @@ class Contact extends ActiveRecord
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
-    const RELATIONS = ['Neutral', 'Friend', 'Enemy',];
+    const RELATIONS = [
+        0 => 'Neutral',
+        1 => 'Friend',
+        2 => 'Enemy',
+    ];
 
     public $userIdOrName;
 
