@@ -26,7 +26,7 @@ class MenuController extends Controller
                     [
                         [
                             'callback_data' => MyProfileController::createRoute(),
-                            'text' => Yii::t('bot', 'Profile'),
+                            'text' => Yii::t('common', 'Profile'),
                         ],
                     ],
                     [
