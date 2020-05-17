@@ -19,15 +19,11 @@
 [![MySQL Version](https://img.shields.io/badge/MySQL-8-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
 [![MySQL Version](https://img.shields.io/badge/MySQL-5.7-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
 
-[![Tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fopensourcewebsite.org)](https://twitter.com/intent/tweet?text=OpenSourceWebsite+(OSW)+-+online+community+managed+by+users+using+electronic+voting+and+modifying+source+code.&url=https://opensourcewebsite.org&hashtags=opensourcewebsite,osw,opensource,community,socialnetwork,digitalfuture)
-
 <h1 align="center">OpenSourceWebsite</h1>
 
 OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot. Join us and be part of the digital future!
 
 The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org).
-
-## Code of Conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
