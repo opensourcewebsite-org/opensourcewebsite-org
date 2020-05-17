@@ -1,3 +1,3 @@
-<b><?= Yii::t('bot', 'Edit new yuor optional name') ?>.</b><br/>
+<b><?= Yii::t('bot', 'Edit new your optional name') ?>.</b><br/>
 <br/>
-<?= Yii::t('bot', 'Yuor optional name') . ' - ' . $optionalName?>
+<?= Yii::t('bot', 'Your optional name') . ' - ' . $optionalName?>
