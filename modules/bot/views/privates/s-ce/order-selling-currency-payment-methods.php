@@ -1,8 +1,16 @@
-<b>USD/THB offer</b><br/>
+<b><?php echo $selling . '/' . $buying?> offer</b><br/>
 <br/>
-Payment methods:<br/>
-  - Cash<br/>
-  - Online System 1<br/>
-  - Online System 2<br/>
-  - Bank 1<br/>
-  - Bank 2<br/>
+<?php echo Yii::t('bot', 'Payment methods')?> :<br/>
+
+<?php
+foreach ($paymentMethod as $value) {
+    if ($value['name'] == 'Cash') {
+        echo ' - ' . $value['name'] . '<br/>';
+    }
+}
+foreach ($paymentMethod as $value) {
+    if ($value['name'] !== 'Cash') {
+        echo ' - ' . $value['name'] . '<br/>';
+    }
+}
+?>
