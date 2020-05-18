@@ -56,6 +56,13 @@ if (extension_loaded('gd')) {
     }
 }
 
+$dbVersionOk = false;
+switch (Yii::$app->db->driverName) {
+    case 'mysql':
+        $dbVersionOk = version_compare(Yii::$app->db->getServerVersion(), '8.0.0', '>=') ? true : false;
+        break;
+}
+
 /**
  * Adjust requirements according to your application specifics.
  */
@@ -74,6 +81,13 @@ $requirements = [
         'by' => '<a href="https://www.php.net/manual/en/ref.pdo-mysql.php">PDO MySQL extension</a>',
         'memo' => 'Required for MySQL database.',
     ],
+    [
+        'name' => 'MySQL server version',
+        'mandatory' => true,
+        'condition' => $dbVersionOk,
+        'by' => 'Checking DB version',
+        'memo' => 'MySQL checking database version',
+    ]
     // CAPTCHA:
     [
         'name' => 'GD PHP extension with FreeType support',
