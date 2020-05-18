@@ -56,10 +56,12 @@ if (extension_loaded('gd')) {
     }
 }
 
-$dbVersionOk = false;
 switch (Yii::$app->db->driverName) {
     case 'mysql':
-        $dbVersionOk = version_compare(Yii::$app->db->getServerVersion(), '8.0.0', '>=') ? true : false;
+        $dbVersionOk = version_compare('5.6.0', '8.0.0', '>=') ? true : false; //Yii::$app->db->getServerVersion(), '8.0.0', '>=') ? true : false;
+        break;
+    default:
+        $dbVersionOk = false;
         break;
 }
 
@@ -87,7 +89,7 @@ $requirements = [
         'condition' => $dbVersionOk,
         'by' => 'Checking DB version',
         'memo' => 'MySQL checking database version',
-    ]
+    ],
     // CAPTCHA:
     [
         'name' => 'GD PHP extension with FreeType support',
