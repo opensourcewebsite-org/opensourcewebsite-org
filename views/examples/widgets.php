@@ -1357,8 +1357,7 @@ Count Dracula
                 <div class="card card-widget widget-user">
                     <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header text-white"
-                         style="background: url('https://dummyimage.com/800x500/006b46/ffffff&text=image') center
-center;">
+                         style="background: url('https://dummyimage.com/800x500/006b46/ffffff&text=image') center center;">
                         <h3 class="widget-user-username text-right">Elizabeth Pierce</h3>
                         <h5 class="widget-user-desc text-right">Web Designer</h5>
                     </div>
@@ -1426,8 +1425,7 @@ center;">
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <img class="img-fluid pad" src="https://dummyimage.com/800x500/006b46/ffffff&text=image"
-                             alt="Photo">
+                        <img class="img-fluid pad" src="https://dummyimage.com/800x500/006b46/ffffff&text=image" alt="Photo">
 
                         <p>I took this photo this morning. What do you guys think?</p>
                         <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i> Share</button>
@@ -1440,7 +1438,6 @@ center;">
                         <div class="card-comment">
                             <!-- User image -->
                             <img class="img-circle img-sm" src="https://dummyimage.com/128x128/ff00ff/ffffff&text=avatar" alt="User Image">
-
                             <div class="comment-text">
 <span class="username">
 Maria Gonzales

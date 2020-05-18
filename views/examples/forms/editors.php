@@ -124,4 +124,3 @@ $this->registerJs('$("#trumbowyg").trumbowyg();');
 <!-- /.control-sidebar -->
 
 </html>
-

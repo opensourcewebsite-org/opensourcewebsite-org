@@ -151,9 +151,9 @@ $this->registerJs($JS);
 
                         <div class="input-group">
                             <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="fas fa-dollar-sign"></i>
-                    </span>
+                                <span class="input-group-text">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </span>
                             </div>
                             <input type="text" class="form-control">
                             <div class="input-group-append">
@@ -167,9 +167,9 @@ $this->registerJs($JS);
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                        <span class="input-group-text">
-                          <input type="checkbox">
-                        </span>
+                                        <span class="input-group-text">
+                                            <input type="checkbox">
+                                        </span>
                                     </div>
                                     <input type="text" class="form-control">
                                 </div>
@@ -225,8 +225,8 @@ $this->registerJs($JS);
                         <div class="input-group input-group-sm">
                             <input type="text" class="form-control">
                             <span class="input-group-append">
-                    <button type="button" class="btn btn-info btn-flat">Go!</button>
-                  </span>
+                                <button type="button" class="btn btn-info btn-flat">Go!</button>
+                            </span>
                         </div>
                         <!-- /input-group -->
                     </div>
@@ -602,4 +602,3 @@ $this->registerJs($JS);
 <!-- /.control-sidebar -->
 
 </html>
-

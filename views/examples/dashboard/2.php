@@ -383,9 +383,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <div class="product-info">
                                             <a href="javascript:void(0)" class="product-title">Samsung TV
                                                 <span class="badge badge-warning float-right">$1800</span></a>
-                                            <span class="product-description">
-                            Samsung 32" 1080p 60Hz LED Smart HDTV.
-                          </span>
+                                            <span class="product-description">Samsung 32" 1080p 60Hz LED Smart HDTV. </span>
                                         </div>
                                     </li>
                                     <!-- /.item -->
@@ -396,9 +394,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <div class="product-info">
                                             <a href="javascript:void(0)" class="product-title">Bicycle
                                                 <span class="badge badge-info float-right">$700</span></a>
-                                            <span class="product-description">
-                            26" Mongoose Dolomite Men's 7-speed, Navy Blue.
-                          </span>
+                                            <span class="product-description">26" Mongoose Dolomite Men's 7-speed, Navy Blue.</span>
                                         </div>
                                     </li>
                                     <!-- /.item -->
@@ -408,9 +404,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         </div>
                                         <div class="product-info">
                                             <a href="javascript:void(0)" class="product-title">
-                                                Xbox One <span class="badge badge-danger float-right">
-                            $350
-                          </span>
+                                                Xbox One <span class="badge badge-danger float-right">$350</span>
                                             </a>
                                             <span class="product-description">
                             Xbox One Console Bundle with Halo Master Chief Collection.
@@ -425,9 +419,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <div class="product-info">
                                             <a href="javascript:void(0)" class="product-title">PlayStation 4
                                                 <span class="badge badge-success float-right">$399</span></a>
-                                            <span class="product-description">
-                            PlayStation 4 500GB Console (PS4)
-                          </span>
+                                            <span class="product-description">PlayStation 4 500GB Console (PS4)</span>
                                         </div>
                                     </li>
                                     <!-- /.item -->
@@ -661,8 +653,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <a href="#" class="nav-link">
                                     China
                                     <span class="float-right text-warning">
-                        <i class="fas fa-arrow-left text-sm"></i> 0%
-                      </span>
+                        <i class="fas fa-arrow-left text-sm"></i> 0% </span>
                                 </a>
                             </li>
                         </ul>
@@ -725,4 +716,3 @@ $this->params['breadcrumbs'][] = $this->title;
 <!-- /.control-sidebar -->
 
 </html>
-

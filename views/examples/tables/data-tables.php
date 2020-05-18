@@ -923,4 +923,3 @@ $this->registerJs($JS);
 <!-- /.control-sidebar -->
 
 </html>
-

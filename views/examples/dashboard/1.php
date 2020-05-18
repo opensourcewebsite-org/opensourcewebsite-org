@@ -10,18 +10,19 @@ $this->params['breadcrumbs'][] = $this->title;
 $JS = <<<JS
 $(function () {
 
-  'use strict';
+    'use strict';
 
-  // Make the dashboard widgets sortable Using jquery UI
-  $('.connectedSortable').sortable({
-    placeholder : 'sort-highlight',
-    connectWith : '.connectedSortable',
-    handle : '.card-header, .nav-tabs',
-    forcePlaceholderSize: true,
-    zIndex : 999999
-  });
-  $('.connectedSortable .card-header, .connectedSortable .nav-tabs-custom').css('cursor', 'move')
-  });
+    // Make the dashboard widgets sortable Using jquery UI
+    $('.connectedSortable').sortable({
+        placeholder : 'sort-highlight',
+        connectWith : '.connectedSortable',
+        handle : '.card-header, .nav-tabs',
+        forcePlaceholderSize: true,
+        zIndex : 999999
+    });
+
+    $('.connectedSortable .card-header, .connectedSortable .nav-tabs-custom').css('cursor', 'move')
+});
 JS;
 $this->registerJs($JS);
 ?>
@@ -55,8 +56,7 @@ $this->registerJs($JS);
                     <div class="card-body">
                         <div class="tab-content p-0">
                             <!-- Morris chart - Sales -->
-                            <div class="chart tab-pane active" id="revenue-chart"
-                                 style="position: relative; height: 300px;">
+                            <div class="chart tab-pane active" id="revenue-chart" style="position: relative; height: 300px;">
                                 <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
                             </div>
                             <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
@@ -528,22 +528,19 @@ $this->registerJs($JS);
                     <div class="card-footer bg-transparent">
                         <div class="row">
                             <div class="col-4 text-center">
-                                <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
-                                       data-fgColor="#39CCCC">
+                                <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60" data-fgColor="#39CCCC">
 
                                 <div class="text-white">Mail-Orders</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-4 text-center">
-                                <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
-                                       data-fgColor="#39CCCC">
+                                <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60" data-fgColor="#39CCCC">
 
                                 <div class="text-white">Online</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-4 text-center">
-                                <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
-                                       data-fgColor="#39CCCC">
+                                <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60" data-fgColor="#39CCCC">
 
                                 <div class="text-white">In-Store</div>
                             </div>
@@ -641,4 +638,3 @@ $this->registerJs($JS);
 <!-- /.control-sidebar -->
 
 </html>
-

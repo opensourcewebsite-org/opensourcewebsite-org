@@ -447,32 +447,28 @@ $this->registerCss($CSS);
                         <p><code>.progress</code></p>
 
                         <div class="progress">
-                            <div class="progress-bar bg-primary progress-bar-striped" role="progressbar"
-                                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                            <div class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
                                 <span class="sr-only">40% Complete (success)</span>
                             </div>
                         </div>
                         <p><code>.progress-sm</code></p>
 
                         <div class="progress progress-sm active">
-                            <div class="progress-bar bg-success progress-bar-striped" role="progressbar"
-                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                            <div class="progress-bar bg-success progress-bar-striped" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
                                 <span class="sr-only">20% Complete</span>
                             </div>
                         </div>
                         <p><code>.progress-xs</code></p>
 
                         <div class="progress progress-xs">
-                            <div class="progress-bar bg-warning progress-bar-striped" role="progressbar"
-                                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                            <div class="progress-bar bg-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
                                 <span class="sr-only">60% Complete (warning)</span>
                             </div>
                         </div>
                         <p><code>.progress-xxs</code></p>
 
                         <div class="progress progress-xxs">
-                            <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar"
-                                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                            <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
                                 <span class="sr-only">60% Complete (warning)</span>
                             </div>
                         </div>
@@ -490,26 +486,22 @@ $this->registerCss($CSS);
                     <!-- /.card-header -->
                     <div class="card-body">
                         <div class="progress mb-3">
-                            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="40" aria-valuemin="0"
-                                 aria-valuemax="100" style="width: 40%">
+                            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
                                 <span class="sr-only">40% Complete (success)</span>
                             </div>
                         </div>
                         <div class="progress mb-3">
-                            <div class="progress-bar bg-info" role="progressbar" aria-valuenow="20" aria-valuemin="0"
-                                 aria-valuemax="100" style="width: 20%">
+                            <div class="progress-bar bg-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
                                 <span class="sr-only">20% Complete</span>
                             </div>
                         </div>
                         <div class="progress mb-3">
-                            <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0"
-                                 aria-valuemax="100" style="width: 60%">
+                            <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
                                 <span class="sr-only">60% Complete (warning)</span>
                             </div>
                         </div>
                         <div class="progress mb-3">
-                            <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0"
-                                 aria-valuemax="100" style="width: 80%">
+                            <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
                                 <span class="sr-only">80% Complete</span>
                             </div>
                         </div>
@@ -541,20 +533,17 @@ $this->registerCss($CSS);
                             </div>
                         </div>
                         <div class="progress vertical progress-sm">
-                            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="20" aria-valuemin="0"
-                                 aria-valuemax="100" style="height: 100%">
+                            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="height: 100%">
                                 <span class="sr-only">100%</span>
                             </div>
                         </div>
                         <div class="progress vertical progress-xs">
-                            <div class="progress-bar bg-warning progress-bar-striped" role="progressbar"
-                                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="height: 60%">
+                            <div class="progress-bar bg-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="height: 60%">
                                 <span class="sr-only">60%</span>
                             </div>
                         </div>
                         <div class="progress vertical progress-xxs">
-                            <div class="progress-bar bg-info progress-bar-striped" role="progressbar" aria-valuenow="60"
-                                 aria-valuemin="0" aria-valuemax="100" style="height: 60%">
+                            <div class="progress-bar bg-info progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="height: 60%">
                                 <span class="sr-only">60%</span>
                             </div>
                         </div>
@@ -574,26 +563,22 @@ $this->registerCss($CSS);
                         <p>By adding the class <code>.vertical</code> we achieve:</p>
 
                         <div class="progress vertical">
-                            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="40" aria-valuemin="0"
-                                 aria-valuemax="100" style="height: 40%">
+                            <div class="progress-bar bg-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 40%">
                                 <span class="sr-only">40%</span>
                             </div>
                         </div>
                         <div class="progress vertical">
-                            <div class="progress-bar bg-info" role="progressbar" aria-valuenow="20" aria-valuemin="0"
-                                 aria-valuemax="100" style="height: 20%">
+                            <div class="progress-bar bg-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="height: 20%">
                                 <span class="sr-only">20%</span>
                             </div>
                         </div>
                         <div class="progress vertical">
-                            <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0"
-                                 aria-valuemax="100" style="height: 60%">
+                            <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="height: 60%">
                                 <span class="sr-only">60%</span>
                             </div>
                         </div>
                         <div class="progress vertical">
-                            <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0"
-                                 aria-valuemax="100" style="height: 80%">
+                            <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="height: 80%">
                                 <span class="sr-only">80%</span>
                             </div>
                         </div>
@@ -623,8 +608,7 @@ $this->registerCss($CSS);
                             <div class="card card-primary">
                                 <div class="card-header">
                                     <h4 class="card-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                            Collapsible Group Item #1
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"> Collapsible Group Item #1
                                         </a>
                                     </h4>
                                 </div>
@@ -653,9 +637,7 @@ $this->registerCss($CSS);
                             <div class="card card-danger">
                                 <div class="card-header">
                                     <h4 class="card-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                                            Collapsible Group Danger
-                                        </a>
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"> Collapsible Group Danger </a>
                                     </h4>
                                 </div>
                                 <div id="collapseTwo" class="panel-collapse collapse">
@@ -683,9 +665,7 @@ $this->registerCss($CSS);
                             <div class="card card-success">
                                 <div class="card-header">
                                     <h4 class="card-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                                            Collapsible Group Success
-                                        </a>
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"> Collapsible Group Success </a>
                                     </h4>
                                 </div>
                                 <div id="collapseThree" class="panel-collapse collapse">
@@ -1039,4 +1019,3 @@ $this->registerCss($CSS);
 <!-- /.control-sidebar -->
 
 </html>
-

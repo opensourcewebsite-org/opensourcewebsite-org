@@ -36,4 +36,3 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
 <!-- /.control-sidebar -->
 
 </html>
-

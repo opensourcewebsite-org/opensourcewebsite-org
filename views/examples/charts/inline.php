@@ -331,9 +331,7 @@ $this->registerJs($JS);
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="-80" data-min="-150" data-max="150" data-width="90"
-                                       data-height="90" data-fgColor="#00a65a">
-
+                                <input type="text" class="knob" value="-80" data-min="-150" data-max="150" data-width="90" data-height="90" data-fgColor="#00a65a">
                                 <div class="knob-label">Server Load</div>
                             </div>
                             <!-- ./col -->
@@ -392,29 +390,24 @@ $this->registerJs($JS);
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="30" data-width="90" data-height="90" data-fgColor="#3c8dbc"
-                                       data-readonly="true">
-
+                                <input type="text" class="knob" value="30" data-width="90" data-height="90" data-fgColor="#3c8dbc" data-readonly="true">
                                 <div class="knob-label">data-width="90"</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="30" data-width="120" data-height="120"
-                                       data-fgColor="#f56954">
+                                <input type="text" class="knob" value="30" data-width="120" data-height="120" data-fgColor="#f56954">
 
                                 <div class="knob-label">data-width="120"</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="30" data-thickness="0.1" data-width="90" data-height="90"
-                                       data-fgColor="#00a65a">
+                                <input type="text" class="knob" value="30" data-thickness="0.1" data-width="90" data-height="90" data-fgColor="#00a65a">
 
                                 <div class="knob-label">data-thickness="0.1"</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" data-thickness="0.2" data-angleArc="250" data-angleOffset="-125"
-                                       value="30" data-width="120" data-height="120" data-fgColor="#00c0ef">
+                                <input type="text" class="knob" data-thickness="0.2" data-angleArc="250" data-angleOffset="-125" value="30" data-width="120" data-height="120" data-fgColor="#00c0ef">
 
                                 <div class="knob-label">data-angleArc="250"</div>
                             </div>
@@ -452,30 +445,25 @@ $this->registerJs($JS);
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="80" data-skin="tron" data-thickness="0.2" data-width="90"
-                                       data-height="90" data-fgColor="#3c8dbc" data-readonly="true">
+                                <input type="text" class="knob" value="80" data-skin="tron" data-thickness="0.2" data-width="90" data-height="90" data-fgColor="#3c8dbc" data-readonly="true">
 
                                 <div class="knob-label">data-width="90"</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="60" data-skin="tron" data-thickness="0.2" data-width="120"
-                                       data-height="120" data-fgColor="#f56954">
+                                <input type="text" class="knob" value="60" data-skin="tron" data-thickness="0.2" data-width="120" data-height="120" data-fgColor="#f56954">
 
                                 <div class="knob-label">data-width="120"</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="10" data-skin="tron" data-thickness="0.1" data-width="90"
-                                       data-height="90" data-fgColor="#00a65a">
+                                <input type="text" class="knob" value="10" data-skin="tron" data-thickness="0.1" data-width="90" data-height="90" data-fgColor="#00a65a">
 
                                 <div class="knob-label">data-thickness="0.1"</div>
                             </div>
                             <!-- ./col -->
                             <div class="col-6 col-md-3 text-center">
-                                <input type="text" class="knob" value="100" data-skin="tron" data-thickness="0.2"
-                                       data-angleArc="250" data-angleOffset="-125" data-width="120" data-height="120"
-                                       data-fgColor="#00c0ef">
+                                <input type="text" class="knob" value="100" data-skin="tron" data-thickness="0.2" data-angleArc="250" data-angleOffset="-125" data-width="120" data-height="120" data-fgColor="#00c0ef">
 
                                 <div class="knob-label">data-angleArc="250"</div>
                             </div>
@@ -504,4 +492,3 @@ $this->registerJs($JS);
 <!-- /.control-sidebar -->
 
 </html>
-

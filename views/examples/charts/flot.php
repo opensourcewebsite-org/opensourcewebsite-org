@@ -226,7 +226,7 @@ $JS = <<<JS
                 tickColor : '#f3f3f3'
             },
             series: {
-                 bars: {
+                bars: {
                     show: true, barWidth: 0.5, align: 'center',
                 },
             },
@@ -450,4 +450,3 @@ $this->registerJs($JS);
 <!-- /.control-sidebar -->
 
 </html>
-

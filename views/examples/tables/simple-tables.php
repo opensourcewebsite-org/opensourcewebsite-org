@@ -464,4 +464,3 @@ $this->params['breadcrumbs'][] = $this->title;
 <!-- /.control-sidebar -->
 
 </html>
-

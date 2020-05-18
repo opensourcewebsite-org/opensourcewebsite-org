@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </p>
                             <p class="ml-auto d-flex flex-column text-right">
                     <span class="text-success">
-                      <i class="fas fa-arrow-up"></i> 12.5%
+                        <i class="fas fa-arrow-up"></i> 12.5%
                     </span>
                                 <span class="text-muted">Since last week</span>
                             </p>
@@ -42,11 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div class="d-flex flex-row justify-content-end">
                   <span class="mr-2">
-                    <i class="fas fa-square text-primary"></i> This Week
+                      <i class="fas fa-square text-primary"></i> This Week
                   </span>
-
-                            <span>
-                    <i class="fas fa-square text-gray"></i> Last Week
+                  <span>
+                      <i class="fas fa-square text-gray"></i> Last Week
                   </span>
                         </div>
                     </div>
@@ -254,7 +253,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </p>
                             <p class="ml-auto d-flex flex-column text-right">
                     <span class="text-success">
-                      <i class="fas fa-arrow-up"></i> 33.1%
+                        <i class="fas fa-arrow-up"></i> 33.1%
                     </span>
                                 <span class="text-muted">Since last month</span>
                             </p>
@@ -267,10 +266,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div class="d-flex flex-row justify-content-end">
                   <span class="mr-2">
-                    <i class="fas fa-square text-primary"></i> This year
+                      <i class="fas fa-square text-primary"></i> This year
                   </span>
 
-                            <span>
+                  <span>
                     <i class="fas fa-square text-gray"></i> Last year
                   </span>
                         </div>
@@ -374,9 +373,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="ion ion-ios-refresh-empty"></i>
                             </p>
                             <p class="d-flex flex-column text-right">
-                    <span class="font-weight-bold">
-                      <i class="ion ion-android-arrow-up text-success"></i> 12%
-                    </span>
+                                <span class="font-weight-bold">
+                                    <i class="ion ion-android-arrow-up text-success"></i> 12%
+                                </span>
                                 <span class="text-muted">CONVERSION RATE</span>
                             </p>
                         </div>
@@ -386,9 +385,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="ion ion-ios-cart-outline"></i>
                             </p>
                             <p class="d-flex flex-column text-right">
-                    <span class="font-weight-bold">
-                      <i class="ion ion-android-arrow-up text-warning"></i> 0.8%
-                    </span>
+                                <span class="font-weight-bold">
+                                    <i class="ion ion-android-arrow-up text-warning"></i> 0.8%
+                                </span>
                                 <span class="text-muted">SALES RATE</span>
                             </p>
                         </div>
@@ -398,9 +397,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="ion ion-ios-people-outline"></i>
                             </p>
                             <p class="d-flex flex-column text-right">
-                    <span class="font-weight-bold">
-                      <i class="ion ion-android-arrow-down text-danger"></i> 1%
-                    </span>
+                                <span class="font-weight-bold">
+                                    <i class="ion ion-android-arrow-down text-danger"></i> 1%
+                                </span>
                                 <span class="text-muted">REGISTRATION RATE</span>
                             </p>
                         </div>
@@ -425,4 +424,3 @@ $this->params['breadcrumbs'][] = $this->title;
 <!-- /.control-sidebar -->
 
 </html>
-
