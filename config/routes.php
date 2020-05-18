@@ -21,6 +21,7 @@ return [
     'support-groups/clients-list/<id:[\d]+>' => 'support-groups/clients-list',
     'support-groups/clients-view/<id:[\d]+>' => 'support-groups/clients-view',
     'u/<id>' => 'user/profile',
-    'user/change-<action>' => 'user/change-<action>'
+    'user/change-<action>' => 'user/change-<action>',
+    'examples/<action>/<id>' => 'examples/<action>',
 //              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
 ];
