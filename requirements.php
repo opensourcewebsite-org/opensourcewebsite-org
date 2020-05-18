@@ -56,6 +56,21 @@ if (extension_loaded('gd')) {
     }
 }
 
+$connection = new \yii\db\Connection([
+    'dsn' => 'mysql:host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_NAME'),
+    'username' => getenv('DB_USERNAME'),
+    'password' => getenv('DB_PASSWORD'),
+]);
+
+switch ($connection->driverName) {
+    case 'mysql':
+        $dbVersionOk = version_compare($connection->getServerVersion(), '8.0.0', '>=') ? true : false;
+        break;
+    default:
+        $dbVersionOk = false;
+        break;
+}
+
 /**
  * Adjust requirements according to your application specifics.
  */
@@ -73,6 +88,13 @@ $requirements = [
         'condition' => extension_loaded('pdo_mysql'),
         'by' => '<a href="https://www.php.net/manual/en/ref.pdo-mysql.php">PDO MySQL extension</a>',
         'memo' => 'Required for MySQL database.',
+    ],
+    [
+        'name' => 'MySQL server version',
+        'mandatory' => true,
+        'condition' => $dbVersionOk,
+        'by' => 'Checking DB version',
+        'memo' => 'MySQL checking database version',
     ],
     // CAPTCHA:
     [
