@@ -1,10 +1,13 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $JS = <<<JS
     $(function () {
         /* BOOTSTRAP SLIDER */
-        $('.slider').bootstrapSlider()
+        $('.slider').bootstrapSlider();
 
         /* ION SLIDER */
         $('#range_1').ionRangeSlider({
@@ -17,8 +20,8 @@ $JS = <<<JS
             prefix : '$',
             prettify: false,
             hasGrid : true
-        })
-        $('#range_2').ionRangeSlider()
+        });
+        $('#range_2').ionRangeSlider();
 
         $('#range_5').ionRangeSlider({
             min : 0,
@@ -28,7 +31,7 @@ $JS = <<<JS
             postfix : ' mm',
             prettify: false,
             hasGrid : true
-        })
+        });
         $('#range_6').ionRangeSlider({
             min : -50,
             max : 50,
@@ -38,7 +41,7 @@ $JS = <<<JS
             postfix : '°',
             prettify: false,
             hasGrid : true
-        })
+        });
 
         $('#range_4').ionRangeSlider({
             type : 'single',
@@ -47,7 +50,7 @@ $JS = <<<JS
             from : 55000,
             hideMinMax: true,
             hideFromTo: false
-        })
+        });
         $('#range_3').ionRangeSlider({
             type : 'double',
             postfix : ' miles',
@@ -55,9 +58,9 @@ $JS = <<<JS
             from : 25000000,
             to : 35000000,
             onChange: function (obj) {
-                var t = ''
+                var t = '';
                 for (var prop in obj) {
-                    t += prop + ': ' + obj[prop] + '\r\n'
+                    t += prop + ': ' + obj[prop] + ';\r\n'
                 }
                 $('#result').html(t)
             },

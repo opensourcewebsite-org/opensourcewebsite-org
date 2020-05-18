@@ -1,5 +1,8 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $this->title = Yii::t('app', 'Dashboard {number}', ['number' => 2]);
 $this->params['breadcrumbs'][] = $this->title;
@@ -40,10 +43,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <script>
                         $(function () {
 
-                            'use strict'
+                            'use strict';
 
                             // Get context with jQuery - using jQuery's .get() method.
-                            var salesChartCanvas = $('#salesChart').get(0).getContext('2d')
+                            var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
 
                             var salesChartData = {
                                 labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -71,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         data : [65, 59, 80, 81, 56, 55, 40]
                                     },
                                 ]
-                            }
+                            };
 
                             var salesChartOptions = {
                                 maintainAspectRatio : false,
@@ -91,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         }
                                     }]
                                 }
-                            }
+                            };
 
                             // This will get the first returned node in the jQuery collection.
                             var salesChart = new Chart(salesChartCanvas, {
@@ -265,7 +268,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <script>
                     $(function () {
 
-                        'use strict'
+                        'use strict';
 
                         /* jVector Maps
                          * ------------
@@ -651,10 +654,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <script>
                     $(function () {
 
-                        'use strict'
+                        'use strict';
 
                         // Get context with jQuery - using jQuery's .get() method.
-                        var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+                        var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
                         var pieData = {
                             labels: [
                                 'Chrome',
@@ -670,12 +673,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                     backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
                                 }
                             ]
-                        }
+                        };
                         var pieOptions = {
                             legend: {
                                 display: false
                             }
-                        }
+                        };
                         //Create pie or douhnut chart
                         // You can switch between pie and douhnut using the method below.
                         var pieChart = new Chart(pieChartCanvas, {

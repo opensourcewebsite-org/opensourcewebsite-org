@@ -1,5 +1,8 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $this->title = Yii::t('app', 'Dashboard {number}', ['number' => 3]);
 $this->params['breadcrumbs'][] = $this->title;
@@ -51,16 +54,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <script>
                     $(function () {
 
-                        'use strict'
+                        'use strict';
 
                         var ticksStyle = {
                             fontColor: '#495057',
                             fontStyle: 'bold'
-                        }
+                        };
 
-                        var mode = 'index'
-                        var intersect = true
-                        var $visitorsChart = $('#visitors-chart')
+                        var mode = 'index';
+                        var intersect = true;
+                        var $visitorsChart = $('#visitors-chart');
                         var visitorsChart = new Chart($visitorsChart, {
                             data : {
                                 labels : ['18th', '20th', '22nd', '24th', '26th', '28th', '30th'],
@@ -276,17 +279,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <script>
                     $(function () {
 
-                        'use strict'
+                        'use strict';
 
                         var ticksStyle = {
                             fontColor: '#495057',
                             fontStyle: 'bold'
-                        }
+                        };
 
-                        var mode = 'index'
-                        var intersect = true
+                        var mode = 'index';
+                        var intersect = true;
 
-                        var $salesChart = $('#sales-chart')
+                        var $salesChart = $('#sales-chart');
                         var salesChart = new Chart($salesChart, {
                             type : 'bar',
                             data : {
@@ -332,7 +335,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             // Include a dollar sign in the ticks
                                             callback: function (value, index, values) {
                                                 if (value >= 1000) {
-                                                    value /= 1000
+                                                    value /= 1000;
                                                     value += 'k'
                                                 }
                                                 return '$' + value

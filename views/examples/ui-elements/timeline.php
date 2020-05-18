@@ -1,5 +1,8 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $JS = <<<JS
     $(function() {

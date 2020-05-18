@@ -1,5 +1,8 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $this->title = Yii::t('app', 'Advanced Elements');
 $this->params['breadcrumbs'][] = $this->title;
@@ -7,22 +10,22 @@ $this->params['breadcrumbs'][] = $this->title;
 $JS = <<<JS
     $(function () {
         //Initialize Select2 Elements
-        $('.select2').select2()
+        $('.select2').select2();
 
         //Initialize Select2 Elements
         $('.select2bs4').select2({
             theme: 'bootstrap4'
-        })
+        });
 
         //Datemask dd/mm/yyyy
-        $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+        $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' });
         //Datemask2 mm/dd/yyyy
-        $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+        $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' });
         //Money Euro
-        $('[data-mask]').inputmask()
+        $('[data-mask]').inputmask();
 
         //Date range picker
-        $('#reservation').daterangepicker()
+        $('#reservation').daterangepicker();
         //Date range picker with time picker
         $('#reservationtime').daterangepicker({
             timePicker: true,
@@ -30,7 +33,7 @@ $JS = <<<JS
             locale: {
                 format: 'MM/DD/YYYY hh:mm A'
             }
-        })
+        });
         //Date range as a button
         $('#daterange-btn').daterangepicker(
             {
@@ -48,20 +51,20 @@ $JS = <<<JS
             function (start, end) {
                 $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
             }
-        )
+        );
 
         //Timepicker
         $('#timepicker').datetimepicker({
             format: 'LT'
-        })
+        });
 
         //Bootstrap Duallistbox
-        $('.duallistbox').bootstrapDualListbox()
+        $('.duallistbox').bootstrapDualListbox();
 
         //Colorpicker
-        $('.my-colorpicker1').colorpicker()
+        $('.my-colorpicker1').colorpicker();
         //color picker with addon
-        $('.my-colorpicker2').colorpicker()
+        $('.my-colorpicker2').colorpicker();
 
         $('.my-colorpicker2').on('colorpickerChange', function(event) {
             $('.my-colorpicker2 .fa-square').css('color', event.color.toString());

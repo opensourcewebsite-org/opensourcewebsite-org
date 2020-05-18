@@ -1,5 +1,8 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $this->title = 'Flot';
 $this->params['breadcrumbs'][] = $this->title;
@@ -13,7 +16,7 @@ $JS = <<<JS
         // We use an inline data source in the example, usually data would
         // be fetched from a server
         var data = [],
-                totalPoints = 100
+                totalPoints = 100;
 
         function getRandomData() {
 
@@ -25,7 +28,7 @@ $JS = <<<JS
             while (data.length < totalPoints) {
 
                 var prev = data.length > 0 ? data[data.length - 1] : 50,
-                        y = prev + Math.random() * 10 - 5
+                        y = prev + Math.random() * 10 - 5;
 
                 if (y < 0) {
                     y = 0
@@ -37,7 +40,7 @@ $JS = <<<JS
             }
 
             // Zip the generated y values with the x values
-            var res = []
+            var res = [];
             for (var i = 0; i < data.length; ++i) {
                 res.push([i, data[i]])
             }
@@ -73,16 +76,16 @@ $JS = <<<JS
                     show: true
                 }
             }
-        )
+        );
 
-        var updateInterval = 500 //Fetch data ever x milliseconds
-        var realtime = 'on' //If == to on then fetch data every x seconds. else stop fetching
+        var updateInterval = 500; //Fetch data ever x milliseconds
+        var realtime = 'on'; //If == to on then fetch data every x seconds. else stop fetching
         function update() {
 
-            interactive_plot.setData([getRandomData()])
+            interactive_plot.setData([getRandomData()]);
 
             // Since the axes don't change, we don't need to call plot.setupGrid()
-            interactive_plot.draw()
+            interactive_plot.draw();
             if (realtime === 'on') {
                 setTimeout(update, updateInterval)
             }
@@ -101,7 +104,7 @@ $JS = <<<JS
                 realtime = 'off'
             }
             update()
-        })
+        });
         /*
          * END INTERACTIVE CHART
          */
@@ -114,19 +117,19 @@ $JS = <<<JS
         //LINE randomly generated data
 
         var sin = [],
-                cos = []
+                cos = [];
         for (var i = 0; i < 14; i += 0.5) {
-            sin.push([i, Math.sin(i)])
+            sin.push([i, Math.sin(i)]);
             cos.push([i, Math.cos(i)])
         }
         var line_data1 = {
             data : sin,
             color: '#3c8dbc'
-        }
+        };
         var line_data2 = {
             data : cos,
             color: '#00c0ef'
-        }
+        };
         $.plot('#line-chart', [line_data1, line_data2], {
             grid : {
                 hoverable : true,
@@ -153,18 +156,18 @@ $JS = <<<JS
             xaxis : {
                 show: true
             }
-        })
+        });
         //Initialize tooltip on hover
         $('<div class="tooltip-inner" id="line-chart-tooltip"></div>').css({
             position: 'absolute',
             display : 'none',
             opacity : 0.8
-        }).appendTo('body')
+        }).appendTo('body');
         $('#line-chart').bind('plothover', function (event, pos, item) {
 
             if (item) {
                 var x = item.datapoint[0].toFixed(2),
-                        y = item.datapoint[1].toFixed(2)
+                        y = item.datapoint[1].toFixed(2);
 
                 $('#line-chart-tooltip').html(item.series.label + ' of ' + x + ' = ' + y)
                     .css({
@@ -176,7 +179,7 @@ $JS = <<<JS
                 $('#line-chart-tooltip').hide()
             }
 
-        })
+        });
         /* END LINE CHART */
 
         /*
@@ -185,7 +188,7 @@ $JS = <<<JS
          */
         var areaData = [[2, 88.0], [3, 93.3], [4, 102.0], [5, 108.5], [6, 115.7], [7, 115.6],
             [8, 124.6], [9, 130.3], [10, 134.3], [11, 141.4], [12, 146.5], [13, 151.7], [14, 159.9],
-            [15, 165.4], [16, 167.8], [17, 168.7], [18, 169.5], [19, 168.0]]
+            [15, 165.4], [16, 167.8], [17, 168.7], [18, 169.5], [19, 168.0]];
         $.plot('#area-chart', [areaData], {
             grid : {
                 borderWidth: 0
@@ -203,7 +206,7 @@ $JS = <<<JS
             xaxis : {
                 show: false
             }
-        })
+        });
 
         /* END AREA CHART */
 
@@ -215,7 +218,7 @@ $JS = <<<JS
         var bar_data = {
             data : [[1,10], [2,8], [3,4], [4,13], [5,17], [6,9]],
             bars: { show: true }
-        }
+        };
         $.plot('#bar-chart', [bar_data], {
             grid : {
                 borderWidth: 1,
@@ -231,7 +234,7 @@ $JS = <<<JS
             xaxis : {
                 ticks: [[1,'January'], [2,'February'], [3,'March'], [4,'April'], [5,'May'], [6,'June']]
             }
-        })
+        });
         /* END BAR CHART */
 
         /*
@@ -255,7 +258,7 @@ $JS = <<<JS
                 data : 50,
                 color: '#00c0ef'
             }
-        ]
+        ];
         $.plot('#donut-chart', donutData, {
             series: {
                 pie: {
@@ -279,7 +282,7 @@ $JS = <<<JS
          * END DONUT CHART
          */
 
-    })
+    });
 
     /*
      * Custom Label formatter

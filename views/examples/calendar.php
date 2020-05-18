@@ -1,5 +1,8 @@
 <?php
-$this->registerAssetBundle(\app\assets\AdminLteContributingAsset::class);
+
+use app\assets\AdminLteContributingAsset;
+
+$this->registerAssetBundle(AdminLteContributingAsset::class);
 
 $this->title = Yii::t('app', 'Calendar');
 $this->params['breadcrumbs'][] = $this->title;
@@ -16,10 +19,10 @@ $JS = <<<JS
                 // it doesn't need to have a start or end
                 var eventObject = {
                     title: $.trim($(this).text()) // use the element's text as the event title
-                }
+                };
 
                 // store the Event Object in the DOM element so we can get to it later
-                $(this).data('eventObject', eventObject)
+                $(this).data('eventObject', eventObject);
 
                 // make the event draggable using jQuery UI
                 $(this).draggable({
@@ -31,15 +34,15 @@ $JS = <<<JS
             })
         }
 
-        ini_events($('#external-events div.external-event'))
+        ini_events($('#external-events div.external-event'));
 
         /* initialize the calendar
          -----------------------------------------------------------------*/
         //Date for the calendar events (dummy data)
-        var date = new Date()
+        var date = new Date();
         var d = date.getDate(),
                 m = date.getMonth(),
-                y = date.getFullYear()
+                y = date.getFullYear();
 
         var Calendar = FullCalendar.Calendar;
         var Draggable = FullCalendarInteraction.Draggable;
@@ -133,39 +136,39 @@ $JS = <<<JS
         // $('#calendar').fullCalendar()
 
         /* ADDING EVENTS */
-        var currColor = '#3c8dbc' //Red by default
+        var currColor = '#3c8dbc'; //Red by default
         //Color chooser button
-        var colorChooser = $('#color-chooser-btn')
+        var colorChooser = $('#color-chooser-btn');
         $('#color-chooser > li > a').click(function (e) {
-            e.preventDefault()
+            e.preventDefault();
             //Save color
-            currColor = $(this).css('color')
+            currColor = $(this).css('color');
             //Add color effect to button
             $('#add-new-event').css({
                 'background-color': currColor,
                 'border-color' : currColor
             })
-        })
+        });
         $('#add-new-event').click(function (e) {
-            e.preventDefault()
+            e.preventDefault();
             //Get value and make sure it is not null
-            var val = $('#new-event').val()
+            var val = $('#new-event').val();
             if (val.length == 0) {
                 return
             }
 
             //Create events
-            var event = $('<div />')
+            var event = $('<div />');
             event.css({
                 'background-color': currColor,
                 'border-color' : currColor,
                 'color' : '#fff'
-            }).addClass('external-event')
-            event.html(val)
-            $('#external-events').prepend(event)
+            }).addClass('external-event');
+            event.html(val);
+            $('#external-events').prepend(event);
 
             //Add draggable funtionality
-            ini_events(event)
+            ini_events(event);
 
             //Remove event from text input
             $('#new-event').val('')
