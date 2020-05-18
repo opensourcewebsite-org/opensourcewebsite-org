@@ -1,6 +1,6 @@
 <b><?= Yii::t('bot', 'Commands') ?></b><br/>
 <br/>
-/my_profile - <?= Yii::t('bot', 'Profile') ?><br/>
+/my_profile - <?= Yii::t('common', 'Profile') ?><br/>
 /my_location - <?= Yii::t('bot', 'Location') ?><br/>
 /my_timezone - <?= Yii::t('bot', 'Timezone') ?><br/>
 /my_languages - <?= Yii::t('bot', 'Languages') ?><br/>
