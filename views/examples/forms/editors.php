@@ -3,7 +3,6 @@
 use app\assets\AceEditorAsset;
 use app\assets\AdminLteContributingAsset;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 
 $this->registerAssetBundle(AdminLteContributingAsset::class);
 
