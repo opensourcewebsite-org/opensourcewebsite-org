@@ -75,48 +75,48 @@ $this->registerJs($JS);
                         //$('#revenue-chart').get(0).getContext('2d');
 
                         var salesChartData = {
-                            labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                             datasets: [
                                 {
-                                    label : 'Digital Goods',
-                                    backgroundColor : 'rgba(60,141,188,0.9)',
-                                    borderColor : 'rgba(60,141,188,0.8)',
-                                    pointRadius : false,
-                                    pointColor : '#3b8bba',
-                                    pointStrokeColor : 'rgba(60,141,188,1)',
-                                    pointHighlightFill : '#fff',
+                                    label: 'Digital Goods',
+                                    backgroundColor: 'rgba(60,141,188,0.9)',
+                                    borderColor: 'rgba(60,141,188,0.8)',
+                                    pointRadius: false,
+                                    pointColor: '#3b8bba',
+                                    pointStrokeColor: 'rgba(60,141,188,1)',
+                                    pointHighlightFill: '#fff',
                                     pointHighlightStroke: 'rgba(60,141,188,1)',
-                                    data : [28, 48, 40, 19, 86, 27, 90]
+                                    data: [28, 48, 40, 19, 86, 27, 90]
                                 },
                                 {
-                                    label : 'Electronics',
-                                    backgroundColor : 'rgba(210, 214, 222, 1)',
-                                    borderColor : 'rgba(210, 214, 222, 1)',
-                                    pointRadius : false,
-                                    pointColor : 'rgba(210, 214, 222, 1)',
-                                    pointStrokeColor : '#c1c7d1',
-                                    pointHighlightFill : '#fff',
+                                    label: 'Electronics',
+                                    backgroundColor: 'rgba(210, 214, 222, 1)',
+                                    borderColor: 'rgba(210, 214, 222, 1)',
+                                    pointRadius: false,
+                                    pointColor: 'rgba(210, 214, 222, 1)',
+                                    pointStrokeColor: '#c1c7d1',
+                                    pointHighlightFill: '#fff',
                                     pointHighlightStroke: 'rgba(220,220,220,1)',
-                                    data : [65, 59, 80, 81, 56, 55, 40]
+                                    data: [65, 59, 80, 81, 56, 55, 40]
                                 },
                             ]
                         };
 
                         var salesChartOptions = {
-                            maintainAspectRatio : false,
-                            responsive : true,
+                            maintainAspectRatio: false,
+                            responsive: true,
                             legend: {
                                 display: false
                             },
                             scales: {
                                 xAxes: [{
-                                    gridLines : {
-                                        display : false,
+                                    gridLines: {
+                                        display: false,
                                     }
                                 }],
                                 yAxes: [{
-                                    gridLines : {
-                                        display : false,
+                                    gridLines: {
+                                        display: false,
                                     }
                                 }]
                             }
@@ -140,8 +140,8 @@ $this->registerJs($JS);
                             ],
                             datasets: [
                                 {
-                                    data: [30,12,20],
-                                    backgroundColor : ['#f56954', '#00a65a', '#f39c12'],
+                                    data: [30, 12, 20],
+                                    backgroundColor: ['#f56954', '#00a65a', '#f39c12'],
                                 }
                             ]
                         };
@@ -149,8 +149,8 @@ $this->registerJs($JS);
                             legend: {
                                 display: false
                             },
-                            maintainAspectRatio : false,
-                            responsive : true,
+                            maintainAspectRatio: false,
+                            responsive: true,
                         };
                         //Create pie or douhnut chart
                         // You can switch between pie and douhnut using the method below.
@@ -192,7 +192,7 @@ $this->registerJs($JS);
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
                                 <!-- checkbox -->
-                                <div  class="icheck-primary d-inline ml-2">
+                                <div class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo1" id="todoCheck1">
                                     <label for="todoCheck1"></label>
                                 </div>
@@ -211,7 +211,7 @@ $this->registerJs($JS);
                         <i class="fas fa-ellipsis-v"></i>
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
-                                <div  class="icheck-primary d-inline ml-2">
+                                <div class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
                                     <label for="todoCheck2"></label>
                                 </div>
@@ -227,7 +227,7 @@ $this->registerJs($JS);
                         <i class="fas fa-ellipsis-v"></i>
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
-                                <div  class="icheck-primary d-inline ml-2">
+                                <div class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo3" id="todoCheck3">
                                     <label for="todoCheck3"></label>
                                 </div>
@@ -243,7 +243,7 @@ $this->registerJs($JS);
                         <i class="fas fa-ellipsis-v"></i>
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
-                                <div  class="icheck-primary d-inline ml-2">
+                                <div class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo4" id="todoCheck4">
                                     <label for="todoCheck4"></label>
                                 </div>
@@ -259,7 +259,7 @@ $this->registerJs($JS);
                         <i class="fas fa-ellipsis-v"></i>
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
-                                <div  class="icheck-primary d-inline ml-2">
+                                <div class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo5" id="todoCheck5">
                                     <label for="todoCheck5"></label>
                                 </div>
@@ -275,7 +275,7 @@ $this->registerJs($JS);
                         <i class="fas fa-ellipsis-v"></i>
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
-                                <div  class="icheck-primary d-inline ml-2">
+                                <div class="icheck-primary d-inline ml-2">
                                     <input type="checkbox" value="" name="todo6" id="todoCheck6">
                                     <label for="todoCheck6"></label>
                                 </div>
@@ -290,7 +290,8 @@ $this->registerJs($JS);
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer clearfix">
-                        <button type="button" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add item</button>
+                        <button type="button" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add item
+                        </button>
                     </div>
                 </div>
                 <script>
@@ -420,16 +421,16 @@ $this->registerJs($JS);
                         'use strict';
 
                         $('.daterange').daterangepicker({
-                            ranges : {
-                                'Today' : [moment(), moment()],
-                                'Yesterday' : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                                'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+                            ranges: {
+                                'Today': [moment(), moment()],
+                                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                                 'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                                'This Month' : [moment().startOf('month'), moment().endOf('month')],
-                                'Last Month' : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                             },
                             startDate: moment().subtract(29, 'days'),
-                            endDate : moment()
+                            endDate: moment()
                         }, function (start, end) {
                             window.alert('You chose: ' + start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
                         });
@@ -453,21 +454,21 @@ $this->registerJs($JS);
                         };
                         // World map by jvectormap
                         $('#world-map').vectorMap({
-                            map : 'usa_en',
-                            backgroundColor : 'transparent',
-                            regionStyle : {
+                            map: 'usa_en',
+                            backgroundColor: 'transparent',
+                            regionStyle: {
                                 initial: {
-                                    fill : 'rgba(255, 255, 255, 0.7)',
-                                    'fill-opacity' : 1,
-                                    stroke : 'rgba(0,0,0,.2)',
-                                    'stroke-width' : 1,
+                                    fill: 'rgba(255, 255, 255, 0.7)',
+                                    'fill-opacity': 1,
+                                    stroke: 'rgba(0,0,0,.2)',
+                                    'stroke-width': 1,
                                     'stroke-opacity': 1
                                 }
                             },
-                            series : {
+                            series: {
                                 regions: [{
-                                    values : visitorsData,
-                                    scale : ['#ffffff', '#0154ad'],
+                                    values: visitorsData,
+                                    scale: ['#ffffff', '#0154ad'],
                                     normalizeFunction: 'polynomial'
                                 }]
                             },
@@ -477,9 +478,24 @@ $this->registerJs($JS);
                             }
                         });
                         // Sparkline charts
-                        var sparkline1 = new Sparkline($("#sparkline-1")[0], {width: 80, height: 50, lineColor: '#92c1dc', endColor: '#ebf4f9'});
-                        var sparkline2 = new Sparkline($("#sparkline-2")[0], {width: 80, height: 50, lineColor: '#92c1dc', endColor: '#ebf4f9'});
-                        var sparkline3 = new Sparkline($("#sparkline-3")[0], {width: 80, height: 50, lineColor: '#92c1dc', endColor: '#ebf4f9'});
+                        var sparkline1 = new Sparkline($("#sparkline-1")[0], {
+                            width: 80,
+                            height: 50,
+                            lineColor: '#92c1dc',
+                            endColor: '#ebf4f9'
+                        });
+                        var sparkline2 = new Sparkline($("#sparkline-2")[0], {
+                            width: 80,
+                            height: 50,
+                            lineColor: '#92c1dc',
+                            endColor: '#ebf4f9'
+                        });
+                        var sparkline3 = new Sparkline($("#sparkline-3")[0], {
+                            width: 80,
+                            height: 50,
+                            lineColor: '#92c1dc',
+                            endColor: '#ebf4f9'
+                        });
 
                         sparkline1.draw([1000, 1200, 920, 927, 931, 1027, 819, 930, 1021]);
                         sparkline2.draw([515, 519, 520, 522, 652, 810, 370, 627, 319, 630, 921]);
@@ -548,48 +564,48 @@ $this->registerJs($JS);
                         //$('#revenue-chart').get(0).getContext('2d');
 
                         var salesGraphChartData = {
-                            labels : ['2011 Q1', '2011 Q2', '2011 Q3', '2011 Q4', '2012 Q1', '2012 Q2', '2012 Q3', '2012 Q4', '2013 Q1', '2013 Q2'],
+                            labels: ['2011 Q1', '2011 Q2', '2011 Q3', '2011 Q4', '2012 Q1', '2012 Q2', '2012 Q3', '2012 Q4', '2013 Q1', '2013 Q2'],
                             datasets: [
                                 {
-                                    label : 'Digital Goods',
-                                    fill : false,
-                                    borderWidth : 2,
-                                    lineTension : 0,
-                                    spanGaps : true,
-                                    borderColor : '#efefef',
-                                    pointRadius : 3,
-                                    pointHoverRadius : 7,
-                                    pointColor : '#efefef',
+                                    label: 'Digital Goods',
+                                    fill: false,
+                                    borderWidth: 2,
+                                    lineTension: 0,
+                                    spanGaps: true,
+                                    borderColor: '#efefef',
+                                    pointRadius: 3,
+                                    pointHoverRadius: 7,
+                                    pointColor: '#efefef',
                                     pointBackgroundColor: '#efefef',
-                                    data : [2666, 2778, 4912, 3767, 6810, 5670, 4820, 15073, 10687, 8432]
+                                    data: [2666, 2778, 4912, 3767, 6810, 5670, 4820, 15073, 10687, 8432]
                                 }
                             ]
                         };
 
                         var salesGraphChartOptions = {
-                            maintainAspectRatio : false,
-                            responsive : true,
+                            maintainAspectRatio: false,
+                            responsive: true,
                             legend: {
                                 display: false,
                             },
                             scales: {
                                 xAxes: [{
-                                    ticks : {
+                                    ticks: {
                                         fontColor: '#efefef',
                                     },
-                                    gridLines : {
-                                        display : false,
+                                    gridLines: {
+                                        display: false,
                                         color: '#efefef',
                                         drawBorder: false,
                                     }
                                 }],
                                 yAxes: [{
-                                    ticks : {
+                                    ticks: {
                                         stepSize: 5000,
                                         fontColor: '#efefef',
                                     },
-                                    gridLines : {
-                                        display : true,
+                                    gridLines: {
+                                        display: true,
                                         color: '#efefef',
                                         drawBorder: false,
                                     }

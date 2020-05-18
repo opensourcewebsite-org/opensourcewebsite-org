@@ -328,7 +328,8 @@ $this->registerJs($JS);
                                 <input type="text" class="form-control is-warning" id="inputWarning" placeholder="Enter ...">
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label" for="inputError"><i class="far fa-times-circle"></i> Input with
+                                <label class="col-form-label" for="inputError"><i class="far fa-times-circle"></i> Input
+                                    with
                                     error</label>
                                 <input type="text" class="form-control is-invalid" id="inputError" placeholder="Enter ...">
                             </div>
@@ -444,15 +445,18 @@ $this->registerJs($JS);
                                     <div class="form-group">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" type="checkbox" id="customCheckbox1" value="option1">
-                                            <label for="customCheckbox1" class="custom-control-label">Custom Checkbox</label>
+                                            <label for="customCheckbox1" class="custom-control-label">Custom
+                                                Checkbox</label>
                                         </div>
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" type="checkbox" id="customCheckbox2" checked>
-                                            <label for="customCheckbox2" class="custom-control-label">Custom Checkbox checked</label>
+                                            <label for="customCheckbox2" class="custom-control-label">Custom Checkbox
+                                                checked</label>
                                         </div>
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" type="checkbox" id="customCheckbox3" disabled>
-                                            <label for="customCheckbox3" class="custom-control-label">Custom Checkbox disabled</label>
+                                            <label for="customCheckbox3" class="custom-control-label">Custom Checkbox
+                                                disabled</label>
                                         </div>
                                     </div>
                                 </div>
@@ -465,11 +469,13 @@ $this->registerJs($JS);
                                         </div>
                                         <div class="custom-control custom-radio">
                                             <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio" checked>
-                                            <label for="customRadio2" class="custom-control-label">Custom Radio checked</label>
+                                            <label for="customRadio2" class="custom-control-label">Custom Radio
+                                                checked</label>
                                         </div>
                                         <div class="custom-control custom-radio">
                                             <input class="custom-control-input" type="radio" id="customRadio3" disabled>
-                                            <label for="customRadio3" class="custom-control-label">Custom Radio disabled</label>
+                                            <label for="customRadio3" class="custom-control-label">Custom Radio
+                                                disabled</label>
                                         </div>
                                     </div>
                                 </div>
@@ -534,19 +540,22 @@ $this->registerJs($JS);
                             <div class="form-group">
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input" id="customSwitch1">
-                                    <label class="custom-control-label" for="customSwitch1">Toggle this custom switch element</label>
+                                    <label class="custom-control-label" for="customSwitch1">Toggle this custom switch
+                                        element</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                                     <input type="checkbox" class="custom-control-input" id="customSwitch3">
-                                    <label class="custom-control-label" for="customSwitch3">Toggle this custom switch element with custom colors danger/success</label>
+                                    <label class="custom-control-label" for="customSwitch3">Toggle this custom switch
+                                        element with custom colors danger/success</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input" disabled id="customSwitch2">
-                                    <label class="custom-control-label" for="customSwitch2">Disabled custom switch element</label>
+                                    <label class="custom-control-label" for="customSwitch2">Disabled custom switch
+                                        element</label>
                                 </div>
                             </div>
                             <div class="form-group">

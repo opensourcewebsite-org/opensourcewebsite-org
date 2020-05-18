@@ -60,7 +60,7 @@ $JS = <<<JS
             onChange: function (obj) {
                 var t = '';
                 for (var prop in obj) {
-                    t += prop + ': ' + obj[prop] + ';\r\n'
+                    t += prop + ': ' + obj[prop] + ';;;\r\n'
                 }
                 $('#result').html(t)
             },
@@ -94,7 +94,7 @@ $this->registerJs($JS);
                                             Ribbon
                                         </div>
                                     </div>
-                                    Ribbon Default <br />
+                                    Ribbon Default <br/>
                                     <small>.ribbon-wrapper.ribbon-lg .ribbon</small>
                                 </div>
                             </div>
@@ -105,7 +105,7 @@ $this->registerJs($JS);
                                             Ribbon Large
                                         </div>
                                     </div>
-                                    Ribbon Large <br />
+                                    Ribbon Large <br/>
                                     <small>.ribbon-wrapper.ribbon-lg .ribbon</small>
                                 </div>
                             </div>
@@ -116,7 +116,7 @@ $this->registerJs($JS);
                                             Ribbon Extra Large
                                         </div>
                                     </div>
-                                    Ribbon Extra Large <br />
+                                    Ribbon Extra Large <br/>
                                     <small>.ribbon-wrapper.ribbon-xl .ribbon</small>
                                 </div>
                             </div>
@@ -129,7 +129,7 @@ $this->registerJs($JS);
                                             Ribbon
                                         </div>
                                     </div>
-                                    Ribbon Large <br /> with Large Text <br />
+                                    Ribbon Large <br/> with Large Text <br/>
                                     <small>.ribbon-wrapper.ribbon-lg .ribbon.text-lg</small>
                                 </div>
                             </div>
@@ -140,7 +140,7 @@ $this->registerJs($JS);
                                             Ribbon
                                         </div>
                                     </div>
-                                    Ribbon Extra Large <br /> with Large Text <br />
+                                    Ribbon Extra Large <br/> with Large Text <br/>
                                     <small>.ribbon-wrapper.ribbon-xl .ribbon.text-lg</small>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@ $this->registerJs($JS);
                                             Ribbon
                                         </div>
                                     </div>
-                                    Ribbon Extra Large <br /> with Extra Large Text <br />
+                                    Ribbon Extra Large <br/> with Extra Large Text <br/>
                                     <small>.ribbon-wrapper.ribbon-xl .ribbon.text-xl</small>
                                 </div>
                             </div>

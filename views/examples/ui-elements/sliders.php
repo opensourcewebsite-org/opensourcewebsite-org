@@ -60,7 +60,7 @@ $JS = <<<JS
             onChange: function (obj) {
                 var t = '';
                 for (var prop in obj) {
-                    t += prop + ': ' + obj[prop] + ';\r\n'
+                    t += prop + ': ' + obj[prop] + ';;;\r\n'
                 }
                 $('#result').html(t)
             },

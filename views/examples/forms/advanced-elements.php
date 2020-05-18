@@ -90,8 +90,10 @@ $this->registerJs($JS);
                 <h3 class="card-title">Select2 (Default Theme)</h3>
 
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i>
+                    </button>
                 </div>
             </div>
             <!-- /.card-header -->
@@ -199,7 +201,8 @@ $this->registerJs($JS);
             </div>
             <!-- /.card-body -->
             <div class="card-footer">
-                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
+                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information
+                about
                 the plugin.
             </div>
         </div>
@@ -211,8 +214,10 @@ $this->registerJs($JS);
                 <h3 class="card-title">Select2 (Bootstrap4 Theme)</h3>
 
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i>
+                    </button>
                 </div>
             </div>
             <!-- /.card-header -->
@@ -282,7 +287,8 @@ $this->registerJs($JS);
             </div>
             <!-- /.card-body -->
             <div class="card-footer">
-                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
+                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information
+                about
                 the plugin.
             </div>
         </div>
@@ -293,8 +299,10 @@ $this->registerJs($JS);
                 <h3 class="card-title">Bootstrap Duallistbox</h3>
 
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i>
+                    </button>
                 </div>
             </div>
             <!-- /.card-header -->
@@ -321,7 +329,8 @@ $this->registerJs($JS);
             </div>
             <!-- /.card-body -->
             <div class="card-footer">
-                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
+                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information
+                about
                 the plugin.
             </div>
         </div>

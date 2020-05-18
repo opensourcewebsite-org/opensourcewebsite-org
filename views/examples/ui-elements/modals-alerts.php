@@ -197,8 +197,8 @@ $this->registerJs($JS);
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-success">
                             Launch Success Modal
                         </button>
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-sm">
                             Launch Small Modal
                         </button>
@@ -208,8 +208,8 @@ $this->registerJs($JS);
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-xl">
                             Launch Extra Large Modal
                         </button>
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-overlay">
                             Launch Modal with Overlay
                         </button>
@@ -244,8 +244,8 @@ $this->registerJs($JS);
                         <button type="button" class="btn btn-default toastsDefaultNotFixed">
                             Launch Default Toasts with not fixed
                         </button>
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                         <button type="button" class="btn btn-default toastsDefaultTopLeft">
                             Launch Default Toast (topLeft)
                         </button>
@@ -255,8 +255,8 @@ $this->registerJs($JS);
                         <button type="button" class="btn btn-default toastsDefaultBottomLeft">
                             Launch Default Toast (bottomLeft)
                         </button>
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                         <button type="button" class="btn btn-success toastsDefaultSuccess">
                             Launch Success Toast
                         </button>

@@ -1,4 +1,5 @@
 <?php
+
 use app\assets\AceEditorAsset;
 use app\assets\AdminLteContributingAsset;
 use yii\helpers\Html;
@@ -55,12 +56,14 @@ $this->registerJs('$("#trumbowyg").trumbowyg();');
 
             <div class="alert alert-info">
                 <h5><i class="icon fa fa-info"></i> Important!</h5>
-                Use UI elements from <?= Html::a('AdminLTE 3', 'https://adminlte.io/themes/dev/AdminLTE/index3.html') ?>, <?= Html::a('Bootstrap 4', 'https://getbootstrap.com/docs/4.1/getting-started/introduction/') ?> and <?= Html::a('Font Awesome 5', 'https://fontawesome.com/icons') ?> examples.
+                Use UI elements from <?= Html::a('AdminLTE 3', 'https://adminlte.io/themes/dev/AdminLTE/index3.html') ?>
+                , <?= Html::a('Bootstrap 4', 'https://getbootstrap.com/docs/4.1/getting-started/introduction/') ?>
+                and <?= Html::a('Font Awesome 5', 'https://fontawesome.com/icons') ?> examples.
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <?= Html::textInput('textinput', '', [
-                        'class' => 'form-control'
+                        'class' => 'form-control',
                     ]); ?>
                 </div>
             </div>
@@ -69,11 +72,13 @@ $this->registerJs('$("#trumbowyg").trumbowyg();');
                     <?= Html::ul([
                         Html::a('HTML', '#html', ['class' => 'nav-link active', 'data-toggle' => 'tab']),
                         Html::a('CSS (optional)', '#css', ['class' => 'nav-link', 'data-toggle' => 'tab']),
-                        Html::a('Preview', '#preview', ['class' => 'nav-link', 'data-toggle' => 'tab', 'id' => 'toggle-prev']),
+                        Html::a('Preview', '#preview', [
+                            'class' => 'nav-link', 'data-toggle' => 'tab', 'id' => 'toggle-prev',
+                        ]),
                     ], [
                         'class' => 'nav nav-pills ml-auto p-2',
                         'encode' => false,
-                        'itemOptions' => ['class' => 'nav-item']
+                        'itemOptions' => ['class' => 'nav-item'],
                     ]) ?>
                 </div>
             </div>

@@ -83,10 +83,12 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block btn-secondary btn-xs">Secondary</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-secondary btn-flat">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-secondary btn-flat">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-secondary disabled">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-secondary disabled">Secondary
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -203,19 +205,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block btn-outline-primary">Primary</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-primary btn-lg">Primary</button>
+                                    <button type="button" class="btn btn-block btn-outline-primary btn-lg">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-primary btn-sm">Primary</button>
+                                    <button type="button" class="btn btn-block btn-outline-primary btn-sm">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-primary btn-xs">Primary</button>
+                                    <button type="button" class="btn btn-block btn-outline-primary btn-xs">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-primary btn-flat">Primary</button>
+                                    <button type="button" class="btn btn-block btn-outline-primary btn-flat">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-primary disabled">Primary</button>
+                                    <button type="button" class="btn btn-block btn-outline-primary disabled">Primary
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -223,19 +230,26 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block btn-outline-secondary">Secondary</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-secondary btn-lg">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-outline-secondary btn-lg">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-secondary btn-sm">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-outline-secondary btn-sm">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-secondary btn-xs">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-outline-secondary btn-xs">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-secondary btn-flat">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-outline-secondary btn-flat">
+                                        Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-secondary disabled">Secondary</button>
+                                    <button type="button" class="btn btn-block btn-outline-secondary disabled">
+                                        Secondary
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -243,19 +257,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block btn-outline-success">Success</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-success btn-lg">Success</button>
+                                    <button type="button" class="btn btn-block btn-outline-success btn-lg">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-success btn-sm">Success</button>
+                                    <button type="button" class="btn btn-block btn-outline-success btn-sm">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-success btn-xs">Success</button>
+                                    <button type="button" class="btn btn-block btn-outline-success btn-xs">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-success btn-flat">Success</button>
+                                    <button type="button" class="btn btn-block btn-outline-success btn-flat">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-success disabled">Success</button>
+                                    <button type="button" class="btn btn-block btn-outline-success disabled">Success
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -283,19 +302,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block btn-outline-danger">Danger</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-danger btn-lg">Danger</button>
+                                    <button type="button" class="btn btn-block btn-outline-danger btn-lg">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-danger btn-sm">Danger</button>
+                                    <button type="button" class="btn btn-block btn-outline-danger btn-sm">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-danger btn-xs">Danger</button>
+                                    <button type="button" class="btn btn-block btn-outline-danger btn-xs">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-danger btn-flat">Danger</button>
+                                    <button type="button" class="btn btn-block btn-outline-danger btn-flat">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-danger disabled">Danger</button>
+                                    <button type="button" class="btn btn-block btn-outline-danger disabled">Danger
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -303,19 +327,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block btn-outline-warning">Warning</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-warning btn-lg">Warning</button>
+                                    <button type="button" class="btn btn-block btn-outline-warning btn-lg">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-warning btn-sm">Warning</button>
+                                    <button type="button" class="btn btn-block btn-outline-warning btn-sm">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-warning btn-xs">Warning</button>
+                                    <button type="button" class="btn btn-block btn-outline-warning btn-xs">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-warning btn-flat">Warning</button>
+                                    <button type="button" class="btn btn-block btn-outline-warning btn-flat">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block btn-outline-warning disabled">Warning</button>
+                                    <button type="button" class="btn btn-block btn-outline-warning disabled">Warning
+                                    </button>
                                 </td>
                             </tr>
                         </table>
@@ -352,19 +381,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block bg-gradient-primary">Primary</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-primary btn-lg">Primary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-primary btn-lg">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-primary btn-sm">Primary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-primary btn-sm">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-primary btn-xs">Primary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-primary btn-xs">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-primary btn-flat">Primary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-primary btn-flat">Primary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-primary disabled">Primary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-primary disabled">Primary
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -372,19 +406,26 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block bg-gradient-secondary">Secondary</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-lg">Secondary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-lg">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-sm">Secondary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-sm">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-xs">Secondary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-xs">Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-flat">Secondary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-secondary btn-flat">
+                                        Secondary
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-secondary disabled">Secondary</button>
+                                    <button type="button" class="btn btn-block bg-gradient-secondary disabled">
+                                        Secondary
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -392,19 +433,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block bg-gradient-success">Success</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-success btn-lg">Success</button>
+                                    <button type="button" class="btn btn-block bg-gradient-success btn-lg">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-success btn-sm">Success</button>
+                                    <button type="button" class="btn btn-block bg-gradient-success btn-sm">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-success btn-xs">Success</button>
+                                    <button type="button" class="btn btn-block bg-gradient-success btn-xs">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-success btn-flat">Success</button>
+                                    <button type="button" class="btn btn-block bg-gradient-success btn-flat">Success
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-success disabled">Success</button>
+                                    <button type="button" class="btn btn-block bg-gradient-success disabled">Success
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -432,19 +478,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block bg-gradient-danger">Danger</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-danger btn-lg">Danger</button>
+                                    <button type="button" class="btn btn-block bg-gradient-danger btn-lg">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-danger btn-sm">Danger</button>
+                                    <button type="button" class="btn btn-block bg-gradient-danger btn-sm">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-danger btn-xs">Danger</button>
+                                    <button type="button" class="btn btn-block bg-gradient-danger btn-xs">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-danger btn-flat">Danger</button>
+                                    <button type="button" class="btn btn-block bg-gradient-danger btn-flat">Danger
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-danger disabled">Danger</button>
+                                    <button type="button" class="btn btn-block bg-gradient-danger disabled">Danger
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -452,19 +503,24 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                     <button type="button" class="btn btn-block bg-gradient-warning">Warning</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-warning btn-lg">Warning</button>
+                                    <button type="button" class="btn btn-block bg-gradient-warning btn-lg">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-warning btn-sm">Warning</button>
+                                    <button type="button" class="btn btn-block bg-gradient-warning btn-sm">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-warning btn-xs">Warning</button>
+                                    <button type="button" class="btn btn-block bg-gradient-warning btn-xs">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-warning btn-flat">Warning</button>
+                                    <button type="button" class="btn btn-block bg-gradient-warning btn-flat">Warning
+                                    </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-block bg-gradient-warning disabled">Warning</button>
+                                    <button type="button" class="btn btn-block bg-gradient-warning disabled">Warning
+                                    </button>
                                 </td>
                             </tr>
                         </table>
@@ -519,17 +575,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-default"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-default"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-default"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-default"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-default"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-default btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-default btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-default btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-default btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-default btn-flat"><i class="fas fa-align-right"></i>
+                                        <button type="button" class="btn btn-default btn-flat">
+                                            <i class="fas fa-align-right"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -561,16 +623,22 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-info"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-info"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-info"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-info"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-info"><i class="fas fa-align-center"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-info"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-info btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-info btn-flat">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-info btn-flat">
+                                            <i class="fas fa-align-right"></i></button>
                                     </div>
                                 </td>
                                 <td>
@@ -601,17 +669,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-center"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-danger btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-danger btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-danger btn-flat">
+                                            <i class="fas fa-align-right"></i></button>
                                     </div>
                                 </td>
                                 <td>
@@ -642,17 +716,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-warning">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-warning btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-warning btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-warning btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-warning btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-warning btn-flat"><i class="fas fa-align-right"></i>
+                                        <button type="button" class="btn btn-warning btn-flat">
+                                            <i class="fas fa-align-right"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -684,17 +764,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-success"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-success"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-success"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-success"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-success btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-success btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-success btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-success btn-flat"><i class="fas fa-align-right"></i>
+                                        <button type="button" class="btn btn-success btn-flat">
+                                            <i class="fas fa-align-right"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -996,7 +1082,8 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                         <h3 class="card-title">Application Buttons</h3>
                     </div>
                     <div class="card-body">
-                        <p>Add the classes <code>.btn.btn-app</code> to an <code>&lt;a></code> tag to achieve the following:</p>
+                        <p>Add the classes <code>.btn.btn-app</code> to an <code>&lt;a></code> tag to achieve the
+                            following:</p>
                         <a class="btn btn-app">
                             <i class="fas fa-edit"></i> Edit
                         </a>
@@ -1068,17 +1155,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-default"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-default"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-default"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-default"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-default"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-default btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-default btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-default btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-default btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-default btn-flat"><i class="fas fa-align-right"></i>
+                                        <button type="button" class="btn btn-default btn-flat">
+                                            <i class="fas fa-align-right"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -1110,16 +1203,22 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-info"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-info"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-info"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-info"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-info"><i class="fas fa-align-center"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-info"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-info btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-info btn-flat">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-info btn-flat">
+                                            <i class="fas fa-align-right"></i></button>
                                     </div>
                                 </td>
                                 <td>
@@ -1150,17 +1249,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-center"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-danger btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-danger btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-danger btn-flat">
+                                            <i class="fas fa-align-right"></i></button>
                                     </div>
                                 </td>
                                 <td>
@@ -1191,17 +1296,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-warning">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-warning"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-warning btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-warning btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-warning btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-warning btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-warning btn-flat"><i class="fas fa-align-right"></i>
+                                        <button type="button" class="btn btn-warning btn-flat">
+                                            <i class="fas fa-align-right"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -1233,17 +1344,23 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-success"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-success"><i class="fas fa-align-center"></i></button>
-                                        <button type="button" class="btn btn-success"><i class="fas fa-align-right"></i></button>
+                                        <button type="button" class="btn btn-success"><i class="fas fa-align-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success">
+                                            <i class="fas fa-align-center"></i></button>
+                                        <button type="button" class="btn btn-success"><i class="fas fa-align-right"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group-vertical">
-                                        <button type="button" class="btn btn-success btn-flat"><i class="fas fa-align-left"></i></button>
-                                        <button type="button" class="btn btn-success btn-flat"><i class="fas fa-align-center"></i>
+                                        <button type="button" class="btn btn-success btn-flat">
+                                            <i class="fas fa-align-left"></i></button>
+                                        <button type="button" class="btn btn-success btn-flat">
+                                            <i class="fas fa-align-center"></i>
                                         </button>
-                                        <button type="button" class="btn btn-success btn-flat"><i class="fas fa-align-right"></i>
+                                        <button type="button" class="btn btn-success btn-flat">
+                                            <i class="fas fa-align-right"></i>
                                         </button>
                                     </div>
                                 </td>

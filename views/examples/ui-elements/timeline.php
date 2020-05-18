@@ -202,7 +202,8 @@ $this->registerJs($JS);
                         <i class="fas fa-user bg-green"></i>
                         <div class="timeline-item">
                             <span class="time"><i class="fas fa-clock"></i> 5 mins ago</span>
-                            <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request</h3>
+                            <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend
+                                request</h3>
                         </div>
                     </div>
                     <!-- END timeline item -->

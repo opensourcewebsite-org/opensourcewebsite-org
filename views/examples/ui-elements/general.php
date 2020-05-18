@@ -286,7 +286,8 @@ $this->registerCss($CSS);
                         <div class="alert alert-danger alert-dismissible">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <h5><i class="icon fas fa-ban"></i> Alert!</h5>
-                            Danger alert preview. This alert is dismissable. A wonderful serenity has taken possession of my
+                            Danger alert preview. This alert is dismissable. A wonderful serenity has taken possession
+                            of my
                             entire
                             soul, like these sweet mornings of spring which I enjoy with my whole heart.
                         </div>
@@ -325,7 +326,8 @@ $this->registerCss($CSS);
                         <div class="callout callout-danger">
                             <h5>I am a danger callout!</h5>
 
-                            <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my entire
+                            <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my
+                                entire
                                 soul,
                                 like these sweet mornings of spring which I enjoy with my whole heart.</p>
                         </div>
@@ -362,7 +364,8 @@ $this->registerCss($CSS);
                     <div class="card-header d-flex p-0">
                         <h3 class="card-title p-3">Tabs</h3>
                         <ul class="nav nav-pills ml-auto p-2">
-                            <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Tab 1</a></li>
+                            <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Tab 1</a>
+                            </li>
                             <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Tab 2</a></li>
                             <li class="nav-item"><a class="nav-link" href="#tab_3" data-toggle="tab">Tab 3</a></li>
                             <li class="nav-item dropdown">
@@ -392,22 +395,31 @@ $this->registerCss($CSS);
                             </div>
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="tab_2">
-                                The European languages are members of the same family. Their separate existence is a myth.
-                                For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
-                                in their grammar, their pronunciation and their most common words. Everyone realizes why a
-                                new common language would be desirable: one could refuse to pay expensive translators. To
-                                achieve this, it would be necessary to have uniform grammar, pronunciation and more common
-                                words. If several languages coalesce, the grammar of the resulting language is more simple
+                                The European languages are members of the same family. Their separate existence is a
+                                myth.
+                                For science, music, sport, etc, Europe uses the same vocabulary. The languages only
+                                differ
+                                in their grammar, their pronunciation and their most common words. Everyone realizes why
+                                a
+                                new common language would be desirable: one could refuse to pay expensive translators.
+                                To
+                                achieve this, it would be necessary to have uniform grammar, pronunciation and more
+                                common
+                                words. If several languages coalesce, the grammar of the resulting language is more
+                                simple
                                 and regular than that of the individual languages.
                             </div>
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="tab_3">
                                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                                 Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                when an unknown printer took a galley of type and scrambled it to make a type specimen
+                                book.
                                 It has survived not only five centuries, but also the leap into electronic typesetting,
-                                remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                                sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
+                                remaining essentially unchanged. It was popularised in the 1960s with the release of
+                                Letraset
+                                sheets containing Lorem Ipsum passages, and more recently with desktop publishing
+                                software
                                 like Aldus PageMaker including versions of Lorem Ipsum.
                             </div>
                             <!-- /.tab-pane -->
@@ -517,7 +529,8 @@ $this->registerCss($CSS);
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body text-center">
-                        <p>By adding the class <code>.vertical</code> and <code>.progress-sm</code>, <code>.progress-xs</code>
+                        <p>By adding the class <code>.vertical</code> and <code>.progress-sm</code>,
+                            <code>.progress-xs</code>
                             or
                             <code>.progress-xxs</code> we achieve:</p>
 
@@ -617,16 +630,22 @@ $this->registerCss($CSS);
                                 </div>
                                 <div id="collapseOne" class="panel-collapse collapse in">
                                     <div class="card-body">
-                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
+                                        richardson ad squid.
                                         3
-                                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa
+                                        nesciunt
                                         laborum
-                                        eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                                        eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
+                                        single-origin coffee
                                         nulla
-                                        assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                                        nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                                        assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                                        anderson cred
+                                        nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                                        occaecat craft
                                         beer
-                                        farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                                        farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of
+                                        them accusamus
                                         labore sustainable VHS.
                                     </div>
                                 </div>
@@ -641,16 +660,22 @@ $this->registerCss($CSS);
                                 </div>
                                 <div id="collapseTwo" class="panel-collapse collapse">
                                     <div class="card-body">
-                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
+                                        richardson ad squid.
                                         3
-                                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa
+                                        nesciunt
                                         laborum
-                                        eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                                        eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
+                                        single-origin coffee
                                         nulla
-                                        assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                                        nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                                        assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                                        anderson cred
+                                        nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                                        occaecat craft
                                         beer
-                                        farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                                        farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of
+                                        them accusamus
                                         labore sustainable VHS.
                                     </div>
                                 </div>
@@ -665,16 +690,22 @@ $this->registerCss($CSS);
                                 </div>
                                 <div id="collapseThree" class="panel-collapse collapse">
                                     <div class="card-body">
-                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
+                                        richardson ad squid.
                                         3
-                                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa
+                                        nesciunt
                                         laborum
-                                        eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                                        eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
+                                        single-origin coffee
                                         nulla
-                                        assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                                        nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                                        assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                                        anderson cred
+                                        nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                                        occaecat craft
                                         beer
-                                        farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                                        farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of
+                                        them accusamus
                                         labore sustainable VHS.
                                     </div>
                                 </div>
@@ -981,7 +1012,8 @@ $this->registerCss($CSS);
                             <dt>Malesuada porta</dt>
                             <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
                             <dt>Felis euismod semper eget lacinia</dt>
-                            <dd>Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo
+                            <dd>Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum
+                                massa justo
                                 sit amet risus.
                             </dd>
                         </dl>

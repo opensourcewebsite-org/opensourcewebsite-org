@@ -49,48 +49,48 @@ $this->params['breadcrumbs'][] = $this->title;
                             var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
 
                             var salesChartData = {
-                                labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                                 datasets: [
                                     {
-                                        label : 'Digital Goods',
-                                        backgroundColor : 'rgba(60,141,188,0.9)',
-                                        borderColor : 'rgba(60,141,188,0.8)',
-                                        pointRadius : false,
-                                        pointColor : '#3b8bba',
-                                        pointStrokeColor : 'rgba(60,141,188,1)',
-                                        pointHighlightFill : '#fff',
+                                        label: 'Digital Goods',
+                                        backgroundColor: 'rgba(60,141,188,0.9)',
+                                        borderColor: 'rgba(60,141,188,0.8)',
+                                        pointRadius: false,
+                                        pointColor: '#3b8bba',
+                                        pointStrokeColor: 'rgba(60,141,188,1)',
+                                        pointHighlightFill: '#fff',
                                         pointHighlightStroke: 'rgba(60,141,188,1)',
-                                        data : [28, 48, 40, 19, 86, 27, 90]
+                                        data: [28, 48, 40, 19, 86, 27, 90]
                                     },
                                     {
-                                        label : 'Electronics',
-                                        backgroundColor : 'rgba(210, 214, 222, 1)',
-                                        borderColor : 'rgba(210, 214, 222, 1)',
-                                        pointRadius : false,
-                                        pointColor : 'rgba(210, 214, 222, 1)',
-                                        pointStrokeColor : '#c1c7d1',
-                                        pointHighlightFill : '#fff',
+                                        label: 'Electronics',
+                                        backgroundColor: 'rgba(210, 214, 222, 1)',
+                                        borderColor: 'rgba(210, 214, 222, 1)',
+                                        pointRadius: false,
+                                        pointColor: 'rgba(210, 214, 222, 1)',
+                                        pointStrokeColor: '#c1c7d1',
+                                        pointHighlightFill: '#fff',
                                         pointHighlightStroke: 'rgba(220,220,220,1)',
-                                        data : [65, 59, 80, 81, 56, 55, 40]
+                                        data: [65, 59, 80, 81, 56, 55, 40]
                                     },
                                 ]
                             };
 
                             var salesChartOptions = {
-                                maintainAspectRatio : false,
-                                responsive : true,
+                                maintainAspectRatio: false,
+                                responsive: true,
                                 legend: {
                                     display: false
                                 },
                                 scales: {
                                     xAxes: [{
-                                        gridLines : {
-                                            display : false,
+                                        gridLines: {
+                                            display: false,
                                         }
                                     }],
                                     yAxes: [{
-                                        gridLines : {
-                                            display : false,
+                                        gridLines: {
+                                            display: false,
                                         }
                                     }]
                                 }
@@ -276,7 +276,7 @@ $this->params['breadcrumbs'][] = $this->title;
                          */
                         $('#world-map-markers').mapael({
                                 map: {
-                                    name : "usa_states",
+                                    name: "usa_states",
                                     zoom: {
                                         enabled: true,
                                         maxLevel: 10
@@ -296,9 +296,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 <div class="card-tools">
                                     <span class="badge badge-danger">8 New Members</span>
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
                                     </button>
-                                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             </div>
@@ -475,7 +477,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>Call of Duty IV</td>
                                     <td><span class="badge badge-success">Shipped</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
+                                        <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                            90,80,90,-70,61,-83,63
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -483,7 +487,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>Samsung Smart TV</td>
                                     <td><span class="badge badge-warning">Pending</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
+                                        <div class="sparkbar" data-color="#f39c12" data-height="20">
+                                            90,80,-90,70,61,-83,68
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -491,7 +497,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>iPhone 6 Plus</td>
                                     <td><span class="badge badge-danger">Delivered</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
+                                        <div class="sparkbar" data-color="#f56954" data-height="20">
+                                            90,-80,90,70,-61,83,63
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -499,7 +507,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>Samsung Smart TV</td>
                                     <td><span class="badge badge-info">Processing</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#00c0ef" data-height="20">90,80,-90,70,-61,83,63</div>
+                                        <div class="sparkbar" data-color="#00c0ef" data-height="20">
+                                            90,80,-90,70,-61,83,63
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -507,7 +517,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>Samsung Smart TV</td>
                                     <td><span class="badge badge-warning">Pending</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
+                                        <div class="sparkbar" data-color="#f39c12" data-height="20">
+                                            90,80,-90,70,61,-83,68
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -515,7 +527,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>iPhone 6 Plus</td>
                                     <td><span class="badge badge-danger">Delivered</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
+                                        <div class="sparkbar" data-color="#f56954" data-height="20">
+                                            90,-80,90,70,-61,83,63
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -523,7 +537,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td>Call of Duty IV</td>
                                     <td><span class="badge badge-success">Shipped</span></td>
                                     <td>
-                                        <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
+                                        <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                            90,80,90,-70,61,-83,63
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -590,9 +606,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h3 class="card-title">Browser Usage</h3>
 
                         <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
                             </button>
-                            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
@@ -669,8 +687,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             datasets: [
                                 {
-                                    data: [700,500,400,600,300,100],
-                                    backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+                                    data: [700, 500, 400, 600, 300, 100],
+                                    backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
                                 }
                             ]
                         };
