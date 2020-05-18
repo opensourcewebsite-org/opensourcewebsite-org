@@ -75,8 +75,8 @@ $this->registerJs('$("#trumbowyg").trumbowyg();');
                             'class' => 'nav-link', 'data-toggle' => 'tab', 'id' => 'toggle-prev',
                         ]),
                     ], [
-                        'class' => 'nav nav-pills ml-auto p-2',
-                        'encode' => false,
+                        'class'       => 'nav nav-pills ml-auto p-2',
+                        'encode'      => false,
                         'itemOptions' => ['class' => 'nav-item'],
                     ]) ?>
                 </div>
@@ -86,17 +86,17 @@ $this->registerJs('$("#trumbowyg").trumbowyg();');
                     <div class="tab-content p-0">
                         <div class="tab-pane active" id="html">
                             <?= Html::textArea('textarea', '', [
-                                'rows' => 10,
+                                'rows'       => 10,
                                 'max-length' => 100000,
-                                'style' => 'display:none',
+                                'style'      => 'display:none',
                             ]) ?>
                             <div id="html-editor" class="ace-editor"></div>
                         </div>
                         <div class="tab-pane" id="css">
                             <?= Html::textArea('textarea', '', [
-                                'rows' => 10,
+                                'rows'       => 10,
                                 'max-length' => 100000,
-                                'style' => 'display:none',
+                                'style'      => 'display:none',
                             ]) ?>
                             <div id="css-editor" class="ace-editor"></div>
                         </div>
