@@ -129,7 +129,7 @@ $this->beginBody();
         <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?> |
         <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
         <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
-        <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
+        <?= Html::a(Yii::t('common', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
     </footer>
 </div>
 <?php $this->endBody() ?>

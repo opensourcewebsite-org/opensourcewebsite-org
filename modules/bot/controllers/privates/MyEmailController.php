@@ -109,11 +109,11 @@ class MyEmailController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('merge-accounts'),
-                                'text' => Yii::t('bot', 'Yes'),
+                                'text' => Yii::t('common', 'Yes'),
                             ],
                             [
                                 'callback_data' => self::createRoute('update'),
-                                'text' => Yii::t('bot', 'No'),
+                                'text' => Yii::t('common', 'No'),
                             ]
                         ]
                     ])
