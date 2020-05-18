@@ -13,13 +13,13 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-	'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
-	'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
-	'Profile' => 'Профиль',
-	'Name' => 'Название',
-	'Rating provides' => 'Рейтинг дает',
-	'Contacts' => 'Контакты',
-	'Yes' => 'Да',
-	'No' => 'Нет',
-	'Source Code' => 'Исходный код',
+    'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
+    'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
+    'Profile' => 'Профиль',
+    'Name' => 'Название',
+    'Rating provides' => 'Рейтинг дает',
+    'Contacts' => 'Контакты',
+    'Yes' => 'Да',
+    'No' => 'Нет',
+    'Source Code' => 'Исходный код',
 ];
