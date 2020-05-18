@@ -56,9 +56,15 @@ if (extension_loaded('gd')) {
     }
 }
 
-switch (Yii::$app->db->driverName) {
+$connection = new \yii\db\Connection([
+    'dsn' => 'mysql:host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_NAME'),
+    'username' => getenv('DB_USERNAME'),
+    'password' => getenv('DB_PASSWORD'),
+]);
+
+switch ($connection->driverName) {
     case 'mysql':
-        $dbVersionOk = version_compare('5.6.0', '8.0.0', '>=') ? true : false; //Yii::$app->db->getServerVersion(), '8.0.0', '>=') ? true : false;
+        $dbVersionOk = version_compare($connection->getServerVersion(), '8.0.0', '>=') ? true : false;
         break;
     default:
         $dbVersionOk = false;
