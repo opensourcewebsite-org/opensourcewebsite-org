@@ -406,9 +406,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <a href="javascript:void(0)" class="product-title">
                                                 Xbox One <span class="badge badge-danger float-right">$350</span>
                                             </a>
-                                            <span class="product-description">
-                            Xbox One Console Bundle with Halo Master Chief Collection.
-                          </span>
+                                            <span class="product-description"> Xbox One Console Bundle with Halo Master Chief Collection. </span>
                                         </div>
                                     </li>
                                     <!-- /.item -->
@@ -644,9 +642,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <li class="nav-item">
                                 <a href="#" class="nav-link">
                                     India
-                                    <span class="float-right text-success">
-                        <i class="fas fa-arrow-up text-sm"></i> 4%
-                      </span>
+                                    <span class="float-right text-success"><i class="fas fa-arrow-up text-sm"></i> 4% </span>
                                 </a>
                             </li>
                             <li class="nav-item">

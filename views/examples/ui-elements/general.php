@@ -527,8 +527,7 @@ $this->registerCss($CSS);
                             <code>.progress-xxs</code> we achieve:</p>
 
                         <div class="progress vertical active">
-                            <div class="progress-bar bg-primary progress-bar-striped" role="progressbar"
-                                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 40%">
+                            <div class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 40%">
                                 <span class="sr-only">40%</span>
                             </div>
                         </div>

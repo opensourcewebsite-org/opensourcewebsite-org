@@ -842,7 +842,7 @@ $this->registerAssetBundle(AdminLteContributingAsset::class);
                         <div class="input-group mb-3">
                             <input type="text" class="form-control rounded-0">
                             <span class="input-group-append">
-                               <button type="button" class="btn btn-info btn-flat">Go!</button>
+                                <button type="button" class="btn btn-info btn-flat">Go!</button>
                             </span>
                         </div>
                         <!-- /input-group -->
