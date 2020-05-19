@@ -1,8 +1,6 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
-
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\ui\SlidersAsset::class);
 
 $JS = <<<JS
     $(function () {
@@ -91,7 +89,8 @@ $this->registerJs($JS);
                             </div>
 
                             <div class="col-sm-6">
-                                <input id="range_2" type="text" name="range_2" value="1000;100000" data-type="double" data-step="500" data-postfix=" &euro;" data-from="30000" data-to="90000" data-hasgrid="true">
+                                <input id="range_2" type="text" name="range_2" value="1000;100000" data-type="double"
+                                       data-step="500" data-postfix=" &euro;" data-from="30000" data-to="90000" data-hasgrid="true">
                             </div>
                         </div>
                         <div class="row margin">
@@ -127,54 +126,78 @@ $this->registerJs($JS);
                         <div class="row margin">
                             <div class="col-sm-6">
                                 <div class="slider-red">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
 
                                 <p>.slider-red input.slider</p>
                                 <div class="slider-blue">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
 
                                 <p>.slider-blue input.slider</p>
                                 <div class="slider-green">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
 
                                 <p>.slider-green input.slider</p>
                                 <div class="slider-yellow">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
 
                                 <p>.slider-yellow input.slider</p>
                                 <div class="slider-teal">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
 
                                 <p>.slider-teal input.slider</p>
                                 <div class="slider-purple">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="horizontal"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
 
                                 <p>.slider-purple input.slider</p>
                             </div>
                             <div class="col-sm-6 d-flex justify-content-center">
                                 <div class="slider-red mx-3">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
                                 <div class="slider-blue mx-3">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
                                 <div class="slider-green mx-3">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
                                 <div class="slider-yellow mx-3">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
                                 <div class="slider-teal mx-3">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
                                 <div class="slider-purple mx-3">
-                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200" data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical" data-slider-selection="before" data-slider-tooltip="show">
+                                    <input type="text" value="" class="slider form-control" data-slider-min="-200" data-slider-max="200"
+                                           data-slider-step="5" data-slider-value="[-100,100]" data-slider-orientation="vertical"
+                                           data-slider-selection="before" data-slider-tooltip="show">
                                 </div>
                             </div>
                         </div>
