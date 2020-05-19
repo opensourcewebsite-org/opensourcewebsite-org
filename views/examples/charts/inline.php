@@ -1,8 +1,6 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
-
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\charts\InlineAsset::class);
 
 $this->title = 'Inline';
 $this->params['breadcrumbs'][] = $this->title;
