@@ -1,2 +1,6 @@
 *
 !.gitignore
+!cache
+!debug
+!logs
+!mail
