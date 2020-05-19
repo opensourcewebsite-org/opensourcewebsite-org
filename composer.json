@@ -44,7 +44,7 @@
         "longman/telegram-bot": "^0.61",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
-        "ivankff/yii2-modal-ajax": "~4.1.0",
+        "ivankff/yii2-modal-ajax": "^4.1",
         "yiisoft/yii2-bootstrap4": "^2.0"
     },
     "require-dev": {
@@ -73,29 +73,23 @@
         "post-install-cmd": [
             "yii\\composer\\Installer::postInstall",
             "@php requirements.php"
-        ],
-        "post-create-project-cmd": [
-            "yii\\composer\\Installer::postCreateProject",
-            "yii\\composer\\Installer::postInstall"
         ]
     },
     "extra": {
-        "yii\\composer\\Installer::postCreateProject": {
+        "yii\\composer\\Installer::postInstall": {
+            "generateCookieValidationKey": [
+                "config/web-local.php"
+            ],
             "setPermission": [
                 {
                     "runtime": "0777",
                     "runtime/cache": "0777",
-                    "runtime/logs": "0777",
                     "runtime/debug": "0777",
+                    "runtime/logs": "0777",
                     "runtime/mail": "0777",
                     "web/assets": "0777",
                     "yii": "0755"
                 }
-            ]
-        },
-        "yii\\composer\\Installer::postInstall": {
-            "generateCookieValidationKey": [
-                "config/web-local.php"
             ]
         }
     },
