@@ -3,7 +3,6 @@
 namespace app\assets\widgets\ui;
 
 use yii\web\AssetBundle;
-use yii\web\View;
 
 
 class RibbonsAsset extends AssetBundle

@@ -1,9 +1,8 @@
 <?php
 
- namespace app\assets\widgets\dashboard;
+namespace app\assets\widgets\dashboard;
 
 use yii\web\AssetBundle;
-use yii\web\View;
 
 
 class Dashboard3Asset extends AssetBundle

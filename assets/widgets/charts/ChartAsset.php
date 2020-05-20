@@ -3,7 +3,6 @@
 namespace app\assets\widgets\charts;
 
 use yii\web\AssetBundle;
-use yii\web\View;
 
 
 class ChartAsset extends AssetBundle

@@ -23,6 +23,6 @@ class SlidersAsset extends AssetBundle
         'yii\web\YiiAsset',
         'yii\bootstrap4\BootstrapAsset',
         'yii\bootstrap4\BootstrapPluginAsset',
-        'app\assets\widgets\CommonAsset'
+        'app\assets\widgets\CommonAsset',
     ];
 }
