@@ -33,11 +33,7 @@ class MySexualityController extends Controller
             }
         }
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'sexuality' => isset($user->sexuality) ? $user->sexuality->name : null,
@@ -90,14 +86,10 @@ class MySexualityController extends Controller
             ];
         }, $sexualities);
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $text = $this->render('update'),
-                array_merge($sexualityRows, [ $paginationButtons ], [
+                array_merge($sexualityRows, [$paginationButtons], [
                     [
                         [
                             'callback_data' => self::createRoute(),

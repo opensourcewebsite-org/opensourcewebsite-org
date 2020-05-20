@@ -20,11 +20,7 @@ class RandomIntController extends Controller
         //TODO add flexible int min and max from $message
         $randomInt = random_int(1, 10);
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->sendMessage(
                 new MessageText($randomInt)
             )

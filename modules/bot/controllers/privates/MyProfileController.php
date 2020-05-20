@@ -40,16 +40,12 @@ class MyProfileController extends Controller
             'languages' => array_map(function ($userLanguage) {
                 return $userLanguage->getDisplayName();
             }, $user->languages),
-            'citizenships' => array_map(function($citizenship) {
+            'citizenships' => array_map(function ($citizenship) {
                 return $citizenship->country->name;
             }, $user->citizenships),
         ];
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $this->render('index', $params),
                 [

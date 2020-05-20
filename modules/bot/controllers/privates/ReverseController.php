@@ -20,11 +20,7 @@ class ReverseController extends Controller
     {
         //TODO add reverse for $$message
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->sendMessage(
                 new MessageText($message)
             )

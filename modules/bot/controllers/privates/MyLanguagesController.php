@@ -48,14 +48,10 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($rows, [ $paginationButtons ], [
+                array_merge($rows, [$paginationButtons], [
                     [
                         [
                             'text' => Emoji::BACK,
@@ -109,14 +105,10 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $this->render('create-language'),
-                array_merge($languageRows, [ $paginationButtons ], [
+                array_merge($languageRows, [$paginationButtons], [
                     [
                         [
                             'callback_data' => self::createRoute(),
@@ -132,11 +124,7 @@ class MyLanguagesController extends Controller
     {
         $language = Language::findOne($languageId);
         if (!isset($language)) {
-
             return $this->getResponseBuilder()
-
-            
-
                 ->answerCallbackQuery();
         }
 
@@ -173,18 +161,14 @@ class MyLanguagesController extends Controller
             ];
         }, $levels);
 
-        $isEdit = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->exists();
-
+        $isEdit = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->exists();
 
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $this->render('create-level', [
                     'languageName' => $language->name,
                 ]),
-                array_merge($levelRows, [ $paginationButtons ], [
+                array_merge($levelRows, [$paginationButtons], [
                     array_merge([
                         [
                             'text' => Emoji::BACK,
@@ -214,15 +198,11 @@ class MyLanguagesController extends Controller
         $language = Language::findOne($languageId);
         $level = Language::findOne($levelId);
         if (!isset($language) || !isset($level)) {
-
             return $this->getResponseBuilder()
-
-            
-
                 ->answerCallbackQuery();
         }
 
-        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one()
+        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one()
             ?? new UserLanguage();
         $userLanguage->setAttributes([
             'user_id' => $this->getUser()->id,
@@ -236,13 +216,9 @@ class MyLanguagesController extends Controller
 
     public function actionDelete($languageId)
     {
-        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one();
+        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one();
         if (!isset($userLanguage)) {
-
             return $this->getResponseBuilder()
-
-            
-
                 ->answerCallbackQuery()
                 ->build();
         }

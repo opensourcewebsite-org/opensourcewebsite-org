@@ -27,11 +27,7 @@ class MyReferralsController extends Controller
         $botName = $this->getBotName();
         $botRefUrl = "https://t.me/$botName?start=$userId";
 
-
         return $this->getResponseBuilder()
-
-        
-
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'referralsCount' => $referralsCount,
