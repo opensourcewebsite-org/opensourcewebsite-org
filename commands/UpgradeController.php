@@ -2,34 +2,44 @@
 
 namespace app\commands;
 
-use yii\db\Migration;
+use app\commands\traits\ControllerLogTrait;
+use yii\console\Controller;
 
-class UpgradeController extends Migration
+class UpgradeController extends Controller
 {
+    use ControllerLogTrait;
+
     /**
-     * {@inheritdoc}
+     * Upgrade DB charset
      */
-    public function safeUp()
+    public function actionUpgradeDbCharset()
     {
-        preg_match('/' . 'dbname' . '=([^;]*)/', $this->db->dsn, $match);
+        $connection = \Yii::$app->db;
+        preg_match('/' . 'dbname' . '=([^;]*)/', $connection->dsn, $match);
         $dbName = $match[1];
-        if ($this->execute("ALTER DATABASE $dbName CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;")) {
-            $tableSchemas = $this->db->schema->getTableSchemas();
-            $this->execute('SET foreign_key_checks = 0;');
-            foreach ($tableSchemas as $tableSchema) {
-                $this->execute("ALTER TABLE $tableSchema->name CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;");
-            }
-            $this->execute('SET foreign_key_checks = 0;');
-        }
+        $command = $connection->createCommand("ALTER DATABASE $dbName CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;");
+        $command->execute();
+        $this->output('DataBase charset is changed!');
     }
 
     /**
-     * {@inheritdoc}
+     * Upgrade tables charset
      */
-    public function safeDown()
+    public function actionUpgradeTablesCharset()
     {
-        echo "UpgradeController cannot be reverted.\n";
-
-        return false;
+        $this->output('Running tables charset upgrades...');
+        $connection = \Yii::$app->db;
+        $tableSchemas = $connection->schema->getTableSchemas();
+        $sqlForeignKeyChecks = 'SET foreign_key_checks = 0;';
+        $command = $connection->createCommand($sqlForeignKeyChecks);
+        $command->execute();
+        foreach ($tableSchemas as $tableSchema) {
+            $sqlTablesSchemas = "ALTER TABLE $tableSchema->name CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;";
+            $command = $connection->createCommand($sqlTablesSchemas);
+            $command->execute();
+        }
+        $command = $connection->createCommand($sqlForeignKeyChecks);
+        $command->execute();
+        $this->output('Tables charset is changed!');
     }
 }
