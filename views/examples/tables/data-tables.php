@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\tables\DataTablesAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(DataTablesAsset::class);
 
 $this->title = 'DataTables';
 $this->params['breadcrumbs'][] = $this->title;

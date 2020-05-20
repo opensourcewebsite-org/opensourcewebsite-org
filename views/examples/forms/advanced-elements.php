@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\forms\AdvancedElementsAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(AdvancedElementsAsset::class);
 
 $this->title = Yii::t('app', 'Advanced Elements');
 $this->params['breadcrumbs'][] = $this->title;
