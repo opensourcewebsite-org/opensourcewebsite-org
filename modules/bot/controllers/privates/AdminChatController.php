@@ -89,8 +89,9 @@ class AdminChatController extends Controller
                                     'text' => '🔄',
                                 ],
                             ],
-                        ])
-                        ->build();
+                        ]
+                    )
+                    ->build();
             }
 
             return $this->getResponseBuilder()
