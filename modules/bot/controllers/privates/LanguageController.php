@@ -42,8 +42,8 @@ class LanguageController extends Controller
         $language = $language ?? $telegramUser->language;
         $languageCode = isset($language) ? $language->code : null;
         $languageName = isset($language) ? $language->name : null;
-        
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('languageCode', 'languageName')),
                 [
@@ -101,10 +101,10 @@ class LanguageController extends Controller
             ];
         }, $languages);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('list'),
-                array_merge($languageRows, [ $paginationButtons ], [
+                array_merge($languageRows, [$paginationButtons], [
                     [
                         [
                             'callback_data' => self::createRoute(),

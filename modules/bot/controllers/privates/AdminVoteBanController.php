@@ -46,39 +46,39 @@ class AdminVoteBanController extends Controller
         $voteLimitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
         $voteLimit =  isset($voteLimitSetting) ? $voteLimitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
 
-        return $this->getResponseBuilder()($this->getUpdate())
-        ->editMessageTextOrSendMessage(
-            $this->render('index', compact('chatTitle')),
-            [
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('chatTitle')),
                 [
                     [
-                        'callback_data' => self::createRoute('update', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
+                        [
+                            'callback_data' => self::createRoute('update', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
+                        ],
                     ],
-                ],
-                [
-                    // TODO add limit feature
                     [
-                        'callback_data' => self::createRoute('enter-limit', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => Yii::t('bot', 'Limit') . ': ' . $voteLimit,
+                        // TODO add limit feature
+                        [
+                            'callback_data' => self::createRoute('enter-limit', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Limit') . ': ' . $voteLimit,
+                        ],
                     ],
-                ],
-                [
                     [
-                        'callback_data' => AdminChatController::createRoute('index', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => '🔙',
-                    ],
-                ]
+                        [
+                            'callback_data' => AdminChatController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => '🔙',
+                        ],
+                    ]
 
-            ]
-        )
-        ->build();
+                ]
+            )
+            ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -107,7 +107,8 @@ class AdminVoteBanController extends Controller
         $this->getState()->setName(self::createRoute('update-limit', [
                 'chatId' => $chatId,
             ]));
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('update-limit'),
                 [
@@ -134,9 +135,9 @@ class AdminVoteBanController extends Controller
         $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
 
         if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
-            return $this->getResponseBuilder()($this->getUpdate())
-                    ->deleteMessage()
-                    ->build();
+            return $this->getResponseBuilder()
+                ->deleteMessage()
+                ->build();
         }
 
         if (!isset($statusSetting)) {
