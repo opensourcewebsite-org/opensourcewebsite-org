@@ -1,8 +1,8 @@
 <?php
 
+use yii\bootstrap4\ActiveForm;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
-use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
 $this->title = 'Change email';

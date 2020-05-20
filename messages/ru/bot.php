@@ -198,7 +198,7 @@ return [
     'Min. hourly rate' => 'Минимальная часовая ставка',
     'Max. hourly rate' => 'Максимальна часовая ставка',
     'allows members to vote for a specific member to be banned or kicked from the group' => 'позволяет участникам голосовать за бан других участников группы',
-    'To start a vote, send a reply “/voteban” to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ "/voteban" на сообщение любого участника группы',
+    'To start a vote, send a reply «<b>/voteban</b>» to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ «<b>/voteban</b>» на сообщение любого участника группы',
     'Not applicable for administrators' => 'Не применимо к администраторам',
     'allows members to leave likes and dislikes for any member of the group' => 'позволяет участникам оставлять лайки и дизлайки для любого участника группы',
     'Sexuality' => 'Сексуальная ориентация',
@@ -218,7 +218,7 @@ return [
     'reacted to a message from' => 'отреагировал на сообщение от',
     'Awesome members' => 'Классные участники',
     'rating' => 'рейтинг',
-    'To start a vote, send a reply “+” or "-" to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ "+" или "-" на сообщение любого участника группы',
+    'To start a vote, send a reply «<b>+</b>» or «<b>-</b>» to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ «<b>+</b>» или «<b>-</b>» на сообщение любого участника группы',
     'Not applicable for bots' => 'Не применимо к ботам',
     'send to the group to publish the list of members with votes' => 'отправьте в группу чтобы опубликовать список участников с голосами',
 ];

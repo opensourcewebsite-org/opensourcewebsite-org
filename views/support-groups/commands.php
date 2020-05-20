@@ -1,9 +1,9 @@
 <?php
 
+use yii\bootstrap4\ActiveForm;
 use app\widgets\buttons\AddButton;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
-use yii\bootstrap\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 

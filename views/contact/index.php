@@ -50,17 +50,33 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function (Contact $data) {
                                     return Html::a($data->getContactName(), ['/contact/view', 'id' => $data->id]);
                                 },
+                                'enableSorting' => false,
                                 'format' => 'html',
                             ],
                             [
                                 'attribute' => 'is_real',
                                 'value' => function ($model) {
-                                    return $model->is_real ? 'Real' : '';
+                                    return $model->is_real ? Yii::t('app', 'Real') : '';
                                 },
+                                'enableSorting' => false,
                                 'format' => 'html',
                             ],
-                            'vote_delegation_priority',
-                            'debt_redistribution_priority',
+                            [
+                                'attribute' => 'relation',
+                                'value' => function ($model) {
+                                    return Yii::t('app', Contact::RELATIONS[$model->relation]);
+                                },
+                                'enableSorting' => false,
+                                'format' => 'html',
+                            ],
+                            [
+                                'attribute' => 'vote_delegation_priority',
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'debt_redistribution_priority',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',

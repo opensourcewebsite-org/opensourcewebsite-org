@@ -17,6 +17,7 @@ return [
     'Voting Power' => 'Сила голоса',
     'Rating' => 'Рейтинг',
     'Active Rating' => 'Активный рейтинг',
+    'User ID' => 'ID пользователя',
     'Username' => 'Имя пользователя',
     'Name' => 'Имя',
     'Birthday' => 'День рождения',

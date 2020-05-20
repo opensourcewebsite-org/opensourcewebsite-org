@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\bootstrap\Modal;
+use yii\bootstrap4\Modal;
 use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 

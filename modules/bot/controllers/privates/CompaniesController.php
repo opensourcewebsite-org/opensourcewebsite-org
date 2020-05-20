@@ -43,7 +43,7 @@ class CompaniesController extends FillablePropertiesController
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $keyboards = array_map(function($company) {
+        $keyboards = array_map(function ($company) {
             return [
                 [
                     'text' => $company->name,
@@ -53,7 +53,7 @@ class CompaniesController extends FillablePropertiesController
                 ],
             ];
         }, $companies);
-        $keyboards = array_merge($keyboards, [ $paginationButtons ], [
+        $keyboards = array_merge($keyboards, [$paginationButtons], [
             [
                 [
                     'text' => Emoji::BACK,
@@ -72,7 +72,7 @@ class CompaniesController extends FillablePropertiesController
             ],
         ]);
 
-        return $this->getResponseBuilder()($update)
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 $keyboards

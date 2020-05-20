@@ -7,7 +7,7 @@ use Yii;
 /**
  * Nav renders a nav HTML component.
  */
-class Nav extends \yii\bootstrap\Nav
+class Nav extends \yii\bootstrap4\Nav
 {
 
     /**
@@ -20,9 +20,6 @@ class Nav extends \yii\bootstrap\Nav
         }
         if ($this->params === null) {
             $this->params = Yii::$app->request->getQueryParams();
-        }
-        if ($this->dropDownCaret === null) {
-            $this->dropDownCaret = '<span class="caret"></span>';
         }
     }
 }

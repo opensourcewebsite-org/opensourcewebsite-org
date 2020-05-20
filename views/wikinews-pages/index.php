@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\Icon;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -7,6 +8,8 @@ use yii\grid\ActionColumn;
 use app\models\UserWikiToken;
 use app\models\UserWikiPage;
 use app\components\TitleColumn;
+use app\widgets\ModalAjax;
+
 /* @var $this \yii\web\View */
 
 $this->title = Yii::t('menu', 'Wikinews pages');
@@ -15,15 +18,18 @@ $this->title = Yii::t('menu', 'Wikinews pages');
     <div class="card-header d-flex p-0">
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <?= Html::button('<i class="fa fa-plus"></i>', [
-                    'class' => 'btn btn-outline-success',
-                    'title' => 'Add Wikinews page',
-                    'onclick' => '$.get("' . Yii::$app->urlManager->createUrl(['wikinews-pages/create']) . '", {}, function (result){
-                    $("#main-modal-body").html(result);
-                    $("#main-modal-header").html("' . Yii::t('app', 'Add Wikinews page') . '").data("target", "' . Yii::$app->urlManager->createUrl(['wikinews-page/create']) . '");
-                    $("#main-modal").modal("show");
-                })',
-                ]); ?>
+                <?= ModalAjax::widget([
+                    'id' => 'add-wikinews',
+                    'header' => Yii::t('user', 'Add wikinews page'),
+                    'closeButton' => false,
+                    'toggleButton' => [
+                        'label' => Icon::ADD,
+                        'class' => 'btn btn-outline-success',
+                        'style' =>  ['float' => 'right'],
+                    ],
+                    'url' => Url::to(['wikinews-pages/create']),
+                    'ajaxSubmit' => true,
+                ]);?>
             </li>
         </ul>
     </div>

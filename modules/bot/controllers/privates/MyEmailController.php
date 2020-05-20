@@ -32,7 +32,11 @@ class MyEmailController extends Controller
             $this->getState()->setName(self::createRoute('create'));
         }
 
+
         return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'email' => $email,
@@ -96,7 +100,11 @@ class MyEmailController extends Controller
             }
         }
 
+
         return $this->getResponseBuilder()
+
+        
+
             ->sendMessage(
                 $this->render('create', [
                     'changeRequest' => $changeRequest,
@@ -130,7 +138,11 @@ class MyEmailController extends Controller
 
         $this->getState()->setName(self::createRoute('create'));
 
+
         return $this->getResponseBuilder()
+
+        
+
             ->removeInlineKeyboardMarkup()
             ->sendMessage(
                 $this->render('update')
@@ -156,7 +168,11 @@ class MyEmailController extends Controller
                 ]);
                 // MergeAccountsRequest::sendEmail also call ActiveRecord::save method
                 if ($mergeAccountsRequest->sendEmail()) {
+
                     return $this->getResponseBuilder()
+
+                    
+
                         ->editMessageTextOrSendMessage(
                             $this->render('merge-accounts'),
                             [
@@ -176,7 +192,11 @@ class MyEmailController extends Controller
             } else {
             }
         } else {
+
             return $this->getResponseBuilder()
+
+            
+
                 ->answerCallbackQuery(
                     new MessageText(Yii::t('bot', 'This request has expired')),
                     true
@@ -194,7 +214,11 @@ class MyEmailController extends Controller
             $deleted = $mergeAccountsRequest->delete();
         }
 
+
         return $this->getResponseBuilder()
+
+        
+
             ->removeInlineKeyboardMarkup()
             ->answerCallbackQuery(
                 new MessageText(Yii::t('bot', $deleted

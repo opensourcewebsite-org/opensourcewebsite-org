@@ -21,7 +21,11 @@ class MyRatingController extends Controller
      */
     public function actionIndex()
     {
+
         return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->renderRating(),
                 [

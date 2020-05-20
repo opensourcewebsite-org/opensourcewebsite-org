@@ -365,7 +365,7 @@ class UserController extends Controller
         $languageName = Language::findOne($id)->name;
 
         $languagesLevel = array_map(function ($languageLevel) {
-            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('app', $languageLevel->description);
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('user', $languageLevel->description);
         }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $userLanguageRecord = UserLanguage::find()->where([
@@ -409,7 +409,7 @@ class UserController extends Controller
         }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $languagesLevel = array_map(function ($languageLevel) {
-            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('app', $languageLevel->description);
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('user', $languageLevel->description);
         }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
         if (Yii::$app->request->post()) {

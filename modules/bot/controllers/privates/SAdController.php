@@ -19,7 +19,11 @@ class SAdController extends Controller
      */
     public function actionIndex()
     {
+
         return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [

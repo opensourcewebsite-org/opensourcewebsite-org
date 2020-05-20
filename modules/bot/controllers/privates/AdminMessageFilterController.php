@@ -62,52 +62,52 @@ class AdminMessageFilterController extends Controller
         $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
 
         return $this->getResponseBuilder()
-        ->editMessageTextOrSendMessage(
-            $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
-            [
+            ->editMessageTextOrSendMessage(
+                $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
                 [
                     [
-                        'callback_data' => self::createRoute('status', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? 'ON' : 'OFF'),
+                        [
+                            'callback_data' => self::createRoute('status', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? 'ON' : 'OFF'),
+                        ],
                     ],
-                ],
-                [
                     [
-                        'callback_data' => self::createRoute('update', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => Yii::t('bot', 'Mode') . ': ' . ($isFilterModeBlack ? Yii::t('bot', 'Blacklist') : Yii::t('bot', 'Whitelist')),
+                        [
+                            'callback_data' => self::createRoute('update', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Mode') . ': ' . ($isFilterModeBlack ? Yii::t('bot', 'Blacklist') : Yii::t('bot', 'Whitelist')),
+                        ],
                     ],
-                ],
-                [
                     [
-                        'callback_data' => self::createRoute('whitelist', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => Yii::t('bot', 'Whitelist'),
+                        [
+                            'callback_data' => self::createRoute('whitelist', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Whitelist'),
+                        ],
                     ],
-                ],
-                [
                     [
-                        'callback_data' => self::createRoute('blacklist', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => Yii::t('bot', 'Blacklist'),
+                        [
+                            'callback_data' => self::createRoute('blacklist', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Blacklist'),
+                        ],
                     ],
-                ],
-                [
                     [
-                        'callback_data' => AdminChatController::createRoute('index', [
-                            'chatId' => $chatId,
-                        ]),
-                        'text' => '🔙',
-                    ],
+                        [
+                            'callback_data' => AdminChatController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => '🔙',
+                        ],
+                    ]
                 ]
-            ]
-        )
-        ->build();
+            )
+            ->build();
     }
 
     public function actionUpdate($chatId = null)
@@ -301,11 +301,11 @@ class AdminMessageFilterController extends Controller
                 ];
 
         return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('whitelist', compact('chatTitle')),
-                    $buttons
-                )
-                ->build();
+            ->editMessageTextOrSendMessage(
+                $this->render('whitelist', compact('chatTitle')),
+                $buttons
+            )
+            ->build();
     }
 
     /**
@@ -319,24 +319,24 @@ class AdminMessageFilterController extends Controller
                     ]));
 
         return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('newphrase'),
+            ->editMessageTextOrSendMessage(
+                $this->render('newphrase'),
+                [
+                    [
                         [
-                            [
-                                [
-                                    'callback_data' => $type == Phrase::TYPE_BLACKLIST
-                                    ? self::createRoute('blacklist', [
-                                        'chatId' => $chatId,
-                                    ])
-                                    : self::createRoute('whitelist', [
-                                        'chatId' => $chatId,
-                                    ]),
-                                    'text' => '🔙',
-                                ],
-                            ],
-                        ]
-                    )
-                    ->build();
+                            'callback_data' => $type == Phrase::TYPE_BLACKLIST
+                            ? self::createRoute('blacklist', [
+                                'chatId' => $chatId,
+                            ])
+                            : self::createRoute('whitelist', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => '🔙',
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionNewphraseUpdate($type = null, $chatId = null)
@@ -378,36 +378,36 @@ class AdminMessageFilterController extends Controller
         $phrase = Phrase::findOne($phraseId);
 
         return $this->getResponseBuilder()
-                        ->editMessageTextOrSendMessage(
-                            $this->render('phrase', compact('phrase')),
-                            [
-                                [
-                                    [
-                                        'callback_data' => $phrase->isTypeBlack()
-                                        ? self::createRoute('blacklist', [
-                                            'chatId' => $phrase->chat_id,
-                                        ])
-                                        : self::createRoute('whitelist', [
-                                            'chatId' => $phrase->chat_id,
-                                        ]),
-                                        'text' => '🔙',
-                                    ],
-                                    [
-                                        'callback_data' => self::createRoute('phrase-create', [
-                                            'phraseId' => $phraseId,
-                                        ]),
-                                        'text' => '✏️',
-                                    ],
-                                    [
-                                        'callback_data' => self::createRoute('phrase-delete', [
-                                            'phraseId' => $phraseId,
-                                        ]),
-                                        'text' => '🗑',
-                                    ],
-                                ],
-                            ]
-                        )
-                        ->build();
+            ->editMessageTextOrSendMessage(
+                $this->render('phrase', compact('phrase')),
+                [
+                    [
+                        [
+                            'callback_data' => $phrase->isTypeBlack()
+                            ? self::createRoute('blacklist', [
+                                'chatId' => $phrase->chat_id,
+                            ])
+                            : self::createRoute('whitelist', [
+                                'chatId' => $phrase->chat_id,
+                            ]),
+                            'text' => '🔙',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('phrase-create', [
+                                'phraseId' => $phraseId,
+                            ]),
+                            'text' => '✏️',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('phrase-delete', [
+                                'phraseId' => $phraseId,
+                            ]),
+                            'text' => '🗑',
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionPhraseDelete($phraseId = null)
@@ -438,20 +438,20 @@ class AdminMessageFilterController extends Controller
                             ]));
 
         return $this->getResponseBuilder()
-                            ->editMessageTextOrSendMessage(
-                                $this->render('phrase-create'),
-                                [
-                                    [
-                                        [
-                                            'callback_data' => self::createRoute('phrase', [
-                                                'phraseId' => $phraseId,
-                                            ]),
-                                            'text' => '🔙',
-                                        ],
-                                    ],
-                                ]
-                            )
-                            ->build();
+            ->editMessageTextOrSendMessage(
+                $this->render('phrase-create'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('phrase', [
+                                'phraseId' => $phraseId,
+                            ]),
+                            'text' => '🔙',
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionPhraseUpdate($phraseId = null)
