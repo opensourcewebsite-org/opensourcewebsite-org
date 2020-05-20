@@ -14,7 +14,6 @@ class MessageCommandResolver implements ICommandResolver
         }
 
         if (!isset($commandText) && ($message = $update->getEditedMessage())) {
-            $chat = $message->getChat();
             $commandText = $message->getText();
         }
 
