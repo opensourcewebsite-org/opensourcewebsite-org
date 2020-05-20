@@ -27,8 +27,7 @@ class MessageUpdateHandler implements IUpdateHandler
             // Имеет смысл сделать так чтобы бот повторно рассматривал
             // отредактированные сообщения. Это будет влиять на все функции для групп
             // если потребуется для pirvate чата, то это выражение можно убрать
-            $isPublicChat = $chat && in_array($chat->getType(), [Chat::TYPE_GROUP, Chat::TYPE_SUPERGROUP]);
-            if (!$isPublicChat) {
+            if (!$chat->isPublic()) {
                 unset($chat);
             }
         }
