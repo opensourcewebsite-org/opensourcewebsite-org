@@ -4,7 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
@@ -43,7 +43,7 @@ class AdminJoinHiderController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [

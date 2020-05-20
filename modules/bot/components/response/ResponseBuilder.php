@@ -62,7 +62,7 @@ class ResponseBuilder
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
                 ]
             );
-        } elseif ($message = $this->update->getMessage()) {
+        } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $optionalParams = ArrayHelper::merge(
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
@@ -143,7 +143,7 @@ class ResponseBuilder
     public function sendMessage(MessageText $messageText, array $replyMarkup = null, bool $disablePreview = false, array $optionalParams = [])
     {
         $chatId = null;
-        if ($message = $this->update->getMessage()) {
+        if ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $chatId = $message->getChat()->getId();
         } elseif ($callbackQuery = $this->update->getCallbackQuery()) {
             $chatId = $callbackQuery->getMessage()->getChat()->getId();
@@ -171,7 +171,7 @@ class ResponseBuilder
      */
     public function deleteMessage()
     {
-        if ($message = $this->update->getMessage()) {
+        if ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $this->commands[] = new DeleteMessageCommand(
                 $message->getChat()->getId(),
                 $message->getMessageId()
@@ -188,7 +188,7 @@ class ResponseBuilder
     public function sendLocation(int $longitude, int $latitude)
     {
         $chatId = null;
-        if ($message = $this->update->getMessage()) {
+        if ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $chatId = $message->getChat()->getId();
         } elseif ($callbackQuery = $this->update->getCallbackQuery()) {
             $chatId = $callbackQuery->getMessage()->getChat()->getId();

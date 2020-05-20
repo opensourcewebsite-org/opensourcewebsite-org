@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
@@ -98,7 +98,7 @@ class AdminChatRefreshController extends Controller
             }
 
             if ($currentUserIsAdministrator) {
-                $result = ResponseBuilder::fromUpdate($this->getUpdate())
+                $result = $this->getResponseBuilder()($this->getUpdate())
                 ->answerCallbackQuery(
                     $this->render('index'),
                     true

@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Phrase;
@@ -61,7 +61,7 @@ class AdminMessageFilterController extends Controller
         $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
         $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
         ->editMessageTextOrSendMessage(
             $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
             [
@@ -222,7 +222,7 @@ class AdminMessageFilterController extends Controller
                 ],
             ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('blacklist', compact('chatTitle')),
                 $buttons
@@ -300,7 +300,7 @@ class AdminMessageFilterController extends Controller
                     ],
                 ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
                 ->editMessageTextOrSendMessage(
                     $this->render('whitelist', compact('chatTitle')),
                     $buttons
@@ -318,7 +318,7 @@ class AdminMessageFilterController extends Controller
                         'chatId' => $chatId,
                     ]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
                     ->editMessageTextOrSendMessage(
                         $this->render('newphrase'),
                         [
@@ -377,7 +377,7 @@ class AdminMessageFilterController extends Controller
 
         $phrase = Phrase::findOne($phraseId);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
                         ->editMessageTextOrSendMessage(
                             $this->render('phrase', compact('phrase')),
                             [
@@ -437,7 +437,7 @@ class AdminMessageFilterController extends Controller
                                 'phraseId' => $phraseId,
                             ]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
                             ->editMessageTextOrSendMessage(
                                 $this->render('phrase-create'),
                                 [
