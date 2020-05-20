@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
-            "version": "v3.0.4",
+            "version": "v3.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ColorlibHQ/AdminLTE.git",
-                "reference": "4723bccf4321f28d9ac8ec4f8c64b785e277ba71"
+                "reference": "6b8b69261f1aacbb4be037c934f3c3652e6dff27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ColorlibHQ/AdminLTE/zipball/4723bccf4321f28d9ac8ec4f8c64b785e277ba71",
-                "reference": "4723bccf4321f28d9ac8ec4f8c64b785e277ba71",
+                "url": "https://api.github.com/repos/ColorlibHQ/AdminLTE/zipball/6b8b69261f1aacbb4be037c934f3c3652e6dff27",
+                "reference": "6b8b69261f1aacbb4be037c934f3c3652e6dff27",
                 "shasum": ""
             },
             "type": "library",
@@ -43,7 +43,7 @@
                 "theme",
                 "web"
             ],
-            "time": "2020-04-01T23:06:25+00:00"
+            "time": "2020-05-19T20:41:11+00:00"
         },
         {
             "name": "bower-asset/inputmask",
