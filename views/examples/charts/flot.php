@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\charts\FlotAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(FlotAsset::class);
 
 $this->title = 'Flot';
 $this->params['breadcrumbs'][] = $this->title;

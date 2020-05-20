@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\CalendarAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(CalendarAsset::class);
 
 $this->title = Yii::t('app', 'Calendar');
 $this->params['breadcrumbs'][] = $this->title;

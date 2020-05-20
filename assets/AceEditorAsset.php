@@ -6,9 +6,10 @@ use yii\web\AssetBundle;
 
 /**
  * Ace Editor Asset
+ *
  * @link https://cdnjs.com/libraries/ace
  */
- //TODO replace scripts from vendor to cdn
+//TODO replace scripts from vendor to cdn
 class AceEditorAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/npm-asset/ace-builds';

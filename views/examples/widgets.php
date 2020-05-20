@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\WidgetsAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(WidgetsAsset::class);
 
 $this->title = Yii::t('app', 'Widgets');
 $this->params['breadcrumbs'][] = $this->title;
@@ -1356,8 +1356,7 @@ Count Dracula
                 <!-- Widget: user widget style 1 -->
                 <div class="card card-widget widget-user">
                     <!-- Add the bg color to the header using any of the bg-* classes -->
-                    <div class="widget-user-header text-white"
-                        style="background: url('https://dummyimage.com/800x500/006b46/ffffff&text=image') center center;">
+                    <div class="widget-user-header text-white" style="background: url('https://dummyimage.com/800x500/006b46/ffffff&text=image') center center;">
                         <h3 class="widget-user-username text-right">Elizabeth Pierce</h3>
                         <h5 class="widget-user-desc text-right">Web Designer</h5>
                     </div>

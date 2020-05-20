@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\CommonAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(CommonAsset::class);
 
 $CSS = <<<CSS
     .color-palette {

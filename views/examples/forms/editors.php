@@ -1,10 +1,10 @@
 <?php
 
 use app\assets\AceEditorAsset;
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\forms\EditorsAsset;
 use yii\helpers\Html;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(EditorsAsset::class);
 
 $this->title = Yii::t('app', 'Editors');
 $this->params['breadcrumbs'][] = $this->title;

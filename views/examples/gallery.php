@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\GalleryAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(GalleryAsset::class);
 
 $this->title = Yii::t('app', 'Gallery');
 $this->params['breadcrumbs'][] = $this->title;

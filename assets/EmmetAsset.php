@@ -6,6 +6,7 @@ use yii\web\AssetBundle;
 
 /**
  * Emmet.js Asset
+ *
  * @link https://cdnjs.com/libraries/html.js
  */
 class EmmetAsset extends AssetBundle

@@ -1,8 +1,11 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
+use app\assets\widgets\ui\SweetAlertAsset;
+use app\assets\widgets\ui\ToastAsset;
 
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(ToastAsset::class);
+$this->registerAssetBundle(SweetAlertAsset::class);
+
 
 $JS = <<<JS
     $(function() {
