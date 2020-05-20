@@ -43,7 +43,7 @@ class AdminStarTopController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [
