@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\tables\JsGridAsset::class);
+use app\assets\widgets\tables\JsGridAsset;
+
+$this->registerAssetBundle(JsGridAsset::class);
 
 $this->title = 'jsGrid';
 $this->params['breadcrumbs'][] = $this->title;

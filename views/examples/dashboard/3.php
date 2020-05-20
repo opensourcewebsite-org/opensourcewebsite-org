@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\dashboard\OnlineVisitorsAsset::class);
+use app\assets\widgets\dashboard\OnlineVisitorsAsset;
+
+$this->registerAssetBundle(OnlineVisitorsAsset::class);
 
 $this->title = Yii::t('app', 'Dashboard {number}', ['number' => 3]);
 $this->params['breadcrumbs'][] = $this->title;
@@ -267,7 +269,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <i class="fas fa-square text-primary"></i> This year
                         </span>
 
-                        <span>
+                            <span>
                             <i class="fas fa-square text-gray"></i> Last year
                         </span>
                         </div>

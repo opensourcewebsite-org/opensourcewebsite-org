@@ -1,7 +1,10 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\ui\ToastAsset::class);
-$this->registerAssetBundle(\app\assets\widgets\ui\SweetAlertAsset::class);
+use app\assets\widgets\ui\SweetAlertAsset;
+use app\assets\widgets\ui\ToastAsset;
+
+$this->registerAssetBundle(ToastAsset::class);
+$this->registerAssetBundle(SweetAlertAsset::class);
 
 
 $JS = <<<JS

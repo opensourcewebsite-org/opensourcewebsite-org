@@ -1,10 +1,16 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\dashboard\SalesGraphAsset::class);
-$this->registerAssetBundle(\app\assets\widgets\dashboard\SalesChartAsset::class);
-$this->registerAssetBundle(\app\assets\widgets\dashboard\VisitorsAsset::class);
-$this->registerAssetBundle(\app\assets\widgets\dashboard\ToDoListAsset::class);
-$this->registerAssetBundle(\app\assets\widgets\dashboard\CalendarAsset::class);
+use app\assets\widgets\dashboard\CalendarAsset;
+use app\assets\widgets\dashboard\SalesChartAsset;
+use app\assets\widgets\dashboard\SalesGraphAsset;
+use app\assets\widgets\dashboard\ToDoListAsset;
+use app\assets\widgets\dashboard\VisitorsAsset;
+
+$this->registerAssetBundle(SalesGraphAsset::class);
+$this->registerAssetBundle(SalesChartAsset::class);
+$this->registerAssetBundle(VisitorsAsset::class);
+$this->registerAssetBundle(ToDoListAsset::class);
+$this->registerAssetBundle(CalendarAsset::class);
 
 $this->title = Yii::t('app', 'Dashboard {number}', ['number' => 1]);
 $this->params['breadcrumbs'][] = $this->title;

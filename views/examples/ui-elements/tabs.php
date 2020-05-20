@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\ui\TabsAsset::class);
+use app\assets\widgets\ui\TabsAsset;
+
+$this->registerAssetBundle(TabsAsset::class);
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\ui\TimelineAsset::class);
+use app\assets\widgets\ui\TimelineAsset;
+
+$this->registerAssetBundle(TimelineAsset::class);
 
 $JS = <<<JS
     $(function() {

@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\tables\SimpleTablesAsset::class);
+use app\assets\widgets\tables\SimpleTablesAsset;
+
+$this->registerAssetBundle(SimpleTablesAsset::class);
 
 $this->title = Yii::t('app', 'Simple Tables');
 $this->params['breadcrumbs'][] = $this->title;

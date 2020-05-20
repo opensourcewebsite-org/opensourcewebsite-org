@@ -1,6 +1,9 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\charts\ChartAsset::class);
+use app\assets\widgets\charts\ChartAsset;
+use yii\web\View;
+
+$this->registerAssetBundle(ChartAsset::class);
 
 $this->title = 'ChartJS';
 $this->params['breadcrumbs'][] = $this->title;
@@ -17,7 +20,7 @@ $JS = <<<JS
     //--------------
 
     // Get context with jQuery - using jQuery's .get() method.
-    var areaChartCanvas = $('#areaChart').get(0).getContext('2d')
+    var areaChartCanvas = $('#areaChart').get(0).getContext('2d');
 
     var areaChartData = {
       labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -45,7 +48,7 @@ $JS = <<<JS
           data                : [65, 59, 80, 81, 56, 55, 40]
         },
       ]
-    }
+    };
 
     var areaChartOptions = {
       maintainAspectRatio : false,
@@ -65,36 +68,36 @@ $JS = <<<JS
           }
         }]
       }
-    }
+    };
 
     // This will get the first returned node in the jQuery collection.
     var areaChart       = new Chart(areaChartCanvas, {
       type: 'line',
       data: areaChartData,
       options: areaChartOptions
-    })
+    });
 
     //-------------
     //- LINE CHART -
     //--------------
-    var lineChartCanvas = $('#lineChart').get(0).getContext('2d')
-    var lineChartOptions = jQuery.extend(true, {}, areaChartOptions)
-    var lineChartData = jQuery.extend(true, {}, areaChartData)
+    var lineChartCanvas = $('#lineChart').get(0).getContext('2d');
+    var lineChartOptions = jQuery.extend(true, {}, areaChartOptions);
+    var lineChartData = jQuery.extend(true, {}, areaChartData);
     lineChartData.datasets[0].fill = false;
     lineChartData.datasets[1].fill = false;
-    lineChartOptions.datasetFill = false
+    lineChartOptions.datasetFill = false;
 
     var lineChart = new Chart(lineChartCanvas, {
       type: 'line',
       data: lineChartData,
       options: lineChartOptions
-    })
+    });
 
     //-------------
     //- DONUT CHART -
     //-------------
     // Get context with jQuery - using jQuery's .get() method.
-    var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
+    var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
     var donutData        = {
       labels: [
           'Chrome',
@@ -110,64 +113,64 @@ $JS = <<<JS
           backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
         }
       ]
-    }
+    };
     var donutOptions     = {
       maintainAspectRatio : false,
       responsive : true,
-    }
+    };
     //Create pie or douhnut chart
     // You can switch between pie and douhnut using the method below.
     var donutChart = new Chart(donutChartCanvas, {
       type: 'doughnut',
       data: donutData,
       options: donutOptions
-    })
+    });
 
     //-------------
     //- PIE CHART -
     //-------------
     // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+    var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
     var pieData        = donutData;
     var pieOptions     = {
       maintainAspectRatio : false,
       responsive : true,
-    }
+    };
     //Create pie or douhnut chart
     // You can switch between pie and douhnut using the method below.
     var pieChart = new Chart(pieChartCanvas, {
       type: 'pie',
       data: pieData,
       options: pieOptions
-    })
+    });
 
     //-------------
     //- BAR CHART -
     //-------------
-    var barChartCanvas = $('#barChart').get(0).getContext('2d')
-    var barChartData = jQuery.extend(true, {}, areaChartData)
-    var temp0 = areaChartData.datasets[0]
-    var temp1 = areaChartData.datasets[1]
-    barChartData.datasets[0] = temp1
-    barChartData.datasets[1] = temp0
+    var barChartCanvas = $('#barChart').get(0).getContext('2d');
+    var barChartData = jQuery.extend(true, {}, areaChartData);
+    var temp0 = areaChartData.datasets[0];
+    var temp1 = areaChartData.datasets[1];
+    barChartData.datasets[0] = temp1;
+    barChartData.datasets[1] = temp0;
 
     var barChartOptions = {
       responsive              : true,
       maintainAspectRatio     : false,
       datasetFill             : false
-    }
+    };
 
     var barChart = new Chart(barChartCanvas, {
       type: 'bar',
       data: barChartData,
       options: barChartOptions
-    })
+    });
 
     //---------------------
     //- STACKED BAR CHART -
     //---------------------
-    var stackedBarChartCanvas = $('#stackedBarChart').get(0).getContext('2d')
-    var stackedBarChartData = jQuery.extend(true, {}, barChartData)
+    var stackedBarChartCanvas = $('#stackedBarChart').get(0).getContext('2d');
+    var stackedBarChartData = jQuery.extend(true, {}, barChartData);
 
     var stackedBarChartOptions = {
       responsive              : true,
@@ -180,7 +183,7 @@ $JS = <<<JS
           stacked: true
         }]
       }
-    }
+    };
 
     var stackedBarChart = new Chart(stackedBarChartCanvas, {
       type: 'bar',
@@ -190,7 +193,7 @@ $JS = <<<JS
   })
 JS;
 
-$this->registerJs($JS, \yii\web\View::POS_END);
+$this->registerJs($JS, View::POS_END);
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\ui\SlidersAsset::class);
+use app\assets\widgets\ui\SlidersAsset;
+
+$this->registerAssetBundle(SlidersAsset::class);
 
 $JS = <<<JS
     $(function () {
@@ -58,7 +60,7 @@ $JS = <<<JS
             onChange: function (obj) {
                 var t = '';
                 for (var prop in obj) {
-                    t += prop + ': ' + obj[prop] + ';;;;;\r\n'
+                    t += prop + ': ' + obj[prop] + ';;;;;;\r\n'
                 }
                 $('#result').html(t)
             },

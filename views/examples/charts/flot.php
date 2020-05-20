@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\charts\FlotAsset::class);
+use app\assets\widgets\charts\FlotAsset;
+
+$this->registerAssetBundle(FlotAsset::class);
 
 $this->title = 'Flot';
 $this->params['breadcrumbs'][] = $this->title;

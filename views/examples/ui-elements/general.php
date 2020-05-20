@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\CommonAsset::class);
+use app\assets\widgets\CommonAsset;
+
+$this->registerAssetBundle(CommonAsset::class);
 
 $CSS = <<<CSS
     .color-palette {

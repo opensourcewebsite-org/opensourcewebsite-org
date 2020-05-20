@@ -1,6 +1,8 @@
 <?php
 
-$this->registerAssetBundle(\app\assets\widgets\tables\DataTablesAsset::class);
+use app\assets\widgets\tables\DataTablesAsset;
+
+$this->registerAssetBundle(DataTablesAsset::class);
 
 $this->title = 'DataTables';
 $this->params['breadcrumbs'][] = $this->title;
