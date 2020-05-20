@@ -19,7 +19,7 @@ class UpgradeController extends Migration
             foreach ($tableSchemas as $tableSchema) {
                 $this->execute("ALTER TABLE $tableSchema->name CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;");
             }
-            $this->execute("SET foreign_key_checks = 0;");
+            $this->execute('SET foreign_key_checks = 0;');
         }
     }
 
