@@ -1,13 +1,23 @@
 <?php
 
+use app\components\helpers\Icon;
 use app\components\helpers\TimeHelper;
-use yii\helpers\Html;
+use app\models\Country;
+use app\models\Language;
+use app\models\LanguageLevel;
+use app\widgets\buttons\TrashButton;
+use app\widgets\ModalAjax;
+use yii\helpers\Url;
+use kartik\select2\Select2Asset;
+use app\widgets\buttons\EditButton;
 
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Account');
 
 $timezones = TimeHelper::timezonesList();
+Select2Asset::register($this);
+
 ?>
 
 <div class="account-index">
@@ -25,7 +35,7 @@ $timezones = TimeHelper::timezonesList();
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Real confirmations'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Real confirmations'); ?></th>
                                     <td class="align-middle"><?= $realConfirmations; ?></td>
                                     <td></td>
                                 </tr>
@@ -40,29 +50,31 @@ $timezones = TimeHelper::timezonesList();
                                         ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-email" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-email',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Rank'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Rank'); ?></th>
                                     <td class="align-middle"><?= "<b>$ranking[rank]</b> of $ranking[total]"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Voting Power'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Voting Power'); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[percent]%</b> of 100%"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Rating'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Rating'); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[rating]</b> of $overallRating[totalRating]"; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Active Rating'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Active Rating'); ?></th>
                                     <td class="align-middle"><?= "<b>$model->activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ')'; ?></td>
                                     <td></td>
                                 </tr>
@@ -91,85 +103,211 @@ $timezones = TimeHelper::timezonesList();
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Username'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Username'); ?></th>
                                     <td class="align-middle"><span id="username"><?= empty($model->username)
                                                 ? '' : '<b>@</b>' . $model->username;
                                             ?></span></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-username" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-username',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Name'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Name'); ?></th>
                                     <td class="align-middle" id="name"><?= $model->name ?? $model->id; ?></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-name" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-name',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Birthday'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Birthday'); ?></th>
                                     <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' :
                                             Yii::$app->formatter->asDate($model->birthday); ?></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-birthday" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-birthday',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Gender'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Gender'); ?></th>
                                     <td class="align-middle" id="gender">
-                                        <?= Yii::t('app', $model->gender->name ?? ''); ?>
+                                        <?= Yii::t('user', $model->gender->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-gender" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-gender',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Sexuality'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Sexuality'); ?></th>
                                     <td class="align-middle" id="sexuality">
-                                        <?= Yii::t('app', $model->sexuality->name ?? ''); ?>
+                                        <?= Yii::t('user', $model->sexuality->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-sexuality" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-sexuality',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Timezone'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Timezone'); ?></th>
                                     <td class="align-middle" id="timezone"><?= Yii::t('app',
                                             $timezones[$model->timezone]); ?></td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-timezone" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-timezone',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Currency'); ?></th>
+                                    <th class="align-middle"><?= Yii::t('user', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
                                         <?= Yii::t('app', $model->currency->name ?? ''); ?>
                                     </td>
                                     <td>
-                                        <?= Html::button('<a href="/user/change-currency" class="fas fa-edit"></a>', [
-                                            'class' => 'btn btn-light edit-btn',
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'style' => ['float' => 'right']]); ?>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-currency',
+                                            'options' => [
+                                                'style' => 'float: right'
+                                            ]
+                                        ]); ?>
                                     </td>
                                 </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="languages-index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('user', 'Languages'); ?></h3>
+                    <div class="card-tools">
+                        <?= ModalAjax::widget([
+                            'id' => 'add-language',
+                            'header' => Yii::t('user', 'Add language'),
+                            'closeButton' => false,
+                            'toggleButton' => [
+                                'label' => Icon::ADD,
+                                'class' => 'btn btn-outline-success',
+                                'style' =>  ['float' => 'right'],
+                            ],
+                            'url' => Url::to(['user/add-language']),
+                            'ajaxSubmit' => true,
+                        ]);?>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <div id="w0" class="grid-view">
+                            <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                                <tbody>
+                                <?php
+                                array_map(function ($language) {
+                                    $languageName = Language::findOne($language->language_id)->name;
+                                    $languageName = Yii::t('app', $languageName);
+                                    $languageLevel = LanguageLevel::findOne($language->language_level_id)->description;
+                                    $languageLevel = Yii::t('user', $languageLevel);
+
+                                    echo  '<tr><td>' . $languageName . ' - ' . $languageLevel . '</td><td>';
+                                    echo ModalAjax::widget([
+                                        'id' => 'change-language' . $language->language_id,
+                                        'header' => Yii::t('user', 'Change language'),
+                                        'closeButton' => false,
+                                        'toggleButton' => [
+                                            'label' => Icon::EDIT,
+                                            'class' => 'btn btn-light edit-btn',
+                                            'style' =>  ['float' => 'right', 'color' => '#007bff'],
+                                        ],
+                                        'url' => Url::to([
+                                            'user/change-language',
+                                            'id' => $language->language_id]),
+                                        'ajaxSubmit' => true,
+                                    ]);
+                                    echo '</td></tr>';
+                                }, $model->languages); ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="citizenship-index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('user', 'Citizenships'); ?></h3>
+                    <div class="card-tools">
+                        <?= ModalAjax::widget([
+                            'id' => 'add-citizenship',
+                            'header' => Yii::t('user', 'Add citizenship'),
+                            'closeButton' => false,
+                            'toggleButton' => [
+                                'label' => Icon::ADD,
+                                'class' => 'btn btn-outline-success',
+                                'style' =>  ['float' => 'right'],
+                            ],
+                            'url' => Url::to(['user/add-citizenship']),
+                            'ajaxSubmit' => true,
+                        ]);?>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <div id="w0" class="grid-view">
+                            <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                                <tbody>
+                                <?php
+                                array_map(function ($citizenship) {
+                                    $citizenshipName = Country::findOne($citizenship->country_id)->name;
+                                    $citizenshipName = Yii::t('user', $citizenshipName);
+                                    echo '<tr><td>' . $citizenshipName . '</td><td>';
+                                    echo TrashButton::widget([
+                                        'url' => [
+                                            '/user/delete-citizenship',
+                                            'id' => $citizenship->country_id,
+                                        ],
+                                        'options' => [
+                                            'style' => 'float: right',
+                                        ]
+                                    ]);
+                                    echo '</td></tr>';
+                                }, $model->citizenships); ?>
                                 </tbody>
                             </table>
                         </div>

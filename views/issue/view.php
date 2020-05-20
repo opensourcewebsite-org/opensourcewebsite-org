@@ -3,6 +3,7 @@
 use app\components\Converter;
 use app\components\helpers\IssuesHelper;
 use app\models\UserIssueVote;
+use app\widgets\buttons\EditButton;
 use yii\helpers\Html;
 use app\modules\comment\models\IssueComment;
 use app\modules\comment\Comment;
@@ -25,10 +26,9 @@ $this->params['breadcrumbs'][] = '#'.$model->id;
                         </div>
                         <div class="col-1 text-right">
                             <?php if ((int) $model->user_id === Yii::$app->user->identity->id && !$model->hasIssuesVoteOfOthers($model)) : ?>
-                            <?= Html::a('<i class="fas fa-edit"></i>', ['issue/edit', 'id' => $model->id], [
-                                'class' => 'btn btn-light',
-                                'title' => 'Edit',
-                            ]) ?>
+                            <?= EditButton::widget([
+                                'url' => ['issue/edit', 'id' => $model->id]
+                                ]); ?>
                             <?php endif; ?>
                         </div>
                     </div>

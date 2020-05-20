@@ -4,6 +4,8 @@ First off, thanks for taking the time to contribute!
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
+Please read through [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
+
 ## Getting Started
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the core team before making a change.
