@@ -15,7 +15,7 @@ class UpgradeController extends Migration
         $dbName = $match[1];
         if ($this->execute("ALTER DATABASE $dbName CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;")) {
             $tableSchemas = $this->db->schema->getTableSchemas();
-            $this->execute("SET foreign_key_checks = 0;");
+            $this->execute('SET foreign_key_checks = 0;');
             foreach ($tableSchemas as $tableSchema) {
                 $this->execute("ALTER TABLE $tableSchema->name CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;");
             }
