@@ -27,7 +27,7 @@ class RandomStringController extends Controller
             $randomString .= $characters[$index];
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendMessage(
                 new MessageText($randomString)
             )

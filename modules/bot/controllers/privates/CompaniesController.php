@@ -82,7 +82,7 @@ class CompaniesController extends FillablePropertiesController
 
     public function actionUpdate($companyId)
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageReplyMarkup([
                     [
                         [
@@ -142,7 +142,7 @@ class CompaniesController extends FillablePropertiesController
             return [];
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $company->name,

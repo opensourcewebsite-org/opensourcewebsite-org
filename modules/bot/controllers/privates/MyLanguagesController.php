@@ -48,7 +48,7 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 array_merge($rows, [ $paginationButtons ], [
@@ -105,7 +105,7 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('create-language'),
                 array_merge($languageRows, [ $paginationButtons ], [
@@ -124,7 +124,7 @@ class MyLanguagesController extends Controller
     {
         $language = Language::findOne($languageId);
         if (!isset($language)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery();
         }
 
@@ -163,7 +163,7 @@ class MyLanguagesController extends Controller
 
         $isEdit = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->exists();
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('create-level', [
                     'languageName' => $language->name,
@@ -198,7 +198,7 @@ class MyLanguagesController extends Controller
         $language = Language::findOne($languageId);
         $level = Language::findOne($levelId);
         if (!isset($language) || !isset($level)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery();
         }
 
@@ -218,7 +218,7 @@ class MyLanguagesController extends Controller
     {
         $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one();
         if (!isset($userLanguage)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }

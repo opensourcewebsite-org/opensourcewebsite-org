@@ -56,7 +56,7 @@ class MyCitizenshipController extends Controller
             ];
         }, $citizenships);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 array_merge($citizenshipRows, [ $paginationButtons ], [
@@ -113,7 +113,7 @@ class MyCitizenshipController extends Controller
             ];
         }, $countries);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('create-country'),
                 array_merge($countryRows, [ $paginationButtons ], [
@@ -132,7 +132,7 @@ class MyCitizenshipController extends Controller
     {
         $country = Country::findOne($countryId);
         if (!isset($country)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -152,12 +152,12 @@ class MyCitizenshipController extends Controller
     {
         $country = Country::findOne($countryId);
         if (!isset($country)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'countryName' => $country->name,
@@ -188,7 +188,7 @@ class MyCitizenshipController extends Controller
     {
         $citizenship = $this->getUser()->getCitizenships()->where([ 'country_id' => $countryId ])->one();
         if (!isset($citizenship)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }

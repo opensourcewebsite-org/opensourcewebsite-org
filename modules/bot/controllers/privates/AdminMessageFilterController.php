@@ -61,7 +61,7 @@ class AdminMessageFilterController extends Controller
         $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
         $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
         ->editMessageTextOrSendMessage(
             $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
             [
@@ -222,7 +222,7 @@ class AdminMessageFilterController extends Controller
                 ],
             ];
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('blacklist', compact('chatTitle')),
                 $buttons
@@ -300,7 +300,7 @@ class AdminMessageFilterController extends Controller
                     ],
                 ];
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('whitelist', compact('chatTitle')),
                     $buttons
@@ -318,7 +318,7 @@ class AdminMessageFilterController extends Controller
                         'chatId' => $chatId,
                     ]));
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
                         $this->render('newphrase'),
                         [
@@ -377,7 +377,7 @@ class AdminMessageFilterController extends Controller
 
         $phrase = Phrase::findOne($phraseId);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
                         ->editMessageTextOrSendMessage(
                             $this->render('phrase', compact('phrase')),
                             [
@@ -437,7 +437,7 @@ class AdminMessageFilterController extends Controller
                                 'phraseId' => $phraseId,
                             ]));
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
                             ->editMessageTextOrSendMessage(
                                 $this->render('phrase-create'),
                                 [

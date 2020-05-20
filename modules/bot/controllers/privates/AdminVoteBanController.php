@@ -46,7 +46,7 @@ class AdminVoteBanController extends Controller
         $voteLimitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
         $voteLimit =  isset($voteLimitSetting) ? $voteLimitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
         ->editMessageTextOrSendMessage(
             $this->render('index', compact('chatTitle')),
             [
@@ -107,7 +107,7 @@ class AdminVoteBanController extends Controller
         $this->getState()->setName(self::createRoute('update-limit', [
                 'chatId' => $chatId,
             ]));
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('update-limit'),
                 [
@@ -134,7 +134,7 @@ class AdminVoteBanController extends Controller
         $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
 
         if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                     ->deleteMessage()
                     ->build();
         }

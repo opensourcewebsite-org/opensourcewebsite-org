@@ -28,7 +28,7 @@ class VacanciesController extends FillablePropertiesController
     {
         $company = Company::findOne($companyId);
         if (!isset($company)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -65,7 +65,7 @@ class VacanciesController extends FillablePropertiesController
         }, $vacancies);
         $rows = array_merge($rows, [ $paginationButtons ]);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'companyName' => $company->name,
@@ -105,13 +105,13 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($vacancyId);
         if (!isset($vacancy)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
         $isEnabled = $vacancy->status == 1;
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $vacancy->name,
@@ -174,12 +174,12 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancyExists = Vacancy::find()->where([ 'id' => $vacancyId ])->exists();
         if (!$vacancyExists) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageReplyMarkup([
                 [
                     [
@@ -255,7 +255,7 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($vacancyId);
         if (!isset($vacancy)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -275,7 +275,7 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($vacancyId);
         if (!isset($vacancy)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
