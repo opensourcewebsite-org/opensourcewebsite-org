@@ -3,6 +3,8 @@
 use yii\web\View;
 
 $params = require __DIR__ . '/params.php';
+$params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap 4.x for all Krajee Extensions
+
 $settingValidations = require __DIR__ . '/setting_validations.php';
 $params = array_merge($params, $settingValidations);
 $db = require __DIR__ . '/db.php';
@@ -40,16 +42,12 @@ $config = [
             'linkAssets' => true,
             'appendTimestamp' => true,
             'bundles' => [
-                'yii\bootstrap\BootstrapAsset' => [
+                'yii\bootstrap4\BootstrapAsset' => [
                     'css' => ['//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css'],
                 ],
-                'yii\bootstrap\BootstrapThemeAsset' => [
-                    'css' => [],
-                ],
-                'yii\bootstrap\BootstrapPluginAsset' => [
+                'yii\bootstrap4\BootstrapPluginAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.0/umd/popper.min.js',
-                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js',
                     ],
                 ],
                 'yii\web\JqueryAsset' => [

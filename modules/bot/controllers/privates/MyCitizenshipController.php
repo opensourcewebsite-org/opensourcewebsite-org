@@ -6,7 +6,7 @@ use app\models\Country;
 use app\models\UserCitizenship;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\modules\bot\components\Controller;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
@@ -56,7 +56,7 @@ class MyCitizenshipController extends Controller
             ];
         }, $citizenships);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 array_merge($citizenshipRows, [ $paginationButtons ], [
@@ -113,7 +113,7 @@ class MyCitizenshipController extends Controller
             ];
         }, $countries);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-country'),
                 array_merge($countryRows, [ $paginationButtons ], [
@@ -132,7 +132,7 @@ class MyCitizenshipController extends Controller
     {
         $country = Country::findOne($countryId);
         if (!isset($country)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -152,12 +152,12 @@ class MyCitizenshipController extends Controller
     {
         $country = Country::findOne($countryId);
         if (!isset($country)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'countryName' => $country->name,
@@ -188,7 +188,7 @@ class MyCitizenshipController extends Controller
     {
         $citizenship = $this->getUser()->getCitizenships()->where([ 'country_id' => $countryId ])->one();
         if (!isset($citizenship)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }

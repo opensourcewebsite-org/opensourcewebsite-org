@@ -6,13 +6,7 @@
 
 use app\assets\AgencyAsset;
 use app\assets\FontAwesomeAsset;
-use app\widgets\Alert;
-use yii\bootstrap\Modal;
-use app\widgets\Nav;
-use app\widgets\NavBar;
 use yii\helpers\Html;
-use yii\widgets\Breadcrumbs;
-use cebe\gravatar\Gravatar;
 
 AgencyAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -108,7 +102,7 @@ $this->beginBody();
                 <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?>
               </li>
               <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
+                <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
               </li>
               <li class="list-inline-item">
                 <?= Html::a(Yii::t('app', 'Terms of Use'), ['terms-of-use'], ['target' => '_blank']) ?>

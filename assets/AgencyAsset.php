@@ -6,6 +6,7 @@ use yii\web\AssetBundle;
 
 /**
  * Agency asset bundle.
+ *
  * @link https://startbootstrap.com/template-overviews/agency
  * @link https://cdnjs.com/libraries/startbootstrap-agency
  */
@@ -25,8 +26,8 @@ class AgencyAsset extends AssetBundle
 
     public $depends = [
         'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
-        'yii\bootstrap\BootstrapPluginAsset',
+        'yii\bootstrap4\BootstrapAsset',
+        'yii\bootstrap4\BootstrapPluginAsset',
         'yii\web\JqueryAsset',
     ];
 }

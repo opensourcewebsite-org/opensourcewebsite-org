@@ -2,8 +2,6 @@
 
 use Dotenv\Dotenv;
 
-$config = include '../config/web-local.php';
-
 require __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = new Dotenv('..');
