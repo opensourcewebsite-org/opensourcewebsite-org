@@ -2,24 +2,22 @@
 
 namespace app\commands;
 
-use app\commands\traits\ControllerLogTrait;
 use yii\console\Controller;
+use Yii;
 
 class UpgradeController extends Controller
 {
-    use ControllerLogTrait;
-
     /**
      * Upgrade DB charset
      */
     public function actionUpgradeDbCharset()
     {
-        $connection = \Yii::$app->db;
+        $connection = Yii::$app->db;
         preg_match('/' . 'dbname' . '=([^;]*)/', $connection->dsn, $match);
         $dbName = $match[1];
         $command = $connection->createCommand("ALTER DATABASE $dbName CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;");
         $command->execute();
-        $this->output('DataBase charset is changed!');
+        echo 'DataBase charset is changed!';
     }
 
     /**
@@ -27,8 +25,8 @@ class UpgradeController extends Controller
      */
     public function actionUpgradeTablesCharset()
     {
-        $this->output('Running tables charset upgrades...');
-        $connection = \Yii::$app->db;
+        echo "Running tables charset upgrades...\n";
+        $connection = Yii::$app->db;
         $tableSchemas = $connection->schema->getTableSchemas();
         $sqlForeignKeyChecks = 'SET foreign_key_checks = 0;';
         $command = $connection->createCommand($sqlForeignKeyChecks);
@@ -40,6 +38,6 @@ class UpgradeController extends Controller
         }
         $command = $connection->createCommand($sqlForeignKeyChecks);
         $command->execute();
-        $this->output('Tables charset is changed!');
+        echo 'Tables charset is changed!';
     }
 }
