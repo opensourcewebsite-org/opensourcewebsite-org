@@ -16,7 +16,6 @@ class MessageCommandResolver implements ICommandResolver
         if (!isset($commandText) && ($message = $update->getEditedMessage())) {
             $chat = $message->getChat();
             $commandText = $message->getText();
-            \Yii::info('edited ' . $chat->getType(),'xxxxx');
         }
 
         return $commandText ?? null;
