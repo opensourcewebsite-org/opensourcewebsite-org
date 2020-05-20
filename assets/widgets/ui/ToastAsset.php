@@ -4,7 +4,6 @@ namespace app\assets\widgets\ui;
 
 use yii\web\AssetBundle;
 
-
 class ToastAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/almasaeed2010/adminlte';

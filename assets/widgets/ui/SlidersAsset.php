@@ -4,7 +4,6 @@ namespace app\assets\widgets\ui;
 
 use yii\web\AssetBundle;
 
-
 class SlidersAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/almasaeed2010/adminlte';

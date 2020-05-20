@@ -4,7 +4,6 @@ namespace app\assets\widgets\charts;
 
 use yii\web\AssetBundle;
 
-
 class InlineAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/almasaeed2010/adminlte';

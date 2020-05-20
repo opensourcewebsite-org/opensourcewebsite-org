@@ -4,7 +4,6 @@ namespace app\assets\widgets\dashboard;
 
 use yii\web\AssetBundle;
 
-
 class Dashboard3Asset extends AssetBundle
 {
     public $sourcePath = '@vendor/almasaeed2010/adminlte';

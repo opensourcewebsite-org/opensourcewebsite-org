@@ -4,7 +4,6 @@ namespace app\assets\widgets;
 
 use yii\web\AssetBundle;
 
-
 class CommonAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/almasaeed2010/adminlte';

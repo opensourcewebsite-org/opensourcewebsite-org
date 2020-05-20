@@ -4,7 +4,6 @@ namespace app\assets\widgets\ui;
 
 use yii\web\AssetBundle;
 
-
 class TabsAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/almasaeed2010/adminlte';
