@@ -21,7 +21,6 @@ class CompaniesController extends FillablePropertiesController
 
     public function actionIndex($page = 1)
     {
-        $update = $this->getUpdate();
         $user = $this->getUser();
 
         $companiesCount = $user->getCompanies()->count();
