@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\components\api\Types;
 
-use TelegramBot\Api\Types\ChatPhotot;
+use TelegramBot\Api\Types\ChatPhoto;
 use app\modules\bot\models\Chat as ActiveRecordChat;
 
 class Chat extends \TelegramBot\Api\Types\Chat
