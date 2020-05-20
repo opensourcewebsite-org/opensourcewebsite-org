@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
-
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\UsageAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\MonthlyRecapReportAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\VisitorsReportAsset::class);
 
 $this->title = Yii::t('app', 'Dashboard {number}', ['number' => 2]);
 $this->params['breadcrumbs'][] = $this->title;

@@ -1,8 +1,10 @@
 <?php
 
-use app\assets\AdminLteContributingAsset;
-
-$this->registerAssetBundle(AdminLteContributingAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\SalesGraphAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\SalesChartAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\VisitorsAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\ToDoListAsset::class);
+$this->registerAssetBundle(\app\assets\widgets\dashboard\CalendarAsset::class);
 
 $this->title = Yii::t('app', 'Dashboard {number}', ['number' => 1]);
 $this->params['breadcrumbs'][] = $this->title;
