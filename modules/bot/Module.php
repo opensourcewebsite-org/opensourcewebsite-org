@@ -7,7 +7,7 @@ use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
 use Yii;
 use app\modules\bot\components\api\BotApi;
-use TelegramBot\Api\Types\Update;
+use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
@@ -118,7 +118,6 @@ class Module extends \yii\base\Module
                 break;
             }
         }
-
         if (isset($updateUser) && isset($updateChat)) {
             $isNewUser = false;
             $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
