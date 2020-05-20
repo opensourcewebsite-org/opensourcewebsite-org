@@ -35,7 +35,11 @@ class MyBirthdayController extends Controller
             $this->getState()->setName(self::createRoute('create'));
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('birthday')),
                 [
@@ -74,7 +78,11 @@ class MyBirthdayController extends Controller
             return $this->actionIndex();
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('update'),
                 [
@@ -95,7 +103,11 @@ class MyBirthdayController extends Controller
 
         $this->getState()->setName(self::createRoute('create'));
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->removeInlineKeyboardMarkup()
             ->sendMessage(
                 $this->render('update'),

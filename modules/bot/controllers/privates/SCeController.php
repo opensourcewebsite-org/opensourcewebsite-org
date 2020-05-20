@@ -18,14 +18,14 @@ class SCeController extends Controller
      * @return array
      */
     public function actionIndex()
-	{
+    {
         $telegramUser = $this->getTelegramUser();
 
         //TODO PaginationButtons for orders
 
         //TODO add this check for all controller actions, remove from actions
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('index'),
                     [
@@ -93,7 +93,7 @@ class SCeController extends Controller
                 )
                 ->build();
         } else {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('no-requirements'),
                     [
@@ -119,8 +119,7 @@ class SCeController extends Controller
     public function actionOrderCreate($step = 1)
     {
         //TODO make steps to create a order (maybe in separate actions)
-
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-create'),
                 [
@@ -166,7 +165,7 @@ class SCeController extends Controller
      */
     public function actionOrder()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order'),
                 [
@@ -230,7 +229,7 @@ class SCeController extends Controller
      */
     public function actionOrderEdit()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-edit'),
                 [
@@ -276,7 +275,7 @@ class SCeController extends Controller
      */
     public function actionOrderSellingRate()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
@@ -296,7 +295,7 @@ class SCeController extends Controller
      */
     public function actionOrderBuyingRate()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
@@ -316,7 +315,7 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrency()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency'),
                 [
@@ -354,7 +353,7 @@ class SCeController extends Controller
      */
     public function actionOrderBuyingCurrency()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-buying-currency'),
                 [
@@ -380,7 +379,7 @@ class SCeController extends Controller
      */
     public function actionOffer()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('offer'),
                 [
@@ -424,7 +423,7 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrencyPaymentMethods()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency-payment-methods'),
                 [
@@ -481,8 +480,7 @@ class SCeController extends Controller
         //TODO save any location that will be sent
 
         $telegramUser = $this->getTelegramUser();
-
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendLocation(
                 $telegramUser->location_lat,
                 $telegramUser->location_lon
@@ -522,7 +520,7 @@ class SCeController extends Controller
      */
     public function actionNoRequirements()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('no-requirements'),
                 [

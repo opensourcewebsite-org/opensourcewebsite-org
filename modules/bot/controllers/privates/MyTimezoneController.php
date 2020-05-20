@@ -31,7 +31,11 @@ class MyTimezoneController extends Controller
             }
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'timezone' => $timezones[$user->timezone],
@@ -99,7 +103,11 @@ class MyTimezoneController extends Controller
             ];
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $text = $this->render('list'),
                 $buttons

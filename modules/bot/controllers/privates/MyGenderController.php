@@ -33,7 +33,11 @@ class MyGenderController extends Controller
             }
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'gender' => isset($user->gender) ? $user->gender->name : null,
@@ -86,7 +90,11 @@ class MyGenderController extends Controller
             ];
         }, $genders);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $text = $this->render('update'),
                 array_merge($genderRows, [ $paginationButtons ], [

@@ -37,7 +37,7 @@ class AdminChatController extends Controller
             $update = $this->getUpdate();
 
             if ($update->getCallbackQuery()) {
-                return $this->getResponseBuilder()($update)->editMessageTextOrSendMessage(
+                return $this->getResponseBuilder()->editMessageTextOrSendMessage(
                     $this->render('index', compact('chatTitle')),
                     [
                         [
@@ -92,7 +92,7 @@ class AdminChatController extends Controller
                 )->build();
             }
 
-            return $this->getResponseBuilder()($update)->editMessageTextOrSendMessage(
+            return $this->getResponseBuilder()->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [
                         [
