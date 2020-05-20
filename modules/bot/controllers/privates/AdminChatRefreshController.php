@@ -98,7 +98,7 @@ class AdminChatRefreshController extends Controller
             }
 
             if ($currentUserIsAdministrator) {
-                $result = $this->getResponseBuilder()($this->getUpdate())
+                $result = $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('index'),
                     true

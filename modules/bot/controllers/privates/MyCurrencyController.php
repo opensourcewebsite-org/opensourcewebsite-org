@@ -40,7 +40,11 @@ class MyCurrencyController extends Controller
         $currencyCode = isset($currency) ? $currency->code : null;
         $currencyName = isset($currency) ? $currency->name : null;
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('currencyCode', 'currencyName')),
                 [
@@ -108,7 +112,11 @@ class MyCurrencyController extends Controller
             ];
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('list'),
                 $buttons

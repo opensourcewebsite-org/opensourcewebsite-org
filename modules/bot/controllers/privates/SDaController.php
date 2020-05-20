@@ -19,7 +19,11 @@ class SDaController extends Controller
      */
     public function actionIndex()
     {
-        return $this->getResponseBuilder()($this->getUpdate())
+
+        return $this->getResponseBuilder()
+
+        
+
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
