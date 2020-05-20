@@ -20,7 +20,7 @@ class MyLocationController extends Controller
         $telegramUser = $this->getTelegramUser();
 
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
-            return $this->getResponseBuilder()($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('header')
                 )
@@ -42,7 +42,7 @@ class MyLocationController extends Controller
                 ->build();
         }
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
