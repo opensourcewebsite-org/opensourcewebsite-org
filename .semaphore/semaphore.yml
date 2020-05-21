@@ -17,7 +17,7 @@ blocks:
             - cp .env.test.dist .env.test
             - cp config/params.dist.php config/params.php
             - cp config/web-local.dist.php config/web-local.php
-            - sem-version php 7.4.6
+            - sem-version php 7.4.4
             - php --version
             - cache restore
             - pear config-set php_ini ~/.phpbrew/php/php-7.4/etc/php.ini
