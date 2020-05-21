@@ -21,6 +21,8 @@ class TopController extends Controller
 {
     const VOTE_LIKE = 1;
     const VOTE_DISLIKE = -1;
+    const LIKE_MESSAGE = '+';
+    const DISLIKE_MESSAGE = '-';
 
     public function beforeAction($action)
     {
@@ -70,11 +72,21 @@ class TopController extends Controller
             )->build();
     }
 
+    public function actionStartLike()
+    {
+        return $this->actionStart(self::LIKE_MESSAGE);
+    }
+
+    public function actionStartHate()
+    {
+        return $this->actionStart(self::DISLIKE_MESSAGE);
+    }
+
     public function actionStart($estimate)
     {
-        if ($estimate == '+') {
+        if ($estimate == self::LIKE_MESSAGE) {
             $estimateValue = self::VOTE_LIKE;
-        } elseif ($estimate == '-') {
+        } elseif ($estimate == self::DISLIKE_MESSAGE) {
             $estimateValue = self::VOTE_DISLIKE;
         }
 
