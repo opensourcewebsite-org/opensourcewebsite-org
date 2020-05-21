@@ -3,9 +3,9 @@
 namespace app\modules\bot\components\request;
 
 use TelegramBot\Api\Types\Update;
-use app\modules\bot\controllers\publics\TopController;
+use app\modules\bot\models\BotCommandAlias;
 
-class RatingCommandResolver implements ICommandResolver
+class AliasCommandResolver implements ICommandResolver
 {
     public function resolveCommand(Update $update)
     {
@@ -17,9 +17,9 @@ class RatingCommandResolver implements ICommandResolver
             $replyMessage = $message->getReplyToMessage();
             if ($replyMessage) {
                 $commandText = $message->getText();
-                $estimate = trim($commandText);
-                if (in_array($estimate, [TopController::LIKE_MESSAGE, TopController::DISLIKE_MESSAGE])) {
-                    $route = TopController::createRoute('start', ['estimate' => $estimate]);
+                $commandAlias = BotCommandAlias::find()->where(['text' => $commandText])->one();
+                if ($commandAlias) {
+                    $route = $commandAlias->command;
                 }
             }
         }
