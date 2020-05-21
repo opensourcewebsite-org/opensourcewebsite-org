@@ -25,7 +25,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
         "ext-json": "*",
         "ext-PDO": "*",
         "ext-intl": "*",
@@ -63,7 +63,7 @@
             "enabled": false
         },
         "platform": {
-            "php": "7.2"
+            "php": "7.4"
         }
     },
     "scripts": {
