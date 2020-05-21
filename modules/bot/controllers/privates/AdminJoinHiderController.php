@@ -43,7 +43,7 @@ class AdminJoinHiderController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [

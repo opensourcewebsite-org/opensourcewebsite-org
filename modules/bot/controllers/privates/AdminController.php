@@ -64,7 +64,7 @@ class AdminController extends Controller
             'text' => Emoji::MENU,
         ];
 
-        return $this->getResponseBuilder()($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 $buttons
