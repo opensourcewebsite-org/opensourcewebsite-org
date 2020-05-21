@@ -11,11 +11,27 @@ Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 - Copy file `.env.docker.dist` to `.env`
 - Install [Docker](https://www.docker.com)
-- Run `docker-compose up -d`
-- Run `docker-compose exec php composer install`
-- Run `docker-compose exec php ./yii migrate`
+- Run in terminal (or console) from project's folder:
+  - `docker-compose up -d`
+  - `docker-compose exec php composer install`
+  - `docker-compose exec php ./yii migrate`
 
 Web-server can be accessed at http://localhost:8000
+
+
+##### Common problems
+
+- If you ran other database outside docker, you can get error like
+
+`ERROR: for db  Cannot start service db: b'driver failed programming external connectivity on endpoint docker_db_1: Error starting userland proxy: listen tcp 0.0.0.0:3306: bind: address already in use'`
+
+You need to stop your current database and retry to run docker.
+
+- If you ran other server outside docker, you can get error when open host link:
+
+`This site can't  be reached`
+
+You need to stop current server.
 
 ### Without Docker (master way)
 
