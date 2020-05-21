@@ -18,8 +18,7 @@ Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
 Web-server can be accessed at http://localhost:8000
 
-
-##### Common problems
+#### Common problems
 
 - If you ran other database outside docker, you can get error like
 
