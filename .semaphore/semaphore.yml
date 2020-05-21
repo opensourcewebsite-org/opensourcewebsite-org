@@ -24,7 +24,7 @@ blocks:
             - pecl install xdebug
             - phpbrew ext install iconv
             - php -m
-            - sem-service start mysql 8.0.20
+            - sem-service start mysql 8.0 --default-authentication-plugin=mysql_native_password
             - mysql --version
             - sem-service status mysql
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
