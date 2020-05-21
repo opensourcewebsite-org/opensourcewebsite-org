@@ -1,7 +1,7 @@
 # https://travis-ci.org
 language: php
 php:
-  - 7.2
+  - 7.4
 # faster builds on new travis setup not using sudo
 sudo: required
 dist: bionic
@@ -15,7 +15,7 @@ services:
 addons:
   apt:
     sources:
-      - mysql-5.7-bionic
+      - mysql-8.0-bionic
     packages:
       - mysql-server
       - mysql-client
@@ -31,7 +31,7 @@ install:
 
 before_script:
   - mysql --version
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;'
   - ./tests/bin/yii migrate --interactive=0 -c
 
 script:
