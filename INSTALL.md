@@ -28,7 +28,7 @@ The website can be accessed at http://localhost:8000.
 - Install [Nginx web server](https://nginx.org) or [Apache web server](https://httpd.apache.org):
   - Setup your web server root folder to `web`
 - Install [PHP 7.4.X](https://www.php.net)
-- Install [XDebug](https://xdebug.org) for test environment
+- Install [XDebug](https://xdebug.org)
 - Install [Composer](https://getcomposer.org)
 - Run `php composer.phar install`
 - Run `php yii migrate`
@@ -60,7 +60,7 @@ php yii dataGenerator/default/load -h
 
 Basic usage (generates all available models with a delay of 2 seconds):
 ```
-php yii dataGenerator "*"`
+php yii dataGenerator "*"
 ```
 
 Advanced usage (generates `User` and `Contact` models with a delay of 5 seconds):
@@ -77,11 +77,16 @@ The generation controller extends from `\yii\console\controllers\FixtureControll
 
 New generators for models can be added to the folder `modules\dataGenerator\components\generators`.
 
-## Run tests
+## Tests
+
+### Setup
 
 - Copy file `.env.test.dist` to `.env.test`
 - Set correct values in `.env.test` file for test environment
 - Create a new MySQL InnoDB database ("opensourcewebsite_test" by default) with an "utf8mb4_0900_ai_ci" collation for test environment
+
+### Usage
+
 - Run `php tests/bin/yii migrate`
 - Run `php vendor/bin/codecept run` or `php vendor/bin/codecept run --coverage --coverage-xml --coverage-html`
 
