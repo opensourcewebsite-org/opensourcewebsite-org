@@ -43,12 +43,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ]); ?>
                                 </li>
                                 <li class="nav-item">
-                                <?= Html::a(Yii::t('app', 'Yes'), ['/issue', 'viewYes' => 1], [
+                                <?= Html::a(Yii::t('common', 'Yes'), ['/issue', 'viewYes' => 1], [
                                     'class' => 'nav-link ' . (isset($params['viewYes']) && $params['viewYes'] == 1 ? ' active' : ''),
                                 ]); ?>
                                 </li>
                                 <li class="nav-item">
-                                <?= Html::a(Yii::t('app', 'No'), ['/issue', 'viewNo' => 1], [
+                                <?= Html::a(Yii::t('common', 'No'), ['/issue', 'viewNo' => 1], [
                                     'class' => 'nav-link ' . (isset($params['viewNo']) && $params['viewNo'] == 1 ? ' active' : ''),
                                 ]); ?>
                                 </li>

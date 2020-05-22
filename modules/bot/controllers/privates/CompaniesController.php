@@ -85,7 +85,7 @@ class CompaniesController extends FillablePropertiesController
             ->editMessageReplyMarkup([
                     [
                         [
-                            'text' => Yii::t('bot', 'Name'),
+                            'text' => Yii::t('common', 'Name'),
                             'callback_data' => self::createRoute('set-property', [
                                 'id' => $companyId,
                                 'property' => 'name',

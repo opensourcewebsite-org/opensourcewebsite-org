@@ -42,7 +42,7 @@ class Language extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'code' => Yii::t('app', 'Code'),
-            'name' => Yii::t('app', 'Name'),
+            'name' => Yii::t('common', 'Name'),
             'name_ascii' => Yii::t('app', 'Name Ascii'),
         ];
     }

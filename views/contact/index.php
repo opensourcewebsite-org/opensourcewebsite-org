@@ -9,7 +9,7 @@ use yii\grid\ActionColumn;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Contacts');
+$this->title = Yii::t('common', 'Contacts');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

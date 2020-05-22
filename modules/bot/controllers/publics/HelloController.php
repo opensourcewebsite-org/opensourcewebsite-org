@@ -55,7 +55,7 @@ class HelloController extends Controller
                         [
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
-                                'text' => Yii::t('bot', 'Source Code'),
+                                'text' => Yii::t('common', 'Source Code'),
                             ],
                         ],
                         [

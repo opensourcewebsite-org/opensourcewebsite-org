@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
                     <div class="row">
                         <div class="col">
                             <?= $nameForm->field($user, 'name')->textInput(['value' =>
-                                Yii::$app->user->identity->name])->label(Yii::t('app', 'Name')); ?>
+                                Yii::$app->user->identity->name])->label(Yii::t('common', 'Name')); ?>
                         </div>
                     </div>
                 </div>
