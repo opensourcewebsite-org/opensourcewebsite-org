@@ -15,14 +15,19 @@ trait SelectForUpdateTrait
     private $foundForUpdateKey;
 
     /**
-     * @param self[]|ActiveRecord[]|ActiveQuery $source
+     * @param self[]|ActiveQuery $source
      *
      * @return self[]
      */
     public static function findAllForUpdate($source): array
     {
+        $indexBy = ($source instanceof ActiveQuery) ? $source->indexBy : null;
+        
         /** @var self[] $models */
-        $models = self::findBySql(self::sqlForUpdate($source))->all();
+        $models = static::findBySql(static::sqlForUpdate($source))
+            ->indexBy($indexBy)
+            ->all();
+        
         foreach ($models as $model) {
             $model->setFoundForUpdate();
         }
@@ -31,7 +36,7 @@ trait SelectForUpdateTrait
     }
 
     /**
-     * @param self|ActiveRecord|ActiveQuery $source
+     * @param self|ActiveQuery $source
      *
      * @return self|null
      */
@@ -41,7 +46,7 @@ trait SelectForUpdateTrait
             $source = [$source];
         }
         /** @var self $model */
-        $model = self::findBySql(self::sqlForUpdate($source))->one();
+        $model = static::findBySql(static::sqlForUpdate($source))->one();
 
         if ($model) {
             $model->setFoundForUpdate();
@@ -52,23 +57,23 @@ trait SelectForUpdateTrait
 
     private static function clearFoundForUpdate(): void
     {
-        self::$foundForUpdate = [];
+        static::$foundForUpdate = [];
     }
 
     /**
-     * @param self[]|ActiveQuery $source
+     * @param static[]|ActiveQuery $source
      *
      * @return string
      */
     private static function sqlForUpdate($source): string
     {
-        self::requireTransaction();
+        static::requireTransaction();
 
         if ($source instanceof ActiveQuery) {
             $query = $source;
         } else {
             /** @var ActiveQuery|SelfSearchTrait $query */
-            $query = self::find();
+            $query = static::find();
 
             $traits = class_uses($query);
             if (!isset($traits[SelfSearchTrait::class])) {
@@ -83,28 +88,28 @@ trait SelectForUpdateTrait
 
     private static function requireTransaction(): void
     {
-        if (!self::getDb()->getTransaction()) {
+        if (!static::getDb()->getTransaction()) {
             throw new InvalidCallException('The method must be called in DB transaction');
         }
     }
 
     private function setFoundForUpdate(): void
     {
-        if (self::$foundForUpdate === null) {
-            self::$foundForUpdate = [];
+        if (static::$foundForUpdate === null) {
+            static::$foundForUpdate = [];
 
             $handler = static function () { static::clearFoundForUpdate(); };
-            self::getDb()->on(Connection::EVENT_COMMIT_TRANSACTION, $handler);
-            self::getDb()->on(Connection::EVENT_ROLLBACK_TRANSACTION, $handler);
+            static::getDb()->on(Connection::EVENT_COMMIT_TRANSACTION, $handler);
+            static::getDb()->on(Connection::EVENT_ROLLBACK_TRANSACTION, $handler);
         }
 
         $key = uniqid('', true);
-        self::$foundForUpdate[$key] = true;
+        static::$foundForUpdate[$key] = true;
         $this->foundForUpdateKey = $key;
     }
 
     private function isFoundForUpdate(): bool
     {
-        return isset(self::$foundForUpdate[$this->foundForUpdateKey]);
+        return isset(static::$foundForUpdate[$this->foundForUpdateKey]);
     }
 }

@@ -89,7 +89,7 @@ class DefaultController extends FixtureController
             $this->output("\n[PROCESS] Loading fixtures:", [Console::FG_YELLOW, Console::BOLD]);
         }
 
-        $while = $this->limit ?? true;
+        $while = $this->limit ?: true;
 
         while($while) {
             /** @var ARGenerator $fixtureRand */

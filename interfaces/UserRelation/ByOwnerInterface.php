@@ -14,13 +14,23 @@ interface ByOwnerInterface
     /**
      * User who created this model
      * @return mixed
-     * @see ByOwnerTrait::getOwnerUID()
+     * @see ByOwnerTrait::ownerUID()
      */
-    public function getOwnerUID();
+    public function ownerUID($value = null);
 
     /**
      * @return mixed
-     * @see ByOwnerTrait::getLinkedUID()
+     * @see ByOwnerTrait::linkedUID()
      */
-    public function getLinkedUID();
+    public function linkedUID($value = null);
+
+    /**
+     * @see ByOwnerTrait::getOwnerAttribute()
+     */
+    public static function getOwnerAttribute(): string;
+
+    /**
+     * @see ByOwnerTrait::getLinkedAttribute()
+     */
+    public static function getLinkedAttribute(): string;
 }

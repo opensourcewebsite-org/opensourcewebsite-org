@@ -2,12 +2,15 @@
 
 namespace app\models;
 
+use app\components\debt\Redistribution;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByOwnerInterface;
 use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
 use app\models\queries\CurrencyQuery;
+use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtRedistributionQuery;
+use app\models\traits\SelectForUpdateTrait;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -19,15 +22,20 @@ use yii\db\ActiveRecord;
  * @property int      $link_user_id     {@see ByOwnerInterface}, {@see ByDebtInterface}
  * @property int      $currency_id
  * @property int|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
+ *                                  max_amount is limit of {@see Debt}, which may be created by {@see Redistribution}.
+ *                                  Note: other Debts, created not by Redistribution, don't depend from this limit.
+ *                                  RU: сколько я (user_id) разрешаю моему контакту (link_user_id) быть должным мне,
+ *                                      при Перераспределении долгов.
  *
- * @property User $ownerUser
- * @property User $linkedUser
  * @property Currency $currency
  * @property Contact $contact
+ * @property DebtBalance $debtBalanceToOwner
+ * @property DebtBalance $debtBalanceToLinked
  */
 class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDebtInterface
 {
     use ByOwnerTrait;
+    use SelectForUpdateTrait;
 
     /** @var null no limit - allow any amount. */
     public const MAX_AMOUNT_ANY  = null;
@@ -101,6 +109,30 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
         ]);
     }
 
+    /**
+     * @return DebtBalanceQuery|ActiveQuery
+     */
+    public function getDebtBalanceToOwner()
+    {
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id' => 'currency_id',
+            DebtBalance::getDebtReceiverAttribute() => self::getOwnerAttribute(),
+            DebtBalance::getDebtorAttribute() => self::getLinkedAttribute(),
+        ]);
+    }
+
+    /**
+     * @return DebtBalanceQuery|ActiveQuery
+     */
+    public function getDebtBalanceToLinked()
+    {
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id' => 'currency_id',
+            DebtBalance::getDebtorAttribute() => self::getOwnerAttribute(),
+            DebtBalance::getDebtReceiverAttribute() => self::getLinkedAttribute(),
+        ]);
+    }
+
     public function isMaxAmountAny(): bool
     {
         return $this->max_amount === self::MAX_AMOUNT_ANY;
@@ -111,22 +143,6 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
         return !$this->isMaxAmountAny() && ($this->max_amount == self::MAX_AMOUNT_DENY);
     }
 
-    /**
-     * @param ByOwnerInterface|ByDebtInterface $modelSource
-     */
-    public function setUsers($modelSource): self
-    {
-        if ($modelSource instanceof ByOwnerInterface) {
-            $this->user_id = $modelSource->getOwnerUID();
-            $this->link_user_id = $modelSource->getLinkedUID();
-        } else {
-            $this->user_id = $modelSource->getDebtReceiverUID();
-            $this->link_user_id = $modelSource->getDebtorUID();
-        }
-
-        return $this;
-    }
-
     private function fnFormatMaxAmount(): callable
     {
         return function () {
@@ -134,13 +150,23 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
         };
     }
 
-    public function getDebtorUID()
+    public function debtorUID($value = null)
     {
-        return $this->getLinkedUID();
+        return $this->linkedUID($value);
     }
 
-    public function getDebtReceiverUID()
+    public function debtReceiverUID($value = null)
     {
-        return $this->getOwnerUID();
+        return $this->ownerUID($value);
+    }
+
+    public static function getDebtorAttribute(): string
+    {
+        return self::getLinkedAttribute();
+    }
+
+    public static function getDebtReceiverAttribute(): string
+    {
+        return self::getOwnerAttribute();
     }
 }

@@ -59,7 +59,7 @@ class DebtRedistributionSettings extends Widget
     private function renderHeader(): string
     {
         return Yii::t('app', 'Debt Redistribution for user "#{userId}"', [
-            'userId' => $this->getModelSource()->getLinkedUID(),
+            'userId' => $this->getModelSource()->linkedUID(),
         ]);
     }
 

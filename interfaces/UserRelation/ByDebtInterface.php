@@ -7,21 +7,33 @@ namespace app\interfaces\UserRelation;
  *
  * Determine relation between 2 users in terms of Debt
  *
- * @package app\interfaces
+ * @property int $currency_id
  */
 interface ByDebtInterface
 {
     /**
-     * This user should return money to {@see getDebtReceiverUID()}
+     * This user should return money to {@see debtReceiverUID()}
+     *
      * @return mixed
-     * @see ByDebtTrait::getDebtorUID()
+     * @see ByDebtTrait::debtorUID()
      */
-    public function getDebtorUID();
+    public function debtorUID($value = null);
 
     /**
-     * This user will receive money from {@see getDebtorUID()}
+     * This user will receive money from {@see debtorUID()}
+     *
      * @return mixed
-     * @see ByDebtTrait::getDebtReceiverUID()
+     * @see ByDebtTrait::debtReceiverUID()
      */
-    public function getDebtReceiverUID();
+    public function debtReceiverUID($value = null);
+
+    /**
+     * @see ByDebtTrait::getDebtorAttribute()
+     */
+    public static function getDebtorAttribute(): string;
+
+    /**
+     * @see ByDebtTrait::getDebtReceiverAttribute()
+     */
+    public static function getDebtReceiverAttribute(): string;
 }

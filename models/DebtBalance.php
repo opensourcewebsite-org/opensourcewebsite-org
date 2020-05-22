@@ -23,6 +23,7 @@ use yii\db\ActiveRecord;
  * @property float $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
  * @property int|null $processed_at     TIMESTAMP - if last Debt created by User.
  *                                      NULL      - by cron {@see \app\components\debt\Reduction}
+ * @property int $redistribute_try_at
  *
  * @property Currency      $currency
  * @property User          $fromUser
@@ -157,6 +158,20 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     }
 
     /**
+     * @throws Exception
+     */
+    public function afterRedistribution(int $timestamp): void
+    {
+        //SELECT FOR UPDATE and transaction is not necessary for this particular field.
+        //So we can simply use raw SQL to avoid transaction validation
+        $this->redistribute_try_at = $timestamp;
+        static::getDb()
+            ->createCommand()
+            ->update(static::tableName(), ['redistribute_try_at' => $timestamp], $this->primaryKey)
+            ->execute();
+    }
+
+    /**
      * @throws \Throwable
      */
     public static function onDebtConfirmation(Debt $debt): self
@@ -222,8 +237,8 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     private function changeProcessed(Debt $debt): void
     {
         if (!$this->amount) {
-            $this->processed_at = null; // no sense to run \app\components\debt\Deduction if amount is "0"
-        } elseif ($debt->isCreatedByUser()) {
+            $this->processed_at = null; // no sense to run \app\components\debt\Reduction if amount is "0"
+        } elseif ($debt->isUpdateProcessedFlag()) {
             $this->processed_at = time();
         }
     }

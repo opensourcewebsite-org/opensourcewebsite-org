@@ -10,29 +10,61 @@ trait SelfSearchTrait
     /**
      * @param ActiveRecord[] $models
      * @param string $operand
+     * @param array $attributes  default - ActiveRecord::primaryKey()
      *
      * @return ActiveQuery|self
      */
-    public function models(array $models, string $operand = 'IN'): ActiveQuery
+    public function models(array $models, string $operand = 'IN', $attributes = []): ActiveQuery
     {
         /** @var ActiveRecord $class */
         $class = $this->modelClass;
         $table = $class::tableName();
 
-        $columns = [];
-        foreach ($class::primaryKey() as $attribute) {
-            $columns[] = "$table.$attribute";
+        if (empty($attributes)) {
+            $attributes = $class::primaryKey();
         }
 
         $params = [];
-        foreach ($models as $balance) {
-            $pk = [];
-            foreach ($balance->getPrimaryKey(true) as $attribute => $value) {
-                $pk["$table.$attribute"] = $value;
+        $paramsNull = [];
+        foreach ($models as $model) {
+            $modelCondition = [];
+            $isNull = false;
+
+            foreach ($attributes as $attribute) {
+                $value = $model->getAttribute($attribute);
+                if ($value === null) {
+                    $isNull = true;
+                }
+                $modelCondition["$table.$attribute"] = $value;
             }
-            $params[] = $pk;
+
+            if ($isNull) {
+                $paramsNull[] = $modelCondition;
+            } else {
+                $params[] = $modelCondition;
+            }
         }
 
-        return $this->andWhere([$operand, $columns, $params]);
+        $columns = [];
+        foreach ($attributes as $attribute) {
+            $columns[] = "$table.$attribute";
+        }
+
+        $this->andWhere([$operand, $columns, $params]);
+
+        if (empty($paramsNull)) {
+            return $this;
+        }
+
+        $conditionOr = ['OR'];
+        foreach ($paramsNull as $modelCondition) {
+            $conditionAnd = ['AND'];
+            foreach ($modelCondition as $attribute => $value) {
+                $conditionAnd[] = ($value === NULL) ? "$attribute IS NULL" : [$attribute => $value];
+            }
+            $conditionOr[] = $conditionAnd;
+        }
+
+        return $this->orWhere($conditionOr);
     }
 }

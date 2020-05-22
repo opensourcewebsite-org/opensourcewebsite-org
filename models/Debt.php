@@ -53,6 +53,8 @@ class Debt extends ActiveRecord implements ByDebtInterface
     public $depositConfirmed;
     public $creditConfirmed;
 
+    private $updateProcessedFlag = false;
+
     /**
      * {@inheritdoc}
      */
@@ -197,27 +199,44 @@ class Debt extends ActiveRecord implements ByDebtInterface
     }
 
     /**
-     * @param DebtBalance $balance
-     * @param int         $amount '-' (negative) will decrease Balance amount.
-     *                            '+' (positive) will increase.
+     * @param DebtBalance|DebtRedistribution|Debt $source
+     * @param int $amount '-' (negative) will decrease Balance amount.
+     *                    '+' (positive) will increase.
+     * @param float $group
+     *
+     * @return Debt
      */
-    public static function factoryChangeBalance(DebtBalance $balance, $amount): ?self
+    public static function factoryBySource($source, $amount, float $group): self
     {
         if (!$amount) {
-            return null;
+            throw new InvalidCallException('Argument $amount cannot be empty. $amount = ' . var_export($amount, true));
         }
 
-        $model = new Debt();
+        $debt = new Debt();
 
-        $model->currency_id  = $balance->currency_id;
-        $model->from_user_id = ($amount > 0) ? $balance->from_user_id : $balance->to_user_id;
-        $model->to_user_id   = ($amount > 0) ? $balance->to_user_id : $balance->from_user_id;
-        $model->amount       = abs($amount);
-        $model->populateRelation('debtBalance', $balance);
+        if ($source instanceof DebtRedistribution) {
+            $debtorUID = ($amount > 0) ? $source->ownerUID() : $source->linkedUID();
+            $debtReceiverUID = ($amount > 0) ? $source->linkedUID() : $source->ownerUID();
+        } else {
+            $debtorUID = ($amount > 0) ? $source->debtorUID() : $source->debtReceiverUID();
+            $debtReceiverUID = ($amount > 0) ? $source->debtReceiverUID() : $source->debtorUID();
+        }
 
-        return $model;
+        $debt->currency_id = $source->currency_id;
+        $debt->debtorUID($debtorUID);
+        $debt->debtReceiverUID($debtReceiverUID);
+        $debt->amount = abs($amount);
+        $debt->status = Debt::STATUS_CONFIRM;
+        $debt->group = $group;
+
+        if ($source instanceof DebtBalance) {
+            $debt->populateRelation('debtBalance', $source);
+        } elseif ($source instanceof DebtRedistribution) {
+            $debt->setUpdateProcessedFlag(true);
+        }
+
+        return $debt;
     }
-
 
     public static function mapStatus()
     {
@@ -257,6 +276,24 @@ class Debt extends ActiveRecord implements ByDebtInterface
         }
 
         return (bool)$this->created_by;
+    }
+
+    public function isUpdateProcessedFlag(): bool
+    {
+        return $this->updateProcessedFlag || $this->isCreatedByUser();
+    }
+
+    /**
+     * @param bool $value
+     */
+    public function setUpdateProcessedFlag(bool $value): void
+    {
+        $this->updateProcessedFlag = $value;
+    }
+
+    public static function generateGroup(): float
+    {
+        return microtime(true);
     }
 
     /**

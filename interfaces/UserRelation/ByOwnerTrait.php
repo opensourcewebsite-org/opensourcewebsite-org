@@ -14,22 +14,48 @@ use yii\db\ActiveQuery;
  */
 trait ByOwnerTrait
 {
+    use UserRelationTrait;
+
     /**
      * @return mixed
-     * @see ByOwnerInterface::getOwnerUID()
+     * @see ByOwnerInterface::ownerUID()
      */
-    public function getOwnerUID()
+    public function ownerUID($value = null)
     {
+        if (isset($value)) {
+            $this->user_id = $value;
+        }
+
         return $this->user_id;
     }
 
     /**
      * @return mixed
-     * @see ByOwnerInterface::getLinkedUID()
+     * @see ByOwnerInterface::linkedUID()
      */
-    public function getLinkedUID()
+    public function linkedUID($value = null)
     {
+        if (isset($value)) {
+            $this->link_user_id = $value;
+        }
+
         return $this->link_user_id;
+    }
+
+    /**
+     * @see ByOwnerInterface::getOwnerAttribute()
+     */
+    public static function getOwnerAttribute(): string
+    {
+        return 'user_id';
+    }
+
+    /**
+     * @see ByOwnerInterface::getLinkedAttribute()
+     */
+    public static function getLinkedAttribute(): string
+    {
+        return 'link_user_id';
     }
 
     /**
@@ -37,7 +63,7 @@ trait ByOwnerTrait
      */
     public function getOwnerUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => self::getOwnerAttribute()]);
     }
 
     /**
@@ -45,6 +71,6 @@ trait ByOwnerTrait
      */
     public function getLinkedUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'link_user_id']);
+        return $this->hasOne(User::className(), ['id' => self::getLinkedAttribute()]);
     }
 }

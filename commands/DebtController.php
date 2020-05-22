@@ -4,8 +4,13 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\components\debt\BalanceChecker;
+use app\components\debt\Redistribution;
 use app\components\debt\Reduction;
 use app\interfaces\CronChainedInterface;
+use app\models\Debt;
+use Yii;
+use yii\base\Exception;
+use yii\base\InvalidArgumentException;
 use yii\console\Controller;
 use yii\helpers\Console;
 use yii\helpers\VarDumper;
@@ -107,6 +112,14 @@ class DebtController extends Controller implements CronChainedInterface
             $this->output($message, $format);
         };
         $reduction->run();
+
+        $this->output("Finished $class");
+        $class = Redistribution::class;
+        $this->output("Running $class ...");
+
+        $redistribution = new Redistribution();
+        $redistribution->logger = $reduction->logger;
+        $redistribution->run();
 
         $this->output("Finished $class");
     }

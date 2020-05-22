@@ -47,14 +47,27 @@ class DebtBalanceQuery extends ActiveQuery
         return $this->andWhere([$operand, 'debt_balance.to_user_id', $id]);
     }
 
-    public function notResolved(): self
+    public function canBeReduced(bool $can): self
     {
-        return $this->andWhere('debt_balance.processed_at IS NOT NULL');
+        $operand = $can ? 'IS NOT' : 'IS';
+        return $this->andWhere("debt_balance.processed_at $operand NULL")
+            ->amountNotEmpty();
+    }
+
+    public function canBeRedistributed(int $timestamp): self
+    {
+        return $this->canBeReduced(false)
+            ->andWhere('debt_balance.redistribute_try_at <> :timestamp', [':timestamp' => $timestamp]);
     }
 
     public function amountNotEmpty($alias = 'debt_balance'): self
     {
         return DebtBalance::STORE_EMPTY_AMOUNT ? $this->andWhere("{{{$alias}}}.amount <> 0") : $this;
+    }
+
+    public function amount($value, $alias = 'debt_balance'): self
+    {
+        return $this->andWhere(["{{{$alias}}}.amount" => $value]);
     }
 
     /**
