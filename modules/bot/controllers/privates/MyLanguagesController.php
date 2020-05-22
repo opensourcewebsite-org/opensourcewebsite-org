@@ -9,9 +9,11 @@ use app\models\Vacancy;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-
+use app\modules\bot\components\response\ResponseBuilder;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
+use app\modules\bot\components\response\commands\DeleteMessageCommand;
+use TelegramBot\Api\BotApi;
 
 class MyLanguagesController extends Controller
 {
@@ -48,10 +50,10 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($rows, [$paginationButtons], [
+                array_merge($rows, [ $paginationButtons ], [
                     [
                         [
                             'text' => Emoji::BACK,
@@ -73,6 +75,8 @@ class MyLanguagesController extends Controller
 
     public function actionCreateLanguage($page = 1)
     {
+        $this->getState()->setName(self::createRoute('search'));
+
         $languageQuery = Language::find()->orderBy('code ASC');
         $pagination = new Pagination([
             'totalCount' => $languageQuery->count(),
@@ -105,17 +109,19 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-        return $this->getResponseBuilder()
+        $keyboards = array_merge($languageRows, [ $paginationButtons ], [
+            [
+                [
+                    'callback_data' => self::createRoute(),
+                    'text' => Emoji::BACK,
+                ],
+            ],
+        ]);
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-language'),
-                array_merge($languageRows, [$paginationButtons], [
-                    [
-                        [
-                            'callback_data' => self::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ])
+                $keyboards
             )
             ->build();
     }
@@ -124,7 +130,7 @@ class MyLanguagesController extends Controller
     {
         $language = Language::findOne($languageId);
         if (!isset($language)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery();
         }
 
@@ -161,14 +167,14 @@ class MyLanguagesController extends Controller
             ];
         }, $levels);
 
-        $isEdit = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->exists();
+        $isEdit = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->exists();
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-level', [
                     'languageName' => $language->name,
                 ]),
-                array_merge($levelRows, [$paginationButtons], [
+                array_merge($levelRows, [ $paginationButtons ], [
                     array_merge([
                         [
                             'text' => Emoji::BACK,
@@ -198,11 +204,11 @@ class MyLanguagesController extends Controller
         $language = Language::findOne($languageId);
         $level = Language::findOne($levelId);
         if (!isset($language) || !isset($level)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery();
         }
 
-        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one()
+        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one()
             ?? new UserLanguage();
         $userLanguage->setAttributes([
             'user_id' => $this->getUser()->id,
@@ -216,9 +222,9 @@ class MyLanguagesController extends Controller
 
     public function actionDelete($languageId)
     {
-        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one();
+        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one();
         if (!isset($userLanguage)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -230,5 +236,47 @@ class MyLanguagesController extends Controller
         }
 
         return $this->actionIndex();
+    }
+
+    public function actionSearch()
+    {
+        $update = $this->getUpdate();
+        $text = $update->getMessage()->getText();
+
+        if (strlen($text) <= 3) {
+            $language = Language::find()
+                ->orFilterWhere(['like', 'code', $text, false])
+                ->one();
+        } else {
+            $language = Language::find()
+                ->orFilterWhere(['like', 'code', $text, false])
+                ->orFilterWhere(['like', 'name', $text . '%', false])
+                ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
+                ->one();
+       }
+
+        if (isset($language) ) {
+            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+            $messageId = $this->getUpdate()->getMessage()->getMessageId();
+
+            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+            $deleteBotMessage->send($this->getBotApi());
+
+            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+            $deleteUserMessage->send($this->getBotApi());
+
+            return $this->actionCreateLevel($language->id);
+        } else {
+            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+            $messageId = $this->getUpdate()->getMessage()->getMessageId();
+            
+            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+            $deleteBotMessage->send($this->getBotApi());
+            
+            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+            $deleteUserMessage->send($this->getBotApi());
+
+            return $this->actionCreateLanguage();
+        }
     }
 }
