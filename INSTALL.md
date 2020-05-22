@@ -15,8 +15,9 @@ Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 - Run `docker-compose exec php composer install`
 - Run `docker-compose exec php ./yii migrate`
 
-The website can be accessed at http://localhost:8000
-[Adminer](https://www.adminer.org) can be accessed at http://localhost:8080
+The website can be accessed at http://localhost:8000.
+
+[Adminer](https://www.adminer.org) can be accessed at http://localhost:8080.
 
 ### Without Docker (master way)
 
