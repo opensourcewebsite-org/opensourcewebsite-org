@@ -7,23 +7,20 @@ services:
       - ./:/app:delegated
     ports:
       - '8000:80'
-    environment:
-      DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_CHARSET: ${DB_CHARSET}
+    
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
   db:
     image: mysql:8
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_HOST: '%'
-    ports:
-      - ${DB_PORT}:${DB_PORT}
-    expose:
-      - ${DB_PORT}
     volumes:
       - db:/var/lib/mysql
 
