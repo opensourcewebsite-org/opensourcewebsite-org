@@ -4,14 +4,21 @@ namespace app\controllers;
 
 use app\components\helpers\ReferrerHelper;
 use app\models\ChangeEmailRequest;
+use app\models\Country;
+use app\models\Contact;
 use app\models\EditProfileForm;
 use app\models\Gender;
 use app\models\Currency;
+use app\models\Language;
+use app\models\LanguageLevel;
 use app\models\Sexuality;
+use app\models\UserCitizenship;
+use app\models\UserLanguage;
 use app\models\UserStatistic;
 use Yii;
 use app\models\User;
 use app\models\UserMoqupFollow;
+use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
@@ -93,7 +100,7 @@ class UserController extends Controller
             ]);
 
             if ($relation->save()) {
-               $withoutErrors = true;
+                $withoutErrors = true;
             }
         }
 
@@ -151,13 +158,26 @@ class UserController extends Controller
             return;
         }
 
-        return $this->render('profile', ['model' => $user]);
+        $realConfirmations = Contact::find()->where([
+            'link_user_id' => $user->id,
+            'is_real' => 1
+        ])->count();
+
+        $params = [
+            'model' => $user,
+            'realConfirmations' => $realConfirmations,
+        ];
+        return $this->render('profile', $params);
     }
 
     public function actionChangeEmail()
     {
+        $renderParams = [
+            'user' => $this->user,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-email', ['user' => $this->user]);
+            return $this->render('fields/change-email', $renderParams);
         }
 
         $postData = Yii::$app->request->post('User');
@@ -179,13 +199,17 @@ class UserController extends Controller
             }
         }
 
-        return $this->render('fields/change-email', ['user' => $this->user]);
+        return $this->render('fields/change-email', $renderParams);
     }
 
     public function actionChangeUsername()
     {
+        $renderParams = [
+            'user' => $this->user,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-username', ['user' => $this->user]);
+            return $this->render('fields/change-username', $renderParams);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -194,13 +218,17 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        return $this->render('fields/change-username', ['user' => $this->user]);
+        return $this->render('fields/change-username', $renderParams);
     }
 
     public function actionChangeName()
     {
+        $renderParams = [
+            'user' => $this->user,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-name', ['user' => $this->user]);
+            return $this->render('fields/change-name', $renderParams);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -209,14 +237,17 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        return $this->render('fields/change-name', ['user' => $this->user]);
+        return $this->render('fields/change-name', $renderParams);
     }
 
     public function actionChangeBirthday()
     {
+        $renderParams = [
+            'user' => $this->user,
+        ];
 
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-birthday', ['user' => $this->user]);
+            return $this->render('fields/change-birthday', $renderParams);
         }
 
         $this->user->birthday = Yii::$app->formatter->asDate(Yii::$app->request->post('birthday'));
@@ -225,14 +256,23 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        return $this->render('fields/change-birthday', ['user' => $this->user]);
+        return $this->render('fields/change-birthday', $renderParams);
     }
 
     public function actionChangeGender()
     {
+        $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        foreach ($genders as $key => $gender) {
+            $genders[$key] = Yii::t('app', $gender);
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'genders' => $genders,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
+            return $this->render('fields/change-gender', $renderParams);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -241,14 +281,17 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-        return $this->render('fields/change-gender', ['user' => $this->user, 'genders' => $genders]);
+        return $this->render('fields/change-gender', $renderParams);
     }
 
     public function actionChangeTimezone()
     {
+        $renderParams = [
+            'user' => $this->user,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-timezone', ['user' => $this->user]);
+            return $this->render('fields/change-timezone', $renderParams);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -257,14 +300,23 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        return $this->render('fields/change-timezone', ['user' => $this->user]);
+        return $this->render('fields/change-timezone', $renderParams);
     }
 
     public function actionChangeCurrency()
     {
+        $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        foreach ($currencies as $key => $currency) {
+            $currencies[$key] = Yii::t('app', $currency);
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'currencies' => $currencies,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' => $currencies]);
+            return $this->render('fields/change-currency', $renderParams);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -273,16 +325,23 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-        return $this->render('fields/change-currency', ['user' => $this->user, 'currencies' => $currencies]);
+        return $this->render('fields/change-currency', $renderParams);
     }
 
     public function actionChangeSexuality()
     {
+        $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        foreach ($sexualities as $key => $sexuality) {
+            $sexualities[$key] = Yii::t('app', $sexuality);
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'sexualities' => $sexualities,
+        ];
+
         if (!Yii::$app->request->isPost) {
-            $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-            return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' =>
-                $sexualities]);
+            return $this->render('fields/change-sexuality', $renderParams);
         }
 
         $this->user->load(Yii::$app->request->post());
@@ -291,7 +350,163 @@ class UserController extends Controller
             return $this->redirect('/account');
         }
 
-        $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
-        return $this->render('fields/change-sexuality', ['user' => $this->user, 'sexualities' => $sexualities]);
+        return $this->render('fields/change-sexuality', $renderParams);
+    }
+
+    /*
+     * Action for changing language
+     */
+    public function actionChangeLanguage(int $id)
+    {
+        $languages = array_map(function ($language) {
+            return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
+        }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        $languageName = Language::findOne($id)->name;
+
+        $languagesLevel = array_map(function ($languageLevel) {
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('user', $languageLevel->description);
+        }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        $userLanguageRecord = UserLanguage::find()->where([
+            'user_id' => $this->user->id,
+            'language_id' => $id,
+        ])->one();
+
+        if (Yii::$app->request->post()) {
+            $postData = Yii::$app->request->post();
+            $userLanguageRecord = $userLanguageRecord ?? new UserLanguage();
+            $userLanguageRecord->setAttributes([
+                'user_id' => $this->user->id,
+                'language_id' => $id,
+                'language_level_id' => $postData['level']
+            ]);
+
+            if ($userLanguageRecord->save()) {
+                return $this->redirect('/account');
+            }
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'languages' => $languages,
+            'languagesLevel' => $languagesLevel,
+            'userLanguageRecord' => $userLanguageRecord,
+            'languageName' => $languageName
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('fields/change-language', $renderParams);
+        } else {
+            return $this->render('fields/change-language', $renderParams);
+        }
+    }
+
+    public function actionAddLanguage()
+    {
+        $languages = array_map(function ($language) {
+            return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
+        }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        $languagesLevel = array_map(function ($languageLevel) {
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('user', $languageLevel->description);
+        }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        if (Yii::$app->request->post()) {
+            $postData = Yii::$app->request->post();
+
+            $userLanguageRecord = UserLanguage::find()->where([
+                'user_id' => $this->user->id,
+                'language_id' => $postData['language'],
+            ])->one();
+            $userLanguageRecord = $userLanguageRecord ?? new UserLanguage();
+            $userLanguageRecord->setAttributes([
+                'user_id' => $this->user->id,
+                'language_id' => $postData['language'],
+                'language_level_id' => $postData['level']
+            ]);
+
+            if ($userLanguageRecord->save()) {
+                return $this->redirect('/account');
+            }
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'languages' => $languages,
+            'languagesLevel' => $languagesLevel,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('fields/add-language', $renderParams);
+        } else {
+            return $this->render('fields/add-language', $renderParams);
+        }
+    }
+
+    public function actionDeleteLanguage(int $id)
+    {
+        $language = UserLanguage::find()->where([ 'id' => $id, 'user_id' => $this->user->id ])->one();
+        if (!$language) {
+            $this->redirect('/account');
+        }
+        try {
+            $language->delete();
+        } catch (StaleObjectException $e) {
+        } catch (\Throwable $e) {
+        }
+
+        $this->redirect('/account');
+    }
+
+    public function actionAddCitizenship()
+    {
+        $citizenships = array_map(function ($citizenship) {
+            return Yii::t('app', $citizenship->name);
+        }, Country::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        if (Yii::$app->request->post()) {
+            $postData = Yii::$app->request->post();
+
+            $userCitizenshipRecord = UserCitizenship::find()->where([
+                'user_id' => $this->user->id,
+                'country_id' => $postData['country'],
+            ])->one();
+            $userCitizenshipRecord = $userCitizenshipRecord ?? new UserCitizenship();
+            $userCitizenshipRecord->setAttributes([
+                'user_id' => $this->user->id,
+                'country_id' => $postData['country'],
+            ]);
+
+            if ($userCitizenshipRecord->save()) {
+                return $this->redirect('/account');
+            }
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'citizenships' => $citizenships,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('fields/add-citizenship', $renderParams);
+        } else {
+            return $this->render('fields/add-citizenship', $renderParams);
+        }
+    }
+
+    public function actionDeleteCitizenship(int $id)
+    {
+        $citizenship = UserCitizenship::find()->where([ 'country_id' => $id, 'user_id' => $this->user->id ])->one();
+        if (!$citizenship) {
+            $this->redirect('/account');
+        }
+        try {
+            $citizenship->delete();
+        } catch (StaleObjectException $e) {
+        } catch (\Throwable $e) {
+        }
+
+        $this->redirect('/account');
     }
 }

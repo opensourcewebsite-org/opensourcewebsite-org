@@ -4,8 +4,8 @@ namespace app\modules\comment;
 use Yii;
 use yii\data\Pagination;
 use yii\helpers\Html;
-use yii\bootstrap\Widget;
-use yii\bootstrap\BootstrapAsset;
+use yii\bootstrap4\Widget;
+use yii\bootstrap4\BootstrapAsset;
 use app\modules\comment\assets\CommentsAsset;
 
 /**
@@ -78,7 +78,7 @@ class Comment extends Widget
 
         $this->view->registerJs('$(document).on(\'pjax:complete\', function(event) {
             $(\'form.formReplies #' . $className . '-message\').val(\'\');
-            
+
             $(\'.modal\').modal(\'hide\');
         });
         $(\'#main-response\').on(\'pjax:end\', function(event) {

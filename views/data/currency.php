@@ -6,7 +6,7 @@ use yii\widgets\LinkPager;
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Currency</h3>
+        <h3 class="card-title">Currencies</h3>
         <div class="card-tools">
             <?php echo LinkPager::widget([
                 'pagination' => $pages,
@@ -25,14 +25,16 @@ use yii\widgets\LinkPager;
         </div>
     </div>
     <div class="card-body p-0">
-        <table class="table">
-            <tbody>
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Code</th>
-                    <th>Symbol</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Symbol</th>
                 </tr>
+            </thead>
+            <tbody>
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?= $model->id ?></td>

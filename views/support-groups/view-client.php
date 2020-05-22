@@ -1,7 +1,8 @@
 <?php
 
+use app\widgets\buttons\SaveButton;
 use yii\widgets\DetailView;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -60,10 +61,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 if ($model->provider_bot_user_blocked == 0) {
                     $form = ActiveForm::begin();
                         echo $form->field($sendMessage, 'message')->textarea();
-                        echo Html::submitButton(
-                            Yii::t('app', 'Save'),
-                            ['class' => 'btn btn-success float-right']
-                        );
+                        echo SaveButton::widget([
+                            'options' => [
+                                'style' => 'float: right;'
+                            ]
+                        ]);
 
                     ActiveForm::end();
                 }

@@ -5,7 +5,7 @@ namespace app\widgets\traits;
 use yii\base\Widget;
 
 /**
- * Fix and improvement for {@see \yii\bootstrap\Modal}
+ * Fix and improvement for {@see \yii\bootstrap4\Modal}
  *
  * Usage:
  * ```php
@@ -28,12 +28,6 @@ trait ModalTrait
             $this->options['class'] = '';
         }
         $this->options['class'] .= ' modal-fix';
-
-        //Defaults:
-
-        if ($this->header && $this->header == strip_tags($this->header)) {
-            $this->header = "<h5 class='modal-title'>$this->header</h5>";
-        }
 
         if (!isset($this->footerOptions['class'])) {
             $this->footerOptions['class'] = 'card-footer';

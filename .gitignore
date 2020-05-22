@@ -29,9 +29,6 @@ phpunit.phar
 tests/_output/*
 tests/_support/_generated
 
-#vagrant folder
-/.vagrant
-
 .env
 .env.test
 
@@ -39,3 +36,6 @@ tests/_support/_generated
 /config/params.php
 
 *views/layouts/analytics.php
+
+# php-cs-fixer itself is not needed
+php-cs-fixer.phar

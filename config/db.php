@@ -1,10 +1,10 @@
 <?php
 
-$username = getenv('DB_USERNAME') ?: 'root';
-$password = getenv('DB_PASSWORD') ?: '';
-$name = getenv('DB_NAME');
+$name = getenv('DB_NAME') ?: 'opensourcewebsite';
 $host = getenv('DB_HOST') ?: 'localhost';
 $port = getenv('DB_PORT') ?: '3306';
+$username = getenv('DB_USERNAME') ?: 'root';
+$password = getenv('DB_PASSWORD') ?: '';
 $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
 return [

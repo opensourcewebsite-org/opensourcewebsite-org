@@ -1,12 +1,16 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
+use app\widgets\buttons\AddButton;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
+use yii\bootstrap4\ActiveForm;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
+use yii\bootstrap4\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroup */
@@ -28,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row mb-2">
             <div class="col">
                 <div class="alert alert-info" role="alert">
-                    <b>Support Group Members:</b> <?= Yii::$app->user->identity->supportGroupMemberCount ?>/<?= Yii::$app->user->identity->maxSupportGroupMember ?>. 
+                    <b>Support Group Members:</b> <?= Yii::$app->user->identity->supportGroupMemberCount ?>/<?= Yii::$app->user->identity->maxSupportGroupMember ?>.
                     (<?= $settingQty ?> per 1 User Rating)
                 </div>
             </div>
@@ -37,7 +41,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card">
         <div class="card-header text-right">
             <?php $form = ActiveForm::begin(['enableAjaxValidation' => true]) ?>
-            <a class="btn btn-outline-success ml-3" href="#" title="New Member"  data-toggle="modal" data-target="#exampleModalLong"><i class="fa fa-plus"></i></a>
+            <?= AddButton::widget([
+                'url' => '#',
+                'options' => [
+                    'title' => 'New Member',
+                    'data-toggle' => 'modal',
+                    'data-target' => '#exampleModalLong',
+                ]
+            ]); ?>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -56,8 +67,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             ])->label('User'); ?>
                         </div>
                         <div class="card-footer text-left">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" title="Cancel" data-dismiss="modal" >Cancel</a>
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
                         </div>
                     </div>
                 </div>

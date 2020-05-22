@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use app\modules\bot\components\Controller;
 
 /**
@@ -20,7 +20,7 @@ class ReverseController extends Controller
     {
         //TODO add reverse for $$message
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendMessage(
                 new MessageText($message)
             )

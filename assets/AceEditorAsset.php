@@ -5,8 +5,11 @@ namespace app\assets;
 use yii\web\AssetBundle;
 
 /**
- * Ace Editor asset
+ * Ace Editor Asset
+ *
+ * @link https://cdnjs.com/libraries/ace
  */
+//TODO replace scripts from vendor to cdn
 class AceEditorAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/npm-asset/ace-builds';

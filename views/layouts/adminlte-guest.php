@@ -7,12 +7,10 @@
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\widgets\Alert;
-use yii\bootstrap\Modal;
 use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
-use cebe\gravatar\Gravatar;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -79,12 +77,10 @@ $this->beginBody();
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' => $menuItemsLeft,
-        'dropDownCaret'=>'',
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav ml-auto'],
         'items' => $menuItemsRight,
-        'dropDownCaret'=>'',
     ]);
     NavBar::end();
     ?>
@@ -133,7 +129,7 @@ $this->beginBody();
         <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?> |
         <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
         <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
-        <?= Html::a(Yii::t('app', 'GitHub'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
+        <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
     </footer>
 </div>
 <?php $this->endBody() ?>

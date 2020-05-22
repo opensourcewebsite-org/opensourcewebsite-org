@@ -1,7 +1,11 @@
 <?php
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroupCommand */
@@ -14,7 +18,13 @@ use yii\bootstrap\ActiveForm;
             <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
         </div>
         <div class="col-1 text-right">
-            <a class="btn btn-light" href="#" title="Edit" data-toggle="modal" data-target="#exampleModalLongEditCommand"><i class="fas fa-edit"></i></a>
+            <?= EditButton::widget([
+                'url' => '#',
+                'options' => [
+                    'data-toggle' => 'modal',
+                    'data-target' => '#exampleModalLongEditCommand',
+                ]
+            ]); ?>
             <?php $form = ActiveForm::begin() ?>
             <div class="modal fade" id="exampleModalLongEditCommand" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -33,9 +43,11 @@ use yii\bootstrap\ActiveForm;
                             ]) ?>
                         </div>
                         <div class="card-footer text-left">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" data-dismiss="modal">Cancel</a>
-                            <a class="btn btn-danger float-right" href="command-delete?id=<?= $model->id ?>" onclick="#">Delete</a>
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
+                            <?= DeleteButton::widget([
+                                'url' => ['command-delete', 'id' => $model->id]
+                            ]); ?>
                         </div>
                     </div>
                 </div>

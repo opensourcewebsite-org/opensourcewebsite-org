@@ -7,12 +7,6 @@
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\assets\AdminLteUserAsset;
-use app\widgets\Alert;
-use yii\bootstrap\Nav;
-use app\widgets\NavBar;
-use yii\helpers\Html;
-use yii\widgets\Breadcrumbs;
-use cebe\gravatar\Gravatar;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);

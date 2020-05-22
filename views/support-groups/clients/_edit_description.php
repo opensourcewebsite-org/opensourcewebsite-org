@@ -1,7 +1,10 @@
 <?php
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroupCommand */
@@ -11,7 +14,13 @@ use yii\bootstrap\ActiveForm;
 <div class="card-header mb-3">
     <div class="row">
         <div class="col-12 text-right">
-            <a class="btn btn-light" href="#" title="Edit" data-toggle="modal" data-target="#commonModal"><i class="fas fa-edit"></i></a>
+            <?= EditButton::widget([
+                'url' => '#',
+                'options' => [
+                    'data-toggle' => 'modal',
+                    'data-target' => '#commonModal'
+                ]
+            ]); ?>
             <?php $form = ActiveForm::begin() ?>
             <div class="modal fade" id="commonModal" tabindex="-1" role="dialog" aria-labelledby="commonModalTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -25,8 +34,8 @@ use yii\bootstrap\ActiveForm;
                             <?= $form->field($model, 'description')->textarea() ?>
                         </div>
                         <div class="card-footer text-left">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a class="btn btn-secondary" href="#" data-dismiss="modal">Cancel</a>
+                            <?= SaveButton::widget(); ?>
+                            <?= CancelButton::widget(); ?>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,9 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
+use yii\bootstrap4\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupportGroupBot */
@@ -16,9 +19,11 @@ use yii\bootstrap\ActiveForm;
                 <?= $form->field($model, 'token')->textInput(['maxlength' => true]) ?>
             </div>
             <div class="card-footer">
-                <button type="submit" class="btn btn-success">Save</button>
-                <a class="btn btn-secondary" href="#" data-dismiss="modal">Cancel</a>
-                <a class="btn btn-danger float-right" href="bots-delete?id=<?= $model->id ?>" onclick="#">Delete</a>
+                <?= SaveButton::widget(); ?>
+                <?= CancelButton::widget(); ?>
+                <?= DeleteButton::widget([
+                    'url' => ['bots-delete', 'id' => $model->id]
+                ]); ?>
             </div>
         </div>
     </div>

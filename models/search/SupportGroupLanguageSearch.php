@@ -20,7 +20,7 @@ class SupportGroupLanguageSearch extends SupportGroupLanguage
     {
         return [];
     }
-    
+
     /**
      * Creates data provider instance with search query applied
      *
@@ -31,10 +31,10 @@ class SupportGroupLanguageSearch extends SupportGroupLanguage
     public function search($params)
     {
 
-        $query = self::find()->with('languageCode');
+        $query = self::find()->with('language');
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
+            'query' => $query,
         ]);
 
         $this->load($params);

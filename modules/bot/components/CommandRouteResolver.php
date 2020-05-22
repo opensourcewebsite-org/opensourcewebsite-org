@@ -35,7 +35,7 @@ class CommandRouteResolver extends Component
                 list($route, $params) = $this->resolveCommandRoute($commandText);
 
                 if (!isset($route) && $commandText[0] == '/') {
-                    list($route, $params) = [ $defaultRoute, [] ];
+                    list($route, $params) = [$defaultRoute, []];
                 }
 
                 break;
@@ -47,9 +47,9 @@ class CommandRouteResolver extends Component
             $isStateRoute = true;
         }
 
-        Yii::warning('Input: ' . ($commandText ?? '') . ', State: ' . ($state) .', Resolved route: ' . ($route ?? ''));
+        Yii::warning('Input: ' . ($commandText ?? '') . ', State: ' . ($state) . ', Resolved route: ' . ($route ?? ''));
 
-        return [ $route, $params, $isStateRoute ];
+        return [$route, $params, $isStateRoute];
     }
 
     /**
@@ -129,7 +129,6 @@ class CommandRouteResolver extends Component
             }
         }
 
-
         $queryParams = [];
         if (array_key_exists('query', $namedGroups)) {
             $query = $namedGroups['query'];
@@ -138,7 +137,7 @@ class CommandRouteResolver extends Component
         }
         $params = array_merge($queryParams, $namedGroups);
 
-        return [ $route, $params ];
+        return [$route, $params];
     }
 
     /**
@@ -155,7 +154,7 @@ class CommandRouteResolver extends Component
             $paramsKeyValues = explode('&', $query);
             foreach ($paramsKeyValues as $keyValue) {
                 list($key, $value) = explode('=', $keyValue);
-                $params[$key] = $value;
+                $params[$key] = urldecode($value);
             }
         }
 

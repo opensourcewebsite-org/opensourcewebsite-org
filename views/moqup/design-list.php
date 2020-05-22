@@ -1,6 +1,7 @@
 <?php
 /* @var $this \yii\web\View */
 
+use app\widgets\buttons\AddButton;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -19,7 +20,7 @@ $this->title = Yii::t('menu', 'Moqups');
         <div class="row mb-2">
             <div class="col">
                 <div class="alert alert-info" role="alert">
-                    <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>. 
+                    <b>Moqups:</b> <?= Yii::$app->user->identity->moqupsCount ?>/<?= Yii::$app->user->identity->maxMoqupsNumber ?>.
                     (<?= $maxMoqupValue ?> per 1 User Rating)
                 </div>
             </div>
@@ -31,11 +32,12 @@ $this->title = Yii::t('menu', 'Moqups');
     <div class="card-header d-flex p-0">
         <ul class="nav nav-pills ml-auto p-2">
             <li class="nav-item align-self-center mr-4">
-                <?= Html::a('<i class="fa fa-plus"></i>',
-                    ['moqup/design-edit'], [
-                        'class' => 'btn btn-outline-success',
-                        'title' => Yii::t('moqup', 'Create New'),
-                    ]); ?>
+                <?= AddButton::widget([
+                        'url' => 'design-edit',
+                        'options' => [
+                            'title' => 'Create New'
+                        ]
+                ]); ?>
             </li>
             <li class="nav-item">
                 <?= Html::a(Yii::t('moqup', 'All') . ' <span class="badge badge-light ml-1">' . $countAll . '</span>',
@@ -83,7 +85,7 @@ $this->title = Yii::t('menu', 'Moqups');
                     'format' => 'html',
                     'value' => function($model) use ($viewFollowing) {
                         $response = $model->user->name ?? $model->user->id;
-                        
+
                         return $response;
                     },
                     'visible' => $viewYours == false,

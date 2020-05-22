@@ -8,6 +8,7 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class Controller
@@ -78,6 +79,31 @@ class Controller extends \yii\web\Controller
     }
 
     /**
+     * @return ResponseBuilder
+     */
+    protected function getResponseBuilder()
+    {
+        return ResponseBuilder::fromUpdate($this->getUpdate());
+    }
+
+    /**
+     * @return TelegramBot\Api\Types\Message
+     */
+    protected function getMessage()
+    {
+        $update = $this->getUpdate();
+        $message = $update->getMessage();
+        $message = $message ?? $update->getEditedMessage();
+
+        $callbackQuery = $update->getCallbackQuery();
+        if (!isset($message)) {
+            $message = $callbackQuery->getMessage();
+        }
+
+        return $message;
+    }
+
+    /**
      * @return UserState
      */
     protected function getState()
@@ -143,8 +169,7 @@ class Controller extends \yii\web\Controller
      */
     private function prepareMessageText($text)
     {
-        if ($this->textFormat == 'html')
-        {
+        if ($this->textFormat == 'html') {
             $text = str_replace(["\n", "\r\n"], '', $text);
             $text = preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
         }

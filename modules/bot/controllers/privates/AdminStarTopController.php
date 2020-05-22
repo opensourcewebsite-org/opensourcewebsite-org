@@ -3,9 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use \app\modules\bot\components\response\commands\EditMessageTextCommand;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use app\modules\bot\components\Controller as Controller;
+use app\modules\bot\components\Controller;
+
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 
@@ -44,14 +43,10 @@ class AdminStarTopController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
 
-        return [
-            new EditMessageTextCommand(
-                $this->getTelegramChat()->chat_id,
-                $this->getUpdate()->getCallbackQuery()->getMessage()->getMessageId(),
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [
-                    'parseMode' => $this->textFormat,
-                    'replyMarkup' => new InlineKeyboardMarkup([
                         [
                             [
                                 'callback_data' => self::createRoute('update', [
@@ -68,10 +63,9 @@ class AdminStarTopController extends Controller
                                 'text' => '🔙',
                             ],
                         ]
-                    ]),
                 ]
-            ),
-        ];
+            )
+            ->build();
     }
 
     public function actionUpdate($chatId = null)

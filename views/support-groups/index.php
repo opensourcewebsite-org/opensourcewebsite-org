@@ -1,6 +1,7 @@
 <?php
 
-use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap4\ButtonDropdown;
+use app\widgets\buttons\AddButton;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -29,10 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $this->endBlock(); ?>
     <div class="card">
         <div class="card-header text-right">
-            <?= Html::a('<i class="fa fa-plus"></i>', ['create'], [
-                'class' => 'btn btn-outline-success',
-                'title' => Yii::t('app', 'New Support Group'),
-            ]) ?>
+            <?= AddButton::widget([
+                'url' => ['create'],
+                'options' => [
+                    'title' => 'New Support Group'
+                ]
+            ]); ?>
         </div>
         <div class="card-body p-0">
             <?= GridView::widget([

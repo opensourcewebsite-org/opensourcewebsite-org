@@ -4,7 +4,6 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class RandomStringController
@@ -28,7 +27,7 @@ class RandomStringController extends Controller
             $randomString .= $characters[$index];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendMessage(
                 new MessageText($randomString)
             )

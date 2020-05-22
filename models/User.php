@@ -69,11 +69,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [
-                ['email'],
-                'required'
-            ],
-
             ['is_authenticated', 'boolean'],
             [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
             ['birthday', 'date'],
@@ -99,6 +94,7 @@ class User extends ActiveRecord implements IdentityInterface
                 'message' => 'Username can contain only letters, numbers and \'_\' symbols'
             ],
             ['username', 'validateUsernameUnique'],
+            ['username', 'default', 'value' => null],
 
             ['name', 'string'],
             ['name', 'trim'],

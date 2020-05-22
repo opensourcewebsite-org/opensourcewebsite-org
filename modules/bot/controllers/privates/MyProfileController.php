@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\modules\bot\components\Controller;
 use app\models\Currency;
@@ -27,7 +27,6 @@ class MyProfileController extends Controller
         $timezones = TimeHelper::timezonesList();
 
         $currency = $user->currency;
-        $interfaceLanguage = $telegramUser->language;
 
         $params = [
             'firstName' => $telegramUser->provider_user_first_name,
@@ -41,12 +40,12 @@ class MyProfileController extends Controller
             'languages' => array_map(function ($userLanguage) {
                 return $userLanguage->getDisplayName();
             }, $user->languages),
-            'citizenships' => array_map(function($citizenship) {
+            'citizenships' => array_map(function ($citizenship) {
                 return $citizenship->country->name;
             }, $user->citizenships),
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', $params),
                 [

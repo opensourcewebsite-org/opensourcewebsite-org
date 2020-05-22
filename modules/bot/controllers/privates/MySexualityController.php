@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\models\Sexuality;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
@@ -33,7 +33,7 @@ class MySexualityController extends Controller
             }
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'sexuality' => isset($user->sexuality) ? $user->sexuality->name : null,
@@ -86,10 +86,10 @@ class MySexualityController extends Controller
             ];
         }, $sexualities);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $text = $this->render('update'),
-                array_merge($sexualityRows, [ $paginationButtons ], [
+                array_merge($sexualityRows, [$paginationButtons], [
                     [
                         [
                             'callback_data' => self::createRoute(),

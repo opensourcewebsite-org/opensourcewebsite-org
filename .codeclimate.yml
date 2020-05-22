@@ -42,6 +42,9 @@ plugins:
     enabled: true
   markdownlint:
     enabled: true
+    checks:
+      MD013:
+        enabled: false
   phan:
     enabled: true
     config:
@@ -70,8 +73,15 @@ plugins:
     config:
       file_extensions: "php"
       rulesets: "unusedcode,codesize,naming,phpmd.xml"
+    # https://phpmd.org/rules/
     checks:
+      CleanCode/ElseExpression:
+        enabled: false
       CyclomaticComplexity:
+        enabled: false
+      Design/CouplingBetweenObjects:
+        enabled: false
+      Design/LongClass:
         enabled: false
       Design/LongMethod:
         enabled: false
@@ -80,6 +90,8 @@ plugins:
       Design/NpathComplexity:
         enabled: false
       Design/WeightedMethodCount:
+        enabled: false
+      Naming/LongVariable:
         enabled: false
       Naming/ShortVariable:
         enabled: false

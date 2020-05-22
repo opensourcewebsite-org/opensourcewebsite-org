@@ -1,0 +1,21 @@
+{
+  "html": {
+    "brace_style": "collapse",
+    "indent_scripts": "normal",
+    "max_preserve_newlines": 1,
+    "preserve_newlines": true,
+    "unformatted": ["a", "sub", "sup", "b", "i", "u"],
+    "wrap_line_length": 0
+  },
+  "js": {
+    "indent_level": 0,
+    "indent_with_tabs": false,
+    "preserve_newlines": true,
+    "max_preserve_newlines": 2,
+    "jslint_happy": true
+  },
+  "sql": {
+    "indent_level": 0,
+    "indent_with_tabs": false
+  }
+}

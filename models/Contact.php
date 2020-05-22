@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use app\interfaces\UserRelation\ByOwnerInterface;
 use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
@@ -42,6 +43,11 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
+    const RELATIONS = [
+        0 => 'Neutral',
+        1 => 'Friend',
+        2 => 'Enemy',
+    ];
 
     public $userIdOrName;
 
@@ -61,7 +67,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return [
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
-            [['user_id', 'link_user_id', 'is_real'], 'integer'],
+            [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required',
                 'when' => static function (self $model) {
@@ -87,8 +93,12 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'id' => 'ID',
             'user_id' => 'User ID',
             'link_user_id' => 'Link User ID',
-            'name' => 'Name',
-            'userIdOrName' => 'User ID / Username',
+            'name' => Yii::t('user', 'Name'),
+            'userIdOrName' => Yii::t('user', 'User ID') . ' / ' . Yii::t('user', 'Username'),
+            'is_real' => Yii::t('app', 'Is Real'),
+            'relation' => Yii::t('app', 'Relation'),
+            'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
+            'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
         ];
     }
 
@@ -286,5 +296,4 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         return empty($this->linkedUser->username) ? $this->link_user_id : $this->linkedUser->username;
     }
-
 }

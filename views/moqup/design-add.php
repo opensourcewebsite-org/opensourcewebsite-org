@@ -1,6 +1,9 @@
 <?php
 /* @var $this \yii\web\View */
 
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 
 $this->title = Yii::t('menu', 'Edit design');
@@ -59,9 +62,13 @@ $this->title = Yii::t('menu', 'Edit design');
             </div>
         </div>
         <div class="card-footer">
-            <button type="submit" class="btn btn-success">Save</button>
-            <a type="button" href="<?= Yii::$app->urlManager->createUrl(['moqup/design-list']) ?>" class="btn btn-secondary"> Cancel</a>
-            <button type="button" class="btn btn-outline-danger float-right"> Delete</button>
+            <?= SaveButton::widget(); ?>
+            <?= CancelButton::widget([
+                'url' => ['moqup/design-list']
+            ]); ?>
+            <?= DeleteButton::widget([
+                'url' => ''
+            ]); ?>
         </div>
     </form>
 </div>
