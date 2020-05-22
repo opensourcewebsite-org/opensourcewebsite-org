@@ -6,7 +6,6 @@ use app\models\DebtRedistribution;
 use app\models\DebtRedistributionForm;
 use app\models\User;
 use app\tests\fixtures\ContactFixture;
-use app\tests\fixtures\CurrencyFixture;
 use app\tests\fixtures\UserFixture;
 use Codeception\Test\Unit;
 use Yii;
@@ -24,10 +23,6 @@ class DebtRedistributionFormTest extends Unit
             'contact' => [
                 'class'    => ContactFixture::className(),
                 'dataFile' => codecept_data_dir() . 'contact.php',
-            ],
-            'currency' => [
-                'class'    => CurrencyFixture::className(),
-                'dataFile' => codecept_data_dir() . 'currency.php',
             ],
         ];
     }
