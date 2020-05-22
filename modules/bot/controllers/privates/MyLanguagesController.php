@@ -9,7 +9,7 @@ use app\models\Vacancy;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use app\modules\bot\components\response\commands\DeleteMessageCommand;
@@ -50,10 +50,10 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($rows, [ $paginationButtons ], [
+                array_merge($rows, [$paginationButtons], [
                     [
                         [
                             'text' => Emoji::BACK,
@@ -76,7 +76,6 @@ class MyLanguagesController extends Controller
     public function actionCreateLanguage($page = 1)
     {
         $this->getState()->setName(self::createRoute('search'));
-
         $languageQuery = Language::find()->orderBy('code ASC');
         $pagination = new Pagination([
             'totalCount' => $languageQuery->count(),
@@ -109,19 +108,17 @@ class MyLanguagesController extends Controller
             ];
         }, $languages);
 
-        $keyboards = array_merge($languageRows, [ $paginationButtons ], [
-            [
-                [
-                    'callback_data' => self::createRoute(),
-                    'text' => Emoji::BACK,
-                ],
-            ],
-        ]);
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('create-language'),
-                $keyboards
+                array_merge($languageRows, [$paginationButtons], [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ])
             )
             ->build();
     }
@@ -130,7 +127,7 @@ class MyLanguagesController extends Controller
     {
         $language = Language::findOne($languageId);
         if (!isset($language)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery();
         }
 
@@ -167,14 +164,14 @@ class MyLanguagesController extends Controller
             ];
         }, $levels);
 
-        $isEdit = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->exists();
+        $isEdit = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->exists();
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('create-level', [
                     'languageName' => $language->name,
                 ]),
-                array_merge($levelRows, [ $paginationButtons ], [
+                array_merge($levelRows, [$paginationButtons], [
                     array_merge([
                         [
                             'text' => Emoji::BACK,
@@ -204,11 +201,11 @@ class MyLanguagesController extends Controller
         $language = Language::findOne($languageId);
         $level = Language::findOne($levelId);
         if (!isset($language) || !isset($level)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery();
         }
 
-        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one()
+        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one()
             ?? new UserLanguage();
         $userLanguage->setAttributes([
             'user_id' => $this->getUser()->id,
@@ -222,9 +219,9 @@ class MyLanguagesController extends Controller
 
     public function actionDelete($languageId)
     {
-        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one();
+        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one();
         if (!isset($userLanguage)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
