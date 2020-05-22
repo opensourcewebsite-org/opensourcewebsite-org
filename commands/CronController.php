@@ -2,7 +2,7 @@
 namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 use app\models\CronJob;
 use app\models\CronJobConsole;
 use yii\console\Controller;
@@ -92,7 +92,7 @@ class CronController extends Controller
                     [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
                 );
 
-                /** @var ControllerLogTrait|ICronChained $controller */
+                /** @var ControllerLogTrait|CronChainedInterface $controller */
                 $controller = new $job(Yii::$app->controller->id, Yii::$app);
                 $controller->log = $this->log;
                 $controller->actionIndex();
