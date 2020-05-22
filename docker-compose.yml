@@ -21,7 +21,9 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       MYSQL_ROOT_HOST: '%'
     ports:
-      - '3306:3306'
+      - ${DB_PORT}:${DB_PORT}
+    expose:
+      - ${DB_PORT}
     volumes:
       - db:/var/lib/mysql
 

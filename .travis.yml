@@ -21,7 +21,8 @@ services:
 addons:
   apt:
     sources:
-      - sourceline: 'deb https://repo.mysql.com/apt/ubuntu/ bionic mysql-8.0'
+      # TODO migrate to mysql 8
+      - mysql-5.7-bionic
     packages:
       - mysql-server
       - mysql-client
@@ -39,7 +40,8 @@ install:
 
 before_script:
   - mysql --version
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;'
+  # TODO migrate to utf8mb4_0900_ai_ci
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
   - ./tests/bin/yii migrate --interactive=0 -c
 
 script:
