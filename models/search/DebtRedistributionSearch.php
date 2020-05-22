@@ -2,6 +2,8 @@
 
 namespace app\models\search;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByOwnerInterface;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\DebtRedistribution;
@@ -18,7 +20,7 @@ class DebtRedistributionSearch extends DebtRedistribution
     public function rules()
     {
         return [
-            [['id', 'from_user_id', 'to_user_id', 'currency_id'], 'integer', 'min' => 1],
+            [['id', 'user_id', 'link_user_id', 'currency_id'], 'integer', 'min' => 1],
             [['max_amount'], 'number', 'min' => 0],
         ];
     }
@@ -35,11 +37,12 @@ class DebtRedistributionSearch extends DebtRedistribution
     /**
      * Creates data provider instance with search query applied
      *
+     * @param ByOwnerInterface|ByDebtInterface $modelSource
      * @param array $params
      *
      * @return ActiveDataProvider
      */
-    public function search($toUserId, $params)
+    public function search($modelSource, $params)
     {
         $sort = new Sort([
             'attributes'   => [
@@ -54,8 +57,7 @@ class DebtRedistributionSearch extends DebtRedistribution
         ]);
         $query = DebtRedistribution::find()
             ->joinWith('currency')
-            ->fromUser()
-            ->toUser($toUserId)
+            ->usersByModelSource($modelSource)
             ->orderBy($sort->orders);
 
         // add conditions that should always apply here
