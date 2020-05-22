@@ -12,6 +12,7 @@ use Yii;
 use yii\base\Exception;
 use yii\base\InvalidArgumentException;
 use yii\console\Controller;
+use yii\db\Transaction;
 use yii\helpers\Console;
 use yii\helpers\VarDumper;
 
@@ -122,5 +123,75 @@ class DebtController extends Controller implements CronChainedInterface
         $redistribution->run();
 
         $this->output("Finished $class");
+    }
+
+    /**
+     * Create and confirm Debts reverse to specified.
+     * Developer tool, that may be useful for debugging.
+     *
+     * @param int $id
+     * @param float $group
+     *
+     * @throws \Throwable
+     */
+    public function actionCreateReverseDebts($id = 0, $group = 0.0)
+    {
+        $debts = $this->findDebts($id, $group);
+        $function = $this->revert($debts);
+        Yii::$app->db->transaction($function, Transaction::READ_COMMITTED);
+
+        $this->stdout('SUCCESS', Console::FG_GREEN);
+    }
+
+    /**
+     * @param int   $id
+     * @param float $group
+     *
+     * @return Debt[]
+     */
+    private function findDebts($id, $group): array
+    {
+        if (!$id && !$group) {
+            $message = 'No required argument was passed. You must provide either "id" or "group".';
+            throw new InvalidArgumentException($message);
+        }
+        if ($id && $group) {
+            throw new InvalidArgumentException('You must provide only one argument: either "id" or "group".');
+        }
+
+        if ($id) {
+            $debts = Debt::findAll($id);
+        } else {
+            $debts = Debt::find()->groupCondition($group)->all();
+        }
+
+        if (empty($debts)) {
+            throw new InvalidArgumentException("Can't find any row in DB using provided args.");
+        }
+
+        return $debts;
+    }
+
+    /**
+     * @param Debt[] $debts
+     *
+     * @return callable
+     */
+    private function revert(array $debts): callable
+    {
+        return static function () use ($debts) {
+            $groupNew = Debt::generateGroup();
+
+            foreach ($debts as $debt) {
+                $debtNew = Debt::factoryBySource($debt, -$debt->amount, $groupNew);
+                $debtNew->setUpdateProcessedFlag(true);
+
+                if (!$debtNew->save()) {
+                    $message = "Unexpected error occurred: Fail to save Debt.\n";
+                    $message .= 'Debt::$errors = ' . print_r($debtNew->errors, true);
+                    throw new Exception($message);
+                }
+            }
+        };
     }
 }

@@ -6,6 +6,7 @@ use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
+use app\models\queries\DebtQuery;
 use Yii;
 use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
@@ -260,6 +261,14 @@ class Debt extends ActiveRecord implements ByDebtInterface
     {
         $this->triggerAfterAffectBalance($insert, $changedAttributes);
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * @return DebtQuery
+     */
+    public static function find()
+    {
+        return new DebtQuery(get_called_class());
     }
 
     /**
