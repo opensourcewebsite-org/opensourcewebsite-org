@@ -464,7 +464,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h3 class="card-title">Card Refresh</h3>
 
                         <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="/pages/widgets.html" data-source-selector="#card-refresh-content">
+                            <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="/examples/widgets" data-source-selector="#card-refresh-content">
                                 <i class="fas fa-sync-alt"></i></button>
                         </div>
                         <!-- /.card-tools -->
@@ -487,7 +487,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h3 class="card-title">All together</h3>
 
                         <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="/pages/widgets.html" data-source-selector="#card-refresh-content">
+                            <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="/examples/widgets" data-source-selector="#card-refresh-content">
                                 <i class="fas fa-sync-alt"></i></button>
                             <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                 <i class="fas fa-expand"></i></button>
