@@ -22,12 +22,12 @@ trait SelectForUpdateTrait
     public static function findAllForUpdate($source): array
     {
         $indexBy = ($source instanceof ActiveQuery) ? $source->indexBy : null;
-        
+
         /** @var self[] $models */
         $models = static::findBySql(static::sqlForUpdate($source))
             ->indexBy($indexBy)
             ->all();
-        
+
         foreach ($models as $model) {
             $model->setFoundForUpdate();
         }
@@ -98,7 +98,9 @@ trait SelectForUpdateTrait
         if (static::$foundForUpdate === null) {
             static::$foundForUpdate = [];
 
-            $handler = static function () { static::clearFoundForUpdate(); };
+            $handler = static function () {
+                static::clearFoundForUpdate();
+            };
             static::getDb()->on(Connection::EVENT_COMMIT_TRANSACTION, $handler);
             static::getDb()->on(Connection::EVENT_ROLLBACK_TRANSACTION, $handler);
         }
