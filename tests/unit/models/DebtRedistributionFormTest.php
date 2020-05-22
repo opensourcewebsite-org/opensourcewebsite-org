@@ -6,6 +6,7 @@ use app\models\DebtRedistribution;
 use app\models\DebtRedistributionForm;
 use app\models\User;
 use app\tests\fixtures\ContactFixture;
+use app\tests\fixtures\CurrencyFixture;
 use app\tests\fixtures\UserFixture;
 use Codeception\Test\Unit;
 use Yii;
@@ -23,6 +24,10 @@ class DebtRedistributionFormTest extends Unit
             'contact' => [
                 'class'    => ContactFixture::className(),
                 'dataFile' => codecept_data_dir() . 'contact.php',
+            ],
+            'currency' => [
+                'class'    => CurrencyFixture::className(),
+                'dataFile' => codecept_data_dir() . 'currency.php',
             ],
         ];
     }
@@ -66,7 +71,7 @@ class DebtRedistributionFormTest extends Unit
 
         $model->load([
             'contactId'   => 1,
-            'currency_id' => 2,
+            'currency_id' => 108,
             'max_amount'  => 20,
         ], '');
         expect('save() is success', $model->save())->true();
@@ -74,7 +79,7 @@ class DebtRedistributionFormTest extends Unit
         $model = DebtRedistributionForm::findModel($model->id);
         expect('DebtRedistributionForm::getModel() works fine', $model)->notEmpty();
         expect('attribute "max_amount" is correct', $model->max_amount)->equals(20);
-        expect('attribute "currency_id" is correct', $model->currency_id)->equals(2);
+        expect('attribute "currency_id" is correct', $model->currency_id)->equals(108);
     }
 
     /**

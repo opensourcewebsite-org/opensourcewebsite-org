@@ -2,7 +2,7 @@
 
 namespace app\interfaces;
 
-interface ICronChained
+interface CronChainedInterface
 {
     public function actionIndex();
 }

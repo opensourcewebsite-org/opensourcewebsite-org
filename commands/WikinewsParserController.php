@@ -3,13 +3,13 @@
 namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
 use yii\console\Controller;
 use yii\httpclient\Client;
 
-class WikinewsParserController extends Controller implements ICronChained
+class WikinewsParserController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 
