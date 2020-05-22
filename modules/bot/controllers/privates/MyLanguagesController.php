@@ -253,9 +253,9 @@ class MyLanguagesController extends Controller
                 ->orFilterWhere(['like', 'name', $text . '%', false])
                 ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
                 ->one();
-        }
+       }
 
-        if (isset($language) ){
+        if (isset($language) ) {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
@@ -269,7 +269,7 @@ class MyLanguagesController extends Controller
         } else {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
+            
             $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
             $deleteBotMessage->send($this->getBotApi());
             
