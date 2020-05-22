@@ -6,7 +6,7 @@ if (!$isEdit) {
 <b><?= Yii::t('bot', 'Requirements') ?></b><br/>
 <br/>
 <?php
-if (!empty($currentValue)) {
+if (isset($currentValue) && $currentValue !== '') {
     echo Yii::t('bot', 'Current value') . ': <br/>';
     echo $currentValue . '<br/><br/>';
 }

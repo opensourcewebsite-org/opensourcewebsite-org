@@ -4,7 +4,10 @@ namespace app\modules\bot\controllers\privates;
 
 use app\models\Company;
 use app\models\Currency;
+use app\models\Language;
+use app\models\LanguageLevel;
 use app\models\Vacancy;
+use app\models\VacancyLanguage;
 use app\modules\bot\components\CrudController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
@@ -41,11 +44,22 @@ class SJobController extends CrudController
             [
                 'model' => Vacancy::class,
                 'attributes' => [
-                    'currency_id' => [
+                    'currency' => [
                         'relation' => [
-                            'model' => Currency::class,
-                            'foreign_key' => 'id',
-                        ]
+                            'attributes' => [
+                                'currency_id' => [ Currency::class, 'id' ],
+                            ],
+                        ],
+                    ],
+                    'languages' => [
+                        'relation' => [
+                            'model' => VacancyLanguage::class,
+                            'attributes' => [
+                                'vacancy_id' => [ Vacancy::class, 'id' ],
+                                'language_id' => [ Language::class, 'id' ],
+                                'language_level_id' => [ LanguageLevel::class, 'id' ],
+                            ],
+                        ],
                     ],
                     'name' => [],
                     'hourly_rate' => [],
@@ -398,11 +412,27 @@ class SJobController extends CrudController
         return $currency->code . ' - ' . $currency->name;
     }
 
+    protected function getLanguageLabel(Language $language)
+    {
+        return $language->name;
+    }
+
+    protected function getLanguageLevelLabel(LanguageLevel $languageLevel)
+    {
+        return $languageLevel->getDisplayName();
+    }
+
+    protected function getVacancyLanguageLabel(VacancyLanguage $vacancyLanguage)
+    {
+        return $vacancyLanguage->language->name . ' - ' . Yii::t('app', $vacancyLanguage->level->description);
+    }
+
     /**
      * @param string $className
      */
     protected function beforeCreate(string $className)
     {
+        parent::beforeCreate($className);
         if ($className == Vacancy::class) {
             $this->getState()->setIntermediateField('companyId', $this->getRequest()->getParam('cid', null));
         }

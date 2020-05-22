@@ -24,7 +24,8 @@ class m200412_103747_create_vacancy_language_table extends Migration
             '{{%vacancy_language}}',
             'vacancy_id',
             '{{%vacancy}}',
-            'id'
+            'id',
+            'CASCADE'
         );
 
         $this->addForeignKey(

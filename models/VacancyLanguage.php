@@ -5,6 +5,15 @@ namespace app\models;
 use yii\db\ActiveRecord;
 use Yii;
 
+/**
+ * Class VacancyLanguage
+ * @package app\models
+ * @property-read Language $language
+ * @property-read LanguageLevel $level
+ * @property int $language_id
+ * @property int $language_level_id
+ * @property int $vacancy_id
+ */
 class VacancyLanguage extends ActiveRecord
 {
     public static function tableName()
@@ -28,10 +37,5 @@ class VacancyLanguage extends ActiveRecord
     public function getLanguage()
     {
         return $this->hasOne(Language::class, [ 'id' => 'language_id' ]);
-    }
-
-    public function getDisplayName()
-    {
-        return $this->language->name . ' - ' . Yii::t('app', $this->level->description);
     }
 }

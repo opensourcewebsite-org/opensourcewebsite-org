@@ -5,6 +5,12 @@ namespace app\models;
 use yii\db\ActiveRecord;
 use Yii;
 
+/**
+ * Class LanguageLevel
+ * @package app\models
+ * @property string $code
+ * @property string $description
+ */
 class LanguageLevel extends ActiveRecord
 {
     public static function tableName()

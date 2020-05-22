@@ -31,6 +31,17 @@ class PaginationButtons
         return self::build($items, $routeCallback, $buttonCallback, $pagination);
     }
 
+    public static function buildFromArray(array $items, callable $routeCallback, callable $buttonCallback, int $page = 1, int $pageSize = 9)
+    {
+        $pagination = self::generatePagination(count($items), $page, $pageSize);
+        $items = array_slice(
+            $items,
+            $pagination->offset,
+            $pagination->limit
+        );
+        return self::build($items, $routeCallback, $buttonCallback, $pagination);
+    }
+
     /**
      * @param array $items
      * @param callable $routeCallback
@@ -41,7 +52,12 @@ class PaginationButtons
     private static function build(array $items, callable $routeCallback, callable $buttonCallback, Pagination $pagination)
     {
         $buttons = array_map(function ($item) use ($buttonCallback) {
-            return [ $buttonCallback($item) ];
+            $buttonCallbackResult = $buttonCallback($item);
+            if (is_array($buttonCallbackResult) && !is_array($buttonCallbackResult[0]))
+            {
+                $buttonCallbackResult = [ $buttonCallbackResult ];
+            }
+            return $buttonCallbackResult;
         }, $items);
 
         if ($pagination->pageCount > 1) {

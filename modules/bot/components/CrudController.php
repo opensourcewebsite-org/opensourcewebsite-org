@@ -2,11 +2,13 @@
 
 namespace app\modules\bot\components;
 
+use app\models\VacancyLanguage;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\request\Request;
 use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -26,78 +28,159 @@ abstract class CrudController extends Controller
             ->build();
     }
 
-    public function actionEnterAttribute($m, $a, $t = null)
+    public function actionEnterAttribute($a, $t = null)
     {
-        $stateRequest = Request::fromUrl($this->getState()->getName());
-        if ($m == $stateRequest->getParam('m', null)) {
-            $rule = $this->getRule($m);
-            $attributes = $this->getAttributes($rule);
-            $stateAttribute = $stateRequest->getParam('a', null);
-            if (!empty($attributes) && array_key_exists($a, $attributes)
-                && ($stateAttribute == $a
-                    || ($this->canSkipAttribute($attributes, $stateAttribute) && $this->getNextElement(array_keys($attributes), $stateAttribute) == $a)
-                    || $this->getPrevElement(array_keys($attributes), $stateAttribute) == $a)) {
-                if (empty($t)) {
-                    return $this->generatePublicResponse($m, $a, $attributes[$a]);
-                }
-
-                /* @var ActiveRecord $model */
-                $model = $this->createModel($rule);
-                $model->setAttribute($a, $t);
-                if (!$model->validate($a)) {
-                    $errors = $model->getErrors($a);
-                    return $this->generatePublicResponse($m, $a, $attributes[$a], reset($errors));
-                }
-                $this->getState()->setIntermediateField($a, $t);
-
-                $isEdit = !is_null($this->getState()->getIntermediateField('id', null));
-                $nextAttribute = $this->getNextElement(array_keys($attributes), $a);
-                if (isset($nextAttribute) && !$isEdit) {
-                    return $this->generateResponse($m, $nextAttribute, $rule);
-                }
-
-                return $this->save($rule);
-            }
+        if (!$this->isRequestValid($a)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
         }
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
-            ->build();
+
+        $state = $this->getState();
+        $modelClass = $state->getIntermediateField('modelClass', null);
+        $modelName = $this->getModelName($modelClass);
+        $rule = $this->getRule($modelName);
+
+        if ($this->isPrivateAttribute($a, $rule)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $attributes = $this->getAttributes($rule);
+        $config = $attributes[$a];
+
+        if (!is_string($t) || $t === '') {
+            return $this->generatePublicResponse($modelName, $a, $config);
+        }
+
+        /* @var ActiveRecord $model */
+        $model = $this->createModel($rule);
+        $model->setAttribute($a, $t);
+        if (!$model->validate($a)) {
+            $errors = $model->getErrors($a);
+            return $this->generatePublicResponse($modelName, $a, $attributes[$a], reset($errors));
+        }
+        $this->getState()->setIntermediateField($a, $t);
+
+        $isEdit = !is_null($this->getState()->getIntermediateField('id', null));
+        $nextAttribute = $this->getNextKey($attributes, $a);
+Yii::error($nextAttribute);
+        if (isset($nextAttribute) && !$isEdit) {
+            return $this->generateResponse($modelName, $nextAttribute, $rule);
+        }
+
+        return $this->save($rule);
     }
 
-    public function actionSetAttribute($m, $a, $p = 1, $v = null)
+    /**
+     * @param string $a Attribute name
+     * @param int $p Page number
+     * @param null $v Attribute value
+     * @return array
+     */
+    public function actionSetAttribute($a, $p = 1, $v = null)
     {
-        $stateRequest = Request::fromUrl($this->getState()->getName());
-        if ($m == $stateRequest->getParam('m', null)) {
-            $rule = $this->getRule($m);
-            $attributes = $this->getAttributes($rule);
-            $stateAttribute = $stateRequest->getParam('a', null);
-            if (!empty($attributes) && array_key_exists($a, $attributes)
-                && ($stateAttribute == $a
-                    || ($this->canSkipAttribute($attributes, $stateAttribute) && $this->getNextElement(array_keys($attributes), $stateAttribute) == $a)
-                    || $this->getPrevElement(array_keys($attributes), $stateAttribute) == $a)) {
-                $config = $attributes[$a];
+        if (!$this->isRequestValid($a)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
 
-                if (isset($v)) {
-                    $relationModel = call_user_func([ $config['relation']['model'], 'findOne' ], $v);
-                    if (isset($relationModel)) {
-                        $this->getState()->setIntermediateField($a, $v);
+        $state = $this->getState();
+        $modelClass = $state->getIntermediateField('modelClass', null);
+        $modelName = $this->getModelName($modelClass);
+        $rule = $this->getRule($modelName);
 
-                        $isEdit = !is_null($this->getState()->getIntermediateField('id', null));
-                        $nextAttribute = $this->getNextElement(array_keys($attributes), $a);
-                        if (isset($nextAttribute) && !$isEdit) {
-                            return $this->generateResponse($m, $nextAttribute, $rule);
+        if (!$this->isPrivateAttribute($a, $rule)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $attributes = $this->getAttributes($rule);
+        $config = $attributes[$a];
+        $relation = $this->getRelation($config);
+        $relationAttributes = $relation['attributes'];
+
+        if (isset($v) && isset($relation)) {
+            $relationAttributeName = $state->getIntermediateField('relationAttributeName', null);
+            if (!array_key_exists($relationAttributeName, $relationAttributes)) {
+                return ResponseBuilder::fromUpdate($this->getUpdate())
+                    ->answerCallbackQuery()
+                    ->build();
+            }
+            $relationAttribute = $relationAttributes[$relationAttributeName];
+            $relationModelName = $relationAttribute[0];
+            $relationModel = call_user_func([ $relationModelName, 'findOne' ], $v);
+            if (isset($relationModel)) {
+                $relationData = $state->getIntermediateField($a, [[]]);
+                $item = array_pop($relationData);
+                if (empty($item)) {
+                    foreach ($relationData as $key => $relationItem) {
+                        if ($relationItem[$relationAttributeName] == $v)
+                        {
+                            $item = $relationItem;
+                            unset($relationData[$key]);
+                            break;
                         }
-
-                        return $this->save($rule);
                     }
                 }
+                $relationAttributesCount = count($relationAttributes);
+                $isManyToOne = $relationAttributesCount == 1;
+                $item[$relationAttributeName] = $v;
+                $relationData[] = $item;
+                $state->setIntermediateField($a, $relationData);
 
-                return $this->generatePrivateResponse($m, $a, $config, $p);
+                $nextRelationAttributeName = $this->getNextKey($relationAttributes, $relationAttributeName);
+                $state->setIntermediateField('relationAttributeName', $nextRelationAttributeName);
+
+                if (!isset($nextRelationAttributeName) && $isManyToOne) {
+                    $isEdit = !is_null($state->getIntermediateField('id', null));
+                    $nextAttribute = $this->getNextKey($attributes, $a);
+                    if (isset($nextAttribute) && !$isEdit) {
+                        return $this->generateResponse($modelName, $nextAttribute, $rule);
+                    }
+
+                    return $this->save($rule);
+                }
             }
         }
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->answerCallbackQuery()
-            ->build();
+
+        return $this->generatePrivateResponse($modelName, $a, $config, $p);
+    }
+
+    public function actionAddAttribute($a, $p = null)
+    {
+        if (!$this->isRequestValid($a)) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $state = $this->getState();
+        $modelClass = $state->getIntermediateField('modelClass', null);
+        $rule = $this->getRule($this->getModelName($modelClass));
+        $config = $rule['attributes'][$a];
+        if (!isset($p)) {
+            $relation = $this->getRelation($config);
+            $attributeNames = array_keys($relation['attributes']);
+            $relationAttributeName = reset($attributeNames);
+            $relationAttribute = $relation['attributes'][$relationAttributeName];
+            if ($relationAttribute[0] == $modelClass) {
+                $relationAttributeName = next($attributeNames);
+            }
+            $state->setIntermediateField('relationAttributeName', $relationAttributeName);
+            $attributeValue = $state->getIntermediateField($a, [[]]);
+            $attributeLastItem = end($attributeValue);
+            if (!empty($attributeLastItem)) {
+                $attributeValue[] = [];
+            }
+            $state->setIntermediateField($a, $attributeValue);
+        } else {
+            $state->setIntermediateField('relationAttributeName', null);
+        }
+        return $this->generatePrivateResponse($this->getModelName($modelClass), $a, $config, $p ?? 1);
     }
 
     public function actionEditAttribute($m, $a, $id)
@@ -114,59 +197,191 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param string $m Model name
-     * @param string $a Attribute name
      * @return array
      */
-    public function actionClearAttribute($m, $a)
+    public function actionClearAttribute()
     {
-        $rule = $this->getRule($m);
-        $attributes = $this->getAttributes($rule);
-        if (isset($rule) && array_key_exists($a, $attributes)) {
-            $isAttributeRequired = $attributes[$a]['isRequired'] ?? true;
+        $state = $this->getState();
+        $attributeName = $state->getIntermediateField('attributeName', null);
+        if (isset($attributeName)) {
+            $modelClass = $state->getIntermediateField('modelClass', null);
+            $modelName = $this->getModelName($modelClass);
+            $rule = $this->getRule($modelName);
+            $attributes = $this->getAttributes($rule);
+            $config = $attributes[$attributeName];
+
+            $isAttributeRequired = $config['isRequired'] ?? true;
             if (!$isAttributeRequired) {
-                $state = $this->getState();
-                $state->setIntermediateField($a, null);
+                $state->setIntermediateField($attributeName, null);
+
                 $isEdit = !is_null($state->getIntermediateField('id', null));
                 if ($isEdit) {
                     return $this->save($rule);
                 }
+
+                return $this->generateResponse($modelName, $attributeName, $config);
             }
         }
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->answerCallbackQuery()
             ->build();
     }
 
-    public function actionFinish(string $modelName)
+    public function actionNextAttribute()
     {
-        $rule = $this->getRule($modelName);
-        if (!empty($rule) && ($attributes = $this->getAttributes($rule))) {
-            $stateRequest = Request::fromUrl($this->getState()->getName());
-            $stateAttribute = $stateRequest->getParam('a', null);
-            $attributeValue = $this->getState()->getIntermediateField($stateAttribute, null);
-            $lastAttribute = end(array_keys($attributes));
-            if ($stateAttribute == $lastAttribute && !empty($attributeValue)) {
-                $this->save($rule);
+        $state = $this->getState();
+        $attributeName = $state->getIntermediateField('attributeName', null);
+        if (isset($attributeName)) {
+            $isEdit = !is_null($state->getIntermediateField('id', null));
+            $modelClass = $state->getIntermediateField('modelClass', null);
+            $modelName = $this->getModelName($modelClass);
+            $rule = $this->getRule($modelName);
+            $attributes = $this->getAttributes($rule);
+            if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
+                $relationAttributes = $relation['attributes'];
+                array_shift($relationAttributes);
+                $relationAttributeName = $state->getIntermediateField('relationAttributeName', null);
+                if (isset($relationAttributeName)) {
+                    $relationData = $state->getIntermediateField($attributeName, [[]]);
+                    $item = array_pop($relationData);
+                    if (!empty($item[$relationAttributeName] ?? null)) {
+                        $nextRelationAttributeName = $this->getNextKey($relationAttributes, $relationAttributeName);
+                        $state->setIntermediateField('relationAttributeName', $nextRelationAttributeName);
+                        return $this->generatePrivateResponse($modelName, $attributeName, $attributes[$attributeName]);
+                    }
+
+                    return ResponseBuilder::fromUpdate($this->getUpdate())
+                        ->answerCallbackQuery()
+                        ->build();
+                }
+            }
+            $nextAttributeName = $this->getNextKey($attributes, $attributeName);
+            $isAttributeRequired = $attributes[$attributeName]['isRequired'] ?? true;
+            if (!$isAttributeRequired || !empty($state->getIntermediateField($attributeName, null))) {
+                if (isset($nextAttributeName) && !$isEdit) {
+                        return $this->generateResponse($modelName, $nextAttributeName, $rule);
+                } else {
+                    return $this->save($rule);
+                }
             }
         }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->answerCallbackQuery()
+            ->build();
+    }
+
+    public function actionPrevAttribute()
+    {
+        $state = $this->getState();
+        $attributeName = $state->getIntermediateField('attributeName', null);
+        if (isset($attributeName)) {
+            $isEdit = !is_null($state->getIntermediateField('id', null));
+            $modelClass = $state->getIntermediateField('modelClass', null);
+            $modelName = $this->getModelName($modelClass);
+            $rule = $this->getRule($modelName);
+            $attributes = $this->getAttributes($rule);
+            if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
+                $relationAttributes = $relation['attributes'];
+                array_shift($relationAttributes);
+                $relationAttributeName = $state->getIntermediateField('relationAttributeName', null);
+                if (isset($relationAttributeName)) {
+                    $nextRelationAttributeName = $this->getPrevKey($relationAttributes, $relationAttributeName);
+                    $state->setIntermediateField('relationAttributeName', $nextRelationAttributeName);
+                    return $this->generatePrivateResponse($modelName, $attributeName, $attributes[$attributeName]);
+                }
+            }
+            $prevAttributeName = $this->getPrevKey($attributes, $attributeName);
+            if (isset($prevAttributeName) && !$isEdit) {
+                return $this->generateResponse($modelName, $prevAttributeName, $rule);
+            } else {
+                $response = $this->onCancel($rule['model'], $this->getState()->getIntermediateField('id', null));
+                $this->getState()->reset();
+                return $response;
+            }
+        }
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->answerCallbackQuery()
             ->build();
     }
 
     /**
-     * @param string $m
+     * @param $i int Item Primary Id
      * @return array
      */
-    public function actionCancel(string $m)
+    public function actionRemoveAttribute($i)
     {
-        $rule = $this->getRule($m);
-        if (isset($rule)) {
-            $response = $this->onCancel($rule['model'], $this->getState()->getIntermediateField('id', null));
-            $this->getState()->reset();
-            return $response;
+        $state = $this->getState();
+        $attributeName = $state->getIntermediateField('attributeName', null);
+        if (isset($attributeName)) {
+            $modelClass = $state->getIntermediateField('modelClass', null);
+            $modelName = $this->getModelName($modelClass);
+            $rule = $this->getRule($modelName);
+            $attributes = $this->getAttributes($rule);
+            if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
+                $relationAttributes = $relation['attributes'];
+                array_shift($relationAttributes);
+                $secondaryRelationAttributeName = reset(array_keys($relationAttributes));
+                $relationAttributeName = $state->getIntermediateField('relationAttributeName', null);
+                if (!isset($relationAttributeName)) {
+                    $items = $state->getIntermediateField($attributeName, []);
+                    foreach ($items as $key => $item) {
+                        if ($item[$secondaryRelationAttributeName] == $i)
+                        {
+                            unset($items[$key]);
+                            break;
+                        }
+                    }
+                    $state->setIntermediateField($attributeName, $items);
+                    return $this->generatePrivateResponse($modelName, $attributeName, $attributes[$attributeName]);
+                }
+            }
         }
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->answerCallbackQuery()
+            ->build();
+    }
+
+    /**
+     * @param $i int Item Primary Id
+     * @return array
+     */
+    public function actionEditRelationAttribute($i)
+    {
+        $state = $this->getState();
+        $attributeName = $state->getIntermediateField('attributeName', null);
+        if (isset($attributeName)) {
+            $modelClass = $state->getIntermediateField('modelClass', null);
+            $modelName = $this->getModelName($modelClass);
+            $rule = $this->getRule($modelName);
+            $attributes = $this->getAttributes($rule);
+            if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
+                $relationAttributes = $relation['attributes'];
+                array_shift($relationAttributes);
+                $secondaryRelationAttributeName = reset(array_keys($relationAttributes));
+                array_shift($relationAttributes);
+                $noneValueRelationAttributeName = reset(array_keys($relationAttributes));
+                $relationAttributeName = $state->getIntermediateField('relationAttributeName', null);
+                if (!isset($relationAttributeName)) {
+                    $state->setIntermediateField('relationAttributeName', $noneValueRelationAttributeName);
+                    $items = $state->getIntermediateField($attributeName, []);
+                    foreach ($items as $key => $item) {
+                        if ($item[$secondaryRelationAttributeName] == $i)
+                        {
+                            unset($items[$key]);
+                            $items[] = $item;
+                            break;
+                        }
+                    }
+                    $state->setIntermediateField($attributeName, $items);
+                    return $this->generatePrivateResponse($modelName, $attributeName, $attributes[$attributeName]);
+                }
+            }
+        }
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->answerCallbackQuery()
             ->build();
@@ -256,22 +471,55 @@ abstract class CrudController extends Controller
     /**
      * @param string $className
      */
-    protected function beforeCreate(string $className) { }
+    protected function beforeCreate(string $className)
+    {
+        $this->getState()->setIntermediateField('modelClass', $className);
+    }
 
     /**
      * @param array $rule
-     * @param string $attribute
+     * @param string $attributeName
      * @param int $id
      */
-    protected function beforeEdit(array $rule, string $attribute, int $id)
+    protected function beforeEdit(array $rule, string $attributeName, int $id)
     {
         $state = $this->getState();
         $model = $this->getModel($rule, $id);
         if (isset($model)) {
+            $state->setIntermediateField('modelClass', $rule['model']);
             $state->setIntermediateField('id', $id);
-            $value = $model->getAttribute($attribute);
+
+            if ($this->isPrivateAttribute($attributeName, $rule))
+            {
+                $relation = $this->getRelation($this->getAttributes($rule)[$attributeName]);
+            }
+            if (isset($relation) && count($relation['attributes']) > 1)
+            {
+                $relationModelClass = $relation['model'];
+                $relationAttributeName = reset(array_keys($relation['attributes']));
+                $relationAttributeRefColumn = $relation['attributes'][$relationAttributeName][1];
+                $relationModels = call_user_func([ $relationModelClass, 'findAll' ], [ $relationAttributeName => $model->getAttribute($relationAttributeRefColumn) ]);
+                $value = [];
+                $relationAttributes = $relation['attributes'];
+                array_shift($relationAttributes);
+                /* @var ActiveRecord $relationModel */
+                foreach ($relationModels as $relationModel) {
+                    $relationItem = [];
+                    foreach ($relationAttributes as $relationAttributeName => $relationAttribute)
+                    {
+                        $relationItem[$relationAttributeName] = $relationModel->getAttribute($relationAttributeName);
+                    }
+                    $value[] = $relationItem;
+                }
+            }
+            else
+            {
+                $value = $model->getAttribute($attributeName);
+            }
+
+
             if (isset($value)) {
-                $state->setIntermediateField($attribute, $value);
+                $state->setIntermediateField($attributeName, $value);
             }
         }
     }
@@ -322,16 +570,78 @@ abstract class CrudController extends Controller
         }
 
         if ($model) {
-            foreach (array_keys($rule['attributes']) as $attribute) {
-                if ($state->isIntermediateFieldExists($attribute)) {
-                    $value = $state->getIntermediateField($attribute, null);
-                    $model->setAttribute($attribute, $value);
+            $manyToManyRelationAttributes = [];
+            foreach ($rule['attributes'] as $attributeName => $attribute) {
+                if ($state->isIntermediateFieldExists($attributeName)) {
+                    $relation = $this->getRelation($attribute);
+                    if (isset($relation)) {
+                        $relationAttributes = $relation['attributes'];
+                        if (count($relationAttributes) > 1) {
+                            $manyToManyRelationAttributes[] = $attributeName;
+                            continue;
+                        }
+                        if (count($relation) == 1) {
+                            $relationValue = $state->getIntermediateField($attributeName, [[]]);
+                            $model->setAttributes($relationValue[0]);
+                        }
+                    } else {
+                        $value = $state->getIntermediateField($attributeName, null);
+                        $model->setAttribute($attributeName, $value ?? null);
+                    }
                 }
             }
             $this->beforeSave($model, $isNew);
-            if ($model->save()) {
-                $state->reset();
-                return $this->afterSave($model, $isNew);
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($model->save()) {
+                    foreach ($manyToManyRelationAttributes as $attributeName) {
+                        $relation = $this->getRelation($rule['attributes'][$attributeName]);
+                        $relationModelClass = $relation['model'];
+                        $relationAttributes = $relation['attributes'];
+
+                        $primaryRelationAttributeName = array_keys($relationAttributes)[0];
+                        $primaryRelationAttribute = $relationAttributes[$primaryRelationAttributeName];
+                        $primaryRelationAttributeRefColumn = $primaryRelationAttribute[1];
+                        $secondaryRelationAttributeName = array_keys($relationAttributes)[1];
+
+                        $attributeValues = $state->getIntermediateField($attributeName, []);
+                        $secondaryAttributeIds = [];
+                        foreach ($attributeValues as $attributeValue) {
+                            /** @var ActiveRecord $relationModel */
+                            $relationModel = call_user_func([ $relationModelClass, 'findOne' ], [
+                                    $primaryRelationAttributeName => $model->getAttribute($primaryRelationAttributeRefColumn),
+                                    $secondaryRelationAttributeName => $attributeValue[$secondaryRelationAttributeName],
+                                ])
+                                ?? Yii::createObject([
+                                'class' => $relationModelClass,
+                            ]);
+                            $secondaryAttributeIds[] = $attributeValue[$secondaryRelationAttributeName];
+                            $relationModel->setAttribute($primaryRelationAttributeName, $model->getAttribute($primaryRelationAttributeRefColumn));
+                            $relationModel->setAttributes($attributeValue);
+                            if (!$relationModel->save()) {
+                                return ResponseBuilder::fromUpdate($this->getUpdate())
+                                    ->answerCallbackQuery()
+                                    ->build();
+                            }
+                        }
+
+                        if (!$isNew) {
+                            /* @var ActiveQuery $query */
+                            $query = call_user_func([$relationModelClass, 'find'], []);
+                            $itemsToDelete = $query->where(['not', [$secondaryRelationAttributeName => $secondaryAttributeIds]])->andWhere([$primaryRelationAttributeName => $model->id])->all();
+                            foreach ($itemsToDelete as $itemToDelete) {
+                                $itemToDelete->delete();
+                            }
+                        }
+                    }
+
+                    $state->reset();
+                    $transaction->commit();
+                    return $this->afterSave($model, $isNew);
+                }
+            } catch (\Exception $ex) {
+                Yii::warning($ex);
+                $transaction->rollBack();
             }
         }
 
@@ -341,84 +651,144 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param array $array
+     * @param array $assocArray
      * @param $element
      * @return mixed|null
      */
-    private function getNextElement(array $array, $element)
+    private function getNextKey(array $assocArray, $element)
     {
-        return $array[array_search($element, $array) + 1] ?? null;
+        $keys = array_keys($assocArray);
+        return $keys[array_search($element, $keys) + 1] ?? null;
     }
 
     /**
-     * @param array $array
+     * @param array $assocArray
      * @param $element
      * @return mixed|null
      */
-    private function getPrevElement(array $array, $element)
+    private function getPrevKey(array $assocArray, $element)
     {
-        return $array[array_search($element, $array) - 1] ?? null;
+        $keys = array_keys($assocArray);
+        return $keys[array_search($element, $keys) - 1] ?? null;
     }
 
     private function generatePrivateResponse(string $modelName, string $attributeName, array $config, int $page = 1)
     {
-        $this->getState()->setName(self::createRoute('set-attribute', [
-            'm' => $modelName,
+        $state = $this->getState();
+        $state->setName(self::createRoute('set-attribute', [
             'a' => $attributeName,
             'p' => $page,
         ]));
-        /* @var ActiveQuery $query */
-        $query = call_user_func([ $config['relation']['model'], 'find' ], []);
-        $itemButtons = PaginationButtons::buildFromQuery(
-            $query,
-            function (int $page) use ($modelName, $attributeName) {
-                return self::createRoute('set-attribute', [
-                    'm' => $modelName,
+        $state->setIntermediateField('attributeName', $attributeName);
+
+        $relationAttributeName = $state->getIntermediateField('relationAttributeName', null);
+        $isEdit = !is_null($state->getIntermediateField('id', null));
+        list($step, $totalSteps) = $this->getStepsInfo($attributeName, $this->getRule($modelName));
+        $relation = $this->getRelation($config);
+        if (isset($relationAttributeName)) {
+            $relationAttribute = $relation['attributes'][$relationAttributeName];
+            /* @var ActiveQuery $query */
+            $query = call_user_func([ $relationAttribute[0] , 'find'], []);
+            $valueAttribute = $relationAttribute[1];
+            $itemButtons = PaginationButtons::buildFromQuery(
+                $query,
+                function (int $page) use ($modelName, $attributeName) {
+                    return self::createRoute('set-attribute', [
+                        'a' => $attributeName,
+                        'p' => $page,
+                    ]);
+                },
+                function (ActiveRecord $model) use ($modelName, $attributeName, $valueAttribute) {
+                    return [
+                        'text' => $this->getLabel($model),
+                        'callback_data' => self::createRoute('set-attribute', [
+                            'a' => $attributeName,
+                            'v' => $model->getAttribute($valueAttribute),
+                        ]),
+                    ];
+                },
+                $page
+            );
+
+            $attributeValue = $state->getIntermediateField($attributeName, []);
+            if (!empty($attributeValue)) {
+                $item = $attributeValue[0];
+                $relationAttributeValue = $item[$relationAttributeName];
+                $currentValue = $query->where([ $valueAttribute => $relationAttributeValue ])->one();
+            }
+            $systemButtons = $this->generateSystemButtons($modelName, $attributeName, empty($attributeValue));
+
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
+                    $this->render("$modelName/$attributeName/set-$relationAttributeName", [
+                        'currentValue' => $currentValue ?? null,
+                        'step' => $step,
+                        'totalSteps' => $totalSteps,
+                        'isEdit' => $isEdit,
+                    ]),
+                    array_merge($itemButtons, [ $systemButtons ]),
+                    true
+                )
+                ->build();
+        }
+
+        $isAttributeRequired = $config['isRequired'] ?? true;
+        $relationAttributesWithoutPrimaryAttribute = $relation['attributes'];
+        array_shift($relationAttributesWithoutPrimaryAttribute);
+        $secondaryRelationAttributeName = reset(array_keys($relationAttributesWithoutPrimaryAttribute));
+        $items = $state->getIntermediateField($attributeName, []);
+        $itemButtons = PaginationButtons::buildFromArray(
+            $items,
+            function (int $page) use ($attributeName) {
+                return self::createRoute('add-attribute', [
                     'a' => $attributeName,
                     'p' => $page,
                 ]);
             },
-            function (ActiveRecord $model) use ($modelName, $attributeName) {
-                return [
-                    'text' => $this->getLabel($model),
-                    'callback_data' => self::createRoute('set-attribute', [
-                        'm' => $modelName,
-                        'a' => $attributeName,
-                        'v' => $model->id,
-                    ]),
-                ];
+            function (array $item) use ($relation, $secondaryRelationAttributeName, $isAttributeRequired, $items) {
+                /* @var ActiveRecord $model */
+                $model = Yii::createObject(array_merge([ 'class' => $relation['model'] ], $item));
+                return array_merge([
+                        [
+                            'text' => $this->getLabel($model),
+                            'callback_data' => self::createRoute('edit-relation-attribute', [
+                                'i' => $item[$secondaryRelationAttributeName],
+                            ]),
+                        ]
+                    ],
+                    count($items) == 1 && $isAttributeRequired ? [] : [
+                        [
+                        'text' => Emoji::DELETE,
+                        'callback_data' => self::createRoute('remove-attribute', [
+                            'i' => $item[$secondaryRelationAttributeName],
+                        ]),
+                    ]
+                ]);
             },
             $page
         );
-
-        $isEdit = !is_null($this->getState()->getIntermediateField('id', null));
-        $attributeValue = $this->getState()->getIntermediateField($attributeName, null);
-        $systemButtons = $this->generateSystemButtons($modelName, $attributeName, empty($attributeValue));
-        list($step, $totalSteps) = $this->getStepsInfo($attributeName, $this->getRule($modelName));
-
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render("$modelName/set-$attributeName", [
-                    'currentValue' => /*$query->where([ $relation['foreign_key'] => $attributeValue ])*/ null,
                     'step' => $step,
                     'totalSteps' => $totalSteps,
                     'isEdit' => $isEdit,
                 ]),
-                array_merge($itemButtons, [ $systemButtons ]),
-                true
+                array_merge($itemButtons, [ $this->generateSystemButtons($modelName, $attributeName, empty($items)) ])
             )
             ->build();
     }
 
     private function generatePublicResponse(string $modelName, string $attributeName, array $config, string $error = null)
     {
-        $this->getState()->setName(self::createRoute('enter-attribute', [
-            'm' => $modelName,
+        $state = $this->getState();
+        $state->setName(self::createRoute('enter-attribute', [
             'a' => $attributeName,
         ]));
+        $state->setIntermediateField('attributeName', $attributeName);
 
-        $isEdit = !is_null($this->getState()->getIntermediateField('id', null));
-        $attributeValue = $this->getState()->getIntermediateField($attributeName, null);
+        $isEdit = !is_null($state->getIntermediateField('id', null));
+        $attributeValue = $state->getIntermediateField($attributeName, null);
         $systemButtons = $this->generateSystemButtons($modelName, $attributeName, empty($attributeValue));
         list($step, $totalSteps) = $this->getStepsInfo($attributeName, $this->getRule($modelName));
 
@@ -441,6 +811,8 @@ abstract class CrudController extends Controller
     {
         $config = $rule['attributes'][$attributeName];
         if ($this->isPrivateAttribute($attributeName, $rule)) {
+            $attributes = $config['relation']['attributes'];
+            $this->getState()->setIntermediateField('relationAttributeName', (count($attributes) == 1) ? array_keys($attributes)[0] : null);
             return $this->generatePrivateResponse($modelName, $attributeName, $config);
         } else {
             return $this->generatePublicResponse($modelName, $attributeName, $config);
@@ -456,56 +828,41 @@ abstract class CrudController extends Controller
 
         $isEdit = !is_null($this->getState()->getIntermediateField('id', null));
         $isAttributeRequired = $config['isRequired'] ?? true;
+        $relation = $this->getRelation($config);
+        $relationAttributeName = $this->getState()->getIntermediateField('relationAttributeName', null);
 
         /* 'Back' button */
-        if (!$isEdit && $prevAttribute = $this->getPrevElement(array_keys($attributes), $attributeName)) {
-            $action = $this->isPrivateAttribute($prevAttribute, $rule) ? 'set-attribute' : 'enter-attribute';
-            $systemButtons[] = [
-                'text' => Emoji::BACK,
-                'callback_data' => self::createRoute($action, [
-                    'm' => $modelName,
-                    'a' => $prevAttribute,
-                ]),
-            ];
-        } else {
-            $systemButtons[] = [
-                'text' => Emoji::BACK,
-                'callback_data' => self::createRoute('cancel', [
-                    'm' => $modelName,
-                ]),
-            ];
-        }
+        $systemButtons[] = [
+            'text' => Emoji::BACK,
+            'callback_data' => self::createRoute('prev-attribute'),
+        ];
 
-        /* 'Clear' button */
-        if (!$isAttributeRequired && !$isEmpty) {
-            $systemButtons[] = [
-                'text' => Emoji::DELETE,
-                'callback_data' => self::createRoute('clear-attribute', [
-                    'm' => $modelName,
-                    'a' => $attributeName,
-                ])
-            ];
-        }
-
-        /* 'Skip' button */
-        if ((!$isAttributeRequired || !$isEmpty) && !$isEdit) {
-            if ($nextAttribute = $this->getNextElement(array_keys($attributes), $attributeName)) {
-                $action = $this->isPrivateAttribute($nextAttribute, $rule) ? 'set-attribute' : 'enter-attribute';
+        if (!isset($relation) || count($relation['attributes']) == 1) {
+            /* 'Clear' button */
+            if (!$isAttributeRequired && !$isEmpty) {
                 $systemButtons[] = [
-                    'text' => Yii::t('bot', 'Skip'),
-                    'callback_data' => self::createRoute($action, [
-                        'm' => $modelName,
-                        'a' => $nextAttribute,
-                    ])
-                ];
-            } else {
-                $systemButtons[] = [
-                    'text' => Yii::t('bot', 'Finish'),
-                    'callback_data' => self::createRoute('finish', [
-                        'm' => $modelName,
-                    ])
+                    'text' => Emoji::DELETE,
+                    'callback_data' => self::createRoute('clear-attribute')
                 ];
             }
+        } else {
+            /* 'Add' button */
+            $systemButtons[] = [
+                'text' => Emoji::ADD,
+                'callback_data' => self::createRoute('add-attribute', [
+                    'a' => $attributeName,
+                ]),
+            ];
+        }
+
+        /* 'Next' button */
+        if (((!$isAttributeRequired || !$isEmpty) && (!$isEdit || (isset($relation) && count($relation['attributes']) > 1)
+                && !isset($relationAttributeName)))) {
+            $nextAttribute = $this->getNextKey($attributes, $attributeName);
+            $systemButtons[] = [
+                'text' => Yii::t('bot', (isset($nextAttribute) && !$isEdit) ? 'Next' : 'Finish'),
+                'callback_data' => self::createRoute('next-attribute'),
+            ];
         }
 
         return $systemButtons;
@@ -606,6 +963,63 @@ abstract class CrudController extends Controller
         return null;
     }
 
+    /**
+     * If attribute has relation, this method perform its validation and return an array on success, otherwise null.
+     *
+     * @param array $attributeConfig
+     * @return array|null
+     */
+    private function getRelation(array $attributeConfig)
+    {
+        if (array_key_exists('relation', $attributeConfig)) {
+            $relation = $attributeConfig['relation'];
+            if (!is_array($relation)) {
+                Yii::warning('\'relation\' must have an array as its value.');
+                return null;
+            }
+        }
+        if (isset($relation) && array_key_exists('attributes', $relation) ) {
+            $attributes = $relation['attributes'];
+        }
+        if (!empty($attributes)) {
+            $attributesCount = count($attributes);
+            if ($attributesCount <= 1 && array_key_exists('model', $relation)) {
+                Yii::warning('When using many-to-many relationship, \'model\' can`t be empty and count of attributes must be greater than 1.');
+                return null;
+            }
+            if ($attributesCount != 1 && !array_key_exists('model', $relation)) {
+                Yii::warning('When using many-to-one relationship, \'model\' must be empty and count of attributes must be equal to one.');
+                return null;
+            }
+            foreach ($attributes as $attribute => $config) {
+                if (count($config) != 2) {
+                    Yii::warning("Error occurred when reading '$config' attribute: its value must be an array with model name in 0th index and ref columng in 1th index");
+                    return null;
+                }
+                $modelClassName = $config[0];
+                $refColumn = $config[1];
+                try {
+                    /* @var $model ActiveRecord */
+                    $model = Yii::createObject($modelClassName);
+                } catch (InvalidConfigException $ex) {
+                    Yii::warning("$modelClassName doesn't exist.");
+                    return null;
+                }
+                if (!($model instanceof ActiveRecord)) {
+                    Yii::warning("$modelClassName must be inherited from " . ActiveRecord::class);
+                    return null;
+                }
+                if (!$model->hasAttribute($refColumn)) {
+                    Yii::warning("$modelClassName doesn't have $refColumn attribute");
+                    return null;
+                }
+            }
+
+            return $relation;
+        }
+        return null;
+    }
+
     private function getLabel(ActiveRecord $model)
     {
         $methodName = 'get' . ucfirst($this->getModelName(get_class($model))) . 'Label';
@@ -618,5 +1032,41 @@ abstract class CrudController extends Controller
         $isRequired = $config['isRequired'] ?? true;
         $isEmptyAttribute = empty($this->getState()->getIntermediateField($attributeName, null));
         return !$isRequired || !$isEmptyAttribute;
+    }
+
+    /**
+     * @param string $attributeName
+     * @return bool
+     */
+    private function isRequestValid(string $attributeName)
+    {
+        $state = $this->getState();
+        $modelClass = $state->getIntermediateField('modelClass', null);
+        $stateRoute = $state->getName();
+        if (isset($stateRoute)) {
+            $stateRequest = Request::fromUrl($stateRoute);
+        }
+        if (isset($stateRequest)) {
+            $stateAttributeName = $stateRequest->getParam('a', null);
+        }
+        if (isset($modelClass)) {
+            $rule = $this->getRule($this->getModelName($modelClass));
+        }
+        if (isset($rule)) {
+            $attributes = $this->getAttributes($rule);
+        }
+        if (!empty($attributes) && isset($stateAttributeName) && array_key_exists($attributeName, $attributes)) {
+            if ($stateAttributeName == $attributeName) {
+                return true;
+            }
+            if ($this->canSkipAttribute($attributes, $stateAttributeName)
+                && $this->getNextKey($attributes, $stateAttributeName) == $attributeName) {
+                return true;
+            }
+            if ($this->getPrevKey($attributes, $stateAttributeName) == $attributeName) {
+                return true;
+            }
+        }
+        return false;
     }
 }

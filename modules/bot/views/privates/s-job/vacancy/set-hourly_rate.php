@@ -9,7 +9,7 @@ if (!$isEdit) {
 if (!empty($error)) {
     echo Yii::t('bot', 'You entered an invalid value') . ': ' . $error . '<br/><br/>';
 }
-if (!empty($currentValue)) {
+if (isset($currentValue) && $currentValue !== '') {
     echo Yii::t('bot', 'Current value') . ': ' . $currentValue . '<br/><br/>';
 }
 ?>
