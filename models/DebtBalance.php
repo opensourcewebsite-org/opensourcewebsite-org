@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\DebtBalanceQuery;
+use app\models\traits\SelectForUpdateTrait;
 use yii\base\Exception;
 use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
@@ -20,6 +23,7 @@ use yii\db\ActiveRecord;
  * @property float $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
  * @property int|null $processed_at     TIMESTAMP - if last Debt created by User.
  *                                      NULL      - by cron {@see \app\components\debt\Reduction}
+ * @property int $redistribute_try_at
  *
  * @property Currency      $currency
  * @property User          $fromUser
@@ -30,8 +34,11 @@ use yii\db\ActiveRecord;
  *                                              for relation {@see DebtBalance::getChainMembers()}
  *                                              in {@see Reduction::reduceCircledChainAmount()}
  */
-class DebtBalance extends ActiveRecord
+class DebtBalance extends ActiveRecord implements ByDebtInterface
 {
+    use ByDebtTrait;
+    use SelectForUpdateTrait;
+
     /**
      * Should script store zero amount in DB.
      *      FALSE - system will expect, that there are no row, where `debt_balance.amount = 0`.
@@ -46,8 +53,6 @@ class DebtBalance extends ActiveRecord
 
     /** @var bool {@see DebtBalance::requireAllowExecute()} */
     private static $allowExecute = false;
-
-    private $foundForUpdate = false;
 
     /**
      * {@inheritdoc}
@@ -82,26 +87,6 @@ class DebtBalance extends ActiveRecord
     }
 
     /**
-     * Gets query for [[FromUser]].
-     *
-     * @return \yii\db\ActiveQuery|\app\models\queries\UserQuery
-     */
-    public function getFromUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'from_user_id']);
-    }
-
-    /**
-     * Gets query for [[ToUser]].
-     *
-     * @return \yii\db\ActiveQuery|\app\models\queries\UserQuery
-     */
-    public function getToUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'to_user_id']);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery|DebtBalanceQuery
      */
     public function getChainMembers()
@@ -117,7 +102,7 @@ class DebtBalance extends ActiveRecord
      */
     public function getChainMemberParent()
     {
-        /** @var [] $link empty array is not bug. {@see DebtBalance::chainMemberParent} */
+        /** @var [] $link empty array is not bug. {@see DebtBalance::$chainMemberParent} */
         $link = [];
         return $this->hasOne(self::className(), $link);
     }
@@ -173,6 +158,20 @@ class DebtBalance extends ActiveRecord
     }
 
     /**
+     * @throws Exception
+     */
+    public function afterRedistribution(int $timestamp): void
+    {
+        //SELECT FOR UPDATE and transaction is not necessary for this particular field.
+        //So we can simply use raw SQL to avoid transaction validation
+        $this->redistribute_try_at = $timestamp;
+        static::getDb()
+            ->createCommand()
+            ->update(static::tableName(), ['redistribute_try_at' => $timestamp], $this->primaryKey)
+            ->execute();
+    }
+
+    /**
      * @throws \Throwable
      */
     public static function onDebtConfirmation(Debt $debt): self
@@ -181,12 +180,13 @@ class DebtBalance extends ActiveRecord
             throw new InvalidCallException('Method require `Debt::isStatusConfirm() === TRUE`');
         }
 
-        if ($debt->isRelationPopulated('debtBalance') && $debt->debtBalance->foundForUpdate) {
+        if ($debt->isRelationPopulated('debtBalance') && $debt->debtBalance->isFoundForUpdate()) {
             $debtBalance = $debt->debtBalance;
         } else {
             //`FOR UPDATE` - necessary to avoid conflict. Because we can't just set `amount = amount + :debtAmount`.
             // We need possibility to switch values of `from_user_id` & `to_user_id`. And possibility to delete row.
-            $debtBalance = DebtBalance::findOneForUpdate($debt);
+            $query = DebtBalance::find()->debt($debt);
+            $debtBalance = DebtBalance::findOneForUpdate($query);
         }
 
         if ($debtBalance) {
@@ -234,58 +234,11 @@ class DebtBalance extends ActiveRecord
         }
     }
 
-    /**
-     * @param self[] $models
-     *
-     * @return DebtBalance[]
-     */
-    public static function findAllForUpdate($models): array
-    {
-        self::requireTransaction();
-
-        $sql = self::find()
-            ->balances($models)
-            ->createCommand()
-            ->getRawSql();
-
-        $modelsRefreshed = self::findBySql($sql . ' FOR UPDATE')->all();
-        foreach ($modelsRefreshed as $model) {
-            $model->foundForUpdate = true;
-        }
-
-        return $modelsRefreshed;
-    }
-
-    /**
-     * @param Debt|DebtBalance $model
-     *
-     * @return DebtBalance|null
-     */
-    private static function findOneForUpdate($model): ?self
-    {
-        self::requireTransaction();
-
-        $query = self::find();
-        if ($model instanceof DebtBalance) {
-            $query->where($model->getPrimaryKey(true));
-        } else {
-            $query->debt($model);
-        }
-        $sql = $query->createCommand()->getRawSql();
-
-        $balance = self::findBySql($sql . ' FOR UPDATE')->one();
-        if ($balance) {
-            $balance->foundForUpdate = true;
-        }
-
-        return $balance;
-    }
-
     private function changeProcessed(Debt $debt): void
     {
         if (!$this->amount) {
-            $this->processed_at = null; // no sense to run \app\components\debt\Deduction if amount is "0"
-        } elseif ($debt->isCreatedByUser()) {
+            $this->processed_at = null; // no sense to run \app\components\debt\Reduction if amount is "0"
+        } elseif ($debt->isUpdateProcessedFlag()) {
             $this->processed_at = time();
         }
     }
@@ -355,12 +308,5 @@ class DebtBalance extends ActiveRecord
         $message .= " You should never allow to call any execute method as public - to avoid bugs in future development.\n";
 
         throw new NotSupportedException($message);
-    }
-
-    private static function requireTransaction(): void
-    {
-        if (!self::getDb()->getTransaction()) {
-            throw new InvalidCallException('The method must be called in DB transaction');
-        }
     }
 }
