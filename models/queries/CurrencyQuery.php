@@ -2,6 +2,8 @@
 
 namespace app\models\queries;
 
+use app\interfaces\UserRelation\ByDebtInterface;
+use app\interfaces\UserRelation\ByOwnerInterface;
 use app\models\Currency;
 use app\models\queries\traits\RandomTrait;
 use yii\db\ActiveQuery;
@@ -19,13 +21,12 @@ class CurrencyQuery extends ActiveQuery
     use RandomTrait;
 
     /**
-     * @param int      $fromUserId
-     * @param int      $toUserId
-     * @param int|null $modelId     specify it on Update form (to exclude all except this one)
+     * @param ByOwnerInterface|ByDebtInterface $modelSource
+     * @param int|null $modelId specify it on Update form (to exclude all except this one)
      *
      * @return self
      */
-    public function excludeExistedInDebtRedistribution($fromUserId, $toUserId, $modelId = null): self
+    public function excludeExistedInDebtRedistribution($modelSource, $modelId = null): self
     {
         $condition = ['debt_redistribution.id' => null];
         if ($modelId) {
@@ -34,9 +35,8 @@ class CurrencyQuery extends ActiveQuery
 
         return $this
             ->joinWith([
-                'debtRedistributions' => function (DebtRedistributionQuery $query) use ($fromUserId, $toUserId) {
-                    $query->fromUser($fromUserId, 'andOnCondition');
-                    $query->toUser($toUserId, 'andOnCondition');
+                'debtRedistributions' => function (DebtRedistributionQuery $query) use ($modelSource) {
+                    $query->usersByModelSource($modelSource, 'andOnCondition');
                 },
             ])
             ->andWhere($condition);
