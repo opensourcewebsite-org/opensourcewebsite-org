@@ -16,7 +16,7 @@ class EnterAction extends BaseAction
     */
     public function run($chatId)
     {
-        $this->getState()->setName($this->createRoute( $this->insertActionId, [
+        $this->getState()->setName($this->createRoute($this->insertActionId, [
             'chatId' => $chatId
         ]));
 

@@ -9,7 +9,7 @@ use app\modules\bot\components\api\Types\Update;
 abstract class BaseAction extends Action
 {
     /**
-     * @return \app\modules\bot\models\UserState;
+     * @return \app\modules\bot\models\UserState
      */
     protected function getState()
     {
@@ -25,7 +25,7 @@ abstract class BaseAction extends Action
     }
 
     /**
-     * @return \app\modules\bot\components\response\ResponseBuilder;
+     * @return \app\modules\bot\components\response\ResponseBuilder
      */
     protected function getResponseBuilder()
     {
@@ -35,7 +35,8 @@ abstract class BaseAction extends Action
     /**
      * @param string $view
      * @param array $params
-     * @return MessageText Instance of MessageText class that is used for sending Telegram commands
+     * @return app\modules\bot\components\helpers\MessageText
+     * Instance of MessageText class that is used for sending Telegram commands
      */
     public function render($view, $params = [])
     {

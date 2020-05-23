@@ -38,14 +38,14 @@ use yii\base\InvalidConfigException;
  * - View: word-view.php (w-v.php, whitelist-word-view.php, whitelist-w-v.php)
  * - Change: word-change.php (w-c.php, whitelist-word-change.php, whitelist-w-c.php)
  *
- * @param string $wordModelClass - имя класса модели фраз
- * @param array $modelAttributes - дополнительные атрибуты модели (например,
+ * @property string $wordModelClass - имя класса модели фраз
+ * @property array $modelAttributes - дополнительные атрибуты модели (например,
  * если черный список и белый список фраз в одной таблице и отличается
  * по значению в столбце type, то можно передать ['type' => 'whitelist'], а для
  * списока алиасов роутов ['route' => '/voteban__index']  )
  * хотя можно было бы не делать этот параметр, никто не мешает создать модель
  * whitelist наследующую Phrase и использовать ее
- * @param string $actionGroupName - в случае когда в контроллере несколько
+ * @property string $actionGroupName - в случае когда в контроллере несколько
  * списков фраз, например whitelist и blacklist - можно дважды подцепить behavior
  * указав этот параметры, чтобы создаваемые экшены были уникальными. Если параметр
  * не указан, то например для списка фраз создается экшен word-list
@@ -53,7 +53,7 @@ use yii\base\InvalidConfigException;
  * применяется, т.к. есть ограничение API Telegram на длину поля callback_data
  * кнопок в InlineKeyboard). Если же данный параметр равен whitelist, то создается
  * экшен whitelist-word-list или whitelist-w-l при $short равном true
- * @param boolean $short - указывает применять ли сокращения для создаваемых
+ * @property boolean $short - указывает применять ли сокращения для создаваемых
  * экшенов (подробнее в описнии $actionGroupName)
  */
 class WordlistAdminComponent extends \yii\base\Component
