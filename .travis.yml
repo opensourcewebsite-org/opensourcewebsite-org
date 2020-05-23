@@ -1,36 +1,46 @@
 # https://travis-ci.org
 language: php
+
 php:
-  - 7.2
+  - 7.4
+
 # faster builds on new travis setup not using sudo
 sudo: required
+
 dist: bionic
+
 cache:
   directories:
     - $HOME/.composer/cache
     - $HOME/.composer/vendor
     - vendor
+
 services:
   - mysql
+
 addons:
   apt:
     sources:
+      # TODO migrate to mysql 8
       - mysql-5.7-bionic
     packages:
       - mysql-server
       - mysql-client
+
 before_install:
   - sudo systemctl unmask mysql.service
   - sudo systemctl start mysql
+
 install:
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - travis_retry composer install --prefer-dist --no-interaction
   - cp .env.test.dist .env.test
   - cp config/params.dist.php config/params.php
   - cp config/web-local.dist.php config/web-local.php
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - travis_retry composer install --prefer-dist --no-interaction
 
 before_script:
   - mysql --version
+  # TODO migrate to utf8mb4_0900_ai_ci
   - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
   - ./tests/bin/yii migrate --interactive=0 -c
 
