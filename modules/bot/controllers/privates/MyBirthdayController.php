@@ -63,7 +63,7 @@ class MyBirthdayController extends Controller
     }
 
     public function actionCreate()
-    {   
+    {
         $update = $this->getUpdate();
         $user = $this->getUser();
 
