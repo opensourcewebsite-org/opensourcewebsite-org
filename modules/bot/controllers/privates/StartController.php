@@ -97,7 +97,7 @@ class StartController extends Controller
                 ->one();
         }
 
-        if (isset($language) ){
+        if (isset($language)) {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
