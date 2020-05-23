@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\Debt;
+use app\models\queries\traits\SelfSearchTrait;
 use yii\db\ActiveQuery;
 use app\models\DebtBalance;
 
@@ -15,6 +16,8 @@ use app\models\DebtBalance;
  */
 class DebtBalanceQuery extends ActiveQuery
 {
+    use SelfSearchTrait;
+
     public function debt(Debt $debt): self
     {
         /**
@@ -44,9 +47,17 @@ class DebtBalanceQuery extends ActiveQuery
         return $this->andWhere([$operand, 'debt_balance.to_user_id', $id]);
     }
 
-    public function notResolved(): self
+    public function canBeReduced(bool $can): self
     {
-        return $this->andWhere('debt_balance.processed_at IS NOT NULL');
+        $operand = $can ? 'IS NOT' : 'IS';
+        return $this->andWhere("debt_balance.processed_at $operand NULL")
+            ->amountNotEmpty();
+    }
+
+    public function canBeRedistributed(int $timestamp): self
+    {
+        return $this->canBeReduced(false)
+            ->andWhere('debt_balance.redistribute_try_at <> :timestamp', [':timestamp' => $timestamp]);
     }
 
     public function amountNotEmpty($alias = 'debt_balance'): self
@@ -54,25 +65,19 @@ class DebtBalanceQuery extends ActiveQuery
         return DebtBalance::STORE_EMPTY_AMOUNT ? $this->andWhere("{{{$alias}}}.amount <> 0") : $this;
     }
 
+    public function amount($value, $alias = 'debt_balance'): self
+    {
+        return $this->andWhere(["{{{$alias}}}.amount" => $value]);
+    }
+
     /**
-     * @param DebtBalance[] $balances
+     * @param DebtBalance[] $models
      * @param string $operand
      *
-     * @return DebtBalanceQuery
+     * @return self|ActiveQuery
      */
-    public function balances($balances, $operand = 'IN'): self
+    public function balances(array $models, string $operand = 'IN'): self
     {
-        $columns = ['debt_balance.currency_id', 'debt_balance.from_user_id', 'debt_balance.to_user_id'];
-
-        $params = [];
-        foreach ($balances as $balance) {
-            $params[] = [
-                'debt_balance.currency_id'  => $balance->currency_id,
-                'debt_balance.from_user_id' => $balance->from_user_id,
-                'debt_balance.to_user_id'   => $balance->to_user_id,
-            ];
-        }
-
-        return $this->andWhere([$operand, $columns, $params]);
+        return $this->models($models, $operand);
     }
 }

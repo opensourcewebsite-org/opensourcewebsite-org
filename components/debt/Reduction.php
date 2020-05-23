@@ -42,7 +42,7 @@ class Reduction extends Component
     private function findDebtBalanceFirstMember(): ?DebtBalance
     {
         return DebtBalance::find()
-            ->notResolved()
+            ->canBeReduced(true)
             ->orderBy('debt_balance.processed_at')
             ->limit(1)
             ->one();
@@ -219,13 +219,9 @@ class Reduction extends Component
                 return;
             }
 
-            $group = microtime(true);
+            $group = Debt::generateGroup();
             foreach ($chainMembersRefreshed as $balance) {
-                /** @var Debt $debt */
-                $debt = Debt::factoryChangeBalance($balance, $minAmount);
-
-                $debt->status = Debt::STATUS_CONFIRM;
-                $debt->group  = $group;
+                $debt = Debt::factoryBySource($balance, $minAmount, $group);
 
                 if (!$debt->save()) {
                     $message = "Unexpected error occurred: Fail to save Debt.\n";
