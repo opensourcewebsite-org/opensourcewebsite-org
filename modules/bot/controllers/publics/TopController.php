@@ -77,7 +77,7 @@ class TopController extends Controller
         return $this->actionStart(self::LIKE_MESSAGE);
     }
 
-    public function actionStartHate()
+    public function actionStartDislike()
     {
         return $this->actionStart(self::DISLIKE_MESSAGE);
     }

@@ -3,7 +3,7 @@
 namespace app\modules\bot\components\request;
 
 use TelegramBot\Api\Types\Update;
-use app\modules\bot\models\BotCommandAlias;
+use app\modules\bot\models\BotRouteAlias;
 
 class AliasCommandResolver implements ICommandResolver
 {
@@ -17,7 +17,7 @@ class AliasCommandResolver implements ICommandResolver
             $replyMessage = $message->getReplyToMessage();
             if ($replyMessage) {
                 $commandText = $message->getText();
-                $commandAlias = BotCommandAlias::find()->where(['text' => $commandText])->one();
+                $commandAlias = BotRouteAlias::find()->where(['text' => $commandText])->one();
                 if ($commandAlias) {
                     $route = $commandAlias->command;
                 }

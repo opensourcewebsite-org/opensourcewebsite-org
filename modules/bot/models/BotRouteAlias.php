@@ -5,21 +5,21 @@ namespace app\modules\bot\models;
 use Yii;
 
 /**
- * This is the model class for table "bot_command_alias".
+ * This is the model class for table "bot_route_alias".
  *
  * @property int $id
  * @property int $chat_id
- * @property string $command
+ * @property string $route
  * @property string $text
  */
-class BotCommandAlias extends \yii\db\ActiveRecord
+class BotRouteAlias extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bot_command_alias';
+        return 'bot_route_alias';
     }
 
     /**
@@ -28,9 +28,9 @@ class BotCommandAlias extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'command', 'text'], 'required'],
+            [['chat_id', 'route', 'text'], 'required'],
             [['chat_id'], 'integer'],
-            [['command', 'text'], 'string', 'max' => 255],
+            [['route', 'text'], 'string', 'max' => 255],
         ];
     }
 
@@ -42,7 +42,7 @@ class BotCommandAlias extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'chat_id' => 'Chat ID',
-            'command' => 'Command',
+            'route' => 'Route',
             'text' => 'Text',
         ];
     }
