@@ -220,7 +220,7 @@ class MyCitizenshipController extends Controller
                 ->one();
         }
 
-        if (isset($country) ){
+        if (isset($country)) {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
@@ -234,13 +234,13 @@ class MyCitizenshipController extends Controller
         } else {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
+            
             $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
             $deleteBotMessage->send($this->getBotApi());
             
             $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
             $deleteUserMessage->send($this->getBotApi());
-
+            
             return $this->actionCreateCountry();
         }
     }
