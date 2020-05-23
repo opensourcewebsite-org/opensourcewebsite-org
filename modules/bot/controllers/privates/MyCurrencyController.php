@@ -147,13 +147,10 @@ class MyCurrencyController extends Controller
         } else {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
             $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
             $deleteBotMessage->send($this->getBotApi());
-            
             $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
             $deleteUserMessage->send($this->getBotApi());
-            
             return $this->actionList();
         }
     }
