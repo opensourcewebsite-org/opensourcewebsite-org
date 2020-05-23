@@ -110,7 +110,7 @@ class LanguageController extends Controller
                 ->one();
         }
 
-        if (isset($language) ){
+        if (isset($language)) {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
@@ -127,10 +127,10 @@ class LanguageController extends Controller
             
             $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
             $deleteBotMessage->send($this->getBotApi());
-
+            
             $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
             $deleteUserMessage->send($this->getBotApi());
-
+            
             return $this->actionIndex();
         }
     }
