@@ -221,4 +221,7 @@ return [
     'To start a vote, send a reply «<b>+</b>» or «<b>-</b>» to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ «<b>+</b>» или «<b>-</b>» на сообщение любого участника группы',
     'Not applicable for bots' => 'Не применимо к ботам',
     'send to the group to publish the list of members with votes' => 'отправьте в группу чтобы опубликовать список участников с голосами',
+    'Like wordlist' => 'Синонимы команды «+»',
+    'Dislike wordlist' => 'Синонимы команды «-»',
+    'Aliases' => 'Синонимы'
 ];
