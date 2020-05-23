@@ -35,7 +35,7 @@ abstract class BaseAction extends Action
     /**
      * @param string $view
      * @param array $params
-     * @return app\modules\bot\components\helpers\MessageText
+     * @return \app\modules\bot\components\helpers\MessageText
      * Instance of MessageText class that is used for sending Telegram commands
      */
     public function render($view, $params = [])
