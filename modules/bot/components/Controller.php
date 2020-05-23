@@ -7,7 +7,7 @@ use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
 use TelegramBot\Api\BotApi;
-use TelegramBot\Api\Types\Update;
+use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\response\ResponseBuilder;
 
 /**
