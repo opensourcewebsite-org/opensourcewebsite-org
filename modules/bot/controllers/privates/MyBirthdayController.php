@@ -2,11 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\response\commands\DeleteMessageCommand;
+use TelegramBot\Api\BotApi;
 
 /**
  * Class MyBirthdayController
@@ -66,6 +67,15 @@ class MyBirthdayController extends Controller
         $update = $this->getUpdate();
         $user = $this->getUser();
 
+        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+        $messageId = $this->getUpdate()->getMessage()->getMessageId();
+
+        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+        $deleteBotMessage->send($this->getBotApi());
+
+        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+        $deleteUserMessage->send($this->getBotApi());
+
         $text = $update->getMessage()->getText();
         if ($this->validateDate($text, User::DATE_FORMAT)) {
             $user->birthday = Yii::$app->formatter->format($text, 'date');
@@ -96,8 +106,7 @@ class MyBirthdayController extends Controller
         $this->getState()->setName(self::createRoute('create'));
 
         return $this->getResponseBuilder()
-            ->removeInlineKeyboardMarkup()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('update'),
                 [
                     [

@@ -4,12 +4,13 @@ namespace app\modules\bot\controllers\privates;
 
 use app\models\Country;
 use app\models\UserCitizenship;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-
-use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
+use TelegramBot\Api\BotApi;
 use function foo\func;
 
 /**
@@ -81,6 +82,7 @@ class MyCitizenshipController extends Controller
 
     public function actionCreateCountry($page = 1)
     {
+        $this->getState()->setName(self::createRoute('search'));
         $countriesQuery = Country::find();
         $pagination = new Pagination([
             'totalCount' => $countriesQuery->count(),
@@ -200,5 +202,43 @@ class MyCitizenshipController extends Controller
         }
 
         return $this->actionIndex();
+    }
+
+    public function actionSearch()
+    {
+        $update = $this->getUpdate();
+        $text = $update->getMessage()->getText();
+
+        if (strlen($text) <= 3) {
+            $country = Country::find()
+                ->orFilterWhere(['like', 'code', $text, false])
+                ->one();
+        } else {
+            $country = Country::find()
+                ->orFilterWhere(['like', 'name', $text . '%', false])
+                ->orFilterWhere(['like', 'slug', $text, false])
+                ->one();
+        }
+
+        if (isset($country)) {
+            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+            $messageId = $this->getUpdate()->getMessage()->getMessageId();
+
+            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+            $deleteBotMessage->send($this->getBotApi());
+
+            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+            $deleteUserMessage->send($this->getBotApi());
+
+            return $this->actionCreate($country->id);
+        } else {
+            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+            $messageId = $this->getUpdate()->getMessage()->getMessageId();
+            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+            $deleteBotMessage->send($this->getBotApi());
+            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+            $deleteUserMessage->send($this->getBotApi());
+            return $this->actionCreateCountry();
+        }
     }
 }
