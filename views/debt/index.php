@@ -13,6 +13,13 @@ $this->title = Yii::t('app', 'Debts');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
+<div class="callout callout-danger">
+    <h5><?= Yii::t('app', 'Attention') ?>!</h5>
+    <p>
+        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted from 2020-07-01 or earlier') ?>. <?= Yii::t('app', 'After that, this feature will work in an operating mode') ?>.
+    </p>
+</div>
+
 <div class="debt-index">
     <div class="row">
         <div class="col-12">
