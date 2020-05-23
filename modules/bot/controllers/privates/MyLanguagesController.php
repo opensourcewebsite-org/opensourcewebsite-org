@@ -251,7 +251,7 @@ class MyLanguagesController extends Controller
                 ->one();
         }
 
-        if (isset($language) ){
+        if (isset($language)) {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
@@ -265,10 +265,8 @@ class MyLanguagesController extends Controller
         } else {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
             $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
             $deleteBotMessage->send($this->getBotApi());
-            
             $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
             $deleteUserMessage->send($this->getBotApi());
 
