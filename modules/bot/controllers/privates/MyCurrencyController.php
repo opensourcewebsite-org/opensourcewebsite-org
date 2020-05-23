@@ -133,7 +133,7 @@ class MyCurrencyController extends Controller
                 ->one();
         }
 
-        if (isset($currency) ){
+        if (isset($currency)) {
             $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
             $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
@@ -153,7 +153,7 @@ class MyCurrencyController extends Controller
             
             $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
             $deleteUserMessage->send($this->getBotApi());
-
+            
             return $this->actionList();
         }
     }
