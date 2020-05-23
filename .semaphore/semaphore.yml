@@ -14,21 +14,24 @@ blocks:
         - name: build
           commands:
             - checkout
-            - sem-version php 7.2
-            - cache restore
-            - php --version
-            - pear config-set php_ini ~/.phpbrew/php/php-7.2/etc/php.ini
-            - pecl install xdebug
-            - phpbrew ext install iconv
-            - php -m
-            - sem-service start mysql 5.7
-            - export PATH="$HOME/.composer/vendor/bin:$PATH"
-            - composer install --prefer-dist --no-interaction
-            - cache store
             - cp .env.test.dist .env.test
             - cp config/params.dist.php config/params.php
             - cp config/web-local.dist.php config/web-local.php
+            - sem-version php 7.4.4
+            - php --version
+            - cache restore
+            - pear config-set php_ini ~/.phpbrew/php/php-7.4/etc/php.ini
+            - pecl install xdebug
+            - phpbrew ext install iconv
+            - php -m
+            # TODO migrate to mysql 8
+            - sem-service start mysql 5.7
             - mysql --version
+            - sem-service status mysql
+            - export PATH="$HOME/.composer/vendor/bin:$PATH"
+            - composer install --prefer-dist --no-interaction
+            - cache store
+            # TODO migrate to utf8mb4_0900_ai_ci
             - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
             - ./tests/bin/yii migrate --interactive=0 -c
             - ./tests/bin/yii fixture/load '*' --interactive=0
