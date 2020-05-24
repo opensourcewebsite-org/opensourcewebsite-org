@@ -24,15 +24,13 @@ blocks:
             - pecl install xdebug
             - phpbrew ext install iconv
             - php -m
-            # TODO migrate to mysql 8
-            - sem-service start mysql 5.7
-            - mysql --version
+            - sem-service start mysql 8
+            - mysql --host=0.0.0.0 -uroot -e 'SHOW VARIABLES like "version";
             - sem-service status mysql
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
             - composer install --prefer-dist --no-interaction
             - cache store
-            # TODO migrate to utf8mb4_0900_ai_ci
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+            - mysql --host=0.0.0.0 -uroot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
             - ./tests/bin/yii migrate --interactive=0 -c
             - ./tests/bin/yii fixture/load '*' --interactive=0
             - ./vendor/bin/codecept run unit --coverage --coverage-xml
