@@ -25,7 +25,7 @@ blocks:
             - phpbrew ext install iconv
             - php -m
             - sem-service start mysql 8
-            - mysql --host=0.0.0.0 -uroot -e 'SHOW VARIABLES like "version";
+            - mysql --host=0.0.0.0 -uroot -e 'SHOW VARIABLES like "version"';
             - sem-service status mysql
             - export PATH="$HOME/.composer/vendor/bin:$PATH"
             - composer install --prefer-dist --no-interaction
