@@ -12,8 +12,8 @@ class m200420_163341_update_debt_redistribution_rename_users extends Migration
      */
     public function safeUp()
     {
-        $this->renameColumn('debt_redistribution', 'from_user_id', 'user_id');
-        $this->renameColumn('debt_redistribution', 'to_user_id', 'link_user_id');
+        $this->renameColumn('debt_redistribution', '`from_user_id`', '`user_id`');
+        $this->renameColumn('debt_redistribution', '`to_user_id`', '`link_user_id`');
     }
 
     /**

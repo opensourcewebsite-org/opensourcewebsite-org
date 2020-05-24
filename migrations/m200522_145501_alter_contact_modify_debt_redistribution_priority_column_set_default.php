@@ -12,6 +12,12 @@ class m200522_145501_alter_contact_modify_debt_redistribution_priority_column_se
      */
     public function safeUp()
     {
+        $this->update(
+            'contact',
+            ['debt_redistribution_priority' => 0],
+            ['debt_redistribution_priority' => null]
+        );
+
         $this->alterColumn('contact', 'debt_redistribution_priority', $this->tinyInteger()->unsigned()->notNull()->defaultValue(0));
     }
 
@@ -20,7 +26,7 @@ class m200522_145501_alter_contact_modify_debt_redistribution_priority_column_se
      */
     public function safeDown()
     {
-        $this->alterColumn('contact', 'debt_redistribution_priority', $this->tinyInteger()->unsigned()->notNull());
+        $this->alterColumn('contact', 'debt_redistribution_priority', $this->tinyInteger()->unsigned());
     }
 
     /*
