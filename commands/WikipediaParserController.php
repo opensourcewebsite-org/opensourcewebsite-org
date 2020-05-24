@@ -4,7 +4,7 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\components\WikipediaParser;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
 use app\models\WikiPage;
@@ -20,7 +20,7 @@ use yii\web\ServerErrorHttpException;
  * @property integer $groupId
  * @property bool $log
  */
-class WikipediaParserController extends Controller implements ICronChained
+class WikipediaParserController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 

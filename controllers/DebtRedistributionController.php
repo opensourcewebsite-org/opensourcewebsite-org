@@ -91,7 +91,7 @@ class DebtRedistributionController extends Controller
         }
 
         $searchModel  = new DebtRedistributionSearch();
-        $dataProvider = $searchModel->search($contact->link_user_id, Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search($contact, Yii::$app->request->queryParams);
 
         return $this->renderAjax('index', [
             'dataProvider' => $dataProvider,

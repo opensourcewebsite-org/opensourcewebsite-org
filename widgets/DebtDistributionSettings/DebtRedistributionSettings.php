@@ -2,6 +2,7 @@
 
 namespace app\widgets\DebtDistributionSettings;
 
+use app\interfaces\UserRelation\ByOwnerInterface;
 use app\models\Currency;
 use app\models\DebtRedistributionForm;
 use PDO;
@@ -24,8 +25,8 @@ class DebtRedistributionSettings extends Widget
      */
     public function init()
     {
-        if (!$this->contact && !$this->debtRed) {
-            throw new InvalidConfigException("'contact' property must be specified.");
+        if (!$this->getModelSource()) {
+            throw new InvalidConfigException("Either 'contact' or 'debtRed' property must be specified.");
         }
 
         if (!$this->debtRed) {
@@ -34,11 +35,12 @@ class DebtRedistributionSettings extends Widget
 
         if (empty($this->currencyList)) {
             $debtRedId = $this->debtRed->id ?? null;
+            $modelSource = $this->getModelSource();
 
             //find all Currencies, excluding those which are already used
             $this->currencyList = Currency::find()
                 ->select(['currency.id', 'currency.code'])
-                ->excludeExistedInDebtRedistribution($this->getFromUserId(), $this->getToUserId(), $debtRedId)
+                ->excludeExistedInDebtRedistribution($modelSource, $debtRedId)
                 ->orderBy('currency.code')
                 ->createCommand()
                 ->queryAll(PDO::FETCH_KEY_PAIR);
@@ -56,16 +58,13 @@ class DebtRedistributionSettings extends Widget
 
     private function renderHeader(): string
     {
-        return Yii::t('app', 'Debt Redistribution for user "#{userId}"', ['userId' => $this->getToUserId()]);
+        return Yii::t('app', 'Debt Redistribution for user "#{userId}"', [
+            'userId' => $this->getModelSource()->linkedUID(),
+        ]);
     }
 
-    private function getFromUserId()
+    private function getModelSource(): ByOwnerInterface
     {
-        return $this->contact ? $this->contact->user_id : $this->debtRed->from_user_id;
-    }
-
-    private function getToUserId()
-    {
-        return $this->contact ? $this->contact->link_user_id : $this->debtRed->to_user_id;
+        return $this->contact ?: $this->debtRed;
     }
 }
