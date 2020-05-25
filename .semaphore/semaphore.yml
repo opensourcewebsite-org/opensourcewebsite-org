@@ -1,5 +1,6 @@
-# For more PHP information and examples, see
-# https://docs.semaphoreci.com/article/84-language-php
+# https://opensourcewebsite.semaphoreci.com/projects/opensourcewebsite-org
+# https://docs.semaphoreci.com
+# For more PHP information and examples, see https://docs.semaphoreci.com/article/84-language-php
 version: v1.0
 name: Main Pipeline
 agent:
@@ -33,4 +34,4 @@ blocks:
             - mysql --host=0.0.0.0 -uroot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
             - ./tests/bin/yii migrate --interactive=0 -c
             - ./tests/bin/yii fixture/load '*' --interactive=0
-            - ./vendor/bin/codecept run unit --coverage --coverage-xml
+            - ./vendor/bin/codecept run unit --coverage
