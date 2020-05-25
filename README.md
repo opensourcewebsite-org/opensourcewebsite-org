@@ -7,6 +7,8 @@
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 [![Travis CI Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?style=flat-square&branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org)
 [![Semaphore CI Build Status](https://opensourcewebsite.semaphoreci.com/badges/opensourcewebsite-org/branches/master.svg?style=shields&label=1)](https://opensourcewebsite.semaphoreci.com/projects/opensourcewebsite-org)
+[![Scrutinizer CI Build Status](https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org/badges/build.png?b=master)](https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org/build-status/master)
+[![Scrutinizer CI Code Intelligence Status](https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![Codeclimate Maintainability](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/maintainability?style=flat-square)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/maintainability)
 [![Codeclimate Coverage](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/test_coverage?style=flat-square)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/test_coverage)
 [![Codebeat Status](https://codebeat.co/badges/c69e6f2a-e6f6-4a50-b5aa-9003cdae23c2?style=flat-square)](https://codebeat.co/projects/github-com-opensourcewebsite-org-opensourcewebsite-org-master)
@@ -14,9 +16,9 @@
 [![Coveralls Coverage](https://coveralls.io/repos/github/opensourcewebsite-org/opensourcewebsite-org/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org?branch=master)
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/opensourcewebsite-org/opensourcewebsite-org/master.svg?style=flat-square)](https://codecov.io/gh/opensourcewebsite-org/opensourcewebsite-org)
 
-[![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
 [![PHP Version](https://img.shields.io/badge/PHP-7.4-blue.svg?style=flat-square&logo=php)](https://www.php.net)
 [![MySQL Version](https://img.shields.io/badge/MySQL-8-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
+[![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
 
 <h1 align="center">OpenSourceWebsite</h1>
 

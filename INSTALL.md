@@ -2,13 +2,12 @@
 
 Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
-## General setup
-
-- Copy file `config/params.dist.php` to `config/params.php`
-- Copy file `config/web-local.dist.php` to `config/web-local.php`
+## Website
 
 #### Using Docker (easy way)
 
+- Copy file `config/params.dist.php` to `config/params.php`
+- Copy file `config/web-local.dist.php` to `config/web-local.php`
 - Copy file `.env.docker.dist` to `.env`
 - Install [Docker](https://www.docker.com)
 - Run `docker-compose up -d`
@@ -21,6 +20,8 @@ The website can be accessed at http://localhost:8000.
 
 #### Without Docker (master way)
 
+- Copy file `config/params.dist.php` to `config/params.php`
+- Copy file `config/web-local.dist.php` to `config/web-local.php`
 - Copy file `.env.dist` to `.env`
 - Set correct values in `.env` file for your environment
 - Install [MySQL 8.X](https://www.mysql.com):
@@ -97,7 +98,7 @@ php yii dataGenerator "*, -Contact" --interval=5
 - Run `php tests/bin/yii migrate`
 - Run `php vendor/bin/codecept run` or `php vendor/bin/codecept run --coverage --coverage-xml --coverage-html`
 
-## Telegram bots
+## Telegram bot
 
 We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
 
