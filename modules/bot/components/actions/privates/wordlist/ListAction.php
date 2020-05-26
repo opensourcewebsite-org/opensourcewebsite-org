@@ -30,7 +30,6 @@ class ListAction extends BaseAction
         $phraseQuery = $this->wordModelClass::find()->where(array_merge($this->modelAttributes,[
             'chat_id' => $chatId
         ]));
-
         $pagination = new Pagination([
                 'totalCount' => $phraseQuery->count(),
                 'pageSize' => $this->pageWordsCount,

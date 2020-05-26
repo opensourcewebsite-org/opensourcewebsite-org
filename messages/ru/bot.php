@@ -224,6 +224,7 @@ return [
     'Like wordlist' => 'Синонимы команды «+»',
     'Dislike wordlist' => 'Синонимы команды «-»',
     'Aliases' => 'Синонимы',
+    'Aliases for' => 'Синонимы для',
     'Buy' => 'Купить',
     'Sell' => 'Продать',
     'Rent' => 'Аренда',
