@@ -25,16 +25,6 @@ class StartController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => LanguageController::createRoute(),
-                            'text' => Emoji::LANGUAGE,
-                        ],
-                    ],
-                    [
-                        [
                             'url' => 'https://opensourcewebsite.org',
                             'text' => Yii::t('bot', 'Website'),
                         ],
@@ -71,6 +61,16 @@ class StartController extends Controller
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
                             'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => LanguageController::createRoute(),
+                            'text' => Emoji::LANGUAGE,
                         ],
                     ],
                 ]

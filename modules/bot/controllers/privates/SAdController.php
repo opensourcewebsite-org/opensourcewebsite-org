@@ -26,41 +26,31 @@ class SAdController extends Controller
                     [
                         [
                             'callback_data' => '/s_ad__1',
-                            'text' => '📥 ' . 'Купить',
+                            'text' => '🔍 ' . Yii::t('bot', 'Buy'),
                         ],
                         [
                             'callback_data' => '/s_ad__1',
-                            'text' => 'Продать' . ' 📤',
+                            'text' => Yii::t('bot', 'Sell') . ' 💰',
                         ],
                     ],
                     [
                         [
                             'callback_data' => '/s_ad__1',
-                            'text' => '📥 ' . 'Аренда',
+                            'text' => '🔍 ' . Yii::t('bot', 'Rent'),
                         ],
                         [
                             'callback_data' => '/s_ad__1',
-                            'text' => 'Аренда'  . ' 📤',
+                            'text' => Yii::t('bot', 'Rent')  . ' 💰',
                         ],
                     ],
                     [
                         [
                             'callback_data' => '/s_ad__1',
-                            'text' => '📥 ' . 'Услуги',
+                            'text' => '🔍 ' . Yii::t('bot', 'Services'),
                         ],
                         [
                             'callback_data' => '/s_ad__1',
-                            'text' => 'Услуги' . ' 📤',
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                        ],
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                            'text' => Yii::t('bot', 'Services') . ' 💰',
                         ],
                     ],
                     [
