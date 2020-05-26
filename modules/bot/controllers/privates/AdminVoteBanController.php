@@ -4,9 +4,11 @@ namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use app\modules\bot\components\Controller;
-
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\BotRouteAlias;
+use app\modules\bot\components\actions\privates\wordlist\WordlistAdminComponent;
+use app\modules\bot\controllers\publics\VotebanController;
 
 /**
 * Class AdminVoteBanController
@@ -15,11 +17,26 @@ use app\modules\bot\models\ChatSetting;
 */
 class AdminVoteBanController extends Controller
 {
+    public function actions()
+    {
+        return array_merge(
+            parent::actions(),
+            Yii::createObject([
+                'class' => WordlistAdminComponent::className(),
+                'wordModelClass' => BotRouteAlias::className(),
+                'modelAttributes' => [
+                    'route' => VotebanController::createRoute('index')
+                ]
+            ])->actions()
+        );
+    }
+
     /**
     * @return array
     */
     public function actionIndex($chatId = null)
     {
+        $this->actions();
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
@@ -59,12 +76,19 @@ class AdminVoteBanController extends Controller
                         ],
                     ],
                     [
-                        // TODO add limit feature
                         [
                             'callback_data' => self::createRoute('enter-limit', [
                                 'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Limit') . ': ' . $voteLimit,
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('word-list', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Aliases') . ' voteban',
                         ],
                     ],
                     [
