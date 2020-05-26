@@ -88,7 +88,7 @@ class AdminVoteBanController extends Controller
                             'callback_data' => self::createRoute('word-list', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Aliases') . ' voteban',
+                            'text' => Yii::t('bot', 'Aliases for') . ' «voteban»',
                         ],
                     ],
                     [
