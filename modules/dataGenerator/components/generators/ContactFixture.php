@@ -56,7 +56,7 @@ class ContactFixture extends ARGenerator
             }])
             ->active()
             ->groupBy('user.id')
-            ->having('n_contact < :nUser', [':nUser' => $userQty])
+            ->having('n_contact < :nUser', [':nUser' => $userQty - 1])
             ->orderBy('n_contact')
             ->limit(30)
             ->column();
@@ -80,7 +80,7 @@ class ContactFixture extends ARGenerator
                 $query->userOwner($userIdFrom, 'andOnCondition');
             }])
             ->active()
-            ->andWhere('user.id <> :userIdFrom', [':userIdFrom' => $userIdFrom])
+            ->andWhere('contact.id IS NULL AND user.id <> :userIdFrom', [':userIdFrom' => $userIdFrom])
             ->limit(30)
             ->column();
 
@@ -94,18 +94,22 @@ class ContactFixture extends ARGenerator
 
     private function setDRP(Contact $model): void
     {
-        $hasValidator = false;
+        $min = 0;
+        $max = 255;
 
-        foreach ($model->activeValidators as $v) {
-            if (in_array('debt_redistribution_priority', $v->attributes, true) &&  $v instanceof NumberValidator) {
-                $hasValidator = true;
-                $model->debt_redistribution_priority = self::getFaker()->numberBetween($v->min, $v->max);
+        foreach ($model->activeValidators as $validator) {
+            if (
+                in_array('debt_redistribution_priority', $validator->attributes, true) &&
+                $validator instanceof NumberValidator
+            ) {
+                $min = $validator->min;
+                $max = $validator->max;
                 break;
             }
         }
 
-        if (!$hasValidator) {
-            $model->debt_redistribution_priority = self::getFaker()->numberBetween($v->min, 255);
-        }
+        $model->debt_redistribution_priority = self::getFaker()
+            ->optional(0.5, Contact::DEBT_REDISTRIBUTION_PRIORITY_NO)
+            ->numberBetween($min, $max);
     }
 }
