@@ -1,4 +1,5 @@
-# https://travis-ci.org
+# https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org
+# https://docs.travis-ci.com
 language: php
 
 php:
@@ -39,6 +40,8 @@ install:
   - travis_retry composer install --prefer-dist --no-interaction
 
 before_script:
+  - php --version
+  - php -m
   - mysql --version
   # TODO migrate to utf8mb4_0900_ai_ci
   - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
@@ -46,4 +49,4 @@ before_script:
 
 script:
   - ./tests/bin/yii fixture/load '*' --interactive=0
-  - ./vendor/bin/codecept run unit --coverage --coverage-xml
+  - ./vendor/bin/codecept run unit --coverage

@@ -223,5 +223,8 @@ return [
     'send to the group to publish the list of members with votes' => 'отправьте в группу чтобы опубликовать список участников с голосами',
     'Like wordlist' => 'Синонимы команды «+»',
     'Dislike wordlist' => 'Синонимы команды «-»',
-    'Aliases' => 'Синонимы'
+    'Aliases' => 'Синонимы',
+    'Buy' => 'Купить',
+    'Sell' => 'Продать',
+    'Rent' => 'Аренда',
 ];
