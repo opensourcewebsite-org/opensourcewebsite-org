@@ -30,8 +30,12 @@ class AliasCommandResolver implements ICommandResolver
         $aliases = [
             'voteban' => VotebanController::createRoute('index')
         ];
-
-        return $aliases[$text] ?? null;
+        foreach ($aliases as $alias => $aliasRoute) {
+            if (preg_match('<' . $alias . '>i', $text)) {
+                $route = $aliasRoute;
+            }
+        }
+        return $route ?? null;
     }
 
     private function getGroupAlias($text)
