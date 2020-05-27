@@ -4,8 +4,11 @@
 build:
   environment:
     php: 7.4
-    # TODO migrate to mysql 8
-    mysql: 5.7
+  nodes:
+    mysql:
+      services:
+        # For available tags, see https://hub.docker.com/_/mysql/
+        mysql: 8.0
   dependencies:
     before:
       - cp .env.test.dist .env.test
@@ -16,8 +19,7 @@ build:
       - php --version
       - php -m
       - mysql --version
-      # TODO migrate to utf8mb4_0900_ai_ci
-      - mysql -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      - mysql -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
       - ./tests/bin/yii migrate --interactive=0 -c
       - ./tests/bin/yii fixture/load '*' --interactive=0
   tests:
@@ -27,7 +29,7 @@ build:
       - php-scrutinizer-run
       -
         command: phpcs-run
-        use_website_config: false
+        use_website_config: true
       - js-scrutinizer-run
       -
         command: jshint-run
