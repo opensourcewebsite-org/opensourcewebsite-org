@@ -19,18 +19,13 @@ cache:
 services:
   - mysql
 
-addons:
-  apt:
-    sources:
-      # TODO migrate to mysql 8
-      - mysql-5.7-bionic
-    packages:
-      - mysql-server
-      - mysql-client
-
 before_install:
-  - sudo systemctl unmask mysql.service
-  - sudo systemctl start mysql
+  - wget https://repo.mysql.com//mysql-apt-config_0.8.20-1_all.deb
+  - sudo dpkg -i mysql-apt-config_0.8.20-1_all.deb
+  - sudo apt-get update -q
+  - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+  - sudo systemctl restart mysql
+  - sudo mysql_upgrade
 
 install:
   - cp .env.test.dist .env.test
@@ -43,8 +38,7 @@ before_script:
   - php --version
   - php -m
   - mysql --version
-  # TODO migrate to utf8mb4_0900_ai_ci
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;'
   - ./tests/bin/yii migrate --interactive=0 -c
 
 script:
