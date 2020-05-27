@@ -4,12 +4,8 @@
 build:
   environment:
     php: 7.4
-  nodes:
-    mysql:
-      services:
-        # For available tags, see https://hub.docker.com/_/mysql/
-        # TODO migrate to mysql 8
-        mysql: 5.7
+    # TODO migrate to mysql 8
+    mysql: 5.7
   dependencies:
     before:
       - cp .env.test.dist .env.test
