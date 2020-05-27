@@ -42,9 +42,9 @@ class AliasCommandResolver implements ICommandResolver
     {
         if ($text) {
             $routeAlias = BotRouteAlias::find()->where(['text' => $text])->one();
-        }
-        if ($routeAlias) {
-            $route = $routeAlias->route;
+            if ($routeAlias) {
+                $route = $routeAlias->route;
+            }
         }
 
         return $route ?? null;

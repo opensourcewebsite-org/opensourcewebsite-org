@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Type phrase') ?>
+<b><?= Yii::t('bot', 'Type a phrase'); ?>:</b>

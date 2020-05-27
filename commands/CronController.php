@@ -12,7 +12,8 @@ use yii\web\NotFoundHttpException;
 
 /**
  * CronController is a cron manager.
- * It run other commands, that chained in single thread (should be run one by one).
+ * It runs other commands, that chained in single thread (should be run one by one).
+ * Instance https://github.com/opensourcewebsite-org/osw-devops/blob/master/pillar/prod/supervisor.sls#L22
  *
  * @property array $map
  * @property bool $log
