@@ -25,15 +25,15 @@ $this->registerJs($JS);
                             <table class="table table-condensed table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="col-4">Variable name</th>
-                                        <th class="col-8">Value</th>
+                                        <th class="col-5">Variable name</th>
+                                        <th class="col-7">Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($mysqlvars as $mysqlVar => $mysqlValue): ?>
                                         <tr>
-                                            <td class="col-4"><?php echo $mysqlVar; ?></td>
-                                            <td class="col-8"><?php echo $mysqlValue; ?></td>
+                                            <td class="col-5"><?php echo $mysqlVar; ?></td>
+                                            <td class="col-7"><?php echo $mysqlValue; ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
