@@ -101,7 +101,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                 ],
                                             ]); ?></td>
                                     </tr>
-                                    <?php if($model->link_user_id) : ?>
+                                    <?php if ($model->link_user_id) : ?>
                                         <tr>
                                             <th class="align-middle"><?= $model->getAttributeLabel('userIdOrName'); ?></th>
                                             <td class="align-middle"><?= $model->userIdOrName; ?></td>
@@ -113,7 +113,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         <td class="align-middle"><?= $model->name; ?></td>
                                         <td></td>
                                     </tr>
-                                    <?php if($model->link_user_id) : ?>
+                                    <?php if ($model->link_user_id) : ?>
                                         <tr>
                                             <th class="align-middle"><?= $model->getAttributeLabel('is_real'); ?></th>
                                             <td class="align-middle"><?= $realConfirmations; ?></td>

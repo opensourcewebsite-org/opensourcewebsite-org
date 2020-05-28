@@ -367,7 +367,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
  */
     public function validateHasEmptyGroup()
     {
-        if(Yii::$app->user->identity->hasEmptyContactGroup) {
+        if (Yii::$app->user->identity->hasEmptyContactGroup) {
             $this->addError('contact_group_ids', 'You already have an empty group!');
             return;
         }

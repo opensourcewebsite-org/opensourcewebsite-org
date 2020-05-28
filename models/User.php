@@ -744,13 +744,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function getHasEmptyContactGroup()
     {
         $groups = $this->getContactGroups()->all();
+        $hasEmptyGroup = 0;
 
         if (!empty($groups)) {
-            $hasEmptyGroup = 0;
             foreach($groups as $group){
                 $groupId = $group->id;
                 $countGroupContacts = ContactHasGroup::find()->where(['contact_group_id' => $groupId])->count();
-                if($countGroupContacts == 0) {
+                if ($countGroupContacts == 0) {
                     $hasEmptyGroup = 1;
                     break;
                 }

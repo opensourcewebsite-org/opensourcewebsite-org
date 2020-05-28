@@ -135,8 +135,8 @@ class ContactController extends Controller
         $contactGroupModel = new ContactGroup();
         $postData = Yii::$app->request->post();
 
-        if($contactGroupModel->load($postData) && $contactGroupModel->validate()){
-            if($contactGroupModel->save()) {
+        if ($contactGroupModel->load($postData) && $contactGroupModel->validate()){
+            if ($contactGroupModel->save()) {
                 return $this->redirect(['contact/groups']);
             }
         }
@@ -151,7 +151,7 @@ class ContactController extends Controller
     public function actionDeleteGroup($id)
     {
         $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-        if(!empty($group)) {
+        if (!empty($group)) {
             $group->delete();
         }
         return $this->redirect('groups');
@@ -162,8 +162,8 @@ class ContactController extends Controller
         $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
         $postData = Yii::$app->request->post();
 
-        if($group->load($postData) && $group->validate()){
-            if($group->save()) {
+        if ($group->load($postData) && $group->validate()){
+            if ($group->save()) {
                 return $this->redirect(['contact/groups']);
             }
         }
@@ -180,7 +180,7 @@ class ContactController extends Controller
         $model = Contact::findOne($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->validate(['contact_group_ids'])) {
-            if($model->save(false)) {
+            if ($model->save(false)) {
                 return $this->redirect(['view', 'id' => $id]);
             }
         }
