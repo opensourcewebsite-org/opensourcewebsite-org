@@ -285,7 +285,9 @@ $leftMenuItems = [
             'examples/forms',
             'examples/tables',
             'examples/calendar',
-            'examples/gallery'
+            'examples/gallery',
+            'examples/phpinfo',
+            'examples/mysqlvar',
         ],
         'items' => [
             [
@@ -460,6 +462,18 @@ $leftMenuItems = [
                 'icon' => 'far fa-circle',
                 'url' => 'examples/gallery',
                 'route' => '/examples/gallery',
+            ],
+            [
+                'title' => 'PHPinfo()',
+                'icon' => 'far fa-circle',
+                'url' => 'examples/phpinfo',
+                'route' => '/examples/phpinfo',
+            ],
+            [
+                'title' => 'MySQL Variables',
+                'icon' => 'fas fa-database',
+                'url' => 'examples/mysqlvar',
+                'route' => '/examples/mysqlvar',
             ],
         ],
     ],

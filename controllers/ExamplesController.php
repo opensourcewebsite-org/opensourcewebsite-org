@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use Yii;
+use yii\helpers\ArrayHelper;
 
 class ExamplesController extends Controller
 {
@@ -60,5 +62,17 @@ class ExamplesController extends Controller
     public function actionGallery()
     {
         return $this->render('gallery');
+    }
+
+    public function actionPhpinfo()
+    {
+        return $this->render('phpinfo');
+    }
+
+    public function actionMysqlvar()
+    {
+        $mysqlvars = Yii::$app->db->createCommand('SHOW GLOBAL VARIABLES')->queryAll();
+        $mysqlvars = ArrayHelper::map($mysqlvars, 'Variable_name', 'Value');
+        return $this->render('mysqlvar', ['mysqlvars' => $mysqlvars]);
     }
 }
