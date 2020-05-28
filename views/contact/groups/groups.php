@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'contentOptions' => ['class' => 'lif-td'],
                                 'template' => '{update}',
                                 'buttons' => [
-                                    'update' => static function($url, $model, $key) {
+                                    'update' => static function ($url, $model, $key) {
                                         echo ModalAjax::widget([
                                             'id' => 'change-group' . $key,
                                             'header' => Yii::t('app', 'Change group'),

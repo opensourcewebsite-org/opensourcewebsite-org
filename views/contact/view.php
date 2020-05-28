@@ -78,9 +78,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             $groups = '';
 
                                             foreach ($model->getContactGroups()->each() as $group) {
-
                                                 $groups .= Html::tag('span', $group->name, ['class' => 'badge badge-primary']) . "\n";
-
                                             }
                                             echo $groups;
                                             ?>

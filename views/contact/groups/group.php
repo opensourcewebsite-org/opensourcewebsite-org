@@ -16,15 +16,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'name')
              ->textInput()
-             ->label(Yii::t('app', 'Name'));
-    ?>
+             ->label(Yii::t('app', 'Name')); ?>
 
     <?= SaveButton::widget(); ?>
     <?= CancelButton::widget([
         'url' => 'groups'
     ]); ?>
     <?php
-    if(!$model->isNewRecord) {
+    if (!$model->isNewRecord) {
         echo DeleteButton::widget([
             'url' => ['delete-group', 'id' => $model->id]
         ]);

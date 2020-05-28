@@ -25,13 +25,13 @@ class SortActionColumn extends ActionColumn
             'sort-up' => function ($url, $model, $key) use ($sortUpUrl) {
                 return Html::a('<span class="fas fa-arrow-up"></span>', [$sortUpUrl, 'id' => $key], [
                     'data-original-title' => Yii::t('app', 'Move up'),
-                    'data-tooltip' => "tooltip",
+                    'data-tooltip' => 'tooltip',
                 ]);
             },
             'sort-down' => function ($url, $model, $key) use ($sortDownUrl) {
                 return Html::a('<span class="fas fa-arrow-down"></span>', [$sortDownUrl, 'id' => $key], [
                     'data-original-title' => Yii::t('app', 'Move down'),
-                    'data-tooltip' => "tooltip",
+                    'data-tooltip' => 'tooltip',
                 ]);
             },
         ];

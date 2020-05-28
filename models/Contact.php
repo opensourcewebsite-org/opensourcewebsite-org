@@ -71,8 +71,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     ],
                 ],
             ],
-            ]
-        );
+        ]);
     }
 
     public function beforeValidate()
@@ -89,7 +88,11 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             foreach ($this->contact_group_ids as $contact_group_id) {
                 if (!is_numeric($contact_group_id)) {
                     $this->validateHasEmptyGroup();
-                    $contactGroup = new ContactGroup(['name' => $contact_group_id, 'user_id' => Yii::$app->user->identity->id]);
+                    $contactGroup = new ContactGroup();
+                    $contactGroup->setAttributes([
+                        'name' => $contact_group_id,
+                        'user_id' => Yii::$app->user->identity->id
+                    ]);
                     if ($contactGroup->save()) {
                         $contactGroupIds[] = $contactGroup->id;
                     }
@@ -359,7 +362,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
                     ->viaTable('contact_has_group', ['contact_id' => 'id']);
-
     }
 
 /*

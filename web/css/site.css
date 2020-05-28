@@ -159,7 +159,6 @@ a.desc:after {
     width: 1%;
     white-space: nowrap;
     text-align: center;
-    padding-left: 5px !important;
-    padding-right: 5px !important;
+    padding-left: 5px;
+    padding-right: 5px;
 }
-

@@ -20,7 +20,7 @@ class ContactGroup extends ActiveRecord
             [['name'], 'required'],
             [['name'], 'unique', 'filter' => ['user_id' => Yii::$app->user->identity->id]],
             [['name'], 'string', 'max' => 255],
-            [['name'], 'validateHasEmptyGroup', 'when' => function() {
+            [['name'], 'validateHasEmptyGroup', 'when' => function () {
                 return $this->isNewRecord;
             },],
         ];
@@ -40,7 +40,7 @@ class ContactGroup extends ActiveRecord
      */
     public function validateHasEmptyGroup()
     {
-        if(Yii::$app->user->identity->hasEmptyContactGroup) {
+        if (Yii::$app->user->identity->hasEmptyContactGroup) {
             $this->addError('name', 'You already have an empty group!');
         }
     }
@@ -61,6 +61,5 @@ class ContactGroup extends ActiveRecord
         $this->user_id = Yii::$app->user->identity->id;
 
         return true;
-
     }
 }

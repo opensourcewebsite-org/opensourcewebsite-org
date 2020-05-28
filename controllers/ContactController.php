@@ -135,7 +135,7 @@ class ContactController extends Controller
         $contactGroupModel = new ContactGroup();
         $postData = Yii::$app->request->post();
 
-        if ($contactGroupModel->load($postData) && $contactGroupModel->validate()){
+        if ($contactGroupModel->load($postData) && $contactGroupModel->validate()) {
             if ($contactGroupModel->save()) {
                 return $this->redirect(['contact/groups']);
             }
@@ -162,7 +162,7 @@ class ContactController extends Controller
         $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
         $postData = Yii::$app->request->post();
 
-        if ($group->load($postData) && $group->validate()){
+        if ($group->load($postData) && $group->validate()) {
             if ($group->save()) {
                 return $this->redirect(['contact/groups']);
             }
