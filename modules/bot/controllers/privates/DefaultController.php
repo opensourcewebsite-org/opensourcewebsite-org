@@ -4,7 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 
 /**
@@ -19,7 +19,7 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('/menu/index')
             )
@@ -30,8 +30,8 @@ class DefaultController extends Controller
      * @return array
      */
     public function actionCommandNotFound()
-	{
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+    {
+        return $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('command-not-found'),
                 [
@@ -42,7 +42,7 @@ class DefaultController extends Controller
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],
                     [

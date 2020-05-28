@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\modules\bot\components\Controller;
 
@@ -18,14 +18,14 @@ class SCeController extends Controller
      * @return array
      */
     public function actionIndex()
-	{
+    {
         $telegramUser = $this->getTelegramUser();
 
         //TODO PaginationButtons for orders
 
         //TODO add this check for all controller actions, remove from actions
         if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('index'),
                     [
@@ -63,16 +63,6 @@ class SCeController extends Controller
                         ],
                         [
                             [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
-                        ],
-                        [
-                            [
                                 'callback_data' => ServicesController::createRoute(),
                                 'text' => Emoji::BACK,
                             ],
@@ -93,7 +83,7 @@ class SCeController extends Controller
                 )
                 ->build();
         } else {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('no-requirements'),
                     [
@@ -119,8 +109,7 @@ class SCeController extends Controller
     public function actionOrderCreate($step = 1)
     {
         //TODO make steps to create a order (maybe in separate actions)
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-create'),
                 [
@@ -166,7 +155,7 @@ class SCeController extends Controller
      */
     public function actionOrder()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order'),
                 [
@@ -230,7 +219,7 @@ class SCeController extends Controller
      */
     public function actionOrderEdit()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-edit'),
                 [
@@ -276,7 +265,7 @@ class SCeController extends Controller
      */
     public function actionOrderSellingRate()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
@@ -296,7 +285,7 @@ class SCeController extends Controller
      */
     public function actionOrderBuyingRate()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
@@ -316,7 +305,7 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrency()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency'),
                 [
@@ -354,7 +343,7 @@ class SCeController extends Controller
      */
     public function actionOrderBuyingCurrency()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-buying-currency'),
                 [
@@ -380,7 +369,7 @@ class SCeController extends Controller
      */
     public function actionOffer()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('offer'),
                 [
@@ -424,7 +413,7 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrencyPaymentMethods()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency-payment-methods'),
                 [
@@ -481,8 +470,7 @@ class SCeController extends Controller
         //TODO save any location that will be sent
 
         $telegramUser = $this->getTelegramUser();
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendLocation(
                 $telegramUser->location_lat,
                 $telegramUser->location_lon
@@ -522,7 +510,7 @@ class SCeController extends Controller
      */
     public function actionNoRequirements()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('no-requirements'),
                 [

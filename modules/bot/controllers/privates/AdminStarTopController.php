@@ -3,10 +3,15 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\BotRouteAlias;
+use app\modules\bot\controllers\publics\TopController;
+use app\modules\bot\components\actions\privates\wordlist\WordlistAdminComponent;
+use app\modules\bot\components\helpers\PaginationButtons;
+use yii\data\Pagination;
 
 /**
  * Class AdminStarTopController
@@ -15,6 +20,29 @@ use app\modules\bot\models\ChatSetting;
  */
 class AdminStarTopController extends Controller
 {
+    public function actions()
+    {
+        return array_merge(
+            parent::actions(),
+            Yii::createObject([
+                'class' => WordlistAdminComponent::className(),
+                'wordModelClass' => BotRouteAlias::className(),
+                'actionGroupName' => 'likewords',
+                'modelAttributes' => [
+                    'route' => TopController::createRoute('start-like')
+                ]
+            ])->actions(),
+            Yii::createObject([
+                'class' => WordlistAdminComponent::className(),
+                'wordModelClass' => BotRouteAlias::className(),
+                'actionGroupName' => 'dislikewords',
+                'modelAttributes' => [
+                    'route' => TopController::createRoute('start-dislike')
+                ]
+            ])->actions()
+        );
+    }
+
     /**
      * @return array
      */
@@ -43,7 +71,7 @@ class AdminStarTopController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle')),
                 [
@@ -53,6 +81,22 @@ class AdminStarTopController extends Controller
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('likewords-word-list', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => Yii::t('bot', 'Aliases for') . ' «+»',
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('dislikewords-word-list', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => Yii::t('bot', 'Aliases for') . ' «-»',
                             ],
                         ],
                         [

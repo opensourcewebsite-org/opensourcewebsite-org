@@ -5,8 +5,13 @@ namespace app\models;
 use voskobovich\linker\LinkerBehavior;
 use voskobovich\linker\updaters\ManyToManyUpdater;
 use Yii;
+use app\interfaces\UserRelation\ByOwnerInterface;
+use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
+use app\models\queries\DebtRedistributionQuery;
+use app\models\traits\SelectForUpdateTrait;
 use yii\base\Exception;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -21,12 +26,23 @@ use yii\helpers\VarDumper;
  * @property string $name
  * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority.
  *
+ * @property User $ownerUser
  * @property User $linkedUser
  * @property DebtRedistribution[] $debtRedistributions
+ * @property DebtRedistribution $debtRedistributionByDebtorCustom
+ * @property Contact[] $chainMembers
+ * @property Contact $chainMemberParent   you should not use this relation for SQL query. It's only purpose -
+ *                                        to be used as `inverseOf`
+ *                                        for relation {@see Contact::getChainMembers()}
+ *                                        in {@see Reduction::findDebtReceiverCandidatesRedistributeInto()}
  */
-class Contact extends ActiveRecord
+class Contact extends ActiveRecord implements ByOwnerInterface
 {
-    public const DEBT_REDISTRIBUTION_PRIORITY_NO = null;
+    use ByOwnerTrait;
+    use SelectForUpdateTrait;
+
+    public const DEBT_REDISTRIBUTION_PRIORITY_NO = 0;
+    public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
@@ -114,8 +130,8 @@ class Contact extends ActiveRecord
                     return $('#contact-useridorname').val() == '';
                 }",
             ],
-            ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => 255],
-            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
+            ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => self::DEBT_REDISTRIBUTION_PRIORITY_MAX],
+            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: 0; }],
             ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
             ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
         ];
@@ -172,17 +188,48 @@ class Contact extends ActiveRecord
         }
     }
 
-    public function getLinkedUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'link_user_id']);
-    }
-
+    /**
+     * @return DebtRedistributionQuery|ActiveQuery
+     */
     public function getDebtRedistributions()
     {
         return $this->hasMany(DebtRedistribution::className(), [
-            'from_user_id' => 'user_id',
-            'to_user_id'   => 'link_user_id',
+            'user_id' => DebtRedistribution::getOwnerAttribute(),
+            'link_user_id' => DebtRedistribution::getLinkedAttribute(),
         ]);
+    }
+
+    /**
+     * Relation which require additional custom condition, to return exactly one row.
+     *
+     * @return DebtRedistributionQuery|ActiveQuery
+     */
+    public function getDebtRedistributionByDebtorCustom()
+    {
+        return $this->hasOne(DebtRedistribution::className(), [
+            'user_id' => DebtRedistribution::getDebtorAttribute(),
+            'link_user_id' => DebtRedistribution::getDebtReceiverAttribute(),
+        ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|ContactQuery
+     */
+    public function getChainMembers()
+    {
+        return $this->hasMany(self::className(), [
+            'user_id' => 'link_user_id',
+        ])->inverseOf('chainMemberParent');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|ContactQuery
+     */
+    public function getChainMemberParent()
+    {
+        /** @var [] $link empty array is not bug. {@see DebtBalance::$chainMemberParent} */
+        $link = [];
+        return $this->hasOne(self::className(), $link);
     }
 
     public function getContactName()
@@ -268,9 +315,11 @@ class Contact extends ActiveRecord
     {
         $oldId = $this->getOldAttribute('link_user_id');
         if ($oldId && $this->isAttributeChanged('link_user_id')) {
+            $modelOld = clone $this;
+            $modelOld->link_user_id = $oldId;
+
             $models = DebtRedistribution::find()
-                ->fromUser($this->user_id)
-                ->toUser($oldId)
+                ->usersByModelSource($modelOld)
                 ->all();
             $this->deleteDebtRedistributions($models);
         }

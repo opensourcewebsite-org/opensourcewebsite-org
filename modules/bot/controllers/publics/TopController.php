@@ -21,6 +21,8 @@ class TopController extends Controller
 {
     const VOTE_LIKE = 1;
     const VOTE_DISLIKE = -1;
+    const LIKE_MESSAGE = '+';
+    const DISLIKE_MESSAGE = '-';
 
     public function beforeAction($action)
     {
@@ -58,28 +60,37 @@ class TopController extends Controller
         foreach ($tops as &$top) {
             $top['username'] = $this->getProviderUsernameById($top['provider_candidate_id']);
         }
-        return ResponseBuilder::fromUpdate($this->getUpdate())->sendMessage(
+        return $this->getResponseBuilder()->sendMessage(
             $this->render('index', [
                 'users' => $tops
             ]),
             [],
             false,
             [
-                'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId()
+                'replyToMessageId' => $this->getMessage()->getMessageId()
             ]
             )->build();
     }
 
+    public function actionStartLike()
+    {
+        return $this->actionStart(self::LIKE_MESSAGE);
+    }
+
+    public function actionStartDislike()
+    {
+        return $this->actionStart(self::DISLIKE_MESSAGE);
+    }
+
     public function actionStart($estimate)
     {
-        if ($estimate == '+') {
+        if ($estimate == self::LIKE_MESSAGE) {
             $estimateValue = self::VOTE_LIKE;
-        } elseif ($estimate == '-') {
+        } elseif ($estimate == self::DISLIKE_MESSAGE) {
             $estimateValue = self::VOTE_DISLIKE;
         }
 
-        $update = $this->getUpdate();
-        $message = $update->getMessage();
+        $message = $this->getMessage();
         $messageId = $message->getMessageId();
         $currentUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
@@ -152,10 +163,9 @@ class TopController extends Controller
         $chatId = $chat->id;
         $user = $this->getTelegramUser();
         $voterId = $user->provider_user_id;
-        $thisMessage = $this->getUpdate()->getMessage();
+        $thisMessage = $this->getMessage();
 
         if ($this->getUpdate()->getCallbackQuery()) {
-            $thisMessage = $this->getUpdate()->getCallbackQuery()->getMessage();
             $anyMessageVote = RatingVote::find()->where(['message_id' => $messageId, 'chat_id' => $chatId])->one();
             $candidateId = $anyMessageVote->provider_candidate_id;
         } else {
@@ -207,7 +217,7 @@ class TopController extends Controller
             $voting = RatingVoting::find()->where(['chat_id' => $chat->id, 'candidate_message_id' => $messageId])->one();
             $voterId = $voting->provider_starter_id;
         } else {
-            $voterId = $this->getUpdate()->getMessage()->getFrom()->getId();
+            $voterId = $this->getMessage()->getFrom()->getId();
         }
 
         $ratings = ArrayHelper::map(
@@ -222,7 +232,7 @@ class TopController extends Controller
         );
 
         $voterName = $this->getProviderUsernameById($voterId);
-        $commands = ResponseBuilder::fromUpdate($this->getUpdate())->editMessageTextOrSendMessage(
+        $commands = $this->getResponseBuilder()->editMessageTextOrSendMessage(
             $this->render(
                 'vote',
                 [
@@ -234,6 +244,7 @@ class TopController extends Controller
             ),
             $replyMarkup
         )->build();
+
         return $commands;
     }
 

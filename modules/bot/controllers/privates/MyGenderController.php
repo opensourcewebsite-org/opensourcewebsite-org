@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\models\Gender;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
@@ -33,7 +33,7 @@ class MyGenderController extends Controller
             }
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'gender' => isset($user->gender) ? $user->gender->name : null,
@@ -86,10 +86,10 @@ class MyGenderController extends Controller
             ];
         }, $genders);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $text = $this->render('update'),
-                array_merge($genderRows, [ $paginationButtons ], [
+                array_merge($genderRows, [$paginationButtons], [
                     [
                         [
                             'callback_data' => self::createRoute(),

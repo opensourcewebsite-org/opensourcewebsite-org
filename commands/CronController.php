@@ -2,7 +2,7 @@
 namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 use app\models\CronJob;
 use app\models\CronJobConsole;
 use yii\console\Controller;
@@ -12,7 +12,8 @@ use yii\web\NotFoundHttpException;
 
 /**
  * CronController is a cron manager.
- * It run other commands, that chained in single thread (should be run one by one).
+ * It runs other commands, that chained in single thread (should be run one by one).
+ * Instance https://github.com/opensourcewebsite-org/osw-devops/blob/master/pillar/prod/supervisor.sls#L22
  *
  * @property array $map
  * @property bool $log
@@ -92,7 +93,7 @@ class CronController extends Controller
                     [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
                 );
 
-                /** @var ControllerLogTrait|ICronChained $controller */
+                /** @var ControllerLogTrait|CronChainedInterface $controller */
                 $controller = new $job(Yii::$app->controller->id, Yii::$app);
                 $controller->log = $this->log;
                 $controller->actionIndex();

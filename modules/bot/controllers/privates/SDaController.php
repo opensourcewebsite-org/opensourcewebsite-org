@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\modules\bot\components\Controller;
 
@@ -19,20 +19,10 @@ class SDaController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    [
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                            'text' => Yii::t('bot', 'Donate'),
-                        ],
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => Yii::t('bot', 'Contribution'),
-                        ],
-                    ],
                     [
                         [
                             'callback_data' => ServicesController::createRoute(),

@@ -7,7 +7,8 @@ use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
 use TelegramBot\Api\BotApi;
-use TelegramBot\Api\Types\Update;
+use app\modules\bot\components\api\Types\Update;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class Controller
@@ -75,6 +76,31 @@ class Controller extends \yii\web\Controller
     protected function getUpdate()
     {
         return $this->module->update;
+    }
+
+    /**
+     * @return ResponseBuilder
+     */
+    protected function getResponseBuilder()
+    {
+        return ResponseBuilder::fromUpdate($this->getUpdate());
+    }
+
+    /**
+     * @return TelegramBot\Api\Types\Message
+     */
+    protected function getMessage()
+    {
+        $update = $this->getUpdate();
+        $message = $update->getMessage();
+        $message = $message ?? $update->getEditedMessage();
+
+        $callbackQuery = $update->getCallbackQuery();
+        if (!isset($message)) {
+            $message = $callbackQuery->getMessage();
+        }
+
+        return $message;
     }
 
     /**

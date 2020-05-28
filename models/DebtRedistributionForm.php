@@ -53,15 +53,18 @@ class DebtRedistributionForm extends DebtRedistribution
     {
         return self::find()
             ->where(['id' => $id])
-            ->fromUser()
+            ->userOwner()
             ->one();
     }
 
     public function rules()
     {
         $message = Yii::t('app', 'You are trying to save default values. Just close this form.');
+        $rules = parent::rules();
+        $ruleUnique = $rules['unique'];
+        unset($rules['unique']);
 
-        return array_merge(parent::rules(), [
+        return array_merge($rules, [
             ['id', 'integer', 'min' => 1],
 
             ['contactId', 'required',
@@ -80,6 +83,11 @@ class DebtRedistributionForm extends DebtRedistribution
                 'isEmpty'    => function () { return $this->isMaxAmountDeny(); },
                 'message'    => $message,
             ],
+
+            /* It should be called at the end not only because of performance.
+             * But also after {@see fnValidateContact()} - it will set required attributes
+             */
+            'unique' => $ruleUnique,
         ]);
     }
 
@@ -127,9 +135,8 @@ class DebtRedistributionForm extends DebtRedistribution
                 return;
             }
 
-            $this->from_user_id = $contact->user_id;
-            $this->to_user_id   = $contact->link_user_id;
-            $this->populateRelation('toUser', $contact->linkedUser);
+            $this->setUsers($contact);
+            $this->populateRelation('linkedUser', $contact->linkedUser);
         };
     }
 }

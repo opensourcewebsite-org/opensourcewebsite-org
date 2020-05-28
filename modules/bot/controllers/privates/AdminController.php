@@ -4,7 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 
@@ -64,7 +64,7 @@ class AdminController extends Controller
             'text' => Emoji::MENU,
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 $buttons

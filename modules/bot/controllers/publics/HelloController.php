@@ -18,7 +18,7 @@ class HelloController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
@@ -65,13 +65,13 @@ class HelloController extends Controller
                             ],
                             [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
                             ],
                         ],
                 ],
                 false,
                 [
-                    'replyToMessageId' => $this->getUpdate()->getMessage()->getMessageId(),
+                    'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
             ->build();

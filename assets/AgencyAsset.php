@@ -6,6 +6,7 @@ use yii\web\AssetBundle;
 
 /**
  * Agency asset bundle.
+ *
  * @link https://startbootstrap.com/template-overviews/agency
  * @link https://cdnjs.com/libraries/startbootstrap-agency
  */

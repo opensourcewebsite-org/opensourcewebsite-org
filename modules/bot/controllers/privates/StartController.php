@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use Yii;
 use app\modules\bot\components\Controller;
 
@@ -19,20 +19,10 @@ class StartController extends Controller
      */
     public function actionIndex()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
-                    [
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => LanguageController::createRoute(),
-                            'text' => Emoji::LANGUAGE,
-                        ],
-                    ],
                     [
                         [
                             'url' => 'https://opensourcewebsite.org',
@@ -70,7 +60,17 @@ class StartController extends Controller
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => LanguageController::createRoute(),
+                            'text' => Emoji::LANGUAGE,
                         ],
                     ],
                 ]

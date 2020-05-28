@@ -2,36 +2,34 @@
 
 Please read through our [Contributing Guidelines](CONTRIBUTING.md).
 
-## General setup
+## Website
 
-- Copy file `.env.dist` to `.env`
-- Set correct values in `.env` file for your environment
-- Copy file `.env.test.dist` to `.env.test`
-- Set correct values in `.env.test` file for test environment
+#### Using Docker (easy way)
+
 - Copy file `config/params.dist.php` to `config/params.php`
 - Copy file `config/web-local.dist.php` to `config/web-local.php`
-
-#### Using Docker
-
-- Set `DB_HOST=db` in `.env` file
+- Copy file `.env.docker.dist` to `.env`
+- Install [Docker](https://www.docker.com)
 - Run `docker-compose up -d`
 - Run `docker-compose exec php composer install`
 - Run `docker-compose exec php ./yii migrate`
 
-Web-server can be accessed at http://localhost:8000
+The website can be accessed at http://localhost:8000.
 
-#### Without Docker
+[Adminer](https://www.adminer.org) can be accessed at http://localhost:8080.
 
-- Install MySQL:
-  - [MySQL 8.X](https://www.mysql.com)
-    - Create a new MySQL InnoDB database ("opensourcewebsite" by default), with "utf8mb4_0900_ai_ci" collation for your environment
-    - Create a new MySQL InnoDB database ("opensourcewebsite_test" by default) with an "utf8mb4_0900_ai_ci" collation for test environment
-  - or [MySQL 5.7.X](https://www.mysql.com)
-    - Create a new MySQL InnoDB database ("opensourcewebsite" by default), with "utf8mb4_unicode_ci" collation for your environment
-    - Create a new MySQL InnoDB database ("opensourcewebsite_test" by default) with an "utf8mb4_unicode_ci" collation for test environment
-- Setup your web-server root folder to `web`
-- Install [PHP 7.2.X](https://www.php.net)
-- Install [XDebug](https://xdebug.org) for test environment
+#### Without Docker (master way)
+
+- Copy file `config/params.dist.php` to `config/params.php`
+- Copy file `config/web-local.dist.php` to `config/web-local.php`
+- Copy file `.env.dist` to `.env`
+- Set correct values in `.env` file for your environment
+- Install [MySQL 8.X](https://www.mysql.com):
+  - Create a new MySQL InnoDB database ("opensourcewebsite" by default), with "utf8mb4_0900_ai_ci" collation for your environment
+- Install [Nginx web server](https://nginx.org) or [Apache web server](https://httpd.apache.org):
+  - Setup your web server root folder to `web`
+- Install [PHP 7.4.X](https://www.php.net)
+- Install [XDebug](https://xdebug.org)
 - Install [Composer](https://getcomposer.org)
 - Run `php composer.phar install`
 - Run `php yii migrate`
@@ -56,36 +54,51 @@ php yii fixture/unload "*"
 
 ### Data Generator
 
-Help instructions:
-```
-php yii dataGenerator/default/load -h
-```
-
-Basic usage (generates all available models with a delay of 2 seconds):
-```
-php yii dataGenerator "*"`
-```
-
-Advanced usage (generates `User` and `Contact` models with a delay of 5 seconds):
-```
-php yii dataGenerator "User, Contact" --interval=5
-```
-
-Advanced usage (generates all models except `Contact` with a delay of 5 seconds):
-```
-php yii dataGenerator "*, -Contact" --interval=5
-```
-
 The generation controller extends from `\yii\console\controllers\FixtureController`. So this part of documentation - [Loading fixtures](https://www.yiiframework.com/doc/guide/2.0/en/test-fixtures#loading-fixtures) - can be used to understand command syntax.
 
 New generators for models can be added to the folder `modules\dataGenerator\components\generators`.
 
-## Run tests
+Show help information:
+```
+php yii dataGenerator/default/load -h
+```
+
+#### Usage
+
+Generates all available models with a delay of 2 seconds:
+```
+php yii dataGenerator "*"
+```
+
+Generates 5 `User` and 5 `Contact` models:
+```
+php yii dataGenerator "User, Contact" --limit=5
+```
+
+Generates `User` and `Contact` models with a delay of 5 seconds:
+```
+php yii dataGenerator "User, Contact" --interval=5
+```
+
+Generates all models except `Contact` with a delay of 5 seconds:
+```
+php yii dataGenerator "*, -Contact" --interval=5
+```
+
+## Tests
+
+#### Setup
+
+- Copy file `.env.test.dist` to `.env.test`
+- Set correct values in `.env.test` file for test environment
+- Create a new MySQL InnoDB database ("opensourcewebsite_test" by default) with an "utf8mb4_0900_ai_ci" collation for test environment
+
+#### Usage
 
 - Run `php tests/bin/yii migrate`
 - Run `php vendor/bin/codecept run` or `php vendor/bin/codecept run --coverage --coverage-xml --coverage-html`
 
-## Telegram bots
+## Telegram bot
 
 We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your URL to be public and secure (HTTPS). ngrok is a tool that exposes your local environment to the world.
 

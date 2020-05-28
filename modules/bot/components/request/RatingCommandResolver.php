@@ -10,12 +10,15 @@ class RatingCommandResolver implements ICommandResolver
     public function resolveCommand(Update $update)
     {
         $message = $update->getMessage();
+        if (!$message) {
+            $message = $update->getEditedMessage();
+        }
         if ($message) {
             $replyMessage = $message->getReplyToMessage();
             if ($replyMessage) {
                 $commandText = $message->getText();
                 $estimate = trim($commandText);
-                if (in_array($estimate, ['+','-'])) {
+                if (in_array($estimate, [TopController::LIKE_MESSAGE, TopController::DISLIKE_MESSAGE])) {
                     $route = TopController::createRoute('start', ['estimate' => $estimate]);
                 }
             }

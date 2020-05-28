@@ -8,7 +8,7 @@ use app\models\Vacancy;
 use app\models\Company;
 use app\modules\bot\components\FillablePropertiesController;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\ResponseBuilder;
+
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -28,7 +28,7 @@ class VacanciesController extends FillablePropertiesController
     {
         $company = Company::findOne($companyId);
         if (!isset($company)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -63,9 +63,9 @@ class VacanciesController extends FillablePropertiesController
                 ]
             ];
         }, $vacancies);
-        $rows = array_merge($rows, [ $paginationButtons ]);
+        $rows = array_merge($rows, [$paginationButtons]);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'companyName' => $company->name,
@@ -105,13 +105,14 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($vacancyId);
         if (!isset($vacancy)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
         $isEnabled = $vacancy->status == 1;
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $vacancy->name,
@@ -172,14 +173,14 @@ class VacanciesController extends FillablePropertiesController
 
     public function actionUpdate($vacancyId)
     {
-        $vacancyExists = Vacancy::find()->where([ 'id' => $vacancyId ])->exists();
+        $vacancyExists = Vacancy::find()->where(['id' => $vacancyId])->exists();
         if (!$vacancyExists) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageReplyMarkup([
                 [
                     [
@@ -255,7 +256,7 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($vacancyId);
         if (!isset($vacancy)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -275,7 +276,7 @@ class VacanciesController extends FillablePropertiesController
     {
         $vacancy = Vacancy::findOne($vacancyId);
         if (!isset($vacancy)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
@@ -302,7 +303,7 @@ class VacanciesController extends FillablePropertiesController
             ? Vacancy::findOne($id)
             : new Vacancy([
                 'company_id' => $this->getState()->getIntermediateField('companyId', null),
-                'currency_id' => Currency::findOne([ 'code' => 'USD' ])->id,
+                'currency_id' => Currency::findOne(['code' => 'USD'])->id,
             ]);
     }
 

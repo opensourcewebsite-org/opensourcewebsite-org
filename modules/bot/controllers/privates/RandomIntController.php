@@ -4,7 +4,6 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class RandomIntController
@@ -21,7 +20,7 @@ class RandomIntController extends Controller
         //TODO add flexible int min and max from $message
         $randomInt = random_int(1, 10);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendMessage(
                 new MessageText($randomInt)
             )

@@ -4,7 +4,6 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class MyLocationController
@@ -21,7 +20,7 @@ class MyLocationController extends Controller
         $telegramUser = $this->getTelegramUser();
 
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('header')
                 )
@@ -43,7 +42,7 @@ class MyLocationController extends Controller
                 ->build();
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
