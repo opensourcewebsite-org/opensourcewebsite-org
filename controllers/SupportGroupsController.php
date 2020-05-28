@@ -305,7 +305,6 @@ class SupportGroupsController extends Controller
             ]);
 
             if ($sendMessage->save()) {
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Message delivered!'));
                 return $this->redirect([
                     'clients-view',
                     'id' => $id,

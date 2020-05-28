@@ -47,9 +47,10 @@ class SupportGroupInsideMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['support_group_bot_id', 'support_group_bot_client_id', 'message'], 'required'],
+            [['support_group_bot_id', 'support_group_bot_client_id'], 'required'],
             [['support_group_bot_id', 'support_group_bot_client_id', 'created_at', 'created_by'], 'integer'],
-            [['message'], 'string'],
+            [['message'], 'required', 'enableClientValidation' => false],
+            [['message'], 'string', 'enableClientValidation' => false],
             [['support_group_bot_client_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupBotClient::className(), 'targetAttribute' => ['support_group_bot_client_id' => 'id']],
             [['support_group_bot_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupportGroupBot::className(), 'targetAttribute' => ['support_group_bot_id' => 'id']],
         ];
