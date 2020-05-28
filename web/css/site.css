@@ -154,3 +154,12 @@ a.desc:after {
     right: 0;
     top: 0;
 }
+
+.lif-td {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}
+

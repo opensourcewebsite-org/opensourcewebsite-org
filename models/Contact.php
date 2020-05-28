@@ -2,10 +2,13 @@
 
 namespace app\models;
 
+use voskobovich\linker\LinkerBehavior;
+use voskobovich\linker\updaters\ManyToManyUpdater;
 use Yii;
 use app\models\queries\ContactQuery;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
 
@@ -35,6 +38,55 @@ class Contact extends ActiveRecord
 
     public $userIdOrName;
 
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            [
+                /*
+                 * This behavior makes it easy to maintain many-to-many and one-to-many relations
+                 */
+                'class' => LinkerBehavior::class,
+                'relations' => [
+                    'contact_group_ids' => [
+                        'contactGroups',
+                        'updater' => [
+                            'class' => ManyToManyUpdater::class,
+                        ],
+                    ],
+                ],
+            ],
+            ]
+        );
+    }
+
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
+        }
+
+        /*
+         * Prepare for LinkerBehavior
+         */
+        if (is_array($this->contact_group_ids)) {
+            $contactGroupIds = [];
+            foreach ($this->contact_group_ids as $contact_group_id) {
+                if (!is_numeric($contact_group_id)) {
+                    $this->validateHasEmptyGroup();
+                    $contactGroup = new ContactGroup(['name' => $contact_group_id, 'user_id' => Yii::$app->user->identity->id]);
+                    if ($contactGroup->save()) {
+                        $contactGroupIds[] = $contactGroup->id;
+                    }
+                } else {
+                    $contactGroupIds[] = $contact_group_id;
+                }
+            }
+            $this->contact_group_ids = $contactGroupIds;
+        }
+
+        return true;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -51,6 +103,7 @@ class Contact extends ActiveRecord
         return [
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
+            [['contact_group_ids'], 'each', 'rule' => ['integer']],
             [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required',
@@ -246,5 +299,28 @@ class Contact extends ActiveRecord
     public function getUserIdOrName()
     {
         return empty($this->linkedUser->username) ? $this->link_user_id : $this->linkedUser->username;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     *
+     * Get contact's groups
+     */
+    public function getContactGroups()
+    {
+        return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
+                    ->viaTable('contact_has_group', ['contact_id' => 'id']);
+
+    }
+
+/*
+ * validate count empty groups
+ */
+    public function validateHasEmptyGroup()
+    {
+        if(Yii::$app->user->identity->hasEmptyContactGroup) {
+            $this->addError('contact_group_ids', 'You already have an empty group!');
+            return;
+        }
     }
 }
