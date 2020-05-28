@@ -128,7 +128,7 @@ class StartController extends Controller
         return $this->actionIndex();
     }
 
-    public function DeleteLastMessage($chatId, $messageId)
+    public function deleteLastMessage($chatId, $messageId)
     {
         $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
         $deleteBotMessage->send($this->getBotApi());

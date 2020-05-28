@@ -122,7 +122,7 @@ class MyBirthdayController extends Controller
         return $d && $d->format($format) === $date;
     }
 
-    public function DeleteLastMessage($chatId, $messageId)
+    public function deleteLastMessage($chatId, $messageId)
     {
         $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
         $deleteBotMessage->send($this->getBotApi());

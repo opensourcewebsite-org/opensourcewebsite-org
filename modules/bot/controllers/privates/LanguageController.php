@@ -113,7 +113,7 @@ class LanguageController extends Controller
         $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
         $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
-        if (isset($language) ){
+        if (isset($language)) {
             $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionSave($language->code);
         } else {
@@ -122,7 +122,7 @@ class LanguageController extends Controller
         }
     }
 
-    public function DeleteLastMessage($chatId, $messageId)
+    public function deleteLastMessage($chatId, $messageId)
     {
         $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
         $deleteBotMessage->send($this->getBotApi());

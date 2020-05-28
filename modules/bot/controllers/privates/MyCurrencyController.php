@@ -136,7 +136,7 @@ class MyCurrencyController extends Controller
         $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
         $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
-        if (isset($currency) ){
+        if (isset($currency)) {
             $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex($currency->code);
         } else {
@@ -144,8 +144,8 @@ class MyCurrencyController extends Controller
             return $this->actionList();
         }
     }
-    
-    public function DeleteLastMessage($chatId, $messageId)
+
+    public function deleteLastMessage($chatId, $messageId)
     {
         $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
         $deleteBotMessage->send($this->getBotApi());
