@@ -139,8 +139,8 @@ if (!empty($languages)) {
         ]); ?>
 
          <div class="dropdown dropdown-inner ml-auto">
-            <a class="nav-link dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <?= strtoupper(Yii::$app->language) ?> <i class="fas fa-angle-down drop-btn-icon"></i>
+            <a class="nav-link dropdown-toggle dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <?= strtoupper(Yii::$app->language) ?> 
             </a>
 
             <div id="myDropdown" class="dropdown-menu dropdown-menu-inner" aria-labelledby="dropdownMenuLink">
