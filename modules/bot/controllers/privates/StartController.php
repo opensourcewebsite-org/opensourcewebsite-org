@@ -97,27 +97,14 @@ class StartController extends Controller
                 ->one();
         }
 
-        if (isset($language) ){
-            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-            $messageId = $this->getUpdate()->getMessage()->getMessageId();
+        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+        $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
-            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-            $deleteBotMessage->send($this->getBotApi());
-
-            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-            $deleteUserMessage->send($this->getBotApi());
-
+        if (isset($language)) {
+            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionSave($language->code);
         } else {
-            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-            $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
-            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-            $deleteBotMessage->send($this->getBotApi());
-            
-            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-            $deleteUserMessage->send($this->getBotApi());
-
+            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex();
         }
     }
@@ -139,5 +126,13 @@ class StartController extends Controller
             return $this->actionIndex();
         }
         return $this->actionIndex();
+    }
+
+    public function DeleteLastMessage($chatId, $messageId)
+    {
+        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+        $deleteBotMessage->send($this->getBotApi());
+        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+        $deleteUserMessage->send($this->getBotApi());
     }
 }
