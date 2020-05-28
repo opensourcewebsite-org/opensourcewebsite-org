@@ -22,7 +22,6 @@ $countTokens = $tokensDataProvider->count;
                 <?= ModalAjax::widget([
                     'id' => 'add-wikinews',
                     'header' => Yii::t('user', 'Add wikinews page'),
-                    'closeButton' => false,
                     'toggleButton' => [
                         'label' => Icon::ADD,
                         'class' => 'btn btn-outline-success',

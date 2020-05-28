@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\actions\SortAction;
+use app\models\ContactGroup;
 use Yii;
 use app\models\User;
 use app\models\Contact;
@@ -35,10 +37,31 @@ class ContactController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                    'delete-group' => ['POST'],
+
                 ],
             ],
         ];
     }
+
+    public function actions()
+    {
+        return [
+            'sort-up-group' => [
+                'class' => SortAction::class,
+                'modelClass' => ContactGroup::class,
+                'method' => 'movePrev',
+                'returnUrl' => 'groups',
+            ],
+            'sort-down-group' => [
+                'class' => SortAction::class,
+                'modelClass' => ContactGroup::class,
+                'method' => 'moveNext',
+                'returnUrl' => 'groups',
+            ],
+        ];
+    }
+
 
     /**
      * Lists all Contact models.
@@ -88,6 +111,83 @@ class ContactController extends Controller
             'realConfirmations' => $realConfirmations,
         ];
         return $this->render('view', $params);
+    }
+
+    /*
+     * View groups list
+     */
+    public function actionGroups()
+    {
+        $query = Yii::$app->user->identity->getContactGroups()->orderBy('position');
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => false,
+            'pagination' => false,
+        ]);
+
+        return $this->render('groups/groups', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionCreateGroup()
+    {
+        $contactGroupModel = new ContactGroup();
+        $postData = Yii::$app->request->post();
+
+        if ($contactGroupModel->load($postData) && $contactGroupModel->validate()) {
+            if ($contactGroupModel->save()) {
+                return $this->redirect(['contact/groups']);
+            }
+        }
+
+        $groups = Yii::$app->user->identity->getContactGroups()->all();
+        return $this->renderAjax('groups/group', [
+            'model'    => $contactGroupModel,
+            'groups' => $groups,
+        ]);
+    }
+
+    public function actionDeleteGroup($id)
+    {
+        $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
+        if (!empty($group)) {
+            $group->delete();
+        }
+        return $this->redirect('groups');
+    }
+
+    public function actionUpdateGroup($id)
+    {
+        $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
+        $postData = Yii::$app->request->post();
+
+        if ($group->load($postData) && $group->validate()) {
+            if ($group->save()) {
+                return $this->redirect(['contact/groups']);
+            }
+        }
+
+        $groups = Yii::$app->user->identity->getContactGroups()->all();
+        return $this->renderAjax('groups/group', [
+            'model' => $group,
+            'groups' => $groups,
+        ]);
+    }
+
+    public function actionUpdateContactGroups($id)
+    {
+        $model = Contact::findOne($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate(['contact_group_ids'])) {
+            if ($model->save(false)) {
+                return $this->redirect(['view', 'id' => $id]);
+            }
+        }
+
+        return $this->renderAjax('groups/contact-groups', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -201,6 +301,14 @@ class ContactController extends Controller
 
         return $this->redirect(['index', 'view' => Contact::VIEW_USER]);
     }
+
+    public function getContactGroups()
+    {
+        return $this->hasMany(ContactGroup::class, ['id' => 'group_id'])
+                    ->viaTable('contact_has_group', ['contact_id' => 'id']);
+    }
+
+
 
     /**
      * Finds the Contact model based on its primary key value.
