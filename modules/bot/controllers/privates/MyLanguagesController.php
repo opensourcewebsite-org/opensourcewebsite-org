@@ -250,27 +250,24 @@ class MyLanguagesController extends Controller
                 ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
                 ->one();
         }
+        
+        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+        $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
         if (isset($language)) {
-            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-            $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
-            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-            $deleteBotMessage->send($this->getBotApi());
-
-            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-            $deleteUserMessage->send($this->getBotApi());
-
+            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionCreateLevel($language->id);
         } else {
-            $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-            $messageId = $this->getUpdate()->getMessage()->getMessageId();
-            $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-            $deleteBotMessage->send($this->getBotApi());
-            $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-            $deleteUserMessage->send($this->getBotApi());
-
+            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionCreateLanguage();
         }
+    }
+
+    public function DeleteLastMessage($chatId, $messageId)
+    {
+        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+        $deleteBotMessage->send($this->getBotApi());
+        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+        $deleteUserMessage->send($this->getBotApi());
     }
 }

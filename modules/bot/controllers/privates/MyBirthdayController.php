@@ -70,11 +70,7 @@ class MyBirthdayController extends Controller
         $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
         $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
+        $this->DeleteLastMessage($chatId, $messageId);
 
         $text = $update->getMessage()->getText();
         if ($this->validateDate($text, User::DATE_FORMAT)) {
@@ -124,5 +120,13 @@ class MyBirthdayController extends Controller
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
+    }
+
+    public function DeleteLastMessage($chatId, $messageId)
+    {
+        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+        $deleteBotMessage->send($this->getBotApi());
+        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+        $deleteUserMessage->send($this->getBotApi());
     }
 }
