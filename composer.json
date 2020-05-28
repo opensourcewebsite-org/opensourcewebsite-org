@@ -46,6 +46,8 @@
         "janisto/yii2-timepicker": "^1.1",
         "ivankff/yii2-modal-ajax": "^4.1",
         "yiisoft/yii2-bootstrap4": "^2.0"
+        "yii2tech/ar-position": "*",
+        "voskobovich/yii2-linker-behavior": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
