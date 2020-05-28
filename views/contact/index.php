@@ -37,6 +37,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => 'nav-link show ' . ((int) $view === Contact::VIEW_VIRTUALS ? 'active' : ''),
                             ]); ?>
                         </li>
+                        <li class="nav-item">
+                            <?= Html::a(Yii::t('app', 'Groups'), ['contact/groups'], [
+                                'class' => 'nav-link show',
+                            ]); ?>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body p-0">
