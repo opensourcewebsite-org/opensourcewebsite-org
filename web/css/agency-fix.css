@@ -14,7 +14,7 @@ a:hover {
   cursor: pointer;
 }
 
-.dropbtn.dropbtn-inner {
+.dropbtn-inner {
   color: gray;
 }
 
@@ -69,11 +69,11 @@ a:hover {
   outline: none;
 }
 
-.dropdown-menu.dropdown-menu-inner {
+.dropdown-menu-inner {
   padding-top: 0;
 }
 
-.dropdown-menu.dropdown-menu-inner input[type=text] {
+.dropdown-menu-inner input[type=text] {
   padding: 10px 16px !important;
   margin: 0;
   border: none;
@@ -97,7 +97,7 @@ a:hover {
   cursor: pointer;
 }
 
-.dropdown-menu.dropdown-menu-inner .search-container button {
+.dropdown-menu-inner .search-container button {
   padding: 10px 15px;
   margin-right: 0;
   margin-top: 0;
