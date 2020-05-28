@@ -1,6 +1,8 @@
 # Donate
 
-Continuous development of the project is possible due to the financial support of the donators.
+First off, thanks for taking the opportunity to donate!
+
+Your donations increase your Rating in our community.
 
 You can make a contribution from yourself or your organization in a convenient way for you:
 
@@ -9,5 +11,7 @@ You can make a contribution from yourself or your organization in a convenient w
 * [PayPal.Me (PayPal and Credit Cards)](https://paypal.me/opensourcewebsite)
 * [Coingate.com (50+ cryptocurrencies)](https://coingate.com/pay/opensourcewebsite)
 * [Coinbase.com (4 cryptocurrencies)](https://commerce.coinbase.com/checkout/e89005ec-c8c2-47c1-9ca4-b1deb9992794)
+
+Please send any other donation offers to [donate@opensourcewebsite.org](mailto:donate@opensourcewebsite.org).
 
 Together we can change the web for the better!

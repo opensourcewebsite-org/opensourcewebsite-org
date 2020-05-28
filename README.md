@@ -31,7 +31,6 @@ This project and everyone participating in it is governed by the [Code of Conduc
 ## Contributing
 
 This project exists thanks to all the people who contribute.
-<a href="https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors"><img src="https://opencollective.com/opensourcewebsite/contributors.svg?width=890&button=false" /></a>
 
 Your contributions increase your Rating in our community.
 
@@ -43,7 +42,7 @@ This project exists thanks to all the people who donate.
 
 Your donations increase your Rating in our community.
 
-Become a financial contributor and help us sustain our community. [Read more](DONATE.md).
+Please read through our [Donation Details](DONATE.md).
 
 ## Continuous Integration
 

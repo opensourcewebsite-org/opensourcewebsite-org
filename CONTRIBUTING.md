@@ -2,6 +2,8 @@
 
 First off, thanks for taking the time to contribute!
 
+Your contributions increase your Rating in our community.
+
 Please read through our [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
 
 ## Getting Started
