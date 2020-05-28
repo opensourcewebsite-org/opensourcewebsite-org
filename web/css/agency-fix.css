@@ -98,8 +98,8 @@ a:hover {
 }
 
 .dropdown-menu.dropdown-menu-inner .search-container button {
-  padding: 10px 10px;
-  margin-right: 5px;
+  padding: 10px 15px;
+  margin-right: 0;
   margin-top: 0;
   background: transparent;
   font-size: 17px;
