@@ -4,7 +4,6 @@
 
 /* @var $content string */
 
-use app\assets\AgencyAsset;
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\assets\AdminLteUserAsset;
@@ -16,7 +15,6 @@ use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 use yii\bootstrap4\Modal;
 
-AgencyAsset::register($this);
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 AdminLteUserAsset::register($this);
@@ -27,6 +25,7 @@ $this->registerCss('#lang-menu{
     max-height: 200px;
 }#search-lang{
     display: block;
+    position: relative;
     width: 100%;
     padding: .25rem 1rem;
     clear: both;

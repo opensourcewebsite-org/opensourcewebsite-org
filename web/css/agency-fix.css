@@ -14,10 +14,6 @@ a:hover {
   cursor: pointer;
 }
 
-.dropbtn-inner {
-  color: gray;
-}
-
 .dropdown {
   position: relative;
   display: inline-block;
@@ -69,19 +65,6 @@ a:hover {
   outline: none;
 }
 
-.dropdown-menu-inner {
-  padding-top: 0;
-}
-
-.dropdown-menu-inner input[type=text] {
-  padding: 10px 16px !important;
-  margin: 0;
-  border: none;
-  font-size: 15px;
-  width: 100%;
-  outline: none;
-} 
-
 .dropdown-menu .search-container {
   margin-bottom: 10px;
   display: flex;
@@ -94,16 +77,6 @@ a:hover {
   background: #d7d7d7;
   font-size: 17px;
   border: none;
-  cursor: pointer;
-}
-
-.dropdown-menu-inner .search-container button {
-  padding: 10px 15px;
-  margin-right: 0;
-  margin-top: 0;
-  background: transparent;
-  font-size: 17px;
-  border-bottom: 1px solid #eee;
   cursor: pointer;
 }
 
