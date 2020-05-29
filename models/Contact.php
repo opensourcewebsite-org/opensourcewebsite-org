@@ -25,6 +25,9 @@ use yii\helpers\VarDumper;
  * @property int $link_user_id
  * @property string $name
  * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority.
+ * @property int $vote_delegation_priority
+ * @property int $is_real
+ * @property int $relation
  *
  * @property User $ownerUser
  * @property User $linkedUser
@@ -41,7 +44,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     use ByOwnerTrait;
     use SelectForUpdateTrait;
 
-    public const DEBT_REDISTRIBUTION_PRIORITY_NO = 0;
+    public const DEBT_REDISTRIBUTION_PRIORITY_DENY = 0;
     public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
     const VIEW_USER = 1;
@@ -133,8 +136,17 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     return $('#contact-useridorname').val() == '';
                 }",
             ],
-            ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => self::DEBT_REDISTRIBUTION_PRIORITY_MAX],
-            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: 0; }],
+            [
+                'debt_redistribution_priority',
+                'integer',
+                'min' => self::DEBT_REDISTRIBUTION_PRIORITY_DENY,
+                'max' => self::DEBT_REDISTRIBUTION_PRIORITY_MAX,
+            ],
+            [
+                'debt_redistribution_priority',
+                'filter',
+                'filter' => static function ($v) { return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY; },
+            ],
             ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
             ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
         ];
@@ -155,6 +167,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
+            'debt_redistribution_priority:empty' => Yii::t('app', 'Deny'),
         ];
     }
 
@@ -185,9 +198,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 ['id' => $this->userIdOrName],
                 ['username' => $this->userIdOrName]
             ])
-            ->one();
-        if (empty($user)) {
-            return $this->addError($attribute, "User ID / Username doesn't exists.");
+            ->exists();
+        if (!$user) {
+            $this->addError($attribute, "User ID / Username doesn't exists.");
         }
     }
 
@@ -264,9 +277,18 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return !$this->link_user_id;
     }
 
-    public function isPriorityEmpty(): bool
+    public function isDebtRedistributionPriorityEmpty(): bool
     {
-        return $this->debt_redistribution_priority == self::DEBT_REDISTRIBUTION_PRIORITY_NO;
+        return (int)$this->debt_redistribution_priority === self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
+    }
+
+    public function renderDebtRedistributionPriority(): string
+    {
+        if ($this->isDebtRedistributionPriorityEmpty()) {
+            return $this->getAttributeLabel('debt_redistribution_priority:empty');
+        }
+
+        return (string)$this->debt_redistribution_priority;
     }
 
     public static function find()
