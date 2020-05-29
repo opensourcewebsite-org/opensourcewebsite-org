@@ -16,6 +16,7 @@
 - TrashButton - кнопка удаления элемента (включено окно confirm). В отличие от Delete обозначена иконкой мусорного ведра;
 - EditButton - кнопка редактирования;
 - SaveButton - кнопка сохранения.
+- SendButton - кнопка отправления.
 
 Namespace кнопок-виджетов: `app\widgets\buttons
 `. При вызове виджета можно не передавать параметры.
@@ -50,6 +51,10 @@ Namespace кнопок-виджетов: `app\widgets\buttons
 - [обычное модальное окно](https://www.yiiframework.com/extension/yiisoft/yii2-bootstrap/doc/api/2.0/yii-bootstrap-modal) (app\widgets\Modal)
 
 - [модальное окно с подгрузкой контента через  Ajax](https://github.com/loveorigami/yii2-modal-ajax/blob/master/README.md) (app\widgets\ModalAjax)
+
+При использовании модальных окон необходимо придерживаться следующий правил:
+1. Модальное окно должно иметь кнопку закрытия (крестик). Для этого достаточно не устанавливать параметр `'closeButton'` в значение `false`;
+2. При создании модального окна `ModalAjax` в view не создавайте отдельную html-структуру как для обычной страницы. Виджет подгрузит внуть готового контейнера контент.
 
 ## Телеграм бот
 
