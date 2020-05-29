@@ -1,10 +1,12 @@
 # Руководство контрибьютора
 
-Прежде всего, спасибо, что нашли время внести свой вклад!
+[English version](CONTRIBUTING.md)
+
+Прежде всего, спасибо, что нашли время внести вклад!
 
 Ваш вклад увеличивает ваш Рейтинг в нашем сообществе.
 
-Пожалуйста, прочитайте наше [Руководство по архитектуре](ARCHITECTURE.ru.md) и [Инструкции по установке](INSTALL.ru.md).
+Пожалуйста, прочитайте наше [Руководство по архитектуре](ARCHITECTURE.ru.md) и [Инструкцию по установке](INSTALL.ru.md).
 
 ## Начнём
 
@@ -15,7 +17,7 @@
   - Issue не нужно для незначительных изменений.
 - Сделайте [fork](https://help.github.com/en/articles/working-with-forks) репозитория на GitHub.
     - [Настройка удалённого репозитория для fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)
-    - [Синхроизация fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+    - [Синхронизация fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
       - `git fetch upstream`
       - `git checkout master`
       - `git merge upstream/master`
@@ -41,7 +43,7 @@
 
 - `master` - последняя, развёртываемая версия
 
-## Вклада в основной код или исправление ошибок
+## Вклад в основной код или исправление ошибок
 
 ### Ваш первый вклад в код
 
@@ -61,8 +63,7 @@
 
 Чтобы помочь нашим CI-серверам, вы должны добавить `[ci skip]` к вашему commit-сообщению для документации, чтобы пропустить сборку на этом коммите. Пожалуйста, не забудьте использовать его для коммитов, содержащих только изменения документации.
 
-
-## Руководство по стилю
+## Руководство по стилям кодирования
 
 ### Commit-сообщения Git
 
@@ -153,6 +154,6 @@ JavaScript код ДОЛЖЕН придерживаться [JavaScript Standard
 
 ### Composer
 
-В любом случае, если файл `composer.json` обновлен, добавьте файлы `composer.json` и `composer.lock` в текущий коммит.
+Во всех случаях, когда файл `composer.json` обновлен, добавьте файлы `composer.json` и `composer.lock` в один и тот же коммит.
 
 Каждый подключаемый пакет должен содержать определенную версию. Не используйте версии `*` и `@dev`.
