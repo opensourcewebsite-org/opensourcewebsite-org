@@ -30,7 +30,7 @@ $this->registerJs($JS);
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($mysqlvars as $mysqlVar => $mysqlValue): ?>
+                                    <?php foreach ($mysqlvars as $mysqlVar => $mysqlValue) : ?>
                                         <tr>
                                             <td class="col-5"><?php echo $mysqlVar; ?></td>
                                             <td class="col-7"><?php echo $mysqlValue; ?></td>

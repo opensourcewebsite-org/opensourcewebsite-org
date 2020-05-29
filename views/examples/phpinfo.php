@@ -13,7 +13,6 @@ $JS = <<<JS
         let PI_styles       = $(".phpinfo > style").text();
         let array_PI_styles = PI_styles.split(/\\n/);
         let result_styles   = '';
-        
         for (let styles_string of array_PI_styles)
         {
             if (styles_string.length == 0)
@@ -38,5 +37,5 @@ $this->registerJs($JS);
 
 
 <div class="phpinfo">
-   <?php phpinfo(); ?>
+    <?php phpinfo(); ?>
 </div>
