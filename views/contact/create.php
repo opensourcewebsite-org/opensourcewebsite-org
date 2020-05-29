@@ -1,6 +1,5 @@
 <?php
 
-use yii\helpers\Html;
 use app\models\Contact;
 
 /* @var $this yii\web\View */
@@ -15,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'relations' => Contact::RELATIONS,
     ]); ?>
 
 </div>

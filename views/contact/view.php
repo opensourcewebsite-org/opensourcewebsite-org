@@ -15,6 +15,7 @@ use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
+/* @var $realConfirmations int count of real Contacts */
 
 $this->title = Yii::t('app', 'View Contact');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
@@ -130,7 +131,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     </tr>
                                     <tr>
                                         <th class="align-middle"><?= $model->getAttributeLabel('debt_redistribution_priority'); ?></th>
-                                        <td class="align-middle"><?= $model->debt_redistribution_priority; ?></td>
+                                        <td class="align-middle"><?= $model->renderDebtRedistributionPriority(); ?></td>
                                         <td></td>
                                     </tr>
                                     </tbody>
