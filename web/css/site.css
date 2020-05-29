@@ -168,15 +168,15 @@ a.desc:after {
 .dropdown-menu-inner {
     padding-top: 0;
 }
-  
+
 .dropdown-menu-inner input[type=text] {
-    padding: 10px 16px !important;
+    padding: 10px 16px;
     margin: 0;
     border: none;
     font-size: 15px;
     width: 100%;
     outline: none;
-} 
+}
 
 .dropdown-menu-inner .search-container button {
     position: absolute;

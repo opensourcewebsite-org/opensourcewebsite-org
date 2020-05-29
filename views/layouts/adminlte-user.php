@@ -27,7 +27,7 @@ $this->registerCss('#lang-menu{
     display: block;
     position: relative;
     width: 100%;
-    padding: .25rem 1rem;
+    padding: .7rem 1rem;
     clear: both;
     font-weight: 400;
     color: #212529;
@@ -137,17 +137,18 @@ if (!empty($languages)) {
             'items' => $menuItemsLeft,
         ]); ?>
 
-         <div class="dropdown dropdown-inner ml-auto">
+        <div class="dropdown dropdown-inner ml-auto">
             <a class="nav-link dropdown-toggle dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <?= strtoupper(Yii::$app->language) ?> 
+                <?= strtoupper(Yii::$app->language) ?>
             </a>
 
             <div id="myDropdown" class="dropdown-menu dropdown-menu-inner" aria-labelledby="dropdownMenuLink">
-              <div class="search-container">
+                <div class="search-container">
                 <input type="text" id="search-lang" onkeyup="getLanguage()" placeholder="Search..">
                 
                 <button type="button"><i class="fa fa-search"></i></button>
-              </div>
+                </div>
+
                 <div class="dropdown-container">
                 <?php
 
@@ -157,13 +158,13 @@ if (!empty($languages)) {
                 if (!empty($languages)) {
                     foreach ($languages as $language) {
                         //Check if the language is the active
-                        $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
+                        $active = ($language->code == Yii::$app->language) ? 'active' : null;
                         echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
                     }
                 } ?>
                 </div>
             </div>
-          </div>
+        </div>
           
         <?php echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
