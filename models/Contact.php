@@ -41,7 +41,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     use ByOwnerTrait;
     use SelectForUpdateTrait;
 
-    public const DEBT_REDISTRIBUTION_PRIORITY_NO = 0;
+    public const DEBT_REDISTRIBUTION_PRIORITY_DENY = 0;
     public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
     const VIEW_USER = 1;
@@ -83,13 +83,13 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             [
                 'debt_redistribution_priority',
                 'integer',
-                'min' => self::DEBT_REDISTRIBUTION_PRIORITY_NO,
+                'min' => self::DEBT_REDISTRIBUTION_PRIORITY_DENY,
                 'max' => self::DEBT_REDISTRIBUTION_PRIORITY_MAX,
             ],
             [
                 'debt_redistribution_priority',
                 'filter',
-                'filter' => static function ($v) { return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_NO; },
+                'filter' => static function ($v) { return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY; },
             ],
             ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
             ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
@@ -111,7 +111,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
-            'debt_redistribution_priority:empty' => Yii::t('app', 'No priority'),
+            'debt_redistribution_priority:empty' => Yii::t('app', 'Deny'),
         ];
     }
 
@@ -223,7 +223,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     public function isDebtRedistributionPriorityEmpty(): bool
     {
-        return $this->debt_redistribution_priority == self::DEBT_REDISTRIBUTION_PRIORITY_NO;
+        return (int)$this->debt_redistribution_priority === self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
     }
 
     public function renderDebtRedistributionPriority(): string

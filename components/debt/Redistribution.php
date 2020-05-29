@@ -11,7 +11,6 @@ use app\models\queries\DebtBalanceQuery;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
-use yii\db\Expression;
 use yii\db\Transaction;
 use yii\helpers\Console;
 
@@ -131,17 +130,12 @@ class Redistribution extends Component
         int $level
     ): array
     {
-        $attribute = 'debt_redistribution_priority';
-        $lowestPriority = Contact::DEBT_REDISTRIBUTION_PRIORITY_MAX + 1;
-        $orderColumn = new Expression("IF($attribute, $attribute, $lowestPriority) AS `order`");
-
         $chainList = ($level === 1) ? [] : $this->listChainMembers($contact);
 
         return $contact->getChainMembers()
-            ->select(['contact.*', $orderColumn])
-            ->orderBy('order')
             ->models($chainList, 'NOT IN', ['user_id', 'link_user_id'])
             ->canRedistributeInto($debtBalance->currency_id)
+            ->orderBy('debt_redistribution_priority')
             ->all();
     }
 

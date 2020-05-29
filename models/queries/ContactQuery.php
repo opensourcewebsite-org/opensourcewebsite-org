@@ -71,7 +71,8 @@ class ContactQuery extends ActiveQuery
      */
     public function canRedistributeInto($currencyId): self
     {
-        return $this->withDebtRedistributionByCurrency($currencyId, 'JOIN')
+        return $this->andWhere('contact.debt_redistribution_priority <> ' . Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
+            ->withDebtRedistributionByCurrency($currencyId, 'JOIN')
             ->joinWith('debtRedistributionByDebtorCustom.debtBalanceToOwner')
             ->andWhere([
                 'OR',
