@@ -8,7 +8,9 @@ build:
     mysql8:
       services:
         # For available tags, see https://hub.docker.com/_/mysql/
-        mysql: 8.0
+        mysql:
+          image: mysql/mysql-server:8.0
+          command: --default-authentication-plugin=mysql_native_password
   dependencies:
     before:
       - cp .env.test.dist .env.test
@@ -18,8 +20,9 @@ build:
       - composer install --prefer-dist --no-interaction
       - php --version
       - php -m
-      - mysql --version
-      - mysql -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+      #- mysql --version
+      - mysql -uroot -e 'SHOW VARIABLES like "version"';
+      - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
       - ./tests/bin/yii migrate --interactive=0 -c
       - ./tests/bin/yii fixture/load '*' --interactive=0
   tests:
