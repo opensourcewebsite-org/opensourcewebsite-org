@@ -741,7 +741,7 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * Checks if there is empty group
      */
-    public function getHasEmptyContactGroup()
+    public function hasEmptyContactGroup()
     {
         $groups = $this->getContactGroups()->all();
         $hasEmptyGroup = false;

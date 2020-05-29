@@ -40,7 +40,7 @@ class ContactGroup extends ActiveRecord
      */
     public function validateHasEmptyGroup()
     {
-        if (Yii::$app->user->identity->hasEmptyContactGroup) {
+        if (Yii::$app->user->identity->hasEmptyContactGroup()) {
             $this->addError('name', 'You already have an empty group!');
         }
     }
