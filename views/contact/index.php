@@ -8,6 +8,7 @@ use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $view int */
 
 $this->title = Yii::t('app', 'Contacts');
 $this->params['breadcrumbs'][] = $this->title;
@@ -29,12 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         </li>
                         <li class="nav-item">
                             <?= Html::a(Yii::t('app', 'Users'), ['contact/index', 'view' => Contact::VIEW_USER], [
-                                'class' => 'nav-link show ' . ((int) $view === Contact::VIEW_USER ? 'active' : ''),
+                                'class' => 'nav-link show ' . ($view === Contact::VIEW_USER ? 'active' : ''),
                             ]); ?>
                         </li>
                         <li class="nav-item">
                             <?= Html::a(Yii::t('app', 'Virtuals'), ['contact/index', 'view' => Contact::VIEW_VIRTUALS], [
-                                'class' => 'nav-link show ' . ((int) $view === Contact::VIEW_VIRTUALS ? 'active' : ''),
+                                'class' => 'nav-link show ' . ($view === Contact::VIEW_VIRTUALS ? 'active' : ''),
                             ]); ?>
                         </li>
                     </ul>
@@ -55,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'is_real',
-                                'value' => function ($model) {
+                                'value' => static function (Contact $model) {
                                     return $model->is_real ? Yii::t('app', 'Real') : '';
                                 },
                                 'enableSorting' => false,
@@ -63,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'relation',
-                                'value' => function ($model) {
+                                'value' => static function (Contact $model) {
                                     return Yii::t('app', Contact::RELATIONS[$model->relation]);
                                 },
                                 'enableSorting' => false,
@@ -76,6 +77,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'debt_redistribution_priority',
                                 'enableSorting' => false,
+                                'value' => static function (Contact $model) {
+                                    return $model->renderDebtRedistributionPriority();
+                                },
                             ],
                             [
                                 'class' => ActionColumn::class,

@@ -59,7 +59,7 @@ class ContactController extends Controller
         ]);
 
         return $this->render('index', [
-            'view' => $view,
+            'view' => (int)$view,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -83,11 +83,10 @@ class ContactController extends Controller
             $realConfirmations = 0;
         }
 
-        $params = [
+        return $this->render('view', [
             'model' => $model,
             'realConfirmations' => $realConfirmations,
-        ];
-        return $this->render('view', $params);
+        ]);
     }
 
     /**

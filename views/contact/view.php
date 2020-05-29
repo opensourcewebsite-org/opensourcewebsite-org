@@ -2,7 +2,6 @@
 
 use app\widgets\buttons\EditButton;
 use app\widgets\ModalAjax;
-use yii\helpers\Html;
 use app\models\Contact;
 use yii\helpers\Url;
 use yii\web\JsExpression;
@@ -11,6 +10,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
+/* @var $realConfirmations int count of real Contacts */
 
 $this->title = Yii::t('app', 'View Contact');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index', 'view' => Contact::VIEW_USER]];
@@ -71,27 +71,28 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         return !empty($model->linkedUser->username) ? '@' . $model->linkedUser->username : '#' . $model->linkedUser->id;
                                     }
                                 },
-                                'visible' => $model->link_user_id ? 1 : 0
+                                'visible' => (bool)$model->link_user_id,
                             ],
                             'name',
                             [
                                 'label' => Yii::t('user', 'Real confirmations'),
                                 'attribute' => 'Real Confirmations',
                                 'value' => $realConfirmations,
-                                'visible' => $model->link_user_id ? 1 : 0
+                                'visible' => (bool)$model->link_user_id,
                             ],
                             [
                                 'attribute' => 'is_real',
-                                'value' => function ($model) {
-                                    return $model->is_real ? Yii::t('app', 'Yes') : Yii::t('app', 'No');
-                                }
+                                'value' => $model->is_real ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
                             ],
                             [
-                                'label' => Yii::t('app', 'Relation'),
+                                'attribute' => 'relation',
                                 'value' => Yii::t('app', Contact::RELATIONS[$model->relation]),
                             ],
                             'vote_delegation_priority',
-                            'debt_redistribution_priority',
+                            [
+                                'attribute' => 'debt_redistribution_priority',
+                                'value' => $model->renderDebtRedistributionPriority(),
+                            ],
                         ],
                         'options' => ['class' => 'table table-hover detail-view']
                     ]); ?>
