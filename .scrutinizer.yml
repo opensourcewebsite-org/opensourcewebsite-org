@@ -11,6 +11,10 @@ build:
         mysql:
           image: 'mysql:8'
           command: --default-authentication-plugin=mysql_native_password
+          env:
+            MYSQL_DATABASE: opensourcewebsite_test
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root
   dependencies:
     before:
       - cp .env.test.dist .env.test
