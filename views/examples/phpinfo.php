@@ -33,5 +33,5 @@ $this->registerJs($JS);
 
 
 <div class="phpinfo">
-    <?php phpinfo(); ?>
+    <?php phpinfo(1 | 4 | 8); ?>
 </div>
