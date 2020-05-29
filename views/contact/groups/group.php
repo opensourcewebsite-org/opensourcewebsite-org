@@ -15,8 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'name')
-             ->textInput()
-             ->label(Yii::t('app', 'Name')); ?>
+            ->textInput()
+            ->label(Yii::t('app', 'Name')); ?>
 
     <?= SaveButton::widget(); ?>
     <?= CancelButton::widget([
