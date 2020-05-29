@@ -1,7 +1,7 @@
 <?php
-use app\assets\PHPInfoAsset;
+use yii\web\AssetBundle;
 
-$this->registerAssetBundle(PHPInfoAsset::class);
+$this->registerAssetBundle(AssetBundle::class);
 
 $this->title = Yii::t('app', 'PHPinfo()');
 $this->params['breadcrumbs'][] = $this->title;

@@ -1,7 +1,7 @@
 <?php
-use app\assets\MySQLVarAsset;
+use yii\web\AssetBundle;
 
-$this->registerAssetBundle(MySQLVarAsset::class);
+$this->registerAssetBundle(AssetBundle::class);
 
 $this->title = Yii::t('app', 'MySQL Variables');
 $this->params['breadcrumbs'][] = $this->title;
