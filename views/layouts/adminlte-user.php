@@ -65,7 +65,6 @@ if (!empty($languages)) {
     <?php Modal::begin([
         'id' => 'main-modal',
         'size' => Modal::SIZE_LARGE,
-        'closeButton' => false,
         'clientEvents' => [
             'show.bs.modal' => 'function (e) {
                     $("#main-modal").addClass("show");

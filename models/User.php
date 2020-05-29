@@ -727,6 +727,39 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     *
+     * Get user's contact groups
+     */
+    public function getContactGroups()
+    {
+        return $this->hasMany(ContactGroup::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return boolean
+     *
+     * Checks if there is empty group
+     */
+    public function hasEmptyContactGroup()
+    {
+        $groups = $this->getContactGroups()->all();
+        $hasEmptyGroup = false;
+
+        if (!empty($groups)) {
+            foreach ($groups as $group) {
+                $groupId = $group->id;
+                $countGroupContacts = ContactHasGroup::find()->where(['contact_group_id' => $groupId])->count();
+                if ($countGroupContacts == 0) {
+                    $hasEmptyGroup = true;
+                    break;
+                }
+            }
+        }
+        return $hasEmptyGroup;
+    }
+
+    /**
      * {@inheritdoc}
      * @return UserQuery the active query used by this AR class.
      */
