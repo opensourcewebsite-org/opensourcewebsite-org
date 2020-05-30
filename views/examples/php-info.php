@@ -1,5 +1,6 @@
 <?php
-$this->title = Yii::t('app', 'PHPinfo()');
+
+$this->title = Yii::t('app', 'PHP Info');
 $this->params['breadcrumbs'][] = $this->title;
 
 $JS = <<<JS
@@ -30,7 +31,6 @@ $JS = <<<JS
 JS;
 $this->registerJs($JS);
 ?>
-
 
 <div class="phpinfo">
     <?php phpinfo(1 | 4 | 8); ?>

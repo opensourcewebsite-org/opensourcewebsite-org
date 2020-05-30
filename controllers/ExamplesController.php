@@ -64,15 +64,21 @@ class ExamplesController extends Controller
         return $this->render('gallery');
     }
 
-    public function actionPhpinfo()
+    // https://www.php.net/manual/en/function.phpinfo.php
+    public function actionPhpInfo()
     {
-        return $this->render('phpinfo');
+        return $this->render('php-info');
     }
 
-    public function actionMysqlvar()
+    // https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html
+    // https://dev.mysql.com/doc/refman/8.0/en/server-status-variables.html
+    public function actionMysqlInfo()
     {
         $mysqlvars = Yii::$app->db->createCommand('SHOW GLOBAL VARIABLES')->queryAll();
         $mysqlvars = ArrayHelper::map($mysqlvars, 'Variable_name', 'Value');
-        return $this->render('mysqlvar', ['mysqlvars' => $mysqlvars]);
+
+        return $this->render('mysql-info', [
+            'mysqlvars' => $mysqlvars
+        ]);
     }
 }
