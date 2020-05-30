@@ -2,12 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use app\models\Currency;
-use app\modules\bot\components\helpers\PaginationButtons;
-use yii\data\Pagination;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\response\commands\DeleteMessageCommand;
+use yii\data\Pagination;
+use TelegramBot\Api\BotApi;
 
 /**
  * Class MyCurrencyController
@@ -66,6 +67,7 @@ class MyCurrencyController extends Controller
      */
     public function actionList($page = 1)
     {
+        $this->getState()->setName(self::createRoute('search'));
         $currencyQuery = Currency::find()->orderBy('code ASC');
         $pagination = new Pagination([
             'totalCount' => $currencyQuery->count(),
@@ -114,5 +116,40 @@ class MyCurrencyController extends Controller
                 $buttons
             )
             ->build();
+    }
+
+    public function actionSearch()
+    {
+        $update = $this->getUpdate();
+        $text = $update->getMessage()->getText();
+
+        if (strlen($text) <= 3) {
+            $currency = Currency::find()
+                ->orFilterWhere(['like', 'code', $text, false])
+                ->one();
+        } else {
+            $currency = Currency::find()
+                ->orFilterWhere(['like', 'name', $text . '%', false])
+                ->one();
+        }
+
+        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
+        $messageId = $this->getUpdate()->getMessage()->getMessageId();
+
+        if (isset($currency)) {
+            $this->DeleteLastMessage($chatId, $messageId);
+            return $this->actionIndex($currency->code);
+        } else {
+            $this->DeleteLastMessage($chatId, $messageId);
+            return $this->actionList();
+        }
+    }
+
+    public function deleteLastMessage($chatId, $messageId)
+    {
+        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
+        $deleteBotMessage->send($this->getBotApi());
+        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
+        $deleteUserMessage->send($this->getBotApi());
     }
 }
