@@ -2,6 +2,7 @@
 
 namespace app\components\debt;
 
+use app\helpers\Number;
 use app\models\Debt;
 use app\models\DebtBalance;
 use Yii;
@@ -193,16 +194,11 @@ class BalanceChecker extends Component
 
     private function isFloatEqual(string $leftFloat, string $rightFloat): bool
     {
-        return 0 === bccomp($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
-    }
-
-    private function isFloatGreater(string $leftFloat, string $rightFloat): bool
-    {
-        return 1 === bccomp($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
+        return Number::isFloatEqual($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
     }
 
     private function isFloatLower(string $leftFloat, string $rightFloat): bool
     {
-        return -1 === bccomp($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
+        return Number::isFloatLower($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
     }
 }
