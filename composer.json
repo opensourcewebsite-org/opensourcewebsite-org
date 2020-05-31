@@ -26,6 +26,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.4",
+        "ext-bcmath": "*",
         "ext-json": "*",
         "ext-PDO": "*",
         "ext-intl": "*",
