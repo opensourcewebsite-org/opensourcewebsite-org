@@ -5,9 +5,10 @@ namespace app\modules\bot;
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
+use app\modules\bot\components\request\Request;
 use Yii;
-use app\modules\bot\components\api\BotApi;
-use app\modules\bot\components\api\Types\Update;
+use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
@@ -20,7 +21,7 @@ use app\modules\bot\components\Controller;
 /**
  * OSW Bot module definition class
  * @link https://t.me/opensourcewebsite_bot
- * @property CommandRouteResolver $commandRouteResolver
+ * @property-read CommandRouteResolver $commandRouteResolver
  */
 class Module extends \yii\base\Module
 {
@@ -40,12 +41,17 @@ class Module extends \yii\base\Module
     private $updateHandlers = [];
 
     /**
+     * @var Request
+     */
+    private $request;
+
+    /**
      * @var models\User
      */
     public $telegramUser;
 
     /**
-     * @var models\Chat
+     * @var models\chat
      */
     public $telegramChat;
 
@@ -118,6 +124,7 @@ class Module extends \yii\base\Module
                 break;
             }
         }
+
         if (isset($updateUser) && isset($updateChat)) {
             $isNewUser = false;
             $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
@@ -276,20 +283,14 @@ class Module extends \yii\base\Module
         $defaultRoute = $this->telegramChat->isPrivate()
             ? 'default/command-not-found'
             : 'message/index';
-        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
-        if (array_key_exists('botname', $params) && !empty($params['botname']) && $params['botname'] !== $this->botInfo->name) {
-            return $result;
-        }
-        if (!$isStateRoute) {
-            $this->userState->setName(null);
-        }
+        $this->request = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
         /* Temporary solution for filter in groups */
-        if (!isset($route) && !$this->telegramChat->isPrivate()) {
-            $route = $defaultRoute;
+        if (!isset($this->request) && !$this->telegramChat->isPrivate()) {
+            $this->request = Request::fromRouteAndParams($defaultRoute, []);
         }
-        if ($route) {
+        if ($this->request) {
             try {
-                $commands = $this->runAction($route, $params);
+                $commands = $this->runAction($this->request->getRoute(), $this->request->getParams());
             } catch (InvalidRouteException $e) {
                 $commands = $this->runAction($defaultRoute);
             }
@@ -299,7 +300,7 @@ class Module extends \yii\base\Module
                     try {
                         $command->send($this->botApi);
                     } catch (\Exception $ex) {
-                        Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
+                        Yii::error("[{$this->request->getRoute()}] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
                     }
                 }
 
@@ -313,5 +314,10 @@ class Module extends \yii\base\Module
     public function getBotName()
     {
         return $this->botInfo->name;
+    }
+
+    public function getRequest()
+    {
+        return $this->request;
     }
 }

@@ -6,7 +6,7 @@ use app\models\Country;
 use app\models\UserCitizenship;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\Controller;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
@@ -24,42 +24,28 @@ class MyCitizenshipController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $citizenshipsQuery = $this->getUser()->getCitizenships();
-        $pagination = new Pagination([
-            'totalCount' => $citizenshipsQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
-        $citizenships = $citizenshipsQuery
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-        $citizenshipRows = array_map(function ($citizenship) use ($page) {
-            return [
-                [
+        $citizenshipButtons = PaginationButtons::buildFromQuery(
+            $this->getUser()->getCitizenships(),
+            function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            },
+            function ($citizenship) {
+                return [
                     'text' => $citizenship->country->name,
                     'callback_data' => self::createRoute('show', [
                         'countryId' => $citizenship->country->id,
                     ]),
-                ],
-            ];
-        }, $citizenships);
+                ];
+            },
+            $page
+        );
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($citizenshipRows, [$paginationButtons], [
+                array_merge($citizenshipButtons, [
                     [
                         [
                             'callback_data' => MyProfileController::createRoute(),
@@ -81,42 +67,28 @@ class MyCitizenshipController extends Controller
 
     public function actionCreateCountry($page = 1)
     {
-        $countriesQuery = Country::find();
-        $pagination = new Pagination([
-            'totalCount' => $countriesQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('create-country', [
-                'page' => $page,
-            ]);
-        });
-
-        $countries = $countriesQuery
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-        $countryRows = array_map(function ($country) use ($page) {
-            return [
-                [
+        $countryButtons = PaginationButtons::buildFromQuery(
+            Country::find(),
+            function ($page) {
+                return self::createRoute('create-country', [
+                    'page' => $page,
+                ]);
+            },
+            function (Country $country) {
+                return [
                     'text' => $country->name,
                     'callback_data' => self::createRoute('create', [
                         'countryId' => $country->id,
                     ]),
-                ],
-            ];
-        }, $countries);
+                ];
+            },
+            $page
+        );
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-country'),
-                array_merge($countryRows, [$paginationButtons], [
+                array_merge($countryButtons, [
                     [
                         [
                             'text' => Emoji::BACK,
@@ -132,12 +104,12 @@ class MyCitizenshipController extends Controller
     {
         $country = Country::findOne($countryId);
         if (!isset($country)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $citizenship = $this->getUser()->getCitizenships()->where(['country_id' => $countryId])->one()
+        $citizenship = $this->getUser()->getCitizenships()->where([ 'country_id' => $countryId ])->one()
             ?? new UserCitizenship();
         $citizenship->setAttributes([
             'user_id' => $this->getUser()->id,
@@ -152,12 +124,12 @@ class MyCitizenshipController extends Controller
     {
         $country = Country::findOne($countryId);
         if (!isset($country)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'countryName' => $country->name,
@@ -186,9 +158,9 @@ class MyCitizenshipController extends Controller
 
     public function actionDelete($countryId)
     {
-        $citizenship = $this->getUser()->getCitizenships()->where(['country_id' => $countryId])->one();
+        $citizenship = $this->getUser()->getCitizenships()->where([ 'country_id' => $countryId ])->one();
         if (!isset($citizenship)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }

@@ -9,7 +9,7 @@ use app\models\Vacancy;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-
+use app\modules\bot\components\response\ResponseBuilder;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
 
@@ -17,41 +17,28 @@ class MyLanguagesController extends Controller
 {
     public function actionIndex($page = 1)
     {
-        $languagesQuery = $this->getUser()->getLanguages();
-        $pagination = new Pagination([
-            'totalCount' => $languagesQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-        $languages = $languagesQuery
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $rows = array_map(function ($language) {
-            return [
-                [
-                    'text' => $language->getDisplayName(),
+        $userLanguageButton = PaginationButtons::buildFromQuery(
+            $this->getUser()->getLanguages(),
+            function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            },
+            function (UserLanguage $userLanguage) {
+                return [
+                    'text' => $userLanguage->getDisplayName(),
                     'callback_data' => self::createRoute('create-level', [
-                        'languageId' => $language->language->id,
+                        'languageId' => $userLanguage->language->id,
                     ]),
-                ],
-            ];
-        }, $languages);
+                ];
+            },
+            $page
+        );
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($rows, [$paginationButtons], [
+                array_merge($userLanguageButton, [
                     [
                         [
                             'text' => Emoji::BACK,
@@ -73,42 +60,28 @@ class MyLanguagesController extends Controller
 
     public function actionCreateLanguage($page = 1)
     {
-        $languageQuery = Language::find()->orderBy('code ASC');
-        $pagination = new Pagination([
-            'totalCount' => $languageQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $languages = $languageQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('create-language', [
-                'page' => $page,
-            ]);
-        });
-
-        $languageRows = array_map(function ($language) {
-            return [
-                [
+        $languageButtons = PaginationButtons::buildFromQuery(
+            Language::find()->orderBy('code ASC'),
+            function ($page) {
+                return self::createRoute('create-language', [
+                    'page' => $page,
+                ]);
+            },
+            function (Language $language) {
+                return [
                     'callback_data' => self::createRoute('create-level', [
                         'languageId' => $language->id,
                     ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name,
-                ]
-            ];
-        }, $languages);
+                ];
+            },
+            $page
+        );
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-language'),
-                array_merge($languageRows, [$paginationButtons], [
+                array_merge($languageButtons, [
                     [
                         [
                             'callback_data' => self::createRoute(),
@@ -124,51 +97,37 @@ class MyLanguagesController extends Controller
     {
         $language = Language::findOne($languageId);
         if (!isset($language)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery();
         }
 
-        $levelQuery = LanguageLevel::find()->orderBy('value ASC');
-        $pagination = new Pagination([
-            'totalCount' => $levelQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $levels = $levelQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('create-level', [
-                'page' => $page,
-            ]);
-        });
-
-        $levelRows = array_map(function ($level) use ($languageId) {
-            return [
-                [
-                    'text' => $level->getDisplayName(),
+        $levelButtons = PaginationButtons::buildFromQuery(
+            LanguageLevel::find()->orderBy('value ASC'),
+            function ($page) {
+                return self::createRoute('create-level', [
+                    'page' => $page,
+                ]);
+            },
+            function (LanguageLevel $languageLevel) {
+                return [
+                    'text' => $languageLevel->getDisplayName(),
                     'callback_data' => self::createRoute('create', [
-                        'languageId' => $languageId,
-                        'levelId' => $level->id,
+                        'languageId' => $languageLevel->id,
+                        'levelId' => $languageLevel->id,
                     ]),
-                ]
-            ];
-        }, $levels);
+                ];
+            },
+            $page
+        );
 
-        $isEdit = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->exists();
+        $isEdit = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->exists();
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('create-level', [
                     'languageName' => $language->name,
                 ]),
-                array_merge($levelRows, [$paginationButtons], [
+                array_merge($levelButtons, [
                     array_merge([
                         [
                             'text' => Emoji::BACK,
@@ -198,11 +157,11 @@ class MyLanguagesController extends Controller
         $language = Language::findOne($languageId);
         $level = Language::findOne($levelId);
         if (!isset($language) || !isset($level)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery();
         }
 
-        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one()
+        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one()
             ?? new UserLanguage();
         $userLanguage->setAttributes([
             'user_id' => $this->getUser()->id,
@@ -216,9 +175,9 @@ class MyLanguagesController extends Controller
 
     public function actionDelete($languageId)
     {
-        $userLanguage = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->one();
+        $userLanguage = $this->getUser()->getLanguages()->where([ 'language_id' => $languageId ])->one();
         if (!isset($userLanguage)) {
-            return $this->getResponseBuilder()
+            return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery()
                 ->build();
         }

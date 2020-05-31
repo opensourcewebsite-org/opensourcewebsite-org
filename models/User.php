@@ -8,6 +8,7 @@ use app\models\queries\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -26,13 +27,15 @@ use yii\web\IdentityInterface;
  * @property string $password write-only password
  * @property string $name
  * @property string $birthday
- * @property string $timezone
+ * @property-read Timezone $timezone
+ * @property-read Gender $gender
+ * @property-read Sexuality $sexuality
+ * @property integer $timezone_id
  * @property integer $referrer_id
  * @property integer $gender_id
  * @property integer $currency_id
  * @property integer $sexuality_id
  * @property bool $is_authenticated
- * @property bool $gender
  *
  * @property Contact $contact
  * @property Contact[] $contactsFromMe
@@ -69,70 +72,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             ['is_authenticated', 'boolean'],
-            [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
-            ['birthday', 'date'],
-            [['timezone'], 'default', 'value' => 'UTC'],
-
-            ['status',
-                'default',
-                'value' => self::STATUS_ACTIVE],
-            ['status',
-                'in',
-                'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-
-            ['email', 'email'],
-            ['email',
-                'unique',
-                'message' => 'Email must be unique.'
-            ],
-
-            ['username', 'trim'],
-            ['username',
-                'match',
-                'pattern' => '/^[a-zA-Z0-9_]+$/i',
-                'message' => 'Username can contain only letters, numbers and \'_\' symbols'
-            ],
-            ['username', 'validateUsernameUnique'],
-            ['username', 'default', 'value' => null],
-
             ['name', 'string'],
-            ['name', 'trim'],
-            ['name', 'validateNameString'],
+            [['gender_id', 'sexuality_id', 'currency_id', 'timezone_id'], 'integer'],
+            ['email', 'email'],
+            [['timezone_id'], 'default', 'value' => Timezone::findOne([ 'offset' => 0 ])->id ],
         ];
-    }
-
-    /*
-     * Username validation
-     */
-    public function validateUsernameUnique()
-    {
-        $oldUsername = $this->getOldAttribute('username');
-        if (is_numeric($this->username)) {
-            $this->addError('username', 'User name can\'t be number');
-        }
-
-        if (strcasecmp($oldUsername, $this->username) !== 0) {
-            $isUserInDB = User::findOne(['username' => $this->username]);
-            if ($isUserInDB) {
-                $this->addError('username', 'User name must be unique.');
-            }
-        }
-    }
-
-    /*
-     * Name validation
-     */
-    public function validateNameString()
-    {
-        $oldName = $this->getOldAttribute('name');
-        if ($this->name == $oldName) {
-            return;
-        }
-
-        if (is_numeric($this->name)) {
-            $this->addError('name', 'Name can\'t be number');
-        }
     }
 
     /**
@@ -306,8 +253,6 @@ class User extends ActiveRecord implements IdentityInterface
             'id' => 'ID',
             'email' => 'Email',
             'rating' => 'Social Rating',
-            'username' => 'Username (optional)',
-            'name' => 'Name (optional)',
         ];
     }
 
@@ -326,8 +271,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function sendConfirmationEmail($user)
     {
-        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'authKey' =>
-            $user->auth_key]);
+        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'auth_key' => $user->auth_key]);
 
         return Yii::$app
             ->mailer
@@ -342,7 +286,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getMoqups()
     {
@@ -358,7 +302,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getIssues()
     {
@@ -374,7 +318,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroup()
     {
@@ -390,7 +334,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroupMember()
     {
@@ -398,7 +342,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroupCommand()
     {
@@ -406,7 +350,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSupportGroupBot()
     {
@@ -430,7 +374,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getFollowedMoqups()
     {
@@ -566,7 +510,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getRatings()
     {
@@ -631,11 +575,8 @@ class User extends ActiveRecord implements IdentityInterface
                 'user_id' => $id,
                 'type' => $ratingType,
             ]);
-
-            if ($rating !== null) {
-                $commit = true;
-            }
         }
+
         if ($rating == null) {
             $rating = new Rating([
                 'user_id' => $id,
@@ -651,7 +592,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getReferrals(int $level = 1)
     {
@@ -673,7 +614,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
-        //TODO [ref] it is very bad way. NEVER set default conditions for whole app.
+        //REVIEW [ref] it is very bad way. NEVER set default conditions for whole app.
         //  there are exist very-very rare cases, when it is really necessary to do.
         //  Why: this condition useful, only when user with role 'User' is logged on.
         //       but what if user with role 'Admin' is logged on?
@@ -727,44 +668,19 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     *
-     * Get user's contact groups
-     */
-    public function getContactGroups()
-    {
-        return $this->hasMany(ContactGroup::className(), ['user_id' => 'id']);
-    }
-
-    /**
-     * @return boolean
-     *
-     * Checks if there is empty group
-     */
-    public function hasEmptyContactGroup()
-    {
-        $groups = $this->getContactGroups()->all();
-        $hasEmptyGroup = false;
-
-        if (!empty($groups)) {
-            foreach ($groups as $group) {
-                $groupId = $group->id;
-                $countGroupContacts = ContactHasGroup::find()->where(['contact_group_id' => $groupId])->count();
-                if ($countGroupContacts == 0) {
-                    $hasEmptyGroup = true;
-                    break;
-                }
-            }
-        }
-        return $hasEmptyGroup;
-    }
-
-    /**
      * {@inheritdoc}
      * @return UserQuery the active query used by this AR class.
      */
     public static function find()
     {
         return new UserQuery(get_called_class());
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getTimezone()
+    {
+        return $this->hasOne(Timezone::class, [ 'id' => 'timezone_id' ]);
     }
 }

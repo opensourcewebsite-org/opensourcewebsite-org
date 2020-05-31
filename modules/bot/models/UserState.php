@@ -27,12 +27,17 @@ class UserState
 
     public function getIntermediateField(string $name, $defaultValue)
     {
-        return $this->fields['intermediate'][$name] ?? null;
+        return $this->fields['intermediate'][$name] ?? $defaultValue;
     }
 
-    public function setIntermediateField(string $name, ?string $value)
+    public function setIntermediateField(string $name, $value)
     {
         $this->fields['intermediate'][$name] = $value;
+    }
+
+    public function isIntermediateFieldExists(string $name)
+    {
+        return array_key_exists($name, $this->fields['intermediate']);
     }
 
     public function save(User $user)

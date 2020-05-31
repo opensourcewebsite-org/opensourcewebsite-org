@@ -2,12 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\Timezone;
 use app\modules\bot\components\helpers\Emoji;
 
 use app\modules\bot\components\helpers\PaginationButtons;
-use yii\data\Pagination;
-use app\modules\bot\components\Controller as Controller;
-use app\components\helpers\TimeHelper;
+use app\modules\bot\components\Controller;
 
 /**
  * Class MyTimezoneController
@@ -17,24 +16,23 @@ use app\components\helpers\TimeHelper;
 class MyTimezoneController extends Controller
 {
     /**
+     * @param null $timezoneId
      * @return array
      */
-    public function actionIndex($timezone = null)
+    public function actionIndex($timezoneId = null)
     {
         $user = $this->getUser();
-        $timezones = TimeHelper::timezonesList();
 
-        if ($timezone) {
-            if (array_key_exists($timezone, $timezones)) {
-                $user->timezone = $timezone;
-                $user->save();
-            }
+        $timezone = Timezone::findOne($timezoneId);
+        if (isset($timezone)) {
+            $user->timezone_id = $timezone->id;
+            $user->save();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => $timezones[$user->timezone],
+                    'timezone' => $user->timezone->getUTCOffset(),
                 ]),
                 [
                     [
@@ -54,55 +52,35 @@ class MyTimezoneController extends Controller
 
     public function actionList($page = 22)
     {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        $timezones = TimeHelper::timezonesList();
-
-        $pagination = new Pagination([
-            'totalCount' => count($timezones),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-        ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
-
-        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit);
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('list', [
-                'page' => $page,
-            ]);
-        });
-        $buttons = [];
-
-        if ($timezones) {
-            foreach ($timezones as $timezone => $fullName) {
-                $buttons[][] = [
-                    'text' => $fullName,
+        $timezoneButtons = PaginationButtons::buildFromQuery(
+            Timezone::find()->orderBy('offset'),
+            function ($page) {
+                return self::createRoute('list', [
+                    'page' => $page,
+                ]);
+            },
+            function (Timezone $timezone) {
+                return [
+                    'text' => $timezone->getUTCOffset(),
                     'callback_data' => self::createRoute('index', [
-                        'timezone' => $timezone,
+                        'timezoneId' => $timezone->id,
                     ]),
                 ];
-            }
-
-            if ($paginationButtons) {
-                $buttons[] = $paginationButtons;
-            }
-
-            $buttons[][] = [
-                'callback_data' => self::createRoute(),
-                'text' => Emoji::BACK,
-            ];
-        }
+            },
+            $page
+        );
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $text = $this->render('list'),
-                $buttons
+                array_merge($timezoneButtons, [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ])
             )
             ->build();
     }

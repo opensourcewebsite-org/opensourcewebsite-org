@@ -32,7 +32,6 @@ class MessageController extends Controller
 
         if ($this->getMessage()->getText() !== null) {
             $adminUser = $chat->getAdministrators()->where(['id' => $telegramUser->user_id])->one();
-
             if (!isset($adminUser)) {
                 if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                     $deleteMessage = false;

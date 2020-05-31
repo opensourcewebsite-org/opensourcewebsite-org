@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\models\Sexuality;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
@@ -33,7 +33,7 @@ class MySexualityController extends Controller
             }
         }
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'sexuality' => isset($user->sexuality) ? $user->sexuality->name : null,
@@ -56,40 +56,28 @@ class MySexualityController extends Controller
 
     public function actionUpdate($page = 1)
     {
-        $sexualityQuery = Sexuality::find();
-        $pagination = new Pagination([
-            'totalCount' => $sexualityQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('update', [
-                'page' => $page,
-            ]);
-        });
-        $sexualities = $sexualityQuery
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-        $sexualityRows = array_map(function ($sexuality) {
-            return [
-                [
+        $sexualityButtons = PaginationButtons::buildFromQuery(
+            Sexuality::find(),
+            function ($page) {
+                return self::createRoute('update', [
+                    'page' => $page,
+                ]);
+            },
+            function (Sexuality $sexuality) {
+                return [
                     'text' => Yii::t('bot', $sexuality->name),
                     'callback_data' => self::createRoute('index', [
                         'sexualityId' => $sexuality->id,
                     ]),
-                ],
-            ];
-        }, $sexualities);
+                ];
+            },
+            $page
+        );
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $text = $this->render('update'),
-                array_merge($sexualityRows, [$paginationButtons], [
+                array_merge($sexualityButtons, [
                     [
                         [
                             'callback_data' => self::createRoute(),

@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\helpers\Emoji;
-
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\models\Language;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -42,8 +42,8 @@ class LanguageController extends Controller
         $language = $language ?? $telegramUser->language;
         $languageCode = isset($language) ? $language->code : null;
         $languageName = isset($language) ? $language->name : null;
-
-        return $this->getResponseBuilder()
+        
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('languageCode', 'languageName')),
                 [
@@ -69,42 +69,27 @@ class LanguageController extends Controller
      */
     public function actionList($page = 1)
     {
-        $languageQuery = Language::find()->orderBy('code ASC');
-        $pagination = new Pagination([
-            'totalCount' => $languageQuery->count(),
-            'pageSize' => 9,
-            'params' => [
-                'page' => $page,
-            ],
-            'pageSizeParam' => false,
-            'validatePage' => true,
-        ]);
-
-        $languages = $languageQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('list', [
-                'page' => $page,
-            ]);
-        });
-
-        $languageRows = array_map(function ($language) {
-            return [
-                [
+        $languageButtons = PaginationButtons::buildFromQuery(
+            Language::find()->orderBy('code ASC'),
+            function ($page) {
+                return self::createRoute('list', [
+                    'page' => $page,
+                ]);
+            },
+            function (Language $language) {
+                return [
                     'callback_data' => self::createRoute('index', [
                         'languageCode' => $language->code,
                     ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name,
-                ]
-            ];
-        }, $languages);
+                ];
+            }, $page
+        );
 
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('list'),
-                array_merge($languageRows, [$paginationButtons], [
+                array_merge($languageButtons, [
                     [
                         [
                             'callback_data' => self::createRoute(),
