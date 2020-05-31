@@ -191,17 +191,17 @@ class BalanceChecker extends Component
         return $errors;
     }
 
-    private function isFloatEqual($leftFloat, $rightFloat): bool
+    private function isFloatEqual(string $leftFloat, string $rightFloat): bool
     {
         return 0 === bccomp($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
     }
 
-    private function isFloatGreater($leftFloat, $rightFloat): bool
+    private function isFloatGreater(string $leftFloat, string $rightFloat): bool
     {
         return 1 === bccomp($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
     }
 
-    private function isFloatLower($leftFloat, $rightFloat): bool
+    private function isFloatLower(string $leftFloat, string $rightFloat): bool
     {
         return -1 === bccomp($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
     }
