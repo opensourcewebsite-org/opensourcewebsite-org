@@ -53,11 +53,11 @@ class PaginationButtons
     {
         $buttons = array_map(function ($item) use ($buttonCallback) {
             $buttonCallbackResult = $buttonCallback($item);
-            if (is_array($buttonCallbackResult) && !is_array($buttonCallbackResult[0]))
+            if (is_array($buttonCallbackResult) && isset($buttonCallbackResult[0]) && !is_array($buttonCallbackResult[0]))
             {
                 $buttonCallbackResult = [ $buttonCallbackResult ];
             }
-            return $buttonCallbackResult;
+            return [$buttonCallbackResult];
         }, $items);
 
         if ($pagination->pageCount > 1) {

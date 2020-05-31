@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "currency_exchange_order".
@@ -31,13 +33,25 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         return 'currency_exchange_order';
     }
 
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'renewed_at',
+                'updatedAtAttribute' => 'renewed_at',
+                'value' => new Expression('UNIX_TIMESTAMP(NOW())')
+            ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['user_id', 'selling_currency_id', 'buying_currency_id', 'renewed_at'], 'required'],
+            [['user_id', 'selling_currency_id', 'buying_currency_id'], 'required'],
             [['user_id', 'selling_currency_id', 'buying_currency_id', 'status', 'renewed_at'], 'integer'],
             [['selling_rate', 'buying_rate', 'selling_currency_min_amount', 'selling_currency_max_amount'], 'number'],
         ];
