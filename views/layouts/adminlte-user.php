@@ -135,7 +135,7 @@ if (!empty($languages)) {
             'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsLeft,
         ]); ?>
-
+        
         <div class="dropdown dropdown-inner ml-auto">
             <a class="nav-link dropdown-toggle dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <?= strtoupper(Yii::$app->language) ?>
@@ -163,7 +163,7 @@ if (!empty($languages)) {
                 </div>
             </div>
         </div>
-          
+
         <?php echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsRight,
