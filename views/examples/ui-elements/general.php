@@ -40,7 +40,7 @@ $CSS = <<<CSS
     .color-palette-box h4 {
         position: absolute;
         left: 1.25rem;
-        margin-top: .75rem;
+        margin-top: -5.25rem;
         color: rgba(255, 255, 255, 0.8);
         font-size: 12px;
         display: block;
