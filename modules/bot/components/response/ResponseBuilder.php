@@ -2,13 +2,16 @@
 
 namespace app\modules\bot\components\response;
 
+use Yii;
 use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\components\helpers\Photo;
 use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
 use app\modules\bot\components\response\commands\SendLocationCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
+use app\modules\bot\components\response\commands\SendPhotoCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Update;
 use yii\helpers\ArrayHelper;
@@ -52,35 +55,125 @@ class ResponseBuilder
     ) {
         $commands = [];
 
+        if (!$this->update->getCallbackQuery() || $this->update->getCallbackQuery()->getMessage()->getPhoto() === null) {
+
+            if ($callbackQuery = $this->update->getCallbackQuery()) {
+                $this->answerCallbackQuery();
+                $commands[] = new EditMessageTextCommand(
+                    $callbackQuery->getMessage()->getChat()->getId(),
+                    $callbackQuery->getMessage()->getMessageId(),
+                    $messageText,
+                    [
+                        'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                    ]
+                );
+            } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
+                $optionalParams = ArrayHelper::merge(
+                    [
+                        'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                        'disablePreview' => $disablePreview,
+                    ],
+                    ArrayHelper::filter($optionalParams, ['replyToMessageId','disableNotification','parseMode'])
+                );
+
+                $commands[] = new SendMessageCommand(
+                    $message->getChat()->getId(),
+                    $messageText,
+                    $optionalParams
+                );
+            }
+
+            if (!empty($commands)) {
+                $this->commands = array_merge($this->commands, $commands);
+            }
+            return $this;
+        } else {
+            $commands = [];
+
+            if ($callbackQuery = $this->update->getCallbackQuery()) {
+                $this->answerCallbackQuery();
+                $this->deleteMessage();
+
+                $commands[] = new SendMessageCommand(
+                    $callbackQuery->getMessage()->getChat()->getId(),
+                    $messageText,
+                    [
+                        'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                        'disablePreview' => $disablePreview,
+                    ]
+                );
+            } elseif ($message = $this->update->getMessage()) {
+                $commands[] = new SendMessageCommand(
+                    $message->getChat()->getId(),
+                    $messageText,
+                    [
+                        'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                        'disablePreview' => $disablePreview,
+                    ]
+                );
+            }
+
+            if (!empty($commands)) {
+                $this->commands = array_merge($this->commands, $commands);
+            }
+            return $this;
+        }
+    }
+
+    public function sendPhotoOrSendMessage(
+        ?string $photoFileId,
+        MessageText $messageText,
+        array $replyMarkup = []
+    )
+    {
+        $photo = new Photo($photoFileId);
+
+        if ($photo->isNull()) {
+            return $this->sendMessage($messageText, $replyMarkup);
+        }
+
         if ($callbackQuery = $this->update->getCallbackQuery()) {
             $this->answerCallbackQuery();
-            $commands[] = new EditMessageTextCommand(
-                $callbackQuery->getMessage()->getChat()->getId(),
-                $callbackQuery->getMessage()->getMessageId(),
+            $commands[] = new SendPhotoCommand(
+                $this->update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $photo,
                 $messageText,
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
                 ]
             );
-        } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
-            $optionalParams = ArrayHelper::merge(
+        } elseif ($message = $this->update->getMessage()) {
+            $commands[] = new SendPhotoCommand(
+                $this->update->getMessage()->getChat()->getId(),
+                $photo,
+                $messageText,
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
-                    'disablePreview' => $disablePreview,
-                ],
-                ArrayHelper::filter($optionalParams, ['replyToMessageId','disableNotification','parseMode'])
-            );
-
-            $commands[] = new SendMessageCommand(
-                $message->getChat()->getId(),
-                $messageText,
-                $optionalParams
+                ]
             );
         }
+
         if (!empty($commands)) {
             $this->commands = array_merge($this->commands, $commands);
         }
         return $this;
+    }
+
+    public function sendPhotoOrEditMessageTextOrSendMessage(
+        ?string $photoFileId,
+        MessageText $messageText,
+        array $replyMarkup = []
+    )
+    {
+        $photo = new Photo($photoFileId);
+
+        if ($photo->isNull()) {
+            return $this->editMessageTextOrSendMessage($messageText, $replyMarkup);
+        } else {
+            $this->deleteMessage();
+            
+            return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup);
+        }
     }
 
     /**
@@ -176,6 +269,11 @@ class ResponseBuilder
                 $message->getChat()->getId(),
                 $message->getMessageId()
             );
+        } elseif ($callbackQuery = $this->update->getCallbackQuery()) {
+            $this->commands[] = new DeleteMessageCommand(
+                $callbackQuery->getMessage()->getChat()->getId(),
+                $callbackQuery->getMessage()->getMessageId()
+            );
         }
         return $this;
     }
@@ -200,6 +298,13 @@ class ResponseBuilder
                 $latitude
             );
         }
+        return $this;
+    }
+
+    public function merge(array $commands)
+    {
+        $this->commands = array_merge($this->commands, $commands);
+
         return $this;
     }
 
