@@ -29,12 +29,6 @@
     <!-- @see http://phpmd.org/rules/codesize.html#excessivepubliccount -->
     <rule ref="rulesets/codesize.xml/ExcessivePublicCount"/>
 
-    <!-- @see http://phpmd.org/rules/codesize.html#toomanyfields -->
-    <rule ref="rulesets/codesize.xml/TooManyFields"/>
-
-    <!-- @see http://phpmd.org/rules/codesize.html#toomanymethods -->
-    <rule ref="rulesets/codesize.xml/TooManyMethods"/>
-
     <!-- @see http://phpmd.org/rules/codesize.html#excessiveclasscomplexity -->
     <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity"/>
 

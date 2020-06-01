@@ -65,7 +65,6 @@ if (!empty($languages)) {
     <?php Modal::begin([
         'id' => 'main-modal',
         'size' => Modal::SIZE_LARGE,
-        'closeButton' => false,
         'clientEvents' => [
             'show.bs.modal' => 'function (e) {
                     $("#main-modal").addClass("show");
@@ -308,7 +307,9 @@ $leftMenuItems = [
             'examples/forms',
             'examples/tables',
             'examples/calendar',
-            'examples/gallery'
+            'examples/gallery',
+            'examples/php-info',
+            'examples/mysql-info',
         ],
         'items' => [
             [
@@ -483,6 +484,18 @@ $leftMenuItems = [
                 'icon' => 'far fa-circle',
                 'url' => 'examples/gallery',
                 'route' => '/examples/gallery',
+            ],
+            [
+                'title' => 'PHP Info',
+                'icon' => 'far fa-circle',
+                'url' => 'examples/php-info',
+                'route' => '/examples/php-info',
+            ],
+            [
+                'title' => 'MySQL Info',
+                'icon' => 'far fa-circle',
+                'url' => 'examples/mysql-info',
+                'route' => '/examples/mysql-info',
             ],
         ],
     ],
