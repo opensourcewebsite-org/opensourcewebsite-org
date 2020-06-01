@@ -15,7 +15,6 @@ return [
                 '/<controller:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],
             'commandResolvers' => [
-                new LocationCommandResolver(),
                 new MessageCommandResolver(),
                 new CallbackQueryCommandResolver(),
             ],
