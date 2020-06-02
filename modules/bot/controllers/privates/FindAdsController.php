@@ -10,6 +10,7 @@ use app\modules\bot\models\UserSetting;
 use app\modules\bot\models\AdKeyword;
 use app\modules\bot\models\AdsPost;
 use app\modules\bot\models\AdsPostSearch;
+use app\modules\bot\models\AdPhoto;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\User;
@@ -187,7 +188,7 @@ class FindAdsController extends Controller
         if ($this->getTelegramUser()->location_lat !== null) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('location', ['userLocation' => true]),
-                'text' => Yii::t('bot', 'Использовать мою геолокацию'),
+                'text' => Yii::t('bot', 'My location'),
             ];
         }
 
@@ -374,17 +375,17 @@ class FindAdsController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('find-edit-keywords'),
-                            'text' => Yii::t('bot', 'Ключевые слова'),
+                            'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('find-edit-location'),
-                            'text' => Yii::t('bot', 'География'),
+                            'text' => Yii::t('bot', 'Location'),
                         ],
                         [
                             'callback_data' => self::createRoute('find-edit-radius'),
-                            'text' => Yii::t('bot', 'Радиус поиска'),
+                            'text' => Yii::t('bot', 'Search radius'),
                         ],
                     ],
                     [
@@ -664,17 +665,17 @@ class FindAdsController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('edit-keywords', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => Yii::t('bot', 'Ключевые слова'),
+                            'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('edit-location', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => Yii::t('bot', 'География'),
+                            'text' => Yii::t('bot', 'Location'),
                         ],
                         [
                             'callback_data' => self::createRoute('edit-radius', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => Yii::t('bot', 'Радиус'),
+                            'text' => Yii::t('bot', 'Search radius'),
                         ],
                     ],
                     [
@@ -911,7 +912,7 @@ class FindAdsController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
-                $adsPost->photo_file_id,
+                $adsPost->getPhotos()->count() ? $adsPost->getPhotos()->one()->file_id : null,
                 $this->render('post-matches', [
                     'adsPost' => $adsPost,
                     'user' => User::findOne($adsPost->user_id),
@@ -960,35 +961,6 @@ class FindAdsController extends Controller
         }
     }
 
-    public function actionShow()
-    {
-        $buttons = [];
-
-        foreach (AdsPost::find()->all() as $adsPost) {
-            $buttons[][] = [
-                'callback_data' => self::createRoute('show-ads-post', ['adsPostId' => $adsPost->id]),
-                'text' => $adsPost->price . ' | ' . $adsPost->title,
-            ];
-        }
-
-        $buttons[][] = [
-            'callback_data' => self::createRoute('save_search'),
-            'text' => Yii::t('bot', 'Сохранить поиск'),
-        ];
-
-        $buttons[][] = [
-            'callback_data' => AdsController::createRoute(),
-            'text' => Emoji::BACK,
-        ];
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('show'),
-                $buttons
-            )
-            ->build();
-    }
-
     public function actionShowAdsPost($adsPostId)
     {
         $adsPost = AdsPost::find($adsPostId)->one();
@@ -1005,46 +977,6 @@ class FindAdsController extends Controller
                     'user_first_name' => $this->getTelegramUser()->provider_user_first_name,
                     'user_last_name' => $this->getTelegramUser()->provider_user_last_name,
                 ]),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('show'),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionSaveSearch()
-    {
-        $adsPostSearch = new AdsPostSearch();
-
-        $adsPostSearch->setAttributes([
-            'user_id' => $this->getTelegramUser()->id,
-            'radius' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_RADIUS)->value,
-            'location_latitude' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE)->value,
-            'location_longitude' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE)->value,
-            'updated_at' => time(),
-            'status' => AdsPostSearch::STATUS_ACTIVATED,
-        ]);
-
-        $adsPostSearch->save();
-
-        foreach (UserSetting::find()->where([
-            'and',
-            ['user_id' => $this->getTelegramUser()->id],
-            ['like', 'setting', 'find_ad_keyword_'],
-        ])->all() as $keywordSetting) {
-            $adKeyword = AdKeyword::find($keywordSetting->value)->one();
-
-            $adsPostSearch->link('keywords', $adKeyword);
-        }
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('save-search'),
                 [
                     [
                         [

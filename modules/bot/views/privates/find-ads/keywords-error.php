@@ -1,1 +1,1 @@
-❗️ <?= Yii::t('bot', 'Ошибка') ?>. <?= Yii::t('bot', 'Введите хэштеги начиная с символа #') ?>
+❗️ <?= Yii::t('bot', 'Error') ?>. <?= Yii::t('bot', 'Type keywords starting with #') ?>

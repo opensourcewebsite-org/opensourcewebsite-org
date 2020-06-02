@@ -11,6 +11,7 @@ use app\modules\bot\models\AdsPost;
 use app\modules\bot\models\AdCategory;
 use app\modules\bot\models\AdsPostSearch;
 use app\modules\bot\models\User as TelegramUser;
+use app\modules\bot\models\AdPhoto;
 use app\models\User;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -128,37 +129,37 @@ class PlaceAdController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('edit-title', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Заголовок'),
+                            'text' => Yii::t('bot', 'Title'),
                         ],
                         [
                             'callback_data' => self::createRoute('edit-description', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Описание и фото'),
+                            'text' => Yii::t('bot', 'Description and photo'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('edit-keywords', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Ключевые слова'),
+                            'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('edit-currency', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Валюта'),
+                            'text' => Yii::t('bot', 'Currency'),
                         ],
                         [
                             'callback_data' => self::createRoute('edit-price', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Цена'),
+                            'text' => Yii::t('bot', 'Price'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('edit-location', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'География'),
+                            'text' => Yii::t('bot', 'Location'),
                         ],
                         [
                             'callback_data' => self::createRoute('edit-radius', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Радиус доставки'),
+                            'text' => Yii::t('bot', 'Delivery radius'),
                         ],
                     ],
                     [
@@ -205,7 +206,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
-                $adsPost->photo_file_id,
+                $adsPost->getPhotos()->count() ? $adsPost->getPhotos()->one()->file_id : null,
                 $this->render('post', [
                     'adsPost' => $adsPost,
                     'currency' => Currency::findOne($adsPost->currency_id),
@@ -398,7 +399,19 @@ class PlaceAdController extends Controller
             $adsPost = AdsPost::findOne($adsPostId);
 
             $adsPost->description = strval($description);
-            $adsPost->photo_file_id = $photoFileId;
+            $adsPost->unlinkAll('photos', true);
+
+            if ($photoFileId !== null) {
+                $adPhoto = new AdPhoto();
+
+                $adPhoto->setAttributes([
+                    'ads_post_id' => $adsPost->id,
+                    'file_id' => $photoFileId,
+                ]);
+                $adPhoto->save();
+
+                $adsPost->link('photos', $adPhoto);
+            }
 
             $adsPost->save();
 
@@ -1025,7 +1038,7 @@ class PlaceAdController extends Controller
         if ($this->getTelegramUser()->location_lat !== null) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('location', ['userLocation' => 1]),
-                'text' => Yii::t('bot', 'Использовать мою геолокацию'),
+                'text' => Yii::t('bot', 'My location'),
             ];
         }
 
@@ -1243,6 +1256,18 @@ class PlaceAdController extends Controller
             $adsPost->link('keywords', $adKeyword);
         }
 
+        if (($photoFileId = $user->getSetting(UserSetting::PLACE_AD_PHOTO_FILE_ID)->value) != UserSetting::NO_PHOTO_FILE_ID) {
+            $adPhoto = new AdPhoto();
+
+            $adPhoto->setAttributes([
+                'ads_post_id' => $adsPost->id,
+                'file_id' => $photoFileId,
+            ]);
+            $adPhoto->save();
+
+            $adsPost->link('photos', $adPhoto);
+        }
+
         return $this->actionPost($adsPost->id);
     }
 
@@ -1252,42 +1277,42 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit'),
+                $this->render('edit'),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('place-edit-title'),
-                            'text' => Yii::t('bot', 'Заголовок'),
+                            'text' => Yii::t('bot', 'Title'),
                         ],
                         [
                             'callback_data' => self::createRoute('place-edit-description'),
-                            'text' => Yii::t('bot', 'Описание и фото'),
+                            'text' => Yii::t('bot', 'Description and photo'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('place-edit-keywords'),
-                            'text' => Yii::t('bot', 'Ключевые слова'),
+                            'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('place-edit-currency'),
-                            'text' => Yii::t('bot', 'Валюта'),
+                            'text' => Yii::t('bot', 'Currency'),
                         ],
                         [
                             'callback_data' => self::createRoute('place-edit-price'),
-                            'text' => Yii::t('bot', 'Цена'),
+                            'text' => Yii::t('bot', 'Price'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('place-edit-location'),
-                            'text' => Yii::t('bot', 'География'),
+                            'text' => Yii::t('bot', 'Location'),
                         ],
                         [
                             'callback_data' => self::createRoute('place-edit-radius'),
-                            'text' => Yii::t('bot', 'Радиус'),
+                            'text' => Yii::t('bot', 'Delivery radius'),
                         ],
                     ],
                     [
@@ -1311,7 +1336,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-title'),
+                $this->render('edit-title'),
                 [
                     [
                         [
@@ -1350,7 +1375,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-description'),
+                $this->render('edit-description'),
                 [
                     [
                         [
@@ -1400,7 +1425,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-keywords'),
+                $this->render('edit-keywords'),
                 [
                     [
                         [
@@ -1519,7 +1544,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-currency'),
+                $this->render('edit-currency'),
                 $buttons
             )
             ->build();
@@ -1543,7 +1568,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-price'),
+                $this->render('edit-price'),
                 [
                     [
                         [
@@ -1587,7 +1612,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-location'),
+                $this->render('edit-location'),
                 [
                     [
                         [
@@ -1639,7 +1664,7 @@ class PlaceAdController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('place-edit-radius'),
+                $this->render('edit-radius'),
                 [
                     [
                         [

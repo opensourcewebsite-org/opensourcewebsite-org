@@ -7,7 +7,7 @@ class AdKeyword extends ActiveRecord
 {
     public static function tableName()
     {
-        return 'bot_ad_keyword';
+        return 'ad_keyword';
     }
 
     public function rules()

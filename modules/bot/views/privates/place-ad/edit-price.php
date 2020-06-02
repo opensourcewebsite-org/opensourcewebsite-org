@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Отправьте мне новую цену и я автоматически её изменю') ?>
+<?= Yii::t('bot', 'Send me new price and I will automatically change it') ?>

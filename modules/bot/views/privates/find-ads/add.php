@@ -1,3 +1,3 @@
-<?= Yii::t('bot', 'Запишите по ключевым словам несколько хэштегов, по которым я буду искать совпадения и показывать объявления') ?>.<br/>
+<?= Yii::t('bot', 'Type some hashtags by keywords, using them I will find matches and show ads') ?>.<br/>
 <br/>
-<pre><?= Yii::t('bot', 'Например, #сумка') ?></pre>
+<pre><?= Yii::t('bot', 'For example') ?>, #<?= Yii::t('bot', 'bag') ?></pre>

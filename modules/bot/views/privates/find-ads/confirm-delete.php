@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Вы уверены, что хотите удалить поиск') ?>?
+<?= Yii::t('bot', 'Are you sure, you want to delete search') ?>?

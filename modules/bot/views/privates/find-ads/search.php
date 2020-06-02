@@ -1,7 +1,7 @@
 <?= $categoryName ?><br/>
 <br/>
-<b><?= Yii::t('bot', 'Ключевые слова') ?>:</b> <?= $keywords ?><br/>
-<b><?= Yii::t('bot', 'География') ?>:</b> <?= $adsPostSearch->location_latitude ?> <?= $adsPostSearch->location_longitude ?><br/>
-<b><?= Yii::t('bot', 'Радиус поиска') ?>:</b> <?= $adsPostSearch->radius ?> <?= Yii::t('bot', 'км') ?><br/>
+<b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
+<b><?= Yii::t('bot', 'Location') ?>:</b> <?= $adsPostSearch->location_latitude ?> <?= $adsPostSearch->location_longitude ?><br/>
+<b><?= Yii::t('bot', 'Search radius') ?>:</b> <?= $adsPostSearch->radius ?> <?= Yii::t('bot', 'km') ?><br/>
 <br/>
-<i><?= Yii::t('bot', 'Обновлено') ?>: <?= (new DateTime("@" . $adsPostSearch->updated_at))->format('d.m.Y H:i') ?></i>
+<i><?= Yii::t('bot', 'Updated at') ?>: <?= (new DateTime("@" . $adsPostSearch->updated_at))->format('d.m.Y H:i') ?></i>

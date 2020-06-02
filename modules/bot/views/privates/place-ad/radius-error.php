@@ -1,1 +1,1 @@
-❗️ <?= Yii::t('bot', 'Ошибка') ?>. <?= Yii::t('bot', 'Введите только неотрицательное число (км)') ?>
+❗️ <?= Yii::t('bot', 'Error') ?>. <?= Yii::t('bot', 'Type just non-negative number (km)') ?>

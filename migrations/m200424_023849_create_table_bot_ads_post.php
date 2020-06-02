@@ -18,8 +18,8 @@ class m200424_023849_create_table_bot_ads_post extends Migration
             'description' => $this->string()->notNull(),
             'price' => $this->string()->notNull(),
             'delivery_km' => $this->integer()->unsigned(),
-            'location_lat' => $this->string(255)->notNull(),
-            'location_lon' => $this->string(255)->notNull(),
+            'location_lat' => $this->string()->notNull(),
+            'location_lon' => $this->string()->notNull(),
             'category_id' => $this->integer()->unsigned()->notNull(),
             'status' => $this->string()->notNull(),
         ]);
