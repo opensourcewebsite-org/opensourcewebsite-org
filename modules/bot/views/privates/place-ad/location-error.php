@@ -1,1 +1,1 @@
-❗️ <?= Yii::t('bot', 'Ошибка') ?>. <?= Yii::t('bot', 'Отправьте геолокацию') ?>
+❗️ <?= Yii::t('bot', 'Error') ?>. <?= Yii::t('bot', 'Send location') ?>

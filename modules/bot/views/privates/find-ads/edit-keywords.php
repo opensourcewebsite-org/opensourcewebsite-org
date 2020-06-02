@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Отправьте мне новый хэштеги и я автоматически изменю их в вашем объявлении') ?>
+<?= Yii::t('bot', 'Send me new keywords and I will automaticall change it in your ad') ?>

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Введите цену') ?> (<?= $currencyCode ?>)
+<?= Yii::t('bot', 'Type price') ?> (<?= $currencyCode ?>)

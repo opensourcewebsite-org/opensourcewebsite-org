@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Отправьте мне новое описание и/или фото и я автоматически его изменю') ?>
+<?= Yii::t('bot', 'Send me new description or/and photo and I will automaticall change it') ?>

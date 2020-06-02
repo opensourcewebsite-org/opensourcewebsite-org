@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Отправьте геолокацию поиска') ?>
+<?= Yii::t('bot', 'Send search location') ?>

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Отправьте геолокацию и я автоматически её изменю') ?>
+<?= Yii::t('bot', 'Send location and I will automatically change it') ?>

@@ -1,3 +1,3 @@
-<?= Yii::t('bot', 'Отправьте радиус (км) и я автоматически его изменю') ?><br/>
+<?= Yii::t('bot', 'Send me radius (km) and I will automatically change it') ?><br/>
 <br/>
-<pre><?= Yii::t('bot', 'Например: 500') ?></pre>
+<pre><?= Yii::t('bot', 'For example') ?>: 500</pre>

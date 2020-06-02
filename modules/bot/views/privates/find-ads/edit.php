@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Какой раздел поиска хотите изменить') ?>?
+<?= Yii::t('bot', 'What section of search do you want to change') ?>?

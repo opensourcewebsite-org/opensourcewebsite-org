@@ -36,6 +36,11 @@ class AdsPost extends ActiveRecord
             ->viaTable('{{%ads_post_keyword}}', ['ads_post_id' => 'id']);
     }
 
+    public function getPhotos()
+    {
+        return $this->hasMany(AdPhoto::className(), ['ads_post_id' => 'id']);
+    }
+
     public function getStatusName()
     {
         switch ($this->status) {
