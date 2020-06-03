@@ -21,8 +21,7 @@ blocks:
             - sem-version php 7.4.4
             - php --version
             - cache restore
-            - pear config-set php_ini ~/.phpbrew/php/php-7.4/etc/php.ini
-            - pecl install xdebug
+            - phpbrew ext install xdebug
             - phpbrew ext install iconv
             - php -m
             - sem-service start mysql 8
