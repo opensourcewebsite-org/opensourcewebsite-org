@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Type keywords') ?>
+<?= Yii::t('bot', 'Type keywords separated by comma, point or new line') ?>

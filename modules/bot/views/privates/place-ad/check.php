@@ -6,4 +6,4 @@
 <b><?= Yii::t('bot', 'Price') ?>:</b> <?= $price / 100.0 ?><?= $currency->symbol ?><br/>
 <b><?= Yii::t('bot', 'Location') ?>:</b> <?= $locationLatitude ?> <?= $locationLongitude ?><br/>
 <b><?= Yii::t('bot', 'Delivery radius') ?>:</b> <?= $radius ?> <?= Yii::t('bot', 'km') ?><br/>
-<?= $keywords ?>
+<b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?>
