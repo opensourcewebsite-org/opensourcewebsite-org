@@ -635,12 +635,23 @@ class PlaceAdController extends Controller
 
     public function actionNewLocation($adsPostId)
     {
-        if ($message = $this->getUpdate()->getMessage() && $location = $this->getUpdate()->getMessage()->getLocation()) {
+        if (($message = $this->getUpdate()->getMessage())
+            && ($location = $this->getUpdate()->getMessage()->getLocation())
+            || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()))
+        ) {
+            if ($message->getLocation()) {
+                $latitude = strval($location->getLatitude());
+                $longitude = strval($location->getLongitude());
+            } else {
+                $latitude = UserSetting::getLatitudeFromText($message->getText());
+                $longitude = UserSetting::getLongitudeFromText($message->getText());
+            }
+
             $adsPost = AdsPost::findOne($adsPostId);
 
             $adsPost->setAttributes([
-                'location_lat' => strval($location->getLatitude()),
-                'location_lon' => strval($location->getLongitude()),
+                'location_lat' => $latitude,
+                'location_lon' => $longitude,
             ]);
 
             $adsPost->save();
@@ -706,17 +717,13 @@ class PlaceAdController extends Controller
 
     private static function getKeywordsAsString($adKeywords)
     {
-        $reply = '';
-
+        $keywords = [];
+        
         foreach ($adKeywords as $adKeyword) {
-            if (!empty($reply)) {
-                $reply .= ' ';
-            }
-
-            $reply .= $adKeyword->word;
+            $keywords[] = $adKeyword->word;
         }
 
-        return $reply;
+        return implode(", ", $keywords);
     }
 
     public function actionTitle($update = true)
@@ -759,8 +766,8 @@ class PlaceAdController extends Controller
 
     public static function parseKeywords($text)
     {
-        if (preg_match_all('/\#[\w\d\_]+/iu', $text, $matches)) {
-            return $matches[0];
+        if (preg_match_all('/(^|[\.,\n])([^\.,\n]+)/', $text, $matches)) {
+            return array_map('mb_strtolower', array_map('trim', $matches[2]));
         } else {
             return [];
         }
@@ -1065,13 +1072,16 @@ class PlaceAdController extends Controller
     {
         $this->getState()->setName(self::createRoute('radius'));
 
-        if ($update && (($this->getUpdate()->getMessage() && $this->getUpdate()->getMessage()->getLocation()) || $userLocation)) {
+        if ($update && ((($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getLocation()) || $userLocation || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText())))) {
             if ($userLocation) {
                 $latitude = $this->getTelegramUser()->location_lat;
                 $longitude = $this->getTelegramUser()->location_lon;
+            } elseif ($this->getUpdate()->getMessage()->getLocation()) {
+                $latitude = $message->getLocation()->getLatitude();
+                $longitude = $message->getLocation()->getLongitude();
             } else {
-                $latitude = $this->getUpdate()->getMessage()->getLocation()->getLatitude();
-                $longitude = $this->getUpdate()->getMessage()->getLocation()->getLongitude();
+                $latitude = UserSetting::getLatitudeFromText($message->getText());
+                $longitude = UserSetting::getLongitudeFromText($message->getText());
             }
 
             $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_LOCATION_LAT);
@@ -1631,9 +1641,18 @@ class PlaceAdController extends Controller
 
     public function actionPlaceNewLocation()
     {
-        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getLocation()) {
-            $latitude = strval($message->getLocation()->getLatitude());
-            $longitude = strval($message->getLocation()->getLongitude());
+        if (($message = $this->getUpdate()->getMessage())
+            && ($this->getUpdate()->getMessage()->getLocation()
+            || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText())))
+        ) {
+
+            if ($message->getLocation()) {
+                $latitude = strval($message->getLocation()->getLatitude());
+                $longitude = strval($message->getLocation()->getLongitude());
+            } else {
+                $latitude = UserSetting::getLatitudeFromText($message->getText());
+                $longitude = UserSetting::getLongitudeFromText($message->getText());
+            }
 
             $latitudeSetting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_LOCATION_LAT);
             $latitudeSetting->setAttributes([

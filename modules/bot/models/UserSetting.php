@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 
 class UserSetting extends ActiveRecord
@@ -49,7 +50,56 @@ class UserSetting extends ActiveRecord
         return is_numeric($radius) && $radius >= 0;
     }
 
-    public static function validatePrice($price) {
+    public static function validatePrice($price)
+    {
         return is_numeric($price) && round($price, 2) == $price && $price >= 0;
+    }
+
+    private static function removeExtraChars($str)
+    {
+        return preg_replace('/[^\d\. ]/', '', $str);
+    }
+
+    private static function getLocationSlices($location)
+    {
+        $slices = explode(" ", $location);
+
+        if (count($slices) != 2) {
+            return null;
+        } else {
+            return $slices;
+        }
+    }
+
+    public static function validateLocation($location)
+    {
+        Yii::warning(self::removeExtraChars($location));
+
+        $slices = self::getLocationSlices(self::removeExtraChars($location));
+
+        if (!isset($slices)) {
+            return false;
+        }
+
+        $latitude = $slices[0];
+        $longitude = $slices[1];
+
+        return is_numeric($latitude) && is_numeric($longitude)
+            && doubleval($latitude) >= -180 && doubleval($latitude) <= 180
+            && doubleval($longitude) >= -180 && doubleval($longitude) <= 180;
+    }
+
+    public static function getLatitudeFromText($location)
+    {
+        $slices = self::getLocationSlices(self::removeExtraChars($location));
+
+        return isset($slices) ? $slices[0] : null;
+    }
+
+    public static function getLongitudeFromText($location)
+    {
+        $slices = self::getLocationSlices(self::removeExtraChars($location));
+
+        return isset($slices) ? $slices[1] : null;
     }
 }
