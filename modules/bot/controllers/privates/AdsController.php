@@ -1,16 +1,85 @@
 <?php
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\AdCategory;
 
 class AdsController extends Controller
 {
     public function actionIndex()
     {
-        return $this->getResponseBuilder()
+        return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('index')
-            )
-            ->build();
+                $this->render('index'),
+                [
+                    [
+                        [
+                            'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::BUY_SELL_ID]),
+                            'text' => '🔍 ' . AdCategory::getFindName(AdCategory::BUY_SELL_ID),
+                        ],
+                        [
+                            'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => AdCategory::BUY_SELL_ID]),
+                            'text' => '💰 ' . AdCategory::getPlaceName(AdCategory::BUY_SELL_ID),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::RENT_ID]),
+                            'text' => '🔍 ' . AdCategory::getFindName(AdCategory::RENT_ID),
+                        ],
+                        [
+                            'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => AdCategory::RENT_ID]),
+                            'text' => '💰 ' . AdCategory::getPlaceName(AdCategory::RENT_ID),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::SERVICES_ID]),
+                            'text' => '🔍 ' . AdCategory::getFindName(AdCategory::SERVICES_ID),
+                        ],
+                        [
+                            'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => AdCategory::SERVICES_ID]),
+                            'text' => '💰 ' . AdCategory::getPlaceName(AdCategory::SERVICES_ID),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+        	)
+        	->build();
+    }
+
+    public function actionCreate()
+    {
+        $buttons = [];
+
+        foreach (AdCategory::find()->all() as $adCategory) {
+            $buttons[][] = [
+                'callback_data' => PlaceAdController::createRoute('index', ['ad_category_id' => $adCategory->id]),
+                'text' => Yii::t('bot', $adCategory->name),
+            ];
+        }
+
+        $buttons[][] = [
+            'callback_data' => self::createRoute(),
+            'text' => Emoji::BACK,
+        ];
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('create'),
+                $buttons
+            )->build();
     }
 }
