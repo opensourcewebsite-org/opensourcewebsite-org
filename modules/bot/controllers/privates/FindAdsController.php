@@ -84,14 +84,15 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    private static function getKeywordsAsString($adKeywords) {
+    private static function getKeywordsAsString($adKeywords)
+    {
         $keywords = [];
         
         foreach ($adKeywords as $adKeyword) {
             $keywords[] = $adKeyword->word;
         }
 
-        return implode(", ", $keywords);
+        return implode(', ', $keywords);
     }
 
     public function actionAdd($adCategoryId)
@@ -212,18 +213,14 @@ class FindAdsController extends Controller
 
     public function actionLocation($update = true, $userLocation = false)
     {
-        Yii::warning("User location: " . $userLocation);
-        Yii::warning("Update: " . $update);
+        $message = $this->getUpdate()->getMessage();
+        $isLocationInText = $message->getText() && UserSetting::validateLocation($message->getText());
 
         if ($update
-            && ((($message = $this->getUpdate()->getMessage())
-            && $this->getUpdate()->getMessage()->getLocation())
+            && (($message && $message->getLocation())
             || $userLocation
-            || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()))
+            || $isLocationInText
         )) {
-
-            Yii::warning(json_encode($userLocation));
-
             if ($userLocation) {
                 $latitude = $this->getTelegramUser()->location_lat;
                 $longitude = $this->getTelegramUser()->location_lon;
@@ -234,9 +231,6 @@ class FindAdsController extends Controller
                 $latitude = UserSetting::getLatitudeFromText($message->getText());
                 $longitude = UserSetting::getLongitudeFromText($message->getText());
             }
-
-            Yii::warning($latitude);
-            Yii::warning($longitude);
 
             $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE);
 
@@ -269,8 +263,7 @@ class FindAdsController extends Controller
             $setting->save();
         }
 
-        if (!$update || ($update && (($this->getUpdate()->getMessage() && $this->getUpdate()->getMessage()->getLocation()) || $userLocation || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()))))) {
-
+        if (!$update || ($update && (($message && $message->getLocation()) || $userLocation || $isLocationInText))) {
             $this->getState()->setName(self::createRoute('radius'));
 
             return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -367,7 +360,7 @@ class FindAdsController extends Controller
     public function actionSearch($adsPostSearchId)
     {
         $this->updateSearch($adsPostSearchId);
-        
+
         $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
 
         $buttons = [];
@@ -555,8 +548,10 @@ class FindAdsController extends Controller
 
     public function actionNewLocation($adsPostSearchId)
     {
-        if (($message = $this->getUpdate()->getMessage())
-            && ($this->getUpdate()->getMessage()->getLocation() || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText())))) {
+        $message = $this->getUpdate()->getMessage();
+        $isLocationInText = $message->getText() && UserSetting::validateLocation($message->getText());
+
+        if ($message && ($message->getLocation() || $isLocationInText)) {
             if ($message->getLocation()) {
                 $latitude = strval($message->getLocation()->getLatitude());
                 $longitude = strval($message->getLocation()->getLongitude());

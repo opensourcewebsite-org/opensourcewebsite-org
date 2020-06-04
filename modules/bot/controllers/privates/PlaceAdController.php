@@ -217,7 +217,7 @@ class PlaceAdController extends Controller
 
         $buttons[][] = [
             'callback_data' => self::createRoute('status', ['adsPostId' => $adsPostId]),
-            'text' => 'Status: ' . ($adsPost->isActive() ? "ON" : "OFF"), 
+            'text' => 'Status: ' . ($adsPost->isActive() ? 'ON' : 'OFF'),
         ];
 
         $matchedPostSearchesCount = count($this->getMatchedPostSearches($adsPost));
@@ -523,8 +523,7 @@ class PlaceAdController extends Controller
         foreach ($currencyQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all()
-        as $currency) {
+            ->all() as $currency) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('new-currency', [
                     'adsPostId' => $adsPostId,
@@ -614,7 +613,7 @@ class PlaceAdController extends Controller
             $adsPost->setAttributes([
                 'price' => intval(100.0 * doubleval($price)),
             ]);
-            
+
             $adsPost->save();
 
             return $this->actionPost($adsPostId);
@@ -646,9 +645,11 @@ class PlaceAdController extends Controller
 
     public function actionNewLocation($adsPostId)
     {
+        $isLocationInText = $this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText());
+
         if (($message = $this->getUpdate()->getMessage())
             && ($location = $this->getUpdate()->getMessage()->getLocation())
-            || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()))
+            || $isLocationInText
         ) {
             if ($message->getLocation()) {
                 $latitude = strval($location->getLatitude());
@@ -699,10 +700,10 @@ class PlaceAdController extends Controller
         if ($message = $this->getUpdate()->getMessage()) {
             $adsPost = AdsPost::findOne($adsPostId);
 
-            $delivery_km = $message->getText();
+            $deliveryKm = $message->getText();
 
             $adsPost->setAttributes([
-                'delivery_km' => $delivery_km,
+                'delivery_km' => $deliveryKm,
             ]);
 
             $adsPost->save();
@@ -729,12 +730,12 @@ class PlaceAdController extends Controller
     private static function getKeywordsAsString($adKeywords)
     {
         $keywords = [];
-        
+
         foreach ($adKeywords as $adKeyword) {
             $keywords[] = $adKeyword->word;
         }
 
-        return implode(", ", $keywords);
+        return implode(', ', $keywords);
     }
 
     public function actionTitle($update = true)
@@ -945,8 +946,7 @@ class PlaceAdController extends Controller
         foreach ($currencyQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all()
-        as $currency) {
+            ->all() as $currency) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('currency', ['currencyId' => $currency->id]),
                 'text' => $currency->code . ' - ' . $currency->name,
@@ -1026,7 +1026,6 @@ class PlaceAdController extends Controller
     public function actionPrice($update = true)
     {
         if ($update && ($message = $this->getUpdate()->getMessage())) {
-
             if (!UserSetting::validatePrice($message->getText())) {
                 return ResponseBuilder::fromUpdate($this->getUpdate())
                     ->editMessageTextOrSendMessage($this->render('price-error'))
@@ -1083,11 +1082,14 @@ class PlaceAdController extends Controller
     {
         $this->getState()->setName(self::createRoute('radius'));
 
-        if ($update && ((($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getLocation()) || $userLocation || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText())))) {
+        $message = $this->getUpdate()->getMessage();
+        $isLocationInText = $message->getText() && UserSetting::validateLocation($message->getText());
+
+        if ($update && (($message && $message->getLocation()) || $userLocation || $isLocationInText)) {
             if ($userLocation) {
                 $latitude = $this->getTelegramUser()->location_lat;
                 $longitude = $this->getTelegramUser()->location_lon;
-            } elseif ($this->getUpdate()->getMessage()->getLocation()) {
+            } elseif ($message->getLocation()) {
                 $latitude = $message->getLocation()->getLatitude();
                 $longitude = $message->getLocation()->getLongitude();
             } else {
@@ -1175,21 +1177,6 @@ class PlaceAdController extends Controller
         $setting->save();
 
         return $this->actionPlace();
-    }
-
-    private function getPlaceKeywords()
-    {
-        $adKeywords = [];
-
-        foreach (UserSetting::find()->where([
-            'and',
-            ['user_id' => $this->getTelegramUser()->id],
-            ['like', 'setting', 'place_ad_keyword_'],
-        ])->all() as $adKeywordSetting) {
-            $adKeywords[] = AdKeyword::findOne($adKeywordSetting->value);
-        }
-
-        return $adKeywords;
     }
 
     public function actionPlace()

@@ -12,9 +12,9 @@ class AdsController extends Controller
     public function actionIndex()
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
-        	->editMessageTextOrSendMessage(
-        		$this->render('index'),
-        		[
+            ->editMessageTextOrSendMessage(
+                $this->render('index'),
+                [
                     [
                         [
                             'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::BUY_SELL_ID]),
@@ -62,24 +62,24 @@ class AdsController extends Controller
 
     public function actionCreate()
     {
-    	$buttons = [];
+        $buttons = [];
 
-    	foreach (AdCategory::find()->all() as $adCategory) {
-    		$buttons[][] = [
-    			'callback_data' => PlaceAdController::createRoute('index', ['ad_category_id' => $adCategory->id]),
-    			'text' => Yii::t('bot', $adCategory->name),
-    		];
-    	}
+        foreach (AdCategory::find()->all() as $adCategory) {
+            $buttons[][] = [
+                'callback_data' => PlaceAdController::createRoute('index', ['ad_category_id' => $adCategory->id]),
+                'text' => Yii::t('bot', $adCategory->name),
+            ];
+        }
 
-    	$buttons[][] = [
-    		'callback_data' => self::createRoute(),
-    		'text' => Emoji::BACK,
-    	];
+        $buttons[][] = [
+            'callback_data' => self::createRoute(),
+            'text' => Emoji::BACK,
+        ];
 
-    	return ResponseBuilder::fromUpdate($this->getUpdate())
-    		->editMessageTextOrSendMessage(
-    			$this->render('create'),
-    			$buttons
-    		)->build();
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('create'),
+                $buttons
+            )->build();
     }
 }

@@ -10,7 +10,7 @@ class AdsPost extends ActiveRecord
     public const STATUS_NOT_ACTIVATED = 'not_activated';
 
     public const LIVE_DAYS = 14;
-    
+
     public static function tableName()
     {
         return 'ads_post';
