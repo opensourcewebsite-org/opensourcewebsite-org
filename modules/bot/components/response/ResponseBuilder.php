@@ -56,7 +56,6 @@ class ResponseBuilder
         $commands = [];
 
         if (!$this->update->getCallbackQuery() || $this->update->getCallbackQuery()->getMessage()->getPhoto() === null) {
-
             if ($callbackQuery = $this->update->getCallbackQuery()) {
                 $this->answerCallbackQuery();
                 $commands[] = new EditMessageTextCommand(
@@ -121,13 +120,19 @@ class ResponseBuilder
         }
     }
 
+    /**
+     * @param ?string $photoFileId
+     * @param MessageText $messageText
+     * @param array $replyMarkup
+     * @param bool $disablePreview
+     * @return $this
+     */
     public function sendPhotoOrSendMessage(
         ?string $photoFileId,
         MessageText $messageText,
         array $replyMarkup = [],
         bool $disablePreview = false
-    )
-    {
+    ) {
         $photo = new Photo($photoFileId);
 
         if ($photo->isNull()) {
@@ -137,7 +142,7 @@ class ResponseBuilder
         if ($callbackQuery = $this->update->getCallbackQuery()) {
             $this->answerCallbackQuery();
             $commands[] = new SendPhotoCommand(
-                $this->update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $callbackQuery->getMessage()->getChat()->getId(),
                 $photo,
                 $messageText,
                 [
@@ -147,7 +152,7 @@ class ResponseBuilder
             );
         } elseif ($message = $this->update->getMessage()) {
             $commands[] = new SendPhotoCommand(
-                $this->update->getMessage()->getChat()->getId(),
+                $message->getChat()->getId(),
                 $photo,
                 $messageText,
                 [
@@ -163,6 +168,13 @@ class ResponseBuilder
         return $this;
     }
 
+    /**
+     * @param ?string $photoFileId
+     * @param MessageText $messageText
+     * @param array $replyMarkup
+     * @param bool $disablePreview
+     * @return $this
+     */
     public function sendPhotoOrEditMessageTextOrSendMessage(
         ?string $photoFileId,
         MessageText $messageText,
@@ -176,7 +188,7 @@ class ResponseBuilder
             return $this->editMessageTextOrSendMessage($messageText, $replyMarkup, $disablePreview);
         } else {
             $this->deleteMessage();
-            
+
             return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $disablePreview);
         }
     }

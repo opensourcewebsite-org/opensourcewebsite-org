@@ -4,7 +4,8 @@ namespace app\modules\bot\models;
 
 use Yii;
 
-class AdCategory {
+class AdCategory
+{
     public const BUY_SELL_ID = 1;
     public const RENT_ID = 2;
     public const SERVICES_ID = 3;
@@ -19,7 +20,7 @@ class AdCategory {
             case self::SERVICES_ID:
                 return Yii::t('bot', 'Services');
             default:
-                Yii::warning("No ID for categoryId: " . $categoryId);
+                Yii::warning('No ID for categoryId: ' . $categoryId);
                 return '';
         }
     }
@@ -34,7 +35,7 @@ class AdCategory {
             case self::SERVICES_ID:
                 return Yii::t('bot', 'Services');
             default:
-                Yii::warning("No ID for categoryId: " . $categoryId);
+                Yii::warning('No ID for categoryId: ' . $categoryId);
                 return '';
         }
     }

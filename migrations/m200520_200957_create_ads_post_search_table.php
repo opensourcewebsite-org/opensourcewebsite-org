@@ -35,7 +35,7 @@ class m200520_200957_create_ads_post_search_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-ads_post_search_user_id-bot_user_id');
-        
+
         $this->dropTable('{{%ads_post_search}}');
     }
 }

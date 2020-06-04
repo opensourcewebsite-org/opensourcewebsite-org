@@ -62,7 +62,7 @@ class UserSetting extends ActiveRecord
 
     private static function getLocationSlices($location)
     {
-        $slices = explode(" ", $location);
+        $slices = explode(' ', $location);
 
         if (count($slices) != 2) {
             return null;
@@ -73,8 +73,6 @@ class UserSetting extends ActiveRecord
 
     public static function validateLocation($location)
     {
-        Yii::warning(self::removeExtraChars($location));
-
         $slices = self::getLocationSlices(self::removeExtraChars($location));
 
         if (!isset($slices)) {
