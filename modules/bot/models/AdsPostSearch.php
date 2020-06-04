@@ -9,6 +9,8 @@ class AdsPostSearch extends ActiveRecord
     public const STATUS_ACTIVATED = 'activated';
     public const STATUS_NOT_ACTIVATED = 'not_activated';
 
+    public const LIVE_DAYS = 14;
+
     public static function tableName()
     {
         return 'ads_post_search';
@@ -38,7 +40,7 @@ class AdsPostSearch extends ActiveRecord
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVATED;
+        return $this->status == self::STATUS_ACTIVATED && (time() - $this->updated_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 
     public function matches($adsPost)

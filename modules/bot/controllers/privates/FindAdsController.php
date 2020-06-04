@@ -5,6 +5,7 @@ use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdCategory;
 use app\modules\bot\models\UserSetting;
 use app\modules\bot\models\AdKeyword;
@@ -76,7 +77,7 @@ class FindAdsController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'categoryName' => AdCategory::findOne($adCategoryId)->find_name,
+                    'categoryName' => AdCategory::getFindName($adCategoryId),
                 ]),
                 $buttons
             )
@@ -211,16 +212,17 @@ class FindAdsController extends Controller
 
     public function actionLocation($update = true, $userLocation = false)
     {
-        Yii::warning($update);
-        Yii::warning(UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()));
+        Yii::warning("User location: " . $userLocation);
+        Yii::warning("Update: " . $update);
 
         if ($update
-            && (($message = $this->getUpdate()->getMessage())
-            && ($this->getUpdate()->getMessage()->getLocation()
+            && ((($message = $this->getUpdate()->getMessage())
+            && $this->getUpdate()->getMessage()->getLocation())
             || $userLocation
             || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()))
-        ))) {
-            Yii::warning("IF");
+        )) {
+
+            Yii::warning(json_encode($userLocation));
 
             if ($userLocation) {
                 $latitude = $this->getTelegramUser()->location_lat;
@@ -232,6 +234,9 @@ class FindAdsController extends Controller
                 $latitude = UserSetting::getLatitudeFromText($message->getText());
                 $longitude = UserSetting::getLongitudeFromText($message->getText());
             }
+
+            Yii::warning($latitude);
+            Yii::warning($longitude);
 
             $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE);
 
@@ -314,7 +319,7 @@ class FindAdsController extends Controller
         $setting->value = $radius;
         $setting->save();
 
-        return $this->actionCheck();
+        return $this->actionMakeSearch();
     }
 
     private function getFindKeywords()
@@ -332,251 +337,6 @@ class FindAdsController extends Controller
         return $adKeywords;
     }
 
-    public function actionCheck()
-    {
-        $user = $this->getTelegramUser();
-
-        $this->getState()->setName(null);
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('check', [
-                    'keywords' => self::getKeywordsAsString($this->getFindKeywords()),
-                    'latitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE)->value,
-                    'longitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE)->value,
-                    'radius' => $user->getSetting(UserSetting::FIND_AD_RADIUS)->value,
-                ]),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('find-edit'),
-                            'text' => Emoji::EDIT,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('make-search'),
-                            'text' => '✅',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => AdsController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionFindEdit()
-    {
-        $this->getState()->setName(null);
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('edit'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('find-edit-keywords'),
-                            'text' => Yii::t('bot', 'Keywords'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('find-edit-location'),
-                            'text' => Yii::t('bot', 'Location'),
-                        ],
-                        [
-                            'callback_data' => self::createRoute('find-edit-radius'),
-                            'text' => Yii::t('bot', 'Search radius'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('check'),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ]
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionFindEditKeywords()
-    {
-        $this->getState()->setName(self::createRoute('find-new-keywords'));
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('edit-keywords'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('find-edit'),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionFindNewKeywords()
-    {
-        if ($message = $this->getUpdate()->getMessage()) {
-            $keywords = PlaceAdController::parseKeywords($message->getText());
-
-            if (empty($keywords)) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('keywords-error'))
-                    ->merge($this->actionFindEditKeywords())
-                    ->build();
-            }
-
-            UserSetting::deleteAll([
-                'and',
-                ['user_id' => $this->getTelegramUser()->id],
-                ['like', 'setting', 'find_ad_keyword_'],
-            ]);
-
-            foreach ($keywords as $index => $keyword) {
-                $adKeyword = AdKeyword::find()->where([
-                    'word' => $keyword,
-                ])->one();
-
-                if (!isset($adKeyword)) {
-                    $adKeyword = new AdKeyword();
-
-                    $adKeyword->setAttributes([
-                        'word' => $keyword,
-                    ]);
-                    $adKeyword->save();
-                }
-
-                $setting = new UserSetting();
-                $setting->setAttributes([
-                    'user_id' => $this->getTelegramUser()->id,
-                    'setting' => 'find_ad_keyword_' . $index,
-                    'value' => strval($adKeyword->id),
-                ]);
-                $setting->save();
-            }
-
-            return $this->actionCheck();
-        }
-    }
-
-    public function actionFindEditLocation()
-    {
-        $this->getState()->setName(self::createRoute('find-new-location'));
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('edit-location'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('find-edit'),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionFindNewLocation()
-    {
-        if (($message = $this->getUpdate()->getMessage()) && ($this->getUpdate()->getMessage()->getLocation()) || ($this->getUpdate()->getMessage()->getText() && UserSetting::validateLocation($this->getUpdate()->getMessage()->getText()))) {
-            if ($message->getLocation()) {
-                $latitude = strval($message->getLocation()->getLatitude());
-                $longitude = strval($message->getLocation()->getLongitude());
-            } else {
-                $latitude = UserSetting::getLatitudeFromText($message->getText());
-                $longitude = UserSetting::getLongitudeFromText($message->getText());
-            }
-
-            $latitudeSetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE);
-
-            $latitudeSetting->setAttributes([
-                'value' => $latitude,
-            ]);
-            $latitudeSetting->save();
-
-            $longitudeSetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE);
-
-            $longitudeSetting->setAttributes([
-                'value' => $longitude,
-            ]);
-            $longitudeSetting->save();
-
-            return $this->actionCheck();
-        }
-    }
-
-    public function actionFindEditRadius()
-    {
-        $this->getState()->setName(self::createRoute('find-new-radius'));
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('edit-radius'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('find-edit'),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionFindNewRadius()
-    {
-        if ($message = $this->getUpdate()->getMessage()) {
-            $radius = $message->getText();
-
-            if (!UserSetting::validateRadius($radius)) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('radius-error'))
-                    ->merge($this->actionFindEditRadius())
-                    ->build();
-            }
-
-            $radiusSetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_RADIUS);
-
-            $radiusSetting->setAttributes([
-                'value' => $radius,
-            ]);
-            $radiusSetting->save();
-
-            return $this->actionCheck();
-        }
-    }
-
     public function actionMakeSearch()
     {
         $adsPostSearch = new AdsPostSearch();
@@ -590,7 +350,7 @@ class FindAdsController extends Controller
             'location_latitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE)->value,
             'location_longitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE)->value,
             'updated_at' => time(),
-            'status' => AdsPostSearch::STATUS_ACTIVATED,
+            'status' => AdsPostSearch::STATUS_NOT_ACTIVATED,
         ]);
 
         $adsPostSearch->save();
@@ -606,56 +366,61 @@ class FindAdsController extends Controller
 
     public function actionSearch($adsPostSearchId)
     {
+        $this->updateSearch($adsPostSearchId);
+        
         $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+
+        $buttons = [];
+
+        $buttons[][] = [
+            'callback_data' => self::createRoute('status', ['adsPostSearchId' => $adsPostSearchId]),
+            'text' => 'Status: ' . ($adsPostSearch->isActive() ? 'ON' : 'OFF'),
+        ];
+
+        $matchedPostsCount = count($this->getMatchedPosts($adsPostSearch));
+
+        if ($matchedPostsCount > 0) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('post-matches', ['adsPostSearchId' => $adsPostSearchId]),
+                'text' => '🙋‍♂️ ' . $matchedPostsCount,
+            ];
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', ['adCategoryId' => $adsPostSearch->category_id]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+            [
+                'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                'text' => Emoji::EDIT,
+            ],
+            [
+                'callback_data' => self::createRoute('confirm-delete', ['adsPostSearchId' => $adsPostSearchId]),
+                'text' => Emoji::DELETE,
+            ],
+        ];
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('search', [
-                    'categoryName' => AdCategory::findOne($adsPostSearch->category_id)->find_name,
+                    'categoryName' => AdCategory::getFindName($adsPostSearch->category_id),
                     'keywords' => self::getKeywordsAsString($adsPostSearch->getKeywords()->all()),
                     'adsPostSearch' => $adsPostSearch,
+                    'locationLink' => ExternalLink::getOSMLink($adsPostSearch->location_latitude, $adsPostSearch->location_longitude),
+                    'liveDays' => AdsPostSearch::LIVE_DAYS,
                 ]),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('status', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => 'Status: ' . ($adsPostSearch->isActive() ? 'ON' : 'OFF'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('post-matches', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => '🙋‍♂️ ' . count($this->getMatchedPosts($adsPostSearch)),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('index', ['adCategoryId' => $adsPostSearch->category_id]),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('update', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => '🔄',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => Emoji::EDIT,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('confirm-delete', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => Emoji::DELETE,
-                        ],
-                    ],
-                ]
+                $buttons,
+                true
             )
             ->build();
     }
 
-    public function actionUpdate($adsPostSearchId)
+    public function updateSearch($adsPostSearchId)
     {
         $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
 
@@ -663,8 +428,6 @@ class FindAdsController extends Controller
             'updated_at' => time(),
         ]);
         $adsPostSearch->save();
-
-        return $this->actionSearch($adsPostSearchId);
     }
 
     public function actionEdit($adsPostSearchId)
@@ -686,6 +449,8 @@ class FindAdsController extends Controller
                             'callback_data' => self::createRoute('edit-location', ['adsPostSearchId' => $adsPostSearchId]),
                             'text' => Yii::t('bot', 'Location'),
                         ],
+                    ],
+                    [
                         [
                             'callback_data' => self::createRoute('edit-radius', ['adsPostSearchId' => $adsPostSearchId]),
                             'text' => Yii::t('bot', 'Search radius'),
@@ -936,10 +701,12 @@ class FindAdsController extends Controller
                     'adsPost' => $adsPost,
                     'user' => User::findOne($adsPost->user_id),
                     'currency' => Currency::findOne($adsPost->currency_id),
-                    'categoryName' => AdCategory::findOne($adsPost->category_id)->place_name,
+                    'categoryName' => AdCategory::getPlaceName($adsPost->category_id),
                     'keywords' => self::getKeywordsAsString($adsPost->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adsPost->location_lat, $adsPost->location_lon),
                 ]),
-                $buttons
+                $buttons,
+                true
             )
             ->build();
     }

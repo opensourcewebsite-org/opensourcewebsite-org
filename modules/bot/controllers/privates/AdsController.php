@@ -11,36 +11,51 @@ class AdsController extends Controller
 {
     public function actionIndex()
     {
-        $buttons = [];
-
-        foreach (AdCategory::find()->all() as $adCategory) {
-            $buttons[] = [
-                [
-                    'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => $adCategory->id]),
-                    'text' => '🔍 ' . Yii::t('bot', $adCategory->find_name),
-                ],
-                [
-                    'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => $adCategory->id]),
-                    'text' => '💰 ' . Yii::t('bot', $adCategory->place_name),
-                ],
-            ];
-        }
-
-        $buttons[] = [
-            [
-                'callback_data' => ServicesController::createRoute(),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-        ];
-
         return ResponseBuilder::fromUpdate($this->getUpdate())
         	->editMessageTextOrSendMessage(
         		$this->render('index'),
-        		$buttons
+        		[
+                    [
+                        [
+                            'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::BUY_SELL_ID]),
+                            'text' => '🔍 ' . AdCategory::getFindName(AdCategory::BUY_SELL_ID),
+                        ],
+                        [
+                            'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => AdCategory::BUY_SELL_ID]),
+                            'text' => '💰 ' . AdCategory::getPlaceName(AdCategory::BUY_SELL_ID),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::RENT_ID]),
+                            'text' => '🔍 ' . AdCategory::getFindName(AdCategory::RENT_ID),
+                        ],
+                        [
+                            'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => AdCategory::RENT_ID]),
+                            'text' => '💰 ' . AdCategory::getPlaceName(AdCategory::RENT_ID),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => FindAdsController::createRoute('index', ['adCategoryId' => AdCategory::SERVICES_ID]),
+                            'text' => '🔍 ' . AdCategory::getFindName(AdCategory::SERVICES_ID),
+                        ],
+                        [
+                            'callback_data' => PlaceAdController::createRoute('index', ['adCategoryId' => AdCategory::SERVICES_ID]),
+                            'text' => '💰 ' . AdCategory::getPlaceName(AdCategory::SERVICES_ID),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
         	)
         	->build();
     }

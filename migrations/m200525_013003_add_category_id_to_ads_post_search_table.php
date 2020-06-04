@@ -28,7 +28,7 @@ class m200525_013003_add_category_id_to_ads_post_search_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ads_post_search_category_id-bot_ad_category_id');
+        $this->dropForeignKey('fk-ads_post_search_category_id-bot_ad_category_id', '{{%ads_post_search}}');
 
         $this->dropColumn('{{%ads_post_search}}', 'category_id');
     }

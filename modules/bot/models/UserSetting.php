@@ -85,7 +85,7 @@ class UserSetting extends ActiveRecord
         $longitude = $slices[1];
 
         return is_numeric($latitude) && is_numeric($longitude)
-            && doubleval($latitude) >= -180 && doubleval($latitude) <= 180
+            && doubleval($latitude) >= -90 && doubleval($latitude) <= 90
             && doubleval($longitude) >= -180 && doubleval($longitude) <= 180;
     }
 
