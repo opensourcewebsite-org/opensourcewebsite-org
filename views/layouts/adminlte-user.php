@@ -19,24 +19,6 @@ AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 AdminLteUserAsset::register($this);
 
-$this->registerCss('#lang-menu{
-    overflow: auto;
-    min-width: 300px;
-    max-height: 200px;
-}#search-lang{
-    display: block;
-    position: relative;
-    width: 100%;
-    padding: .7rem 1rem;
-    clear: both;
-    font-weight: 400;
-    color: #212529;
-    text-align: inherit;
-    white-space: nowrap;
-    background-color: transparent;
-    border: 0;
-    border-bottom: 1px solid #eee;');
-
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
