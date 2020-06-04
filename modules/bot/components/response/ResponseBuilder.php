@@ -65,6 +65,7 @@ class ResponseBuilder
                     $messageText,
                     [
                         'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                        'disablePreview' => $disablePreview,
                     ]
                 );
             } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
@@ -123,7 +124,8 @@ class ResponseBuilder
     public function sendPhotoOrSendMessage(
         ?string $photoFileId,
         MessageText $messageText,
-        array $replyMarkup = []
+        array $replyMarkup = [],
+        bool $disablePreview = false
     )
     {
         $photo = new Photo($photoFileId);
@@ -140,6 +142,7 @@ class ResponseBuilder
                 $messageText,
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                    'disablePreview' => $disablePreview,
                 ]
             );
         } elseif ($message = $this->update->getMessage()) {
@@ -149,6 +152,7 @@ class ResponseBuilder
                 $messageText,
                 [
                     'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                    'disablePreview' => $disablePreview,
                 ]
             );
         }
@@ -162,17 +166,18 @@ class ResponseBuilder
     public function sendPhotoOrEditMessageTextOrSendMessage(
         ?string $photoFileId,
         MessageText $messageText,
-        array $replyMarkup = []
+        array $replyMarkup = [],
+        bool $disablePreview = false
     )
     {
         $photo = new Photo($photoFileId);
 
         if ($photo->isNull()) {
-            return $this->editMessageTextOrSendMessage($messageText, $replyMarkup);
+            return $this->editMessageTextOrSendMessage($messageText, $replyMarkup, $disablePreview);
         } else {
             $this->deleteMessage();
             
-            return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup);
+            return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $disablePreview);
         }
     }
 

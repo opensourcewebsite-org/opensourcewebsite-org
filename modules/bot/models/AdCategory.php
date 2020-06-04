@@ -1,27 +1,41 @@
 <?php
+
 namespace app\modules\bot\models;
 
-use yii\db\ActiveRecord;
+use Yii;
 
-class AdCategory extends ActiveRecord
-{
-    public static function tableName()
+class AdCategory {
+    public const BUY_SELL_ID = 1;
+    public const RENT_ID = 2;
+    public const SERVICES_ID = 3;
+
+    public static function getPlaceName($categoryId)
     {
-        return 'ad_category';
+        switch ($categoryId) {
+            case self::BUY_SELL_ID:
+                return Yii::t('bot', 'Sell');
+            case self::RENT_ID:
+                return Yii::t('bot', 'Rent');
+            case self::SERVICES_ID:
+                return Yii::t('bot', 'Services');
+            default:
+                Yii::warning("No ID for categoryId: " . $categoryId);
+                return '';
+        }
     }
 
-    public function rules()
+    public static function getFindName($categoryId)
     {
-        return [
-            [['name'], 'required'],
-            [['name'], 'string'],
-        ];
-    }
-
-    public function behaviors()
-    {
-        return [
-            // TimestampBehavior::className(),
-        ];
+        switch ($categoryId) {
+            case self::BUY_SELL_ID:
+                return Yii::t('bot', 'Buy');
+            case self::RENT_ID:
+                return Yii::t('bot', 'Rent');
+            case self::SERVICES_ID:
+                return Yii::t('bot', 'Services');
+            default:
+                Yii::warning("No ID for categoryId: " . $categoryId);
+                return '';
+        }
     }
 }
