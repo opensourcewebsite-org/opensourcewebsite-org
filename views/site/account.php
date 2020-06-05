@@ -5,10 +5,13 @@ use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\modules\apiTesting\models\ApiTestTeam;
+use app\widgets\buttons\AddButton;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\EditButton;
 use app\widgets\buttons\TrashButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Url;
-use app\widgets\buttons\EditButton;
 
 /* @var $this yii\web\View */
 
@@ -42,7 +45,7 @@ $timezones = TimeHelper::timezonesList();
                                     <td class="align-middle" id="email">
                                         <?php
                                         echo $model->email;
-                                        if (!$model->is_authenticated) {
+                                        if ( ! $model->is_authenticated) {
                                             echo ' <b>(not confirmed)</b>';
                                         }
                                         ?>
@@ -73,7 +76,7 @@ $timezones = TimeHelper::timezonesList();
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Active Rating'); ?></th>
-                                    <td class="align-middle"><?= "<b>$model->activeRating</b> (" . Yii::t('bot', 'in the last {0,number} days', 30) . ')'; ?></td>
+                                    <td class="align-middle"><?= "<b>$model->activeRating</b> (".Yii::t('bot', 'in the last {0,number} days', 30).')'; ?></td>
                                     <td></td>
                                 </tr>
                                 </tbody>
@@ -85,11 +88,45 @@ $timezones = TimeHelper::timezonesList();
         </div>
     </div>
 </div>
+<?php if ($invites = ApiTestTeam::find()->andWhere(['user_id' => Yii::$app->user->id, 'status' => ApiTestTeam::STATUS_INVITED])->all()) : ?>
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-3 pb-2">Project invites</h2>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <?php foreach ($invites as $invite): ?>
+                Invite to testing <?= $invite->project->name; ?> project
+                <?= AddButton::widget([
+                    'text' => 'Accept invite',
+                    'url' => ['/apiTesting/team/accept-invite', 'id' => $invite->project_id],
+                    'options' => [
+                        'style' => [
+                            'float' => 'right',
+                        ]
+                    ]
+                ]); ?>
+
+                <?= CancelButton::widget([
+                    'url' => ['/apiTesting/team/decline-invite', 'id' => $invite->project_id],
+                    'options' => [
+                        'style' => [
+                            'color' => 'white',
+                            'float' => 'right',
+                            'margin-right' => '10px'
+                        ]
+                    ]
+                ]); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>
 
 <div class="profile-index">
     <div class="row">
         <div class="col-md-12">
-            <h2 style="padding-top: 30px; padding-bottom: 15px"><?= Yii::t('app', 'Profile') ?></h2>
+            <h2 style="padding-top: 30px; padding-bottom: 15px"><?= Yii::t('app', 'Profile'); ?></h2>
         </div>
     </div>
     <div class="row">
@@ -103,7 +140,7 @@ $timezones = TimeHelper::timezonesList();
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Username'); ?></th>
                                     <td class="align-middle"><span id="username"><?= empty($model->username)
-                                                ? '' : '<b>@</b>' . $model->username;
+                                                ? '' : '<b>@</b>'.$model->username;
                                             ?></span></td>
                                     <td>
                                         <?= EditButton::widget([
@@ -217,11 +254,11 @@ $timezones = TimeHelper::timezonesList();
                             'toggleButton' => [
                                 'label' => Icon::ADD,
                                 'class' => 'btn btn-outline-success',
-                                'style' =>  ['float' => 'right'],
+                                'style' => ['float' => 'right'],
                             ],
                             'url' => Url::to(['user/add-language']),
                             'ajaxSubmit' => true,
-                        ]);?>
+                        ]); ?>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -236,14 +273,14 @@ $timezones = TimeHelper::timezonesList();
                                     $languageLevel = LanguageLevel::findOne($language->language_level_id)->description;
                                     $languageLevel = Yii::t('user', $languageLevel);
 
-                                    echo  '<tr><td>' . $languageName . ' - ' . $languageLevel . '</td><td>';
+                                    echo  '<tr><td>'.$languageName.' - '.$languageLevel.'</td><td>';
                                     echo ModalAjax::widget([
-                                        'id' => 'change-language' . $language->language_id,
+                                        'id' => 'change-language'.$language->language_id,
                                         'header' => Yii::t('user', 'Change language'),
                                         'toggleButton' => [
                                             'label' => Icon::EDIT,
                                             'class' => 'btn btn-light edit-btn',
-                                            'style' =>  ['float' => 'right', 'color' => '#007bff'],
+                                            'style' => ['float' => 'right', 'color' => '#007bff'],
                                         ],
                                         'url' => Url::to([
                                             'user/change-language',
@@ -275,11 +312,11 @@ $timezones = TimeHelper::timezonesList();
                             'toggleButton' => [
                                 'label' => Icon::ADD,
                                 'class' => 'btn btn-outline-success',
-                                'style' =>  ['float' => 'right'],
+                                'style' => ['float' => 'right'],
                             ],
                             'url' => Url::to(['user/add-citizenship']),
                             'ajaxSubmit' => true,
-                        ]);?>
+                        ]); ?>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -291,7 +328,7 @@ $timezones = TimeHelper::timezonesList();
                                 array_map(function ($citizenship) {
                                     $citizenshipName = Country::findOne($citizenship->country_id)->name;
                                     $citizenshipName = Yii::t('user', $citizenshipName);
-                                    echo '<tr><td>' . $citizenshipName . '</td><td>';
+                                    echo '<tr><td>'.$citizenshipName.'</td><td>';
                                     echo TrashButton::widget([
                                         'url' => [
                                             '/user/delete-citizenship',

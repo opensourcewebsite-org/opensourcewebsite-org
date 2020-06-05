@@ -48,7 +48,9 @@
         "ivankff/yii2-modal-ajax": "^4.1",
         "yiisoft/yii2-bootstrap4": "^2.0",
         "yii2tech/ar-position": "^1.0",
-        "voskobovich/yii2-linker-behavior": "^4.1"
+        "voskobovich/yii2-linker-behavior": "^4.1",
+        "unclead/yii2-multiple-input": "~2.0",
+        "kartik-v/yii2-field-range": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
