@@ -14,7 +14,8 @@ use app\modules\bot\models\AdsPostSearch;
 use app\modules\bot\models\AdPhoto;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\models\User;
+use app\modules\bot\models\User as TelegramUser;
+use app\models\User;
 use app\models\Currency;
 
 class FindAdsController extends Controller
@@ -135,7 +136,7 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionKeywords()
+    public function actionKeywords($page = 1)
     {
         if ($message = $this->getUpdate()->getMessage()) {
             $keywords = PlaceAdController::parseKeywords($message->getText());
@@ -179,16 +180,52 @@ class FindAdsController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('location'));
+        $this->getState()->setName(null);
+
+        $currencyQuery = Currency::find();
+
+        $pagination = new Pagination([
+            'totalCount' => $currencyQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
         $buttons = [];
 
-        if ($this->getTelegramUser()->location_lat !== null) {
+        $telegramUser = $this->getTelegramUser();
+        if ($telegramUser->user_id && User::findOne($telegramUser->user_id)) {
+            $user = User::findOne($telegramUser->user_id);
+
+            if ($user->currency_id !== null) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('currency-set', ['currencyId' => $user->currency_id]),
+                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name . ' ·',
+                ];
+            }
+        }
+
+        foreach ($currencyQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('location', ['userLocation' => true]),
-                'text' => Yii::t('bot', 'My location'),
+                'callback_data' => self::createRoute('currency-set', ['currencyId' => $currency->id]),
+                'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('keywords', ['page' => $page]);
+        });
+
+        $buttons[][] = [
+            'callback_data' => self::createRoute('currency-skip'),
+            'text' => Yii::t('bot', 'Skip'),
+        ];
 
         $buttons[] = [
             [
@@ -211,10 +248,160 @@ class FindAdsController extends Controller
             ->build();
     }
 
+    public function actionCurrencySet($currencyId)
+    {
+        $currencySetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CURRENCY_ID);
+
+        if (!isset($currencySetting)) {
+            $currencySetting = new UserSetting();
+
+            $currencySetting->setAttributes([
+                'user_id' => $this->getTelegramUser()->id,
+                'setting' => UserSetting::FIND_AD_CURRENCY_ID,
+            ]);
+        }
+
+        $currencySetting->setAttributes([
+            'value' => strval($currencyId),
+        ]);
+        $currencySetting->save();
+
+        return $this->actionCurrency();
+    }
+
+    public function actionCurrency()
+    {
+        $this->getState()->setName(self::createRoute('max-price-send'));
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('currency'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('keywords'),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    public function actionCurrencySkip()
+    {
+        $currencySetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CURRENCY_ID);
+
+        if (!isset($currencySetting)) {
+            $currencySetting = new UserSetting();
+
+            $currencySetting->setAttributes([
+                'user_id' => $this->getTelegramUser()->id,
+                'setting' => UserSetting::FIND_AD_CURRENCY_ID,
+            ]);
+        }
+
+        $currencySetting->setAttributes([
+            'value' => null,
+        ]);
+        $currencySetting->save();
+
+        return $this->actionMaxPriceSkip();
+    }
+
+    public function actionMaxPriceSend()
+    {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            if (!UserSetting::validatePrice($message->getText())) {
+                return ResponseBuilder::fromUpdate($this->getUpdate())
+                    ->editMessageTextOrSendMessage($this->render('price-error'))
+                    ->merge($this->actionKeywords())
+                    ->build();
+            }
+
+            $maxPrice = intval(doubleval($message->getText()) * 100);
+
+            $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_MAX_PRICE);
+
+            if (!isset($setting)) {
+                $setting = new UserSetting();
+
+                $setting->setAttributes([
+                    'user_id' => $this->getTelegramUser()->id,
+                    'setting' => UserSetting::FIND_AD_MAX_PRICE,
+                ]);
+            }
+
+            $setting->setAttributes([
+                'value' => strval($maxPrice),
+            ]);
+
+            $setting->save();
+
+            return $this->actionMaxPrice();
+        }
+    }
+
+    public function actionMaxPriceSkip()
+    {
+        $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_MAX_PRICE);
+
+        if (!isset($setting)) {
+            $setting = new UserSetting();
+
+            $setting->setAttributes([
+                'user_id' => $this->getTelegramUser()->id,
+                'setting' => UserSetting::FIND_AD_MAX_PRICE,
+            ]);
+        }
+
+        $setting->setAttributes([
+            'value' => null,
+        ]);
+
+        $setting->save();
+
+        return $this->actionMaxPrice();
+    }
+
+    public function actionMaxPrice()
+    {
+        $buttons = [];
+
+        if ($this->getTelegramUser()->location_lat !== null) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('location', ['userLocation' => true]),
+                'text' => Yii::t('bot', 'My location'),
+            ];
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CURRENCY_ID)->value === null ? self::createRoute('keywords') : self::createRoute('currency'),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('max-price'),
+                $buttons
+            )
+            ->build();
+    }
+
     public function actionLocation($update = true, $userLocation = false)
     {
         $message = $this->getUpdate()->getMessage();
-        $isLocationInText = $message->getText() && UserSetting::validateLocation($message->getText());
+        $isLocationInText = $message && $message->getText() && UserSetting::validateLocation($message->getText());
 
         if ($update
             && (($message && $message->getLocation())
@@ -340,6 +527,8 @@ class FindAdsController extends Controller
             'user_id' => $user->id,
             'category_id' => intval($user->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value),
             'radius' => $user->getSetting(UserSetting::FIND_AD_RADIUS)->value,
+            'currency_id' => $user->getSetting(UserSetting::FIND_AD_CURRENCY_ID)->value,
+            'max_price' => $user->getSetting(UserSetting::FIND_AD_MAX_PRICE)->value,
             'location_latitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE)->value,
             'location_longitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE)->value,
             'updated_at' => time(),
@@ -404,6 +593,7 @@ class FindAdsController extends Controller
                     'categoryName' => AdCategory::getFindName($adsPostSearch->category_id),
                     'keywords' => self::getKeywordsAsString($adsPostSearch->getKeywords()->all()),
                     'adsPostSearch' => $adsPostSearch,
+                    'currency' => isset($adsPostSearch->currency_id) ? Currency::findOne($adsPostSearch->currency_id) : null,
                     'locationLink' => ExternalLink::getOSMLink($adsPostSearch->location_latitude, $adsPostSearch->location_longitude),
                     'liveDays' => AdsPostSearch::LIVE_DAYS,
                 ]),
@@ -439,6 +629,12 @@ class FindAdsController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('edit-currency', ['adsPostSearchId' => $adsPostSearchId]),
+                            'text' => Yii::t('bot', 'Max price'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit-location', ['adsPostSearchId' => $adsPostSearchId]),
                             'text' => Yii::t('bot', 'Location'),
                         ],
@@ -446,7 +642,7 @@ class FindAdsController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('edit-radius', ['adsPostSearchId' => $adsPostSearchId]),
-                            'text' => Yii::t('bot', 'Search radius'),
+                            'text' => Yii::t('bot', 'Pickup radius'),
                         ],
                     ],
                     [
@@ -462,6 +658,149 @@ class FindAdsController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionEditCurrency($adsPostSearchId, $page = 1)
+    {
+        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+
+        $currencyQuery = Currency::find();
+
+        $pagination = new Pagination([
+            'totalCount' => $currencyQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $buttons = [];
+
+        $telegramUser = $this->getTelegramUser();
+        $userCurrencyId = null;
+        if ($telegramUser->user_id && User::findOne($telegramUser->user_id)) {
+            $user = User::findOne($telegramUser->user_id);
+
+            if ($user->currency_id !== null) {
+                $userCurrencyId = $user->currency_id;
+
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('edit-currency-set', [
+                        'adsPostSearchId' => $adsPostSearchId,
+                        'currencyId' => $user->currency_id]),
+                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name . ' ·',
+                ];
+            }
+        }
+
+        if (isset($adsPostSearch->currency_id) && $userCurrencyId != $adsPostSearch->currency_id) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('edit-currency-set', [
+                    'adsPostSearchId' => $adsPostSearchId,
+                    'currencyId' => $adsPostSearch->currency_id,
+                ]),
+                'text' => '· ' . Currency::findOne($adsPostSearch->currency_id)->code . ' - ' . Currency::findOne($adsPostSearch->currency_id)->name . ' ·',
+            ];
+        }
+
+        foreach ($currencyQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all() as $currency) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('edit-currency-set', [
+                    'adsPostSearchId' => $adsPostSearchId,
+                    'currencyId' => $currency->id
+                ]),
+                'text' => $currency->code . ' - ' . $currency->name,
+            ];
+        }
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adsPostSearchId) {
+            return self::createRoute('edit-currency', [
+                'adsPostSearchId' => $adsPostSearchId,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('edit-currency'),
+                $buttons
+            )
+            ->build();
+    }
+
+    public function actionEditCurrencySet($adsPostSearchId, $currencyId)
+    {
+        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+
+        $adsPostSearch->setAttributes([
+            'currency_id' => $currencyId,
+        ]);
+
+        $adsPostSearch->save();
+
+        return $this->actionEditMaxPrice($adsPostSearchId);
+    }
+
+    public function actionEditMaxPrice($adsPostSearchId)
+    {
+        $this->getState()->setName(self::createRoute('edit-max-price-set', ['adsPostSearchId' => $adsPostSearchId]));
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('edit-max-price'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('edit-currency', ['adsPostSearchId' => $adsPostSearchId]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    public function actionEditMaxPriceSet($adsPostSearchId)
+    {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            if (!UserSetting::validatePrice($message->getText())) {
+                return ResponseBuilder::fromUpdate($this->getUpdate())
+                    ->editMessageTextOrSendMessage($this->render('max-price-error'))
+                    ->merge($this->actionEditMaxPrice($adsPostSearchId))
+                    ->build();
+            }
+
+            $maxPrice = intval(doubleval($message->getText()) * 100);
+
+            $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+
+            $adsPostSearch->setAttributes([
+                'max_price' => $maxPrice,
+            ]);
+            $adsPostSearch->save();
+
+            return $this->actionSearch($adsPostSearchId);
+        }
     }
 
     public function actionEditKeywords($adsPostSearchId)
@@ -694,7 +1033,7 @@ class FindAdsController extends Controller
                 $adsPost->getPhotos()->count() ? $adsPost->getPhotos()->one()->file_id : null,
                 $this->render('post-matches', [
                     'adsPost' => $adsPost,
-                    'user' => User::findOne($adsPost->user_id),
+                    'user' => TelegramUser::findOne($adsPost->user_id),
                     'currency' => Currency::findOne($adsPost->currency_id),
                     'categoryName' => AdCategory::getPlaceName($adsPost->category_id),
                     'keywords' => self::getKeywordsAsString($adsPost->getKeywords()->all()),

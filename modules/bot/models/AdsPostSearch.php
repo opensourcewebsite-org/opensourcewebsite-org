@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\bot\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 
 class AdsPostSearch extends ActiveRecord
@@ -21,7 +22,7 @@ class AdsPostSearch extends ActiveRecord
         return [
             [['user_id', 'category_id', 'radius', 'location_latitude', 'location_longitude', 'updated_at', 'status'], 'required'],
             [['location_latitude', 'location_longitude', 'status'], 'string'],
-            [['id', 'category_id', 'user_id', 'radius', 'updated_at'], 'integer'],
+            [['id', 'category_id', 'user_id', 'radius', 'currency_id', 'max_price', 'updated_at'], 'integer'],
         ];
     }
 
@@ -45,6 +46,10 @@ class AdsPostSearch extends ActiveRecord
 
     public function matches($adsPost)
     {
+        if ($this->matchesKeywords($adsPost)) {
+            Yii::warning("MATCH!");
+        }
+
         return $this->matchesKeywords($adsPost)
             && $this->distance($adsPost) <= $this->radius + $adsPost->delivery_km;
     }

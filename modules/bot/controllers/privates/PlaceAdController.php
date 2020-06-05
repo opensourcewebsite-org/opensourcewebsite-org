@@ -136,7 +136,13 @@ class PlaceAdController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('edit-description', ['adsPostId' => $adsPostId]),
-                            'text' => Yii::t('bot', 'Description and photo'),
+                            'text' => Yii::t('bot', 'Description'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('edit-photo', ['adsPostId' => $adsPostId]),
+                            'text' => Yii::t('bot', 'Photo'),
                         ],
                     ],
                     [
@@ -383,7 +389,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -398,33 +404,60 @@ class PlaceAdController extends Controller
 
     public function actionNewDescription($adsPostId)
     {
-        if ($message = $this->getUpdate()->getMessage()) {
-            if ($message->getPhoto()) {
-                $description = $message->getCaption() !== null ? $message->getCaption() : UserSetting::NO_DESCRIPTION;
-                $photoFileId = $message->getPhoto()[0]->getFileId();
-            } else {
-                $description = $message->getText();
-                $photoFileId = null;
-            }
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            $description = $message->getText();
 
             $adsPost = AdsPost::findOne($adsPostId);
 
             $adsPost->description = strval($description);
-            $adsPost->unlinkAll('photos', true);
-
-            if ($photoFileId !== null) {
-                $adPhoto = new AdPhoto();
-
-                $adPhoto->setAttributes([
-                    'ads_post_id' => $adsPost->id,
-                    'file_id' => $photoFileId,
-                ]);
-                $adPhoto->save();
-
-                $adsPost->link('photos', $adPhoto);
-            }
 
             $adsPost->save();
+
+            return $this->actionPost($adsPostId);
+        }
+    }
+
+    public function actionEditPhoto($adsPostId)
+    {
+        $this->getState()->setName(self::createRoute('new-photo', ['adsPostId' => $adsPostId]));
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('edit-photo'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    public function actionNewPhoto($adsPostId)
+    {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getPhoto()) {
+            $photoFileId = $message->getPhoto()[0]->getFileId();
+
+            $adsPost = AdsPost::findOne($adsPostId);
+
+            $adsPost->unlinkAll('photos', true);
+
+            $adPhoto = new AdPhoto();
+
+            $adPhoto->setAttributes([
+                'ads_post_id' => $adsPost->id,
+                'file_id' => $photoFileId,
+            ]);
+            $adPhoto->save();
+
+            $adsPost->link('photos', $adPhoto);
 
             return $this->actionPost($adsPostId);
         }
@@ -440,7 +473,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -583,7 +616,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -630,7 +663,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -682,7 +715,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -787,8 +820,8 @@ class PlaceAdController extends Controller
 
     public function actionKeywords()
     {
-        if ($this->getUpdate()->getMessage() !== null) {
-            $keywords = self::parseKeywords($this->getUpdate()->getMessage()->getText());
+        if ($message = $this->getUpdate()->getMessage()) {
+            $keywords = self::parseKeywords($message->getText());
 
             if (empty($keywords)) {
                 return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -877,29 +910,8 @@ class PlaceAdController extends Controller
 
     public function actionDescription($page = 1)
     {
-        if ($message = $this->getUpdate()->getMessage()) {
-
-            if ($message->getPhoto() !== null) {
-                $photoFileId = $message->getPhoto()[0]->getFileId();
-                $description = $message->getCaption() !== null ? $message->getCaption() : UserSetting::NO_DESCRIPTION;
-            } else {
-                $photoFileId = UserSetting::NO_PHOTO_FILE_ID;
-                $description = $message->getText();
-            }
-
-            $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_PHOTO_FILE_ID);
-
-            if (!isset($setting)) {
-                $setting = new UserSetting();
-
-                $setting->setAttributes([
-                    'user_id' => $this->getTelegramUser()->id,
-                    'setting' => UserSetting::PLACE_AD_PHOTO_FILE_ID,
-                ]);
-            }
-
-            $setting->value = $photoFileId;
-            $setting->save();
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            $description = $message->getText();
 
             $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_DESCRIPTION);
 
@@ -916,6 +928,73 @@ class PlaceAdController extends Controller
             $setting->value = $description;
             $setting->save();
         }
+
+        $this->getState()->setName(self::createRoute('photo-send'));
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('description'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('photo-skip'),
+                            'text' => Yii::t('bot', 'Skip'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('keywords'),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    public function actionPhotoSend($page = 1)
+    {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getPhoto()) {
+            $photoFileId = $message->getPhoto()[0]->getFileId();
+
+            $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_PHOTO_FILE_ID);
+
+            if (!isset($setting)) {
+                $setting = new UserSetting();
+
+                $setting->setAttributes([
+                    'user_id' => $this->getTelegramUser()->id,
+                    'setting' => UserSetting::PLACE_AD_PHOTO_FILE_ID,
+                ]);
+            }
+
+            $setting->value = $photoFileId;
+            $setting->save();
+        }
+
+        return $this->actionPhoto($page);
+    }
+
+    public function actionPhotoSkip($page = 1)
+    {
+        $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_PHOTO_FILE_ID);
+
+        $setting->setAttributes([
+            'value' => null,
+        ]);
+
+        $setting->save();
+
+        return $this->actionPhoto($page);
+    }
+
+    public function actionPhoto($page = 1)
+    {
+        $this->getState()->setName(null);
 
         $currencyQuery = Currency::find();
 
@@ -954,12 +1033,12 @@ class PlaceAdController extends Controller
         }
 
         $buttons[] = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('description', ['page' => $page]);
+            return self::createRoute('photo', ['page' => $page]);
         });
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('keywords'),
+                'callback_data' => self::createRoute('description'),
                 'text' => Emoji::BACK,
             ],
             [
@@ -968,11 +1047,9 @@ class PlaceAdController extends Controller
             ],
         ];
 
-        $this->getState()->setName(null);
-
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('description'),
+                $this->render('photo'),
                 $buttons
             )
             ->build();
@@ -1080,10 +1157,10 @@ class PlaceAdController extends Controller
 
     public function actionLocation($update = true, $userLocation = false)
     {
-        $this->getState()->setName(self::createRoute('radius'));
+        $this->getState()->setName(self::createRoute('radius-send'));
 
         $message = $this->getUpdate()->getMessage();
-        $isLocationInText = $message->getText() && UserSetting::validateLocation($message->getText());
+        $isLocationInText = $message && $message->getText() && UserSetting::validateLocation($message->getText());
 
         if ($update && (($message && $message->getLocation()) || $userLocation || $isLocationInText)) {
             if ($userLocation) {
@@ -1139,8 +1216,18 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('radius-skip'),
+                            'text' => Yii::t('bot', 'No delivery'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('price'),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]
@@ -1148,38 +1235,66 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionRadius()
+    public function actionRadiusSkip()
     {
-        $radius = $this->getUpdate()->getMessage()->getText();
-
-        if (!UserSetting::validateRadius($radius)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->editMessageTextOrSendMessage(
-                    $this->render('radius-error')
-                )
-                ->merge($this->actionLocation(false))
-                ->build();
-        }
-
         $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_RADIUS);
 
         if (!isset($setting)) {
             $setting = new UserSetting();
 
             $setting->setAttributes([
-                'user_id' => $this->getTelegramUser()->id,
+                'user_id' => $this->getTelegramUser(),
                 'setting' => UserSetting::PLACE_AD_RADIUS,
-                'value' => $radius,
             ]);
         }
 
-        $setting->value = $radius;
+        $setting->setAttributes([
+            'value' => '0',
+        ]);
         $setting->save();
 
+        return $this->actionRadius();
+    }
+
+    public function actionRadiusSend()
+    {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            if (!UserSetting::validateRadius($message->getText())) {
+                return ResponseBuilder::fromUpdate($this->getUpdate())
+                    ->editMessageTextOrSendMessage(
+                        $this->render('radius-error')
+                    )
+                    ->merge($this->actionLocation(false))
+                    ->build();
+            }
+
+            $radius = $message->getText();
+            $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_RADIUS);
+
+            if (!isset($setting)) {
+                $setting = new UserSetting();
+
+                $setting->setAttributes([
+                    'user_id' => $this->getTelegramUser()->id,
+                    'setting' => UserSetting::PLACE_AD_RADIUS,
+                ]);
+            }
+
+            $setting->setAttributes([
+                'value' => $radius,
+            ]);
+            $setting->save();
+
+            return $this->actionRadius();
+        }
+    }
+
+    public function actionRadius()
+    {
         return $this->actionPlace();
     }
 
-    public function actionPlace()
+    public function actionPlace() 
     {
         $adsPost = new AdsPost();
         $user = $this->getTelegramUser();

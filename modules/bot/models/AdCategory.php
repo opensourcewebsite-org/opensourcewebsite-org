@@ -18,7 +18,7 @@ class AdCategory
             case self::RENT_ID:
                 return Yii::t('bot', 'Rent');
             case self::SERVICES_ID:
-                return Yii::t('bot', 'Services');
+                return Yii::t('bot_ad', 'Services');
             default:
                 Yii::warning('No ID for categoryId: ' . $categoryId);
                 return '';
@@ -33,7 +33,7 @@ class AdCategory
             case self::RENT_ID:
                 return Yii::t('bot', 'Rent');
             case self::SERVICES_ID:
-                return Yii::t('bot', 'Services');
+                return Yii::t('bot_ad', 'Services');
             default:
                 Yii::warning('No ID for categoryId: ' . $categoryId);
                 return '';

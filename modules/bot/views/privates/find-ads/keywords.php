@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send search location') ?>
+<?= Yii::t('bot', 'Choose currency of max price of search') ?>

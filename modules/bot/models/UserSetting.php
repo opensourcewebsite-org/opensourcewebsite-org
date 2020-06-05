@@ -17,6 +17,8 @@ class UserSetting extends ActiveRecord
     public const PLACE_AD_RADIUS = 'place_ad_radius';
 
     public const FIND_AD_CATEGORY_ID = 'find_ad_category_id';
+    public const FIND_AD_CURRENCY_ID = 'find_ad_currency_id';
+    public const FIND_AD_MAX_PRICE = 'find_ad_max_price';
     public const FIND_AD_LOCATION_LATITUDE = 'find_ad_location_latitude';
     public const FIND_AD_LOCATION_LONGITUDE = 'find_ad_location_longitude';
     public const FIND_AD_RADIUS = 'find_ad_radius';

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Choose currency') ?>
+<?= Yii::t('bot', 'Send photo') ?>
