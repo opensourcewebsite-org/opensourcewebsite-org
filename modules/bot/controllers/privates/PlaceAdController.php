@@ -190,27 +190,6 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    private function getMatchedPostSearches($adsPost)
-    {
-        $adsPostSearches = AdsPostSearch::find()
-            ->where([
-                'category_id' => $adsPost->category_id,
-                'status' => AdsPostSearch::STATUS_ACTIVATED,
-            ])
-            ->andWhere(['>=', 'updated_at', time() - 14 * 24 * 60 * 60])
-            ->all();
-
-        $matchedPostSearches = [];
-
-        foreach ($adsPostSearches as $adsPostSearch) {
-            if ($adsPostSearch->matches($adsPost)) {
-                $matchedPostSearches[] = $adsPostSearch;
-            }
-        }
-
-        return $matchedPostSearches;
-    }
-
     public function actionPost($adsPostId)
     {
         $this->updatePost($adsPostId);
@@ -226,7 +205,7 @@ class PlaceAdController extends Controller
             'text' => 'Status: ' . ($adsPost->isActive() ? 'ON' : 'OFF'),
         ];
 
-        $matchedPostSearchesCount = count($this->getMatchedPostSearches($adsPost));
+        $matchedPostSearchesCount = $adsPost->getMatches()->count();
 
         if ($matchedPostSearchesCount > 0) {
             $buttons[][] = [
@@ -285,7 +264,7 @@ class PlaceAdController extends Controller
     {
         $adsPost = AdsPost::findOne($adsPostId);
 
-        $matchedPostSearches = $this->getMatchedPostSearches($adsPost);
+        $matchedPostSearches = $adsPost->getMatches()->all();
 
         if (empty($matchedPostSearches)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -494,10 +473,7 @@ class PlaceAdController extends Controller
             $keywords = self::parseKeywords($this->getUpdate()->getMessage()->getText());
 
             if (empty($keywords)) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('keywords-error'))
-                    ->merge($this->actionEditKeywords($adsPostId))
-                    ->build();
+                return $this->actionEditKeywords($adsPostId);
             }
 
             $adsPost->unlinkAll('keywords', true);
@@ -517,6 +493,8 @@ class PlaceAdController extends Controller
 
                 $adsPost->link('keywords', $adKeyword);
             }
+
+            $adsPost->markToUpdateMatches();
 
             return $this->actionPost($adsPostId);
         }
@@ -633,10 +611,7 @@ class PlaceAdController extends Controller
     {
         if ($message = $this->getUpdate()->getMessage()) {
             if (!UserSetting::validatePrice($message->getText())) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('price-error'))
-                    ->merge($this->actionEditPrice($adsPostId))
-                    ->build();
+                return $this->actionEditPrice($adsPostId);
             }
 
             $price = $message->getText();
@@ -700,6 +675,7 @@ class PlaceAdController extends Controller
             ]);
 
             $adsPost->save();
+            $adsPost->markToUpdateMatches();
 
             return $this->actionPost($adsPostId);
         }
@@ -740,6 +716,7 @@ class PlaceAdController extends Controller
             ]);
 
             $adsPost->save();
+            $adsPost->markToUpdateMatches();
 
             return $this->actionPost($adsPostId);
         }
@@ -824,10 +801,7 @@ class PlaceAdController extends Controller
             $keywords = self::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('keywords-error'))
-                    ->merge($this->actionTitle(false))
-                    ->build();
+                return $this->actionTitle(false);
             }
 
             UserSetting::deleteAll([
@@ -1104,10 +1078,7 @@ class PlaceAdController extends Controller
     {
         if ($update && ($message = $this->getUpdate()->getMessage())) {
             if (!UserSetting::validatePrice($message->getText())) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('price-error'))
-                    ->merge($this->actionCurrency())
-                    ->build();
+                return $this->actionCurrency();
             }
 
             $setting = $this->getTelegramUser()->getSetting(UserSetting::PLACE_AD_PRICE);
@@ -1204,10 +1175,7 @@ class PlaceAdController extends Controller
             $setting->value = strval($longitude);
             $setting->save();
         } elseif ($update) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->editMessageTextOrSendMessage($this->render('location-error'))
-                ->merge($this->actionPrice(false))
-                ->build();
+            return $this->actionPrice(false);
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -1260,12 +1228,7 @@ class PlaceAdController extends Controller
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             if (!UserSetting::validateRadius($message->getText())) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage(
-                        $this->render('radius-error')
-                    )
-                    ->merge($this->actionLocation(false))
-                    ->build();
+                return $this->actionLocation(false);
             }
 
             $radius = $message->getText();
@@ -1313,6 +1276,7 @@ class PlaceAdController extends Controller
             'status' => AdsPost::STATUS_NOT_ACTIVATED,
             'created_at' => time(),
             'updated_at' => time(),
+            'edited_at' => time(),
         ]);
 
         $adsPost->save();
