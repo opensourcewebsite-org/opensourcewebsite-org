@@ -142,10 +142,7 @@ class FindAdsController extends Controller
             $keywords = PlaceAdController::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('keywords-error'))
-                    ->merge($this->actionAdd($this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value))
-                    ->build();
+                return $this->actionAdd($this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value);
             }
 
             UserSetting::deleteAll([
@@ -317,10 +314,7 @@ class FindAdsController extends Controller
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             if (!UserSetting::validatePrice($message->getText())) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('price-error'))
-                    ->merge($this->actionKeywords())
-                    ->build();
+                return $this->actionKeywords();
             }
 
             $maxPrice = intval(doubleval($message->getText()) * 100);
@@ -478,10 +472,7 @@ class FindAdsController extends Controller
         $radius = $this->getUpdate()->getMessage()->getText();
 
         if (!UserSetting::validateRadius($radius)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->editMessageTextOrSendMessage($this->render('radius-error'))
-                ->merge($this->actionLocation(false))
-                ->build();
+            return $this->actionLocation(false);
         }
 
         $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_RADIUS);
@@ -533,6 +524,7 @@ class FindAdsController extends Controller
             'location_longitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE)->value,
             'updated_at' => time(),
             'status' => AdsPostSearch::STATUS_NOT_ACTIVATED,
+            'edited_at' => time(),
         ]);
 
         $adsPostSearch->save();
@@ -559,7 +551,7 @@ class FindAdsController extends Controller
             'text' => 'Status: ' . ($adsPostSearch->isActive() ? 'ON' : 'OFF'),
         ];
 
-        $matchedPostsCount = count($this->getMatchedPosts($adsPostSearch));
+        $matchedPostsCount = $adsPostSearch->getMatches()->count();
 
         if ($matchedPostsCount > 0) {
             $buttons[][] = [
@@ -784,10 +776,7 @@ class FindAdsController extends Controller
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             if (!UserSetting::validatePrice($message->getText())) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('max-price-error'))
-                    ->merge($this->actionEditMaxPrice($adsPostSearchId))
-                    ->build();
+                return $this->actionEditMaxPrice($adsPostSearchId);
             }
 
             $maxPrice = intval(doubleval($message->getText()) * 100);
@@ -832,10 +821,7 @@ class FindAdsController extends Controller
             $keywords = PlaceAdController::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return ResponseBuilder::fromUpdate($this->getUpdate())
-                    ->editMessageTextOrSendMessage($this->render('keywords-error'))
-                    ->merge($this->actionEditKeywords($adsPostSearchId))
-                    ->build();
+                return $this->actionEditKeywords($adsPostSearchId);
             }
 
             $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
@@ -857,6 +843,8 @@ class FindAdsController extends Controller
 
                 $adsPostSearch->link('keywords', $adKeyword);
             }
+
+            $adsPostSearch->markToUpdateMatches();
 
             return $this->actionSearch($adsPostSearchId);
         }
@@ -906,6 +894,7 @@ class FindAdsController extends Controller
                 'location_longitude' => $longitude,
             ]);
             $adsPostSearch->save();
+            $adsPostSearch->markToUpdateMatches();
 
             return $this->actionSearch($adsPostSearchId);
         }
@@ -945,6 +934,7 @@ class FindAdsController extends Controller
                 'radius' => $radius,
             ]);
             $adsPostSearch->save();
+            $adsPostSearch->markToUpdateMatches();
 
             return $this->actionSearch($adsPostSearchId);
         }
@@ -962,32 +952,11 @@ class FindAdsController extends Controller
         return $this->actionSearch($adsPostSearchId);
     }
 
-    private function getMatchedPosts($adsPostSearch)
-    {
-        $allAdsPosts = AdsPost::find()
-            ->where([
-                'category_id' => $adsPostSearch->category_id,
-                'status' => AdsPost::STATUS_ACTIVATED,
-            ])
-            ->andWhere(['>=', 'updated_at', time() - 14 * 24 * 60 * 60])
-            ->all();
-
-        $adsPosts = [];
-
-        foreach ($allAdsPosts as $adsPostToCheck) {
-            if ($adsPostSearch->matches($adsPostToCheck)) {
-                $adsPosts[] = $adsPostToCheck;
-            }
-        }
-
-        return $adsPosts;
-    }
-
     public function actionPostMatches($adsPostSearchId, $page = 1)
     {
         $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
 
-        $adsPosts = $this->getMatchedPosts($adsPostSearch);
+        $adsPosts = $adsPostSearch->getMatches()->all();
 
         if (empty($adsPosts)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())

@@ -22,7 +22,7 @@ class AdsPostSearch extends ActiveRecord
         return [
             [['user_id', 'category_id', 'radius', 'location_latitude', 'location_longitude', 'updated_at', 'status'], 'required'],
             [['location_latitude', 'location_longitude', 'status'], 'string'],
-            [['id', 'category_id', 'user_id', 'radius', 'currency_id', 'max_price', 'updated_at'], 'integer'],
+            [['id', 'category_id', 'user_id', 'radius', 'currency_id', 'max_price', 'updated_at', 'edited_at'], 'integer'],
         ];
     }
 
@@ -46,12 +46,9 @@ class AdsPostSearch extends ActiveRecord
 
     public function matches($adsPost)
     {
-        if ($this->matchesKeywords($adsPost)) {
-            Yii::warning("MATCH!");
-        }
-
         return $this->matchesKeywords($adsPost)
-            && $this->distance($adsPost) <= $this->radius + $adsPost->delivery_km;
+            && $this->distance($adsPost) <= $this->radius + $adsPost->delivery_km
+            && $this->category_id == $adsPost->category_id;
     }
 
     private function matchesKeywords($adsPost)
@@ -90,5 +87,47 @@ class AdsPostSearch extends ActiveRecord
         $dist = $ad * self::EARTH_RADIUS;
 
         return $dist;
+    }
+
+    public function getMatches()
+    {
+        return $this->hasMany(AdsPost::className(), ['id' => 'ads_post_id'])
+            ->viaTable('{{%ad_matches}}', ['ads_post_search_id' => 'id']);
+    }
+
+    public function updateMatches()
+    {
+        $this->unlinkAll('matches', true);
+
+        if (!$this->isActive()) {
+            return;
+        }
+
+        foreach ($this->getKeywords()->all() as $adKeyword) {
+            foreach (AdsPostKeyword::find()->where([
+                'keyword_id' => $adKeyword->id,
+            ])->all() as $adsPostKeyword) {
+                $adsPost = AdsPost::findOne($adsPostKeyword->ads_post_id);
+
+                $adsPostMatches = $this->getMatches()->where([
+                    'id' => $adsPost->id
+                ])->one();
+
+                if ($this->matches($adsPost) && !isset($adsPostMatches) && $adsPost->isActive()) {
+                    $this->link('matches', $adsPost);
+                }
+            }
+        }
+    }
+
+    public function markToUpdateMatches()
+    {
+        if ($this->edited_at === null) {
+            $this->setAttributes([
+                'edited_at' => time(),
+            ]);
+
+            $this->save();
+        } 
     }
 }
