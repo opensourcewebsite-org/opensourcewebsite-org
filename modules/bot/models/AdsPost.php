@@ -20,7 +20,7 @@ class AdsPost extends ActiveRecord
     {
         return [
             [['user_id', 'title', 'description', 'currency_id', 'price', 'location_lat', 'location_lon', 'category_id', 'status', 'created_at', 'updated_at'], 'required'],
-            [['title', 'description', 'photo_file_id', 'location_lat', 'location_lon', 'status'], 'string'],
+            [['title', 'description', 'location_lat', 'location_lon', 'status'], 'string'],
             [['user_id', 'currency_id', 'price', 'delivery_km', 'category_id', 'created_at', 'updated_at'], 'integer'],
         ];
     }
