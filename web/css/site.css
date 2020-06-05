@@ -154,3 +154,70 @@ a.desc:after {
     right: 0;
     top: 0;
 }
+
+.lif-td {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* Fix some styles for language button */
+
+.dropbtn-inner {
+    color: gray;
+}
+
+.dropbtn-inner:hover {
+    color: black;
+}
+
+.dropdown-menu-inner {
+    padding-top: 0;
+}
+
+.dropdown-menu-inner input[type=text] {
+    padding: 10px 16px;
+    margin: 0;
+    border: none;
+    font-size: 15px;
+    width: 100%;
+    outline: none;
+}
+
+.dropdown-menu-inner .search-container button {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    padding: 9px 15px;
+    margin-right: 0;
+    margin-top: 0;
+    background: transparent;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Language menu */
+
+#lang-menu {
+    overflow: auto;
+    min-width: 300px;
+    max-height: 200px;
+}
+
+#search-lang {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: .7rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #eee;
+}

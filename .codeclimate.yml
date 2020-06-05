@@ -89,6 +89,12 @@ plugins:
         enabled: false
       Design/NpathComplexity:
         enabled: false
+      Design/TooManyFields:
+        enabled: false
+      Design/TooManyMethods:
+        enabled: false
+      Design/TooManyPublicMethods:
+        enabled: false
       Design/WeightedMethodCount:
         enabled: false
       Naming/LongVariable:

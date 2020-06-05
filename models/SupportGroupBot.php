@@ -100,7 +100,7 @@ class SupportGroupBot extends \yii\db\ActiveRecord
             $botApi->setProxy(Yii::$app->params['telegramProxy']);
         }
 
-        $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram/' . $this->token]);
+        $url = Yii::$app->params['baseUrl'] . '/webhook/telegram/' . $this->token;
         $url = str_replace('http:', 'https:', $url);
         return $botApi->setWebhook($url);
     }

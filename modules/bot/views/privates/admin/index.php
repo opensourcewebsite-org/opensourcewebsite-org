@@ -5,4 +5,4 @@
 - <?= Yii::t('bot', 'Add the bot to your group as administrator') ?>.<br/>
 - <?= Yii::t('bot', 'Give the bot a permission to delete messages and ban users') ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'Type command /refresh in your group to add the group to the list, or update the list of group administrators') ?>.
+<b>/refresh</b> - <?= Yii::t('bot', 'send to your group to add the group to the list, or update the list of group administrators'); ?>.

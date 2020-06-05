@@ -1,6 +1,10 @@
 # Contributing Guidelines
 
+[Русская версия](CONTRIBUTING.ru.md)
+
 First off, thanks for taking the time to contribute!
+
+Your contributions increase your Rating in our community.
 
 Please read through our [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
 
@@ -150,4 +154,6 @@ Recommended IDE:
 
 ### Composer
 
-In any case when `composer.json` file is updated, add `composer.json` and `composer.lock` files to the same commit.
+In all cases when `composer.json` file is updated, add ` composer.json` and `composer.lock` files to the same commit.
+
+Each package must contain specific version. Don't use `*` and `@dev` versions.

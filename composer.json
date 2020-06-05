@@ -26,6 +26,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.4",
+        "ext-bcmath": "*",
         "ext-json": "*",
         "ext-PDO": "*",
         "ext-intl": "*",
@@ -45,7 +46,9 @@
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
         "ivankff/yii2-modal-ajax": "^4.1",
-        "yiisoft/yii2-bootstrap4": "^2.0"
+        "yiisoft/yii2-bootstrap4": "^2.0",
+        "yii2tech/ar-position": "^1.0",
+        "voskobovich/yii2-linker-behavior": "^4.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",

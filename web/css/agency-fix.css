@@ -55,12 +55,6 @@ a:hover {
   display:block;
 }
 
-@media (max-width: 992px) {
-  .dropbtn {
-    margin-right: 20px;
-  }
-}
-
 .dropdown-menu input[type=text] {
   padding: 6px;
   border: none;
