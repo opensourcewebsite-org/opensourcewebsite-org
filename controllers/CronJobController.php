@@ -5,8 +5,8 @@ namespace app\controllers;
 use app\models\CronJob;
 use app\models\search\CronJobSearch;
 use Yii;
-use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -16,8 +16,7 @@ use yii\web\NotFoundHttpException;
  */
 class CronJobController extends Controller
 {
-
-    /**
+    /**f
      * {@inheritdoc}
      */
     public function behaviors()
@@ -43,15 +42,14 @@ class CronJobController extends Controller
      */
     public function actionIndex()
     {
-
         $searchModel = new CronJobSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'jobs'         => $this->findJobModel(),
-            'searchModel'  => $searchModel,
+            'jobs' => $this->findJobModel(),
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'jobId'        => null,
+            'jobId' => null,
         ]);
     }
 
@@ -70,10 +68,10 @@ class CronJobController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'jobs'         => $this->findJobModel(),
-            'searchModel'  => $searchModel,
+            'jobs' => $this->findJobModel(),
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'jobId'        => $id,
+            'jobId' => $id,
         ]);
     }
 
