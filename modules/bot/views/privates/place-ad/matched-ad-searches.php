@@ -1,8 +1,8 @@
 <b>🔍 <?= Yii::t('bot', $categoryName) ?></b><br/>
 <br/>
 <b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= Yii::t('bot', $keywords) ?><br/>
-<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adsPostSearch->location_latitude ?> <?= $adsPostSearch->location_longitude ?></a><br/>
-<b><?= Yii::t('bot', 'Pickup radius') ?>:</b> <?= $adsPostSearch->radius ?> <?= Yii::t('bot', 'km') ?><br/>
+<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adSearch->location_latitude ?> <?= $adSearch->location_longitude ?></a><br/>
+<b><?= Yii::t('bot', 'Pickup radius') ?>:</b> <?= $adSearch->pickup_radius ?> <?= Yii::t('bot', 'km') ?><br/>
 <br/>
 <?php if ($user->provider_user_name) : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>

@@ -1,4 +1,4 @@
-💰 <b><?= $categoryName ?></b><br/>
+<b>💰 <?= $categoryName ?></b><br/>
 <br/>
 <?= $adOrder->title ?><br/>
 <br/>
@@ -10,6 +10,8 @@
 <b><?= Yii::t('bot', 'Delivery radius') ?>:</b> <?= $adOrder->delivery_radius ?> <?= Yii::t('bot', 'km') ?><br/>
 <?php endif; ?>
 <br/>
-<?php if ($adOrder->isActive() && $showDetailedInfo) : ?>
-<i><?= Yii::t('bot', 'This ad will be active for') ?> <?= $liveDays ?> <?= Yii::t('bot', 'days. Visit this page again before expiring time to automatically extend ad action') ?>.</i>
+<?php if ($user->provider_user_name) : ?>
+<b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
+<?php else : ?>
+<b><?= Yii::t('bot', 'Contact') ?>:</b> <a href = "tg://user?id=<?= $user->provider_user_id ?>"><?= $user->provider_user_first_name ?> <?= $user->provider_user_last_name ?></a>
 <?php endif; ?>

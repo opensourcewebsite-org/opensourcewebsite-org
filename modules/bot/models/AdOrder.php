@@ -5,7 +5,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 
-class AdsPost extends ActiveRecord
+class AdOrder extends ActiveRecord
 {
     public const STATUS_ACTIVATED = 'activated';
     public const STATUS_NOT_ACTIVATED = 'not_activated';
@@ -14,15 +14,15 @@ class AdsPost extends ActiveRecord
 
     public static function tableName()
     {
-        return 'ads_post';
+        return 'ad_order';
     }
 
     public function rules()
     {
         return [
-            [['user_id', 'title', 'description', 'currency_id', 'price', 'location_lat', 'location_lon', 'category_id', 'status', 'created_at', 'updated_at'], 'required'],
-            [['title', 'description', 'location_lat', 'location_lon', 'status'], 'string'],
-            [['user_id', 'currency_id', 'price', 'delivery_km', 'category_id', 'created_at', 'updated_at', 'edited_at'], 'integer'],
+            [['user_id', 'category_id', 'title', 'description', 'currency_id', 'price', 'location_latitude', 'location_longitude', 'delivery_radius', 'status', 'created_at', 'renewed_at'], 'required'],
+            [['title', 'description', 'location_latitude', 'location_longitude', 'status'], 'string'],
+            [['user_id', 'currency_id', 'price', 'delivery_radius', 'category_id', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
         ];
     }
 
@@ -35,13 +35,13 @@ class AdsPost extends ActiveRecord
 
     public function getKeywords()
     {
-        return $this->hasMany(AdKeyword::className(), ['id' => 'keyword_id'])
-            ->viaTable('{{%ads_post_keyword}}', ['ads_post_id' => 'id']);
+        return $this->hasMany(AdKeyword::className(), ['id' => 'ad_keyword_id'])
+            ->viaTable('{{%ad_order_keyword}}', ['ad_order_id' => 'id']);
     }
 
     public function getPhotos()
     {
-        return $this->hasMany(AdPhoto::className(), ['ads_post_id' => 'id']);
+        return $this->hasMany(AdPhoto::className(), ['ad_order_id' => 'id']);
     }
 
     public function getStatusName()
@@ -59,13 +59,13 @@ class AdsPost extends ActiveRecord
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVATED && (time() - $this->updated_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ACTIVATED && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 
     public function getMatches()
     {
-        return $this->hasMany(AdsPostSearch::className(), ['id' => 'ads_post_search_id'])
-            ->viaTable('{{%ad_matches}}', ['ads_post_id' => 'id']);
+        return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
+            ->viaTable('{{%ad_matches}}', ['ad_order_id' => 'id']);
     }
 
     public function updateMatches()
@@ -77,17 +77,17 @@ class AdsPost extends ActiveRecord
         }
         
         foreach ($this->getKeywords()->all() as $adKeyword) {
-            foreach (AdsPostSearchKeyword::find()->where([
-                'keyword_id' => $adKeyword->id,
-            ])->all() as $adsPostSearchKeyword) {
-                $adsPostSearch = AdsPostSearch::findOne($adsPostSearchKeyword->ads_post_search_id);
+            foreach (AdSearchKeyword::find()->where([
+                'ad_keyword_id' => $adKeyword->id,
+            ])->all() as $adSearchKeyword) {
+                $adSearch = AdSearch::findOne($adSearchKeyword->ad_search_id);
 
-                $adsPostSearchMatches = $this->getMatches()->where([
-                    'id' => $adsPostSearch->id,
+                $adSearchMatches = $this->getMatches()->where([
+                    'id' => $adSearch->id,
                 ])->one();
 
-                if ($adsPostSearch->matches($this) && !isset($adsPostSearchMatches) && $adsPostSearch->isActive()) {
-                    $this->link('matches', $adsPostSearch);
+                if ($adSearch->matches($this) && !isset($adSearchMatches) && $adSearch->isActive()) {
+                    $this->link('matches', $adSearch);
                 }
             }
         }

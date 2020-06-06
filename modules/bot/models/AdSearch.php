@@ -4,7 +4,7 @@ namespace app\modules\bot\models;
 use Yii;
 use yii\db\ActiveRecord;
 
-class AdsPostSearch extends ActiveRecord
+class AdSearch extends ActiveRecord
 {
     private const EARTH_RADIUS = 6372.795;
     public const STATUS_ACTIVATED = 'activated';
@@ -14,15 +14,15 @@ class AdsPostSearch extends ActiveRecord
 
     public static function tableName()
     {
-        return 'ads_post_search';
+        return 'ad_search';
     }
 
     public function rules()
     {
         return [
-            [['user_id', 'category_id', 'radius', 'location_latitude', 'location_longitude', 'updated_at', 'status'], 'required'],
+            [['user_id', 'category_id', 'pickup_radius', 'location_latitude', 'location_longitude', 'status', 'renewed_at'], 'required'],
             [['location_latitude', 'location_longitude', 'status'], 'string'],
-            [['category_id', 'user_id', 'radius', 'currency_id', 'max_price', 'updated_at', 'edited_at'], 'integer'],
+            [['user_id', 'category_id', 'currency_id', 'max_price', 'pickup_radius', 'renewed_at', 'edited_at'], 'integer'],
         ];
     }
 
@@ -35,42 +35,42 @@ class AdsPostSearch extends ActiveRecord
 
     public function getKeywords()
     {
-        return $this->hasMany(AdKeyword::className(), ['id' => 'keyword_id'])
-            ->viaTable('{{%ads_post_search_keyword}}', ['ads_post_search_id' => 'id']);
+        return $this->hasMany(AdKeyword::className(), ['id' => 'ad_keyword_id'])
+            ->viaTable('{{%ad_search_keyword}}', ['ad_search_id' => 'id']);
     }
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVATED && (time() - $this->updated_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ACTIVATED && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 
-    public function matches($adsPost)
+    public function matches($adOrder)
     {
-        return $this->matchesKeywords($adsPost)
-            && $this->distance($adsPost) <= $this->radius + $adsPost->delivery_km
-            && $this->category_id == $adsPost->category_id;
+        return $this->matchesKeywords($adOrder)
+            && $this->distance($adOrder) <= $this->pickup_radius + $adOrder->delivery_radius
+            && $this->category_id == $adOrder->category_id;
     }
 
-    private function matchesKeywords($adsPost)
+    private function matchesKeywords($adOrder)
     {
-        $adsPostSearchKeywords = array_map(function ($adKeyword) {
+        $adSearchKeywords = array_map(function ($adKeyword) {
             return $adKeyword->id;
         }, $this->getKeywords()->all());
 
-        $adsPostKeywords = array_map(function ($adKeyword) {
+        $adOrderKeywords = array_map(function ($adKeyword) {
             return $adKeyword->id;
-        }, $adsPost->getKeywords()->all());
+        }, $adOrder->getKeywords()->all());
 
-        return !empty(array_intersect($adsPostSearchKeywords, $adsPostKeywords));
+        return !empty(array_intersect($adSearchKeywords, $adOrderKeywords));
     }
 
-    private function distance($adsPost)
+    private function distance($adOrder)
     {
         $lat1 = doubleval($this->location_latitude) * M_PI / 180;
         $lon1 = doubleval($this->location_longitude) * M_PI / 180;
 
-        $lat2 = doubleval($adsPost->location_lat) * M_PI / 180;
-        $lon2 = doubleval($adsPost->location_lon) * M_PI / 180;
+        $lat2 = doubleval($adOrder->location_latitude) * M_PI / 180;
+        $lon2 = doubleval($adOrder->location_longitude) * M_PI / 180;
 
         $cl1 = cos($lat1);
         $cl2 = cos($lat2);
@@ -91,8 +91,8 @@ class AdsPostSearch extends ActiveRecord
 
     public function getMatches()
     {
-        return $this->hasMany(AdsPost::className(), ['id' => 'ads_post_id'])
-            ->viaTable('{{%ad_matches}}', ['ads_post_search_id' => 'id']);
+        return $this->hasMany(AdOrder::className(), ['id' => 'ad_order_id'])
+            ->viaTable('{{%ad_matches}}', ['ad_search_id' => 'id']);
     }
 
     public function updateMatches()
@@ -104,17 +104,17 @@ class AdsPostSearch extends ActiveRecord
         }
 
         foreach ($this->getKeywords()->all() as $adKeyword) {
-            foreach (AdsPostKeyword::find()->where([
-                'keyword_id' => $adKeyword->id,
-            ])->all() as $adsPostKeyword) {
-                $adsPost = AdsPost::findOne($adsPostKeyword->ads_post_id);
+            foreach (AdOrderKeyword::find()->where([
+                'ad_keyword_id' => $adKeyword->id,
+            ])->all() as $adOrderKeyword) {
+                $adOrder = AdOrder::findOne($adOrderKeyword->ad_order_id);
 
-                $adsPostMatches = $this->getMatches()->where([
-                    'id' => $adsPost->id
+                $adOrderMatches = $this->getMatches()->where([
+                    'id' => $adOrder->id
                 ])->one();
 
-                if ($this->matches($adsPost) && !isset($adsPostMatches) && $adsPost->isActive()) {
-                    $this->link('matches', $adsPost);
+                if ($this->matches($adOrder) && !isset($adOrderMatches) && $adOrder->isActive()) {
+                    $this->link('matches', $adOrder);
                 }
             }
         }

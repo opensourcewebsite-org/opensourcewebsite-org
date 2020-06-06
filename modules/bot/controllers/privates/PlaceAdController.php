@@ -7,9 +7,9 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdKeyword;
-use app\modules\bot\models\AdsPost;
+use app\modules\bot\models\AdOrder;
 use app\modules\bot\models\AdCategory;
-use app\modules\bot\models\AdsPostSearch;
+use app\modules\bot\models\AdSearch;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\models\AdPhoto;
 use app\models\User;
@@ -25,15 +25,15 @@ class PlaceAdController extends Controller
 
         $buttons = [];
 
-        $adsPostQuery = AdsPost::find()->where([
+        $adOrderQuery = AdOrder::find()->where([
             'user_id' => $this->getTelegramUser()->id,
             'category_id' => $adCategoryId,
         ]);
 
-        $adsPostCount = $adsPostQuery->count();
+        $adOrderCount = $adOrderQuery->count();
 
         $pagination = new Pagination([
-            'totalCount' => $adsPostCount,
+            'totalCount' => $adOrderCount,
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -42,13 +42,13 @@ class PlaceAdController extends Controller
             'validatePage' => true,
         ]);
 
-        foreach ($adsPostQuery
+        foreach ($adOrderQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all() as $adsPost) {
+            ->all() as $adOrder) {
             $buttons[][] = [
-                'text' => ($adsPost->isActive() ? '' : '❌ ') . $adsPost->title,
-                'callback_data' => self::createRoute('post', ['adsPostId' => $adsPost->id]),
+                'text' => ($adOrder->isActive() ? '' : '❌ ') . $adOrder->title,
+                'callback_data' => self::createRoute('post', ['adOrderId' => $adOrder->id]),
             ];
         }
 
@@ -107,67 +107,67 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionEdit($adsPostId)
+    public function actionEdit($adOrderId)
     {
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('post', [
-                    'adsPost' => $adsPost,
-                    'currency' => Currency::findOne($adsPost->currency_id),
-                    'categoryName' => AdCategory::getPlaceName($adsPost->category_id),
-                    'keywords' => self::getKeywordsAsString($adsPost->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adsPost->location_lat, $adsPost->location_lon),
-                    'liveDays' => AdsPost::LIVE_DAYS,
+                    'adOrder' => $adOrder,
+                    'currency' => Currency::findOne($adOrder->currency_id),
+                    'categoryName' => AdCategory::getPlaceName($adOrder->category_id),
+                    'keywords' => self::getKeywordsAsString($adOrder->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_latitude, $adOrder->location_longitude),
+                    'liveDays' => AdOrder::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit-title', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-title', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Title'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-keywords', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-keywords', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-description', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-description', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Description'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-photo', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-photo', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Photo'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-price', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-price', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Price'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-location', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-location', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-radius', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-radius', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Delivery radius'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('post', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -181,33 +181,33 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionPost($adsPostId)
+    public function actionPost($adOrderId)
     {
-        $this->updatePost($adsPostId);
+        $this->updatePost($adOrderId);
 
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
 
         $this->getState()->setName(null);
 
         $buttons = [];
 
         $buttons[][] = [
-            'callback_data' => self::createRoute('status', ['adsPostId' => $adsPostId]),
-            'text' => 'Status: ' . ($adsPost->isActive() ? 'ON' : 'OFF'),
+            'callback_data' => self::createRoute('status', ['adOrderId' => $adOrderId]),
+            'text' => 'Status: ' . ($adOrder->isActive() ? 'ON' : 'OFF'),
         ];
 
-        $matchedPostSearchesCount = $adsPost->getMatches()->count();
+        $matchedAdSearchesCount = $adOrder->getMatches()->count();
 
-        if ($matchedPostSearchesCount > 0) {
+        if ($matchedAdSearchesCount > 0) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('matched-post-searches', ['adsPostId' => $adsPostId]),
-                'text' => '🙋‍♂️ ' . $matchedPostSearchesCount,
+                'callback_data' => self::createRoute('matched-ad-searches', ['adOrderId' => $adOrderId]),
+                'text' => '🙋‍♂️ ' . $matchedAdSearchesCount,
             ];
         }
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('index', ['adCategoryId' => $adsPost->category_id]),
+                'callback_data' => self::createRoute('index', ['adCategoryId' => $adOrder->category_id]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -215,25 +215,25 @@ class PlaceAdController extends Controller
                 'text' => Emoji::MENU,
             ],
             [
-                'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                 'text' => Emoji::EDIT,
             ],
             [
-                'callback_data' => self::createRoute('confirm-delete', ['adsPostId' => $adsPostId]),
+                'callback_data' => self::createRoute('confirm-delete', ['adOrderId' => $adOrderId]),
                 'text' => Emoji::DELETE,
             ],
         ];
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
-                $adsPost->getPhotos()->count() ? $adsPost->getPhotos()->one()->file_id : null,
+                $adOrder->getPhotos()->count() ? $adOrder->getPhotos()->one()->file_id : null,
                 $this->render('post', [
-                    'adsPost' => $adsPost,
-                    'currency' => Currency::findOne($adsPost->currency_id),
-                    'categoryName' => AdCategory::getPlaceName($adsPost->category_id),
-                    'keywords' => self::getKeywordsAsString($adsPost->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adsPost->location_lat, $adsPost->location_lon),
-                    'liveDays' => AdsPost::LIVE_DAYS,
+                    'adOrder' => $adOrder,
+                    'currency' => Currency::findOne($adOrder->currency_id),
+                    'categoryName' => AdCategory::getPlaceName($adOrder->category_id),
+                    'keywords' => self::getKeywordsAsString($adOrder->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_latitude, $adOrder->location_longitude),
+                    'liveDays' => AdOrder::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
@@ -242,28 +242,28 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function updatePost($adsPostId)
+    public function updatePost($adOrderId)
     {
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
 
-        $adsPost->setAttributes([
-            'updated_at' => time(),
+        $adOrder->setAttributes([
+            'renewed_at' => time(),
         ]);
-        $adsPost->save();
+        $adOrder->save();
     }
 
-    public function actionMatchedPostSearches($adsPostId, $page = 1)
+    public function actionMatchedAdSearches($adOrderId, $page = 1)
     {
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
 
-        $matchedPostSearchesQuery = $adsPost->getMatches();
+        $matchedAdSearchesQuery = $adOrder->getMatches();
 
-        if ($matchedPostSearchesQuery->count() == 0) {
-            return $this->actionPost($adsPostId);
+        if ($matchedAdSearchesQuery->count() == 0) {
+            return $this->actionPost($adOrderId);
         }
 
         $pagination = new Pagination([
-            'totalCount' => $matchedPostSearchesQuery->count(),
+            'totalCount' => $matchedAdSearchesQuery->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -274,16 +274,16 @@ class PlaceAdController extends Controller
 
         $buttons = [];
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adsPostId) {
-            return self::createRoute('matched-post-searches', [
-                'adsPostId' => $adsPostId,
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adOrderId) {
+            return self::createRoute('matched-ad-searches', [
+                'adOrderId' => $adOrderId,
                 'page' => $page,
             ]);
         });
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                'callback_data' => self::createRoute('post', ['adOrderId' => $adOrderId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -292,19 +292,19 @@ class PlaceAdController extends Controller
             ],
         ];
 
-        $matchedPostSearch = $matchedPostSearchesQuery
+        $matchedAdSearch = $matchedAdSearchesQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all()[0];
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('matched-post-searches', [
-                    'categoryName' => AdCategory::getFindName($matchedPostSearch->category_id),
-                    'adsPostSearch' => $matchedPostSearch,
-                    'user' => TelegramUser::findOne($matchedPostSearch->user_id),
-                    'keywords' => self::getKeywordsAsString($matchedPostSearch->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($matchedPostSearch->location_latitude, $matchedPostSearch->location_longitude),
+                $this->render('matched-ad-searches', [
+                    'categoryName' => AdCategory::getFindName($matchedAdSearch->category_id),
+                    'adSearch' => $matchedAdSearch,
+                    'user' => TelegramUser::findOne($matchedAdSearch->user_id),
+                    'keywords' => self::getKeywordsAsString($matchedAdSearch->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_latitude, $matchedAdSearch->location_longitude),
                 ]),
                 $buttons,
                 true
@@ -312,9 +312,9 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionEditTitle($adsPostId)
+    public function actionEditTitle($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-title', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-title', ['adOrderId' => $adOrderId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -322,7 +322,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -335,25 +335,25 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewTitle($adsPostId)
+    public function actionNewTitle($adOrderId)
     {
         if ($this->getUpdate()->getMessage()) {
-            $adsPost = AdsPost::findOne($adsPostId);
+            $adOrder = AdOrder::findOne($adOrderId);
 
             $title = $this->getUpdate()->getMessage()->getText();
 
-            $adsPost->setAttributes([
+            $adOrder->setAttributes([
                 'title' => $title,
             ]);
-            $adsPost->save();
+            $adOrder->save();
 
-            return $this->actionPost($adsPostId);
+            return $this->actionPost($adOrderId);
         }
     }
 
-    public function actionEditDescription($adsPostId)
+    public function actionEditDescription($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-description', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-description', ['adOrderId' => $adOrderId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -361,7 +361,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -374,24 +374,24 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewDescription($adsPostId)
+    public function actionNewDescription($adOrderId)
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $description = $message->getText();
 
-            $adsPost = AdsPost::findOne($adsPostId);
+            $adOrder = AdOrder::findOne($adOrderId);
 
-            $adsPost->description = strval($description);
+            $adOrder->description = strval($description);
 
-            $adsPost->save();
+            $adOrder->save();
 
-            return $this->actionPost($adsPostId);
+            return $this->actionPost($adOrderId);
         }
     }
 
-    public function actionEditPhoto($adsPostId)
+    public function actionEditPhoto($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-photo', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-photo', ['adOrderId' => $adOrderId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -399,7 +399,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -412,32 +412,34 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewPhoto($adsPostId)
+    public function actionNewPhoto($adOrderId)
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getPhoto()) {
             $photoFileId = $message->getPhoto()[0]->getFileId();
 
-            $adsPost = AdsPost::findOne($adsPostId);
+            $adOrder = AdOrder::findOne($adOrderId);
 
-            $adsPost->unlinkAll('photos', true);
+            $adOrder->unlinkAll('photos', true);
 
             $adPhoto = new AdPhoto();
 
             $adPhoto->setAttributes([
-                'ads_post_id' => $adsPost->id,
+                'ad_order_id' => $adOrder->id,
                 'file_id' => $photoFileId,
             ]);
             $adPhoto->save();
 
-            $adsPost->link('photos', $adPhoto);
+            $adOrder->link('photos', $adPhoto);
 
-            return $this->actionPost($adsPostId);
+            return $this->actionPost($adOrderId);
+        } else {
+            return $this->actionEditPhoto($adOrderId);
         }
     }
 
-    public function actionEditKeywords($adsPostId)
+    public function actionEditKeywords($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-keywords', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-keywords', ['adOrderId' => $adOrderId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -445,7 +447,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -458,42 +460,44 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewKeywords($adsPostId)
+    public function actionNewKeywords($adOrderId)
     {
-        if ($this->getUpdate()->getMessage()) {
-            $adsPost = AdsPost::findOne($adsPostId);
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            $adOrder = AdOrder::findOne($adOrderId);
 
             $keywords = self::parseKeywords($this->getUpdate()->getMessage()->getText());
 
             if (empty($keywords)) {
-                return $this->actionEditKeywords($adsPostId);
+                return $this->actionEditKeywords($adOrderId);
             }
 
-            $adsPost->unlinkAll('keywords', true);
+            $adOrder->unlinkAll('keywords', true);
 
             foreach ($keywords as $keyword) {
-                $adKeyword = AdKeyword::find()->where(['word' => $keyword])->one();
+                $adKeyword = AdKeyword::find()->where(['keyword' => $keyword])->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
 
                     $adKeyword->setAttributes([
-                        'word' => $keyword,
+                        'keyword' => $keyword,
                     ]);
 
                     $adKeyword->save();
                 }
 
-                $adsPost->link('keywords', $adKeyword);
+                $adOrder->link('keywords', $adKeyword);
             }
 
-            $adsPost->markToUpdateMatches();
+            $adOrder->markToUpdateMatches();
 
-            return $this->actionPost($adsPostId);
+            return $this->actionPost($adOrderId);
+        } else {
+            return $this->actionEditKeyword($adOrderId);
         }
     }
 
-    public function actionEditCurrency($adsPostId, $page = 1)
+    public function actionEditCurrency($adOrderId, $page = 1)
     {
         $currencyQuery = Currency::find();
 
@@ -516,7 +520,7 @@ class PlaceAdController extends Controller
             if ($user->currency_id !== null) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('new-currency', [
-                        'adsPostId' => $adsPostId,
+                        'adOrderId' => $adOrderId,
                         'currencyId' => $user->currency_id,
                     ]),
                     'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name . ' ·',
@@ -530,23 +534,23 @@ class PlaceAdController extends Controller
             ->all() as $currency) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('new-currency', [
-                    'adsPostId' => $adsPostId,
+                    'adOrderId' => $adOrderId,
                     'currencyId' => $currency->id,
                 ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adsPostId) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adOrderId) {
             return self::createRoute('edit-currency', [
-                'adsPostId' => $adsPostId,
+                'adOrderId' => $adOrderId,
                 'page' => $page,
             ]);
         });
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('edit-price', ['adsPostId' => $adsPostId]),
+                'callback_data' => self::createRoute('edit-price', ['adOrderId' => $adOrderId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -563,40 +567,40 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewCurrency($adsPostId, $currencyId)
+    public function actionNewCurrency($adOrderId, $currencyId)
     {
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
 
-        if (isset($adsPost)) {
-            $adsPost->setAttributes([
+        if (isset($adOrder)) {
+            $adOrder->setAttributes([
                 'currency_id' => $currencyId,
             ]);
-            $adsPost->save();
+            $adOrder->save();
         }
 
-        return $this->actionEditPrice($adsPostId);
+        return $this->actionEditPrice($adOrderId);
     }
 
-    public function actionEditPrice($adsPostId)
+    public function actionEditPrice($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-price', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-price', ['adOrderId' => $adOrderId]));
 
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
-                    'currencyCode' => Currency::findOne($adsPost->currency_id)->code
+                    'currencyCode' => Currency::findOne($adOrder->currency_id)->code
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit-currency', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit-currency', ['adOrderId' => $adOrderId]),
                             'text' => Yii::t('bot', 'Edit currency'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -609,43 +613,43 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewPrice($adsPostId)
+    public function actionNewPrice($adOrderId)
     {
         if ($message = $this->getUpdate()->getMessage()) {
-            if (!AdsPost::validatePrice($message->getText())) {
-                return $this->actionEditPrice($adsPostId);
+            if (!AdOrder::validatePrice($message->getText())) {
+                return $this->actionEditPrice($adOrderId);
             }
 
             $price = $message->getText();
 
-            $adsPost = AdsPost::findOne($adsPostId);
+            $adOrder = AdOrder::findOne($adOrderId);
 
-            $adsPost->setAttributes([
+            $adOrder->setAttributes([
                 'price' => intval(100.0 * doubleval($price)),
             ]);
 
-            $adsPost->save();
+            $adOrder->save();
 
-            return $this->actionPost($adsPostId);
+            return $this->actionPost($adOrderId);
         }
     }
 
-    public function actionEditLocation($adsPostId)
+    public function actionEditLocation($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-location-send', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-location-send', ['adOrderId' => $adOrderId]));
 
         $buttons = [];
 
         if ($this->getTelegramUser()->location_lat !== null && $this->getTelegramUser()->location_lon != null) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('new-location-my', ['adsPostId' => $adsPostId]),
+                'callback_data' => self::createRoute('new-location-my', ['adOrderId' => $adOrderId]),
                 'text' => Yii::t('bot', 'My location'),
             ];
         }
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -662,52 +666,52 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewLocationMy($adsPostId)
+    public function actionNewLocationMy($adOrderId)
     {
         $latitude = $this->getTelegramUser()->location_lat;
         $longitude = $this->getTelegramUser()->location_lon;
 
-        return $this->actionNewLocation($adsPostId, $latitude, $longitude);
+        return $this->actionNewLocation($adOrderId, $latitude, $longitude);
     }
 
-    public function actionNewLocationSend($adsPostId)
+    public function actionNewLocationSend($adOrderId)
     {
         $message = $this->getUpdate()->getMessage();
 
         if ($message && $message->getLocation()) {
             $latitude = $message->getLocation()->getLatitude();
             $longitude = $message->getLocation()->getLongitude();
-        } elseif ($message && $message->getText() && AdsPost::validateLocation($message->getText())) {
-            $latitude = AdsPost::getLatitudeFromText($message->getText());
-            $longitude = AdsPost::getLongitudeFromText($message->getText());
+        } elseif ($message && $message->getText() && AdOrder::validateLocation($message->getText())) {
+            $latitude = AdOrder::getLatitudeFromText($message->getText());
+            $longitude = AdOrder::getLongitudeFromText($message->getText());
         } else {
             $latitude = null;
             $longitude = null;
         }
 
-        return $this->actionNewLocation($adsPostId, $latitude, $longitude);
+        return $this->actionNewLocation($adOrderId, $latitude, $longitude);
     }
 
-    public function actionNewLocation($adsPostId, $latitude, $longitude)
+    public function actionNewLocation($adOrderId, $latitude, $longitude)
     {
         if ($latitude && $longitude) {
-            $adsPost = AdsPost::findOne($adsPostId);
+            $adOrder = AdOrder::findOne($adOrderId);
 
-            $adsPost->setAttributes([
-                'location_lat' => strval($latitude),
-                'location_lon' => strval($longitude),
+            $adOrder->setAttributes([
+                'location_latitude' => strval($latitude),
+                'location_longitude' => strval($longitude),
             ]);
 
-            $adsPost->save();
-            $adsPost->markToUpdateMatches();
+            $adOrder->save();
+            $adOrder->markToUpdateMatches();
         }
 
-        return $this->actionPost($adsPostId);
+        return $this->actionPost($adOrderId);
     }
 
-    public function actionEditRadius($adsPostId)
+    public function actionEditRadius($adOrderId)
     {
-        $this->getState()->setName(self::createRoute('new-radius', ['adsPostId' => $adsPostId]));
+        $this->getState()->setName(self::createRoute('new-radius', ['adOrderId' => $adOrderId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -715,7 +719,7 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('edit', ['adOrderId' => $adOrderId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -728,51 +732,51 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionNewRadius($adsPostId)
+    public function actionNewRadius($adOrderId)
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!AdsPost::validateRadius($message->getText())) {
-                return $this->actionEditRadius($adsPostId);
+            if (!AdOrder::validateRadius($message->getText())) {
+                return $this->actionEditRadius($adOrderId);
             }
 
-            $adsPost = AdsPost::findOne($adsPostId);
+            $adOrder = AdOrder::findOne($adOrderId);
 
             $deliveryKm = $message->getText();
 
-            $adsPost->setAttributes([
-                'delivery_km' => $deliveryKm,
+            $adOrder->setAttributes([
+                'delivery_radius' => $deliveryKm,
             ]);
 
-            $adsPost->save();
-            $adsPost->markToUpdateMatches();
+            $adOrder->save();
+            $adOrder->markToUpdateMatches();
 
-            return $this->actionPost($adsPostId);
+            return $this->actionPost($adOrderId);
         }
     }
 
-    public function actionStatus($adsPostId)
+    public function actionStatus($adOrderId)
     {
-        $adsPost = AdsPost::findOne($adsPostId);
+        $adOrder = AdOrder::findOne($adOrderId);
 
-        if ($adsPost->isActive()) {
-            $adsPost->status = AdsPost::STATUS_NOT_ACTIVATED;
+        if ($adOrder->isActive()) {
+            $adOrder->status = AdOrder::STATUS_NOT_ACTIVATED;
         } else {
-            $adsPost->status = AdsPost::STATUS_ACTIVATED;
+            $adOrder->status = AdOrder::STATUS_ACTIVATED;
         }
 
-        $adsPost->save();
+        $adOrder->save();
 
-        if ($adsPost->isActive()) {
-            $adsPost->markToUpdateMatches();
+        if ($adOrder->isActive()) {
+            $adOrder->markToUpdateMatches();
         } else {
-            $adsPost->unlinkAll('matches', true);
-            $adsPost->setAttributes([
+            $adOrder->unlinkAll('matches', true);
+            $adOrder->setAttributes([
                 'edited_at' => null,
             ]);
-            $adsPost->save();
+            $adOrder->save();
         }
 
-        return $this->actionPost($adsPostId);
+        return $this->actionPost($adOrderId);
     }
 
     private static function getKeywordsAsString($adKeywords)
@@ -780,7 +784,7 @@ class PlaceAdController extends Controller
         $keywords = [];
 
         foreach ($adKeywords as $adKeyword) {
-            $keywords[] = $adKeyword->word;
+            $keywords[] = $adKeyword->keyword;
         }
 
         return implode(', ', $keywords);
@@ -830,14 +834,14 @@ class PlaceAdController extends Controller
             }
 
             $placeAdKeywords = [];
-            foreach ($keywords as $index => $word) {
-                $adKeyword = AdKeyword::find()->where(['word' => $word])->one();
+            foreach ($keywords as $index => $keyword) {
+                $adKeyword = AdKeyword::find()->where(['keyword' => $keyword])->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
 
                     $adKeyword->setAttributes([
-                        'word' => $word,
+                        'keyword' => $keyword,
                     ]);
                     $adKeyword->save();
                 }
@@ -865,7 +869,7 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionConfirmDelete($adsPostId)
+    public function actionConfirmDelete($adOrderId)
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -873,11 +877,11 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('post', ['adOrderId' => $adOrderId]),
                             'text' => '❌',
                         ],
                         [
-                            'callback_data' => self::createRoute('delete', ['adsPostId' => $adsPostId]),
+                            'callback_data' => self::createRoute('delete', ['adOrderId' => $adOrderId]),
                             'text' => '✅',
                         ],
                     ],
@@ -886,12 +890,12 @@ class PlaceAdController extends Controller
             ->build();
     }
 
-    public function actionDelete($adsPostId)
+    public function actionDelete($adOrderId)
     {
-        $adCategoryId = AdsPost::findOne($adsPostId)->category_id;
+        $adCategoryId = AdOrder::findOne($adOrderId)->category_id;
 
-        AdsPost::findOne($adsPostId)->unlinkAll('keywords', true);
-        AdsPost::findOne($adsPostId)->delete();
+        AdOrder::findOne($adOrderId)->unlinkAll('keywords', true);
+        AdOrder::findOne($adOrderId)->delete();
 
         return $this->actionIndex($adCategoryId);
     }
@@ -1047,7 +1051,7 @@ class PlaceAdController extends Controller
     public function actionPrice()
     {
         if ($message = $this->getUpdate()->getMessage()) {
-            if (!AdsPost::validatePrice($message->getText())) {
+            if (!AdOrder::validatePrice($message->getText())) {
                 return $this->actionCurrency();
             }
 
@@ -1099,9 +1103,9 @@ class PlaceAdController extends Controller
         if ($message && $message->getLocation()) {
             $latitude = $message->getLocation()->getLatitude();
             $longitude = $message->getLocation()->getLongitude();
-        } elseif ($message && $message->getText() && AdsPost::validateLocation($message->getText())) {
-            $latitude = AdsPost::getLatitudeFromText($message->getText());
-            $longitude = AdsPost::getLongitudeFromText($message->getText());
+        } elseif ($message && $message->getText() && AdOrder::validateLocation($message->getText())) {
+            $latitude = AdOrder::getLatitudeFromText($message->getText());
+            $longitude = AdOrder::getLongitudeFromText($message->getText());
         } else {
             $latitude = null;
             $longitude = null;
@@ -1149,7 +1153,7 @@ class PlaceAdController extends Controller
 
     public function actionRadiusSkip()
     {
-        $this->getState()->setIntermediateField('placeAdDeliveryKm', '0');
+        $this->getState()->setIntermediateField('placeAdDeliveryRadius', '0');
 
         return $this->actionRadius();
     }
@@ -1157,12 +1161,12 @@ class PlaceAdController extends Controller
     public function actionRadiusSend()
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!AdsPost::validateRadius($message->getText())) {
+            if (!AdOrder::validateRadius($message->getText())) {
                 return $this->actionLocation();
             }
 
             $radius = $message->getText();
-            $this->getState()->setIntermediateField('placeAdDeliveryKm', $radius);
+            $this->getState()->setIntermediateField('placeAdDeliveryRadius', $radius);
 
             return $this->actionRadius();
         }
@@ -1175,45 +1179,45 @@ class PlaceAdController extends Controller
 
     public function actionPlace() 
     {
-        $adsPost = new AdsPost();
+        $adOrder = new AdOrder();
         $state = $this->getState();
         
-        $adsPost->setAttributes([
+        $adOrder->setAttributes([
             'user_id' => $this->getTelegramUser()->id,
             'title' => $state->getIntermediateField('placeAdTitle'),
             'description' => $state->getIntermediateField('placeAdDescription'),
             'currency_id' => $state->getIntermediateField('placeAdCurrencyId'),
             'price' => $state->getIntermediateField('placeAdPrice'),
-            'delivery_km' => intval($state->getIntermediateField('placeAdDeliveryKm')),
-            'location_lat' => $state->getIntermediateField('placeAdLocationLatitude'),
-            'location_lon' => $state->getIntermediateField('placeAdLocationLongitude'),
+            'delivery_radius' => intval($state->getIntermediateField('placeAdDeliveryRadius')),
+            'location_latitude' => $state->getIntermediateField('placeAdLocationLatitude'),
+            'location_longitude' => $state->getIntermediateField('placeAdLocationLongitude'),
             'category_id' => intval($state->getIntermediateField('placeAdCategoryId')),
-            'status' => AdsPost::STATUS_NOT_ACTIVATED,
+            'status' => AdOrder::STATUS_NOT_ACTIVATED,
             'created_at' => time(),
-            'updated_at' => time(),
+            'renewed_at' => time(),
             'edited_at' => time(),
         ]);
 
-        $adsPost->save();
+        $adOrder->save();
 
         foreach ($this->getState()->getIntermediateFieldArray('placeAdKeywords') as $adKeywordId) {
             $adKeyword = AdKeyword::findOne($adKeywordId);
 
-            $adsPost->link('keywords', $adKeyword);
+            $adOrder->link('keywords', $adKeyword);
         }
 
         if ($photoFileId = $this->getState()->getIntermediateField('placeAdPhotoFileId')) {
             $adPhoto = new AdPhoto();
 
             $adPhoto->setAttributes([
-                'ads_post_id' => $adsPost->id,
+                'ad_order_id' => $adOrder->id,
                 'file_id' => $photoFileId,
             ]);
             $adPhoto->save();
 
-            $adsPost->link('photos', $adPhoto);
+            $adOrder->link('photos', $adPhoto);
         }
 
-        return $this->actionPost($adsPost->id);
+        return $this->actionPost($adOrder->id);
     }
 }
