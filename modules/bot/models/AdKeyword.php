@@ -13,8 +13,8 @@ class AdKeyword extends ActiveRecord
     public function rules()
     {
         return [
-            [['word'], 'required'],
-            [['word'], 'string'],
+            [['keyword'], 'required'],
+            [['keyword'], 'string'],
         ];
     }
 

@@ -9,8 +9,8 @@ use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
 use yii\console\Controller;
 use yii\httpclient\Client;
-use app\modules\bot\models\AdsPost;
-use app\modules\bot\models\AdsPostSearch;
+use app\modules\bot\models\AdOrder;
+use app\modules\bot\models\AdSearch;
 
 class AdMatchesController extends Controller implements CronChainedInterface
 {
@@ -27,67 +27,67 @@ class AdMatchesController extends Controller implements CronChainedInterface
         while (true) {
             $this->output('Running update...');
 
-            $adsPostUpdated = $this->updateAdsPost();
-            $adsPostSearchUpdated = $this->updateAdsPostSearch();
+            $adOrderUpdated = $this->updateAdOrder();
+            $adSearchUpdated = $this->updateAdSearch();
 
-            if (!$adsPostUpdated && !$adsPostSearchUpdated) {
+            if (!$adOrderUpdated && !$adSearchUpdated) {
                 break;
             }
         }
     }
 
-    protected function updateAdsPostSearch()
+    protected function updateAdSearch()
     {
-        $this->output('Running updateAdsPostSearch...');
+        $this->output('Running updateAdSearch...');
 
-        $minEditedAt = AdsPostSearch::find()->min('edited_at');
+        $minEditedAt = AdSearch::find()->min('edited_at');
 
         if ($minEditedAt === null) {
             return false;
         }
 
-        $adsPostSearch = AdsPostSearch::find()->where([
+        $adSearch = AdSearch::find()->where([
             'edited_at' => $minEditedAt,
         ])->one();
 
-        if (!isset($adsPostSearch)) {
+        if (!isset($adSearch)) {
             return false;
         }
 
-        $adsPostSearch->updateMatches();
+        $adSearch->updateMatches();
 
-        $adsPostSearch->setAttributes([
+        $adSearch->setAttributes([
             'edited_at' => null,
         ]);
-        $adsPostSearch->save();
+        $adSearch->save();
 
         return true;
     }
 
-    protected function updateAdsPost()
+    protected function updateAdOrder()
     {
-        $this->output('Running updateAdsPost...');
+        $this->output('Running updateAdOrder...');
 
-        $minEditedAt = AdsPost::find()->min('edited_at');
+        $minEditedAt = AdOrder::find()->min('edited_at');
 
         if ($minEditedAt === null) {
             return false;
         }
 
-        $adsPost = AdsPost::find()->where([
+        $adOrder = AdOrder::find()->where([
             'edited_at' => $minEditedAt,
         ])->one();
 
-        if (!isset($adsPost)) {
+        if (!isset($adOrder)) {
             return false;
         }
 
-        $adsPost->updateMatches();
+        $adOrder->updateMatches();
 
-        $adsPost->setAttributes([
+        $adOrder->setAttributes([
             'edited_at' => null,
         ]);
-        $adsPost->save();
+        $adOrder->save();
 
         return true;
     }

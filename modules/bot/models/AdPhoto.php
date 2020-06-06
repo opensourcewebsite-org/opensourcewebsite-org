@@ -13,9 +13,9 @@ class AdPhoto extends ActiveRecord
     public function rules()
     {
         return [
-            [['ads_post_id', 'file_id'], 'required'],
+            [['ad_order_id', 'file_id'], 'required'],
             [['file_id'], 'string'],
-            [['ads_post_id'], 'integer'],
+            [['ad_order_id'], 'integer'],
         ];
     }
 

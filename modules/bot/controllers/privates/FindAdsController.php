@@ -8,8 +8,8 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdCategory;
 use app\modules\bot\models\AdKeyword;
-use app\modules\bot\models\AdsPost;
-use app\modules\bot\models\AdsPostSearch;
+use app\modules\bot\models\AdOrder;
+use app\modules\bot\models\AdSearch;
 use app\modules\bot\models\AdPhoto;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -25,15 +25,15 @@ class FindAdsController extends Controller
 
         $buttons = [];
 
-        $adsPostSearchQuery = AdsPostSearch::find()->where([
+        $adSearchQuery = AdSearch::find()->where([
             'user_id' => $this->getTelegramUser()->id,
             'category_id' => $adCategoryId,
         ]);
 
-        $adsPostSearchCount = $adsPostSearchQuery->count();
+        $adSearchCount = $adSearchQuery->count();
 
         $pagination = new Pagination([
-            'totalCount' => $adsPostSearchCount,
+            'totalCount' => $adSearchCount,
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -42,13 +42,13 @@ class FindAdsController extends Controller
             'validatePage' => true,
         ]);
 
-        foreach ($adsPostSearchQuery
+        foreach ($adSearchQuery
             ->limit($pagination->limit)
             ->offset($pagination->offset)
-            ->all() as $adsPostSearch) {
+            ->all() as $adSearch) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('search', ['adsPostSearchId' => $adsPostSearch->id]),
-                'text' => ($adsPostSearch->isActive() ? '' : '❌ ') . self::getKeywordsAsString($adsPostSearch->getKeywords()->all()),
+                'callback_data' => self::createRoute('search', ['adSearchId' => $adSearch->id]),
+                'text' => ($adSearch->isActive() ? '' : '❌ ') . self::getKeywordsAsString($adSearch->getKeywords()->all()),
             ];
         }
 
@@ -89,7 +89,7 @@ class FindAdsController extends Controller
         $keywords = [];
         
         foreach ($adKeywords as $adKeyword) {
-            $keywords[] = $adKeyword->word;
+            $keywords[] = $adKeyword->keyword;
         }
 
         return implode(', ', $keywords);
@@ -133,16 +133,16 @@ class FindAdsController extends Controller
 
             $findAdKeywords = [];
 
-            foreach ($keywords as $index => $word) {
+            foreach ($keywords as $index => $keyword) {
                 $adKeyword = AdKeyword::find()->where([
-                    'word' => $word,
+                    'keyword' => $keyword,
                 ])->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
 
                     $adKeyword->setAttributes([
-                        'word' => $word,
+                        'keyword' => $keyword,
                     ]);
                     $adKeyword->save();
                 }
@@ -262,7 +262,7 @@ class FindAdsController extends Controller
     public function actionMaxPriceSend()
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!AdsPost::validatePrice($message->getText())) {
+            if (!AdOrder::validatePrice($message->getText())) {
                 return $this->actionKeywords();
             }
 
@@ -328,9 +328,9 @@ class FindAdsController extends Controller
         if ($message && $message->getLocation()) {
             $latitude = $message->getLocation()->getLatitude();
             $longitude = $message->getLocation()->getLongitude();
-        } elseif ($message && $message->getText() && AdsPost::validateLocation($message->getText())) {
-            $latitude = AdsPost::getLatitudeFromText($message->getText());
-            $longitude = AdsPost::getLongitudeFromText($message->getText());
+        } elseif ($message && $message->getText() && AdOrder::validateLocation($message->getText())) {
+            $latitude = AdOrder::getLatitudeFromText($message->getText());
+            $longitude = AdOrder::getLongitudeFromText($message->getText());
         } else {
             $latitude = null;
             $longitude = null;
@@ -378,7 +378,7 @@ class FindAdsController extends Controller
     {
         $radius = $this->getUpdate()->getMessage()->getText();
 
-        if (!AdsPost::validateRadius($radius)) {
+        if (!AdOrder::validateRadius($radius)) {
             return $this->actionLocation();
         }
 
@@ -389,60 +389,59 @@ class FindAdsController extends Controller
 
     public function actionMakeSearch()
     {
-        $adsPostSearch = new AdsPostSearch();
+        $adSearch = new AdSearch();
 
         $state = $this->getState();
-        $user = $this->getTelegramUser();
 
-        $adsPostSearch->setAttributes([
-            'user_id' => $user->id,
+        $adSearch->setAttributes([
+            'user_id' => $this->getTelegramUser()->id,
             'category_id' => intval($state->getIntermediateField('findAdCategoryId')),
-            'radius' => intval($state->getIntermediateField('findAdRadius')),
+            'pickup_radius' => intval($state->getIntermediateField('findAdRadius')),
             'currency_id' => $state->getIntermediateField('findAdCurrencyId') ? intval($state->getIntermediateField('findAdCurrencyId')) : null,
             'max_price' => $state->getIntermediateField('findAdMaxPrice') ? intval($state->getIntermediateField('findAdMaxPrice')) : null,
             'location_latitude' => $state->getIntermediateField('findAdLocationLatitude'),
             'location_longitude' => $state->getIntermediateField('findAdLocationLongitude'),
-            'updated_at' => time(),
-            'status' => AdsPostSearch::STATUS_NOT_ACTIVATED,
+            'renewed_at' => time(),
+            'status' => AdSearch::STATUS_NOT_ACTIVATED,
             'edited_at' => time(),
         ]);
 
-        $adsPostSearch->save();
+        $adSearch->save();
 
         foreach ($this->getState()->getIntermediateFieldArray('findAdKeywords') as $adKeywordId) {
             $adKeyword = AdKeyword::findOne($adKeywordId);
 
-            $adsPostSearch->link('keywords', $adKeyword);
+            $adSearch->link('keywords', $adKeyword);
         }
 
-        return $this->actionSearch($adsPostSearch->id);
+        return $this->actionSearch($adSearch->id);
     }
 
-    public function actionSearch($adsPostSearchId)
+    public function actionSearch($adSearchId)
     {
-        $this->updateSearch($adsPostSearchId);
+        $this->updateSearch($adSearchId);
 
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
         $buttons = [];
 
         $buttons[][] = [
-            'callback_data' => self::createRoute('status', ['adsPostSearchId' => $adsPostSearchId]),
-            'text' => 'Status: ' . ($adsPostSearch->isActive() ? 'ON' : 'OFF'),
+            'callback_data' => self::createRoute('status', ['adSearchId' => $adSearchId]),
+            'text' => 'Status: ' . ($adSearch->isActive() ? 'ON' : 'OFF'),
         ];
 
-        $matchedPostsCount = $adsPostSearch->getMatches()->count();
+        $matchedAdOrderCount = $adSearch->getMatches()->count();
 
-        if ($matchedPostsCount > 0) {
+        if ($matchedAdOrderCount > 0) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('post-matches', ['adsPostSearchId' => $adsPostSearchId]),
-                'text' => '🙋‍♂️ ' . $matchedPostsCount,
+                'callback_data' => self::createRoute('ad-order-matches', ['adSearchId' => $adSearchId]),
+                'text' => '🙋‍♂️ ' . $matchedAdOrderCount,
             ];
         }
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('index', ['adCategoryId' => $adsPostSearch->category_id]),
+                'callback_data' => self::createRoute('index', ['adCategoryId' => $adSearch->category_id]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -450,11 +449,11 @@ class FindAdsController extends Controller
                 'text' => Emoji::MENU,
             ],
             [
-                'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                'callback_data' => self::createRoute('edit', ['adSearchId' => $adSearchId]),
                 'text' => Emoji::EDIT,
             ],
             [
-                'callback_data' => self::createRoute('confirm-delete', ['adsPostSearchId' => $adsPostSearchId]),
+                'callback_data' => self::createRoute('confirm-delete', ['adSearchId' => $adSearchId]),
                 'text' => Emoji::DELETE,
             ],
         ];
@@ -462,12 +461,12 @@ class FindAdsController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('search', [
-                    'categoryName' => AdCategory::getFindName($adsPostSearch->category_id),
-                    'keywords' => self::getKeywordsAsString($adsPostSearch->getKeywords()->all()),
-                    'adsPostSearch' => $adsPostSearch,
-                    'currency' => isset($adsPostSearch->currency_id) ? Currency::findOne($adsPostSearch->currency_id) : null,
-                    'locationLink' => ExternalLink::getOSMLink($adsPostSearch->location_latitude, $adsPostSearch->location_longitude),
-                    'liveDays' => AdsPostSearch::LIVE_DAYS,
+                    'categoryName' => AdCategory::getFindName($adSearch->category_id),
+                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'adSearch' => $adSearch,
+                    'currency' => isset($adSearch->currency_id) ? Currency::findOne($adSearch->currency_id) : null,
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_latitude, $adSearch->location_longitude),
+                    'liveDays' => AdSearch::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
@@ -476,61 +475,61 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function updateSearch($adsPostSearchId)
+    public function updateSearch($adSearchId)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
-        $adsPostSearch->setAttributes([
-            'updated_at' => time(),
+        $adSearch->setAttributes([
+            'renewed_at' => time(),
         ]);
-        $adsPostSearch->save();
+        $adSearch->save();
     }
 
-    public function actionEdit($adsPostSearchId)
+    public function actionEdit($adSearchId)
     {
         $this->getState()->setName(null);
 
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('search', [
-                    'categoryName' => AdCategory::getFindName($adsPostSearch->category_id),
-                    'keywords' => self::getKeywordsAsString($adsPostSearch->getKeywords()->all()),
-                    'adsPostSearch' => $adsPostSearch,
-                    'currency' => isset($adsPostSearch->currency_id) ? Currency::findOne($adsPostSearch->currency_id) : null,
-                    'locationLink' => ExternalLink::getOSMLink($adsPostSearch->location_latitude, $adsPostSearch->location_longitude),
-                    'liveDays' => AdsPostSearch::LIVE_DAYS,
+                    'categoryName' => AdCategory::getFindName($adSearch->category_id),
+                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'adSearch' => $adSearch,
+                    'currency' => isset($adSearch->currency_id) ? Currency::findOne($adSearch->currency_id) : null,
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_latitude, $adSearch->location_longitude),
+                    'liveDays' => AdSearch::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit-keywords', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit-keywords', ['adSearchId' => $adSearchId]),
                             'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-max-price', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit-max-price', ['adSearchId' => $adSearchId]),
                             'text' => Yii::t('bot', 'Max price'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-location', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit-location', ['adSearchId' => $adSearchId]),
                             'text' => Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-radius', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit-radius', ['adSearchId' => $adSearchId]),
                             'text' => Yii::t('bot', 'Pickup radius'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('search', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('search', ['adSearchId' => $adSearchId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -544,9 +543,9 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionEditCurrency($adsPostSearchId, $page = 1)
+    public function actionEditCurrency($adSearchId, $page = 1)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
         $currencyQuery = Currency::find();
 
@@ -572,7 +571,7 @@ class FindAdsController extends Controller
 
                 $buttons[][] = [
                     'callback_data' => self::createRoute('edit-currency-set', [
-                        'adsPostSearchId' => $adsPostSearchId,
+                        'adSearchId' => $adSearchId,
                         'currencyId' => $user->currency_id]),
                     'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name . ' ·',
                 ];
@@ -585,25 +584,25 @@ class FindAdsController extends Controller
             ->all() as $currency) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('edit-currency-set', [
-                    'adsPostSearchId' => $adsPostSearchId,
+                    'adSearchId' => $adSearchId,
                     'currencyId' => $currency->id
                 ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adsPostSearchId) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adSearchId) {
             return self::createRoute('edit-currency', [
-                'adsPostSearchId' => $adsPostSearchId,
+                'adSearchId' => $adSearchId,
                 'page' => $page,
             ]);
         });
 
         $buttons[] = [
             [
-                'callback_data' => isset($adsPostSearch->currency_id)
-                    ? self::createRoute('edit-max-price', ['adsPostSearchId' => $adsPostSearchId])
-                    : self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                'callback_data' => isset($adSearch->currency_id)
+                    ? self::createRoute('edit-max-price', ['adSearchId' => $adSearchId])
+                    : self::createRoute('edit', ['adSearchId' => $adSearchId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -620,45 +619,44 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionEditCurrencySet($adsPostSearchId, $currencyId)
+    public function actionEditCurrencySet($adSearchId, $currencyId)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
-        $adsPostSearch->setAttributes([
+        $adSearch->setAttributes([
             'currency_id' => $currencyId,
         ]);
 
-        $adsPostSearch->save();
+        $adSearch->save();
 
-        return $this->actionEditMaxPrice($adsPostSearchId);
+        return $this->actionEditMaxPrice($adSearchId);
     }
 
-    public function actionEditMaxPrice($adsPostSearchId)
+    public function actionEditMaxPrice($adSearchId)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
-        if (!isset($adsPostSearch->currency_id)) {
-            return $this->actionEditCurrency($adsPostSearchId);
+        if (!isset($adSearch->currency_id)) {
+            return $this->actionEditCurrency($adSearchId);
         }
 
-        $this->getState()->setName(self::createRoute('edit-max-price-set', ['adsPostSearchId' => $adsPostSearchId]));
+        $this->getState()->setName(self::createRoute('edit-max-price-set', ['adSearchId' => $adSearchId]));
 
-        
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('edit-max-price', [
-                    'currencyCode' => Currency::findOne($adsPostSearch->currency_id)->code,
+                    'currencyCode' => Currency::findOne($adSearch->currency_id)->code,
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit-currency', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit-currency', ['adSearchId' => $adSearchId]),
                             'text' => Yii::t('bot', 'Edit currency'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit', ['adSearchId' => $adSearchId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -671,29 +669,29 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionEditMaxPriceSet($adsPostSearchId)
+    public function actionEditMaxPriceSet($adSearchId)
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!AdsPost::validatePrice($message->getText())) {
-                return $this->actionEditMaxPrice($adsPostSearchId);
+            if (!AdOrder::validatePrice($message->getText())) {
+                return $this->actionEditMaxPrice($adSearchId);
             }
 
             $maxPrice = intval(doubleval($message->getText()) * 100);
 
-            $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+            $adSearch = AdSearch::findOne($adSearchId);
 
-            $adsPostSearch->setAttributes([
+            $adSearch->setAttributes([
                 'max_price' => $maxPrice,
             ]);
-            $adsPostSearch->save();
+            $adSearch->save();
 
-            return $this->actionSearch($adsPostSearchId);
+            return $this->actionSearch($adSearchId);
         }
     }
 
-    public function actionEditKeywords($adsPostSearchId)
+    public function actionEditKeywords($adSearchId)
     {
-        $this->getState()->setName(self::createRoute('new-keywords', ['adsPostSearchId' => $adsPostSearchId]));
+        $this->getState()->setName(self::createRoute('new-keywords', ['adSearchId' => $adSearchId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -701,7 +699,7 @@ class FindAdsController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit', ['adSearchId' => $adSearchId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -714,44 +712,44 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionNewKeywords($adsPostSearchId)
+    public function actionNewKeywords($adSearchId)
     {
         if ($message = $this->getUpdate()->getMessage()) {
             $keywords = PlaceAdController::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return $this->actionEditKeywords($adsPostSearchId);
+                return $this->actionEditKeywords($adSearchId);
             }
 
-            $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+            $adSearch = AdSearch::findOne($adSearchId);
 
-            $adsPostSearch->unlinkAll('keywords', true);
+            $adSearch->unlinkAll('keywords', true);
             foreach ($keywords as $keyword) {
                 $adKeyword = AdKeyword::find()->where([
-                    'word' => $keyword,
+                    'keyword' => $keyword,
                 ])->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
 
                     $adKeyword->setAttributes([
-                        'word' => $keyword,
+                        'keyword' => $keyword,
                     ]);
                     $adKeyword->save();
                 }
 
-                $adsPostSearch->link('keywords', $adKeyword);
+                $adSearch->link('keywords', $adKeyword);
             }
 
-            $adsPostSearch->markToUpdateMatches();
+            $adSearch->markToUpdateMatches();
 
-            return $this->actionSearch($adsPostSearchId);
+            return $this->actionSearch($adSearchId);
         }
     }
 
-    public function actionEditLocation($adsPostSearchId)
+    public function actionEditLocation($adSearchId)
     {
-        $this->getState()->setName(self::createRoute('new-location-send', ['adsPostSearchId' => $adsPostSearchId]));
+        $this->getState()->setName(self::createRoute('new-location-send', ['adSearchId' => $adSearchId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -759,13 +757,13 @@ class FindAdsController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('new-location-my', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('new-location-my', ['adSearchId' => $adSearchId]),
                             'text' => Yii::t('bot', 'My location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit', ['adSearchId' => $adSearchId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -778,52 +776,52 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionNewLocationMy($adsPostSearchId)
+    public function actionNewLocationMy($adSearchId)
     {
         $latitude = $this->getTelegramUser()->location_lat;
         $longitude = $this->getTelegramUser()->location_lon;
 
-        return $this->actionNewLocationSet($adsPostSearchId, $latitude, $longitude);
+        return $this->actionNewLocationSet($adSearchId, $latitude, $longitude);
     }
 
-    public function actionNewLocationSend($adsPostSearchId)
+    public function actionNewLocationSend($adSearchId)
     {
         $message = $this->getUpdate()->getMessage();
 
         if ($message && $message->getLocation()) {
             $latitude = $message->getLocation()->getLatitude();
             $longitude = $message->getLocation()->getLongitude();
-        } elseif ($message && $message->getText() && AdsPost::validateLocation($message->getText())) {
-            $latitude = AdsPost::getLatitudeFromText($message->getText());
-            $longitude = AdsPost::getLongitudeFromText($message->getText());
+        } elseif ($message && $message->getText() && AdOrder::validateLocation($message->getText())) {
+            $latitude = AdOrder::getLatitudeFromText($message->getText());
+            $longitude = AdOrder::getLongitudeFromText($message->getText());
         } else {
             $latitude = null;
             $longitude = null;
         }
 
-        return $this->actionNewLocationSet($adsPostSearchId, $latitude, $longitude);
+        return $this->actionNewLocationSet($adSearchId, $latitude, $longitude);
     }
 
-    public function actionNewLocationSet($adsPostSearchId, $latitude, $longitude)
+    public function actionNewLocationSet($adSearchId, $latitude, $longitude)
     {
         if ($latitude && $longitude) {
-            $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+            $adSearch = AdSearch::findOne($adSearchId);
 
-            $adsPostSearch->setAttributes([
+            $adSearch->setAttributes([
                 'location_latitude' => strval($latitude),
                 'location_longitude' => strval($longitude),
             ]);
-            $adsPostSearch->save();
+            $adSearch->save();
 
-            return $this->actionSearch($adsPostSearchId);
+            return $this->actionSearch($adSearchId);
         } else {
-            return $this->actionEditLocation($adsPostSearchId);
+            return $this->actionEditLocation($adSearchId);
         }
     }
 
-    public function actionEditRadius($adsPostSearchId)
+    public function actionEditRadius($adSearchId)
     {
-        $this->getState()->setName(self::createRoute('new-radius', ['adsPostSearchId' => $adsPostSearchId]));
+        $this->getState()->setName(self::createRoute('new-radius', ['adSearchId' => $adSearchId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -831,7 +829,7 @@ class FindAdsController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit', ['adSearchId' => $adSearchId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -844,61 +842,61 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionNewRadius($adsPostSearchId)
+    public function actionNewRadius($adSearchId)
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!AdsPost::validateRadius($message->getText())) {
-                return $this->actionEditRadius($adsPostSearchId);
+            if (!AdOrder::validateRadius($message->getText())) {
+                return $this->actionEditRadius($adSearchId);
             }
 
             $radius = $message->getText();
 
-            $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+            $adSearch = AdSearch::findOne($adSearchId);
 
-            $adsPostSearch->setAttributes([
-                'radius' => $radius,
+            $adSearch->setAttributes([
+                'pickup_radius' => $radius,
             ]);
-            $adsPostSearch->save();
-            $adsPostSearch->markToUpdateMatches();
+            $adSearch->save();
+            $adSearch->markToUpdateMatches();
 
-            return $this->actionSearch($adsPostSearchId);
+            return $this->actionSearch($adSearchId);
         }
     }
 
-    public function actionStatus($adsPostSearchId)
+    public function actionStatus($adSearchId)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
-        $adsPostSearch->setAttributes([
-            'status' => ($adsPostSearch->isActive() ? AdsPostSearch::STATUS_NOT_ACTIVATED : AdsPostSearch::STATUS_ACTIVATED),
+        $adSearch->setAttributes([
+            'status' => ($adSearch->isActive() ? AdSearch::STATUS_NOT_ACTIVATED : AdSearch::STATUS_ACTIVATED),
         ]);
-        $adsPostSearch->save();
+        $adSearch->save();
 
-        if ($adsPostSearch->isActive()) {
-            $adsPostSearch->markToUpdateMatches();
+        if ($adSearch->isActive()) {
+            $adSearch->markToUpdateMatches();
         } else {
-            $adsPostSearch->unlinkAll('matches', true);
-            $adsPostSearch->setAttributes([
+            $adSearch->unlinkAll('matches', true);
+            $adSearch->setAttributes([
                 'edited_at' => null,
             ]);
-            $adsPostSearch->save();
+            $adSearch->save();
         }
 
-        return $this->actionSearch($adsPostSearchId);
+        return $this->actionSearch($adSearchId);
     }
 
-    public function actionPostMatches($adsPostSearchId, $page = 1)
+    public function actionAdOrderMatches($adSearchId, $page = 1)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
-        $adsPostsQuery = $adsPostSearch->getMatches();
+        $adOrderQuery = $adSearch->getMatches();
 
-        if ($adsPostsQuery->count() == 0) {
-            return $this->actionSearch($adsPostSearchId);
+        if ($adOrderQuery->count() == 0) {
+            return $this->actionSearch($adSearchId);
         }
 
         $pagination = new Pagination([
-            'totalCount' => $adsPostsQuery->count(),
+            'totalCount' => $adOrderQuery->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -907,9 +905,9 @@ class FindAdsController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adsPostSearchId) {
-            return self::createRoute('post-matches', [
-                'adsPostSearchId' => $adsPostSearchId,
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adSearchId) {
+            return self::createRoute('ad-order-matches', [
+                'adSearchId' => $adSearchId,
                 'page' => $page,
             ]);
         });
@@ -919,7 +917,7 @@ class FindAdsController extends Controller
         $buttons[] = $paginationButtons;
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('search', ['adsPostSearchId' => $adsPostSearchId]),
+                'callback_data' => self::createRoute('search', ['adSearchId' => $adSearchId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -928,21 +926,21 @@ class FindAdsController extends Controller
             ],
         ];
 
-        $adsPost = $adsPostsQuery
+        $adOrder = $adOrderQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all()[0];
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
-                $adsPost->getPhotos()->count() ? $adsPost->getPhotos()->one()->file_id : null,
-                $this->render('post-matches', [
-                    'adsPost' => $adsPost,
-                    'user' => TelegramUser::findOne($adsPost->user_id),
-                    'currency' => Currency::findOne($adsPost->currency_id),
-                    'categoryName' => AdCategory::getPlaceName($adsPost->category_id),
-                    'keywords' => self::getKeywordsAsString($adsPost->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adsPost->location_lat, $adsPost->location_lon),
+                $adOrder->getPhotos()->count() ? $adOrder->getPhotos()->one()->file_id : null,
+                $this->render('ad-order-matches', [
+                    'adOrder' => $adOrder,
+                    'user' => TelegramUser::findOne($adOrder->user_id),
+                    'currency' => Currency::findOne($adOrder->currency_id),
+                    'categoryName' => AdCategory::getPlaceName($adOrder->category_id),
+                    'keywords' => self::getKeywordsAsString($adOrder->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_latitude, $adOrder->location_longitude),
                 ]),
                 $buttons,
                 true
@@ -950,7 +948,7 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionConfirmDelete($adsPostSearchId)
+    public function actionConfirmDelete($adSearchId)
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -958,11 +956,11 @@ class FindAdsController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('search', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('search', ['adSearchId' => $adSearchId]),
                             'text' => '❌',
                         ],
                         [
-                            'callback_data' => self::createRoute('delete', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('delete', ['adSearchId' => $adSearchId]),
                             'text' => '✅',
                         ],
                     ],
@@ -971,46 +969,18 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionDelete($adsPostSearchId)
+    public function actionDelete($adSearchId)
     {
-        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+        $adSearch = AdSearch::findOne($adSearchId);
 
-        if (isset($adsPostSearch)) {
-            $adCategoryId = $adsPostSearch->category_id;
+        if (isset($adSearch)) {
+            $adCategoryId = $adSearch->category_id;
 
-            $adsPostSearch->unlinkAll('keywords', true);
+            $adSearch->unlinkAll('keywords', true);
 
-            $adsPostSearch->delete();
+            $adSearch->delete();
 
             return $this->actionIndex($adCategoryId);
         }
-    }
-
-    public function actionShowAdsPost($adsPostId)
-    {
-        $adsPost = AdsPost::find($adsPostId)->one();
-
-        return ResponseBuilder::fromUpdate($this->getUpdate())
-            ->editMessageTextOrSendMessage(
-                $this->render('show-ads-post', [
-                    'title' => $adsPost->title,
-                    'description' => $adsPost->description,
-                    'price' => $adsPost->price,
-                    'latitude' => $adsPost->location_lat,
-                    'longitude' => $adsPost->location_lon,
-                    'user_id' => $this->getTelegramUser()->id,
-                    'user_first_name' => $this->getTelegramUser()->provider_user_first_name,
-                    'user_last_name' => $this->getTelegramUser()->provider_user_last_name,
-                ]),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('show'),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
     }
 }
