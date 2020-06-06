@@ -7,7 +7,6 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdCategory;
-use app\modules\bot\models\UserSetting;
 use app\modules\bot\models\AdKeyword;
 use app\modules\bot\models\AdsPost;
 use app\modules\bot\models\AdsPostSearch;
@@ -98,31 +97,18 @@ class FindAdsController extends Controller
 
     public function actionAdd($adCategoryId)
     {
-        $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CATEGORY_ID);
-
-        if (!isset($setting)) {
-            $setting = new UserSetting();
-
-            $setting->setAttributes([
-                'user_id' => $this->getTelegramUser()->id,
-                'setting' => UserSetting::FIND_AD_CATEGORY_ID,
-                'value' => $adCategoryId,
-            ]);
-        }
-
-        $setting->value = $adCategoryId;
-        $setting->save();
+        $this->getState()->setIntermediateField('findAdCategoryId', $adCategoryId);
 
         $this->getState()->setName(self::createRoute('keywords'));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('add'),
+                $this->render('edit-keywords'),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'adCategoryId' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value,
+                                'adCategoryId' => $this->getState()->getIntermediateField('findAdCategoryId'),
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -142,14 +128,10 @@ class FindAdsController extends Controller
             $keywords = PlaceAdController::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return $this->actionAdd($this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value);
+                return $this->actionAdd($this->getState()->getIntermediateField('findAdCategoryId'));
             }
 
-            UserSetting::deleteAll([
-                'and',
-                ['user_id' => $this->getTelegramUser()->id,],
-                ['like', 'setting', 'find_ad_keyword_'],
-            ]);
+            $findAdKeywords = [];
 
             foreach ($keywords as $index => $word) {
                 $adKeyword = AdKeyword::find()->where([
@@ -165,16 +147,9 @@ class FindAdsController extends Controller
                     $adKeyword->save();
                 }
 
-                $setting = new UserSetting();
-
-                $setting->setAttributes([
-                    'user_id' => $this->getTelegramUser()->id,
-                    'setting' => 'find_ad_keyword_' . $index,
-                    'value' => strval($adKeyword->id),
-                ]);
-
-                $setting->save();
+                $findAdKeywords[] = $adKeyword->id;
             }
+            $this->getState()->setIntermediateFieldArray('findAdKeywords', $findAdKeywords);
         }
 
         $this->getState()->setName(null);
@@ -227,7 +202,7 @@ class FindAdsController extends Controller
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('add', [
-                    'adCategoryId' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value,
+                    'adCategoryId' => $this->getState()->getIntermediateField('findAdCategoryId'),
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -239,7 +214,7 @@ class FindAdsController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('keywords'),
+                $this->render('edit-currency'),
                 $buttons
             )
             ->build();
@@ -247,21 +222,7 @@ class FindAdsController extends Controller
 
     public function actionCurrencySet($currencyId)
     {
-        $currencySetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CURRENCY_ID);
-
-        if (!isset($currencySetting)) {
-            $currencySetting = new UserSetting();
-
-            $currencySetting->setAttributes([
-                'user_id' => $this->getTelegramUser()->id,
-                'setting' => UserSetting::FIND_AD_CURRENCY_ID,
-            ]);
-        }
-
-        $currencySetting->setAttributes([
-            'value' => strval($currencyId),
-        ]);
-        $currencySetting->save();
+        $this->getState()->setIntermediateField('findAdCurrencyId', $currencyId);
 
         return $this->actionCurrency();
     }
@@ -272,7 +233,9 @@ class FindAdsController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('currency'),
+                $this->render('edit-max-price', [
+                    'currencyCode' => Currency::findOne($this->getState()->getIntermediateField('findAdCurrencyId'))->code,
+                ]),
                 [
                     [
                         [
@@ -291,21 +254,7 @@ class FindAdsController extends Controller
 
     public function actionCurrencySkip()
     {
-        $currencySetting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CURRENCY_ID);
-
-        if (!isset($currencySetting)) {
-            $currencySetting = new UserSetting();
-
-            $currencySetting->setAttributes([
-                'user_id' => $this->getTelegramUser()->id,
-                'setting' => UserSetting::FIND_AD_CURRENCY_ID,
-            ]);
-        }
-
-        $currencySetting->setAttributes([
-            'value' => null,
-        ]);
-        $currencySetting->save();
+        $this->getState()->setIntermediateField('findAdCurrencyId', null);
 
         return $this->actionMaxPriceSkip();
     }
@@ -313,28 +262,13 @@ class FindAdsController extends Controller
     public function actionMaxPriceSend()
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!UserSetting::validatePrice($message->getText())) {
+            if (!AdsPost::validatePrice($message->getText())) {
                 return $this->actionKeywords();
             }
 
             $maxPrice = intval(doubleval($message->getText()) * 100);
 
-            $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_MAX_PRICE);
-
-            if (!isset($setting)) {
-                $setting = new UserSetting();
-
-                $setting->setAttributes([
-                    'user_id' => $this->getTelegramUser()->id,
-                    'setting' => UserSetting::FIND_AD_MAX_PRICE,
-                ]);
-            }
-
-            $setting->setAttributes([
-                'value' => strval($maxPrice),
-            ]);
-
-            $setting->save();
+            $this->getState()->setIntermediateField('findAdMaxPrice', $maxPrice);
 
             return $this->actionMaxPrice();
         }
@@ -342,22 +276,7 @@ class FindAdsController extends Controller
 
     public function actionMaxPriceSkip()
     {
-        $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_MAX_PRICE);
-
-        if (!isset($setting)) {
-            $setting = new UserSetting();
-
-            $setting->setAttributes([
-                'user_id' => $this->getTelegramUser()->id,
-                'setting' => UserSetting::FIND_AD_MAX_PRICE,
-            ]);
-        }
-
-        $setting->setAttributes([
-            'value' => null,
-        ]);
-
-        $setting->save();
+        $this->getState()->setIntermediateField('findAdMaxPrice', null);
 
         return $this->actionMaxPrice();
     }
@@ -368,14 +287,14 @@ class FindAdsController extends Controller
 
         if ($this->getTelegramUser()->location_lat !== null) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('location', ['userLocation' => true]),
+                'callback_data' => self::createRoute('location-my'),
                 'text' => Yii::t('bot', 'My location'),
             ];
         }
 
         $buttons[] = [
             [
-                'callback_data' => $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_CURRENCY_ID)->value === null ? self::createRoute('keywords') : self::createRoute('currency'),
+                'callback_data' => $this->getState()->getIntermediateField('findAdCurrencyId') === null ? self::createRoute('keywords') : self::createRoute('currency'),
                 'text' => Emoji::BACK,
             ],
             [
@@ -384,128 +303,88 @@ class FindAdsController extends Controller
             ],
         ];
 
+        $this->getState()->setName(self::createRoute('location-send'));
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('max-price'),
+                $this->render('edit-location'),
                 $buttons
             )
             ->build();
     }
 
-    public function actionLocation($update = true, $userLocation = false)
+    public function actionLocationMy()
+    {
+        $latitude = $this->getTelegramUser()->location_lat;
+        $longitude = $this->getTelegramUser()->location_lon;
+
+        return $this->actionLocationSet($latitude, $longitude);
+    }
+
+    public function actionLocationSend()
     {
         $message = $this->getUpdate()->getMessage();
-        $isLocationInText = $message && $message->getText() && UserSetting::validateLocation($message->getText());
 
-        if ($update
-            && (($message && $message->getLocation())
-            || $userLocation
-            || $isLocationInText
-        )) {
-            if ($userLocation) {
-                $latitude = $this->getTelegramUser()->location_lat;
-                $longitude = $this->getTelegramUser()->location_lon;
-            } elseif ($message->getLocation()) {
-                $latitude = $message->getLocation()->getLatitude();
-                $longitude = $message->getLocation()->getLongitude();
-            } else {
-                $latitude = UserSetting::getLatitudeFromText($message->getText());
-                $longitude = UserSetting::getLongitudeFromText($message->getText());
-            }
-
-            $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE);
-
-            if (!isset($setting)) {
-                $setting = new UserSetting();
-
-                $setting->setAttributes([
-                    'user_id' => $this->getTelegramUser()->id,
-                    'setting' => UserSetting::FIND_AD_LOCATION_LATITUDE,
-                    'value' => strval($latitude),
-                ]);
-            }
-
-            $setting->value = strval($latitude);
-            $setting->save();
-
-            $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE);
-
-            if (!isset($setting)) {
-                $setting = new UserSetting();
-
-                $setting->setAttributes([
-                    'user_id' => $this->getTelegramUser()->id,
-                    'setting' => UserSetting::FIND_AD_LOCATION_LONGITUDE,
-                    'value' => strval($longitude),
-                ]);
-            }
-
-            $setting->value = strval($longitude);
-            $setting->save();
+        if ($message && $message->getLocation()) {
+            $latitude = $message->getLocation()->getLatitude();
+            $longitude = $message->getLocation()->getLongitude();
+        } elseif ($message && $message->getText() && AdsPost::validateLocation($message->getText())) {
+            $latitude = AdsPost::getLatitudeFromText($message->getText());
+            $longitude = AdsPost::getLongitudeFromText($message->getText());
+        } else {
+            $latitude = null;
+            $longitude = null;
         }
 
-        if (!$update || ($update && (($message && $message->getLocation()) || $userLocation || $isLocationInText))) {
-            $this->getState()->setName(self::createRoute('radius'));
+        return $this->actionLocationSet($latitude, $longitude);
+    }
 
-            return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->editMessageTextOrSendMessage(
-                    $this->render('location'),
+    public function actionLocationSet($latitude, $longitude)
+    {
+        if ($latitude && $longitude) {
+            $this->getState()->setIntermediateField('findAdLocationLatitude', strval($latitude));
+            $this->getState()->setIntermediateField('findAdLocationLongitude', strval($longitude));
+
+            return $this->actionLocation();
+        } else {
+            return $this->actionMaxPrice();
+        }
+    }
+
+    public function actionLocation()
+    {
+        $this->getState()->setName(self::createRoute('radius'));
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('edit-radius'),
+                [
                     [
                         [
-                            [
-                                'callback_data' => self::createRoute('keywords'),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
+                            'callback_data' => self::createRoute('max-price'),
+                            'text' => Emoji::BACK,
                         ],
-                    ]
-                )
-                ->build();
-        }
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionRadius()
     {
         $radius = $this->getUpdate()->getMessage()->getText();
 
-        if (!UserSetting::validateRadius($radius)) {
-            return $this->actionLocation(false);
+        if (!AdsPost::validateRadius($radius)) {
+            return $this->actionLocation();
         }
 
-        $setting = $this->getTelegramUser()->getSetting(UserSetting::FIND_AD_RADIUS);
-
-        if (!isset($setting)) {
-            $setting = new UserSetting();
-
-            $setting->setAttributes([
-                'user_id' => $this->getTelegramUser()->id,
-                'setting' => UserSetting::FIND_AD_RADIUS,
-                'value' => $radius,
-            ]);
-        }
-
-        $setting->value = $radius;
-        $setting->save();
+        $this->getState()->setIntermediateField('radius', $radius);
 
         return $this->actionMakeSearch();
-    }
-
-    private function getFindKeywords()
-    {
-        $adKeywords = [];
-
-        foreach (UserSetting::find()->where([
-            'and',
-            ['user_id' => $this->getTelegramUser()->id],
-            ['like', 'setting', 'find_ad_keyword_'],
-        ])->all() as $adKeywordSetting) {
-            $adKeywords[] = AdKeyword::findOne($adKeywordSetting->value);
-        }
-
-        return $adKeywords;
     }
 
     public function actionMakeSearch()
@@ -516,12 +395,12 @@ class FindAdsController extends Controller
 
         $adsPostSearch->setAttributes([
             'user_id' => $user->id,
-            'category_id' => intval($user->getSetting(UserSetting::FIND_AD_CATEGORY_ID)->value),
-            'radius' => $user->getSetting(UserSetting::FIND_AD_RADIUS)->value,
-            'currency_id' => $user->getSetting(UserSetting::FIND_AD_CURRENCY_ID)->value,
-            'max_price' => $user->getSetting(UserSetting::FIND_AD_MAX_PRICE)->value,
-            'location_latitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LATITUDE)->value,
-            'location_longitude' => $user->getSetting(UserSetting::FIND_AD_LOCATION_LONGITUDE)->value,
+            'category_id' => intval($this->getState()->getIntermediateField('findAdCategoryId')),
+            'radius' => intval($this->getState()->getIntermediateField('findAdRadius')),
+            'currency_id' => intval($this->getState()->getIntermediateField('findAdCurrencyId')),
+            'max_price' => intval($this->getState()->getIntermediateField('findAdMaxPrice')),
+            'location_latitude' => $this->getState()->getIntermediateField('findAdLocationLatitude'),
+            'location_longitude' => $this->getState()->getIntermediateField('findAdLocationLongitude'),
             'updated_at' => time(),
             'status' => AdsPostSearch::STATUS_NOT_ACTIVATED,
             'edited_at' => time(),
@@ -529,9 +408,9 @@ class FindAdsController extends Controller
 
         $adsPostSearch->save();
 
-        $adKeywords = $this->getFindKeywords();
+        foreach ($this->getState()->getIntermediateFieldArray('findAdKeywords') as $adKeywordId) {
+            $adKeyword = AdKeyword::findOne($adKeywordId);
 
-        foreach ($adKeywords as $adKeyword) {
             $adsPostSearch->link('keywords', $adKeyword);
         }
 
@@ -588,6 +467,7 @@ class FindAdsController extends Controller
                     'currency' => isset($adsPostSearch->currency_id) ? Currency::findOne($adsPostSearch->currency_id) : null,
                     'locationLink' => ExternalLink::getOSMLink($adsPostSearch->location_latitude, $adsPostSearch->location_longitude),
                     'liveDays' => AdsPostSearch::LIVE_DAYS,
+                    'showDetailedInfo' => true,
                 ]),
                 $buttons,
                 true
@@ -609,9 +489,19 @@ class FindAdsController extends Controller
     {
         $this->getState()->setName(null);
 
+        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('edit'),
+                $this->render('search', [
+                    'categoryName' => AdCategory::getFindName($adsPostSearch->category_id),
+                    'keywords' => self::getKeywordsAsString($adsPostSearch->getKeywords()->all()),
+                    'adsPostSearch' => $adsPostSearch,
+                    'currency' => isset($adsPostSearch->currency_id) ? Currency::findOne($adsPostSearch->currency_id) : null,
+                    'locationLink' => ExternalLink::getOSMLink($adsPostSearch->location_latitude, $adsPostSearch->location_longitude),
+                    'liveDays' => AdsPostSearch::LIVE_DAYS,
+                    'showDetailedInfo' => false,
+                ]),
                 [
                     [
                         [
@@ -621,7 +511,7 @@ class FindAdsController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-currency', ['adsPostSearchId' => $adsPostSearchId]),
+                            'callback_data' => self::createRoute('edit-max-price', ['adsPostSearchId' => $adsPostSearchId]),
                             'text' => Yii::t('bot', 'Max price'),
                         ],
                     ],
@@ -647,7 +537,8 @@ class FindAdsController extends Controller
                             'text' => Emoji::MENU,
                         ],
                     ],
-                ]
+                ],
+                true
             )
             ->build();
     }
@@ -687,16 +578,6 @@ class FindAdsController extends Controller
             }
         }
 
-        if (isset($adsPostSearch->currency_id) && $userCurrencyId != $adsPostSearch->currency_id) {
-            $buttons[][] = [
-                'callback_data' => self::createRoute('edit-currency-set', [
-                    'adsPostSearchId' => $adsPostSearchId,
-                    'currencyId' => $adsPostSearch->currency_id,
-                ]),
-                'text' => '· ' . Currency::findOne($adsPostSearch->currency_id)->code . ' - ' . Currency::findOne($adsPostSearch->currency_id)->name . ' ·',
-            ];
-        }
-
         foreach ($currencyQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
@@ -719,7 +600,9 @@ class FindAdsController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
+                'callback_data' => isset($adsPostSearch->currency_id)
+                    ? self::createRoute('edit-max-price', ['adsPostSearchId' => $adsPostSearchId])
+                    : self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -751,15 +634,30 @@ class FindAdsController extends Controller
 
     public function actionEditMaxPrice($adsPostSearchId)
     {
+        $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
+
+        if (!isset($adsPostSearch->currency_id)) {
+            return $this->actionEditCurrency($adsPostSearchId);
+        }
+
         $this->getState()->setName(self::createRoute('edit-max-price-set', ['adsPostSearchId' => $adsPostSearchId]));
 
+        
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('edit-max-price'),
+                $this->render('edit-max-price', [
+                    'currencyCode' => Currency::findOne($adsPostSearch->currency_id)->code,
+                ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('edit-currency', ['adsPostSearchId' => $adsPostSearchId]),
+                            'text' => Yii::t('bot', 'Edit currency'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -775,7 +673,7 @@ class FindAdsController extends Controller
     public function actionEditMaxPriceSet($adsPostSearchId)
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            if (!UserSetting::validatePrice($message->getText())) {
+            if (!AdsPost::validatePrice($message->getText())) {
                 return $this->actionEditMaxPrice($adsPostSearchId);
             }
 
@@ -852,12 +750,18 @@ class FindAdsController extends Controller
 
     public function actionEditLocation($adsPostSearchId)
     {
-        $this->getState()->setName(self::createRoute('new-location', ['adsPostSearchId' => $adsPostSearchId]));
+        $this->getState()->setName(self::createRoute('new-location-send', ['adsPostSearchId' => $adsPostSearchId]));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('edit-location'),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('new-location-my', ['adsPostSearchId' => $adsPostSearchId]),
+                            'text' => Yii::t('bot', 'My location'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('edit', ['adsPostSearchId' => $adsPostSearchId]),
@@ -873,20 +777,35 @@ class FindAdsController extends Controller
             ->build();
     }
 
-    public function actionNewLocation($adsPostSearchId)
+    public function actionNewLocationMy($adsPostSearchId)
+    {
+        $latitude = $this->getTelegramUser()->location_lat;
+        $longitude = $this->getTelegramUser()->location_lon;
+
+        return $this->actionNewLocationSet($adsPostSearchId, $latitude, $longitude);
+    }
+
+    public function actionNewLocationSend($adsPostSearchId)
     {
         $message = $this->getUpdate()->getMessage();
-        $isLocationInText = $message->getText() && UserSetting::validateLocation($message->getText());
 
-        if ($message && ($message->getLocation() || $isLocationInText)) {
-            if ($message->getLocation()) {
-                $latitude = strval($message->getLocation()->getLatitude());
-                $longitude = strval($message->getLocation()->getLongitude());
-            } else {
-                $latitude = UserSetting::getLatitudeFromText($message->getText());
-                $longitude = UserSetting::getLongitudeFromText($message->getText());
-            }
+        if ($message && $message->getLocation()) {
+            $latitude = $message->getLocation()->getLatitude();
+            $longitude = $message->getLocation()->getLongitude();
+        } elseif ($message && $message->getText() && AdsPost::validateLocation($message->getText())) {
+            $latitude = AdsPost::getLatitudeFromText($message->getText());
+            $longitude = AdsPost::getLongitudeFromText($message->getText());
+        } else {
+            $latitude = null;
+            $longitude = null;
+        }
 
+        return $this->actionNewLocationSet($adsPostSearchId, $latitude, $longitude);
+    }
+
+    public function actionNewLocationSet($adsPostSearchId, $latitude, $longitude)
+    {
+        if ($latitude && $longitude) {
             $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
 
             $adsPostSearch->setAttributes([
@@ -894,9 +813,10 @@ class FindAdsController extends Controller
                 'location_longitude' => $longitude,
             ]);
             $adsPostSearch->save();
-            $adsPostSearch->markToUpdateMatches();
 
             return $this->actionSearch($adsPostSearchId);
+        } else {
+            return $this->actionEditLocation($adsPostSearchId);
         }
     }
 
@@ -925,7 +845,11 @@ class FindAdsController extends Controller
 
     public function actionNewRadius($adsPostSearchId)
     {
-        if ($message = $this->getUpdate()->getMessage()) {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
+            if (!AdsPost::validateRadius($message->getText())) {
+                return $this->actionEditRadius($adsPostSearchId);
+            }
+
             $radius = $message->getText();
 
             $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
@@ -949,6 +873,16 @@ class FindAdsController extends Controller
         ]);
         $adsPostSearch->save();
 
+        if ($adsPostSearch->isActive()) {
+            $adsPostSearch->markToUpdateMatches();
+        } else {
+            $adsPostSearch->unlinkAll('matches', true);
+            $adsPostSearch->setAttributes([
+                'edited_at' => null,
+            ]);
+            $adsPostSearch->save();
+        }
+
         return $this->actionSearch($adsPostSearchId);
     }
 
@@ -956,16 +890,14 @@ class FindAdsController extends Controller
     {
         $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
 
-        $adsPosts = $adsPostSearch->getMatches()->all();
+        $adsPostsQuery = $adsPostSearch->getMatches();
 
-        if (empty($adsPosts)) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->answerCallbackQuery($this->render('no-post-matches'))
-                ->build();
+        if ($adsPostsQuery->count() == 0) {
+            return $this->actionSearch($adsPostSearchId);
         }
 
         $pagination = new Pagination([
-            'totalCount' => count($adsPosts),
+            'totalCount' => $adsPostsQuery->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -995,7 +927,10 @@ class FindAdsController extends Controller
             ],
         ];
 
-        $adsPost = $adsPosts[$page - 1];
+        $adsPost = $adsPostsQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all()[0];
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(

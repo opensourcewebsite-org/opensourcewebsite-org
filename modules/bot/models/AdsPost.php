@@ -102,4 +102,60 @@ class AdsPost extends ActiveRecord
             $this->save();
         }
     }
+
+    public static function validatePrice($price)
+    {
+        return is_numeric($price) && round($price, 2) == $price && $price >= 0;
+    }
+
+    public static function validateLocation($location)
+    {
+        $slices = self::getLocationSlices(self::removeExtraChars($location));
+
+        if (!isset($slices)) {
+            return false;
+        }
+
+        $latitude = $slices[0];
+        $longitude = $slices[1];
+
+        return is_numeric($latitude) && is_numeric($longitude)
+            && doubleval($latitude) >= -90 && doubleval($latitude) <= 90
+            && doubleval($longitude) >= -180 && doubleval($longitude) <= 180;
+    }
+
+    public static function getLatitudeFromText($location)
+    {
+        $slices = self::getLocationSlices(self::removeExtraChars($location));
+
+        return isset($slices) ? $slices[0] : null;
+    }
+
+    public static function getLongitudeFromText($location)
+    {
+        $slices = self::getLocationSlices(self::removeExtraChars($location));
+
+        return isset($slices) ? $slices[1] : null;
+    }
+
+    public static function validateRadius($radius)
+    {
+        return is_numeric($radius) && $radius >= 0;
+    }
+
+    private static function removeExtraChars($str)
+    {
+        return preg_replace('/[^\d\. ]/', '', $str);
+    }
+
+    private static function getLocationSlices($location)
+    {
+        $slices = explode(' ', $location);
+
+        if (count($slices) != 2) {
+            return null;
+        } else {
+            return $slices;
+        }
+    }
 }

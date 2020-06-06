@@ -164,14 +164,4 @@ class User extends ActiveRecord
 
         $this->save();
     }
-
-    public function getSettings()
-    {
-        return $this->hasMany(UserSetting::className(), ['user_id' => 'id']);
-    }
-
-    public function getSetting($setting)
-    {
-        return $this->getSettings()->where(['setting' => $setting])->one();
-    }
 }

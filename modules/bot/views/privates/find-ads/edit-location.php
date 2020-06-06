@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send location and I will automatically change it') ?>
+<?= Yii::t('bot', 'Send search location') ?>
