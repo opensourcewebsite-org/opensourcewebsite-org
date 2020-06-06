@@ -180,21 +180,19 @@ class ApiTestResponse extends \yii\db\ActiveRecord
         return $this->code.' '.$this::responseCodesList()[$this->code];
     }
 
+    public static function codeTextStylesList()
+    {
+        return [
+            1 => 'warning',
+            2 => 'success',
+            3 => 'danger',
+            4 => 'danger',
+            5 => 'danger',
+        ];
+    }
+
     public function codeTextStyle()
     {
-        switch (floor($this->code / 100)):
-            case 1:
-                return 'warning';
-        case 2:
-                return 'success';
-        case 3:
-                return 'danger';
-        case 4:
-                return 'danger';
-        case 5:
-                return 'danger';
-        default:
-                return 'warning';
-        endswitch;
+        return self::codeTextStylesList()[floor($this->code / 100)];
     }
 }

@@ -26,6 +26,7 @@ class RequestService extends Component
     private function updateHeaders(ApiTestRequest $model)
     {
         $this->flushHeaders($model);
+        $model->headers = [];
         $this->saveHeaders($model);
     }
 

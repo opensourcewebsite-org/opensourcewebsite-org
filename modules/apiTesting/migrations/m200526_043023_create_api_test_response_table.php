@@ -14,15 +14,15 @@ class m200526_043023_create_api_test_response_table extends Migration
     {
         $this->createTable('{{%api_test_response}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'request_id' => $this->integer()->unsigned()->notNull()->comment('Request identity'),
-            'job_id' => $this->integer()->unsigned()->null()->comment('Job identity'),
-            'headers' => $this->text()->comment('Headers'),
+            'request_id' => $this->integer()->unsigned()->notNull(),
+            'job_id' => $this->integer()->unsigned()->null(),
+            'headers' => $this->text(),
             'body' => 'LONGTEXT',
-            'cookies' => $this->text()->comment('Cookies'),
-            'code' => $this->integer()->unsigned()->notNull()->comment('Response code'),
-            'time' => $this->integer()->unsigned()->comment('Request execution time'),
-            'size' => $this->integer()->unsigned()->comment('Size of response'),
-            'created_at' => $this->integer()->notNull()->comment('Response time')
+            'cookies' => $this->text(),
+            'code' => $this->integer()->unsigned()->notNull(),
+            'time' => $this->integer()->unsigned(),
+            'size' => $this->integer()->unsigned(),
+            'created_at' => $this->integer()->notNull()
         ]);
 
         $this->createIndex(

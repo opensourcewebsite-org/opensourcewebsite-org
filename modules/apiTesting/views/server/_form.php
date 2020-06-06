@@ -30,7 +30,7 @@ use yii\widgets\ActiveForm;
                             <?= $form->field($model, 'protocol')->dropDownList($model::getProtocolList()); ?>
                         </div>
                         <div class="col-md-2">
-                            <?= $form->field($model, 'domain')->textInput(['maxlength' => true]); ?>
+                            <?= $form->field($model, 'domainFormValue')->textInput(['maxlength' => true]); ?>
                         </div>
                         <div class="col-md-2">
                             <?= $form->field($model, 'path')->textInput(['maxlength' => true]); ?>

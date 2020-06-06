@@ -13,8 +13,8 @@ class m200526_043704_create_api_test_job_request_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%api_test_job_request}}', [
-            'job_id' => $this->integer()->unsigned()->notNull()->comment('Job identity'),
-            'request_id' => $this->integer()->unsigned()->notNull()->comment('Request identity')
+            'job_id' => $this->integer()->unsigned()->notNull(),
+            'request_id' => $this->integer()->unsigned()->notNull()
         ]);
 
         $this->addPrimaryKey('pk-test-job-request', '{{%api_test_job_request}}', ['job_id', 'request_id']);

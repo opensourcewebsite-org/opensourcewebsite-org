@@ -15,11 +15,11 @@ class m200522_044300_create_api_test_project_table extends Migration
         $this->createTable('{{%api_test_project}}', [
             'id' => $this->primaryKey()->unsigned(),
             'user_id' => $this->integer()->unsigned()->notNull(),
-            'name' => $this->string()->notNull()->comment('Project name'),
-            'description' => $this->text()->null()->comment('Description (optional)'),
-            'project_type' => $this->tinyInteger()->notNull()->comment('Project Type'),
-            'created_at' => $this->integer()->unsigned()->comment('Created at'),
-            'updated_at' => $this->integer()->unsigned()->comment('Updated at')
+            'name' => $this->string()->notNull(),
+            'description' => $this->text()->null(),
+            'project_type' => $this->tinyInteger()->notNull(),
+            'created_at' => $this->integer()->unsigned(),
+            'updated_at' => $this->integer()->unsigned()
         ]);
 
         // creates index for column `user_id`

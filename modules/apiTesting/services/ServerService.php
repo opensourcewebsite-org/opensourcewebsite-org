@@ -3,6 +3,7 @@
 namespace app\modules\apiTesting\services;
 
 use app\modules\apiTesting\models\ApiTestServer;
+use app\modules\apiTesting\models\ApiTestServerDomain;
 use Yii;
 use yii\base\Component;
 
@@ -35,17 +36,8 @@ class ServerService extends Component
 
         foreach ($records as $record) {
             if ($record['txt'] == $model->txt) {
-                $model->status = $model::STATUS_VERIFIED;
-                $model->save();
-
-                if ($exsistedDomain = ApiTestServer::find()->andWhere([
-                    'domain' => $model->domain,
-                ])->andWhere([
-                    '!=', 'txt', $model->txt
-                ])->one()) {
-                    $exsistedDomain->status = $exsistedDomain::STATUS_EXPIRED;
-                    $exsistedDomain->save();
-                }
+                $model->domain->status = $model::STATUS_VERIFIED;
+                $model->domain->save();
             }
         }
 
@@ -56,7 +48,12 @@ class ServerService extends Component
 
     public function createServer(ApiTestServer $server)
     {
-        $server->status = $server::STATUS_VERIFICATION_PROGRESS;
+        if ($domain = $this->findDomain($server->domainFormValue)) {
+            $server->domain_id = $domain->id;
+        } else {
+            $server->domain_id = $this->createDomain($server->domainFormValue)->id;
+        }
+
         if ($server->save()) {
             $this->flushTxtKey();
         }
@@ -64,5 +61,24 @@ class ServerService extends Component
 
     public function verifyServer(ApiTestServer $server)
     {
+    }
+
+    private function createDomain($domain): ApiTestServerDomain
+    {
+        $domain = new ApiTestServerDomain([
+            'domain' => $domain,
+            'status' => ApiTestServer::STATUS_VERIFICATION_PROGRESS
+        ]);
+        $domain->save();
+        return $domain;
+    }
+
+    private function updateDomain(ApiTestServer $server, ApiTestServerDomain $domain)
+    {
+    }
+
+    private function findDomain($domain):?ApiTestServerDomain
+    {
+        return ApiTestServerDomain::findOne(['domain' => $domain]);
     }
 }

@@ -15,6 +15,7 @@ class ProjectTeamService extends \yii\base\Component
     public function inviteUserToProject(ApiTestTeam $team)
     {
         $team->status = $team::STATUS_INVITED;
+        $team->invited_by = Yii::$app->user->id;
         return $team->save();
     }
 

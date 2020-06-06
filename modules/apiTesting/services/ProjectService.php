@@ -92,7 +92,8 @@ class ProjectService extends \yii\base\Component
     {
         $team = new ApiTestTeam([
             'project_id' => $project->id,
-            'user_id' => Yii::$app->user->id
+            'user_id' => Yii::$app->user->id,
+            'invited_by' => Yii::$app->user->id
         ]);
 
         $this->teamService->acceptInvite($team);

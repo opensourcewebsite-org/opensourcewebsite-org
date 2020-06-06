@@ -38,9 +38,13 @@ class RunnerService extends Component
                     if ($queueItem->isJob()) {
                         $this->runJob($queueItem->job);
                     } elseif ($queueItem->isRequest()) {
-                        if ( ! $this->runRequest($queueItem->request)) {
+                        if ($queueItem->request->server->domain->status == ApiTestServer::STATUS_VERIFICATION_PROGRESS) {
+                            $queueItem->status = $queueItem::STATUS_WAITING;
+                            $queueItem->save();
                             continue;
                         }
+
+                        $this->runRequest($queueItem->request);
                     }
                 } catch (\Exception $exception) {
                     $queueItem->status = $queueItem::STATUS_FAILED;
@@ -82,10 +86,6 @@ class RunnerService extends Component
 
     private function runRequest(ApiTestRequest $request, ApiTestJob $byJob = null)
     {
-        if ($request->server->status == ApiTestServer::STATUS_VERIFICATION_PROGRESS) {
-            return false;
-        }
-
         $this->requester->makeRequest($request, $byJob);
         return true;
     }

@@ -13,8 +13,8 @@ class m200526_052434_create_api_test_request_label_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%api_test_request_label}}', [
-            'label_id' => $this->integer()->unsigned()->comment('Label identity'),
-            'request_id' => $this->integer()->unsigned()->comment('Request identity')
+            'label_id' => $this->integer()->unsigned(),
+            'request_id' => $this->integer()->unsigned()
         ]);
 
         $this->addPrimaryKey(

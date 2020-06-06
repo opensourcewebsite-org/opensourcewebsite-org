@@ -3,7 +3,7 @@
 namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
-use app\interfaces\ICronChained;
+use app\interfaces\CronChainedInterface;
 use app\modules\apiTesting\models\ApiTestServer;
 use app\modules\apiTesting\services\RunnerScheduleManager;
 use app\modules\apiTesting\services\RunnerService;
@@ -18,7 +18,7 @@ use yii\console\Controller;
  * @property RunnerScheduleManager $scheduleManager
  * @property ServerService $serverService
  */
-class ApiTestController extends Controller implements ICronChained {
+class ApiTestController extends Controller implements CronChainedInterface {
 
     use ControllerLogTrait;
 

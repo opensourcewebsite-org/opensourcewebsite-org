@@ -14,8 +14,8 @@ class m200526_043022_create_api_test_job_table extends Migration
     {
         $this->createTable('{{%api_test_job}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'project_id' => $this->integer()->unsigned()->comment('Project identity'),
-            'name' => $this->string()->notNull()->comment('Name of job'),
+            'project_id' => $this->integer()->unsigned(),
+            'name' => $this->string()->notNull(),
         ]);
 
         $this->createIndex(

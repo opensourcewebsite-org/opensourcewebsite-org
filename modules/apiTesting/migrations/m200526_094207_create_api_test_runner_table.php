@@ -14,13 +14,13 @@ class m200526_094207_create_api_test_runner_table extends Migration
     {
         $this->createTable('{{%api_test_runner}}', [
             'id' => $this->primaryKey(),
-            'job_id' => $this->integer()->unsigned()->comment('Job identity'),
-            'request_id' => $this->integer()->unsigned()->comment('Request identity'),
-            'triggered_by' => $this->integer()->unsigned()->comment('User that triggered'),
-            'triggered_by_schedule' => $this->integer()->unsigned()->comment('Schedule id'),
-            'timing' => $this->integer()->unsigned()->comment('Timing'),
-            'status' => $this->tinyInteger()->unsigned()->comment('Run status'),
-            'start_at' => $this->integer()->unsigned()->comment('Time when start')
+            'job_id' => $this->integer()->unsigned(),
+            'request_id' => $this->integer()->unsigned(),
+            'triggered_by' => $this->integer()->unsigned(),
+            'triggered_by_schedule' => $this->integer()->unsigned(),
+            'timing' => $this->integer()->unsigned(),
+            'status' => $this->tinyInteger()->unsigned(),
+            'start_at' => $this->integer()->unsigned()
         ]);
 
         $this->createIndex(

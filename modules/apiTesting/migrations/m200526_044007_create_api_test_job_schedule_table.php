@@ -14,12 +14,12 @@ class m200526_044007_create_api_test_job_schedule_table extends Migration
     {
         $this->createTable('{{%api_test_job_schedule}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'job_id' => $this->integer()->unsigned()->notNull()->comment('Job identity'),
-            'status' => $this->boolean()->notNull()->defaultValue(0)->comment('Is Active'),
+            'job_id' => $this->integer()->unsigned()->notNull(),
+            'status' => $this->boolean()->notNull()->defaultValue(0),
             'schedule_periodicity' => $this->integer()->unsigned()->notNull(),
-            'custom_schedule_from_date' => $this->integer()->unsigned()->comment('Date for schedule start'),
-            'custom_schedule_end_date' => $this->integer()->unsigned()->comment('Date for schedule stop'),
-            'description' => $this->string()->notNull()->comment('Description for job')->defaultValue('')
+            'custom_schedule_from_date' => $this->integer()->unsigned(),
+            'custom_schedule_end_date' => $this->integer()->unsigned(),
+            'description' => $this->string()->notNull()->defaultValue('')
         ]);
 
         $this->createIndex(

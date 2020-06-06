@@ -13,16 +13,32 @@ class m200522_065432_create_api_test_team_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%api_test_team}}', [
-            'user_id' => $this->integer()->unsigned()->comment('User identity'),
-            'project_id' => $this->integer()->unsigned()->comment('Project identity'),
-            'invited_at' => $this->integer()->unsigned()->comment("Time of inviting"),
-            'status' => $this->tinyInteger()->unsigned()->notNull()->comment("Accepting status")
+            'user_id' => $this->integer()->unsigned(),
+            'project_id' => $this->integer()->unsigned(),
+            'invited_at' => $this->integer()->unsigned(),
+            'invited_by' => $this->integer()->unsigned(),
+            'status' => $this->tinyInteger()->unsigned()->notNull()
         ]);
 
         $this->addPrimaryKey('pk-api_test_team', '{{%api_test_team}}', [
             'user_id',
             'project_id'
         ]);
+
+        $this->createIndex(
+            'idx-api_test_team-invited_by',
+            '{{%api_test_team}}',
+            'invited_by'
+        );
+
+        $this->addForeignKey(
+            'fk-api_test_team-invited_by',
+            '{{%api_test_team}}',
+            'invited_by',
+            'user',
+            'id',
+            'CASCADE'
+        );
 
         $this->createIndex(
             'idx-api_test_team-user_id',

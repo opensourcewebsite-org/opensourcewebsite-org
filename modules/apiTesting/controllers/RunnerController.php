@@ -71,7 +71,6 @@ class RunnerController extends Controller
 
         if ($filterModel->server_id) {
             $server = $project->getServers()->andWhere(['id' => $server_id])->one();
-
             if ($server == null) {
                 throw new NotFoundHttpException('Not found');
             }
