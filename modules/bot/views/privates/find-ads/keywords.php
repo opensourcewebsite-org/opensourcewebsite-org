@@ -1,1 +1,0 @@
-<?= Yii::t('bot', 'Choose currency of max price of search') ?>

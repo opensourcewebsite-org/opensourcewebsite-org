@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send me new photo and I will automaticall change it') ?>
+<?= Yii::t('bot', 'Send photo') ?>

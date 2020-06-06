@@ -7,6 +7,6 @@
 <b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adsPostSearch->location_latitude ?> <?= $adsPostSearch->location_longitude ?></a><br/>
 <b><?= Yii::t('bot', 'Pickup radius') ?>:</b> <?= $adsPostSearch->radius ?> <?= Yii::t('bot', 'km') ?><br/>
 <br/>
-<?php if ($adsPostSearch->isActive()) : ?>
+<?php if ($adsPostSearch->isActive() && $showDetailedInfo) : ?>
 <i><?= Yii::t('bot', 'This ad will be active for') ?> <?= $liveDays ?> <?= Yii::t('bot', 'days. Visit this page again before expiring time to automatically extend ad action') ?>.</i>
 <?php endif; ?>
