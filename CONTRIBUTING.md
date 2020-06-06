@@ -109,21 +109,36 @@ Recommended IDE:
 
 #### Yii 2 migration files
 
+https://www.yiiframework.com/doc/api/2.0/yii-db-migration
+
 Before to create a migration files use [wwwsqldesigner](https://github.com/ondras/wwwsqldesigner) to prototype your changes for the database. For example you can use https://ondras.zarovi.cz/sql/demo/?keyword=default with any keyword and share the link with other contributors.
 
-To upgrade data in the database, create a migration whose name starts with `upgrade_`. To upgrade the data in the migration, the `safeUp()` method is used, it is forbidden to use data access through the models, only through DAO (yii\db\Command). Use of such migrations is necessary for existing databases, and for all new such migrations will be deleted. In `down()` and `safeDown()`, only deletion of objects of the database structure (tables, fields, keys, indexes) is allowed.
+##### safeUp()
 
-Do not use variables like `$tableName` and `$tableOptions`.
+https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeUp()-detail
 
-To specify a primary key, use `$this->primaryKey()->unsigned()`. Be sure to use `unsigned()` for those columns where possible.
+- Name database tables in the singular to list any objects. For example, `user`, but not` users`.
+- Do not use variables like `$tableName` and `$tableOptions`.
+- Do not use database comments for the database and columns.
 
-To add a column with integer values between 0-255, use `$this->tinyInteger()->unsigned()`.
+Columns:
+- Primary key with integer - use `$this->primaryKey()->unsigned()`.
+- Integer values between 0-255 - use `$this->tinyInteger()->unsigned()`.
+- Integer values between 0-65535 - use `$this->smallInteger()->unsigned()`.
+- Integer values above 65535 - use `$this->integer()->unsigned()`.
+- Datetime or timeshtamp values - use `$this->integer()->unsigned()`.
+- Do not specify a length for columns with integer values.
+- Floating-point values where precision is needed, such as money or coordinates - use `$this->decimal($precision, $scale)->unsigned()`. Avoid using float columns without explicit necessity, as this type is not exact.
 
-To add a column with integer values in the range 0-65535, use `$this->smallInteger()->unsigned()`.
+##### safeDown()
 
-To add a column with date values in most cases, use the data type `$this->integer()->unsigned()`. Exceptions - if the column will be actively used in mysql requests as a date.
+https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeDown()-detail
 
-Usually, database tables are named in the singular for listing any objects. For example `user`, but not `users`.
+Use only for deletion of objects of the database structure (tables, fields, keys, indexes).
+
+##### Upgrade data in the database
+
+To upgrade data in the database, create a migration whose name starts with `upgrade_`. Use data access only through DAO (yii\db\Command), not through the models. These migrations are required for existing databases.
 
 ### JavaScript Style Guide
 
