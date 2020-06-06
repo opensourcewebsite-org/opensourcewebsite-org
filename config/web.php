@@ -35,6 +35,9 @@ $config = [
         'bot' => [
             'class' => 'app\modules\bot\Module'
         ],
+        'apiTesting' => [
+            'class' => 'app\modules\apiTesting\Module'
+        ]
     ],
     'components' => [
         'assetManager' => [
