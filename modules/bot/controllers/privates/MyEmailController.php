@@ -97,7 +97,7 @@ class MyEmailController extends Controller
         }
 
         return $this->getResponseBuilder()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('create', [
                     'changeRequest' => $changeRequest,
                     'mergeRequest' => $mergeRequest,
@@ -132,7 +132,7 @@ class MyEmailController extends Controller
 
         return $this->getResponseBuilder()
             ->removeInlineKeyboardMarkup()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('update')
             )
             ->build();

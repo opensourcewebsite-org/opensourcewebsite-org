@@ -101,10 +101,10 @@ class StartController extends Controller
         $messageId = $this->getUpdate()->getMessage()->getMessageId();
 
         if (isset($language)) {
-            $this->DeleteLastMessage($chatId, $messageId);
+            #$this->DeleteLastMessage($chatId, $messageId);
             return $this->actionSave($language->code);
         } else {
-            $this->DeleteLastMessage($chatId, $messageId);
+            #$this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex();
         }
     }
