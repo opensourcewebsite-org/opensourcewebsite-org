@@ -382,7 +382,7 @@ class FindAdsController extends Controller
             return $this->actionLocation();
         }
 
-        $this->getState()->setIntermediateField('radius', $radius);
+        $this->getState()->setIntermediateField('findAdRadius', $radius);
 
         return $this->actionMakeSearch();
     }
@@ -391,16 +391,17 @@ class FindAdsController extends Controller
     {
         $adsPostSearch = new AdsPostSearch();
 
+        $state = $this->getState();
         $user = $this->getTelegramUser();
 
         $adsPostSearch->setAttributes([
             'user_id' => $user->id,
-            'category_id' => intval($this->getState()->getIntermediateField('findAdCategoryId')),
-            'radius' => intval($this->getState()->getIntermediateField('findAdRadius')),
-            'currency_id' => intval($this->getState()->getIntermediateField('findAdCurrencyId')),
-            'max_price' => intval($this->getState()->getIntermediateField('findAdMaxPrice')),
-            'location_latitude' => $this->getState()->getIntermediateField('findAdLocationLatitude'),
-            'location_longitude' => $this->getState()->getIntermediateField('findAdLocationLongitude'),
+            'category_id' => intval($state->getIntermediateField('findAdCategoryId')),
+            'radius' => intval($state->getIntermediateField('findAdRadius')),
+            'currency_id' => $state->getIntermediateField('findAdCurrencyId') ? intval($state->getIntermediateField('findAdCurrencyId')) : null,
+            'max_price' => $state->getIntermediateField('findAdMaxPrice') ? intval($state->getIntermediateField('findAdMaxPrice')) : null,
+            'location_latitude' => $state->getIntermediateField('findAdLocationLatitude'),
+            'location_longitude' => $state->getIntermediateField('findAdLocationLongitude'),
             'updated_at' => time(),
             'status' => AdsPostSearch::STATUS_NOT_ACTIVATED,
             'edited_at' => time(),
@@ -809,8 +810,8 @@ class FindAdsController extends Controller
             $adsPostSearch = AdsPostSearch::findOne($adsPostSearchId);
 
             $adsPostSearch->setAttributes([
-                'location_latitude' => $latitude,
-                'location_longitude' => $longitude,
+                'location_latitude' => strval($latitude),
+                'location_longitude' => strval($longitude),
             ]);
             $adsPostSearch->save();
 

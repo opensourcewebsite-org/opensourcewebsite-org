@@ -22,7 +22,7 @@ class AdsPostSearch extends ActiveRecord
         return [
             [['user_id', 'category_id', 'radius', 'location_latitude', 'location_longitude', 'updated_at', 'status'], 'required'],
             [['location_latitude', 'location_longitude', 'status'], 'string'],
-            [['id', 'category_id', 'user_id', 'radius', 'currency_id', 'max_price', 'updated_at', 'edited_at'], 'integer'],
+            [['category_id', 'user_id', 'radius', 'currency_id', 'max_price', 'updated_at', 'edited_at'], 'integer'],
         ];
     }
 
