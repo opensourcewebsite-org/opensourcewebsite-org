@@ -71,7 +71,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['is_authenticated', 'boolean'],
-            [['gender_id', 'sexuality_id', 'currency_id'], 'integer'],
+            [['gender_id', 'sexuality_id', 'currency_id', 'rating'], 'integer'],
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 'UTC'],
 
