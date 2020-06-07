@@ -10,8 +10,6 @@ use yii\base\Component;
 
 class BalanceChecker extends Component
 {
-    public const DEBT_FLOAT_SCALE = 2;
-
     /**
      * @throws \yii\db\Exception
      */
@@ -96,7 +94,7 @@ class BalanceChecker extends Component
                     $debtSumDiff = bcsub(
                         $debtSummary['debt_sum'],
                         ($inverseDebtSummary['debt_sum'] ?? 0),
-                        self::DEBT_FLOAT_SCALE
+                        self::getFloatScale()
                     );
 
                     $errorParams = [
@@ -194,11 +192,19 @@ class BalanceChecker extends Component
 
     private function isFloatEqual(string $leftFloat, string $rightFloat): bool
     {
-        return Number::isFloatEqual($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
+        return Number::isFloatEqual($leftFloat, $rightFloat, self::getFloatScale());
     }
 
     private function isFloatLower(string $leftFloat, string $rightFloat): bool
     {
-        return Number::isFloatLower($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
+        return Number::isFloatLower($leftFloat, $rightFloat, self::getFloatScale());
+    }
+
+    private static function getFloatScale(): int
+    {
+        return max(
+            Debt::getAttributeFloatScale('amount'),
+            Debtbalance::getAttributeFloatScale('amount')
+        );
     }
 }

@@ -2,13 +2,12 @@
 
 namespace app\models;
 
-use app\components\debt\BalanceChecker;
-use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtQuery;
+use app\models\traits\FloatAttributeTrait;
 use Yii;
 use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
@@ -38,6 +37,7 @@ use yii\behaviors\TimestampBehavior;
 class Debt extends ActiveRecord implements ByDebtInterface
 {
     use ByDebtTrait;
+    use FloatAttributeTrait;
 
     public const STATUS_PENDING = 0;
     public const STATUS_CONFIRM = 1;
@@ -296,8 +296,8 @@ class Debt extends ActiveRecord implements ByDebtInterface
             return false;
         }
 
-        if ($name === 'amount' && !$identical) {
-            return !Number::isFloatEqual($this->amount, $this->getOldAttribute('amount'), BalanceChecker::DEBT_FLOAT_SCALE);
+        if (!$identical && self::isAttributeFloat($name)) {
+            return $this->isAttributeFloatChanged($name);
         }
 
         return true;

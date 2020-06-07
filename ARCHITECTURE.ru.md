@@ -86,3 +86,5 @@ LocationRequestHandler просто возвращает константу, е�
 - работая с `float` в PHP **НУЖНО** всегда использовать [Функции BC Math](https://www.php.net/manual/ru/ref.bc.php).
     - Для удобного сравнения двух числе используйте `\app\helpers\Number`.
     - [Почему это важно?](https://stackoverflow.com/questions/3148937/compare-floats-in-php)
+    - Если в БД таблице есть DECIMAL поле - добавьте trait `\app\models\traits\FloatAttributeTrait` в `ActiveRecord`.
+

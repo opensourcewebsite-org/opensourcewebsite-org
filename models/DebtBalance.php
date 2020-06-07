@@ -2,11 +2,10 @@
 
 namespace app\models;
 
-use app\components\debt\BalanceChecker;
-use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\DebtBalanceQuery;
+use app\models\traits\FloatAttributeTrait;
 use app\models\traits\SelectForUpdateTrait;
 use app\components\debt\Reduction;
 use app\components\debt\Redistribution;
@@ -46,6 +45,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 {
     use ByDebtTrait;
     use SelectForUpdateTrait;
+    use FloatAttributeTrait;
 
     /**
      * Should script store zero amount in DB.
@@ -244,8 +244,8 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             return false;
         }
 
-        if ($name === 'amount' && !$identical) {
-            return !Number::isFloatEqual($this->amount, $this->getOldAttribute('amount'), BalanceChecker::DEBT_FLOAT_SCALE);
+        if (!$identical && self::isAttributeFloat($name)) {
+            return $this->isAttributeFloatChanged($name);
         }
 
         return true;
