@@ -7,7 +7,6 @@ use app\components\Converter;
 use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
 use app\modules\apiTesting\models\ApiTestProject;
-use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
