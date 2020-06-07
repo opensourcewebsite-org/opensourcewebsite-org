@@ -7,8 +7,6 @@
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 [![Travis CI Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?style=flat-square&branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org)
 [![Semaphore CI Build Status](https://opensourcewebsite.semaphoreci.com/badges/opensourcewebsite-org/branches/master.svg?style=shields&label=1)](https://opensourcewebsite.semaphoreci.com/projects/opensourcewebsite-org)
-[![Scrutinizer CI Build Status](https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org/badges/build.png?b=master)](https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org/build-status/master)
-[![Scrutinizer CI Code Intelligence Status](https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![Codeclimate Maintainability](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/maintainability?style=flat-square)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/maintainability)
 [![Codeclimate Coverage](https://api.codeclimate.com/v1/badges/589055a81b82d015acb8/test_coverage?style=flat-square)](https://codeclimate.com/github/opensourcewebsite-org/opensourcewebsite-org/test_coverage)
 [![Codebeat Status](https://codebeat.co/badges/c69e6f2a-e6f6-4a50-b5aa-9003cdae23c2?style=flat-square)](https://codebeat.co/projects/github-com-opensourcewebsite-org-opensourcewebsite-org-master)
@@ -31,7 +29,6 @@ This project and everyone participating in it is governed by the [Code of Conduc
 ## Contributing
 
 This project exists thanks to all the people who contribute.
-<a href="https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors"><img src="https://opencollective.com/opensourcewebsite/contributors.svg?width=890&button=false" /></a>
 
 Your contributions increase your Rating in our community.
 
@@ -43,7 +40,7 @@ This project exists thanks to all the people who donate.
 
 Your donations increase your Rating in our community.
 
-Become a financial contributor and help us sustain our community. [Read more](DONATE.md).
+Please read through our [Donation Details](DONATE.md).
 
 ## Continuous Integration
 

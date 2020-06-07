@@ -109,7 +109,7 @@ class ContactFixture extends ARGenerator
         }
 
         $model->debt_redistribution_priority = self::getFaker()
-            ->optional(0.5, Contact::DEBT_REDISTRIBUTION_PRIORITY_NO)
+            ->optional(0.5, Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
             ->numberBetween($min, $max);
     }
 }
