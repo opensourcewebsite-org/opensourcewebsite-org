@@ -60,6 +60,22 @@ $config = [
         ],
     ],
     'controllerMap' => [
+        'apiTestingServer' => [
+            'class' => \app\modules\apiTesting\commands\ServerController::class
+        ],
+        'apiTestingRunner' => [
+            'class' => \app\modules\apiTesting\commands\RunnerController::class
+        ],
+        'apiTestingSchedule' => [
+            'class' => \app\modules\apiTesting\commands\ScheduleController::class
+        ],
+        'migrate' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationPath' => [
+                '@app/modules/apiTesting/migrations',
+                '@app/migrations'
+            ]
+        ],
         'fixture' => [
             'class' => FixtureController::class,
             'namespace' => 'app\tests\fixtures',
