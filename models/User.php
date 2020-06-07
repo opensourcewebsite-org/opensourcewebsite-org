@@ -6,6 +6,7 @@ use Yii;
 use app\components\Converter;
 use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
+use app\modules\apiTesting\models\ApiTestProject;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -483,6 +484,12 @@ class User extends ActiveRecord implements IdentityInterface
         return $settingQty * $this->rating;
     }
 
+    public function getMaxProjectsCount() {
+        $setting = Setting::findOne(['key' => 'api_tester_project_quantity_value_per_one_rating']);
+        $settingQty = ($setting != null) ? $setting->value : 1;
+        return $settingQty * $this->rating;
+    }
+
     /**
      * @return integer The max ammount of support group members the user can have
      */
@@ -766,6 +773,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function getCitizenships()
     {
         return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
+    }
+
+    public function getProjects() {
+        return $this->hasMany(ApiTestProject::class, ['user_id' => 'id']);
     }
 
     /**

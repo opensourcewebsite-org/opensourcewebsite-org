@@ -278,6 +278,12 @@ $leftMenuItems = [
         'route' => '/debt',
     ],
     [
+        'title' => 'Api Testing',
+        'icon' => 'fa fa-cogs',
+        'url' => '/apiTesting/project',
+        'route' => '/apiTesting'
+    ],
+    [
         'title' => 'Examples',
         'icon' => 'fas fa-layer-group',
         'urls' => [
