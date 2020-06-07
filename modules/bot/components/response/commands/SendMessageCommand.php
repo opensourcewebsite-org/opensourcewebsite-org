@@ -31,9 +31,11 @@ class SendMessageCommand extends MessageTextCommand
                 $this->getOptionalProperty('replyMarkup', null),
                 $this->getOptionalProperty('disableNotification', false)
             );
+            $this->setMessageId($answer->getMessageId());
         } catch (HttpException $e) {
             Yii::warning($e);
         }
+
         return $answer;
     }
 }

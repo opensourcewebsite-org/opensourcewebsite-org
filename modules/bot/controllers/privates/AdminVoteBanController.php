@@ -174,10 +174,9 @@ class AdminVoteBanController extends Controller
         $statusSetting->value= (string) $value;
         $statusSetting->save();
 
-        $this->getState()->setName(self::createRoute('index', [
-                    'chatId' => $chatId,
-                ]));
-
-        $this->module->dispatchRoute($update);
+        $this->getState()->setName(null);
+        return $this->runAction('index', [
+            'chatId' => $chatId,
+        ]);
     }
 }
