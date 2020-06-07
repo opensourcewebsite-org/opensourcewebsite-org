@@ -160,7 +160,7 @@ class SettingController extends Controller
                 try {
                     $votePercent = floor($settingVote->settingValue->getUserVotesPercent(false));
 
-                    $threshHold = Setting::find()->select('value')->where(['key' => 'website_setting_min_vote_percent_to_apply_change'])->scalar();
+                    $threshHold = Setting::getValue('website_setting_min_vote_percent_to_apply_change');
 
                     if ($threshHold <= $votePercent) {
                         $setting->value = $settingVote->settingValue->value;
