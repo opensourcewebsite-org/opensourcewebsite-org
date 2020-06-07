@@ -124,4 +124,9 @@ class Setting extends ActiveRecord
         }
         return $remainingVotes;
     }
+
+    public static function getValue($key)
+    {
+        return static::findOne(['key' => $key])->value;
+    }
 }

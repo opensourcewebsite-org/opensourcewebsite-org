@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use app\components\Converter;
 use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
@@ -11,6 +12,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\db\Query;
 
 /**
  * User model
@@ -458,8 +460,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxMoqupsNumber()
     {
-        $setting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
-        $maxMoqup = ($setting != null) ? $setting->value : 1;
+        $maxMoqup = Setting::getValue('moqup_quantity_value_per_one_rating');
 
         return $maxMoqup * $this->rating;
     }
@@ -469,8 +470,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxIssuesNumber()
     {
-        $setting = Setting::findOne(['key' => 'issue_quantity_value_per_one_rating']);
-        $maxIssue = ($setting != null) ? $setting->value : 1;
+        $maxIssue = Setting::getValue('issue_quantity_value_per_one_rating');
 
         return $maxIssue * $this->rating;
     }
@@ -480,8 +480,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxSupportGroup()
     {
-        $setting = Setting::findOne(['key' => 'support_group_quantity_value_per_one_rating']);
-        $settingQty = ($setting != null) ? $setting->value : 1;
+        $settingQty = Setting::getValue('support_group_quantity_value_per_one_rating');
 
         return $settingQty * $this->rating;
     }
@@ -497,8 +496,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxSupportGroupMember()
     {
-        $setting = Setting::findOne(['key' => 'support_group_member_quantity_value_per_one_rating']);
-        $settingQty = ($setting != null) ? $setting->value : 1;
+        $settingQty = Setting::getValue('support_group_member_quantity_value_per_one_rating');
 
         return $settingQty * $this->rating;
     }
@@ -508,8 +506,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getMaxBots()
     {
-        $setting = Setting::findOne(['key' => 'support_group_bot_quantity_value_per_one_rating']);
-        $settingQty = ($setting != null) ? $setting->value : 1;
+        $settingQty = Setting::getValue('support_group_bot_quantity_value_per_one_rating');
 
         return $settingQty * $this->rating;
     }
@@ -554,14 +551,12 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getMaxMoqupsHtmlSize()
     {
-        $setting = Setting::findOne(['key' => 'moqup_html_field_max_value']);
-        return ($setting != null) ? $setting->value : 1;
+        return Setting::getValue('moqup_html_field_max_value');
     }
 
     public function getMaxMoqupsCssSize()
     {
-        $setting = Setting::findOne(['key' => 'moqup_css_field_max_value']);
-        return ($setting != null) ? $setting->value : 1;
+        return Setting::getValue('moqup_css_field_max_value');
     }
 
     /**
@@ -585,9 +580,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getRating()
     {
-        $balance = Rating::find()->select(['balance' => 'sum(amount)'])->where(['user_id' => $this->id])->groupBy('user_id')->scalar();
-
-        return ($balance != null) ? $balance : 0;
+        return $this->rating;
     }
 
     /**
@@ -596,7 +589,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getOverallRatingPercent($format = true)
     {
-        $totalRating = Rating::getTotalRating();
+        $totalRating = self::getTotalRating();
+
         return Converter::percentage($this->rating, $totalRating, $format);
     }
 
@@ -605,15 +599,64 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getActiveRating()
     {
-        $setting = Setting::findOne(['key' => 'days_count_to_calculate_active_rating']);
-        $daysActiveRating = intval($setting->value);
+        $daysActiveRating = intval(Setting::getValue('days_count_to_calculate_active_rating'));
 
-        $balance = Rating::find()
+        $activeRating = Rating::find()
             ->where(['>', 'created_at', time() - 3600 * 24 * $daysActiveRating])
             ->andWhere(['user_id' => $this->id])
             ->sum('amount');
 
-        return ($balance != null) ? $balance : 0;
+        return $activeRating ?: 0;
+    }
+
+    public function getRank()
+    {
+        $groupQueryResult = (new Query)
+            ->select([
+                '`user`.id',
+                '`user`.rating',
+            ])
+            ->from(User::tableName())
+            ->orderBy(['rating' => SORT_DESC, 'created_at' => SORT_ASC])
+            ->all();
+
+        foreach ($groupQueryResult as $index => $row) {
+            if ($row['id'] == $this->id) {
+                $rank = $index + 1;
+            }
+        }
+
+        // TODO переделать на один запрос
+
+/*        $result = User::find()
+            ->orderBy(['rating' => SORT_DESC, 'created_at' => SORT_ASC])
+            ->all();
+
+        $groupQueryResult = (new Query)
+            ->select([
+                'ROW_NUMBER()',
+                '`user`.id',
+            ])
+            ->from(User::tableName())
+            ->orderBy(['rating' => SORT_DESC, 'created_at' => SORT_ASC])
+            ->all();
+*/
+
+        return $rank ?: 0;
+    }
+
+    public function updateRating()
+    {
+        $totalRating = Rating::find()
+            ->where(['user_id' => $this->id])
+            ->sum('amount');
+
+        if ($this->rating != $totalRating) {
+            $this->rating = $totalRating;
+            $this->save();
+        }
+
+        return true;
     }
 
     /**
@@ -627,15 +670,13 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function addRating($ratingType = Rating::CONFIRM_EMAIL, $ratingAmount = 1, $existMultiple = true)
     {
-        $id = $this->id;
-
         $commit = false;
         $rating = null;
 
         //If a rating can exist only once
         if (!$existMultiple) {
             $rating = Rating::findOne([
-                'user_id' => $id,
+                'user_id' => $this->id,
                 'type' => $ratingType,
             ]);
 
@@ -645,15 +686,17 @@ class User extends ActiveRecord implements IdentityInterface
         }
         if ($rating == null) {
             $rating = new Rating([
-                'user_id' => $id,
+                'user_id' => $this->id,
                 'amount' => $ratingAmount,
                 'type' => $ratingType,
             ]);
 
             if ($rating->save()) {
+                $this->updateRating();
                 $commit = true;
             }
         }
+
         return $commit;
     }
 
@@ -777,5 +820,25 @@ class User extends ActiveRecord implements IdentityInterface
     public static function find()
     {
         return new UserQuery(get_called_class());
+    }
+
+    /**
+     * @return integer The total rating in user table
+     */
+    public static function getTotalRating()
+    {
+        $result = static::find()->sum('rating');
+
+        return $result ?: 0;
+    }
+
+    /**
+     * @return integer The total rank in user table
+     */
+    public static function getTotalRank()
+    {
+        $result = static::find()->where(['>', 'rating', 0])->count();
+
+        return $result ?: 0;
     }
 }

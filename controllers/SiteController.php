@@ -310,14 +310,11 @@ class SiteController extends Controller
         $activeRating = $model->activeRating;
 
         $rating = $model->rating;
-        $totalRating = Rating::getTotalRating();
-        if ($totalRating < 1) {
-            $percent = 0;
-        } else {
-            $percent = Converter::percentage($rating, $totalRating);
-        }
+        $totalRating = User::getTotalRating();
+        $percent = $totalRating ? Converter::percentage($rating, $totalRating) : 0;
 
-        list($total, $rank) = Rating::getRank($model->getId());
+        $rank = $model->getRank();
+        $totalRank = User::getTotalRank();
 
         $realConfirmations = $model->getContactsToMe()->where(['is_real' => 1])->count();
 
@@ -332,9 +329,10 @@ class SiteController extends Controller
             ],
             'ranking' => [
                 'rank' => $rank,
-                'total' => $total,
+                'total' => $totalRank,
             ],
         ];
+
         return $this->render('account', $params);
     }
 

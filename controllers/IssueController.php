@@ -59,8 +59,7 @@ class IssueController extends Controller
         $countYours = Issue::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
         $countNew = Issue::getNewIssuesCount();
 
-        $maxIssueSetting = Setting::findOne(['key' => 'issue_quantity_value_per_one_rating']);
-        $maxIssueValue = $maxIssueSetting->value;
+        $maxIssueValue = Setting::getValue('issue_quantity_value_per_one_rating');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
