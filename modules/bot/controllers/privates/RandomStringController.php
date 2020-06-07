@@ -28,7 +28,7 @@ class RandomStringController extends Controller
         }
 
         return $this->getResponseBuilder()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 new MessageText($randomString)
             )
             ->build();

@@ -27,7 +27,7 @@ class UserState
 
     public function getIntermediateField(string $name, $defaultValue)
     {
-        return $this->fields['intermediate'][$name] ?? null;
+        return $this->fields['intermediate'][$name] ?? $defaultValue;
     }
 
     public function setIntermediateField(string $name, ?string $value)
