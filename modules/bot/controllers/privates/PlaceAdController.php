@@ -84,7 +84,7 @@ class PlaceAdController extends Controller
 
     public function actionAdd($adCategoryId)
     {
-        $this->getState()->setName(self::createRoute('title'));
+        $this->getState()->setName(self::createRoute('title-send'));
 
         $this->getState()->setIntermediateField('placeAdCategoryId', $adCategoryId);
 
@@ -465,7 +465,7 @@ class PlaceAdController extends Controller
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $adOrder = AdOrder::findOne($adOrderId);
 
-            $keywords = self::parseKeywords($this->getUpdate()->getMessage()->getText());
+            $keywords = self::parseKeywords($message->getText());
 
             if (empty($keywords)) {
                 return $this->actionEditKeywords($adOrderId);
@@ -625,7 +625,7 @@ class PlaceAdController extends Controller
             $adOrder = AdOrder::findOne($adOrderId);
 
             $adOrder->setAttributes([
-                'price' => intval(100.0 * doubleval($price)),
+                'price' => doubleval($price),
             ]);
 
             $adOrder->save();
@@ -759,9 +759,9 @@ class PlaceAdController extends Controller
         $adOrder = AdOrder::findOne($adOrderId);
 
         if ($adOrder->isActive()) {
-            $adOrder->status = AdOrder::STATUS_NOT_ACTIVATED;
+            $adOrder->status = AdOrder::STATUS_OFF;
         } else {
-            $adOrder->status = AdOrder::STATUS_ACTIVATED;
+            $adOrder->status = AdOrder::STATUS_ON;
         }
 
         $adOrder->save();
@@ -790,12 +790,19 @@ class PlaceAdController extends Controller
         return implode(', ', $keywords);
     }
 
-    public function actionTitle($update = true)
+    public function actionTitleSend()
     {
-        if ($update && ($message = $this->getUpdate()->getMessage())) {
+        if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $this->getState()->setIntermediateField('placeAdTitle', $message->getText());
-        }
 
+            return $this->actionTitle();
+        } else {
+            return $this->actionAdd($this->getState()->getIntermediateField('placeAdCategoryId'));
+        }
+    }
+
+    public function actionTitle()
+    {
         $this->getState()->setName(self::createRoute('keywords'));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -808,6 +815,10 @@ class PlaceAdController extends Controller
                                 'adCategoryId' => $this->getState()->getIntermediateField('placeAdCategoryId'),
                             ]),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]
@@ -830,11 +841,11 @@ class PlaceAdController extends Controller
             $keywords = self::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return $this->actionTitle(false);
+                return $this->actionTitle();
             }
 
             $placeAdKeywords = [];
-            foreach ($keywords as $index => $keyword) {
+            foreach ($keywords as $keyword) {
                 $adKeyword = AdKeyword::find()->where(['keyword' => $keyword])->one();
 
                 if (!isset($adKeyword)) {
@@ -862,6 +873,10 @@ class PlaceAdController extends Controller
                         [
                             'callback_data' => self::createRoute('title'),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]
@@ -900,7 +915,7 @@ class PlaceAdController extends Controller
         return $this->actionIndex($adCategoryId);
     }
 
-    public function actionDescription($page = 1)
+    public function actionDescription()
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $description = $message->getText();
@@ -1028,7 +1043,7 @@ class PlaceAdController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
                     'currencyCode' => Currency::findOne(
-                        $this->getState()->getIntermediateField('placeAdCurrencyId'),
+                        $this->getState()->getIntermediateField('placeAdCurrencyId')
                     )
                     ->code,
                 ]),
@@ -1055,7 +1070,7 @@ class PlaceAdController extends Controller
                 return $this->actionCurrency();
             }
 
-            $this->getState()->setIntermediateField('placeAdPrice', strval(100.0 * doubleval($message->getText())));
+            $this->getState()->setIntermediateField('placeAdPrice', $message->getText());
         }
 
         $this->getState()->setName(self::createRoute('location-send'));
@@ -1117,7 +1132,6 @@ class PlaceAdController extends Controller
     public function actionLocation($latitude = null, $longitude = null)
     {
         $message = $this->getUpdate()->getMessage();
-        
 
         if ($latitude && $longitude) {
             $this->getState()->setIntermediateField('placeAdLocationLatitude', strval($latitude));
@@ -1177,22 +1191,22 @@ class PlaceAdController extends Controller
         return $this->actionPlace();
     }
 
-    public function actionPlace() 
+    public function actionPlace()
     {
         $adOrder = new AdOrder();
         $state = $this->getState();
-        
+
         $adOrder->setAttributes([
             'user_id' => $this->getTelegramUser()->id,
             'title' => $state->getIntermediateField('placeAdTitle'),
             'description' => $state->getIntermediateField('placeAdDescription'),
             'currency_id' => $state->getIntermediateField('placeAdCurrencyId'),
             'price' => $state->getIntermediateField('placeAdPrice'),
-            'delivery_radius' => intval($state->getIntermediateField('placeAdDeliveryRadius')),
+            'delivery_radius' => doubleval($state->getIntermediateField('placeAdDeliveryRadius')),
             'location_latitude' => $state->getIntermediateField('placeAdLocationLatitude'),
             'location_longitude' => $state->getIntermediateField('placeAdLocationLongitude'),
             'category_id' => intval($state->getIntermediateField('placeAdCategoryId')),
-            'status' => AdOrder::STATUS_NOT_ACTIVATED,
+            'status' => AdOrder::STATUS_OFF,
             'created_at' => time(),
             'renewed_at' => time(),
             'edited_at' => time(),

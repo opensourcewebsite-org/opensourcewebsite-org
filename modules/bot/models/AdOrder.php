@@ -7,8 +7,8 @@ use yii\db\Query;
 
 class AdOrder extends ActiveRecord
 {
-    public const STATUS_ACTIVATED = 'activated';
-    public const STATUS_NOT_ACTIVATED = 'not_activated';
+    public const STATUS_OFF = 0;
+    public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
 
@@ -47,9 +47,9 @@ class AdOrder extends ActiveRecord
     public function getStatusName()
     {
         switch ($this->status) {
-            case self::STATUS_ACTIVATED:
+            case self::STATUS_ON:
                 return Yii::t('bot', 'Активно');
-            case self::STATUS_NOT_ACTIVATED:
+            case self::STATUS_OFF:
                 return Yii::t('bot', 'Не активно');
             default:
                 Yii::error('AdsPost status is invalid');
@@ -59,7 +59,7 @@ class AdOrder extends ActiveRecord
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVATED && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 
     public function getMatches()
@@ -75,7 +75,7 @@ class AdOrder extends ActiveRecord
         if (!$this->isActive()) {
             return;
         }
-        
+
         foreach ($this->getKeywords()->all() as $adKeyword) {
             foreach (AdSearchKeyword::find()->where([
                 'ad_keyword_id' => $adKeyword->id,

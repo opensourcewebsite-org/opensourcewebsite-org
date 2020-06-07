@@ -180,8 +180,7 @@ class ResponseBuilder
         MessageText $messageText,
         array $replyMarkup = [],
         bool $disablePreview = false
-    )
-    {
+    ) {
         $photo = new Photo($photoFileId);
 
         if ($photo->isNull()) {

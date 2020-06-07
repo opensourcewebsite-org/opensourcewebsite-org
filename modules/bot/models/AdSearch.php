@@ -7,8 +7,8 @@ use yii\db\ActiveRecord;
 class AdSearch extends ActiveRecord
 {
     private const EARTH_RADIUS = 6372.795;
-    public const STATUS_ACTIVATED = 'activated';
-    public const STATUS_NOT_ACTIVATED = 'not_activated';
+    public const STATUS_OFF = 0;
+    public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
 
@@ -20,9 +20,9 @@ class AdSearch extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'category_id', 'pickup_radius', 'location_latitude', 'location_longitude', 'status', 'renewed_at'], 'required'],
+            [['user_id', 'category_id', 'pickup_radius', 'location_latitude', 'location_longitude', 'status', 'created_at', 'renewed_at'], 'required'],
             [['location_latitude', 'location_longitude', 'status'], 'string'],
-            [['user_id', 'category_id', 'currency_id', 'max_price', 'pickup_radius', 'renewed_at', 'edited_at'], 'integer'],
+            [['user_id', 'category_id', 'currency_id', 'max_price', 'pickup_radius', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
         ];
     }
 
@@ -41,7 +41,7 @@ class AdSearch extends ActiveRecord
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVATED && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 
     public function matches($adOrder)
@@ -128,6 +128,6 @@ class AdSearch extends ActiveRecord
             ]);
 
             $this->save();
-        } 
+        }
     }
 }
