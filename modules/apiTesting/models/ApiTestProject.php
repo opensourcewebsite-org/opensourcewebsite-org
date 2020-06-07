@@ -12,7 +12,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $user_id
  * @property string $name Project name
  * @property string|null $description Description (optional)
- * @property int $project_type Project Type
+ * @property int $type Project Type
  * @property int $created_at
  * @property int|null $updated_at
  *
@@ -63,8 +63,8 @@ class ApiTestProject extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'name', 'project_type'], 'required'],
-            [['user_id', 'project_type', 'created_at', 'updated_at'], 'integer'],
+            [['user_id', 'name', 'type'], 'required'],
+            [['user_id', 'type', 'created_at', 'updated_at'], 'integer'],
             [['description'], 'string'],
             [['name'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
@@ -81,7 +81,7 @@ class ApiTestProject extends \yii\db\ActiveRecord
             'user_id' => 'User ID',
             'name' => 'Project name',
             'description' => 'Description (optional)',
-            'project_type' => 'Project Type',
+            'type' => 'Project Type',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

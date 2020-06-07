@@ -9,7 +9,7 @@
     <?=$response->getStatusLabel(); ?>
 </span>
 &nbsp;
-<strong><?= $response->request->method; ?></strong>
+<strong><?= $response->request->methodString; ?></strong>
 &nbsp;
 <span class="text-<?=$response->codeTextStyle(); ?>">
     <?= $response->getCodeFormatted(); ?>

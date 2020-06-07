@@ -17,7 +17,7 @@ class m200522_044300_create_api_test_project_table extends Migration
             'user_id' => $this->integer()->unsigned()->notNull(),
             'name' => $this->string()->notNull(),
             'description' => $this->text()->null(),
-            'project_type' => $this->tinyInteger()->notNull(),
+            'type' => $this->tinyInteger()->notNull(),
             'created_at' => $this->integer()->unsigned(),
             'updated_at' => $this->integer()->unsigned()
         ]);

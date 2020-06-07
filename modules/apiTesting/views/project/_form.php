@@ -41,7 +41,7 @@ use yii\widgets\ActiveForm;
                             <?=$form->field($model, 'description')->textarea(['rows' => 10]); ?>
                         </div>
                         <div class="col-md-6">
-                            <?= $form->field($model, 'project_type')->radioList($model::projectTypes(), [
+                            <?= $form->field($model, 'type')->radioList($model::projectTypes(), [
                                 'item' => function ($index, $label, $name, $checked, $value) use ($model) {
                                     $radio = Html::radio($name, $checked, ['value' => $value, 'label' => $label]);
                                     return $radio.Html::tag('p',  $model::projecTypesDesription()[$value]);

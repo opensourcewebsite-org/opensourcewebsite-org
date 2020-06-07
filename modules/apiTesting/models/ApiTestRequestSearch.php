@@ -17,8 +17,8 @@ class ApiTestRequestSearch extends ApiTestRequest
     public function rules()
     {
         return [
-            [['id', 'server_id', 'correct_response_code', 'updated_at', 'updated_by'], 'integer'],
-            [['name', 'method', 'uri', 'body'], 'safe'],
+            [['id', 'method', 'server_id', 'correct_response_code', 'updated_at', 'updated_by'], 'integer'],
+            [['name', 'uri', 'body'], 'safe'],
         ];
     }
 
@@ -63,10 +63,11 @@ class ApiTestRequestSearch extends ApiTestRequest
             'correct_response_code' => $this->correct_response_code,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
+            'method' => $this->method
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'method', $this->method])
+
             ->andFilterWhere(['like', 'uri', $this->uri])
             ->andFilterWhere(['like', 'body', $this->body]);
 

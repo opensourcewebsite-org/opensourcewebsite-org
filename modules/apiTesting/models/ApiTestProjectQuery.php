@@ -37,10 +37,10 @@ class ApiTestProjectQuery extends \yii\db\ActiveQuery
         return $this
             ->joinWith('teams t')
             ->orWhere([
-                'project_type' => ApiTestProject::PROJECT_TYPE_PUBLIC
+                'type' => ApiTestProject::PROJECT_TYPE_PUBLIC
             ])
             ->orWhere([
-                'project_type' => ApiTestProject::PROJECT_TYPE_PRIVATE,
+                'type' => ApiTestProject::PROJECT_TYPE_PRIVATE,
                 't.user_id' => \Yii::$app->user->id
             ]);
     }

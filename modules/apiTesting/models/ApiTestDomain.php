@@ -10,17 +10,19 @@ use Yii;
  * @property int $id
  * @property string $domain
  * @property int $status
- *
+ * @property int $txt_checked_at
+ * @property int $txt
+ * @property int $project-id
  * @property ApiTestServer[] $apiTestServers
  */
-class ApiTestServerDomain extends \yii\db\ActiveRecord
+class ApiTestDomain extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'api_test_server_domain';
+        return 'api_test_domain';
     }
 
     /**
@@ -29,10 +31,10 @@ class ApiTestServerDomain extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['domain'], 'required'],
-            [['status'], 'integer'],
+            [['domain', 'project_id'], 'required'],
+            [['status', 'project_id'], 'integer'],
             [['domain'], 'string', 'max' => 255],
-            [['domain'], 'unique'],
+            [['project_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApiTestProject::className(), 'targetAttribute' => ['project_id' => 'id']],
         ];
     }
 

@@ -17,7 +17,7 @@ class ApiTestProjectSearch extends ApiTestProject
     public function rules()
     {
         return [
-            [['id', 'project_type', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'type', 'created_at', 'updated_at'], 'integer'],
             [['name', 'description'], 'safe'],
         ];
     }
@@ -59,7 +59,7 @@ class ApiTestProjectSearch extends ApiTestProject
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'project_type' => $this->project_type,
+            'type' => $this->type,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);

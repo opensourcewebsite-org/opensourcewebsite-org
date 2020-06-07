@@ -12,7 +12,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property int|null $server_id
  * @property string $name
- * @property string $method
+ * @property int $method
  * @property string $uri
  * @property string|null $body
  * @property int $correct_response_code
@@ -32,11 +32,11 @@ use yii\behaviors\TimestampBehavior;
  */
 class ApiTestRequest extends \yii\db\ActiveRecord
 {
-    const METHOD_POST = 'POST';
-    const METHOD_GET = 'GET';
-    const METHOD_PATCH = 'PATCH';
-    const METHOD_DELETE = 'DELETE';
-    const METHOD_PUT = 'PUT';
+    const METHOD_POST = 0;
+    const METHOD_GET = 1;
+    const METHOD_PATCH = 2;
+    const METHOD_DELETE = 3;
+    const METHOD_PUT = 4;
 
     const CONTENT_TYPE_XML = 'application/JSON';
     const CONTENT_TYPE_JSON = 'text/HTML';
@@ -52,11 +52,11 @@ class ApiTestRequest extends \yii\db\ActiveRecord
     public static function getMethodsList()
     {
         return [
-            self::METHOD_POST => self::METHOD_POST,
-            self::METHOD_GET => self::METHOD_GET,
-            self::METHOD_PATCH => self::METHOD_PATCH,
-            self::METHOD_DELETE => self::METHOD_DELETE,
-            self::METHOD_PUT => self::METHOD_PUT
+            self::METHOD_POST => 'POST',
+            self::METHOD_GET => 'GET',
+            self::METHOD_PATCH => 'PATCH',
+            self::METHOD_DELETE => 'DELETE',
+            self::METHOD_PUT => 'PUT'
         ];
     }
 
@@ -76,6 +76,11 @@ class ApiTestRequest extends \yii\db\ActiveRecord
             self::EDITOR_VIEW_TYPE_HTML => self::EDITOR_VIEW_TYPE_HTML,
             self::EDITOR_VIEW_TYPE_JSON => self::EDITOR_VIEW_TYPE_JSON
         ];
+    }
+
+    public function getMethodString()
+    {
+        return $this::getMethodsList()[$this->method];
     }
 
     public function getFullUrl()

@@ -33,7 +33,7 @@ class Requester extends Component
         $response = $this->httpClient
             ->createRequest()
             ->setHeaders($this->prepareHeaders($request))
-            ->setMethod($request->method)
+            ->setMethod($request->getMethodString())
             ->setData($request->body)
             ->setUrl($request->getFullUrl())
             ->send();

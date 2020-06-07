@@ -16,7 +16,7 @@ class m200526_042917_create_api_test_request_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'server_id' => $this->integer()->unsigned(),
             'name' => $this->string()->notNull(),
-            'method' => $this->string()->notNull(),
+            'method' => $this->tinyInteger()->notNull(),
             'uri' => $this->string()->notNull(),
             'body' => 'LONGTEXT',
             'correct_response_code' => $this->integer()->notNull()->defaultValue(200),

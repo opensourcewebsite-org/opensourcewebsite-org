@@ -5,7 +5,7 @@ namespace app\modules\apiTesting\models;
 /**
  * This is the ActiveQuery class for [[ApiTestServerDomain]].
  *
- * @see ApiTestServerDomain
+ * @see ApiTestDomain
  */
 class ApiTestServerDomainQuery extends \yii\db\ActiveQuery
 {
@@ -16,7 +16,7 @@ class ApiTestServerDomainQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return ApiTestServerDomain[]|array
+     * @return ApiTestDomain[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class ApiTestServerDomainQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return ApiTestServerDomain|array|null
+     * @return ApiTestDomain|array|null
      */
     public function one($db = null)
     {

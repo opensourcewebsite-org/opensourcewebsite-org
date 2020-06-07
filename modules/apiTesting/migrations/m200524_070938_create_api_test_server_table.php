@@ -12,10 +12,13 @@ class m200524_070938_create_api_test_server_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%api_test_server_domain}}', [
+        $this->createTable('{{%api_test_domain}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'domain' => $this->string()->notNull()->unique(),
+            'project_id' => $this->integer()->unsigned(),
+            'domain' => $this->string()->notNull(),
             'status' => $this->boolean()->notNull()->defaultValue(0),
+            'txt' => $this->string()->notNull(),
+            'txt_checked_at' => $this->integer()->unsigned(),
         ]);
 
         $this->createTable('{{%api_test_server}}', [
@@ -24,11 +27,24 @@ class m200524_070938_create_api_test_server_table extends Migration
             'project_id' => $this->integer()->unsigned(),
             'protocol' => $this->tinyInteger()->notNull(),
             'path' => $this->string()->null(),
-            'txt' => $this->string()->notNull(),
-            'txt_checked_at' => $this->integer()->unsigned(),
             'created_at' => $this->integer()->unsigned(),
             'updated_at' => $this->integer()->unsigned()
         ]);
+
+        $this->createIndex(
+            'idx-api_test_domain-project_id',
+            '{{%api_test_domain}}',
+            'project_id'
+        );
+
+        $this->addForeignKey(
+            'fk-api_test_domain-project_id',
+            '{{%api_test_domain}}',
+            'project_id',
+            '{{%api_test_project}}',
+            'id',
+            'CASCADE'
+        );
 
         $this->createIndex(
             'idx-api_test_server-project_id',
@@ -55,7 +71,7 @@ class m200524_070938_create_api_test_server_table extends Migration
             'fk-api_test_server-domain_id',
             '{{%api_test_server}}',
             'domain_id',
-            '{{%api_test_server_domain}}',
+            '{{%api_test_domain}}',
             'id',
             'CASCADE'
         );
@@ -67,6 +83,6 @@ class m200524_070938_create_api_test_server_table extends Migration
     public function safeDown()
     {
         $this->dropTable('{{%api_test_server}}');
-        $this->dropTable('{{%api_test_server_domain}}');
+        $this->dropTable('{{%api_test_domain}}');
     }
 }

@@ -2,8 +2,8 @@
 
 namespace app\modules\apiTesting\services;
 
+use app\modules\apiTesting\models\ApiTestDomain;
 use app\modules\apiTesting\models\ApiTestServer;
-use app\modules\apiTesting\models\ApiTestServerDomain;
 use Yii;
 use yii\base\Component;
 
@@ -30,12 +30,12 @@ class ServerService extends Component
 
     public function checkTxtOnServerAndVerify(ApiTestServer $model)
     {
-        $records = dns_get_record($model->domain, DNS_TXT);
+        $records = dns_get_record($model->domain->domain, DNS_TXT);
 
-        $model->txt_checked_at = time();
+        $model->domain->txt_checked_at = time();
 
         foreach ($records as $record) {
-            if ($record['txt'] == $model->txt) {
+            if ($record['txt'] == $model->domain->txt) {
                 $model->domain->status = $model::STATUS_VERIFIED;
                 $model->domain->save();
             }
@@ -48,14 +48,15 @@ class ServerService extends Component
 
     public function createServer(ApiTestServer $server)
     {
-        if ($domain = $this->findDomain($server->domainFormValue)) {
-            $server->domain_id = $domain->id;
-        } else {
-            $server->domain_id = $this->createDomain($server->domainFormValue)->id;
-        }
-
-        if ($server->save()) {
-            $this->flushTxtKey();
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $server->domain_id = $this->createDomain($server)->id;
+            if ($server->save()) {
+                $this->flushTxtKey();
+                $transaction->commit();
+            }
+        } catch (\Exception $e) {
+            $transaction->rollBack();
         }
     }
 
@@ -63,22 +64,25 @@ class ServerService extends Component
     {
     }
 
-    private function createDomain($domain): ApiTestServerDomain
+    private function createDomain(ApiTestServer $server): ApiTestDomain
     {
-        $domain = new ApiTestServerDomain([
-            'domain' => $domain,
-            'status' => ApiTestServer::STATUS_VERIFICATION_PROGRESS
+        $domain = new ApiTestDomain([
+            'project_id' => $server->project_id,
+            'domain' => $server->domainFormValue,
+            'status' => ApiTestServer::STATUS_VERIFICATION_PROGRESS,
+            'txt' => $this->getLatestTxtKey()
         ]);
+
         $domain->save();
         return $domain;
     }
 
-    private function updateDomain(ApiTestServer $server, ApiTestServerDomain $domain)
+    private function updateDomain(ApiTestServer $server, ApiTestDomain $domain)
     {
     }
 
-    private function findDomain($domain):?ApiTestServerDomain
+    private function findDomain($domain):?ApiTestDomain
     {
-        return ApiTestServerDomain::findOne(['domain' => $domain]);
+        return ApiTestDomain::findOne(['domain' => $domain]);
     }
 }
