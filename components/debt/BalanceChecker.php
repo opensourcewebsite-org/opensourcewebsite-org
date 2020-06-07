@@ -10,7 +10,7 @@ use yii\base\Component;
 
 class BalanceChecker extends Component
 {
-    private const DEBT_FLOAT_SCALE = 2;
+    public const DEBT_FLOAT_SCALE = 2;
 
     /**
      * @throws \yii\db\Exception

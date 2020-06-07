@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\components\debt\BalanceChecker;
+use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\CurrencyQuery;
@@ -20,7 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $from_user_id  this user should return money to $to_user_id
  * @property int $to_user_id    this user will receive money from $from_user_id
  * @property int $currency_id
- * @property int $amount
+ * @property float $amount
  * @property int $status
  * @property int $created_at
  * @property int $created_by    {@see self::isCreatedByUser()}
@@ -53,8 +55,6 @@ class Debt extends ActiveRecord implements ByDebtInterface
     public $creditPending;
     public $depositConfirmed;
     public $creditConfirmed;
-
-    private $updateProcessedFlag = false;
 
     /**
      * {@inheritdoc}
@@ -232,8 +232,6 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
         if ($source instanceof DebtBalance) {
             $debt->populateRelation('debtBalance', $source);
-        } elseif ($source instanceof DebtRedistribution) {
-            $debt->setUpdateProcessedFlag(true);
         }
 
         return $debt;
@@ -287,22 +285,22 @@ class Debt extends ActiveRecord implements ByDebtInterface
         return (bool)$this->created_by;
     }
 
-    public function isUpdateProcessedFlag(): bool
-    {
-        return $this->updateProcessedFlag || $this->isCreatedByUser();
-    }
-
-    /**
-     * @param bool $value
-     */
-    public function setUpdateProcessedFlag(bool $value): void
-    {
-        $this->updateProcessedFlag = $value;
-    }
-
     public static function generateGroup(): float
     {
         return microtime(true);
+    }
+
+    public function isAttributeChanged($name, $identical = true)
+    {
+        if (!parent::isAttributeChanged($name, $identical)) {
+            return false;
+        }
+
+        if ($name === 'amount' && !$identical) {
+            return !Number::isFloatEqual($this->amount, $this->getOldAttribute('amount'), BalanceChecker::DEBT_FLOAT_SCALE);
+        }
+
+        return true;
     }
 
     /**

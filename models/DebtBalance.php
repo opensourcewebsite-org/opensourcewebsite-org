@@ -2,10 +2,14 @@
 
 namespace app\models;
 
+use app\components\debt\BalanceChecker;
+use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\DebtBalanceQuery;
 use app\models\traits\SelectForUpdateTrait;
+use app\components\debt\Reduction;
+use app\components\debt\Redistribution;
 use yii\base\Exception;
 use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
@@ -21,9 +25,13 @@ use yii\db\ActiveRecord;
  * @property int $from_user_id          {@see Debt::$from_user_id}
  * @property int $to_user_id            {@see Debt::$to_user_id}
  * @property float $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
- * @property int|null $processed_at     TIMESTAMP - if last Debt created by User.
- *                                      NULL      - by cron {@see \app\components\debt\Reduction}
- * @property int $redistribute_try_at
+ * @property int|null $processed_at     TIMESTAMP - this row is waiting for cron {@see \app\components\debt\Reduction}.
+ *                                                  Because amount has been changed.
+ *                                      NULL      - {@see Reduction} will not try to reduce it.
+ *                                                  Because it has already tried to do that. It will try again, when
+ *                                                  `amount` will be changed and `processed_at` will be set.
+ * @property int $redistribute_try_at   TIMESTAMP - when {@see Redistribution} tried to resolve it.
+ *                                      0         - default. I.e. this is new row, and `Redistribution` have never tried it.
  *
  * @property Currency      $currency
  * @property User          $fromUser
@@ -157,6 +165,13 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         return parent::insert($runValidation, $attributes);
     }
 
+    public function beforeSave($insert)
+    {
+        $this->updateProcessedAt();
+
+        return parent::beforeSave($insert);
+    }
+
     /**
      * @throws Exception
      */
@@ -191,7 +206,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
         if ($debtBalance) {
             $debtBalance->changeAmount($debt);
-            $debtBalance->changeProcessed($debt);
         } else {
             $debtBalance = self::factory($debt);
         }
@@ -218,6 +232,25 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         return $balance;
     }
 
+    public function isDirectionChanged(): bool
+    {
+        // we can check `to_user_id` as well here. Or both attributes. Result will be the same.
+        return $this->isAttributeChanged('from_user_id', false);
+    }
+
+    public function isAttributeChanged($name, $identical = true)
+    {
+        if (!parent::isAttributeChanged($name, $identical)) {
+            return false;
+        }
+
+        if ($name === 'amount' && !$identical) {
+            return !Number::isFloatEqual($this->amount, $this->getOldAttribute('amount'), BalanceChecker::DEBT_FLOAT_SCALE);
+        }
+
+        return true;
+    }
+
     /**
      * @throws Exception
      */
@@ -234,13 +267,20 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         }
     }
 
-    private function changeProcessed(Debt $debt): void
+    private function updateProcessedAt(): void
     {
         if (!$this->amount) {
             $this->processed_at = null; // no sense to run \app\components\debt\Reduction if amount is "0"
-        } elseif ($debt->isUpdateProcessedFlag()) {
+            return;
+        }
+
+        $isAmountBecomeNotZero = $this->isAttributeChanged('amount', false) && !$this->getOldAttribute('amount');
+
+        if ($this->isNewRecord || $isAmountBecomeNotZero || $this->isDirectionChanged()) {
             $this->processed_at = time();
         }
+
+        // Else: leave `processed_at` as is.
     }
 
     /**
@@ -263,8 +303,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         $model->from_user_id = $debt->from_user_id;
         $model->to_user_id   = $debt->to_user_id;
         $model->amount       = $debt->amount;
-
-        $model->changeProcessed($debt);
 
         return $model;
     }
