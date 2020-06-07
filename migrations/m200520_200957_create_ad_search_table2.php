@@ -21,7 +21,8 @@ class m200520_200957_create_ad_search_table2 extends Migration
             'pickup_radius' => $this->integer()->unsigned()->notNull(),
             'location_latitude' => $this->string()->notNull(),
             'location_longitude' => $this->string()->notNull(),
-            'status' => $this->string()->notNull(),
+            'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
+            'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),
             'edited_at' => $this->integer()->unsigned(),
         ]);

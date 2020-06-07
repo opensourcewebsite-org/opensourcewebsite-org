@@ -87,7 +87,7 @@ class FindAdsController extends Controller
     private static function getKeywordsAsString($adKeywords)
     {
         $keywords = [];
-        
+
         foreach ($adKeywords as $adKeyword) {
             $keywords[] = $adKeyword->keyword;
         }
@@ -133,7 +133,7 @@ class FindAdsController extends Controller
 
             $findAdKeywords = [];
 
-            foreach ($keywords as $index => $keyword) {
+            foreach ($keywords as $keyword) {
                 $adKeyword = AdKeyword::find()->where([
                     'keyword' => $keyword,
                 ])->one();
@@ -266,7 +266,7 @@ class FindAdsController extends Controller
                 return $this->actionKeywords();
             }
 
-            $maxPrice = intval(doubleval($message->getText()) * 100);
+            $maxPrice = $message->getText();
 
             $this->getState()->setIntermediateField('findAdMaxPrice', $maxPrice);
 
@@ -396,13 +396,14 @@ class FindAdsController extends Controller
         $adSearch->setAttributes([
             'user_id' => $this->getTelegramUser()->id,
             'category_id' => intval($state->getIntermediateField('findAdCategoryId')),
-            'pickup_radius' => intval($state->getIntermediateField('findAdRadius')),
+            'pickup_radius' => doubleval($state->getIntermediateField('findAdRadius')),
             'currency_id' => $state->getIntermediateField('findAdCurrencyId') ? intval($state->getIntermediateField('findAdCurrencyId')) : null,
             'max_price' => $state->getIntermediateField('findAdMaxPrice') ? intval($state->getIntermediateField('findAdMaxPrice')) : null,
             'location_latitude' => $state->getIntermediateField('findAdLocationLatitude'),
             'location_longitude' => $state->getIntermediateField('findAdLocationLongitude'),
+            'created_at' => time(),
             'renewed_at' => time(),
-            'status' => AdSearch::STATUS_NOT_ACTIVATED,
+            'status' => AdSearch::STATUS_OFF,
             'edited_at' => time(),
         ]);
 
@@ -676,7 +677,7 @@ class FindAdsController extends Controller
                 return $this->actionEditMaxPrice($adSearchId);
             }
 
-            $maxPrice = intval(doubleval($message->getText()) * 100);
+            $maxPrice = $message->getText();
 
             $adSearch = AdSearch::findOne($adSearchId);
 

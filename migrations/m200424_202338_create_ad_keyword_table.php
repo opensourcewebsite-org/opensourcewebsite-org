@@ -14,7 +14,7 @@ class m200424_202338_create_ad_keyword_table extends Migration
     {
         $this->createTable('{{%ad_keyword}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'keyword' => $this->string()->notNull(),
+            'keyword' => $this->string()->notNull()->unique(),
         ]);
     }
 
