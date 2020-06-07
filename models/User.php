@@ -645,7 +645,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         if ($this->rating != $totalRating) {
             $this->rating = $totalRating;
-            $this->save();
+            $this->save(false);
         }
 
         return true;
