@@ -52,8 +52,15 @@ class ResponseBuilder
         array $optionalParams = []
     ) {
         $commands = [];
-
-        if (($messageIds = $this->update->getPrivateMessageIds())
+        if ($callbackQuery = $this->update->getCallbackQuery()) {
+            $this->answerCallbackQuery();
+            $commands[] = new EditMessageTextCommand(
+                $callbackQuery->getMessage()->getChat()->getId(),
+                $callbackQuery->getMessage()->getMessageId(),
+                $messageText,
+                $this->collectEditMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+            );
+        } elseif (($messageIds = $this->update->getPrivateMessageIds())
             && ($chatId = $this->update->getPrivateMessageChatId())) {
             foreach ($messageIds as $messageId) {
                 $commands[] = new DeleteMessageCommand(
@@ -65,14 +72,6 @@ class ResponseBuilder
                 $chatId,
                 $messageText,
                 $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
-            );
-        } elseif ($callbackQuery = $this->update->getCallbackQuery()) {
-            $this->answerCallbackQuery();
-            $commands[] = new EditMessageTextCommand(
-                $callbackQuery->getMessage()->getChat()->getId(),
-                $callbackQuery->getMessage()->getMessageId(),
-                $messageText,
-                $this->collectEditMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
             );
         } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $commands[] = new SendMessageCommand(

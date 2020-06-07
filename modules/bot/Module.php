@@ -255,10 +255,8 @@ class Module extends \yii\base\Module
     private function save()
     {
         $this->user->save();
-
         $this->telegramChat->save();
-
-        $save = $this->userState->save($this->telegramUser);
+        $this->userState->save($this->telegramUser);
     }
 
     private function setupPaths($namespace)
@@ -282,7 +280,8 @@ class Module extends \yii\base\Module
 
         // в персональном чате все сообщения пользователя надо удалять
         if ($this->telegramChat->isPrivate() && $this->update->getMessage()) {
-            $deleteCommand = array_pop(ResponseBuilder::fromUpdate($this->update)->deleteMessage()->build());
+            $commands = ResponseBuilder::fromUpdate($this->update)->deleteMessage()->build();
+            $deleteCommand = array_pop($commands);
             $deleteCommand->send($this->botApi);
         }
 
