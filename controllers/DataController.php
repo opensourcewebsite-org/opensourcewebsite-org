@@ -106,6 +106,23 @@ class DataController extends Controller
         ]);
     }
 
+    public function actionPaymentMethodShow($id)
+    {
+        $paymentMethod = PaymentMethod::findOne($id);
+        $currency = $paymentMethod->getCurrency();
+        $countQuery = clone $currency;
+        $pages =  new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $currency->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('payment-method-show', [
+            'models' => $models,
+            'pages' => $pages,
+            'paymentMethod' =>$paymentMethod->name,
+        ]);
+    }
+
     public function actionGender()
     {
         $gender = Gender::find();
