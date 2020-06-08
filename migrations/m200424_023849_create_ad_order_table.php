@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m200424_023849_create_ad_order_table
  */
-class m200424_023849_create_ad_order_table2 extends Migration
+class m200424_023849_create_ad_order_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -21,8 +21,8 @@ class m200424_023849_create_ad_order_table2 extends Migration
             'currency_id' => $this->integer()->unsigned()->notNull(),
             'price' => $this->decimal(15, 2)->unsigned()->notNull(),
             'delivery_radius' => $this->integer()->unsigned()->notNull(),
-            'location_latitude' => $this->string()->notNull(),
-            'location_longitude' => $this->string()->notNull(),
+            'location_lat' => $this->string()->notNull(),
+            'location_lon' => $this->string()->notNull(),
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),

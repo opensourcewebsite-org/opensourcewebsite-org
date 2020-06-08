@@ -4,8 +4,8 @@
 <br/>
 <b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
 <b><?= Yii::t('bot', 'Description') ?>:</b> <?= $adOrder->description ?><br/>
-<b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOrder->price / 100.0 ?> <?= $currency->code ?><br/>
-<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adOrder->location_latitude ?> <?= $adOrder->location_longitude ?></a><br/>
+<b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOrder->price ?> <?= $currency->code ?><br/>
+<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adOrder->location_lat ?> <?= $adOrder->location_lon ?></a><br/>
 <?php if ($adOrder->delivery_radius > 0) : ?>
 <b><?= Yii::t('bot', 'Delivery radius') ?>:</b> <?= $adOrder->delivery_radius ?> <?= Yii::t('bot', 'km') ?><br/>
 <?php endif; ?>

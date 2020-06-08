@@ -20,9 +20,10 @@ class AdSearch extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'category_id', 'pickup_radius', 'location_latitude', 'location_longitude', 'status', 'created_at', 'renewed_at'], 'required'],
-            [['location_latitude', 'location_longitude', 'status'], 'string'],
-            [['user_id', 'category_id', 'currency_id', 'max_price', 'pickup_radius', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
+            [['user_id', 'category_id', 'pickup_radius', 'location_lat', 'location_lon', 'status', 'created_at', 'renewed_at'], 'required'],
+            [['location_lat', 'location_lon'], 'string'],
+            [['user_id', 'category_id', 'currency_id', 'pickup_radius', 'status', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
+            [['max_price'], 'number'],
         ];
     }
 
@@ -44,51 +45,6 @@ class AdSearch extends ActiveRecord
         return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 
-    public function matches($adOrder)
-    {
-        return $this->matchesKeywords($adOrder)
-            && $this->distance($adOrder) <= $this->pickup_radius + $adOrder->delivery_radius
-            && $this->category_id == $adOrder->category_id;
-    }
-
-    private function matchesKeywords($adOrder)
-    {
-        $adSearchKeywords = array_map(function ($adKeyword) {
-            return $adKeyword->id;
-        }, $this->getKeywords()->all());
-
-        $adOrderKeywords = array_map(function ($adKeyword) {
-            return $adKeyword->id;
-        }, $adOrder->getKeywords()->all());
-
-        return !empty(array_intersect($adSearchKeywords, $adOrderKeywords));
-    }
-
-    private function distance($adOrder)
-    {
-        $lat1 = doubleval($this->location_latitude) * M_PI / 180;
-        $lon1 = doubleval($this->location_longitude) * M_PI / 180;
-
-        $lat2 = doubleval($adOrder->location_latitude) * M_PI / 180;
-        $lon2 = doubleval($adOrder->location_longitude) * M_PI / 180;
-
-        $cl1 = cos($lat1);
-        $cl2 = cos($lat2);
-        $sl1 = sin($lat1);
-        $sl2 = sin($lat2);
-        $delta = $lon2 - $lon1;
-        $cdelta = cos($delta);
-        $sdelta = sin($delta);
-
-        $y = sqrt(pow($cl2 * $sdelta, 2) + pow($cl1 * $sl2 - $sl1 * $cl2 * $cdelta, 2));
-        $x = $sl1 * $sl2 + $cl1 * $cl2 * $cdelta;
-
-        $ad = atan2($y, $x);
-        $dist = $ad * self::EARTH_RADIUS;
-
-        return $dist;
-    }
-
     public function getMatches()
     {
         return $this->hasMany(AdOrder::className(), ['id' => 'ad_order_id'])
@@ -103,26 +59,27 @@ class AdSearch extends ActiveRecord
             return;
         }
 
-        foreach ($this->getKeywords()->all() as $adKeyword) {
-            foreach (AdOrderKeyword::find()->where([
-                'ad_keyword_id' => $adKeyword->id,
-            ])->all() as $adOrderKeyword) {
-                $adOrder = AdOrder::findOne($adOrderKeyword->ad_order_id);
+        $adOrderQuery = AdOrder::find()
+            ->where(['ad_order.status' => AdOrder::STATUS_ON])
+            ->andWhere(['>=', 'ad_order.renewed_at', time() - AdOrder::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_order.location_lat, ad_order.location_lon)) <= 1000 * (ad_order.delivery_radius + $this->pickup_radius)")
+            ->joinWith(['keywords' => function ($query) {
+                $query
+                    ->joinWith('adSearches')
+                    ->andWhere(['ad_search.id' => $this->id]);
+            }])
+            ->groupBy('id');
 
-                $adOrderMatches = $this->getMatches()->where([
-                    'id' => $adOrder->id
-                ])->one();
-
-                if ($this->matches($adOrder) && !isset($adOrderMatches) && $adOrder->isActive()) {
-                    $this->link('matches', $adOrder);
-                }
-            }
+        foreach ($adOrderQuery->all() as $adOrder) {
+            $this->link('matches', $adOrder);
         }
     }
 
     public function markToUpdateMatches()
     {
         if ($this->edited_at === null) {
+            $this->unlinkAll('matches', true);
+            
             $this->setAttributes([
                 'edited_at' => time(),
             ]);

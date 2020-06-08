@@ -11,6 +11,7 @@ class AdOrder extends ActiveRecord
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
+    public const MAX_RADIUS = 10000;
 
     public static function tableName()
     {
@@ -20,9 +21,10 @@ class AdOrder extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'category_id', 'title', 'description', 'currency_id', 'price', 'location_latitude', 'location_longitude', 'delivery_radius', 'status', 'created_at', 'renewed_at'], 'required'],
-            [['title', 'description', 'location_latitude', 'location_longitude', 'status'], 'string'],
-            [['user_id', 'currency_id', 'price', 'delivery_radius', 'category_id', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
+            [['user_id', 'category_id', 'title', 'description', 'currency_id', 'price', 'location_lat', 'location_lon', 'delivery_radius', 'status', 'created_at', 'renewed_at'], 'required'],
+            [['title', 'description', 'location_lat', 'location_lon'], 'string'],
+            [['user_id', 'currency_id', 'delivery_radius', 'category_id', 'status', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
+            [['price'], 'number'],
         ];
     }
 
@@ -76,26 +78,27 @@ class AdOrder extends ActiveRecord
             return;
         }
 
-        foreach ($this->getKeywords()->all() as $adKeyword) {
-            foreach (AdSearchKeyword::find()->where([
-                'ad_keyword_id' => $adKeyword->id,
-            ])->all() as $adSearchKeyword) {
-                $adSearch = AdSearch::findOne($adSearchKeyword->ad_search_id);
+        $adSearchQuery = AdSearch::find()
+            ->where(['ad_search.status' => AdSearch::STATUS_ON])
+            ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)")
+            ->joinWith(['keywords' => function ($query) {
+                $query
+                    ->joinWith('adOrders')
+                    ->andWhere(['ad_order.id' => $this->id]);
+            }])
+            ->groupBy('ad_search.id');
 
-                $adSearchMatches = $this->getMatches()->where([
-                    'id' => $adSearch->id,
-                ])->one();
-
-                if ($adSearch->matches($this) && !isset($adSearchMatches) && $adSearch->isActive()) {
-                    $this->link('matches', $adSearch);
-                }
-            }
+        foreach ($adSearchQuery->all() as $adSearch) {
+            $this->link('matches', $adSearch);
         }
     }
 
     public function markToUpdateMatches()
     {
         if ($this->edited_at === null) {
+            $this->unlinkAll('matches', true);
+
             $this->setAttributes([
                 'edited_at' => time(),
             ]);
@@ -140,12 +143,12 @@ class AdOrder extends ActiveRecord
 
     public static function validateRadius($radius)
     {
-        return is_numeric($radius) && $radius >= 0;
+        return is_numeric($radius) && $radius >= 0 && $radius <= self::MAX_RADIUS;
     }
 
     private static function removeExtraChars($str)
     {
-        return preg_replace('/[^\d\. ]/', '', $str);
+        return preg_replace('/[^\d\.\- ]/', '', $str);
     }
 
     private static function getLocationSlices($location)

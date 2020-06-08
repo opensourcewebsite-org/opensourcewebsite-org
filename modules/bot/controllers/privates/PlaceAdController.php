@@ -118,7 +118,7 @@ class PlaceAdController extends Controller
                     'currency' => Currency::findOne($adOrder->currency_id),
                     'categoryName' => AdCategory::getPlaceName($adOrder->category_id),
                     'keywords' => self::getKeywordsAsString($adOrder->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_latitude, $adOrder->location_longitude),
+                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_lat, $adOrder->location_lon),
                     'liveDays' => AdOrder::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
@@ -232,7 +232,7 @@ class PlaceAdController extends Controller
                     'currency' => Currency::findOne($adOrder->currency_id),
                     'categoryName' => AdCategory::getPlaceName($adOrder->category_id),
                     'keywords' => self::getKeywordsAsString($adOrder->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_latitude, $adOrder->location_longitude),
+                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_lat, $adOrder->location_lon),
                     'liveDays' => AdOrder::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
@@ -304,7 +304,7 @@ class PlaceAdController extends Controller
                     'adSearch' => $matchedAdSearch,
                     'user' => TelegramUser::findOne($matchedAdSearch->user_id),
                     'keywords' => self::getKeywordsAsString($matchedAdSearch->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_latitude, $matchedAdSearch->location_longitude),
+                    'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_lat, $matchedAdSearch->location_lon),
                 ]),
                 $buttons,
                 true
@@ -698,8 +698,8 @@ class PlaceAdController extends Controller
             $adOrder = AdOrder::findOne($adOrderId);
 
             $adOrder->setAttributes([
-                'location_latitude' => strval($latitude),
-                'location_longitude' => strval($longitude),
+                'location_lat' => strval($latitude),
+                'location_lon' => strval($longitude),
             ]);
 
             $adOrder->save();
@@ -907,12 +907,16 @@ class PlaceAdController extends Controller
 
     public function actionDelete($adOrderId)
     {
-        $adCategoryId = AdOrder::findOne($adOrderId)->category_id;
+        $adOrder = AdOrder::findOne($adOrderId);
 
-        AdOrder::findOne($adOrderId)->unlinkAll('keywords', true);
-        AdOrder::findOne($adOrderId)->delete();
+        if (isset($adOrder)) {
+            $adCategoryId = $adOrder->category_id;
 
-        return $this->actionIndex($adCategoryId);
+            $adOrder->unlinkAll('keywords', true);
+            $adOrder->delete();
+
+            return $this->actionIndex($adCategoryId);
+        }
     }
 
     public function actionDescription()
@@ -1203,8 +1207,8 @@ class PlaceAdController extends Controller
             'currency_id' => $state->getIntermediateField('placeAdCurrencyId'),
             'price' => $state->getIntermediateField('placeAdPrice'),
             'delivery_radius' => doubleval($state->getIntermediateField('placeAdDeliveryRadius')),
-            'location_latitude' => $state->getIntermediateField('placeAdLocationLatitude'),
-            'location_longitude' => $state->getIntermediateField('placeAdLocationLongitude'),
+            'location_lat' => $state->getIntermediateField('placeAdLocationLatitude'),
+            'location_lon' => $state->getIntermediateField('placeAdLocationLongitude'),
             'category_id' => intval($state->getIntermediateField('placeAdCategoryId')),
             'status' => AdOrder::STATUS_OFF,
             'created_at' => time(),
@@ -1212,7 +1216,10 @@ class PlaceAdController extends Controller
             'edited_at' => time(),
         ]);
 
-        $adOrder->save();
+        $saved = $adOrder->save();
+
+        Yii::warning("SAVED: " . $saved);
+
 
         foreach ($this->getState()->getIntermediateFieldArray('placeAdKeywords') as $adKeywordId) {
             $adKeyword = AdKeyword::findOne($adKeywordId);

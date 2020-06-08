@@ -399,8 +399,8 @@ class FindAdsController extends Controller
             'pickup_radius' => doubleval($state->getIntermediateField('findAdRadius')),
             'currency_id' => $state->getIntermediateField('findAdCurrencyId') ? intval($state->getIntermediateField('findAdCurrencyId')) : null,
             'max_price' => $state->getIntermediateField('findAdMaxPrice') ? intval($state->getIntermediateField('findAdMaxPrice')) : null,
-            'location_latitude' => $state->getIntermediateField('findAdLocationLatitude'),
-            'location_longitude' => $state->getIntermediateField('findAdLocationLongitude'),
+            'location_lat' => $state->getIntermediateField('findAdLocationLatitude'),
+            'location_lon' => $state->getIntermediateField('findAdLocationLongitude'),
             'created_at' => time(),
             'renewed_at' => time(),
             'status' => AdSearch::STATUS_OFF,
@@ -466,7 +466,7 @@ class FindAdsController extends Controller
                     'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
                     'adSearch' => $adSearch,
                     'currency' => isset($adSearch->currency_id) ? Currency::findOne($adSearch->currency_id) : null,
-                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_latitude, $adSearch->location_longitude),
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
                     'liveDays' => AdSearch::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
@@ -499,7 +499,7 @@ class FindAdsController extends Controller
                     'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
                     'adSearch' => $adSearch,
                     'currency' => isset($adSearch->currency_id) ? Currency::findOne($adSearch->currency_id) : null,
-                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_latitude, $adSearch->location_longitude),
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
                     'liveDays' => AdSearch::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
@@ -809,8 +809,8 @@ class FindAdsController extends Controller
             $adSearch = AdSearch::findOne($adSearchId);
 
             $adSearch->setAttributes([
-                'location_latitude' => strval($latitude),
-                'location_longitude' => strval($longitude),
+                'location_lat' => strval($latitude),
+                'location_lon' => strval($longitude),
             ]);
             $adSearch->save();
 
@@ -869,7 +869,7 @@ class FindAdsController extends Controller
         $adSearch = AdSearch::findOne($adSearchId);
 
         $adSearch->setAttributes([
-            'status' => ($adSearch->isActive() ? AdSearch::STATUS_NOT_ACTIVATED : AdSearch::STATUS_ACTIVATED),
+            'status' => ($adSearch->isActive() ? AdSearch::STATUS_OFF : AdSearch::STATUS_ON),
         ]);
         $adSearch->save();
 
@@ -941,7 +941,7 @@ class FindAdsController extends Controller
                     'currency' => Currency::findOne($adOrder->currency_id),
                     'categoryName' => AdCategory::getPlaceName($adOrder->category_id),
                     'keywords' => self::getKeywordsAsString($adOrder->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_latitude, $adOrder->location_longitude),
+                    'locationLink' => ExternalLink::getOSMLink($adOrder->location_lat, $adOrder->location_lon),
                 ]),
                 $buttons,
                 true

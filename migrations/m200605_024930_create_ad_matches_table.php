@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ad_matches}}`.
  */
-class m200605_024930_create_ad_matches_tablex extends Migration
+class m200605_024930_create_ad_matches_table extends Migration
 {
     /**
      * {@inheritdoc}
