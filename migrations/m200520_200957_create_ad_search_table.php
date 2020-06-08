@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ad_search}}`.
  */
-class m200520_200957_create_ad_search_table2 extends Migration
+class m200520_200957_create_ad_search_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -19,8 +19,8 @@ class m200520_200957_create_ad_search_table2 extends Migration
             'currency_id' => $this->integer()->unsigned(),
             'max_price' => $this->decimal(15, 2)->unsigned(),
             'pickup_radius' => $this->integer()->unsigned()->notNull(),
-            'location_latitude' => $this->string()->notNull(),
-            'location_longitude' => $this->string()->notNull(),
+            'location_lat' => $this->string()->notNull(),
+            'location_lon' => $this->string()->notNull(),
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),
