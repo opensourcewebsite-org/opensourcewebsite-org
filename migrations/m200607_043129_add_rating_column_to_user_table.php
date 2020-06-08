@@ -20,5 +20,6 @@ class m200607_043129_add_rating_column_to_user_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropColumn('user', 'rating');
     }
 }
