@@ -192,6 +192,12 @@ class SAdSearchController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('keywords-skip'),
+                            'text' => Yii::t('bot', 'Skip'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('title'),
                             'text' => Emoji::BACK,
                         ],
@@ -203,6 +209,13 @@ class SAdSearchController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionKeywordsSkip()
+    {
+        $this->getState()->setIntermediateFieldArray('adSearchKeywords', []);
+
+        return $this->actionKeywords();
     }
 
     public function actionKeywords($page = 1)
@@ -530,7 +543,7 @@ class SAdSearchController extends Controller
 
     public function actionRadius()
     {
-        $message = $this->getUpdate()->getMessage()->getText();
+        $message = $this->getUpdate()->getMessage();
 
         if (!AdOffer::validateRadius($message->getText())) {
             return $this->actionLocation();
@@ -771,7 +784,7 @@ class SAdSearchController extends Controller
                             'callback_data' => self::createRoute('new-description-skip', [
                                 'adSearchId' => $adSearchId,
                             ]),
-                            'text' => Yii::t('bot', 'No description'),
+                            'text' => Yii::t('bot', 'No'),
                         ],
                     ],
                     [
@@ -977,6 +990,14 @@ class SAdSearchController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('new-keywords-skip', [
+                                'adSearchId' => $adSearchId,
+                            ]),
+                            'text' => Yii::t('bot', 'No'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit', ['adSearchId' => $adSearchId]),
                             'text' => Emoji::BACK,
                         ],
@@ -988,6 +1009,17 @@ class SAdSearchController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionNewKeywordsSkip($adSearchId)
+    {
+        $adSearch = AdSearch::findOne($adSearchId);
+
+        $adSearch->unlinkAll('keywords', true);
+
+        $adSearch->markToUpdateMatches();
+
+        return $this->actionSearch($adSearchId);
     }
 
     public function actionNewKeywords($adSearchId)

@@ -282,4 +282,5 @@ return [
     'No pickup' => 'Без самовывоза',
     'No description' => 'Без описания',
     'No photo' => 'Без фото',
+    'No keywords' => 'Без ключевых слов',
 ];

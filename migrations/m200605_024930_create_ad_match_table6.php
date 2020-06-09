@@ -16,6 +16,7 @@ class m200605_024930_create_ad_match_table6 extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'ad_offer_id' => $this->integer()->unsigned()->notNull(),
             'ad_search_id' => $this->integer()->unsigned()->notNull(),
+            'type' => $this->tinyInteger()->unsigned()->notNull(),
         ]);
 
         $this->addForeignKey(

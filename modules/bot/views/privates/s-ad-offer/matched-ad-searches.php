@@ -5,7 +5,9 @@
 <?php if ($adSearch->description !== null) : ?>
 <b><?= Yii::t('bot', 'Description') ?>:</b> <?= $adSearch->description ?><br/>
 <?php endif; ?>
-<b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= Yii::t('bot', $keywords) ?><br/>
+<?php if ($keywords != '') : ?>
+<b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
+<?php endif; ?>
 <br/>
 <?php if ($user->provider_user_name) : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>

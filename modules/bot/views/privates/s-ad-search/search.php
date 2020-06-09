@@ -5,7 +5,9 @@
 <?php if ($adSearch->description !== null) : ?>
 <b><?= Yii::t('bot', 'Description') ?>:</b> <?= $adSearch->description ?><br/>
 <?php endif; ?>
+<?php if ($keywords != '') : ?>
 <b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
+<?php endif; ?>
 <?php if ($adSearch->currency_id !== null && $adSearch->max_price !== null) : ?>
 <b><?= Yii::t('bot', 'Max price') ?>:</b> <?= $adSearch->max_price ?> <?= $currency->code ?><br/>
 <?php endif; ?>

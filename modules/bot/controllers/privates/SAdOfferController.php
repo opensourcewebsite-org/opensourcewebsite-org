@@ -68,11 +68,14 @@ class SAdOfferController extends Controller
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
             ],
-            [
+        ];
+
+        if ($adSection == 1 || $adSection == 2) {
+            $buttons[count($buttons) - 1][] = [
                 'callback_data' => self::createRoute('add', ['adSection' => $adSection]),
                 'text' => Emoji::ADD,
-            ],
-        ];
+            ];
+        }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -364,7 +367,7 @@ class SAdOfferController extends Controller
                             'callback_data' => self::createRoute('new-description-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No description'),
+                            'text' => Yii::t('bot', 'No'),
                         ],
                     ],
                     [
@@ -422,7 +425,7 @@ class SAdOfferController extends Controller
                             'callback_data' => self::createRoute('new-photo-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No photo'),
+                            'text' => Yii::t('bot', 'No'),
                         ],
                     ],
                     [
@@ -484,6 +487,14 @@ class SAdOfferController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('new-keywords-skip', [
+                                'adOfferId' => $adOfferId,
+                            ]),
+                            'text' => Yii::t('bot', 'No'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
@@ -495,6 +506,17 @@ class SAdOfferController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionNewKeywordsSkip($adOfferId)
+    {
+        $adOffer = AdOffer::findOne($adOfferId);
+
+        $adOffer->unlinkAll('keywords', true);
+
+        $adOffer->markToUpdateMatches();
+
+        return $this->actionPost($adOfferId);
     }
 
     public function actionNewKeywords($adOfferId)
@@ -637,6 +659,14 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('new-price-skip', [
+                                'adOfferId' => $adOfferId,
+                            ]),
+                            'text' => Yii::t('bot', 'No'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
@@ -648,6 +678,19 @@ class SAdOfferController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionNewPriceSkip($adOfferId)
+    {
+        $adOffer = AdOffer::findOne($adOfferId);
+
+        $adOffer->setAttributes([
+            'price' => null,
+        ]);
+
+        $adOffer->save();
+
+        return $this->actionPost($adOfferId);
     }
 
     public function actionNewPrice($adOfferId)
@@ -868,6 +911,12 @@ class SAdOfferController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('keywords-skip'),
+                            'text' => Yii::t('bot', 'Skip'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('add', [
                                 'adSection' => $this->getState()->getIntermediateField('adOfferSection'),
                             ]),
@@ -890,6 +939,13 @@ class SAdOfferController extends Controller
         } else {
             return [];
         }
+    }
+
+    public function actionKeywordsSkip()
+    {
+        $this->getState()->setIntermediateFieldArray('adOfferKeywords', []);
+
+        return $this->actionKeywords();
     }
 
     public function actionKeywords()
@@ -1106,6 +1162,12 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('price-skip'),
+                            'text' => Yii::t('bot', 'Skip'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('description'),
                             'text' => Emoji::BACK,
                         ],
@@ -1166,6 +1228,13 @@ class SAdOfferController extends Controller
                 $buttons
             )
             ->build();
+    }
+
+    public function actionPriceSkip()
+    {
+        $this->getState()->setIntermediateField('adOfferPrice', null);
+
+        return $this->actionPrice();
     }
 
     public function actionPrice()

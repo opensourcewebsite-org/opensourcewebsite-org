@@ -2,10 +2,13 @@
 <br/>
 <?= $adOffer->title ?><br/>
 <br/>
+<?php if ($keywords != '') : ?>
 <b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
+<?php endif; ?>
 <?php if ($adOffer->description !== null) : ?>
 <b><?= Yii::t('bot', 'Description') ?>:</b> <?= $adOffer->description ?><br/>
 <?php endif; ?>
+<?php if (isset($adOffer->price) && isset($currency)) : ?>
 <b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOffer->price ?> <?= $currency->code ?><br/>
 <?php endif; ?>
 <br/>

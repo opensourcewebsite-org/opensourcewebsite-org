@@ -35,9 +35,9 @@ class AdMatchesController extends Controller implements CronChainedInterface
         $this->output('Running updateAdSearch...');
 
         $adSearchQuery = AdSearch::find()
-            ->where(['processed_at' => null])
-            ->andWhere(['>=', 'renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere(['status' => AdSearch::STATUS_ON])
+            ->where(['ad_search.processed_at' => null])
+            ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
             ->joinWith('globalUser')
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
@@ -52,15 +52,15 @@ class AdMatchesController extends Controller implements CronChainedInterface
         $this->output('Running updateAdOffer...');
 
         $adOfferQuery = AdOffer::find()
-            ->where(['processed_at' => null])
-            ->andWhere(['>=', 'renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-            ->andWehre(['status' => AdOffer::STATUS_ON])
+            ->where(['ad_offer.processed_at' => null])
+            ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
             ->joinWith('globalUser')
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($adOfferQuery->all() as $adOffer) {
-            $adOffer->updateMatches();
+            $this->output(json_encode($adOffer->updateMatches()));
         }
     }
 }
