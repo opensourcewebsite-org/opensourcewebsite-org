@@ -29,21 +29,21 @@ class SAdController extends Controller
                         [
                             [
                                 'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::RENT]),
-                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::RENT),
+                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::RENT) . ' (' . Yii::t('bot', 'in development') . ')',
                             ],
                             [
                                 'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::RENT]),
-                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::RENT),
+                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::RENT) . ' (' . Yii::t('bot', 'in development') . ')',
                             ],
                         ],
                         [
                             [
                                 'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::SERVICES]),
-                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::SERVICES),
+                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::SERVICES) . ' (' . Yii::t('bot', 'in development') . ')',
                             ],
                             [
                                 'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::SERVICES]),
-                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::SERVICES),
+                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::SERVICES) . ' (' . Yii::t('bot', 'in development') . ')',
                             ],
                         ],
                         [

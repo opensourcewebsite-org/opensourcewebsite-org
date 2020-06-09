@@ -71,7 +71,7 @@ class AdOffer extends ActiveRecord
         $this->unlinkAll('allMatches', true);
 
         $adSearchQuery = AdSearch::find()
-            // ->where(['!=', 'ad_search.user_id', $this->user_id])
+            ->where(['!=', 'ad_search.user_id', $this->user_id])
             ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
             ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_search.section' => $this->section])
