@@ -57,7 +57,7 @@ class AdOffer extends ActiveRecord
         return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
             ->viaTable('{{%ad_match}}', ['ad_offer_id' => 'id'], function ($query) {
                 $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
-        });
+            });
     }
 
     public function getAllMatches()

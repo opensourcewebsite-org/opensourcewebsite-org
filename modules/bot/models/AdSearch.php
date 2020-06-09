@@ -106,7 +106,7 @@ class AdSearch extends ActiveRecord
     {
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
-            
+
             $this->setAttributes([
                 'processed_at' => null,
             ]);

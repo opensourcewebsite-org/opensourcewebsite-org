@@ -1386,10 +1386,7 @@ class SAdOfferController extends Controller
             'edited_at' => null,
         ]);
 
-        $saved = $adOffer->save();
-
-        Yii::warning("SAVED: " . $saved);
-
+        $adOffer->save();
 
         foreach ($this->getState()->getIntermediateFieldArray('adOfferKeywords') as $adKeywordId) {
             $adKeyword = AdKeyword::findOne($adKeywordId);

@@ -4,7 +4,7 @@ namespace app\modules\bot\models;
 
 use \yii\db\ActiveRecord;
 use app\models\Language;
-use models\User as GlobalUser; 
+use models\User as GlobalUser;
 
 /**
  * This is the model class for table "bot_user".

@@ -277,9 +277,9 @@ class SAdSearchController extends Controller
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('currency-set',
-                    ['currencyId' => $currency->id]
-                ),
+                'callback_data' => self::createRoute('currency-set', [
+                    'currencyId' => $currency->id,
+                ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
@@ -376,9 +376,9 @@ class SAdSearchController extends Controller
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('currency-set',
-                    ['currencyId' => $currency->id]
-                ),
+                'callback_data' => self::createRoute('currency-set', [
+                    'currencyId' => $currency->id,
+                ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
