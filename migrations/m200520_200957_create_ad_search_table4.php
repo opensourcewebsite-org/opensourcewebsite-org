@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ad_search}}`.
  */
-class m200520_200957_create_ad_search_table extends Migration
+class m200520_200957_create_ad_search_table4 extends Migration
 {
     /**
      * {@inheritdoc}
@@ -15,7 +15,8 @@ class m200520_200957_create_ad_search_table extends Migration
         $this->createTable('{{%ad_search}}', [
             'id' => $this->primaryKey()->unsigned(),
             'user_id' => $this->integer()->unsigned()->notNull(),
-            'category_id' => $this->integer()->unsigned()->notNull(),
+            'section' => $this->tinyInteger()->unsigned()->notNull(),
+            'title' => $this->string()->notNull(),
             'currency_id' => $this->integer()->unsigned(),
             'max_price' => $this->decimal(15, 2)->unsigned(),
             'pickup_radius' => $this->integer()->unsigned()->notNull(),
@@ -24,7 +25,7 @@ class m200520_200957_create_ad_search_table extends Migration
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),
-            'edited_at' => $this->integer()->unsigned(),
+            'processed_at' => $this->integer()->unsigned(),
         ]);
 
         $this->addForeignKey(

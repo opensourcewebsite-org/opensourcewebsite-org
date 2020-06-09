@@ -278,4 +278,5 @@ return [
     'No delivery' => 'Нет доставки',
     'Pickup radius' => 'Радиус самовывоза',
     'Edit currency' => 'Изменить валюту',
+    'Type title' => 'Введите название',
 ];

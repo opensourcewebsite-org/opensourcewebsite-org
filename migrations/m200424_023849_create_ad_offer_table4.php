@@ -3,19 +3,19 @@
 use yii\db\Migration;
 
 /**
- * Class m200424_023849_create_ad_order_table
+ * Class m200424_023849_create_ad_offer_table
  */
-class m200424_023849_create_ad_order_table extends Migration
+class m200424_023849_create_ad_offer_table4 extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('{{%ad_order}}', [
+        $this->createTable('{{%ad_offer}}', [
             'id' => $this->primaryKey()->unsigned(),
             'user_id' => $this->integer()->unsigned()->notNull(),
-            'category_id' => $this->integer()->unsigned()->notNull(),
+            'section' => $this->tinyInteger()->unsigned()->notNull(),
             'title' => $this->string()->notNull(),
             'description' => $this->text()->notNull(),
             'currency_id' => $this->integer()->unsigned()->notNull(),
@@ -26,20 +26,20 @@ class m200424_023849_create_ad_order_table extends Migration
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),
-            'edited_at' => $this->integer()->unsigned(),
+            'processed_at' => $this->integer()->unsigned(),
         ]);
 
         $this->addForeignKey(
-            'fk-ad_order_user_id-bot_user_id',
-            '{{%ad_order}}',
+            'fk-ad_offer_user_id-bot_user_id',
+            '{{%ad_offer}}',
             'user_id',
             '{{%bot_user}}',
             'id'
         );
 
         $this->addForeignKey(
-            'fk-ad_order_currency_id-currency_id',
-            '{{%ad_order}}',
+            'fk-ad_offer_currency_id-currency_id',
+            '{{%ad_offer}}',
             'currency_id',
             '{{%currency}}',
             'id'
@@ -51,11 +51,11 @@ class m200424_023849_create_ad_order_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ad_order_currency_id-currency_id');
+        $this->dropForeignKey('fk-ad_offer_currency_id-currency_id');
 
-        $this->dropForeignKey('fk-ad_order_user_id-bot_user_id');
+        $this->dropForeignKey('fk-ad_offer_user_id-bot_user_id');
 
-        $this->dropTable('{{%ad_order}}');
+        $this->dropTable('{{%ad_offer}}');
     }
 
     /*
@@ -67,7 +67,7 @@ class m200424_023849_create_ad_order_table extends Migration
 
     public function down()
     {
-        echo "m200424_023849_create_ad_order_table cannot be reverted.\n";
+        echo "m200424_023849_create_ad_offer_table cannot be reverted.\n";
 
         return false;
     }
