@@ -116,6 +116,7 @@ if (!empty($languages)) {
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsLeft,
+            'activateParents' => true,
         ]); ?>
         
         <div class="dropdown dropdown-inner ml-auto">
