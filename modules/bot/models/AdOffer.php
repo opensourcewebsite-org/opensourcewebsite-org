@@ -66,13 +66,17 @@ class AdOffer extends ActiveRecord
             ->where(['ad_search.status' => AdSearch::STATUS_ON])
             ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_search.section' => $this->section])
-            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)")
-            ->joinWith(['keywords' => function ($query) {
-                $query
-                    ->joinWith('adOffers')
-                    ->andWhere(['ad_offer.id' => $this->id]);
-            }])
-            ->groupBy('ad_search.id');
+            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
+
+        if ($this->getKeywords()->count() > 0) {
+            $adSearchQuery = $adSearchQuery
+                ->joinWith(['keywords' => function ($query) {
+                    $query
+                        ->joinWith('adOffers')
+                        ->andWhere(['ad_offer.id' => $this->id]);
+                }])
+                ->groupBy('ad_search.id');
+        }
 
         foreach ($adSearchQuery->all() as $adSearch) {
             $this->link('matches', $adSearch);
@@ -128,7 +132,7 @@ class AdOffer extends ActiveRecord
 
     public static function validateRadius($radius)
     {
-        return is_numeric($radius) && $radius >= 0 && $radius <= self::MAX_RADIUS;
+        return is_numeric($radius) && $radius >= 0;
     }
 
     private static function removeExtraChars($str)

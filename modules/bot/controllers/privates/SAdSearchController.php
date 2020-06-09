@@ -530,11 +530,13 @@ class SAdSearchController extends Controller
 
     public function actionRadius()
     {
-        $radius = $this->getUpdate()->getMessage()->getText();
+        $message = $this->getUpdate()->getMessage()->getText();
 
-        if (!AdOffer::validateRadius($radius)) {
+        if (!AdOffer::validateRadius($message->getText())) {
             return $this->actionLocation();
         }
+
+        $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
 
         $this->getState()->setIntermediateField('adSearchRadius', $radius);
 
@@ -1146,7 +1148,7 @@ class SAdSearchController extends Controller
                 return $this->actionEditRadius($adSearchId);
             }
 
-            $radius = intval($message->getText());
+            $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
 
             $adSearch = AdSearch::findOne($adSearchId);
 

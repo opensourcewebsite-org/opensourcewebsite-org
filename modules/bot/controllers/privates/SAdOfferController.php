@@ -798,10 +798,10 @@ class SAdOfferController extends Controller
 
             $adOffer = AdOffer::findOne($adOfferId);
 
-            $deliveryKm = $message->getText();
+            $deliveryRadius = min(AdOffer::MAX_RADIUS, intval($message->getText()));
 
             $adOffer->setAttributes([
-                'delivery_radius' => $deliveryKm,
+                'delivery_radius' => $deliveryRadius,
             ]);
 
             $adOffer->save();
@@ -1284,7 +1284,7 @@ class SAdOfferController extends Controller
                 return $this->actionLocation();
             }
 
-            $radius = $message->getText();
+            $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
             $this->getState()->setIntermediateField('adOfferDeliveryRadius', $radius);
 
             return $this->actionRadius();
