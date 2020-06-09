@@ -71,7 +71,7 @@ class AdSearch extends ActiveRecord
             ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)");
 
         $adOfferQueryNoKeywords = $adOfferQuery
-            ->andWhere(['not in', 'ad_offer.id', AdSearchKeyword::find()->select('ad_offer_id')]);
+            ->andWhere(['not in', 'ad_offer.id', AdOfferKeyword::find()->select('ad_offer_id')]);
 
         $adOfferQueryKeywords = $adOfferQuery
                 ->joinWith(['keywords' => function ($query) {
@@ -82,20 +82,20 @@ class AdSearch extends ActiveRecord
                 ->groupBy('ad_offer.id');
 
         if ($this->getKeywords()->count() > 0) {
-            foreach ($adOfferQueryKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 2]);
+            foreach ($adOfferQueryKeywords->all() as $adOffer) {
+                $this->link('matches', $adOffer, ['type' => 2]);
             }
 
-            foreach ($adOfferQueryNoKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 1]);
+            foreach ($adOfferQueryNoKeywords->all() as $adOffer) {
+                $this->link('matches', $adOffer, ['type' => 0]);
             }
         } else {
-            foreach ($adOfferQueryKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 0]);
+            foreach ($adOfferQueryKeywords->all() as $adOffer) {
+                $this->link('matches', $adOffer, ['type' => 1]);
             }
 
-            foreach ($adOfferQueryNoKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 2]);
+            foreach ($adOfferQueryNoKeywords->all() as $adOffer) {
+                $this->link('matches', $adOffer, ['type' => 2]);
             }
         }
     }
