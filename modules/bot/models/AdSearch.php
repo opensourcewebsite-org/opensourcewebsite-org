@@ -49,7 +49,7 @@ class AdSearch extends ActiveRecord
     {
         return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
             ->viaTable('{{%ad_match}}', ['ad_search_id' => 'id'], function ($query) {
-                $query->andWhere(['type' => 1]);
+                $query->andWhere(['or', ['type' => 1], ['type' => 2]]);
             });
     }
 
@@ -63,38 +63,40 @@ class AdSearch extends ActiveRecord
     {
         $this->unlinkAll('allMatches', true);
 
-        $adOfferQueryNoKeywords = $adOfferQuery = AdOffer::find()
-            ->where(['!=', 'ad_offer.user_id', $this->user_id])
+        $adOfferQuery = AdOffer::find()
+            // ->where(['!=', 'ad_offer.user_id', $this->user_id])
             ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
             ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_offer.section' => $this->section])
             ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)");
 
-        if ($this->getKeywords()->count() > 0) {
-            $adOfferQuery = $adOfferQuery
+        $adOfferQueryNoKeywords = $adOfferQuery
+            ->andWhere(['not in', 'ad_offer.id', AdSearchKeyword::find()->select('ad_offer_id')]);
+
+        $adOfferQueryKeywords = $adOfferQuery
                 ->joinWith(['keywords' => function ($query) {
                     $query
                         ->joinWith('adSearches')
                         ->andWhere(['ad_search.id' => $this->id]);
                 }])
                 ->groupBy('ad_offer.id');
-        }
-
-        foreach ($adOfferQuery->all() as $adOrder) {
-            $this->link('matches', $adOrder, ['type' => 1]);
-        }
-
-        $adOfferQueryNoKeywords = $adOfferQueryNoKeywords
-            ->andWhere(['not in', 'ad_offer.id', AdOfferKeyword::find()->select('ad_offer_id')]);
 
         if ($this->getKeywords()->count() > 0) {
-            foreach ($adOfferQuery->all() as $adOffer) {
-                $adOffer->link('matches', $this, ['type' => 0]);
+            foreach ($adOfferQueryKeywords->all() as $adSearch) {
+                $this->link('matches', $adSearch, ['type' => 2]);
             }
-        }
 
-        foreach ($adOfferQueryNoKeywords->all() as $adOffer) {
-            $adOffer->link('matches', $this, ['type' => 0]);
+            foreach ($adOfferQueryNoKeywords->all() as $adSearch) {
+                $this->link('matches', $adSearch, ['type' => 1]);
+            }
+        } else {
+            foreach ($adOfferQueryKeywords->all() as $adSearch) {
+                $this->link('matches', $adSearch, ['type' => 0]);
+            }
+
+            foreach ($adOfferQueryNoKeywords->all() as $adSearch) {
+                $this->link('matches', $adSearch, ['type' => 2]);
+            }
         }
     }
 
