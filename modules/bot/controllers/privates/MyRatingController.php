@@ -6,6 +6,7 @@ use app\modules\bot\components\helpers\Emoji;
 
 use Yii;
 use app\models\Rating;
+use app\models\User;
 use app\components\Converter;
 use app\modules\bot\components\Controller;
 
@@ -32,7 +33,7 @@ class MyRatingController extends Controller
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],
                     [
@@ -52,20 +53,17 @@ class MyRatingController extends Controller
 
         $activeRating = $user->activeRating;
 
-        $rating = $user->rating;
-        $totalRating = Rating::getTotalRating();
-        if ($totalRating < 1) {
-            $percent = 0;
-        } else {
-            $percent = Converter::percentage($rating, $totalRating);
-        }
+        $rating = $user->getRating();
+        $totalRating = User::getTotalRating();
+        $percent = $totalRating ? Converter::percentage($rating, $totalRating) : 0;
 
-        list($total, $rank) = Rating::getRank($user->getId());
+        $rank = $user->getRank();
+        $totalRank = User::getTotalRank();
 
         $params = [
             'active_rating' => $activeRating,
             'overall_rating' => [$rating, $totalRating, $percent],
-            'ranking' => [$rank, $total],
+            'ranking' => [$rank, $totalRank],
         ];
 
         return $this->render('index', $params);

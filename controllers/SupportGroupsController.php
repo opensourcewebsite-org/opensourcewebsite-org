@@ -80,8 +80,7 @@ class SupportGroupsController extends Controller
         $dataProvider = new SupportGroupSearch();
         $dataProvider->user_id = Yii::$app->user->id;
 
-        $setting = Setting::findOne(['key' => 'support_group_quantity_value_per_one_rating']);
-        $settingQty = $setting->value;
+        $settingQty = Setting::getValue('support_group_quantity_value_per_one_rating');
 
         return $this->render('index', [
             'dataProvider' => $dataProvider->search(),
@@ -114,8 +113,7 @@ class SupportGroupsController extends Controller
             'query' => SupportGroupMember::find()->where(['support_group_id' => intval($id)]),
         ]);
 
-        $setting = Setting::findOne(['key' => 'support_group_member_quantity_value_per_one_rating']);
-        $settingQty = $setting->value;
+        $settingQty = Setting::getValue('support_group_member_quantity_value_per_one_rating');
 
         $member = new SupportGroupMember();
         $member->support_group_id = intval($id);
@@ -183,8 +181,7 @@ class SupportGroupsController extends Controller
             }
         }
 
-        $setting = Setting::findOne(['key' => 'support_group_bot_quantity_value_per_one_rating']);
-        $settingQty = $setting->value;
+        $settingQty = Setting::getValue('support_group_bot_quantity_value_per_one_rating');
 
         return $this->render('bots', [
             'model'        => $model,
@@ -305,7 +302,6 @@ class SupportGroupsController extends Controller
             ]);
 
             if ($sendMessage->save()) {
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Message delivered!'));
                 return $this->redirect([
                     'clients-view',
                     'id' => $id,

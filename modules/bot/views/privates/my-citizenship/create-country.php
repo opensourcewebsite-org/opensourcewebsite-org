@@ -1,1 +1,1 @@
-<b><?= Yii::t('bot', 'Choose your citizenship') ?>:</b>
+<b><?= Yii::t('bot', 'Choose your citizenship or type it') ?>:</b>

@@ -1,6 +1,6 @@
 <?php
 
-use app\widgets\buttons\SaveButton;
+use app\widgets\buttons\SendButton;
 use yii\widgets\DetailView;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
@@ -33,8 +33,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card">
             <div class="card-body">
                 <div class="mb-5">
-                    <?php \yii\widgets\Pjax::begin() ?>
+                    <?php \yii\widgets\Pjax::begin([
+                        'linkSelector' => 'dialog'
+                    ]) ?>
                     <?= \yii\widgets\ListView::widget([
+                        'id' => 'dialog',
                         'dataProvider' => $dataProvider,
                         'summary' => false,
                         'layout' => "<div class='items-message-block'>{items}</div>\n{pager}",
@@ -54,22 +57,24 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                         ],
                     ]) ?>
-                    <?php \yii\widgets\Pjax::end() ?>
                 </div>
 
                 <?php
                 if ($model->provider_bot_user_blocked == 0) {
                     $form = ActiveForm::begin();
                         echo $form->field($sendMessage, 'message')->textarea();
-                        echo SaveButton::widget([
+                        echo SendButton::widget([
                             'options' => [
-                                'style' => 'float: right;'
+                                'data-pjax' => 0,
+                                'style' => 'float: right; color: white;'
                             ]
                         ]);
 
                     ActiveForm::end();
                 }
                 ?>
+                <?php \yii\widgets\Pjax::end() ?>
+
             </div>
         </div>
     </div>

@@ -2,10 +2,18 @@
 
 namespace app\models;
 
+use voskobovich\linker\LinkerBehavior;
+use voskobovich\linker\updaters\ManyToManyUpdater;
 use Yii;
+use app\interfaces\UserRelation\ByOwnerInterface;
+use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
+use app\models\queries\DebtRedistributionQuery;
+use app\models\traits\SelectForUpdateTrait;
 use yii\base\Exception;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
 
@@ -17,13 +25,27 @@ use yii\helpers\VarDumper;
  * @property int $link_user_id
  * @property string $name
  * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority.
+ * @property int $vote_delegation_priority
+ * @property int $is_real
+ * @property int $relation
  *
+ * @property User $ownerUser
  * @property User $linkedUser
  * @property DebtRedistribution[] $debtRedistributions
+ * @property DebtRedistribution $debtRedistributionByDebtorCustom
+ * @property Contact[] $chainMembers
+ * @property Contact $chainMemberParent   you should not use this relation for SQL query. It's only purpose -
+ *                                        to be used as `inverseOf`
+ *                                        for relation {@see Contact::getChainMembers()}
+ *                                        in {@see Reduction::findDebtReceiverCandidatesRedistributeInto()}
  */
-class Contact extends ActiveRecord
+class Contact extends ActiveRecord implements ByOwnerInterface
 {
-    public const DEBT_REDISTRIBUTION_PRIORITY_NO = null;
+    use ByOwnerTrait;
+    use SelectForUpdateTrait;
+
+    public const DEBT_REDISTRIBUTION_PRIORITY_DENY = 0;
+    public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
     const VIEW_USER = 1;
     const VIEW_VIRTUALS = 2;
@@ -34,6 +56,58 @@ class Contact extends ActiveRecord
     ];
 
     public $userIdOrName;
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            [
+                /*
+                 * This behavior makes it easy to maintain many-to-many and one-to-many relations
+                 */
+                'class' => LinkerBehavior::class,
+                'relations' => [
+                    'contact_group_ids' => [
+                        'contactGroups',
+                        'updater' => [
+                            'class' => ManyToManyUpdater::class,
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
+        }
+
+        /*
+         * Prepare for LinkerBehavior
+         */
+        if (is_array($this->contact_group_ids)) {
+            $contactGroupIds = [];
+            foreach ($this->contact_group_ids as $contact_group_id) {
+                if (!is_numeric($contact_group_id)) {
+                    $this->validateHasEmptyGroup();
+                    $contactGroup = new ContactGroup();
+                    $contactGroup->setAttributes([
+                        'name' => $contact_group_id,
+                        'user_id' => Yii::$app->user->identity->id
+                    ]);
+                    if ($contactGroup->save()) {
+                        $contactGroupIds[] = $contactGroup->id;
+                    }
+                } else {
+                    $contactGroupIds[] = $contact_group_id;
+                }
+            }
+            $this->contact_group_ids = $contactGroupIds;
+        }
+
+        return true;
+    }
 
     /**
      * {@inheritdoc}
@@ -51,6 +125,7 @@ class Contact extends ActiveRecord
         return [
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
+            [['contact_group_ids'], 'each', 'rule' => ['integer']],
             [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
             [['name'], 'string', 'max' => 255],
             ['name', 'required',
@@ -61,8 +136,17 @@ class Contact extends ActiveRecord
                     return $('#contact-useridorname').val() == '';
                 }",
             ],
-            ['debt_redistribution_priority', 'integer', 'min' => 0, 'max' => 255],
-            ['debt_redistribution_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
+            [
+                'debt_redistribution_priority',
+                'integer',
+                'min' => self::DEBT_REDISTRIBUTION_PRIORITY_DENY,
+                'max' => self::DEBT_REDISTRIBUTION_PRIORITY_MAX,
+            ],
+            [
+                'debt_redistribution_priority',
+                'filter',
+                'filter' => static function ($v) { return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY; },
+            ],
             ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
             ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
         ];
@@ -83,6 +167,7 @@ class Contact extends ActiveRecord
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
+            'debt_redistribution_priority:empty' => Yii::t('app', 'Deny'),
         ];
     }
 
@@ -113,23 +198,54 @@ class Contact extends ActiveRecord
                 ['id' => $this->userIdOrName],
                 ['username' => $this->userIdOrName]
             ])
-            ->one();
-        if (empty($user)) {
-            return $this->addError($attribute, "User ID / Username doesn't exists.");
+            ->exists();
+        if (!$user) {
+            $this->addError($attribute, "User ID / Username doesn't exists.");
         }
     }
 
-    public function getLinkedUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'link_user_id']);
-    }
-
+    /**
+     * @return DebtRedistributionQuery|ActiveQuery
+     */
     public function getDebtRedistributions()
     {
         return $this->hasMany(DebtRedistribution::className(), [
-            'from_user_id' => 'user_id',
-            'to_user_id'   => 'link_user_id',
+            'user_id' => DebtRedistribution::getOwnerAttribute(),
+            'link_user_id' => DebtRedistribution::getLinkedAttribute(),
         ]);
+    }
+
+    /**
+     * Relation which require additional custom condition, to return exactly one row.
+     *
+     * @return DebtRedistributionQuery|ActiveQuery
+     */
+    public function getDebtRedistributionByDebtorCustom()
+    {
+        return $this->hasOne(DebtRedistribution::className(), [
+            'user_id' => DebtRedistribution::getDebtorAttribute(),
+            'link_user_id' => DebtRedistribution::getDebtReceiverAttribute(),
+        ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|ContactQuery
+     */
+    public function getChainMembers()
+    {
+        return $this->hasMany(self::className(), [
+            'user_id' => 'link_user_id',
+        ])->inverseOf('chainMemberParent');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|ContactQuery
+     */
+    public function getChainMemberParent()
+    {
+        /** @var [] $link empty array is not bug. {@see DebtBalance::$chainMemberParent} */
+        $link = [];
+        return $this->hasOne(self::className(), $link);
     }
 
     public function getContactName()
@@ -161,9 +277,18 @@ class Contact extends ActiveRecord
         return !$this->link_user_id;
     }
 
-    public function isPriorityEmpty(): bool
+    public function isDebtRedistributionPriorityEmpty(): bool
     {
-        return $this->debt_redistribution_priority == self::DEBT_REDISTRIBUTION_PRIORITY_NO;
+        return (int)$this->debt_redistribution_priority === self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
+    }
+
+    public function renderDebtRedistributionPriority(): string
+    {
+        if ($this->isDebtRedistributionPriorityEmpty()) {
+            return $this->getAttributeLabel('debt_redistribution_priority:empty');
+        }
+
+        return (string)$this->debt_redistribution_priority;
     }
 
     public static function find()
@@ -215,9 +340,11 @@ class Contact extends ActiveRecord
     {
         $oldId = $this->getOldAttribute('link_user_id');
         if ($oldId && $this->isAttributeChanged('link_user_id')) {
+            $modelOld = clone $this;
+            $modelOld->link_user_id = $oldId;
+
             $models = DebtRedistribution::find()
-                ->fromUser($this->user_id)
-                ->toUser($oldId)
+                ->usersByModelSource($modelOld)
                 ->all();
             $this->deleteDebtRedistributions($models);
         }
@@ -246,5 +373,27 @@ class Contact extends ActiveRecord
     public function getUserIdOrName()
     {
         return empty($this->linkedUser->username) ? $this->link_user_id : $this->linkedUser->username;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     *
+     * Get contact's groups
+     */
+    public function getContactGroups()
+    {
+        return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
+                    ->viaTable('contact_has_group', ['contact_id' => 'id']);
+    }
+
+/*
+ * validate count empty groups
+ */
+    public function validateHasEmptyGroup()
+    {
+        if (Yii::$app->user->identity->hasEmptyContactGroup()) {
+            $this->addError('contact_group_ids', 'You already have an empty group!');
+            return;
+        }
     }
 }

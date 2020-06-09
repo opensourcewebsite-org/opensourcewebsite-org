@@ -66,7 +66,7 @@ class DebtRedistributionFormTest extends Unit
 
         $model->load([
             'contactId'   => 1,
-            'currency_id' => 2,
+            'currency_id' => 108,
             'max_amount'  => 20,
         ], '');
         expect('save() is success', $model->save())->true();
@@ -74,7 +74,7 @@ class DebtRedistributionFormTest extends Unit
         $model = DebtRedistributionForm::findModel($model->id);
         expect('DebtRedistributionForm::getModel() works fine', $model)->notEmpty();
         expect('attribute "max_amount" is correct', $model->max_amount)->equals(20);
-        expect('attribute "currency_id" is correct', $model->currency_id)->equals(2);
+        expect('attribute "currency_id" is correct', $model->currency_id)->equals(108);
     }
 
     /**

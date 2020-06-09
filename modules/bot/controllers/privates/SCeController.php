@@ -63,16 +63,6 @@ class SCeController extends Controller
                         ],
                         [
                             [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => '👼 ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribution'),
-                            ],
-                        ],
-                        [
-                            [
                                 'callback_data' => ServicesController::createRoute(),
                                 'text' => Emoji::BACK,
                             ],
@@ -236,19 +226,29 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('order-selling-currency'),
-                            'text' => 'Name',
+                            'text' => 'USD',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('order-buying-currency'),
+                            'text' => 'THB',
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('order-selling-currency'),
-                            'text' => 'USD',
+                            'text' => 'Name',
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('order-buying-currency'),
-                            'text' => 'THB',
+                            'callback_data' => self::createRoute('order-location'),
+                            'text' => 'Location',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-delivery-radius'),
+                            'text' => 'Delivery radius: 2 km',
                         ],
                     ],
                     [
@@ -477,29 +477,10 @@ class SCeController extends Controller
      */
     public function actionOrderSellingCurrencyPaymentMethod()
     {
-        //TODO save any location that will be sent
-
-        $telegramUser = $this->getTelegramUser();
         return $this->getResponseBuilder()
-            ->sendLocation(
-                $telegramUser->location_lat,
-                $telegramUser->location_lon
-            )
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('order-selling-currency-payment-method'),
                 [
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                            'text' => 'Delivery: ON',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                            'text' => 'Delivery area: 2 km',
-                        ],
-                    ],
                     [
                         [
                             'callback_data' => self::createRoute('order-selling-currency-payment-methods'),
@@ -527,6 +508,57 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => ServicesController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionOrderLocation()
+    {
+        //TODO save any location that will be sent
+        $telegramUser = $this->getTelegramUser();
+
+        return $this->getResponseBuilder()
+            ->sendLocation(
+                $telegramUser->location_lat,
+                $telegramUser->location_lon
+            )
+            ->editMessageTextOrSendMessage(
+                $this->render('order-location'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-edit'),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionOrderDeliveryRadius()
+    {
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('order-delivery-radius'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-edit'),
                             'text' => Emoji::BACK,
                         ],
                         [

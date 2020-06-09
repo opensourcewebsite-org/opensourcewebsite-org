@@ -21,7 +21,6 @@ $this->title = Yii::t('menu', 'Wikinews pages');
                 <?= ModalAjax::widget([
                     'id' => 'add-wikinews',
                     'header' => Yii::t('user', 'Add wikinews page'),
-                    'closeButton' => false,
                     'toggleButton' => [
                         'label' => Icon::ADD,
                         'class' => 'btn btn-outline-success',
@@ -38,27 +37,27 @@ $this->title = Yii::t('menu', 'Wikinews pages');
                 'dataProvider' => $dataProvider,
                 'summary' => false,
                 'tableOptions' => ['class' => 'table table-hover'],
-				'pager' => [
-						'hideOnSinglePage' => false,
+                'pager' => [
+                        'hideOnSinglePage' => false,
 
-						// Customzing options for pager container tag
-						'options' => [
-							'tag' => 'ul',
-							'class' => 'pagination float-right',
-						],
+                        // Customzing options for pager container tag
+                        'options' => [
+                            'tag' => 'ul',
+                            'class' => 'pagination float-right',
+                        ],
 
-						// Customzing CSS class for pager link
-						'linkOptions' => ['class' => 'page-link'],
-						'linkContainerOptions' => ['class' => 'page-item'],
-						'activePageCssClass' => 'active',
-						'disabledPageCssClass' => 'disabled',
-						'disabledListItemSubTagOptions' => ['tag' => 'a', 'class' => 'page-link disabled'],
-					],
+                        // Customzing CSS class for pager link
+                        'linkOptions' => ['class' => 'page-link'],
+                        'linkContainerOptions' => ['class' => 'page-item'],
+                        'activePageCssClass' => 'active',
+                        'disabledPageCssClass' => 'disabled',
+                        'disabledListItemSubTagOptions' => ['tag' => 'a', 'class' => 'page-link disabled'],
+                    ],
                 'columns' => [
                     [
                         'class' => TitleColumn::class,
                         'label' => 'Lang',
-						'value' => function ($model) {
+                        'value' => function ($model) {
                             return $model->language->name;
                         },
                         'format' => 'text',

@@ -5,6 +5,7 @@ use app\modules\bot\components\request\CallbackQueryCommandResolver;
 use app\modules\bot\components\request\MessageCommandResolver;
 use app\modules\bot\components\request\SystemMessageCommandResolver;
 use app\modules\bot\components\request\RatingCommandResolver;
+use app\modules\bot\components\request\AliasCommandResolver;
 
 return [
     'components' => [
@@ -17,6 +18,7 @@ return [
             'commandResolvers' => [
                 new SystemMessageCommandResolver(),
                 new RatingCommandResolver(),
+                new AliasCommandResolver(),
                 new MessageCommandResolver(),
                 new CallbackQueryCommandResolver(),
             ],

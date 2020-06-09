@@ -14,9 +14,9 @@
 [![Coveralls Coverage](https://coveralls.io/repos/github/opensourcewebsite-org/opensourcewebsite-org/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/opensourcewebsite-org/opensourcewebsite-org?branch=master)
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/opensourcewebsite-org/opensourcewebsite-org/master.svg?style=flat-square)](https://codecov.io/gh/opensourcewebsite-org/opensourcewebsite-org)
 
-[![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
 [![PHP Version](https://img.shields.io/badge/PHP-7.4-blue.svg?style=flat-square&logo=php)](https://www.php.net)
 [![MySQL Version](https://img.shields.io/badge/MySQL-8-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
+[![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
 
 <h1 align="center">OpenSourceWebsite</h1>
 
@@ -29,7 +29,6 @@ This project and everyone participating in it is governed by the [Code of Conduc
 ## Contributing
 
 This project exists thanks to all the people who contribute.
-<a href="https://github.com/opensourcewebsite-org/opensourcewebsite-org/graphs/contributors"><img src="https://opencollective.com/opensourcewebsite/contributors.svg?width=890&button=false" /></a>
 
 Your contributions increase your Rating in our community.
 
@@ -41,7 +40,7 @@ This project exists thanks to all the people who donate.
 
 Your donations increase your Rating in our community.
 
-Become a financial contributor and help us sustain our community. [Read more](DONATE.md).
+Please read through our [Donation Details](DONATE.md).
 
 ## Continuous Integration
 

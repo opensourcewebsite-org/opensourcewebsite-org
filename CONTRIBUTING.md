@@ -1,6 +1,10 @@
 # Contributing Guidelines
 
+[Русская версия](CONTRIBUTING.ru.md)
+
 First off, thanks for taking the time to contribute!
+
+Your contributions increase your Rating in our community.
 
 Please read through our [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
 
@@ -84,42 +88,62 @@ PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://gith
 
 Recommended IDE:
   - [Atom](https://atom.io)
-    - [Atom package for Yii Framework 2](https://atom.io/packages/atom-yii2)
-    - [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
-    - [Atom package for PHP Linter](https://atom.io/packages/linter-php)
-    - [IDE-PHP package](https://atom.io/packages/ide-php)
-    - [Atom-Beautify package](https://atom.io/packages/atom-beautify)
+    - [Atom-Beautify](https://atom.io/packages/atom-beautify)
       - [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer). The beautifier uses `.php_cs` file.
         - Go to "File > Settings > Packages > atom-beautify > Settings > PHP". To automatically beautify PHP code on file save toggle `Beautify On Save` option and select `PHP-CS-Fixer` as Default Beautifier.
         - Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add Binary/Script Path like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
+    - [EditorConfig](https://atom.io/packages/editorconfig)
+    - [IDE-PHP](https://atom.io/packages/ide-php)
+    - [PHP Linter](https://atom.io/packages/linter-php)
+    - [Yii Framework 2](https://atom.io/packages/atom-yii2)
+  - [VS Code](https://code.visualstudio.com)
+    - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+    - [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
+    - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-debug)
+    - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-pack)
+    - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-intellisense)
+    - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
-    - [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
+    - [SonarLint](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
     - Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
   - [Eclipse](https://www.eclipse.org)
-  	- [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
-  - [VS Code](https://code.visualstudio.com)
-    - [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
+  	- [SonarLint](https://www.sonarlint.org/eclipse)
   - [Sublime Text](https://www.sublimetext.com)
     - [PHP-CS-Fixer](https://github.com/benmatselby/sublime-phpcs)
 
 #### Yii 2 migration files
 
+https://www.yiiframework.com/doc/api/2.0/yii-db-migration
+
 Before to create a migration files use [wwwsqldesigner](https://github.com/ondras/wwwsqldesigner) to prototype your changes for the database. For example you can use https://ondras.zarovi.cz/sql/demo/?keyword=default with any keyword and share the link with other contributors.
 
-To upgrade data in the database, create a migration whose name starts with `upgrade_`. To upgrade the data in the migration, the `safeUp()` method is used, it is forbidden to use data access through the models, only through DAO (yii\db\Command). Use of such migrations is necessary for existing databases, and for all new such migrations will be deleted. In `down()` and `safeDown()`, only deletion of objects of the database structure (tables, fields, keys, indexes) is allowed.
+##### safeUp()
 
-Do not use variables like `$tableName` and `$tableOptions`.
+https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeUp()-detail
 
-To specify a primary key, use `$this->primaryKey()->unsigned()`. Be sure to use `unsigned()` for those columns where possible.
+- Name database tables in the singular to list any objects. For example, `user`, but not` users`.
+- Do not use variables like `$tableName` and `$tableOptions`.
+- Do not use database comments for the database and columns.
 
-To add a column with integer values between 0-255, use `$this->tinyInteger()->unsigned()`.
+Columns:
+- Primary key with integer - use `$this->primaryKey()->unsigned()`.
+- Integer values between 0-255 - use `$this->tinyInteger()->unsigned()`.
+- Integer values between 0-65535 - use `$this->smallInteger()->unsigned()`.
+- Integer values above 65535 - use `$this->integer()->unsigned()`.
+- Datetime or timeshtamp values - use `$this->integer()->unsigned()`.
+- Do not specify a length for columns with integer values.
+- Floating-point values where precision is needed, such as money or coordinates - use `$this->decimal($precision, $scale)->unsigned()`. Avoid using float columns without explicit necessity, as this type is not exact.
 
-To add a column with integer values in the range 0-65535, use `$this->smallInteger()->unsigned()`.
+##### safeDown()
 
-To add a column with date values in most cases, use the data type `$this->integer()->unsigned()`. Exceptions - if the column will be actively used in mysql requests as a date.
+https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeDown()-detail
 
-Usually, database tables are named in the singular for listing any objects. For example `user`, but not `users`.
+Use only for deletion of objects of the database structure (tables, fields, keys, indexes).
+
+##### Upgrade data in the database
+
+To upgrade data in the database, create a migration whose name starts with `upgrade_`. Use data access only through DAO (yii\db\Command), not through the models. These migrations are required for existing databases.
 
 ### JavaScript Style Guide
 
@@ -150,4 +174,8 @@ Recommended IDE:
 
 ### Composer
 
-In any case when `composer.json` file is updated, add `composer.json` and `composer.lock` files to the same commit.
+https://getcomposer.org/doc/04-schema.md
+
+In all cases when `composer.json` file is updated, add ` composer.json` and `composer.lock` files to the same commit.
+
+Each package must contain specific version. Don't use `*` and `@dev` versions.

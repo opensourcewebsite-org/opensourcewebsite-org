@@ -9,7 +9,7 @@ use yii\helpers\Html;
     <div class="card-header">
         <h3 class="card-title">Payment Methods</h3>
         <div class="card-tools">
-            <?php echo LinkPager::widget([
+            <?= LinkPager::widget([
                 'pagination' => $pages,
                 'linkContainerOptions' => [
                     'class' => 'page-item',
