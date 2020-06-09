@@ -70,7 +70,7 @@ class SAdOfferController extends Controller
             ],
         ];
 
-        if ($adSection == 1 || $adSection == 2) {
+        if ($adSection == 1) {
             $buttons[count($buttons) - 1][] = [
                 'callback_data' => self::createRoute('add', ['adSection' => $adSection]),
                 'text' => Emoji::ADD,
@@ -79,7 +79,10 @@ class SAdOfferController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('index', ['sectionName' => AdSection::getAdOfferName($adSection)]),
+                $this->render('index', [
+                    'sectionName' => AdSection::getAdOfferName($adSection),
+                    'inDevelopment' => ($adSection != 1),
+                ]),
                 $buttons
             )
             ->build();
