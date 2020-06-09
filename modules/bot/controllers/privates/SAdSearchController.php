@@ -301,7 +301,7 @@ class SAdSearchController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('title'),
+                'callback_data' => self::createRoute('description'),
                 'text' => Emoji::BACK,
             ],
             [
@@ -544,7 +544,7 @@ class SAdSearchController extends Controller
     {
         $this->getState()->setIntermediateField('adSearchRadius', '0');
 
-        return $this->actionMakrSearch();
+        return $this->actionMakeSearch();
     }
 
     public function actionRadius()
