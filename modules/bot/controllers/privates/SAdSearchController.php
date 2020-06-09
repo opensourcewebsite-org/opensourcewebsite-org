@@ -68,16 +68,20 @@ class SAdSearchController extends Controller
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
             ],
-            [
+        ];
+
+        if ($adSection == 1) {
+            $buttons[count($buttons) - 1][] = [
                 'callback_data' => self::createRoute('add', ['adSection' => $adSection]),
                 'text' => Emoji::ADD,
-            ],
-        ];
+            ];
+        }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'sectionName' => AdSection::getAdSearchName($adSection),
+                    'inDevelopment' => ($adSection != 1),
                 ]),
                 $buttons
             )
