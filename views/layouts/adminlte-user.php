@@ -116,10 +116,38 @@ if (!empty($languages)) {
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsLeft,
-            'activateParents' => true,
-        ]);
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav ml-auto'],
+        ]); ?>
+        
+        <div class="dropdown dropdown-inner ml-auto">
+            <a class="nav-link dropdown-toggle dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <?= strtoupper(Yii::$app->language) ?>
+            </a>
+
+            <div id="myDropdown" class="dropdown-menu dropdown-menu-inner" aria-labelledby="dropdownMenuLink">
+                <div class="search-container">
+                <input type="text" id="search-lang" onkeyup="getLanguage()" placeholder="Search..">
+                <button type="button"><i class="fa fa-search"></i></button>
+                </div>
+
+                <div class="dropdown-container">
+                <?php
+
+                //List of language options
+                $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
+
+                if (!empty($languages)) {
+                    foreach ($languages as $language) {
+                        //Check if the language is the active
+                        $active = ($language->code == Yii::$app->language) ? 'active' : null;
+                        echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
+                    }
+                } ?>
+                </div>
+            </div>
+        </div>
+
+        <?php echo Nav::widget([
+            'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsRight,
         ]);
         NavBar::end();
