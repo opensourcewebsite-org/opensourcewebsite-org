@@ -5,30 +5,30 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ad_matches}}`.
  */
-class m200605_024930_create_ad_matches_table4 extends Migration
+class m200605_024930_create_ad_match_table6 extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('{{%ad_matches}}', [
+        $this->createTable('{{%ad_match}}', [
             'id' => $this->primaryKey()->unsigned(),
             'ad_offer_id' => $this->integer()->unsigned()->notNull(),
             'ad_search_id' => $this->integer()->unsigned()->notNull(),
         ]);
 
         $this->addForeignKey(
-            'fk-ad_matches_ad_offer_id-ad_offer_id',
-            '{{%ad_matches}}',
+            'fk-ad_match_ad_offer_id-ad_offer_id',
+            '{{%ad_match}}',
             'ad_offer_id',
             '{{%ad_offer}}',
             'id'
         );
 
         $this->addForeignKey(
-            'fk-ad_matches_ad_search_id-ad_search_id',
-            '{{%ad_matches}}',
+            'fk-ad_match_ad_search_id-ad_search_id',
+            '{{%ad_match}}',
             'ad_search_id',
             '{{%ad_search}}',
             'id'
@@ -40,10 +40,10 @@ class m200605_024930_create_ad_matches_table4 extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ad_matches_ad_search_id-ad_search_id');
+        $this->dropForeignKey('fk-ad_match_ad_search_id-ad_search_id');
 
-        $this->dropForeignKey('fk-ad_matches_ad_offer_id-ad_offer_id');
+        $this->dropForeignKey('fk-ad_match_ad_offer_id-ad_offer_id');
 
-        $this->dropTable('{{%ad_matches}}');
+        $this->dropTable('{{%ad_match}}');
     }
 }

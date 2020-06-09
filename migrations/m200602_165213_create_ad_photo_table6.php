@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ad_photo}}`.
  */
-class m200602_165213_create_ad_photo_table4 extends Migration
+class m200602_165213_create_ad_photo_table6 extends Migration
 {
     /**
      * {@inheritdoc}

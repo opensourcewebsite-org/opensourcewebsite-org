@@ -10,25 +10,25 @@ class AdSection
     public const RENT = 2;
     public const SERVICES = 3;
 
-    private static $placeNames = [
-        self::BUY_SELL => Yii::t('bot', 'Sell'),
-        self::RENT => Yii::t('bot', 'Rent'),
-        self::SERVICES => Yii::t('bot_ad', 'Services'),
-    ];
-
-    private static $findNames = [
-        self::BUY_SELL => Yii::t('bot', 'Buy'),
-        self::RENT => Yii::t('bot', 'Rent'),
-        self::SERVICES => Yii::t('bot_ad', 'Services'),
-    ];
-
     public static function getAdOfferName($section)
     {
-        return self::$placeNames[$section];
+        $adOfferNames = [
+            1 => Yii::t('bot', 'Sell'),
+            2 => Yii::t('bot', 'Rent'),
+            3 => Yii::t('bot_ad', 'Services'),
+        ];
+
+        return $adOfferNames[$section];
     }
 
     public static function getAdSearchName($section)
     {
-        return self::$findNames[$section];
+        $adSearchNames = [
+            1 => Yii::t('bot', 'Buy'),
+            2 => Yii::t('bot', 'Rent'),
+            3 => Yii::t('bot_ad', 'Services'),
+        ];
+
+        return $adSearchNames[$section];
     }
 }

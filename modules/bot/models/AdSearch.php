@@ -3,6 +3,7 @@ namespace app\modules\bot\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use app\models\User as GlobalUser;
 
 class AdSearch extends ActiveRecord
 {
@@ -20,7 +21,7 @@ class AdSearch extends ActiveRecord
     {
         return [
             [['user_id', 'section', 'title', 'pickup_radius', 'location_lat', 'location_lon', 'status', 'created_at', 'renewed_at'], 'required'],
-            [['title', 'location_lat', 'location_lon'], 'string'],
+            [['title', 'description', 'location_lat', 'location_lon'], 'string'],
             [['user_id', 'section', 'currency_id', 'pickup_radius', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
             [['max_price'], 'number'],
         ];
@@ -46,23 +47,19 @@ class AdSearch extends ActiveRecord
 
     public function getMatches()
     {
-        return $this->hasMany(AdOrder::className(), ['id' => 'ad_order_id'])
-            ->viaTable('{{%ad_matches}}', ['ad_search_id' => 'id']);
+        return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
+            ->viaTable('{{%ad_match}}', ['ad_search_id' => 'id']);
     }
 
     public function updateMatches()
     {
         $this->unlinkAll('matches', true);
 
-        if (!$this->isActive()) {
-            return;
-        }
-
-        $adOrderQuery = AdOrder::find()
-            ->where(['ad_order.status' => AdOrder::STATUS_ON])
-            ->andWhere(['>=', 'ad_order.renewed_at', time() - AdOrder::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere(['ad_order.section' => $this->section])
-            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_order.location_lat, ad_order.location_lon)) <= 1000 * (ad_order.delivery_radius + $this->pickup_radius)")
+        $adOrderQuery = AdOffer::find()
+            ->where(['ad_offer.status' => AdOffer::STATUS_ON])
+            ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere(['ad_offer.section' => $this->section])
+            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)")
             ->joinWith(['keywords' => function ($query) {
                 $query
                     ->joinWith('adSearches')
@@ -86,5 +83,11 @@ class AdSearch extends ActiveRecord
 
             $this->save();
         }
+    }
+
+    public function getGlobalUser()
+    {
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
     }
 }

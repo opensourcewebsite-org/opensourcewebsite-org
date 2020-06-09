@@ -18,31 +18,31 @@ class SAdController extends Controller
                     [
                         [
                             [
-                                'callback_data' => FindAdsController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
+                                'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
                                 'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::BUY_SELL),
                             ],
                             [
-                                'callback_data' => PlaceAdController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
+                                'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
                                 'text' => '💰 ' . AdSection::getAdOfferName(AdSection::BUY_SELL),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => FindAdsController::createRoute('index', ['adSection' => AdSection::RENT]),
+                                'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::RENT]),
                                 'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::RENT),
                             ],
                             [
-                                'callback_data' => PlaceAdController::createRoute('index', ['adSection' => AdSection::RENT]),
+                                'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::RENT]),
                                 'text' => '💰 ' . AdSection::getAdOfferName(AdSection::RENT),
                             ],
                         ],
                         [
                             [
-                                'callback_data' => FindAdsController::createRoute('index', ['adSection' => AdSection::SERVICES]),
+                                'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::SERVICES]),
                                 'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::SERVICES),
                             ],
                             [
-                                'callback_data' => PlaceAdController::createRoute('index', ['adSection' => AdSection::SERVICES]),
+                                'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::SERVICES]),
                                 'text' => '💰 ' . AdSection::getAdOfferName(AdSection::SERVICES),
                             ],
                         ],

@@ -24,71 +24,39 @@ class AdMatchesController extends Controller implements CronChainedInterface
 
     protected function update()
     {
-        while (true) {
-            $this->output('Running update...');
+        $this->output('Runnning update...');
 
-            $adOfferUpdated = $this->updateAdOffer();
-            $adSearchUpdated = $this->updateAdSearch();
-
-            if (!$adOfferUpdated && !$adSearchUpdated) {
-                break;
-            }
-        }
+        $this->updateAdOfferes();
+        $this->updateAdSearches();
     }
 
-    protected function updateAdSearch()
+    protected function updateAdSearches()
     {
         $this->output('Running updateAdSearch...');
 
-        $minEditedAt = AdSearch::find()->min('edited_at');
+        $adSearchQuery = AdSearch::find()
+            ->where(['processed_at' => null])
+            ->joinWith('globalUser')
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC]);
 
-        if ($minEditedAt === null) {
-            return false;
+        foreach ($adSearchQuery->all() as $adSearch) {
+            $adSearch->updateMatches();
         }
-
-        $adSearch = AdSearch::find()->where([
-            'edited_at' => $minEditedAt,
-        ])->one();
-
-        if (!isset($adSearch)) {
-            return false;
-        }
-
-        $adSearch->updateMatches();
-
-        $adSearch->setAttributes([
-            'edited_at' => null,
-        ]);
-        $adSearch->save();
-
-        return true;
     }
 
-    protected function updateAdOffer()
+    protected function updateAdOfferes()
     {
         $this->output('Running updateAdOffer...');
 
-        $minEditedAt = AdOffer::find()->min('edited_at');
+        $adOfferQuery = AdOffer::find()
+            ->where(['processed_at' => null])
+            ->joinWith('globalUser')
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC]);
 
-        if ($minEditedAt === null) {
-            return false;
+        foreach ($adOfferQuery->all() as $adOffer) {
+            $adOffer->updateMatches();
         }
-
-        $adOffer = AdOffer::find()->where([
-            'edited_at' => $minEditedAt,
-        ])->one();
-
-        if (!isset($adOffer)) {
-            return false;
-        }
-
-        $adOffer->updateMatches();
-
-        $adOffer->setAttributes([
-            'edited_at' => null,
-        ]);
-        $adOffer->save();
-
-        return true;
     }
 }

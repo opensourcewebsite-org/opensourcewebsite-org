@@ -3,7 +3,9 @@
 <?= $adOffer->title ?><br/>
 <br/>
 <b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
+<?php if ($adOffer->description !== null) : ?>
 <b><?= Yii::t('bot', 'Description') ?>:</b> <?= $adOffer->description ?><br/>
+<?php endif; ?>
 <b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOffer->price ?> <?= $currency->code ?><br/>
 <b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adOffer->location_lat ?> <?= $adOffer->location_lon ?></a><br/>
 <?php if ($adOffer->delivery_radius > 0) : ?>

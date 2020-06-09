@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use app\models\User as GlobalUser;
 
 class AdOffer extends ActiveRecord
 {
@@ -21,7 +22,7 @@ class AdOffer extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'section', 'title', 'description', 'currency_id', 'price', 'location_lat', 'location_lon', 'delivery_radius', 'status', 'created_at', 'renewed_at'], 'required'],
+            [['user_id', 'section', 'title', 'currency_id', 'price', 'location_lat', 'location_lon', 'delivery_radius', 'status', 'created_at', 'renewed_at'], 'required'],
             [['title', 'description', 'location_lat', 'location_lon'], 'string'],
             [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
             [['price'], 'number'],
@@ -54,7 +55,7 @@ class AdOffer extends ActiveRecord
     public function getMatches()
     {
         return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
-            ->viaTable('{{%ad_matches}}', ['ad_offer_id' => 'id']);
+            ->viaTable('{{%ad_match}}', ['ad_offer_id' => 'id']);
     }
 
     public function updateMatches()
@@ -148,5 +149,11 @@ class AdOffer extends ActiveRecord
         } else {
             return $slices;
         }
+    }
+
+    public function getGlobalUser()
+    {
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
     }
 }
