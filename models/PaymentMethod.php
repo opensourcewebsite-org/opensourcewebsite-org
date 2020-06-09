@@ -16,6 +16,11 @@ class PaymentMethod extends \yii\db\ActiveRecord
     const TYPE_EMONEY = 0;
     const TYPE_BANK = 1;
 
+    public static $types = [
+        0 => 'E-Money',
+        1 => 'Bank',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -52,5 +57,10 @@ class PaymentMethod extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Currency::className(), ['id' => 'currency_id'])
                 ->viaTable('payment_method_currency', ['payment_method_id' => 'id']);
+    }
+
+    public function getTypeName()
+    {
+        return self::$types[$this->type];
     }
 }

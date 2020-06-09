@@ -38,8 +38,8 @@ use yii\helpers\Html;
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?= $model->id ?></td>
-                        <td><?php echo Html::a($model->name, ['data/payment-method-show', 'id' => $model->id]) ?? null; ?></td>
-                        <td><?php echo $model->type ?? null; ?></td>
+                        <td><?php echo Html::a($model->name, ['data/payment-method/' . $model->id]); ?></td>
+                        <td><?php echo $model->getTypeName(); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

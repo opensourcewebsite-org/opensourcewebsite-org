@@ -142,6 +142,7 @@ if (!empty($languages)) {
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsLeft,
+            'activateParents' => true,
         ]);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav ml-auto'],

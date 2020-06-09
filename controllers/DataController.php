@@ -119,7 +119,7 @@ class DataController extends Controller
         return $this->render('payment-method-show', [
             'models' => $models,
             'pages' => $pages,
-            'paymentMethod' =>$paymentMethod->name,
+            'paymentMethod' => $paymentMethod,
         ]);
     }
 
