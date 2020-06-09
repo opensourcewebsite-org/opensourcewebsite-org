@@ -26,7 +26,7 @@ class AdMatchesController extends Controller implements CronChainedInterface
     {
         $this->output('Runnning update...');
 
-        $this->updateAdOfferes();
+        $this->updateAdOffers();
         $this->updateAdSearches();
     }
 
@@ -47,7 +47,7 @@ class AdMatchesController extends Controller implements CronChainedInterface
         }
     }
 
-    protected function updateAdOfferes()
+    protected function updateAdOffers()
     {
         $this->output('Running updateAdOffer...');
 
