@@ -4,7 +4,7 @@ use yii\widgets\LinkPager;
 use yii\widgets\Breadcrumbs;
 use yii\grid\GridView;
 
-$this->params['breadcrumbs'][] = [ 'template' => "/{link}/", 'label' => 'payment method', 'url'=> ['/data/payment-method']];
+$this->params['breadcrumbs'][] = [ 'template' => '/{link}/', 'label' => 'payment method', 'url'=> ['/data/payment-method']];
 $this->params['breadcrumbs'][] = 'payment method show';
 $this->title = 'Payment Method';
 
@@ -83,9 +83,9 @@ $this->title = 'Payment Method';
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?php echo $model->id ?></td>
-                        <td><?php echo $model->name ?? null; ?></td>
-                        <td><?php echo $model->code ?? null; ?></td>
-                        <td><?php echo $model->symbol ?? null; ?></td>
+                        <td><?php echo $model->name; ?></td>
+                        <td><?php echo $model->code; ?></td>
+                        <td><?php echo $model->symbol; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
