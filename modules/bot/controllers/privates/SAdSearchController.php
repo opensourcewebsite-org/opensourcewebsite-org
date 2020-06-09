@@ -774,7 +774,7 @@ class SAdSearchController extends Controller
         $this->getState()->setName(self::createRoute('new-description', [
             'adSearchId' => $adSearchId,
         ]));
-        
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('edit-description'),
