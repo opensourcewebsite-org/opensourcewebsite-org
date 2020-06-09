@@ -37,7 +37,7 @@ class ServicesController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => AdsController::createRoute(),
+                            'callback_data' => SAdController::createRoute(),
                             'text' => '🏗 ' . Yii::t('bot', 'Ads'),
                         ],
                     ],

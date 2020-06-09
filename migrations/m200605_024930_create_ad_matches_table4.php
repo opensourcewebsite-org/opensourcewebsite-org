@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ad_matches}}`.
  */
-class m200605_024930_create_ad_matches_table extends Migration
+class m200605_024930_create_ad_matches_table4 extends Migration
 {
     /**
      * {@inheritdoc}
@@ -14,15 +14,15 @@ class m200605_024930_create_ad_matches_table extends Migration
     {
         $this->createTable('{{%ad_matches}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'ad_order_id' => $this->integer()->unsigned()->notNull(),
+            'ad_offer_id' => $this->integer()->unsigned()->notNull(),
             'ad_search_id' => $this->integer()->unsigned()->notNull(),
         ]);
 
         $this->addForeignKey(
-            'fk-ad_matches_ad_order_id-ad_order_id',
+            'fk-ad_matches_ad_offer_id-ad_offer_id',
             '{{%ad_matches}}',
-            'ad_order_id',
-            '{{%ad_order}}',
+            'ad_offer_id',
+            '{{%ad_offer}}',
             'id'
         );
 
@@ -42,7 +42,7 @@ class m200605_024930_create_ad_matches_table extends Migration
     {
         $this->dropForeignKey('fk-ad_matches_ad_search_id-ad_search_id');
 
-        $this->dropForeignKey('fk-ad_matches_ad_order_id-ad_order_id');
+        $this->dropForeignKey('fk-ad_matches_ad_offer_id-ad_offer_id');
 
         $this->dropTable('{{%ad_matches}}');
     }

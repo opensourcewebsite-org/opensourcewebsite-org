@@ -32,9 +32,9 @@ class AdKeyword extends ActiveRecord
             ->viaTable('{{%ad_search_keyword}}', ['ad_keyword_id' => 'id']);
     }
 
-    public function getAdOrders()
+    public function getAdOffers()
     {
-        return $this->hasMany(AdOrder::className(), ['id' => 'ad_order_id'])
-            ->viaTable('{{%ad_order_keyword}}', ['ad_keyword_id' => 'id']);
+        return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
+            ->viaTable('{{%ad_offer_keyword}}', ['ad_keyword_id' => 'id']);
     }
 }

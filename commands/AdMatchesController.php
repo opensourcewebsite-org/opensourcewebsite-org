@@ -9,7 +9,7 @@ use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
 use yii\console\Controller;
 use yii\httpclient\Client;
-use app\modules\bot\models\AdOrder;
+use app\modules\bot\models\AdOffer;
 use app\modules\bot\models\AdSearch;
 
 class AdMatchesController extends Controller implements CronChainedInterface
@@ -27,10 +27,10 @@ class AdMatchesController extends Controller implements CronChainedInterface
         while (true) {
             $this->output('Running update...');
 
-            $adOrderUpdated = $this->updateAdOrder();
+            $adOfferUpdated = $this->updateAdOffer();
             $adSearchUpdated = $this->updateAdSearch();
 
-            if (!$adOrderUpdated && !$adSearchUpdated) {
+            if (!$adOfferUpdated && !$adSearchUpdated) {
                 break;
             }
         }
@@ -64,30 +64,30 @@ class AdMatchesController extends Controller implements CronChainedInterface
         return true;
     }
 
-    protected function updateAdOrder()
+    protected function updateAdOffer()
     {
-        $this->output('Running updateAdOrder...');
+        $this->output('Running updateAdOffer...');
 
-        $minEditedAt = AdOrder::find()->min('edited_at');
+        $minEditedAt = AdOffer::find()->min('edited_at');
 
         if ($minEditedAt === null) {
             return false;
         }
 
-        $adOrder = AdOrder::find()->where([
+        $adOffer = AdOffer::find()->where([
             'edited_at' => $minEditedAt,
         ])->one();
 
-        if (!isset($adOrder)) {
+        if (!isset($adOffer)) {
             return false;
         }
 
-        $adOrder->updateMatches();
+        $adOffer->updateMatches();
 
-        $adOrder->setAttributes([
+        $adOffer->setAttributes([
             'edited_at' => null,
         ]);
-        $adOrder->save();
+        $adOffer->save();
 
         return true;
     }

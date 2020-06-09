@@ -1,5 +1,6 @@
-🔍 <b><?= $categoryName ?></b><br/>
+🔍 <b><?= $sectionName ?></b><br/>
 <br/>
+<b><?= Yii::t('bot', 'Title') ?>:</b> <?= $adSearch->title ?><br/>
 <b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
 <?php if ($adSearch->currency_id !== null && $adSearch->max_price !== null) : ?>
 <b><?= Yii::t('bot', 'Max price') ?>:</b> <?= $adSearch->max_price ?> <?= $currency->code ?><br/>

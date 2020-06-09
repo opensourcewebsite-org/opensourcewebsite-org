@@ -1,1 +1,1 @@
-💰 <?= Yii::t('bot', $categoryName) ?>
+💰 <?= Yii::t('bot', $sectionName) ?>

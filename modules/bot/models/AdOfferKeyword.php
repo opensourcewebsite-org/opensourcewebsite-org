@@ -3,18 +3,18 @@ namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 
-class AdOrderKeyword extends ActiveRecord
+class AdOfferKeyword extends ActiveRecord
 {
     public static function tableName()
     {
-        return 'ad_order_keyword';
+        return 'ad_offer_keyword';
     }
 
     public function rules()
     {
         return [
-            [['ad_order_id', 'ad_keyword_id'], 'required'],
-            [['ad_order_id', 'ad_keyword_id'], 'integer'],
+            [['ad_offer_id', 'ad_keyword_id'], 'required'],
+            [['ad_offer_id', 'ad_keyword_id'], 'integer'],
         ];
     }
 

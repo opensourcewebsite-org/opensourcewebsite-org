@@ -6,7 +6,6 @@ use yii\db\ActiveRecord;
 
 class AdSearch extends ActiveRecord
 {
-    private const EARTH_RADIUS = 6372.795;
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
@@ -20,9 +19,9 @@ class AdSearch extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'category_id', 'pickup_radius', 'location_lat', 'location_lon', 'status', 'created_at', 'renewed_at'], 'required'],
-            [['location_lat', 'location_lon'], 'string'],
-            [['user_id', 'category_id', 'currency_id', 'pickup_radius', 'status', 'created_at', 'renewed_at', 'edited_at'], 'integer'],
+            [['user_id', 'section', 'title', 'pickup_radius', 'location_lat', 'location_lon', 'status', 'created_at', 'renewed_at'], 'required'],
+            [['title', 'location_lat', 'location_lon'], 'string'],
+            [['user_id', 'section', 'currency_id', 'pickup_radius', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
             [['max_price'], 'number'],
         ];
     }
@@ -62,6 +61,7 @@ class AdSearch extends ActiveRecord
         $adOrderQuery = AdOrder::find()
             ->where(['ad_order.status' => AdOrder::STATUS_ON])
             ->andWhere(['>=', 'ad_order.renewed_at', time() - AdOrder::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere(['ad_order.section' => $this->section])
             ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_order.location_lat, ad_order.location_lon)) <= 1000 * (ad_order.delivery_radius + $this->pickup_radius)")
             ->joinWith(['keywords' => function ($query) {
                 $query
@@ -77,11 +77,11 @@ class AdSearch extends ActiveRecord
 
     public function markToUpdateMatches()
     {
-        if ($this->edited_at === null) {
+        if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
             
             $this->setAttributes([
-                'edited_at' => time(),
+                'processed_at' => null,
             ]);
 
             $this->save();
