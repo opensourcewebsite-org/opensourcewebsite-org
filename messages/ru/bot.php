@@ -280,7 +280,4 @@ return [
     'Edit currency' => 'Изменить валюту',
     'Type title' => 'Введите название',
     'No pickup' => 'Без самовывоза',
-    'No description' => 'Без описания',
-    'No photo' => 'Без фото',
-    'No keywords' => 'Без ключевых слов',
 ];

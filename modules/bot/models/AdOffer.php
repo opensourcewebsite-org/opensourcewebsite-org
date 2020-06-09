@@ -70,14 +70,15 @@ class AdOffer extends ActiveRecord
     {
         $this->unlinkAll('allMatches', true);
 
-        $adSearchQueryTo = AdSearch::find()
-            ->where(['ad_search.status' => AdSearch::STATUS_ON])
+        $adSearchQueryNoKeywords = $adSearchQuery = AdSearch::find()
+            ->where(['!=', 'ad_search.user_id', $this->user_id])
+            ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
             ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_search.section' => $this->section])
             ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
 
         if ($this->getKeywords()->count() > 0) {
-            $adSearchQueryTo = $adSearchQueryTo
+            $adSearchQuery = $adSearchQuery
                 ->joinWith(['keywords' => function ($query) {
                     $query
                         ->joinWith('adOffers')
@@ -86,22 +87,20 @@ class AdOffer extends ActiveRecord
                 ->groupBy('ad_search.id');
         }
 
-        foreach ($adSearchQueryTo->all() as $adSearch) {
+        foreach ($adSearchQuery->all() as $adSearch) {
             $this->link('matches', $adSearch, ['type' => 0]);
         }
 
-        $adSearchQueryFrom = AdSearch::find()
-            ->where(['ad_search.status' => AdOffer::STATUS_ON])
-            ->andWhere(['>=', 'ad_search.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere(['ad_search.section' => $this->section])
-            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
+        $adSearchQueryNoKeywords = $adSearchQueryNoKeywords
+            ->andWhere(['not in', 'ad_search.id', AdSearchKeyword::find()->select('ad_search_id')]);
 
-        if ($this->getKeywords()->count() == 0) {
-            $adSearchQueryFrom = $adSearchQueryFrom
-                ->addSelect(['not in', 'ad_search_id', AdSearchKeyword::find()->select('ad_search_id')]);
+        if ($this->getKeywords()->count() > 0) {
+            foreach ($adSearchQuery->all() as $adSearch) {
+                $adSearch->link('matches', $this, ['type' => 1]);
+            }
         }
 
-        foreach ($adSearchQueryFrom->all() as $adSearch) {
+        foreach ($adSearchQueryNoKeywords->all() as $adSearch) {
             $adSearch->link('matches', $this, ['type' => 1]);
         }
     }

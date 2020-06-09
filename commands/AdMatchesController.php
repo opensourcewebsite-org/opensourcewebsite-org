@@ -60,7 +60,7 @@ class AdMatchesController extends Controller implements CronChainedInterface
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($adOfferQuery->all() as $adOffer) {
-            $this->output(json_encode($adOffer->updateMatches()));
+            $adOffer->updateMatches();
         }
     }
 }

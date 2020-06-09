@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m200424_023849_create_ad_offer_table
  */
-class m200424_023849_create_ad_offer_table6 extends Migration
+class m200424_023849_create_ad_offer_table extends Migration
 {
     /**
      * {@inheritdoc}

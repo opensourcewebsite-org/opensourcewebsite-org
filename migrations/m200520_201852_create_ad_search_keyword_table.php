@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m200520_201852_create_ad_search_keyword_table
  */
-class m200520_201852_create_ad_search_keyword_table6 extends Migration
+class m200520_201852_create_ad_search_keyword_table extends Migration
 {
     /**
      * {@inheritdoc}
