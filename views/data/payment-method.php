@@ -1,6 +1,7 @@
 <?php
 
 use yii\widgets\LinkPager;
+use yii\helpers\Html;
 
 ?>
 
@@ -36,9 +37,9 @@ use yii\widgets\LinkPager;
             <tbody>
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
-                        <td><?= $model->id; ?></td>
-                        <td><?= $model->name; ?></td>
-                        <td><?= $model->getTypeName(); ?></td>
+                        <td><?= $model->id ?></td>
+                        <td><?php echo Html::a($model->name, ['data/payment-method/' . $model->id]); ?></td>
+                        <td><?php echo $model->getTypeName(); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
