@@ -75,11 +75,13 @@ class AdOffer extends ActiveRecord
             ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
             ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_search.section' => $this->section])
-            ->andWhere("st_distance_sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
+            ->andWhere("ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
 
-        $adSearchQueryNoKeywords = $adSearchQuery
+        $adSearchQueryNoKeywords = clone $adSearchQuery;
+        $adSearchQueryNoKeywords = $adSearchQueryNoKeywords
             ->andWhere(['not in', 'ad_search.id', AdSearchKeyword::find()->select('ad_search_id')]);
 
+        $adSearchQueryKeywords = clone $adSearchQuery;
         $adSearchQueryKeywords = $adSearchQuery
                 ->joinWith(['keywords' => function ($query) {
                     $query

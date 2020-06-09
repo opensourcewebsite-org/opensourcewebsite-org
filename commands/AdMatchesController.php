@@ -44,6 +44,11 @@ class AdMatchesController extends Controller implements CronChainedInterface
 
         foreach ($adSearchQuery->all() as $adSearch) {
             $adSearch->updateMatches();
+
+            $adSearch->setAttributes([
+                'processed_at' => time(),
+            ]);
+            $adSearch->save();
         }
     }
 
@@ -61,6 +66,11 @@ class AdMatchesController extends Controller implements CronChainedInterface
 
         foreach ($adOfferQuery->all() as $adOffer) {
             $adOffer->updateMatches();
+
+            $adOffer->setAttributes([
+                'processed_at' => time(),
+            ]);
+            $adOffer->save();
         }
     }
 }
