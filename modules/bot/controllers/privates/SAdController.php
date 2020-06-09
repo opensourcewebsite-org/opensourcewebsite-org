@@ -1,244 +1,82 @@
 <?php
-
 namespace app\modules\bot\controllers\privates;
-
-use app\modules\bot\components\helpers\Emoji;
 
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\AdSection;
 
-/**
- * Class SAdController
- *
- * @package app\modules\bot\controllers
- */
 class SAdController extends Controller
 {
-    /**
-     * @return array
-     */
     public function actionIndex()
     {
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('index'),
-                [
+        if ($this->getTelegramUser()->provider_user_name) {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
+                    $this->render('index'),
                     [
                         [
-                            'callback_data' => '/s_ad__1',
-                            'text' => '🔍 ' . Yii::t('bot', 'Buy'),
+                            [
+                                'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
+                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::BUY_SELL),
+                            ],
+                            [
+                                'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
+                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::BUY_SELL),
+                            ],
                         ],
                         [
-                            'callback_data' => '/s_ad__1',
-                            'text' => Yii::t('bot', 'Sell') . ' 💰',
+                            [
+                                'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::RENT]),
+                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::RENT),
+                            ],
+                            [
+                                'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::RENT]),
+                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::RENT),
+                            ],
                         ],
-                    ],
+                        [
+                            [
+                                'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::SERVICES]),
+                                'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::SERVICES),
+                            ],
+                            [
+                                'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::SERVICES]),
+                                'text' => '💰 ' . AdSection::getAdOfferName(AdSection::SERVICES),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => ServicesController::createRoute(),
+                                'text' => Emoji::BACK,
+                            ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
+                        ],
+                    ]
+                )
+                ->build();
+        } else {
+            return ResponseBuilder::fromUpdate($this->getUpdate())
+                ->editMessageTextOrSendMessage(
+                    $this->render('no-requirements'),
                     [
                         [
-                            'callback_data' => '/s_ad__1',
-                            'text' => '🔍 ' . Yii::t('bot', 'Rent'),
+                            [
+                                'callback_data' => ServicesController::createRoute(),
+                                'text' => Emoji::BACK,
+                            ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
                         ],
-                        [
-                            'callback_data' => '/s_ad__1',
-                            'text' => Yii::t('bot', 'Rent')  . ' 💰',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad__1',
-                            'text' => '🔍 ' . Yii::t('bot', 'Services'),
-                        ],
-                        [
-                            'callback_data' => '/s_ad__1',
-                            'text' => Yii::t('bot', 'Services') . ' 💰',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => ServicesController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => '📱',
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return string
-     */
-    public function action1()
-	{
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('1'),
-                [
-                    [
-                        [
-                            'callback_data' => '/s_ad__2',
-                            'text' => 'Название 1',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad__2',
-                            'text' => '❌ ' . 'Название 2',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => '<',
-                        ],
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => '1/3',
-                        ],
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => '>',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => '🔙',
-                        ],
-                        [
-                            'callback_data' => '/menu',
-                            'text' => '📱',
-                        ],
-                        [
-                            'callback_data' => '/s_ad__1',
-                            'text' => '➕',
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return string
-     */
-    public function action2()
-	{
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('2'),
-                [
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => 'Status: ON',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => '🙋‍♂️ 3',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad__1',
-                            'text' => '🔙',
-                        ],
-                        [
-                            'callback_data' => '/menu',
-                            'text' => '📱',
-                        ],
-                        [
-                            'callback_data' => '/s_ad__3',
-                            'text' => '✏️',
-                        ],
-                        [
-                            'callback_data' => '/s_ad__2',
-                            'text' => '🗑',
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return string
-     */
-    public function action3()
-    {
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('2'),
-                [
-                    [
-                        [
-                            'callback_data' => '/s_ad__4',
-                            'text' => 'Название',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => 'Описание',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => 'Цена',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => 'Ключевые слова',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => 'Местонахождение',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad',
-                            'text' => 'Доставка',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => '/s_ad__2',
-                            'text' => '🔙',
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return string
-     */
-    public function action4()
-    {
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('1'),
-                [
-                    [
-                        [
-                            'callback_data' => '/s_ad__3',
-                            'text' => '🔙',
-                        ],
-                    ],
-                ]
-            )
-            ->build();
+                    ]
+                )
+                ->build();
+        }
     }
 }
