@@ -51,7 +51,7 @@ $this->title = 'Payment Method';
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Cyrrencies</h3>
+        <h3 class="card-title">Currencies</h3>
         <div class="card-tools">
             <?php echo LinkPager::widget([
                 'pagination' => $pages,
