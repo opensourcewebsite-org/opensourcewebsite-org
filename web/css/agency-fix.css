@@ -90,12 +90,12 @@ a:hover {
   }
 }
 
-#lang-menu{
+#lang-menu {
     overflow: auto;
     max-height: 200px;
 }
 
-.main-sidebar:hover{
+.main-sidebar:hover {
     width: 4.6rem !important;
 }
 
