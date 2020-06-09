@@ -17,7 +17,7 @@ use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\models\Currency;
 
-class PlaceAdController extends Controller
+class SAdOfferController extends Controller
 {
     public function actionIndex($adSection, $page = 1)
     {
@@ -61,7 +61,7 @@ class PlaceAdController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => AdsController::createRoute(),
+                'callback_data' => SAdController::createRoute(),
                 'text' => Emoji::BACK,
             ],
             [
@@ -86,7 +86,7 @@ class PlaceAdController extends Controller
     {
         $this->getState()->setName(self::createRoute('title-send'));
 
-        $this->getState()->setIntermediateField('placeAdSection', $adSection);
+        $this->getState()->setIntermediateField('adOfferSection', $adSection);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -361,6 +361,14 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('new-description-skip', [
+                                'adOfferId' => $adOfferId,
+                            ]),
+                            'text' => Yii::t('bot', 'No description'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
@@ -372,6 +380,18 @@ class PlaceAdController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionNewDescriptionSkip($adOfferId)
+    {
+        $adOffer = AdOffer::findOne($adOfferId);
+
+        $adOffer->setAttributes([
+            'description' => null,
+        ]);
+        $adOffer->save();
+
+        return $this->actionPost($adOfferId);
     }
 
     public function actionNewDescription($adOfferId)
@@ -399,6 +419,14 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('new-photo-skip', [
+                                'adOfferId' => $adOfferId,
+                            ]),
+                            'text' => Yii::t('bot', 'No photo'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
@@ -410,6 +438,15 @@ class PlaceAdController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionNewPhotoSkip($adOfferId)
+    {
+        $adOffer = AdOffer::findOne($adOfferId);
+
+        $adOffer->unlinkAll('photos', true);
+
+        return $this->actionPost($adOfferId);
     }
 
     public function actionNewPhoto($adOfferId)
@@ -719,6 +756,14 @@ class PlaceAdController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('new-radius-skip', [
+                                'adOfferId' => $adOfferId,
+                            ]),
+                            'text' => Yii::t('bot', 'No delivery'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
@@ -730,6 +775,18 @@ class PlaceAdController extends Controller
                 ]
             )
             ->build();
+    }
+
+    public function actionNewRadiusSkip($adOfferId)
+    {
+        $adOffer = AdOffer::findOne($adOfferId);
+
+        $adOffer->setAttributes([
+            'delivery_radius' => 0,
+        ]);
+        $adOffer->save();
+
+        return $this->actionPost($adOfferId);
     }
 
     public function actionNewRadius($adOfferId)
@@ -793,11 +850,11 @@ class PlaceAdController extends Controller
     public function actionTitleSend()
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
-            $this->getState()->setIntermediateField('placeAdTitle', $message->getText());
+            $this->getState()->setIntermediateField('adOfferTitle', $message->getText());
 
             return $this->actionTitle();
         } else {
-            return $this->actionAdd($this->getState()->getIntermediateField('placeAdSection'));
+            return $this->actionAdd($this->getState()->getIntermediateField('adOfferSection'));
         }
     }
 
@@ -812,7 +869,7 @@ class PlaceAdController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('add', [
-                                'adSection' => $this->getState()->getIntermediateField('placeAdSection'),
+                                'adSection' => $this->getState()->getIntermediateField('adOfferSection'),
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -844,7 +901,7 @@ class PlaceAdController extends Controller
                 return $this->actionTitle();
             }
 
-            $placeAdKeywords = [];
+            $adOfferKeywords = [];
             foreach ($keywords as $keyword) {
                 $adKeyword = AdKeyword::find()->where(['keyword' => $keyword])->one();
 
@@ -857,10 +914,10 @@ class PlaceAdController extends Controller
                     $adKeyword->save();
                 }
 
-                $placeAdKeywords[] = $adKeyword->id;
+                $adOfferKeywords[] = $adKeyword->id;
             }
 
-            $this->getState()->setIntermediateFieldArray('placeAdKeywords', $placeAdKeywords);
+            $this->getState()->setIntermediateFieldArray('adOfferKeywords', $adOfferKeywords);
         }
 
         $this->getState()->setName(self::createRoute('description'));
@@ -869,6 +926,12 @@ class PlaceAdController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('edit-description'),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('description-skip'),
+                            'text' => Yii::t('bot', 'Skip'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('title'),
@@ -898,12 +961,19 @@ class PlaceAdController extends Controller
         }
     }
 
+    public function actionDescriptionSkip()
+    {
+        $this->getState()->setIntermediateField('adOfferDescription', null);
+
+        return $this->actionDescription();
+    }
+
     public function actionDescription()
     {
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $description = $message->getText();
 
-            $this->getState()->setIntermediateField('placeAdDescription', $description);
+            $this->getState()->setIntermediateField('adOfferDescription', $description);
         }
 
         $this->getState()->setName(self::createRoute('photo-send'));
@@ -938,7 +1008,7 @@ class PlaceAdController extends Controller
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getPhoto()) {
             $photoFileId = $message->getPhoto()[0]->getFileId();
 
-            $this->getState()->setIntermdeiateField('placeAdPhotoFileId', $photoFileId);
+            $this->getState()->setIntermdeiateField('adOfferPhotoFileId', $photoFileId);
         }
 
         return $this->actionPhoto($page);
@@ -946,7 +1016,7 @@ class PlaceAdController extends Controller
 
     public function actionPhotoSkip($page = 1)
     {
-        $this->getState()->setIntermediateField('placeAdPhoto', null);
+        $this->getState()->setIntermediateField('adOfferPhoto', null);
 
         return $this->actionPhoto($page);
     }
@@ -954,6 +1024,15 @@ class PlaceAdController extends Controller
     public function actionPhoto($page = 1)
     {
         $this->getState()->setName(null);
+
+        $telegramUser = $this->getTelegramUser();
+        if ($telegramUser->user_id && User::findOne($telegramUser->user_id)) {
+            $user = User::findOne($telegramUser->user_id);
+
+            if ($user->currency_id !== null) {
+                return $this->actionCurrency($user->currency_id);
+            }
+        }
 
         $currencyQuery = Currency::find();
 
@@ -968,18 +1047,6 @@ class PlaceAdController extends Controller
         ]);
 
         $buttons = [];
-
-        $telegramUser = $this->getTelegramUser();
-        if ($telegramUser->user_id && User::findOne($telegramUser->user_id)) {
-            $user = User::findOne($telegramUser->user_id);
-
-            if ($user->currency_id !== null) {
-                $buttons[][] = [
-                    'callback_data' => self::createRoute('currency', ['currencyId' => $user->currency_id]),
-                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name . ' ·',
-                ];
-            }
-        }
 
         foreach ($currencyQuery
             ->offset($pagination->offset)
@@ -1017,7 +1084,7 @@ class PlaceAdController extends Controller
     public function actionCurrency($currencyId = null)
     {
         if ($currencyId) {
-            $this->getState()->setIntermediateField('placeAdCurrencyId', $currencyId);
+            $this->getState()->setIntermediateField('adOfferCurrencyId', $currencyId);
         }
 
         $this->getState()->setName(self::createRoute('price'));
@@ -1026,11 +1093,17 @@ class PlaceAdController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
                     'currencyCode' => Currency::findOne(
-                        $this->getState()->getIntermediateField('placeAdCurrencyId')
+                        $this->getState()->getIntermediateField('adOfferCurrencyId')
                     )
                     ->code,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('change-currency'),
+                            'text' => Yii::t('bot', 'Edit currency'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('description'),
@@ -1046,6 +1119,55 @@ class PlaceAdController extends Controller
             ->build();
     }
 
+    public function actionChangeCurrency($page = 1)
+    {
+        $currencyQuery = Currency::find();
+
+        $pagination = new Pagination([
+            'totalCount' => $currencyQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $buttons = [];
+
+        foreach ($currencyQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all() as $currency) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('currency', ['currencyId' => $currency->id]),
+                'text' => $currency->code . ' - ' . $currency->name,
+            ];
+        }
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('change-currency', ['page' => $page]);
+        });
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('currency'),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render('edit-currency'),
+                $buttons
+            )
+            ->build();
+    }
+
     public function actionPrice()
     {
         if ($message = $this->getUpdate()->getMessage()) {
@@ -1053,7 +1175,7 @@ class PlaceAdController extends Controller
                 return $this->actionCurrency();
             }
 
-            $this->getState()->setIntermediateField('placeAdPrice', $message->getText());
+            $this->getState()->setIntermediateField('adOfferPrice', $message->getText());
         }
 
         $this->getState()->setName(self::createRoute('location-send'));
@@ -1117,8 +1239,8 @@ class PlaceAdController extends Controller
         $message = $this->getUpdate()->getMessage();
 
         if ($latitude && $longitude) {
-            $this->getState()->setIntermediateField('placeAdLocationLatitude', strval($latitude));
-            $this->getState()->setIntermediateField('placeAdLocationLongitude', strval($longitude));
+            $this->getState()->setIntermediateField('adOfferLocationLatitude', strval($latitude));
+            $this->getState()->setIntermediateField('adOfferLocationLongitude', strval($longitude));
         }
 
         $this->getState()->setName(self::createRoute('radius-send'));
@@ -1150,7 +1272,7 @@ class PlaceAdController extends Controller
 
     public function actionRadiusSkip()
     {
-        $this->getState()->setIntermediateField('placeAdDeliveryRadius', '0');
+        $this->getState()->setIntermediateField('adOfferDeliveryRadius', '0');
 
         return $this->actionRadius();
     }
@@ -1163,7 +1285,7 @@ class PlaceAdController extends Controller
             }
 
             $radius = $message->getText();
-            $this->getState()->setIntermediateField('placeAdDeliveryRadius', $radius);
+            $this->getState()->setIntermediateField('adOfferDeliveryRadius', $radius);
 
             return $this->actionRadius();
         }
@@ -1181,14 +1303,14 @@ class PlaceAdController extends Controller
 
         $adOffer->setAttributes([
             'user_id' => $this->getTelegramUser()->id,
-            'title' => $state->getIntermediateField('placeAdTitle'),
-            'description' => $state->getIntermediateField('placeAdDescription'),
-            'currency_id' => $state->getIntermediateField('placeAdCurrencyId'),
-            'price' => $state->getIntermediateField('placeAdPrice'),
-            'delivery_radius' => doubleval($state->getIntermediateField('placeAdDeliveryRadius')),
-            'location_lat' => $state->getIntermediateField('placeAdLocationLatitude'),
-            'location_lon' => $state->getIntermediateField('placeAdLocationLongitude'),
-            'section' => intval($state->getIntermediateField('placeAdSection')),
+            'title' => $state->getIntermediateField('adOfferTitle'),
+            'description' => $state->getIntermediateField('adOfferDescription'),
+            'currency_id' => $state->getIntermediateField('adOfferCurrencyId'),
+            'price' => $state->getIntermediateField('adOfferPrice'),
+            'delivery_radius' => doubleval($state->getIntermediateField('adOfferDeliveryRadius')),
+            'location_lat' => $state->getIntermediateField('adOfferLocationLatitude'),
+            'location_lon' => $state->getIntermediateField('adOfferLocationLongitude'),
+            'section' => intval($state->getIntermediateField('adOfferSection')),
             'status' => AdOffer::STATUS_OFF,
             'created_at' => time(),
             'renewed_at' => time(),
@@ -1200,13 +1322,13 @@ class PlaceAdController extends Controller
         Yii::warning("SAVED: " . $saved);
 
 
-        foreach ($this->getState()->getIntermediateFieldArray('placeAdKeywords') as $adKeywordId) {
+        foreach ($this->getState()->getIntermediateFieldArray('adOfferKeywords') as $adKeywordId) {
             $adKeyword = AdKeyword::findOne($adKeywordId);
 
             $adOffer->link('keywords', $adKeyword);
         }
 
-        if ($photoFileId = $this->getState()->getIntermediateField('placeAdPhotoFileId')) {
+        if ($photoFileId = $this->getState()->getIntermediateField('adOfferPhotoFileId')) {
             $adPhoto = new AdPhoto();
 
             $adPhoto->setAttributes([
