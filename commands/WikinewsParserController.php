@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use Yii;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\WikinewsLanguage;
