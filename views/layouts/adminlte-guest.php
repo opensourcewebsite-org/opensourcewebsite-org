@@ -15,15 +15,6 @@ use yii\widgets\Breadcrumbs;
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 
-$this->registerCss('#lang-menu{
-    overflow: auto;
-    max-height: 200px;
-}');
-
-$this->registerCss('.main-sidebar:hover{
-    width: 4.6rem !important;
-}');
-
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
