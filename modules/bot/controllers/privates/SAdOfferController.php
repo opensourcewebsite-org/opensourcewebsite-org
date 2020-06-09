@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
@@ -17,6 +18,11 @@ use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\models\Currency;
 
+/**
+ * Class SAdOfferController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
 class SAdOfferController extends Controller
 {
     public function actionIndex($adSection, $page = 1)
@@ -103,10 +109,6 @@ class SAdOfferController extends Controller
                             'callback_data' => self::createRoute('index', ['adSection' => $adSection]),
                             'text' => Emoji::BACK,
                         ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
                     ],
                 ]
             )
@@ -119,7 +121,7 @@ class SAdOfferController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('post', [
+                $this->render('offer', [
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
@@ -137,14 +139,14 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-keywords', ['adOfferId' => $adOfferId]),
-                            'text' => Yii::t('bot', 'Keywords'),
+                            'callback_data' => self::createRoute('edit-description', ['adOfferId' => $adOfferId]),
+                            'text' => Yii::t('bot', 'Description'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-description', ['adOfferId' => $adOfferId]),
-                            'text' => Yii::t('bot', 'Description'),
+                            'callback_data' => self::createRoute('edit-keywords', ['adOfferId' => $adOfferId]),
+                            'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
@@ -233,7 +235,7 @@ class SAdOfferController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
-                $this->render('post', [
+                $this->render('offer', [
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
@@ -305,7 +307,7 @@ class SAdOfferController extends Controller
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('matched-ad-searches', [
+                $this->render('search-matches', [
                     'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
                     'adSearch' => $matchedAdSearch,
                     'user' => TelegramUser::findOne($matchedAdSearch->user_id),

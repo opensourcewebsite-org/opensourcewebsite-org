@@ -1,2 +1,1 @@
-<b><?= Yii::t('bot', 'Ads') ?></b><br/>
-<br/>
+<b><?= Yii::t('bot', 'Ads') ?></b>

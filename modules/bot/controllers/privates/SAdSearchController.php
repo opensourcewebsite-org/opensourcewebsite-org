@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
@@ -17,6 +18,11 @@ use app\modules\bot\models\User as TelegramUser;
 use app\models\User;
 use app\models\Currency;
 
+/**
+ * Class SAdSearchController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
 class SAdSearchController extends Controller
 {
     public function actionIndex($adSection, $page = 1)
@@ -115,10 +121,6 @@ class SAdSearchController extends Controller
                                 'adSection' => $this->getState()->getIntermediateField('adSearchSection'),
                             ]),
                             'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]
@@ -1269,7 +1271,7 @@ class SAdSearchController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
-                $this->render('ad-offer-matches', [
+                $this->render('offer-matches', [
                     'adOffer' => $adOffer,
                     'user' => TelegramUser::findOne($adOffer->user_id),
                     'currency' => Currency::findOne($adOffer->currency_id),

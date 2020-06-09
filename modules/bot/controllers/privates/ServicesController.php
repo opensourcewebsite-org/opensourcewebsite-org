@@ -2,15 +2,14 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class ServicesController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class ServicesController extends Controller
 {
@@ -25,8 +24,8 @@ class ServicesController extends Controller
                 [
                     [
                         [
-                            'callback_data' => SCeController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Currency Exchange'),
+                            'callback_data' => SAdController::createRoute(),
+                            'text' => Yii::t('bot', 'Ads'),
                         ],
                     ],
                     [
@@ -37,8 +36,8 @@ class ServicesController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => SAdController::createRoute(),
-                            'text' => Yii::t('bot', 'Ads'),
+                            'callback_data' => SCeController::createRoute(),
+                            'text' => '🏗 ' . Yii::t('bot', 'Currency Exchange'),
                         ],
                     ],
                     [

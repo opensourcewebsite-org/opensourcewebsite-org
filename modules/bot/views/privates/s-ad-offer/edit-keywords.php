@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Type keywords separated by comma, point or new line') ?>
+<?= Yii::t('bot', 'Send a keywords separated by comma, dot or new line') ?>

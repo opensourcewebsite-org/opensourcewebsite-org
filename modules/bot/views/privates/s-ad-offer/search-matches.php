@@ -1,14 +1,13 @@
-<b>🔍 <?= Yii::t('bot', $sectionName) ?></b><br/>
-<br/>
-<?= $adSearch->title ?><br/>
+<b>🔍 <?= Yii::t('bot', $sectionName) ?></b> - <b><?= $adSearch->title ?></b><br/>
 <br/>
 <?php if ($adSearch->description !== null) : ?>
-<b><?= Yii::t('bot', 'Description') ?>:</b> <?= $adSearch->description ?><br/>
+<?= $adSearch->description ?><br/>
+<br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>
-<b><?= Yii::t('bot', 'Keywords') ?>:</b> <?= $keywords ?><br/>
-<?php endif; ?>
+# <i><?= $keywords ?></i><br/>
 <br/>
+<?php endif; ?>
 <?php if ($user->provider_user_name) : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
 <?php else : ?>

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Type delivery radius, km') ?>
+<?= Yii::t('bot', 'Send delivery radius, km') ?>

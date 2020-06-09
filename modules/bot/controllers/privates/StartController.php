@@ -12,7 +12,7 @@ use TelegramBot\Api\BotApi;
 /**
  * Class StartController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class StartController extends Controller
 {

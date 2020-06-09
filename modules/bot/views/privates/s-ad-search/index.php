@@ -1,4 +1,4 @@
-🔍 <?= Yii::t('bot', $sectionName) ?>
+🔍 <b><?= Yii::t('bot', $sectionName) ?></b>
 <?php if ($inDevelopment) : ?>
- (<?= Yii::t('bot', 'in development') ?>)
+ <b>(<?= Yii::t('bot', 'in development') ?>)</b>
 <?php endif; ?>

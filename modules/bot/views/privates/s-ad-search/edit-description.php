@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Type description') ?>
+<?= Yii::t('bot', 'Send a description') ?>

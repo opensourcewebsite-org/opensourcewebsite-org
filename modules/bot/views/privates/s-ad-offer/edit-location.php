@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send ad location') ?>
+<?= Yii::t('bot', 'Send a location using app feature or type it') ?>

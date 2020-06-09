@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send photo') ?>
+<?= Yii::t('bot', 'Send a photo') ?>

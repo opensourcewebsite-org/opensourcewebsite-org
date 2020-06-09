@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Type title') ?>
+<?= Yii::t('bot', 'Send a title') ?>

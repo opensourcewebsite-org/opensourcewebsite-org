@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
@@ -7,6 +8,11 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\AdSection;
 
+/**
+ * Class SAdController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
 class SAdController extends Controller
 {
     public function actionIndex()

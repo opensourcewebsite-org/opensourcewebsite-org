@@ -2,15 +2,14 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class SDaController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class SDaController extends Controller
 {
@@ -27,6 +26,10 @@ class SDaController extends Controller
                         [
                             'callback_data' => ServicesController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => '📱',
                         ],
                     ],
                 ]

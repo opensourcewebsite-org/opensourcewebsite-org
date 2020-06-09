@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send max price of search ad') ?> (<?= $currencyCode ?>)
+<?= Yii::t('bot', 'Send a max price') ?> (<?= $currencyCode ?>)
