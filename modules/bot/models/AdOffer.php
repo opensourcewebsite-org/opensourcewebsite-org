@@ -62,10 +62,6 @@ class AdOffer extends ActiveRecord
     {
         $this->unlinkAll('matches', true);
 
-        if (!$this->isActive()) {
-            return;
-        }
-
         $adSearchQuery = AdSearch::find()
             ->where(['ad_search.status' => AdSearch::STATUS_ON])
             ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])

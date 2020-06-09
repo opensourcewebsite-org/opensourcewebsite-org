@@ -36,6 +36,8 @@ class AdMatchesController extends Controller implements CronChainedInterface
 
         $adSearchQuery = AdSearch::find()
             ->where(['processed_at' => null])
+            ->andWhere(['>=', 'renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere(['status' => AdSearch::STATUS_ON])
             ->joinWith('globalUser')
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
@@ -51,6 +53,8 @@ class AdMatchesController extends Controller implements CronChainedInterface
 
         $adOfferQuery = AdOffer::find()
             ->where(['processed_at' => null])
+            ->andWhere(['>=', 'renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->andWehre(['status' => AdOffer::STATUS_ON])
             ->joinWith('globalUser')
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
