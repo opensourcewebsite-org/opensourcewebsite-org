@@ -23,7 +23,6 @@ class DataController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['country', 'currency', 'language', 'payment-method', 'gender', 'sexuality'],
                 'rules' => [
                     [
                         'allow' => true,
