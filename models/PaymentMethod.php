@@ -53,7 +53,7 @@ class PaymentMethod extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getCurrency()
+    public function getCurrencies()
     {
         return $this->hasMany(Currency::className(), ['id' => 'currency_id'])
                 ->viaTable('payment_method_currency', ['payment_method_id' => 'id']);

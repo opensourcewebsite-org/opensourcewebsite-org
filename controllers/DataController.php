@@ -107,18 +107,18 @@ class DataController extends Controller
 
     public function actionPaymentMethodShow($id)
     {
-        $paymentMethod = PaymentMethod::findOne($id);
-        $currency = $paymentMethod->getCurrency();
-        $countQuery = clone $currency;
+        $model = PaymentMethod::findOne($id);
+        $currencies = $model->getCurrencies();
+        $countQuery = clone $currencies;
         $pages =  new Pagination(['totalCount' => $countQuery->count()]);
-        $models = $currency->offset($pages->offset)
+        $currencyModels = $currencies->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
 
-        return $this->render('payment-method-show', [
-            'models' => $models,
+        return $this->render('payment-method-view', [
+            'currencies' => $currencyModels,
             'pages' => $pages,
-            'paymentMethod' => $paymentMethod,
+            'model' => $model,
         ]);
     }
 
