@@ -603,36 +603,21 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getRank()
     {
-        $groupQueryResult = (new Query)
+        $subQuery = (new Query)
+           ->select([
+               'ROW_NUMBER() OVER(ORDER BY rating DESC, created_at ASC) `rank`',
+               'id',
+           ])
+           ->from(self::tableName());
+
+         $query = (new Query)
             ->select([
-                '`user`.id',
-                '`user`.rating',
+                'rank',
             ])
-            ->from(User::tableName())
-            ->orderBy(['rating' => SORT_DESC, 'created_at' => SORT_ASC])
-            ->all();
+            ->from(['ranks' => $subQuery])
+            ->where(['id' => $this->id]);
 
-        foreach ($groupQueryResult as $index => $row) {
-            if ($row['id'] == $this->id) {
-                $rank = $index + 1;
-            }
-        }
-
-        // TODO переделать на один запрос
-
-/*        $result = User::find()
-            ->orderBy(['rating' => SORT_DESC, 'created_at' => SORT_ASC])
-            ->all();
-
-        $groupQueryResult = (new Query)
-            ->select([
-                'ROW_NUMBER()',
-                '`user`.id',
-            ])
-            ->from(User::tableName())
-            ->orderBy(['rating' => SORT_DESC, 'created_at' => SORT_ASC])
-            ->all();
-*/
+        $rank = $query->scalar();
 
         return $rank ?: 0;
     }
