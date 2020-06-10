@@ -60,6 +60,14 @@ To request a new feature, submit a bug report, give us feedback, start a design 
 
 Please report all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
 
+## Partners
+
+This project is supported by:
+
+[DigitalOcean.com](https://m.do.co/c/4d16b1d56809), [Moqups.com](https://moqups.com).
+
+Please send any partnership offers to [partner@opensourcewebsite.org](mailto:partner@opensourcewebsite.org).
+
 ## License
 
 This project is open source and available freely under the [MIT license](LICENSE.md).
