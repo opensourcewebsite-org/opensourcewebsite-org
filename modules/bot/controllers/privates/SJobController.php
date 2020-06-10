@@ -2,15 +2,14 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class SJobController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class SJobController extends Controller
 {

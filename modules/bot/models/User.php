@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 
 use \yii\db\ActiveRecord;
 use app\models\Language;
+use models\User as GlobalUser;
 
 /**
  * This is the model class for table "bot_user".
@@ -150,6 +151,11 @@ class User extends ActiveRecord
     public function getLanguage()
     {
         return $this->hasOne(Language::class, [ 'id' => 'language_id' ]);
+    }
+
+    public function getGlobalUser()
+    {
+        return $this->hasOne(GlobalsUser::class, ['id' => 'user_id']);
     }
 
     public function updateInfo($updateUser)
