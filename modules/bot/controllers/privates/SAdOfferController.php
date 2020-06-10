@@ -908,15 +908,15 @@ class SAdOfferController extends Controller
 
     public function actionTitle()
     {
-        $this->getState()->setName(self::createRoute('keywords'));
+        $this->getState()->setName(self::createRoute('description'));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('edit-keywords'),
+                $this->render('edit-description'),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('keywords-skip'),
+                            'callback_data' => self::createRoute('description-skip'),
                             'text' => Yii::t('bot', 'Skip'),
                         ],
                     ],
@@ -959,7 +959,7 @@ class SAdOfferController extends Controller
             $keywords = self::parseKeywords($message->getText());
 
             if (empty($keywords)) {
-                return $this->actionTitle();
+                return $this->actionDescription();
             }
 
             $adOfferKeywords = [];
@@ -981,21 +981,21 @@ class SAdOfferController extends Controller
             $this->getState()->setIntermediateFieldArray('adOfferKeywords', $adOfferKeywords);
         }
 
-        $this->getState()->setName(self::createRoute('description'));
+        $this->getState()->setName(self::createRoute('photo-send'));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('edit-description'),
+                $this->render('edit-photo'),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('description-skip'),
+                            'callback_data' => self::createRoute('photo-skip'),
                             'text' => Yii::t('bot', 'Skip'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('title'),
+                            'callback_data' => self::createRoute('description'),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1037,21 +1037,21 @@ class SAdOfferController extends Controller
             $this->getState()->setIntermediateField('adOfferDescription', $description);
         }
 
-        $this->getState()->setName(self::createRoute('photo-send'));
+        $this->getState()->setName(self::createRoute('keywords'));
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('edit-photo'),
+                $this->render('edit-keywords'),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('photo-skip'),
+                            'callback_data' => self::createRoute('keywords-skip'),
                             'text' => Yii::t('bot', 'Skip'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('keywords'),
+                            'callback_data' => self::createRoute('title'),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1069,7 +1069,7 @@ class SAdOfferController extends Controller
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getPhoto()) {
             $photoFileId = $message->getPhoto()[0]->getFileId();
 
-            $this->getState()->setIntermdeiateField('adOfferPhotoFileId', $photoFileId);
+            $this->getState()->setIntermediateField('adOfferPhotoFileId', $photoFileId);
         }
 
         return $this->actionPhoto($page);
