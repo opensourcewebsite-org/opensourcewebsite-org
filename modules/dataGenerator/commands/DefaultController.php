@@ -18,6 +18,11 @@ class DefaultController extends FixtureController
     use ControllerLogTrait;
 
     /**
+     * @var null|int count of models to generate. Default - continuous.
+     */
+    public $limit;
+
+    /**
      * @var int seconds between model generation
      */
     public $interval       = 2;
@@ -30,6 +35,7 @@ class DefaultController extends FixtureController
         $res = $this->optionsAppendLog(parent::options($actionID));
         if ($actionID === 'load') {
             $res[] = 'interval';
+            $res[] = 'limit';
         }
         return $res;
     }
@@ -84,13 +90,17 @@ class DefaultController extends FixtureController
             $this->output("\n[PROCESS] Loading fixtures:", [Console::FG_YELLOW, Console::BOLD]);
         }
 
-
-        while(true) {
+        $while = $this->limit ?: true;
+        while ($while) {
             /** @var ARGenerator $fixtureRand */
             $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);
             $this->stdout($fixtureRand::classNameModel() . PHP_EOL);
             parent::loadFixtures([$fixtureRand]);
             sleep($this->interval);
+
+            if (is_numeric($while)) {
+                --$while;
+            }
         }
     }
 
