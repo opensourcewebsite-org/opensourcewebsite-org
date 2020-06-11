@@ -1,7 +1,7 @@
 💰 <b><?= $sectionName ?></b> - <b><?= $adOffer->title ?></b><br/>
 <br/>
 <?php if ($adOffer->description !== null) : ?>
-<?= $adOffer->description ?><br/>
+<?= nl2br($adOffer->description); ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>
