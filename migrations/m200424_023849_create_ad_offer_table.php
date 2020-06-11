@@ -51,9 +51,9 @@ class m200424_023849_create_ad_offer_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ad_offer_currency_id-currency_id');
+        $this->dropForeignKey('fk-ad_offer_currency_id-currency_id', '{{%ad_offer}}');
 
-        $this->dropForeignKey('fk-ad_offer_user_id-bot_user_id');
+        $this->dropForeignKey('fk-ad_offer_user_id-bot_user_id', '{{%ad_offer}}');
 
         $this->dropTable('{{%ad_offer}}');
     }
