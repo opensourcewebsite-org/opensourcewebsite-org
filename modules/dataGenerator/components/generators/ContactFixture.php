@@ -99,8 +99,8 @@ class ContactFixture extends ARGenerator
 
         foreach ($model->activeValidators as $validator) {
             if (
-               in_array('debt_redistribution_priority', $validator->attributes, true) &&
-               $validator instanceof NumberValidator
+                in_array('debt_redistribution_priority', $validator->attributes, true) &&
+                $validator instanceof NumberValidator
             ) {
                 $min = $validator->min;
                 $max = $validator->max;

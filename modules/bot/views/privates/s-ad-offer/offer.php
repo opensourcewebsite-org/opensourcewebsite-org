@@ -1,0 +1,23 @@
+💰 <b><?= $sectionName ?></b> - <b><?= $adOffer->title ?></b><br/>
+<br/>
+<?php if ($adOffer->description !== null) : ?>
+<?= $adOffer->description ?><br/>
+<br/>
+<?php endif; ?>
+<?php if ($keywords != '') : ?>
+# <i><?= $keywords ?></i><br/>
+<br/>
+<?php endif; ?>
+<?php if (isset($adOffer->price) && isset($currency)) : ?>
+<b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOffer->price ?> <?= $currency->code ?><br/>
+<br/>
+<?php endif; ?>
+<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $adOffer->location_lat ?> <?= $adOffer->location_lon ?></a><br/>
+<br/>
+<?php if ($adOffer->delivery_radius > 0) : ?>
+<b><?= Yii::t('bot', 'Delivery radius') ?>:</b> <?= $adOffer->delivery_radius ?> <?= Yii::t('bot', 'km') ?><br/>
+<br/>
+<?php endif; ?>
+<?php if ($adOffer->isActive() && $showDetailedInfo) : ?>
+<i><?= Yii::t('bot', 'This ad is active for {0,number} more days', $liveDays) ?>. <?= Yii::t('bot', 'Visit this page again before this term to automatically renew this') ?>.</i>
+<?php endif; ?>

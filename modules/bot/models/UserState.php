@@ -25,12 +25,22 @@ class UserState
         $this->fields['name'] = $value;
     }
 
-    public function getIntermediateField(string $name, $defaultValue)
+    public function getIntermediateField(string $name, $defaultValue = null)
     {
         return $this->fields['intermediate'][$name] ?? $defaultValue;
     }
 
     public function setIntermediateField(string $name, ?string $value)
+    {
+        $this->fields['intermediate'][$name] = $value;
+    }
+
+    public function getIntermediateFieldArray(string $name, $defaultValue = null)
+    {
+        return $this->fields['intermediate'][$name] ?? $defaultValue;
+    }
+
+    public function setIntermediateFieldArray(string $name, ?array $value)
     {
         $this->fields['intermediate'][$name] = $value;
     }
