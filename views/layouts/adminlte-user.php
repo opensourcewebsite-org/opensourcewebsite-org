@@ -118,7 +118,7 @@ if (!empty($languages)) {
             'items' => $menuItemsLeft,
             'activateParents' => true,
         ]); ?>
-        
+
         <div class="dropdown dropdown-inner ml-auto">
             <a class="nav-link dropdown-toggle dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <?= strtoupper(Yii::$app->language) ?>
@@ -163,15 +163,112 @@ if (!empty($languages)) {
 <?php
 $leftMenuItems = [
     [
-        'title' => 'Data',
-        'icon' => 'fas fa-database',
+        'title' => 'SERVICES',
+        'icon' => 'fas fa-cloud',
+    ],
+    [
+        'title' => 'Contacts',
+        'icon' => 'far fa-circle',
+        'url' => 'contact',
+        'route' => '/contact',
+    ],
+    [
+        'title' => 'Debts',
+        'icon' => 'far fa-circle',
+        'url' => 'debt',
+        'route' => '/debt',
+    ],
+    [
+        'title' => 'Support groups',
+        'icon' => 'far fa-circle',
+        'url' => 'support-groups',
+        'route' => '/support-groups',
+    ],
+    [
+        'title' => 'Wikipedia watchlists',
+        'icon' => 'far fa-circle',
+        'url' => 'wikipedia-pages',
+        'route' => '/wikipedia-pages/index',
+    ],
+    [
+        'title' => 'Wikinews pages',
+        'icon' => 'far fa-circle',
+        'url' => 'wikinews-pages',
+        'route' => '/wikinews-pages/index',
+    ],
+    [
+        'title' => 'COMMUNITY',
+        'icon' => 'fas fa-users',
+    ],
+    [
+        'title' => 'Website settings',
+        'icon' => 'far fa-circle',
+        'url' => 'website-settings',
+        'route' => '/setting/index',
+    ],
+    [
+        'title' => 'Issues',
+        'icon' => 'far fa-circle',
+        'url' => 'issue',
+        'route' => '/issue',
+    ],
+    [
+        'title' => 'METRICS',
+        'icon' => 'far fa-chart-bar',
+    ],
+    [
+        'title' => 'Users',
+        'icon' => 'far fa-circle',
+        'url' => 'user/display',
+        'route' => '/user/display',
+    ],
+    [
+        'title' => 'SYSTEM REPORTS',
+        'icon' => 'far fa-list-alt',
+    ],
+    [
+        'title' => 'Cron Log',
+        'icon' => 'far fa-circle',
+        'url' => 'cron-job',
+        'route' => '/cron-job/index',
+    ],
+    [
+        'title' => 'PHP Info',
+        'icon' => 'far fa-circle',
+        'url' => 'examples/php-info',
+        'route' => '/examples/php-info',
+    ],
+    [
+        'title' => 'MySQL Info',
+        'icon' => 'far fa-circle',
+        'url' => 'examples/mysql-info',
+        'route' => '/examples/mysql-info',
+    ],
+    [
+        'title' => 'CONTRIBUTION',
+        'icon' => 'fas fa-tools',
+    ],
+    [
+        'title' => 'Getting started',
+        'icon' => 'far fa-circle',
+        'href' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+    ],
+    [
+        'title' => 'Moqups',
+        'icon' => 'far fa-circle',
+        'url' => 'moqup/design-list',
+        'route' => '/moqup/design-list',
+    ],
+    [
+        'title' => 'Models',
+        'icon' => 'far fa-circle',
         'urls' => [
             'data/country',
             'data/currency',
             'data/language',
             'data/payment-method',
             'data/gender',
-            'data/sexuality'
+            'data/sexuality',
         ],
         'items' => [
             [
@@ -219,68 +316,8 @@ $leftMenuItems = [
         ],
     ],
     [
-        'title' => 'Issues',
-        'icon' => 'fa fa-edit',
-        'url' => 'issue',
-        'route' => '/issue',
-    ],
-    [
-        'title' => 'Website settings',
-        'icon' => 'fa fa-microchip',
-        'url' => 'website-settings',
-        'route' => '/setting/index',
-    ],
-    [
-        'title' => 'Moqups',
-        'icon' => 'fa fa-edit',
-        'url' => 'moqup/design-list',
-        'route' => '/moqup/design-list',
-    ],
-    [
-        'title' => 'Users',
-        'icon' => 'fa fa-users',
-        'url' => 'user/display',
-        'route' => '/user/display',
-    ],
-    [
-        'title' => 'Wikipedia Watchlists',
-        'icon' => 'fa fa-book',
-        'url' => 'wikipedia-pages',
-        'route' => '/wikipedia-pages/index',
-    ],
-    [
-        'title' => 'Wikinews pages',
-        'icon' => 'fa fa-book',
-        'url' => 'wikinews-pages',
-        'route' => '/wikinews-pages/index',
-    ],
-    [
-        'title' => 'Cron Job Log',
-        'icon' => 'far fa-list-alt',
-        'url' => 'cron-job',
-        'route' => '/cron-job/index',
-    ],
-    [
-        'title' => 'Support groups',
-        'icon' => 'fa fa-users',
-        'url' => 'support-groups',
-        'route' => '/support-groups',
-    ],
-    [
-        'title' => 'Contacts',
-        'icon' => 'fa fa-address-card',
-        'url' => 'contact',
-        'route' => '/contact',
-    ],
-    [
-        'title' => 'Debts',
-        'icon' => 'fa fa-credit-card',
-        'url' => 'debt',
-        'route' => '/debt',
-    ],
-    [
-        'title' => 'Examples',
-        'icon' => 'fas fa-layer-group',
+        'title' => 'Design System',
+        'icon' => 'far fa-circle',
         'urls' => [
             'examples/dashboard',
             'examples/widgets',
@@ -290,14 +327,14 @@ $leftMenuItems = [
             'examples/tables',
             'examples/calendar',
             'examples/gallery',
-            'examples/php-info',
-            'examples/mysql-info',
         ],
         'items' => [
             [
                 'title' => 'Dashboard',
                 'icon' => 'far fa-circle',
-                'urls' => ['examples/dashboard'],
+                'urls' => [
+                    'examples/dashboard',
+                ],
                 'items' => [
                     [
                         'title' => 'Dashboard 1',
@@ -328,7 +365,9 @@ $leftMenuItems = [
             [
                 'title' => 'Charts',
                 'icon' => 'far fa-circle',
-                'urls' => ['examples/charts'],
+                'urls' => [
+                    'examples/charts',
+                ],
                 'items' => [
                     [
                         'title' => 'ChartJS',
@@ -353,7 +392,9 @@ $leftMenuItems = [
             [
                 'title' => 'UI Elements',
                 'icon' => 'far fa-circle',
-                'urls' => ['examples/ui-elements'],
+                'urls' => [
+                    'examples/ui-elements',
+                ],
                 'items' => [
                     [
                         'title' => 'General',
@@ -467,19 +508,16 @@ $leftMenuItems = [
                 'url' => 'examples/gallery',
                 'route' => '/examples/gallery',
             ],
-            [
-                'title' => 'PHP Info',
-                'icon' => 'far fa-circle',
-                'url' => 'examples/php-info',
-                'route' => '/examples/php-info',
-            ],
-            [
-                'title' => 'MySQL Info',
-                'icon' => 'far fa-circle',
-                'url' => 'examples/mysql-info',
-                'route' => '/examples/mysql-info',
-            ],
         ],
+    ],
+    [
+        'title' => 'DONATION',
+        'icon' => 'fas fa-donate',
+    ],
+    [
+        'title' => 'Getting started',
+        'icon' => 'far fa-circle',
+        'href' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
     ],
 ];
 ?>
@@ -515,7 +553,7 @@ $leftMenuItems = [
                                                 </li>
                                             <?php else : ?>
                                             <li class="nav-item">
-                                                <a href="<?= Yii::$app->urlManager->createUrl([$subItem['url']]) ?>" class="nav-link <?= (Yii::$app->request->getUrl() == $subItem['route']) ? 'active' : '' ?>">
+                                                <a href="<?= $subItem['href'] ?? Yii::$app->urlManager->createUrl([$subItem['url']]) ?>" class="nav-link <?= (isset($subItem['route']) && (Yii::$app->request->getUrl() == $subItem['route'])) ? 'active' : '' ?>">
                                                     <i class="nav-icon <?= $subItem['icon'] ?>"></i>
                                                     <p><?= $subItem['title'] ?></p>
                                                 </a>
@@ -524,13 +562,15 @@ $leftMenuItems = [
                                         <?php endforeach; ?>
                                     </ul>
                                 </li>
-                            <?php else : ?>
-                                <li class="nav-item has-treeview  <?= (Yii::$app->request->getUrl() == $item['route']) ? 'menu-open' : '' ?>">
-                                    <a href="<?= Yii::$app->urlManager->createUrl([$item['url']]) ?>" class="nav-link <?= (Yii::$app->request->getUrl() == $item['route']) ? 'active' : '' ?>">
+                            <?php elseif (isset($item['url']) || isset($item['href'])) : ?>
+                                <li class="nav-item has-treeview  <?= (isset($item['route']) && Yii::$app->request->getUrl() == $item['route']) ? 'menu-open' : '' ?>">
+                                    <a href="<?= $item['href'] ?? Yii::$app->urlManager->createUrl([$item['url']]) ?>" class="nav-link <?= (isset($item['route']) && (Yii::$app->request->getUrl() == $item['route'])) ? 'active' : '' ?>">
                                         <i class="nav-icon <?= $item['icon'] ?>"></i>
                                         <p><?= $item['title'] ?></p>
                                     </a>
                                 </li>
+                            <?php else: ?>
+                                <li class="nav-header"><i class="<?= $item['icon'] ?>"></i> <?= $item['title'] ?></li>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>

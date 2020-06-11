@@ -1,7 +1,7 @@
 🔍 <b><?= $sectionName ?></b> - <b><?= $adSearch->title ?></b><br/>
 <br/>
 <?php if ($adSearch->description !== null) : ?>
-<?= $adSearch->description ?><br/>
+<?= nl2br($adSearch->description); ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>
