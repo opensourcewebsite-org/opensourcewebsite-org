@@ -20,7 +20,7 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         return $this->getResponseBuilder()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('/menu/index')
             )
             ->build();
@@ -32,7 +32,7 @@ class DefaultController extends Controller
     public function actionCommandNotFound()
     {
         return $this->getResponseBuilder()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('command-not-found'),
                 [
                     [

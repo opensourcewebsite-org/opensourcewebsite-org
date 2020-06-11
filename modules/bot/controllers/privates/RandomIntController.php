@@ -21,7 +21,7 @@ class RandomIntController extends Controller
         $randomInt = random_int(1, 10);
 
         return $this->getResponseBuilder()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 new MessageText($randomInt)
             )
             ->build();

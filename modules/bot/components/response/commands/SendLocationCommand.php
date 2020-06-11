@@ -29,6 +29,7 @@ class SendLocationCommand extends Command
                 $this->getOptionalProperty('disableNotification', false),
                 $this->getOptionalProperty('livePeriod', null)
             );
+            $this->setMessageId($answer->getMessageId());
         } catch (HttpException $e) {
             Yii::warning($e);
         }

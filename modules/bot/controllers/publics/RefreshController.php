@@ -71,15 +71,15 @@ class RefreshController extends Controller
             }
         }
 
+        $response = $this->getResponseBuilder()
+                ->deleteMessage();
+
         if (!$currentUserIsAdministrator) {
-            $this->getState()->setName(self::createRoute('index'));
-            return [];
+            $response->editMessageTextOrSendMessage(
+                $this->render('index')
+            );
         }
 
-        return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('index')
-                )
-                ->build();
+        return $response->build();
     }
 }
