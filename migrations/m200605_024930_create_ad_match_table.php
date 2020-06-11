@@ -41,9 +41,9 @@ class m200605_024930_create_ad_match_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ad_match_ad_search_id-ad_search_id');
+        $this->dropForeignKey('fk-ad_match_ad_search_id-ad_search_id', '{{%ad_match}}');
 
-        $this->dropForeignKey('fk-ad_match_ad_offer_id-ad_offer_id');
+        $this->dropForeignKey('fk-ad_match_ad_offer_id-ad_offer_id', '{{%ad_match}}');
 
         $this->dropTable('{{%ad_match}}');
     }
