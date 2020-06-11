@@ -315,9 +315,8 @@ class Module extends \yii\base\Module
                 foreach ($commands as $command) {
                     try {
                         $command->send($this->botApi);
-
-                        // в персональном чате сохраняем запомним id сообещния
-                        // для сохранений в userState чтобы в следующий раз
+                        // в персональном чате запомним id сообещния
+                        // для сохранения в userState чтобы в следующий раз
                         // можно было удалить их все
                         if ($this->telegramChat->isPrivate()) {
                             if ($messageId = $command->getMessageId()) {

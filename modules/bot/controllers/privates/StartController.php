@@ -98,10 +98,8 @@ class StartController extends Controller
         }
 
         if (isset($language)) {
-            #$this->DeleteLastMessage($chatId, $messageId);
             return $this->actionSave($language->code);
         } else {
-            #$this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex();
         }
     }
@@ -123,13 +121,5 @@ class StartController extends Controller
             return $this->actionIndex();
         }
         return $this->actionIndex();
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }
