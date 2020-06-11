@@ -19,6 +19,8 @@ class MyLocationController extends Controller
     {
         $telegramUser = $this->getTelegramUser();
 
+        $this->getState()->setName(self::createRoute('update'));
+        
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
             return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(

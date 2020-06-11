@@ -17,6 +17,7 @@ return [
             'commandResolvers' => [
                 new MessageCommandResolver(),
                 new CallbackQueryCommandResolver(),
+                // new LocationCommandResolver(),
             ],
         ],
     ],
