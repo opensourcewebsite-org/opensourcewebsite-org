@@ -97,14 +97,11 @@ class StartController extends Controller
                 ->one();
         }
 
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
         if (isset($language)) {
-            $this->DeleteLastMessage($chatId, $messageId);
+            #$this->DeleteLastMessage($chatId, $messageId);
             return $this->actionSave($language->code);
         } else {
-            $this->DeleteLastMessage($chatId, $messageId);
+            #$this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex();
         }
     }

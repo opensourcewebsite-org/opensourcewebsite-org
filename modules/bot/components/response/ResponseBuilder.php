@@ -9,6 +9,7 @@ use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\ReplaceMessageTextCommand;
 use app\modules\bot\components\response\commands\SendLocationCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\response\commands\SendPhotoCommand;
@@ -54,7 +55,6 @@ class ResponseBuilder
         array $optionalParams = []
     ) {
         $commands = [];
-
         if (!$this->update->getCallbackQuery() || $this->update->getCallbackQuery()->getMessage()->getPhoto() === null) {
             if ($callbackQuery = $this->update->getCallbackQuery()) {
                 $this->answerCallbackQuery();
@@ -145,20 +145,26 @@ class ResponseBuilder
                 $callbackQuery->getMessage()->getChat()->getId(),
                 $photo,
                 $messageText,
-                [
-                    'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
-                    'disablePreview' => $disablePreview,
-                ]
+                $this->collectEditMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
             );
-        } elseif ($message = $this->update->getMessage()) {
-            $commands[] = new SendPhotoCommand(
-                $message->getChat()->getId(),
-                $photo,
+        } elseif (($messageIds = $this->update->getPrivateMessageIds())
+            && ($chatId = $this->update->getPrivateMessageChatId())) {
+            foreach ($messageIds as $messageId) {
+                $commands[] = new DeleteMessageCommand(
+                    $chatId,
+                    $messageId
+                );
+            }
+            $commands[] = new SendMessageCommand(
+                $chatId,
                 $messageText,
-                [
-                    'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
-                    'disablePreview' => $disablePreview,
-                ]
+                $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+            );
+        } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
+            $commands[] = new SendMessageCommand(
+                $message->getChat()->getId(),
+                $messageText,
+                $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
             );
         }
 
@@ -166,6 +172,64 @@ class ResponseBuilder
             $this->commands = array_merge($this->commands, $commands);
         }
         return $this;
+    }
+
+    /**
+     * filter params and create array of optional params  for edit message api
+     * command
+     *
+     * @param  array $replyMarkup
+     * @param  bool              $disablePreview
+     * @param  array                $optionalParams
+     * @return array
+     */
+    private function collectEditMessageOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams):array
+    {
+        return $this->filterAndMergeOptionalParams(
+            $replyMarkup,
+            $disablePreview,
+            $optionalParams,
+            ['inlineMessageId']
+        );
+    }
+
+    /**
+     * filter params and create array of optional params  for send message api
+     * command
+     *
+     * @param  array $replyMarkup
+     * @param  bool              $disablePreview
+     * @param  array                $optionalParams
+     * @return array
+     */
+    private function collectSendMessageOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams):array
+    {
+        return $this->filterAndMergeOptionalParams(
+            $replyMarkup,
+            $disablePreview,
+            $optionalParams,
+            ['replyToMessageId','disableNotification','parseMode']
+        );
+    }
+
+    /**
+     *
+     * @param  array $replyMarkup
+     * @param  bool              $disablePreview
+     * @param  array                $optionalParams
+     * @param  array                $optionalParamsFilter
+     * @return array
+     */
+    private function filterAndMergeOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams, array $optionalParamsFilter):array
+    {
+        $optionalParams = ArrayHelper::merge(
+            [
+                'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+                'disablePreview' => $disablePreview,
+            ],
+            ArrayHelper::filter($optionalParams, $optionalParamsFilter)
+        );
+        return $optionalParams;
     }
 
     /**
