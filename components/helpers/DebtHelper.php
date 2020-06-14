@@ -10,30 +10,25 @@ use yii\base\Component;
 class DebtHelper extends Component
 {
     /**
-     * @param $depositPending Pending deposit
-     * @param $depositConfirmed Confirmed deposit
+     * @param string $amountPending Pending deposit
+     * @param string $amountConfirmed Confirmed deposit
      */
-    public static function getDepositAmount($depositPending, $depositConfirmed)
+    public static function renderAmount($amountPending, $amountConfirmed)
     {
-        $amount = $depositConfirmed;
-        if (!empty($depositPending)) {
-            $amount = $depositConfirmed . ' (' . $depositPending . ')';
+        $amount = $amountConfirmed;
+        if ($amountPending) {
+            $amount = $amountConfirmed . ' (' . $amountPending . ')';
         }
 
         return $amount;
     }
 
-    /**
-     * @param $creditPending Pending credit
-     * @param $creditConfirmed Confirmed credit
-     */
-    public static function getCreditAmount($creditPending, $creditConfirmed)
+    public static function getFloatScale(): int
     {
-        $amount = $creditConfirmed;
-        if (!empty($creditPending)) {
-            $amount = $creditConfirmed . ' (' . $creditPending . ')';
-        }
-
-        return $amount;
+        return max(
+            Debt::getAttributeFloatScale('amount'),
+            DebtBalance::getAttributeFloatScale('amount'),
+            DebtRedistribution::getAttributeFloatScale('max_amount')
+        );
     }
 }
