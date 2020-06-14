@@ -3,6 +3,7 @@
 namespace Helper\debt\redistribution;
 
 use app\components\debt\BalanceChecker;
+use app\components\debt\Redistribution;
 use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Contact;
@@ -22,6 +23,19 @@ use FunctionalTester;
  */
 class Common
 {
+    public const CHAIN_TARGET = 'target';
+    public const CHAIN_1 = 'chain1';
+    public const CHAIN_2 = 'chain2';
+
+    private const DEBT_FIXTURE_MAP = [
+        self::CHAIN_TARGET => "It's balance should be redistributed",
+        self::CHAIN_1 => "It's balance belongs to: Chain Priority #1. Member: 1st",
+        self::CHAIN_2 => "It's balance belongs to: Chain Priority #2. Member: LAST",
+    ];
+
+    /** @var DebtBalance[] */
+    public $balanceBefore = [];
+
     // fixture data located in tests/_data/*.php
     private function fixtures()
     {
@@ -52,6 +66,10 @@ class Common
     {
         $I->haveFixtures($this->fixtures());
         DebtBalance::getDb()->createCommand('UPDATE debt_balance SET processed_at = NULL;')->execute();
+
+        foreach (self::DEBT_FIXTURE_MAP as $key => $indexFixture) {
+            $this->balanceBefore[$key] = $this->findDebtBalanceByFixture($I, $indexFixture);
+        }
     }
 
     /**
@@ -109,5 +127,58 @@ class Common
     {
         $debtBalance = $this->getFixtureDebt($I, $indexDebt)->getDebtBalance();
         return $debtBalance->refresh() ? clone $debtBalance : null;
+    }
+
+    /**
+     * @throws \Throwable
+     * @throws \yii\db\Exception
+     */
+    public function testDefault(FunctionalTester $I, int $expectCountOfDebtGroups = 1): void
+    {
+        (new Redistribution())->run();
+
+        if (0 === $expectCountOfDebtGroups) {
+            $this->expectBalanceNotChangedByKey($I, self::CHAIN_TARGET);
+        } else {
+            $balanceTarget = $this->findDebtBalanceByFixture($I, "It's balance should be redistributed");
+            $this->expectDebtBalanceBecomeZero($balanceTarget);
+        }
+
+        $this->expectCountOfDebtGroups($expectCountOfDebtGroups);
+    }
+
+    public function expectBalanceNotChanged(DebtBalance $balanceBefore, ?DebtBalance $balanceNow, $chainKey): void
+    {
+        expect("DebtBalance still exist. Chain: {{ $chainKey }}", $balanceNow)->notEmpty();
+
+        $scale = DebtHelper::getFloatScale();
+        /** @noinspection NullPointerExceptionInspection */
+        $isEqual = Number::isFloatEqual($balanceBefore->amount, $balanceNow->amount, $scale);
+
+        expect("DebtBalance was NOT redistributed. And was not changed. Chain: {{ $chainKey }}", $isEqual)->true();
+    }
+
+    public function expectBalanceNotChangedByKey(FunctionalTester $I, string $chainKey): void
+    {
+        $balance = $this->findDebtBalanceByFixture($I, self::DEBT_FIXTURE_MAP[$chainKey]);
+        $this->expectBalanceNotChanged($this->balanceBefore[$chainKey], $balance, $chainKey);
+    }
+
+    public function expectBalanceChanged(?DebtBalance $balance, $amountWas, $amountToAdd, string $chainInfo): void
+    {
+        expect("DebtBalance still exist. Chain: {{ $chainInfo }}", $balance)->notEmpty();
+
+        $scale = DebtHelper::getFloatScale();
+        $expectBalance = Number::floatAdd($amountWas, $amountToAdd, $scale);
+        /** @noinspection NullPointerExceptionInspection */
+        $isEqual = Number::isFloatEqual($expectBalance, $balance->amount, $scale);
+
+        expect("DebtBalance was NOT redistributed. It was added {{ $amountToAdd }}. Chain: {{ $chainInfo }}", $isEqual)->true();
+    }
+
+    public function expectBalanceChangedByKey(FunctionalTester $I, string $chainKey, $amountToAdd): void
+    {
+        $balance = $this->findDebtBalanceByFixture($I, self::DEBT_FIXTURE_MAP[$chainKey]);
+        $this->expectBalanceChanged($balance, $this->balanceBefore[$chainKey]->amount, $amountToAdd, $chainKey);
     }
 }
