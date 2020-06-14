@@ -289,18 +289,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         // Else: leave `processed_at` as is.
     }
 
-    /**
-     * Is Direction of Debt (Credit|Deposit) is equals the Direction of DebtBalance
-     *
-     * @param Debt $debt
-     *
-     * @return bool
-     */
-    public function isSameDirection(Debt $debt): bool
-    {
-        return ($this->from_user_id == $debt->from_user_id) && ($this->to_user_id == $debt->to_user_id);
-    }
-
     private static function factory(Debt $debt): self
     {
         $model = new self;
@@ -316,7 +304,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     private function changeAmount(Debt $debt): void
     {
         $scale = DebtHelper::getFloatScale();
-        $amountAdd = $this->isSameDirection($debt) ? $debt->amount : -$debt->amount;
+        $amountAdd = $debt->isDebtBalanceHasSameDirection($this) ? $debt->amount : -$debt->amount;
         $newAmount = Number::floatAdd($this->amount, $amountAdd, $scale);
 
         if ($newAmount < 0) {

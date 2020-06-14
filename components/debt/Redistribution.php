@@ -211,7 +211,7 @@ class Redistribution extends Component
             // More convenient to use exactly $debtBalance to generate First Debt
             array_shift($contacts);
             $debtRedistributions = ArrayHelper::getColumn($contacts, 'debtRedistributionByDebtorCustom');
-            $debtBalances = ArrayHelper::getColumn($debtRedistributions, 'debtBalanceToOwner');
+            $debtBalances = ArrayHelper::getColumn($debtRedistributions, 'debtBalanceDirectionBack');
             $debtBalances = array_filter($debtBalances, static function ($item) { return (bool)$item; });
 
             try {

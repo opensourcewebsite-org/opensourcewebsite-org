@@ -10,6 +10,7 @@ use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtQuery;
 use app\models\traits\FloatAttributeTrait;
+use app\models\traits\RelationToDebtBalanceTrait;
 use Yii;
 use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
@@ -41,6 +42,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
 {
     use ByDebtTrait;
     use FloatAttributeTrait;
+    use RelationToDebtBalanceTrait;
 
     public const STATUS_PENDING = 0;
     public const STATUS_CONFIRM = 1;
@@ -144,33 +146,13 @@ class Debt extends ActiveRecord implements ByDebtInterface
     /**
      * @return \yii\db\ActiveQuery|DebtBalanceQuery
      */
-    public function debtBalanceDirectionBack()
+    public function getDebtBalanceDirectionBack()
     {
         return $this->hasOne(DebtBalance::className(), [
             'currency_id' => 'currency_id',
             'from_user_id' => 'to_user_id',
             'to_user_id' => 'from_user_id',
         ]);
-    }
-
-    public function getDebtBalance(): DebtBalance
-    {
-        return $this->debtBalanceDirectionSame ?: $this->debtBalanceDirectionBack;
-    }
-
-    public function populateDebtBalance(DebtBalance $debtBalance): void
-    {
-        if ($debtBalance->isSameDirection($this)) {
-            $this->populateRelation('debtBalanceDirectionSame', $debtBalance);
-        } else {
-            $this->populateRelation('debtBalanceDirectionBack', $debtBalance);
-        }
-    }
-
-    public function isDebtBalancePopulated(): bool
-    {
-        return $this->isRelationPopulated('debtBalanceDirectionSame')
-            || $this->isRelationPopulated('debtBalanceDirectionBack');
     }
 
     public function getUserDisplayName($direction)

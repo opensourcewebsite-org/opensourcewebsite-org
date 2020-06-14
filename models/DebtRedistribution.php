@@ -13,6 +13,7 @@ use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\traits\FloatAttributeTrait;
+use app\models\traits\RelationToDebtBalanceTrait;
 use app\models\traits\SelectForUpdateTrait;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -32,14 +33,15 @@ use yii\db\ActiveRecord;
  *
  * @property Currency $currency
  * @property Contact $contact
- * @property DebtBalance $debtBalanceToOwner
- * @property DebtBalance $debtBalanceToLinked
+ * @property DebtBalance $debtBalanceDirectionBack
+ * @property DebtBalance $debtBalanceDirectionSame
  */
 class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDebtInterface
 {
     use ByOwnerTrait;
     use SelectForUpdateTrait;
     use FloatAttributeTrait;
+    use RelationToDebtBalanceTrait;
 
     /** @var null no limit - allow any amount. */
     public const MAX_AMOUNT_ANY  = null;
@@ -116,7 +118,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
     /**
      * @return DebtBalanceQuery|ActiveQuery
      */
-    public function getDebtBalanceToOwner()
+    public function getDebtBalanceDirectionBack()
     {
         return $this->hasOne(DebtBalance::className(), [
             'currency_id' => 'currency_id',
@@ -128,7 +130,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
     /**
      * @return DebtBalanceQuery|ActiveQuery
      */
-    public function getDebtBalanceToLinked()
+    public function getDebtBalanceDirectionSame()
     {
         return $this->hasOne(DebtBalance::className(), [
             'currency_id' => 'currency_id',

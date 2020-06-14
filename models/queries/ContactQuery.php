@@ -78,7 +78,7 @@ class ContactQuery extends ActiveQuery
 
         return $this->andWhere('contact.debt_redistribution_priority <> ' . Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
             ->withDebtRedistributionByCurrency($currencyId, 'JOIN')
-            ->joinWith('debtRedistributionByDebtorCustom.debtBalanceToOwner')
+            ->joinWith('debtRedistributionByDebtorCustom.debtBalanceDirectionBack')
             ->andWhere([
                 'OR',
                 'debt_balance.currency_id IS NULL',
