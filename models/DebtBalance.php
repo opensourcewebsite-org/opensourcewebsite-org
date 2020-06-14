@@ -195,8 +195,8 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             throw new InvalidCallException('Method require `Debt::isStatusConfirm() === TRUE`');
         }
 
-        if ($debt->isRelationPopulated('debtBalance') && $debt->debtBalance->isFoundForUpdate()) {
-            $debtBalance = $debt->debtBalance;
+        if ($debt->isDebtBalancePopulated() && $debt->getDebtBalance()->isFoundForUpdate()) {
+            $debtBalance = $debt->getDebtBalance();
         } else {
             //`FOR UPDATE` - necessary to avoid conflict. Because we can't just set `amount = amount + :debtAmount`.
             // We need possibility to switch values of `from_user_id` & `to_user_id`. And possibility to delete row.

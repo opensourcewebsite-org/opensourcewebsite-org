@@ -32,7 +32,8 @@ use yii\behaviors\TimestampBehavior;
  * @property User        $toUser
  * @property User        $fromUser
  * @property Currency    $currency
- * @property DebtBalance $debtBalance
+ * @property DebtBalance $debtBalanceDirectionSame
+ * @property DebtBalance $debtBalanceDirectionBack
  */
 class Debt extends ActiveRecord implements ByDebtInterface
 {
@@ -129,13 +130,45 @@ class Debt extends ActiveRecord implements ByDebtInterface
     /**
      * @return \yii\db\ActiveQuery|DebtBalanceQuery
      */
-    public function getDebtBalance()
+    public function getDebtBalanceDirectionSame()
     {
         return $this->hasOne(DebtBalance::className(), [
             'currency_id'  => 'currency_id',
             'from_user_id' => 'from_user_id',
             'to_user_id'   => 'to_user_id',
         ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|DebtBalanceQuery
+     */
+    public function debtBalanceDirectionBack()
+    {
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id' => 'currency_id',
+            'from_user_id' => 'to_user_id',
+            'to_user_id' => 'from_user_id',
+        ]);
+    }
+
+    public function getDebtBalance(): DebtBalance
+    {
+        return $this->debtBalanceDirectionSame ?: $this->debtBalanceDirectionBack;
+    }
+
+    public function populateDebtBalance(DebtBalance $debtBalance): void
+    {
+        if ($debtBalance->from_user_id == $this->from_user_id) {
+            $this->populateRelation('debtBalanceDirectionSame', $debtBalance);
+        } else {
+            $this->populateRelation('debtBalanceDirectionBack', $debtBalance);
+        }
+    }
+
+    public function isDebtBalancePopulated(): bool
+    {
+        return $this->isRelationPopulated('debtBalanceDirectionSame')
+            || $this->isRelationPopulated('debtBalanceDirectionBack');
     }
 
     public function getUserDisplayName($direction)
@@ -231,7 +264,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
         $debt->group = $group;
 
         if ($source instanceof DebtBalance) {
-            $debt->populateRelation('debtBalance', $source);
+            $debt->populateDebtBalance($source);
         }
 
         return $debt;
