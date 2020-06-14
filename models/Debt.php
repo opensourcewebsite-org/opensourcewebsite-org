@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\components\helpers\DebtHelper;
+use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\CurrencyQuery;
@@ -158,7 +160,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
     public function populateDebtBalance(DebtBalance $debtBalance): void
     {
-        if ($debtBalance->from_user_id == $this->from_user_id) {
+        if ($debtBalance->isSameDirection($this)) {
             $this->populateRelation('debtBalanceDirectionSame', $debtBalance);
         } else {
             $this->populateRelation('debtBalanceDirectionBack', $debtBalance);
@@ -234,26 +236,27 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
     /**
      * @param DebtBalance|DebtRedistribution|Debt $source
-     * @param int $amount '-' (negative) will decrease Balance amount.
-     *                    '+' (positive) will increase.
+     * @param string $amount '-' (negative) will decrease Balance amount.
+     *                       '+' (positive) will increase.
      * @param float $group
      *
      * @return Debt
      */
-    public static function factoryBySource($source, $amount, float $group): self
+    public static function factoryBySource($source, string $amount, float $group): self
     {
-        if (!$amount) {
+        if (Number::isFloatEqual($amount, 0, DebtHelper::getFloatScale())) {
             throw new InvalidCallException('Argument $amount cannot be empty. $amount = ' . var_export($amount, true));
         }
 
         $debt = new Debt();
+        $isAmountPositive = Number::isFloatGreater($amount, 0, DebtHelper::getFloatScale());
 
         if ($source instanceof DebtRedistribution) {
-            $debtorUID = ($amount > 0) ? $source->ownerUID() : $source->linkedUID();
-            $debtReceiverUID = ($amount > 0) ? $source->linkedUID() : $source->ownerUID();
+            $debtorUID = ($isAmountPositive) ? $source->ownerUID() : $source->linkedUID();
+            $debtReceiverUID = ($isAmountPositive) ? $source->linkedUID() : $source->ownerUID();
         } else {
-            $debtorUID = ($amount > 0) ? $source->debtorUID() : $source->debtReceiverUID();
-            $debtReceiverUID = ($amount > 0) ? $source->debtReceiverUID() : $source->debtorUID();
+            $debtorUID = ($isAmountPositive) ? $source->debtorUID() : $source->debtReceiverUID();
+            $debtReceiverUID = ($isAmountPositive) ? $source->debtReceiverUID() : $source->debtorUID();
         }
 
         $debt->currency_id = $source->currency_id;

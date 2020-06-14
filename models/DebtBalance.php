@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\components\helpers\DebtHelper;
+use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\DebtBalanceQuery;
@@ -23,7 +25,7 @@ use yii\db\ActiveRecord;
  * @property int $currency_id
  * @property int $from_user_id          {@see Debt::$from_user_id}
  * @property int $to_user_id            {@see Debt::$to_user_id}
- * @property float $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
+ * @property string $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
  * @property int|null $processed_at     TIMESTAMP - this row is waiting for cron {@see \app\components\debt\Reduction}.
  *                                                  Because amount has been changed.
  *                                      NULL      - {@see Reduction} will not try to reduce it.
@@ -148,7 +150,8 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     public function update($runValidation = true, $attributeNames = null)
     {
-        if ($this->amount == 0 && !self::STORE_EMPTY_AMOUNT) {
+        $scale = DebtHelper::getFloatScale();
+        if (Number::isFloatEqual(0, $this->amount, $scale) && !self::STORE_EMPTY_AMOUNT) {
             return (bool)$this->delete();
         }
 
@@ -157,7 +160,8 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     public function insert($runValidation = true, $attributes = null)
     {
-        if ($this->amount == 0 && !self::STORE_EMPTY_AMOUNT) {
+        $scale = DebtHelper::getFloatScale();
+        if (Number::isFloatEqual(0, $this->amount, $scale) && !self::STORE_EMPTY_AMOUNT) {
             return true;
         }
         self::requireAllowExecute();
@@ -180,6 +184,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         //SELECT FOR UPDATE and transaction is not necessary for this particular field.
         //So we can simply use raw SQL to avoid transaction validation
         $this->redistribute_try_at = $timestamp;
+        //row $this may no longer exist in DB on this step. It's ok.
         static::getDb()
             ->createCommand()
             ->update(static::tableName(), ['redistribute_try_at' => $timestamp], $this->primaryKey)
@@ -269,7 +274,8 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     private function updateProcessedAt(): void
     {
-        if (!$this->amount) {
+        $scale = DebtHelper::getFloatScale();
+        if (Number::isFloatEqual(0, $this->amount, $scale)) {
             $this->processed_at = null; // no sense to run \app\components\debt\Reduction if amount is "0"
             return;
         }
@@ -290,7 +296,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
      *
      * @return bool
      */
-    private function isSameDirection(Debt $debt): bool
+    public function isSameDirection(Debt $debt): bool
     {
         return ($this->from_user_id == $debt->from_user_id) && ($this->to_user_id == $debt->to_user_id);
     }
@@ -309,8 +315,9 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     private function changeAmount(Debt $debt): void
     {
-        $direction = $this->isSameDirection($debt) ? +1 : -1;
-        $newAmount = $this->amount + ($direction * $debt->amount);
+        $scale = DebtHelper::getFloatScale();
+        $amountAdd = $this->isSameDirection($debt) ? $debt->amount : -$debt->amount;
+        $newAmount = Number::floatAdd($this->amount, $amountAdd, $scale);
 
         if ($newAmount < 0) {
             //debt_balance.amount is always > 0. Switch users to change direction.

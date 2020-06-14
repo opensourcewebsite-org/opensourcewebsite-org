@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\components\debt\Redistribution;
+use app\components\helpers\DebtHelper;
+use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByOwnerInterface;
 use app\interfaces\UserRelation\ByOwnerTrait;
@@ -10,6 +12,7 @@ use app\models\queries\ContactQuery;
 use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtRedistributionQuery;
+use app\models\traits\FloatAttributeTrait;
 use app\models\traits\SelectForUpdateTrait;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -17,11 +20,11 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "debt_redistribution".
  *
- * @property int      $id
- * @property int      $user_id          {@see ByOwnerInterface}, {@see ByDebtInterface}
- * @property int      $link_user_id     {@see ByOwnerInterface}, {@see ByDebtInterface}
- * @property int      $currency_id
- * @property int|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
+ * @property int         $id
+ * @property int         $user_id          {@see ByOwnerInterface}, {@see ByDebtInterface}
+ * @property int         $link_user_id     {@see ByOwnerInterface}, {@see ByDebtInterface}
+ * @property int         $currency_id
+ * @property string|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
  *                                  max_amount is limit of {@see Debt}, which may be created by {@see Redistribution}.
  *                                  Note: other Debts, created not by Redistribution, don't depend from this limit.
  *                                  RU: сколько я (user_id) разрешаю моему контакту (link_user_id) быть должным мне,
@@ -36,6 +39,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
 {
     use ByOwnerTrait;
     use SelectForUpdateTrait;
+    use FloatAttributeTrait;
 
     /** @var null no limit - allow any amount. */
     public const MAX_AMOUNT_ANY  = null;
@@ -140,13 +144,15 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
 
     public function isMaxAmountDeny(): bool
     {
-        return !$this->isMaxAmountAny() && ($this->max_amount == self::MAX_AMOUNT_DENY);
+        $scale = DebtHelper::getFloatScale();
+
+        return !$this->isMaxAmountAny() && Number::isFloatEqual(self::MAX_AMOUNT_DENY, $this->max_amount, $scale);
     }
 
     private function fnFormatMaxAmount(): callable
     {
         return function () {
-            $this->max_amount = $this->max_amount === '' ? null : $this->max_amount;
+            $this->max_amount = ($this->max_amount === '') ? null : $this->max_amount;
         };
     }
 

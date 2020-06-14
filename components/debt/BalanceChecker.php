@@ -2,6 +2,7 @@
 
 namespace app\components\debt;
 
+use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Debt;
 use app\models\DebtBalance;
@@ -91,10 +92,10 @@ class BalanceChecker extends Component
                      * E.g. if ($debtSummary is Deposit) then {$inverseDebtSummary is Credit}
                      */
                     $inverseDebtSummary = $sumOfAllDebt[$currencyId][$toUID][$fromUID] ?? null;
-                    $debtSumDiff = bcsub(
+                    $debtSumDiff = Number::floatSub(
                         $debtSummary['debt_sum'],
                         ($inverseDebtSummary['debt_sum'] ?? 0),
-                        self::getFloatScale()
+                        DebtHelper::getFloatScale()
                     );
 
                     $errorParams = [
@@ -192,19 +193,11 @@ class BalanceChecker extends Component
 
     private function isFloatEqual(string $leftFloat, string $rightFloat): bool
     {
-        return Number::isFloatEqual($leftFloat, $rightFloat, self::getFloatScale());
+        return Number::isFloatEqual($leftFloat, $rightFloat, DebtHelper::getFloatScale());
     }
 
     private function isFloatLower(string $leftFloat, string $rightFloat): bool
     {
-        return Number::isFloatLower($leftFloat, $rightFloat, self::getFloatScale());
-    }
-
-    private static function getFloatScale(): int
-    {
-        return max(
-            Debt::getAttributeFloatScale('amount'),
-            Debtbalance::getAttributeFloatScale('amount')
-        );
+        return Number::isFloatLower($leftFloat, $rightFloat, DebtHelper::getFloatScale());
     }
 }

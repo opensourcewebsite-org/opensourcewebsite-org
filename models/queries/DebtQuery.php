@@ -15,8 +15,8 @@ use yii\db\ActiveQuery;
  */
 class DebtQuery extends ActiveQuery
 {
-    public function groupCondition($group): self
+    public function groupCondition($group, string $operand = 'IN'): self
     {
-        return $this->andWhere(['debt.group' => $group]);
+        return $this->andWhere([$operand, 'debt.group', $group]);
     }
 }

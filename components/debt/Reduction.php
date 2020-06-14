@@ -2,6 +2,8 @@
 
 namespace app\components\debt;
 
+use app\components\helpers\DebtHelper;
+use app\helpers\Number;
 use app\models\Debt;
 use app\models\DebtBalance;
 use app\models\queries\DebtBalanceQuery;
@@ -152,21 +154,24 @@ class Reduction extends Component
 
     /**
      * @param DebtBalance $chainMember
-     * @param float       $minAmount
+     * @param string       $minAmount
      *
      * @return DebtBalance[]
      */
-    private function getPreviousMembers(DebtBalance $chainMember, float &$minAmount = null): array
+    private function getPreviousMembers(DebtBalance $chainMember, &$minAmount = ''): array
     {
         /** @var DebtBalance[] $chainMembersAll */
         $chainMembersAll = [];
-        $minAmount       = $chainMember->amount;
+        $minAmount = $chainMember->amount;
+        $scale = DebtHelper::getFloatScale();
 
         //get all previous chain members
         while ($chainMember->isRelationPopulated('chainMemberParent')) {
-            $chainMember       = $chainMember->chainMemberParent;
+            $chainMember = $chainMember->chainMemberParent;
             $chainMembersAll[] = $chainMember;
-            $minAmount         = ($chainMember->amount < $minAmount) ? $chainMember->amount : $minAmount;
+            $isLower = Number::isFloatLower($chainMember->amount, $minAmount, $scale);
+
+            $minAmount = $isLower ? $chainMember->amount : $minAmount;
         }
 
         //`array_reverse` is not necessary. Just for cleaner understanding on debugging
@@ -175,22 +180,23 @@ class Reduction extends Component
 
     /**
      * @param DebtBalance $penultimateMember
-     * @param float       $minAmount
+     * @param string      $minAmount
      *
      * @return DebtBalance  this method cannot return NULL!
      */
-    private function getLastMember(DebtBalance $penultimateMember, float $minAmount): DebtBalance
+    private function getLastMember(DebtBalance $penultimateMember, $minAmount): DebtBalance
     {
         /** @var DebtBalance|null $lastMemberBest */
         $lastMemberBest = null;
+        $scale = DebtHelper::getFloatScale();
 
         foreach ($penultimateMember->chainMembers as $lastMember) {
-            if ($lastMember->amount == $minAmount) {
+            if (Number::isFloatEqual($lastMember->amount, $minAmount, $scale)) {
                 $lastMemberBest = $lastMember;
                 break;
             }
 
-            if (!$lastMemberBest || $lastMember->amount > $lastMemberBest->amount) {
+            if (!$lastMemberBest || Number::isFloatGreater($lastMember->amount, $lastMemberBest->amount, $scale)) {
                 $lastMemberBest = $lastMember;
             }
         }
@@ -212,10 +218,10 @@ class Reduction extends Component
                 return; //some of balances we need, became zero or changed direction. This chain is not circled anymore
             }
 
-            /** @var float $minAmount */
-            $minAmount = min(ArrayHelper::getColumn($chainMembersRefreshed, 'amount'));
-            $minAmount *= -1;
-            if (!$minAmount) {
+            /** @var string $minAmount */
+            $minAmount = - min(ArrayHelper::getColumn($chainMembersRefreshed, 'amount'));
+            $scale = DebtHelper::getFloatScale();
+            if (Number::isFloatEqual(0, $minAmount, $scale)) {
                 return;
             }
 

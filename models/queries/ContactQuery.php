@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\Contact;
+use app\models\DebtRedistribution;
 use app\models\queries\traits\RandomTrait;
 use app\models\queries\traits\SelfSearchTrait;
 use Yii;
@@ -71,13 +72,17 @@ class ContactQuery extends ActiveQuery
      */
     public function canRedistributeInto($currencyId): self
     {
+        DebtRedistribution::find()
+            ->maxAmount(DebtRedistribution::MAX_AMOUNT_ANY, 'andWhere', $maxAmountIsAny);
+        $maxAmountIsGreater = 'debt_redistribution.max_amount > debt_balance.amount';
+
         return $this->andWhere('contact.debt_redistribution_priority <> ' . Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
             ->withDebtRedistributionByCurrency($currencyId, 'JOIN')
             ->joinWith('debtRedistributionByDebtorCustom.debtBalanceToOwner')
             ->andWhere([
                 'OR',
                 'debt_balance.currency_id IS NULL',
-                'debt_balance.amount < debt_redistribution.max_amount',
+                "$maxAmountIsAny OR $maxAmountIsGreater",
             ]);
     }
 }

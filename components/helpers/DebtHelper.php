@@ -2,6 +2,9 @@
 
 namespace app\components\helpers;
 
+use app\models\Debt;
+use app\models\DebtBalance;
+use app\models\DebtRedistribution;
 use yii\base\Component;
 
 class DebtHelper extends Component
