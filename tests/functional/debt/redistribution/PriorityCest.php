@@ -50,7 +50,7 @@ class PriorityCest
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
 
-        $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $this->common->balanceBefore[Common::CHAIN_TARGET]->amount);
+        $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $this->common->getTargetAmount());
     }
 
     /**
@@ -65,7 +65,7 @@ class PriorityCest
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
 
-        $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->balanceBefore[Common::CHAIN_TARGET]->amount);
+        $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->getTargetAmount());
     }
 
     /**
@@ -83,7 +83,7 @@ class PriorityCest
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
 
         $balanceChain255 = $this->common->getFixtureDebtRedistribution($I, 'Chain Priority #255. Member: 1st')->debtBalanceDirectionSame;
-        $this->common->expectBalanceChanged($balanceChain255, 0, $this->common->balanceBefore[Common::CHAIN_TARGET]->amount, 255);
+        $this->common->expectBalanceChanged($balanceChain255, 0, $this->common->getTargetAmount(), 255);
     }
 
     /**

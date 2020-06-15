@@ -173,12 +173,17 @@ class Common
         /** @noinspection NullPointerExceptionInspection */
         $isEqual = Number::isFloatEqual($expectBalance, $balance->amount, $scale);
 
-        expect("DebtBalance was NOT redistributed. It was added {{ $amountToAdd }}. Chain: {{ $chainInfo }}", $isEqual)->true();
+        expect("DebtBalance was added {{ $amountToAdd }}. Chain: {{ $chainInfo }}", $isEqual)->true();
     }
 
     public function expectBalanceChangedByKey(FunctionalTester $I, string $chainKey, $amountToAdd): void
     {
         $balance = $this->findDebtBalanceByFixture($I, self::DEBT_FIXTURE_MAP[$chainKey]);
         $this->expectBalanceChanged($balance, $this->balanceBefore[$chainKey]->amount, $amountToAdd, $chainKey);
+    }
+
+    public function getTargetAmount(): string
+    {
+        return $this->balanceBefore[Common::CHAIN_TARGET]->amount;
     }
 }

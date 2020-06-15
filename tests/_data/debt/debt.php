@@ -9,7 +9,7 @@ return [
         'currency_id' => 108, //USD
         'from_user_id' => 201,
         'to_user_id' => 202,
-        'amount' => 5000,
+        'amount' => 5000.55,
         'status' => Debt::STATUS_CONFIRM,
     ],
     //This balance should NOT be redistributed.
@@ -19,7 +19,7 @@ return [
         'currency_id' => 108, //USD
         'from_user_id' => $contacts['Chain Priority #1. Member: 1st']['link_user_id'],
         'to_user_id' => $contacts['Chain Priority #1. Member: 1st']['user_id'],
-        'amount' => 11111,
+        'amount' => 11111.11,
         'status' => Debt::STATUS_CONFIRM,
     ],
     //This balance should NOT be redistributed.
@@ -28,7 +28,7 @@ return [
         'currency_id' => 108,   //USD
         'from_user_id' => $contacts['Chain Priority #2. Member: LAST']['user_id'],
         'to_user_id' => $contacts['Chain Priority #2. Member: LAST']['link_user_id'],
-        'amount' => 22222,      //tests expect it is greater than amount of "It's balance should be redistributed"
+        'amount' => 22222.22,      //tests expect it is greater than amount of "It's balance should be redistributed"
         'status' => Debt::STATUS_CONFIRM,
     ],
 ];
