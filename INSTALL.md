@@ -2,7 +2,7 @@
 
 [Русская версия](INSTALL.ru.md)
 
-Please read through our [Contributing Guidelines](CONTRIBUTING.md).
+Please read through our [Contribution Guidelines](CONTRIBUTING.md).
 
 ## Website
 

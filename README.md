@@ -22,9 +22,14 @@
 
 OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code. Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot. Join us and be part of the digital future!
 
-The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org).
+The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org). This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
+## Getting Started
+
+- Read the available information.
+- [Click "Star" in this repository](https://help.github.com/en/github/getting-started-with-github/saving-repositories-with-stars) to keep a link to the repository and help more people learn about the project.
+- [Click “Watch” in this repository](https://help.github.com/en/github/receiving-notifications-about-activity-on-github/watching-and-unwatching-repositories) to keep track of the latest changes in the project.
+- Invite your friends to participate in the project and grow the community.
 
 ## Contributing
 
@@ -32,9 +37,9 @@ This project exists thanks to all the people who contribute.
 
 Your contributions increase your Rating in our community.
 
-Please read through our [Contributing Guidelines](CONTRIBUTING.md), [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
+Please read through our [Contribution Guidelines](CONTRIBUTING.md), [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
 
-## Donate
+## Donating
 
 This project exists thanks to all the people who donate.
 
@@ -54,11 +59,11 @@ Please read through our [API Documentation](https://github.com/opensourcewebsite
 
 ## Feedback
 
-Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org) or [email support](mailto:hello@opensourcewebsite.org).
+Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org).
 
 To request a new feature, submit a bug report, give us feedback, start a design discussion or have an idea to make this code better feel free to [open an issue](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues), or [create a pull request](https://github.com/opensourcewebsite-org/opensourcewebsite-org/pulls).
 
-Please report all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
+Please send all security issues to [security@opensourcewebsite.org](mailto:security@opensourcewebsite.org).
 
 ## Partners
 
@@ -66,7 +71,7 @@ This project is supported by:
 
 [DigitalOcean.com](https://m.do.co/c/4d16b1d56809), [Moqups.com](https://moqups.com).
 
-Please send any partnership offers to [partner@opensourcewebsite.org](mailto:partner@opensourcewebsite.org).
+Please send all partnership offers to [hello@opensourcewebsite.org](mailto:hello@opensourcewebsite.org).
 
 ## License
 

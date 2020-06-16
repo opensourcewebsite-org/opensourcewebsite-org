@@ -1,4 +1,4 @@
-# Contributing Guidelines
+# Contribution Guidelines
 
 [Русская версия](CONTRIBUTING.ru.md)
 
