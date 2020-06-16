@@ -51,9 +51,9 @@ class m200520_200957_create_ad_search_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ad_search_user_id-bot_user_id');
+        $this->dropForeignKey('fk-ad_search_user_id-bot_user_id', '{{%ad_search}}');
 
-        $this->dropForeignKey('fk-ad_search_currency_id-currency_id');
+        $this->dropForeignKey('fk-ad_search_currency_id-currency_id', '{{%ad_search}}');
 
         $this->dropTable('{{%ad_search}}');
     }

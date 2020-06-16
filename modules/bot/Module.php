@@ -16,6 +16,7 @@ use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * OSW Bot module definition class
@@ -241,6 +242,9 @@ class Module extends \yii\base\Module
             $this->telegramUser = $telegramUser;
             $this->userState = UserState::fromUser($telegramUser);
             $this->telegramChat = $telegramChat;
+            if ($telegramChat->isPrivate()) {
+                $this->update->setPrivateMessageFromState($this->userState);
+            }
 
             return true;
         }
@@ -266,27 +270,39 @@ class Module extends \yii\base\Module
      * @return bool
      * @throws InvalidRouteException
      */
-    public function dispatchRoute(Update $update)
+    private function dispatchRoute(Update $update)
     {
         $result = false;
 
         $state = $this->telegramChat->isPrivate()
             ? $this->userState->getName()
             : null;
+
+        // в персональном чате все сообщения пользователя надо удалять
+        if ($this->telegramChat->isPrivate() && $this->update->getMessage()) {
+            $commands = ResponseBuilder::fromUpdate($this->update)->deleteMessage()->build();
+            $deleteCommand = array_pop($commands);
+            $deleteCommand->send($this->botApi);
+        }
+
         $defaultRoute = $this->telegramChat->isPrivate()
             ? 'default/command-not-found'
             : 'message/index';
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
+
         if (array_key_exists('botname', $params) && !empty($params['botname']) && $params['botname'] !== $this->botInfo->name) {
             return $result;
         }
+
         if (!$isStateRoute) {
             $this->userState->setName(null);
         }
+
         /* Temporary solution for filter in groups */
         if (!isset($route) && !$this->telegramChat->isPrivate()) {
             $route = $defaultRoute;
         }
+
         if ($route) {
             try {
                 $commands = $this->runAction($route, $params);
@@ -295,13 +311,24 @@ class Module extends \yii\base\Module
             }
 
             if (isset($commands) && is_array($commands)) {
+                $privateMessageIds = [];
                 foreach ($commands as $command) {
                     try {
                         $command->send($this->botApi);
+                        // в персональном чате запомним id сообещния
+                        // для сохранения в userState чтобы в следующий раз
+                        // можно было удалить их все
+                        if ($this->telegramChat->isPrivate()) {
+                            if ($messageId = $command->getMessageId()) {
+                                $privateMessageIds []= $messageId;
+                            }
+                        }
                     } catch (\Exception $ex) {
                         Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
                     }
                 }
+                $this->userState->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
+                $this->userState->setIntermediateField('private_message_chat_id', $this->telegramChat->chat_id);
 
                 $result = true;
             }

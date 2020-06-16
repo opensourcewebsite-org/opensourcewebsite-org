@@ -27,6 +27,7 @@ class EditMessageReplyMarkupCommand extends Command
                 $this->getOptionalProperty('replyMarkup', null),
                 $this->getOptionalProperty('inlineMessageId', null)
             );
+            $this->setMessageId($answer->getMessageId());
         } catch (HttpException $e) {
             Yii::warning($e);
         }
