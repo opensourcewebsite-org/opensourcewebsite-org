@@ -1015,6 +1015,7 @@ class SAdOfferController extends Controller
         if (isset($adOffer)) {
             $adSection = $adOffer->section;
 
+            $adOffer->unlinkAll('photos', true);
             $adOffer->unlinkAll('keywords', true);
             $adOffer->delete();
 

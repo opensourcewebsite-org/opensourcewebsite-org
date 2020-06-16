@@ -21,6 +21,7 @@ class DefaultController extends FixtureController
      * @var null|int count of models to generate. Default - continuous.
      */
     public $limit;
+
     /**
      * @var int seconds between model generation
      */
@@ -90,8 +91,7 @@ class DefaultController extends FixtureController
         }
 
         $while = $this->limit ?: true;
-
-        while($while) {
+        while ($while) {
             /** @var ARGenerator $fixtureRand */
             $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);
             $this->stdout($fixtureRand::classNameModel() . PHP_EOL);
