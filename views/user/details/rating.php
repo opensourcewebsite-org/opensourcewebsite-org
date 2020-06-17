@@ -20,21 +20,11 @@ $this->title = Yii::t('app', 'Rating transactions');
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($models as $key => $model): ?>
+                                <?php foreach ($models as $key => $model) : ?>
                                     <tr>
                                         <td><?php echo Converter::formatDate($model->created_at); ?></td>
-                                        <td><?php echo $model->amount ?? null; ?></td>
-                                        <td>
-                                            <?php
-                                            switch ($model->type) {
-                                                case 0: echo 'Registration';
-                                                    break;
-                                                case 1: echo 'Contribution';
-                                                    break;
-                                                case 2: echo 'Donation';
-                                            }
-                                            ?>
-                                        </td>
+                                        <td><?php echo $model->amount; ?></td>
+                                        <td><?php echo $model->getTypeName(); ?></td>
                                     </tr>
                                 <?php endforeach;?>
                                 </tbody>
