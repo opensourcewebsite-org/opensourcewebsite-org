@@ -9,6 +9,7 @@ use app\widgets\buttons\TrashButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Url;
 use app\widgets\buttons\EditButton;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 
@@ -67,7 +68,7 @@ $timezones = TimeHelper::timezonesList();
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('user', 'Rating'); ?></th>
+                                    <th class="align-middle"><?= Html::a(Yii::t('user', 'Rating'), ['user/rating']); ?></th>
                                     <td class="align-middle"><?= "<b>$overallRating[rating]</b> of $overallRating[totalRating]"; ?></td>
                                     <td></td>
                                 </tr>
