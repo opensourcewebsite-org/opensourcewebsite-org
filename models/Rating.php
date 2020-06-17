@@ -27,6 +27,7 @@ class Rating extends \yii\db\ActiveRecord
         0 => 'Registration',
         1 => 'Contribution',
         2 => 'Donation',
+        3 => 'Registration',
     ];
 
     /**
