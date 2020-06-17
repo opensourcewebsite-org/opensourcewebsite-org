@@ -70,12 +70,12 @@ $timezones = TimeHelper::timezonesList();
                                 <tr>
                                     <th class="align-middle">
                                         <?php
-                                            $string = Yii::t('user', 'Rating');
-                                            if ($overallRating['rating'] > 0) {
-                                                echo Html::a($string, ['user/rating']);
-                                            } else {
-                                                echo $string;
-                                            }
+                                        $string = Yii::t('user', 'Rating');
+                                        if ($overallRating['rating'] > 0) {
+                                            echo Html::a($string, ['user/rating']);
+                                        } else {
+                                            echo $string;
+                                        }
                                         ?>
                                     </th>
                                     <td class="align-middle"><?= "<b>$overallRating[rating]</b> of $overallRating[totalRating]"; ?></td>
