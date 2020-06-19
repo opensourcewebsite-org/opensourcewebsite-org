@@ -23,6 +23,7 @@ class Redistribution extends Component
     public $logger;
 
     private $timestamp;
+    private $wasRedistributed = false;
 
     /**
      * @throws \Throwable
@@ -32,6 +33,7 @@ class Redistribution extends Component
         $this->timestamp = time();
         while ($debtBalance = $this->findCandidateToRedistribute()->one()) {
             $this->log('--- Starting search Circled Chain ---');
+            $this->wasRedistributed = false;
 
             $chainMemberFirst = $debtBalance->factoryContact(true);
             $validEnd = $this->tryRedistribute($debtBalance, [$chainMemberFirst], $debtBalance->amount);
@@ -40,7 +42,9 @@ class Redistribution extends Component
                 $debtBalance->afterRedistribution($this->timestamp);
             }
 
-            //todo [#294] logs
+            if (!$this->wasRedistributed) {
+                $this->log('Cannot redistribute.');
+            }
         }
     }
 
@@ -237,6 +241,13 @@ class Redistribution extends Component
                     throw new Exception($message);
                 }
             }
+
+            $this->wasRedistributed = true;
+
+            $count = count($debts);
+            $message = "Created chain. Amount=$amountPossible {$debt->currency->code}; Count of Debts=$count;";
+            $message .= ' Count of Users=' . ($count + 1);
+            $this->log($message);
 
             return Number::floatSub($amountWanted, $amountPossible, DebtHelper::getFloatScale());
         };
