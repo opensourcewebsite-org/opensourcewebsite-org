@@ -2,7 +2,7 @@
 
 use app\models\Debt;
 
-$contacts = require ('contact.php');
+$contacts = require 'contact.php';
 
 return [
     "It's balance should be redistributed" => [

@@ -2,7 +2,7 @@
 
 use app\models\DebtRedistribution;
 
-$contacts = require ('contact.php');
+$contacts = require 'contact.php';
 $result = [];
 
 foreach ($contacts as $index => $contact) {

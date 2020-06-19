@@ -96,7 +96,7 @@ class PriorityCest
         $this->common->testDefault($I, 0);
 
         $balanceChainDeny = $this->common->getFixtureDebtRedistribution($I, 'Chain Priority #0 (Deny). Member: 1st')->debtBalanceDirectionSame;
-        expect("DebtBalance not exist. Chain: {{ #0 (Deny) }}", $balanceChainDeny)->isEmpty();
+        expect('DebtBalance not exist. Chain: #0 (Deny)', $balanceChainDeny)->isEmpty();
     }
 
 

@@ -150,7 +150,7 @@ class MaxAmountCest
             $message .= "1) Review other tests of this class. Maybe they can work with your example.\n";
             $message .= "2) Else, most likely, you should add new test.\n";
             $message .= "3) At last you can modify this test. It's unlikely case.\n";
-            $message .= " Do it only if test will remain simple. 2 simple tests better than 1 hardcore.";
+            $message .= ' Do it only if test will remain simple. 2 simple tests better than 1 hardcore.';
             throw new \yii\base\InvalidArgumentException($message);
         }
     }
