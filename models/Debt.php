@@ -2,11 +2,15 @@
 
 namespace app\models;
 
+use app\components\helpers\DebtHelper;
+use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
 use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtQuery;
+use app\models\traits\FloatAttributeTrait;
+use app\models\traits\RelationToDebtBalanceTrait;
 use Yii;
 use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
@@ -20,7 +24,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $from_user_id  this user should return money to $to_user_id
  * @property int $to_user_id    this user will receive money from $from_user_id
  * @property int $currency_id
- * @property int $amount
+ * @property float $amount
  * @property int $status
  * @property int $created_at
  * @property int $created_by    {@see self::isCreatedByUser()}
@@ -31,11 +35,14 @@ use yii\behaviors\TimestampBehavior;
  * @property User        $toUser
  * @property User        $fromUser
  * @property Currency    $currency
- * @property DebtBalance $debtBalance
+ * @property DebtBalance $debtBalanceDirectionSame
+ * @property DebtBalance $debtBalanceDirectionBack
  */
 class Debt extends ActiveRecord implements ByDebtInterface
 {
     use ByDebtTrait;
+    use FloatAttributeTrait;
+    use RelationToDebtBalanceTrait;
 
     public const STATUS_PENDING = 0;
     public const STATUS_CONFIRM = 1;
@@ -53,8 +60,6 @@ class Debt extends ActiveRecord implements ByDebtInterface
     public $creditPending;
     public $depositConfirmed;
     public $creditConfirmed;
-
-    private $updateProcessedFlag = false;
 
     /**
      * {@inheritdoc}
@@ -129,12 +134,24 @@ class Debt extends ActiveRecord implements ByDebtInterface
     /**
      * @return \yii\db\ActiveQuery|DebtBalanceQuery
      */
-    public function getDebtBalance()
+    public function getDebtBalanceDirectionSame()
     {
         return $this->hasOne(DebtBalance::className(), [
             'currency_id'  => 'currency_id',
             'from_user_id' => 'from_user_id',
             'to_user_id'   => 'to_user_id',
+        ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|DebtBalanceQuery
+     */
+    public function getDebtBalanceDirectionBack()
+    {
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id' => 'currency_id',
+            'from_user_id' => 'to_user_id',
+            'to_user_id' => 'from_user_id',
         ]);
     }
 
@@ -201,26 +218,27 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
     /**
      * @param DebtBalance|DebtRedistribution|Debt $source
-     * @param int $amount '-' (negative) will decrease Balance amount.
-     *                    '+' (positive) will increase.
+     * @param string $amount '-' (negative) will decrease Balance amount.
+     *                       '+' (positive) will increase.
      * @param float $group
      *
      * @return Debt
      */
-    public static function factoryBySource($source, $amount, float $group): self
+    public static function factoryBySource($source, string $amount, float $group): self
     {
-        if (!$amount) {
+        if (Number::isFloatEqual($amount, 0, DebtHelper::getFloatScale())) {
             throw new InvalidCallException('Argument $amount cannot be empty. $amount = ' . var_export($amount, true));
         }
 
         $debt = new Debt();
+        $isAmountPositive = Number::isFloatGreater($amount, 0, DebtHelper::getFloatScale());
 
         if ($source instanceof DebtRedistribution) {
-            $debtorUID = ($amount > 0) ? $source->ownerUID() : $source->linkedUID();
-            $debtReceiverUID = ($amount > 0) ? $source->linkedUID() : $source->ownerUID();
+            $debtorUID = ($isAmountPositive) ? $source->ownerUID() : $source->linkedUID();
+            $debtReceiverUID = ($isAmountPositive) ? $source->linkedUID() : $source->ownerUID();
         } else {
-            $debtorUID = ($amount > 0) ? $source->debtorUID() : $source->debtReceiverUID();
-            $debtReceiverUID = ($amount > 0) ? $source->debtReceiverUID() : $source->debtorUID();
+            $debtorUID = ($isAmountPositive) ? $source->debtorUID() : $source->debtReceiverUID();
+            $debtReceiverUID = ($isAmountPositive) ? $source->debtReceiverUID() : $source->debtorUID();
         }
 
         $debt->currency_id = $source->currency_id;
@@ -231,9 +249,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
         $debt->group = $group;
 
         if ($source instanceof DebtBalance) {
-            $debt->populateRelation('debtBalance', $source);
-        } elseif ($source instanceof DebtRedistribution) {
-            $debt->setUpdateProcessedFlag(true);
+            $debt->populateDebtBalance($source);
         }
 
         return $debt;
@@ -287,22 +303,22 @@ class Debt extends ActiveRecord implements ByDebtInterface
         return (bool)$this->created_by;
     }
 
-    public function isUpdateProcessedFlag(): bool
-    {
-        return $this->updateProcessedFlag || $this->isCreatedByUser();
-    }
-
-    /**
-     * @param bool $value
-     */
-    public function setUpdateProcessedFlag(bool $value): void
-    {
-        $this->updateProcessedFlag = $value;
-    }
-
     public static function generateGroup(): float
     {
         return microtime(true);
+    }
+
+    public function isAttributeChanged($name, $identical = true)
+    {
+        if (!parent::isAttributeChanged($name, $identical)) {
+            return false;
+        }
+
+        if (!$identical && self::isAttributeFloat($name)) {
+            return $this->isAttributeFloatChanged($name);
+        }
+
+        return true;
     }
 
     /**
