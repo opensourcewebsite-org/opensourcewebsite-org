@@ -2,6 +2,8 @@
 
 namespace app\models\queries;
 
+use app\components\debt\Redistribution;
+use app\components\debt\Reduction;
 use app\models\Debt;
 use app\models\queries\traits\SelfSearchTrait;
 use yii\db\ActiveQuery;
@@ -47,6 +49,14 @@ class DebtBalanceQuery extends ActiveQuery
         return $this->andWhere([$operand, 'debt_balance.to_user_id', $id]);
     }
 
+    /**
+     * {@see Reduction} should process all rows.
+     * To avoid processing of the same row twice we use field `debt_balance.processed_at`.
+     *
+     * @param bool $can
+     *
+     * @return DebtBalanceQuery
+     */
     public function canBeReduced(bool $can): self
     {
         $operand = $can ? 'IS NOT' : 'IS';
@@ -54,6 +64,14 @@ class DebtBalanceQuery extends ActiveQuery
             ->amountNotEmpty();
     }
 
+    /**
+     * {@see Redistribution} should process all rows.
+     * To avoid processing of the same row twice we use field `debt_balance.redistribute_try_at`.
+     *
+     * @param int $timestamp
+     *
+     * @return DebtBalanceQuery
+     */
     public function canBeRedistributed(int $timestamp): self
     {
         return $this->canBeReduced(false)
