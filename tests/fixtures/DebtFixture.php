@@ -3,6 +3,7 @@
 namespace app\tests\fixtures;
 
 use app\models\Debt;
+use app\tests\_extra\DebtBalanceFixture;
 use yii\db\ActiveRecord;
 use yii\test\ActiveFixture;
 

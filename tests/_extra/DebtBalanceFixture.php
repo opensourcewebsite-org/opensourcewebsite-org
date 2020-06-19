@@ -1,6 +1,6 @@
 <?php
 
-namespace app\tests\fixtures;
+namespace app\tests\_extra;
 
 use app\models\DebtBalance;
 use yii\base\InvalidCallException;
