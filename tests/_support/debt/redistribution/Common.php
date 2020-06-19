@@ -192,8 +192,8 @@ class Common
 
     public function setMaxAmountLimit(FunctionalTester $I, $indexContact, $maxAmount): void
     {
-        $model2 = $this->getFixtureDebtRedistribution($I, $indexContact);
-        $model2->max_amount = $maxAmount;
-        $model2->save();
+        $model = $this->getFixtureDebtRedistribution($I, $indexContact);
+        $model->max_amount = $maxAmount;
+        $model->save();
     }
 }

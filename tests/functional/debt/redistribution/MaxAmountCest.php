@@ -144,8 +144,8 @@ class MaxAmountCest
         }
 
         if (Number::isFloatGreater($sum, $targetAmount, $scale)) {
-            $message = "This test require: (target_amount > sum_of_example_values_must_be)\n";
-            $message .= "Current: target_amount = $targetAmount; sum_of_example_values_must_be = $sum\n";
+            $message = "This test require: (target_amount > sum_of_example_values)\n";
+            $message .= "Current: target_amount = $targetAmount; sum_of_example_values = $sum\n";
             $message .= "Solutions:\n";
             $message .= "1) Review other tests of this class. Maybe they can work with your example.\n";
             $message .= "2) Else, most likely, you should add new test.\n";
