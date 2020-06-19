@@ -133,11 +133,13 @@ class Common
      * @throws \Throwable
      * @throws \yii\db\Exception
      */
-    public function testDefault(FunctionalTester $I, int $expectCountOfDebtGroups = 1): void
+    public function testDefault(FunctionalTester $I, int $expectCountOfDebtGroups = 1, $targetAmountToAdd = null): void
     {
         (new Redistribution())->run();
 
-        if (0 === $expectCountOfDebtGroups) {
+        if (null !== $targetAmountToAdd) {
+            $this->expectBalanceChangedByKey($I, Common::CHAIN_TARGET, $targetAmountToAdd);
+        } elseif (0 === $expectCountOfDebtGroups) {
             $this->expectBalanceNotChangedByKey($I, self::CHAIN_TARGET);
         } else {
             $balanceTarget = $this->findDebtBalanceByFixture($I, "It's balance should be redistributed");
@@ -173,7 +175,8 @@ class Common
         /** @noinspection NullPointerExceptionInspection */
         $isEqual = Number::isFloatEqual($expectBalance, $balance->amount, $scale);
 
-        expect("DebtBalance was added {{ $amountToAdd }}. Chain: {{ $chainInfo }}", $isEqual)->true();
+        /** @noinspection NullPointerExceptionInspection */
+        expect("DebtBalance was: {{ $amountWas }}. Added: {{ $amountToAdd }}. Really: {{ $balance->amount }} Chain: {{ $chainInfo }}", $isEqual)->true();
     }
 
     public function expectBalanceChangedByKey(FunctionalTester $I, string $chainKey, $amountToAdd): void
@@ -185,5 +188,12 @@ class Common
     public function getTargetAmount(): string
     {
         return $this->balanceBefore[Common::CHAIN_TARGET]->amount;
+    }
+
+    public function setMaxAmountLimit(FunctionalTester $I, $indexContact, $maxAmount): void
+    {
+        $model2 = $this->getFixtureDebtRedistribution($I, $indexContact);
+        $model2->max_amount = $maxAmount;
+        $model2->save();
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use app\components\debt\Redistribution;
 use app\models\Contact;
 use Codeception\Configuration;
 use Codeception\Util\Autoload;
@@ -49,7 +48,6 @@ class PriorityCest
         $this->common->testDefault($I);
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
-
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $this->common->getTargetAmount());
     }
 
@@ -64,7 +62,6 @@ class PriorityCest
         $this->common->testDefault($I);
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
-
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->getTargetAmount());
     }
 
@@ -96,14 +93,10 @@ class PriorityCest
         $this->denyChainPriority($I, 'Chain Priority #2. Member: 1st');
         $this->denyChainPriority($I, 'Chain Priority #255. Member: 1st');
 
-        (new Redistribution())->run();
-
-        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_TARGET);
+        $this->common->testDefault($I, 0);
 
         $balanceChainDeny = $this->common->getFixtureDebtRedistribution($I, 'Chain Priority #0 (Deny). Member: 1st')->debtBalanceDirectionSame;
         expect("DebtBalance not exist. Chain: {{ #0 (Deny) }}", $balanceChainDeny)->isEmpty();
-
-        $this->common->expectCountOfDebtGroups(0);
     }
 
 

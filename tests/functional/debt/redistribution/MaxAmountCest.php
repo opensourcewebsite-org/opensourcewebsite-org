@@ -55,9 +55,9 @@ class MaxAmountCest
     {
         $this->validateLimitsSumNotGreaterTargetAmount($example);
 
-        $this->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', $example[0]);
+        $this->common->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', $example[0]);
         if (isset($example[1])) {
-            $this->setMaxAmountLimit($I, 'Chain Priority #1. Member: LAST', $example[1]);
+            $this->common->setMaxAmountLimit($I, 'Chain Priority #1. Member: LAST', $example[1]);
             $lowestLimit = min($example[0], $example[1]);
         } else {
             $lowestLimit = $example[0];
@@ -77,7 +77,7 @@ class MaxAmountCest
      */
     public function skipChainIfAnyMemberHasLimitDeny(FunctionalTester $I): void
     {
-        $this->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', DebtRedistribution::MAX_AMOUNT_DENY);
+        $this->common->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', DebtRedistribution::MAX_AMOUNT_DENY);
 
         $this->common->testDefault($I, 1);
 
@@ -95,8 +95,8 @@ class MaxAmountCest
     {
         $this->validateLimitsSumNotGreaterTargetAmount($example);
 
-        $this->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', $example[0]);
-        $this->setMaxAmountLimit($I, 'Chain Priority #2. Member: 1st', $example[1]);
+        $this->common->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', $example[0]);
+        $this->common->setMaxAmountLimit($I, 'Chain Priority #2. Member: 1st', $example[1]);
 
         $this->common->testDefault($I, 3);
 
@@ -117,8 +117,8 @@ class MaxAmountCest
      */
     public function testCaseWhenLimitGreaterThanTargetAmount(FunctionalTester $I): void
     {
-        $this->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', 123.45);
-        $this->setMaxAmountLimit($I, 'Chain Priority #2. Member: 1st', 999999.99);
+        $this->common->setMaxAmountLimit($I, 'Chain Priority #1. Member: 1st', 123.45);
+        $this->common->setMaxAmountLimit($I, 'Chain Priority #2. Member: 1st', 999999.99);
 
         $this->common->testDefault($I, 2);
 
@@ -132,13 +132,6 @@ class MaxAmountCest
 
 
 
-
-    private function setMaxAmountLimit(FunctionalTester $I, $indexContact, $maxAmount): void
-    {
-        $model2 = $this->common->getFixtureDebtRedistribution($I, $indexContact);
-        $model2->max_amount = $maxAmount;
-        $model2->save();
-    }
 
     private function validateLimitsSumNotGreaterTargetAmount($example): void
     {
