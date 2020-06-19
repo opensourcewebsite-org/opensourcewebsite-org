@@ -82,8 +82,7 @@ class MoqupController extends Controller
             ->count();
         $countAll = Moqup::find()->count();
 
-        $maxMoqupSetting = Setting::findOne(['key' => 'moqup_quantity_value_per_one_rating']);
-        $maxMoqupValue = $maxMoqupSetting->value;
+        $maxMoqupValue = Setting::getValue('moqup_quantity_value_per_one_rating');
 
         return $this->render('design-list', [
             'searchModel' => $searchModel,

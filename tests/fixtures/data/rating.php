@@ -12,8 +12,15 @@ return [
     ],
     [
         'id' => 2,
-        'user_id' => 2,
-        'amount' => 100,
+        'user_id' => 1,
+        'amount' => 50,
+        'type' => Rating::DONATE,
+        'created_at' => time(),
+    ],
+    [
+        'id' => 3,
+        'user_id' => 5,
+        'amount' => 50,
         'type' => Rating::TEAM,
         'created_at' => 1531386000,
     ],

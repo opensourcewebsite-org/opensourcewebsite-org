@@ -23,7 +23,6 @@ class DataController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['country', 'currency', 'language', 'payment-method', 'gender', 'sexuality'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -103,6 +102,23 @@ class DataController extends Controller
         return $this->render('payment-method', [
             'models' => $models,
             'pages' => $pages,
+        ]);
+    }
+
+    public function actionPaymentMethodShow($id)
+    {
+        $model = PaymentMethod::findOne($id);
+        $currencies = $model->getCurrencies();
+        $countQuery = clone $currencies;
+        $pages =  new Pagination(['totalCount' => $countQuery->count()]);
+        $currencyModels = $currencies->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('payment-method-view', [
+            'currencies' => $currencyModels,
+            'pages' => $pages,
+            'model' => $model,
         ]);
     }
 

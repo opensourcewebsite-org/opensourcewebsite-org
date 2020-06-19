@@ -12,7 +12,7 @@ use TelegramBot\Api\BotApi;
 /**
  * Class StartController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class StartController extends Controller
 {
@@ -97,14 +97,9 @@ class StartController extends Controller
                 ->one();
         }
 
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
         if (isset($language)) {
-            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionSave($language->code);
         } else {
-            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex();
         }
     }
@@ -126,13 +121,5 @@ class StartController extends Controller
             return $this->actionIndex();
         }
         return $this->actionIndex();
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }

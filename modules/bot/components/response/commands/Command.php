@@ -6,6 +6,7 @@ use TelegramBot\Api\BotApi;
 abstract class Command
 {
     private $fields = [];
+    private $messageId;
 
     protected function __construct(array $array = [])
     {
@@ -29,5 +30,15 @@ abstract class Command
     protected function getOptionalProperty($name, $defaultValue)
     {
         return $this->{$name} ?? $defaultValue;
+    }
+
+    protected function setMessageId(int $id)
+    {
+        $this->messageId = $id;
+    }
+
+    public function getMessageId()
+    {
+        return $this->messageId;
     }
 }

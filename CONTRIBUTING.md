@@ -1,4 +1,4 @@
-# Contributing Guidelines
+# Contribution Guidelines
 
 [Русская версия](CONTRIBUTING.ru.md)
 
@@ -88,22 +88,27 @@ PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://gith
 
 Recommended IDE:
   - [Atom](https://atom.io)
-    - [Atom package for Yii Framework 2](https://atom.io/packages/atom-yii2)
-    - [Atom package for EditorConfig](https://atom.io/packages/editorconfig)
-    - [Atom package for PHP Linter](https://atom.io/packages/linter-php)
-    - [IDE-PHP package](https://atom.io/packages/ide-php)
-    - [Atom-Beautify package](https://atom.io/packages/atom-beautify)
+    - [Atom-Beautify](https://atom.io/packages/atom-beautify)
       - [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer). The beautifier uses `.php_cs` file.
         - Go to "File > Settings > Packages > atom-beautify > Settings > PHP". To automatically beautify PHP code on file save toggle `Beautify On Save` option and select `PHP-CS-Fixer` as Default Beautifier.
         - Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add Binary/Script Path like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
+    - [EditorConfig](https://atom.io/packages/editorconfig)
+    - [IDE-PHP](https://atom.io/packages/ide-php)
+    - [PHP Linter](https://atom.io/packages/linter-php)
+    - [Yii Framework 2](https://atom.io/packages/atom-yii2)
+  - [VS Code](https://code.visualstudio.com)
+    - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+    - [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
+    - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-debug)
+    - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-pack)
+    - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-intellisense)
+    - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
-    - [SonarLint for PhpStorm](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
+    - [SonarLint](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
     - Yii 2 code styles for PhpStorm. [Download the file](https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/yii2.xml) and import to "Settings > Editor > Code Style > PHP > Import Scheme > Intellij IDEA code style XLM".
   - [Eclipse](https://www.eclipse.org)
-  	- [SonarLint for Eclipse](https://www.sonarlint.org/eclipse)
-  - [VS Code](https://code.visualstudio.com)
-    - [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
+  	- [SonarLint](https://www.sonarlint.org/eclipse)
   - [Sublime Text](https://www.sublimetext.com)
     - [PHP-CS-Fixer](https://github.com/benmatselby/sublime-phpcs)
 
@@ -134,7 +139,7 @@ Columns:
 
 https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeDown()-detail
 
-Use only for deletion of objects of the database structure (tables, fields, keys, indexes).
+Use only for deletion of objects of the database structure (tables, fields, keys, indexes). After creating a new migration, check if it can be rolled back and applied again.
 
 ##### Upgrade data in the database
 
@@ -168,6 +173,8 @@ Recommended IDE:
 ```
 
 ### Composer
+
+https://getcomposer.org/doc/04-schema.md
 
 In all cases when `composer.json` file is updated, add ` composer.json` and `composer.lock` files to the same commit.
 

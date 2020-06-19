@@ -22,7 +22,13 @@ class Rating extends \yii\db\ActiveRecord
     const TEAM = 1;
     const DONATE = 2;
     const USE_TELEGRAM_BOT = 3;
-    const UNRANKED = 'unranked';
+
+    public static $types = [
+        0 => 'Registration',
+        1 => 'Contribution',
+        2 => 'Donation',
+        3 => 'Registration',
+    ];
 
     /**
      * {@inheritdoc}
@@ -72,32 +78,13 @@ class Rating extends \yii\db\ActiveRecord
      */
     public static function getTotalRating()
     {
-        $totalRating = static::find()->select('sum(amount)')->scalar();
-        return $totalRating != null ? $totalRating : 0;
+        $result = static::find()->sum('amount');
+
+        return $result ?: 0;
     }
 
-    public static function getRank($userId)
+    public function getTypeName()
     {
-        $groupQueryResult = (new Query)
-            ->select([
-                '`user`.id',
-                'balance' => 'CASE WHEN SUM(`rating`.`amount`) IS NULL THEN 0 ELSE SUM(`rating`.`amount`) END',
-            ])
-            ->from(User::tableName())
-            ->leftJoin(Rating::tableName() . ' ON `user`.`id` = `rating`.`user_id`')
-            ->groupBy('`user`.`id`')
-            ->orderBy(['balance' => SORT_DESC, 'user.created_at' => SORT_ASC])
-            ->all();
-
-        $total = count($groupQueryResult);
-
-        $rank = static::UNRANKED;
-        foreach ($groupQueryResult as $index => $row) {
-            if ($row['id'] == $userId) {
-                $rank = $index + 1;
-            }
-        }
-
-        return [$total, $rank];
+        return self::$types[$this->type];
     }
 }

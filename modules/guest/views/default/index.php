@@ -15,7 +15,7 @@ use yii\helpers\Html;
   </div>
 </header>
 
-<section class="page-section" id="services">
+<section class="page-section" id="about">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
@@ -30,7 +30,7 @@ use yii\helpers\Html;
   </div>
 </section>
 
-<section class="bg-light page-section" id="team">
+<section class="page-section" id="features">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
@@ -100,23 +100,18 @@ use yii\helpers\Html;
                 <b>Technical</b>
             </p>
             <ul>
-                <li>Custom database and storage</li>
+                <li>Custom databases and storages</li>
                 <li>OAuth</li>
-                <li>API documentation service</li>
                 <li>Open Data Aggregator</li>
+                <li>API documentation service</li>
                 <li>API services directory</li>
-                <li>Medicine and Health</li>
-                <li>Sport and Fitness</li>
-                <li>Inventory and reviews of books and films</li>
-                <li>Local exchange of fiat and electronic currencies</li>
-                <li>Crowdfunding</li>
             </ul>
         </div>
     </div>
   </div>
 </section>
 
-<section class="page-section" id="about">
+<section class="page-section" id="membership">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
@@ -151,11 +146,11 @@ use yii\helpers\Html;
   </div>
 </section>
 
-<section class="bg-light page-section" id="portfolio">
+<section class="page-section" id="donate">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Donate & Crowdfunding') ?></h2>
+        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Donation & Crowdfunding') ?></h2>
       </div>
     </div>
     <div class="row">
@@ -175,7 +170,7 @@ use yii\helpers\Html;
   </div>
 </section>
 
-<section class="page-section" id="about">
+<section class="page-section" id="contribution">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
@@ -200,7 +195,29 @@ use yii\helpers\Html;
   </div>
 </section>
 
-<section class="bg-light page-section" id="portfolio">
+<section class="page-section" id="sponsors">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Partners') ?></h2>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-md-12">
+            <p>
+              <a href="https://m.do.co/c/4d16b1d56809" title="DigitalOcean.com" rel="nofollow noreferrer noopener" target="_blank">
+                <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
+              </a>
+              <a href="https://moqups.com" title="Moqups.com" rel="nofollow noreferrer noopener" target="_blank">
+                <img src="https://landing.moqups.com/img/logo@2x.png">
+              </a>
+            </p>
+        </div>
+      </div>
+  </div>
+</section>
+
+<section class="page-section" id="join">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">

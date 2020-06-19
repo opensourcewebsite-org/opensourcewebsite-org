@@ -44,7 +44,7 @@ class MenuController extends Controller
                     [
                         [
                             'callback_data' => ServicesController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Services')
+                            'text' => Yii::t('bot', 'Services')
                         ],
                     ],
                     [
