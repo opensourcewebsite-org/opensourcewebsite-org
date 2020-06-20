@@ -75,6 +75,16 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     /**
      * {@inheritdoc}
      */
+    public function rules()
+    {
+        return [
+            ['amount', $this->getFloatRuleFilter()],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels()
     {
         return [
