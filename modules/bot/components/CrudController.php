@@ -10,11 +10,13 @@ use app\modules\bot\components\request\Request;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\rules\FieldInterface;
 use app\modules\bot\controllers\privates\MenuController;
+use app\modules\bot\services\AttributeButtonsService;
 use app\modules\bot\services\BackRouteService;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\web\BadRequestHttpException;
 
 /**
  * Class CrudController
@@ -29,6 +31,12 @@ abstract class CrudController extends Controller
 
     /** @var BackRouteService */
     public $backRoute;
+    /** @var AttributeButtonsService */
+    public $attributeButtons;
+    /**
+     * @var array|mixed
+     */
+    private $manyToManyRelationAttributes;
 
     /** @inheritDoc */
     public function __construct($id, $module, $config = [])
@@ -40,23 +48,32 @@ abstract class CrudController extends Controller
                 'controller' => $this,
             ]
         );
+        $this->attributeButtons = Yii::createObject(
+            [
+                'class'      => AttributeButtonsService::class,
+                'controller' => $this,
+            ]
+        );
         parent::__construct($id, $module, $config);
     }
 
     /**
      * @param string $m $this->getModelName(Model::class)
+     * @param bool   $b Just set 1 if you not forget ->backRoute->set()
      *
      * @return array
      */
-    public function actionCreate($m)
+    public function actionCreate($m, $b)
     {
         $rule = $this->getRule($m);
         $attributes = $this->getAttributes($rule);
-        if (!empty($attributes)) {
-            $this->beforeCreate($rule['model']);
-            $attribute = array_keys($attributes)[0];
 
-            return $this->generateResponse($m, $attribute, compact('rule'));
+        if (!empty($attributes)) {
+            $this->beforeCreate($this->getModelClassByRule($rule));
+            $attribute = array_keys($attributes)[0];
+            $enableBackRoute = true;
+
+            return $this->generateResponse($m, $attribute, compact('rule', 'enableBackRoute'));
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -147,7 +164,6 @@ abstract class CrudController extends Controller
 
     /**
      * @param string $modelName
-     * @param string $attributeName
      * @param array  $values
      */
     private function setIntermediateFields($modelName, $values)
@@ -171,7 +187,16 @@ abstract class CrudController extends Controller
         $this->getState()->setIntermediateField(self::FIELD_NAME_MODEL_CLASS, $modelClass);
     }
 
-    public function actionEnterAttribute($a, $text = null)
+    /**
+     * Enter Attribute
+     *
+     * @param      $a
+     * @param null $text
+     *
+     * @return array
+     * @throws InvalidConfigException
+     */
+    public function actionEnA($a, $text = null)
     {
         $attributeName = $a;
         if (!$this->isRequestValid($attributeName)) {
@@ -184,7 +209,7 @@ abstract class CrudController extends Controller
         $modelName = $this->getModelName($modelClass);
         $rule = $this->getRule($modelName);
 
-        if ($this->isPrivateAttribute($attributeName, $rule)) {
+        if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
                                   ->answerCallbackQuery()
                                   ->build();
@@ -236,14 +261,17 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Set Attribute
+     *
      * @param string $a    Attribute name
      * @param int    $p    Page number
      * @param null   $v    Attribute value
      * @param null   $text User Message
      *
      * @return array
+     * @throws InvalidConfigException
      */
-    public function actionSetAttribute($a, $p = 1, $v = null, $text = null)
+    public function actionSA($a, $p = 1, $v = null, $text = null)
     {
         $attributeName = $a;
         if (!$this->isRequestValid($attributeName)) {
@@ -252,12 +280,11 @@ abstract class CrudController extends Controller
                                   ->build();
         }
 
-        $state = $this->getState();
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
         $rule = $this->getRule($modelName);
 
-        if (!$this->isPrivateAttribute($attributeName, $rule)) {
+        if (!$this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
                                   ->answerCallbackQuery()
                                   ->build();
@@ -300,7 +327,11 @@ abstract class CrudController extends Controller
                 }
                 $relationAttribute = $relationAttributes[$relationAttributeName];
                 if ($v) {
-                    $relationModel = call_user_func([$primaryRelation[2], 'findOne'], $v);
+                    if ($secondaryRelation) {
+                        $relationModel = call_user_func([$secondaryRelation[2], 'findOne'], $v);
+                    } else {
+                        $relationModel = call_user_func([$primaryRelation[2], 'findOne'], $v);
+                    }
                 } elseif ($text && ($field = ($relationAttribute[2] ?? null))) {
                     $relationQuery = call_user_func([$primaryRelation[2], 'find']);
                     $queryConditions = [];
@@ -320,6 +351,9 @@ abstract class CrudController extends Controller
                 $item = array_pop($relationData);
                 if (empty($item)) {
                     foreach ($relationData as $key => $relationItem) {
+                        if (!is_array($relationItem)) {
+                            continue;
+                        }
                         if ($relationItem[$relationAttributeName] == $v) {
                             $item = $relationItem;
                             unset($relationData[$key]);
@@ -337,6 +371,9 @@ abstract class CrudController extends Controller
                         return $val;
                     }
                 );
+                if ($isManyToOne && ($modelField = array_key_first($relationAttributes))) {
+                    $this->setIntermediateField($modelName, $modelField, $relationModel->id);
+                }
                 $this->setIntermediateField($modelName, $attributeName, $relationData);
 
                 $nextRelationAttributeName = $this->getNextKey($relationAttributes, $relationAttributeName);
@@ -366,7 +403,15 @@ abstract class CrudController extends Controller
         );
     }
 
-    public function actionAddAttribute($a, $p = null)
+    /**
+     * Add Attribute
+     *
+     * @param      $a
+     * @param null $p
+     *
+     * @return array
+     */
+    public function actionAA($a, $p = null)
     {
         $attributeName = $a;
         if (!$this->isRequestValid($attributeName)) {
@@ -374,8 +419,6 @@ abstract class CrudController extends Controller
                                   ->answerCallbackQuery()
                                   ->build();
         }
-
-        $state = $this->getState();
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
         $rule = $this->getRule($modelName);
@@ -407,6 +450,8 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Edit Attribute
+     *
      * @param string $m $this->getModelName(Model::class)
      * @param        $a
      * @param        $i
@@ -414,17 +459,17 @@ abstract class CrudController extends Controller
      *
      * @return array
      */
-    public function actionEditAttribute($m, $a, $i, $b = false)
+    public function actionEA($m, $a, $i, $b = false)
     {
         $id = $i;
-        $backRoute = $b;
+        $enableBackRoute = $b;
         $attributeName = $a;
         $rule = $this->getRule($m);
         $attributes = $this->getAttributes($rule);
         if (!empty($attributes) && array_key_exists($attributeName, $attributes) && isset($id)) {
             $this->beforeEdit($rule, $attributeName, $id);
 
-            return $this->generateResponse($m, $attributeName, compact('rule', 'backRoute'));
+            return $this->generateResponse($m, $attributeName, compact('rule', 'enableBackRoute'));
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -433,9 +478,11 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Clear Attribute
+     *
      * @return array
      */
-    public function actionClearAttribute()
+    public function actionCA()
     {
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
@@ -463,10 +510,61 @@ abstract class CrudController extends Controller
                               ->build();
     }
 
-    public function actionNextAttribute()
+    /**
+     * Show Attribute
+     *
+     * @param $a
+     *
+     * @return array
+     */
+    public function actionShA($a)
     {
-        $state = $this->getState();
         $modelClass = $this->getCurrentModelClass();
+        $modelName = $this->getModelName($modelClass);
+        $attributeName = $a;
+        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $rule = $this->getRule($modelName);
+        $attributes = $this->getAttributes($rule);
+        if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
+            $relationAttributes = $relation['attributes'];
+            array_shift($relationAttributes);
+            $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
+            if (isset($relationAttributeName)) {
+                $prevRelationAttributeName = $this->getPrevKey($relationAttributes, $relationAttributeName);
+                $this->setIntermediateField($modelName, self::FIELD_NAME_RELATION, $prevRelationAttributeName);
+
+                return $this->generatePrivateResponse(
+                    $modelName,
+                    $attributeName,
+                    ['config' => $attributes[$attributeName]]
+                );
+            }
+        }
+        if (!$isEdit) {
+            return $this->generateResponse($modelName, $attributeName, compact('rule'));
+        } else {
+            $response = $this->onCancel(
+                $this->getModelClassByRule($rule),
+                $this->getIntermediateField($modelName, 'id', null)
+            );
+            $this->getState()->reset();
+
+            return $response;
+        }
+    }
+
+    /**
+     * Next Attribute
+     *
+     * @return array
+     * @throws BadRequestHttpException
+     */
+    public function actionNA()
+    {
+        $modelClass = $this->getCurrentModelClass();
+        if (!$modelClass) {
+            throw new BadRequestHttpException();
+        }
         $modelName = $this->getModelName($modelClass);
         $attributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, null);
         if (isset($attributeName)) {
@@ -516,7 +614,12 @@ abstract class CrudController extends Controller
                               ->build();
     }
 
-    public function actionPrevAttribute()
+    /**
+     * Previous Attribute
+     *
+     * @return array
+     */
+    public function actionPA()
     {
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
@@ -530,8 +633,8 @@ abstract class CrudController extends Controller
                 array_shift($relationAttributes);
                 $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
                 if (isset($relationAttributeName)) {
-                    $nextRelationAttributeName = $this->getPrevKey($relationAttributes, $relationAttributeName);
-                    $this->setIntermediateField($modelName, self::FIELD_NAME_RELATION, $nextRelationAttributeName);
+                    $prevRelationAttributeName = $this->getPrevKey($relationAttributes, $relationAttributeName);
+                    $this->setIntermediateField($modelName, self::FIELD_NAME_RELATION, $prevRelationAttributeName);
 
                     return $this->generatePrivateResponse(
                         $modelName,
@@ -544,7 +647,10 @@ abstract class CrudController extends Controller
             if (isset($prevAttributeName) && !$isEdit) {
                 return $this->generateResponse($modelName, $prevAttributeName, compact('rule'));
             } else {
-                $response = $this->onCancel($rule['model'], $this->getIntermediateField($modelName, 'id', null));
+                $response = $this->onCancel(
+                    $this->getModelClassByRule($rule),
+                    $this->getIntermediateField($modelName, 'id', null)
+                );
                 $this->getState()->reset();
 
                 return $response;
@@ -557,13 +663,14 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Remove Attribute
+     *
      * @param $i int Item Primary Id
      *
      * @return array
      */
-    public function actionRemoveAttribute($i)
+    public function actionRA($i)
     {
-        $state = $this->getState();
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
         $attributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, null);
@@ -602,11 +709,13 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Edit Relation Attribute
+     *
      * @param $i int Item Primary Id
      *
      * @return array
      */
-    public function actionEditRelationAttribute($i)
+    public function actionERA($i)
     {
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
@@ -667,7 +776,7 @@ abstract class CrudController extends Controller
                     [
                         'text'          => Yii::t('bot', $model->getAttributeLabel($attribute)),
                         'callback_data' => self::createRoute(
-                            'edit-attribute',
+                            'e-a',
                             [
                                 'i' => $id,
                                 'm' => $m,
@@ -687,6 +796,7 @@ abstract class CrudController extends Controller
             }
         );
         $systemButtons = $this->getDefaultSystemButtons($b);
+        $systemButtons = array_values($systemButtons);
         $buttons = array_merge($editButtons, [$systemButtons]);
         $messageText = $this->render(
             "$m/show",
@@ -763,11 +873,11 @@ abstract class CrudController extends Controller
         $state = $this->getState();
         $model = $this->getModel($rule, $id);
         if (isset($model)) {
-            $this->setCurrentModelClass($rule['model']);
-            $modelName = $this->getModelName($rule['model']);
+            $this->setCurrentModelClass($this->getModelClassByRule($rule));
+            $modelName = $this->getModelName($this->getModelClassByRule($rule));
             $this->setIntermediateField($modelName, 'id', $id);
 
-            if ($this->isPrivateAttribute($attributeName, $rule)) {
+            if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
                 $relation = $this->getRelation($this->getAttributes($rule)[$attributeName]);
             }
             if (isset($relation) && count($relation['attributes']) > 1) {
@@ -873,8 +983,8 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param $model
-     * @param $relation
+     * @param string|ActiveRecord $model Model::class or Model
+     * @param                     $relation
      *
      * @return array [['column_id', 'ref_column_id', 'class'], ['sec_column_id','sec_ref_column_id', 'class', ?'field']]
      */
@@ -941,43 +1051,59 @@ abstract class CrudController extends Controller
         return $relationModel;
     }
 
-    private function save(array $rule)
+    /**
+     * @param array $rule
+     *
+     * @return ActiveRecord
+     * @throws InvalidConfigException
+     */
+    private function getFilledModel($rule)
     {
-        $state = $this->getState();
-        $modelName = $this->getModelName($rule['model']);
+        $modelName = $this->getModelName($this->getModelClassByRule($rule));
         $id = $this->getIntermediateField($modelName, 'id', null);
         $isNew = is_null($id);
+        $manyToManyRelationAttributes = [];
         /* @var ActiveRecord $model */
         if ($isNew) {
             $model = $this->createModel($rule);
         } else {
             $model = $this->getModel($rule, $id);
         }
-
-        if ($model) {
-            $manyToManyRelationAttributes = [];
-            $behaviors = [];
-            foreach ($rule['attributes'] as $attributeName => $attribute) {
-                if (isset($attribute['behaviors'])) {
-                    foreach ($attribute['behaviors'] as $behaviorName => $behaviorValue) {
-                        $behaviors[$attributeName . $behaviorName] = $behaviorValue;
-                    }
+        $behaviors = [];
+        foreach ($rule['attributes'] as $attributeName => $attribute) {
+            if (isset($attribute['behaviors'])) {
+                foreach ($attribute['behaviors'] as $behaviorName => $behaviorValue) {
+                    $behaviors[$attributeName . $behaviorName] = $behaviorValue;
                 }
-                $component = $this->createAttributeComponent($attribute);
-                if ($component instanceof FieldInterface) {
-                    $fields = $component->getFields();
-                    foreach ($fields as $field) {
-                        $this->fillModel($model, $field, $attribute, $manyToManyRelationAttributes);
-                    }
-                }
-                $this->fillModel($model, $attributeName, $attribute, $manyToManyRelationAttributes);
             }
-            $model->attachBehaviors($behaviors);
+            $component = $this->createAttributeComponent($attribute);
+            if ($component instanceof FieldInterface) {
+                $fields = $component->getFields();
+                foreach ($fields as $field) {
+                    $this->fillModel($model, $field, $attribute, $manyToManyRelationAttributes);
+                }
+            }
+            $this->fillModel($model, $attributeName, $attribute, $manyToManyRelationAttributes);
+        }
+        $model->attachBehaviors($behaviors);
+        $this->manyToManyRelationAttributes = $manyToManyRelationAttributes;
+
+        return $model;
+    }
+
+    private function save(array $rule)
+    {
+        $state = $this->getState();
+        $modelName = $this->getModelName($this->getModelClassByRule($rule));
+        $id = $this->getIntermediateField($modelName, 'id', null);
+        $isNew = is_null($id);
+        $model = $this->getFilledModel($rule);
+        if ($model->validate()) {
             $this->beforeSave($model, $isNew);
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 if ($model->save()) {
-                    foreach ($manyToManyRelationAttributes as $attributeName) {
+                    foreach ($this->manyToManyRelationAttributes as $attributeName) {
                         $relation = $this->getRelation($rule['attributes'][$attributeName]);
                         $relationModelClass = $relation['model'];
 
@@ -1085,11 +1211,57 @@ abstract class CrudController extends Controller
     {
         $keys = array_keys($assocArray);
         $prevKey = $keys[array_search($element, $keys) - 1] ?? null;
-        if (isset($assocArray['hidden'])) {
-            $prevKey = $this->getNextKey($assocArray, $prevKey);
+        if (isset($assocArray[$prevKey]['hidden'])) {
+            $prevKey = $this->getPrevKey($assocArray, $prevKey);
         }
 
         return $prevKey;
+    }
+
+    /**
+     * @param array $buttons
+     * @param array $systemButtons
+     * @param array $options
+     *
+     * @return array
+     */
+    public function prepareButtons($buttons, $systemButtons, $options = [])
+    {
+        $modelName = ArrayHelper::getValue($options, 'modelName', null);
+        $isEmpty = ArrayHelper::getValue($options, 'isEmpty', true);
+        $attributeName = ArrayHelper::getValue($options, 'attributeName', null);
+        $config = ArrayHelper::getValue($options, 'config', []);
+
+        $isAttributeRequired = $config['isRequired'] ?? true;
+        $rule = $this->getRule($modelName);
+        $attributes = $this->getAttributes($rule);
+        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
+        $configButtons = $this->attributeButtons->get($rule, $attributeName);
+        if ($configButtons) {
+            $buttons = array_merge($buttons, [$configButtons]);
+        }
+        /* 'Next' button */
+        if (((!$isAttributeRequired || !$isEmpty)
+            && (!$isEdit
+                || (isset($relation) && count($relation['attributes']) > 1)
+                && !isset($relationAttributeName))
+        )) {
+            $buttonSkip = $config['buttonSkip'] ?? [];
+            $nextAttribute = $this->getNextKey($attributes, $attributeName);
+            $buttonSkip = array_merge(
+                [
+                    'text'          => Yii::t('bot', (isset($nextAttribute) && !$isEdit) ? 'Skip' : 'Finish'),
+                    'callback_data' => self::createRoute('n-a'),
+                ],
+                $buttonSkip
+            );
+
+            $buttons[] = [$buttonSkip];
+        }
+        $buttons = array_merge($buttons, [$systemButtons]);
+
+        return $buttons;
     }
 
     /**
@@ -1103,13 +1275,14 @@ abstract class CrudController extends Controller
     {
         $config = ArrayHelper::getValue($options, 'config', []);
         $page = ArrayHelper::getValue($options, 'page', 1);
-        $backRoute = ArrayHelper::getValue($options, 'backRoute', false);
+        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
         $error = ArrayHelper::getValue($options, 'error', null);
+        $rule = $this->getRule($modelName);
 
         $state = $this->getState();
         $state->setName(
             self::createRoute(
-                'set-attribute',
+                's-a',
                 [
                     'a' => $attributeName,
                     'p' => $page,
@@ -1125,12 +1298,11 @@ abstract class CrudController extends Controller
         if (isset($relationAttributeName)
             && ($relationAttribute = $relation['attributes'][$relationAttributeName])) {
             if (!strcmp($this->getModelName($relationAttribute[0]), $modelName)) {
-                $rule = $this->getRule($modelName);
                 $attributes = $this->getAttributes($rule);
                 $nextAttribute = $this->getNextKey($attributes, $attributeName);
 
                 if (isset($nextAttribute)) {
-                    return $this->generateResponse($modelName, $nextAttribute, compact('rule', 'backRoute'));
+                    return $this->generateResponse($modelName, $nextAttribute, compact('rule', 'enableBackRoute'));
                 }
             }
             /* @var ActiveQuery $query */
@@ -1143,7 +1315,7 @@ abstract class CrudController extends Controller
                     $query,
                     function (int $page) use ($modelName, $attributeName) {
                         return self::createRoute(
-                            'set-attribute',
+                            's-a',
                             [
                                 'a' => $attributeName,
                                 'p' => $page,
@@ -1154,7 +1326,7 @@ abstract class CrudController extends Controller
                         return [
                             'text'          => $this->getLabel($model),
                             'callback_data' => self::createRoute(
-                                'set-attribute',
+                                's-a',
                                 [
                                     'a' => $attributeName,
                                     'v' => $model->getAttribute($valueAttribute),
@@ -1171,12 +1343,18 @@ abstract class CrudController extends Controller
                 $relationAttributeValue = $item[$relationAttributeName];
                 $currentValue = $query->where([$valueAttribute => $relationAttributeValue])->one();
             }
+            $isEmpty = empty($attributeValue);
             $systemButtons = $this->generateSystemButtons(
                 $modelName,
                 $attributeName,
-                ['isEmpty' => isset($attributeValue), 'backRoute' => $backRoute]
+                compact('isEmpty', 'enableBackRoute')
             );
-            $buttons = array_merge($itemButtons, [$systemButtons]);
+            $buttons = $this->prepareButtons(
+                $itemButtons,
+                $systemButtons,
+                compact('config', 'isEmpty', 'modelName', 'attributeName')
+            );
+            $model = $this->getFilledModel($rule);
 
             return ResponseBuilder::fromUpdate($this->getUpdate())
                                   ->editMessageTextOrSendMessage(
@@ -1188,6 +1366,7 @@ abstract class CrudController extends Controller
                                               'error'        => $error,
                                               'totalSteps'   => $totalSteps,
                                               'isEdit'       => $isEdit,
+                                              'model'        => $model,
                                           ]
                                       ),
                                       $buttons,
@@ -1197,36 +1376,33 @@ abstract class CrudController extends Controller
         }
 
         $isAttributeRequired = $config['isRequired'] ?? true;
-        $relationAttributesWithoutPrimaryAttribute = $relation['attributes'];
-        array_shift($relationAttributesWithoutPrimaryAttribute);
-        $relationAttributesWithoutPrimaryAttributeKeys = array_keys($relationAttributesWithoutPrimaryAttribute);
-        $relationAttributeName = reset($relationAttributesWithoutPrimaryAttributeKeys);
-        if ($relationAttributeName
-            && !strcmp(
-                $modelName,
-                $this->getModelName($relationAttributesWithoutPrimaryAttribute[$relationAttributeName][0])
-            )) {
-            $relationAttributeName = array_key_first($relation['attributes']);
-        }
+        [, $secondaryField] = $this->getRelationAttributes($this->getModelClassByRule($rule), $relation);
         $items = $this->getIntermediateField($modelName, $attributeName, []);
         $itemButtons = PaginationButtons::buildFromArray(
             $items,
             function (int $page) use ($attributeName) {
                 return self::createRoute(
-                    'add-attribute',
+                    'a-a',
                     [
                         'a' => $attributeName,
                         'p' => $page,
                     ]
                 );
             },
-            function ($key, $item) use ($relation, $relationAttributeName, $isAttributeRequired, $items) {
+            function ($key, $item) use ($relation, $secondaryField, $isAttributeRequired, $items) {
                 try {
+                    $modelClass = $relation['model'] ?? null;
                     /* @var ActiveRecord $model */
-                    $model = Yii::createObject(array_merge(['class' => $relation['model']], $item));
+                    $model = call_user_func([$modelClass, 'findOne'], $item);
+                    if (!$model) {
+                        throw new \Exception($modelClass . ' with params ' . serialize($item) . ' was not found');
+                    }
                     $label = $this->getLabel($model);
-                    $id = $item[$relationAttributeName];
+                    $id = $item[$secondaryField[0]];
                 } catch (\Exception $ex) {
+                    if (is_array($item)) {
+                        return [];
+                    }
                     $label = $item;
                     $id = 'v_' . $key;
                 }
@@ -1236,7 +1412,7 @@ abstract class CrudController extends Controller
                         [
                             'text'          => $label,
                             'callback_data' => self::createRoute(
-                                'edit-relation-attribute',
+                                'e-r-a',
                                 [
                                     'i' => $id,
                                 ]
@@ -1247,7 +1423,7 @@ abstract class CrudController extends Controller
                         [
                             'text'          => Emoji::DELETE,
                             'callback_data' => self::createRoute(
-                                'remove-attribute',
+                                'r-a',
                                 [
                                     'i' => $id,
                                 ]
@@ -1258,6 +1434,17 @@ abstract class CrudController extends Controller
             },
             $page
         );
+        $isEmpty = empty($items);
+        $buttons = $this->prepareButtons(
+            $itemButtons,
+            $this->generateSystemButtons(
+                $modelName,
+                $attributeName,
+                compact('isEmpty', 'enableBackRoute')
+            ),
+            compact('isEmpty', 'config', 'attributeName', 'modelName')
+        );
+        $model = $this->getFilledModel($rule);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
@@ -1268,34 +1455,35 @@ abstract class CrudController extends Controller
                                           'error'      => $error,
                                           'totalSteps' => $totalSteps,
                                           'isEdit'     => $isEdit,
+                                          'model'      => $model,
                                       ]
                                   ),
-                                  array_merge(
-                                      $itemButtons,
-                                      [
-                                          $this->generateSystemButtons(
-                                              $modelName,
-                                              $attributeName,
-                                              ['isEmpty' => empty($items), 'backRoute' => $backRoute]
-                                          ),
-                                      ]
-                                  )
+                                  $buttons
                               )
                               ->build();
     }
 
+    /**
+     * @param string $modelName
+     * @param string $attributeName
+     * @param array  $options
+     *
+     * @return array
+     * @throws InvalidConfigException
+     */
     private function generatePublicResponse(
         string $modelName,
         string $attributeName,
         array $options
     ) {
-        $backRoute = ArrayHelper::getValue($options, 'backRoute', false);
+        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
         $config = ArrayHelper::getValue($options, 'config', []);
+        $rule = $this->getRule($modelName);
         $error = ArrayHelper::getValue($options, 'error', null);
         $state = $this->getState();
         $state->setName(
             self::createRoute(
-                'enter-attribute',
+                'en-a',
                 [
                     'a' => $attributeName,
                 ]
@@ -1305,12 +1493,18 @@ abstract class CrudController extends Controller
 
         $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
         $attributeValue = $this->getIntermediateField($modelName, $attributeName, null);
+        $isEmpty = empty($attributeValue);
         $systemButtons = $this->generateSystemButtons(
             $modelName,
             $attributeName,
-            ['isEmpty' => empty($attributeValue), 'backRoute' => $backRoute]
+            compact('isEmpty', 'enableBackRoute')
         );
         [$step, $totalSteps] = $this->getStepsInfo($attributeName, $this->getRule($modelName));
+        $buttons = $this->prepareButtons(
+            [],
+            $systemButtons,
+            compact('config', 'isEmpty', 'modelName', 'attributeName')
+        );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
@@ -1322,10 +1516,10 @@ abstract class CrudController extends Controller
                                           'step'         => $step,
                                           'totalSteps'   => $totalSteps,
                                           'isEdit'       => $isEdit,
-                                          'model'        => null,
+                                          'model'        => $this->getFilledModel($rule),
                                       ]
                                   ),
-                                  [$systemButtons],
+                                  $buttons,
                                   true
                               )
                               ->build();
@@ -1341,9 +1535,9 @@ abstract class CrudController extends Controller
     private function generateResponse(string $modelName, string $attributeName, array $options)
     {
         $rule = ArrayHelper::getValue($options, 'rule', []);
-        $backRoute = ArrayHelper::getValue($options, 'backRoute', false);
+        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
         $config = $rule['attributes'][$attributeName];
-        if ($this->isPrivateAttribute($attributeName, $rule)) {
+        if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             $attributes = $config['relation']['attributes'];
             $this->setIntermediateField(
                 $modelName,
@@ -1351,32 +1545,46 @@ abstract class CrudController extends Controller
                 (count($attributes) == 1) ? array_keys($attributes)[0] : null
             );
 
-            return $this->generatePrivateResponse($modelName, $attributeName, compact('config', 'backRoute'));
+            return $this->generatePrivateResponse(
+                $modelName,
+                $attributeName,
+                compact('config', 'enableBackRoute')
+            );
         } else {
-            return $this->generatePublicResponse($modelName, $attributeName, compact('config', 'backRoute'));
+            return $this->generatePublicResponse(
+                $modelName,
+                $attributeName,
+                compact('config', 'enableBackRoute')
+            );
         }
     }
 
     /**
-     * @param bool $backRoute
+     * If you call directly - you should use remove keys
      *
-     * @return array
+     * @param bool $enableBackRoute
+     *
+     * @return array ['back => ['text' => 'this is text', 'callback_data' => 'route']]
      */
-    private function getDefaultSystemButtons($backRoute = false)
+    private function getDefaultSystemButtons($enableBackRoute = false, $backRoute = '')
     {
-        if ($backRoute) {
+        if ($enableBackRoute && $backRoute) {
+            $backRoute = '';
+        } elseif ($enableBackRoute) {
             $backRoute = $this->backRoute->get();
         } else {
-            $backRoute = self::createRoute('prev-attribute');
+            $backRoute = self::createRoute('p-a');
         }
         $systemButtons = [];
-        /* 'Back' button */
-        $systemButtons[] = [
-            'text'          => Emoji::BACK,
-            'callback_data' => $backRoute,
-        ];
+        if ($backRoute) {
+            /* 'Back' button */
+            $systemButtons['back'] = [
+                'text'          => Emoji::BACK,
+                'callback_data' => $backRoute,
+            ];
+        }
         /* 'Menu' button */
-        $systemButtons[] = [
+        $systemButtons['menu'] = [
             'callback_data' => MenuController::createRoute(),
             'text'          => Emoji::MENU,
         ];
@@ -1394,49 +1602,43 @@ abstract class CrudController extends Controller
     private function generateSystemButtons(string $modelName, string $attributeName, array $options)
     {
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', false);
-        $backRoute = ArrayHelper::getValue($options, 'backRoute', false);
+        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
         $rule = $this->getRule($modelName);
         $attributes = $this->getAttributes($rule);
         $config = $attributes[$attributeName];
-        $systemButtons = $this->getDefaultSystemButtons($backRoute);
+        $backRoute = $config['backRoute'] ?? '';
+        if ((!$enableBackRoute && $backRoute)
+            || !strcmp($attributeName, array_key_first($attributes))) {
+            $enableBackRoute = true;
+        }
+        $systemButtons = $this->getDefaultSystemButtons($enableBackRoute, $backRoute);
+        $configSystemButtons = $this->attributeButtons->getSystems($rule, $attributeName);
 
-        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
         $isAttributeRequired = $config['isRequired'] ?? true;
         $relation = $this->getRelation($config);
-        $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
 
         if (!isset($relation) || count($relation['attributes']) == 1) {
             /* 'Clear' button */
             if (!$isAttributeRequired && !$isEmpty) {
-                $systemButtons[] = [
+                $systemButtons['delete'] = [
                     'text'          => Emoji::DELETE,
-                    'callback_data' => self::createRoute('clear-attribute'),
+                    'callback_data' => self::createRoute('c-a'),
                 ];
             }
         } else {
             /* 'Add' button */
-            $systemButtons[] = [
+            $systemButtons['add'] = [
                 'text'          => Emoji::ADD,
                 'callback_data' => self::createRoute(
-                    'add-attribute',
+                    'a-a',
                     [
                         'a' => $attributeName,
                     ]
                 ),
             ];
         }
-
-        /* 'Next' button */
-        if (((!$isAttributeRequired || !$isEmpty) && (!$isEdit || (isset($relation) && count(
-                        $relation['attributes']
-                    ) > 1)
-                && !isset($relationAttributeName)))) {
-            $nextAttribute = $this->getNextKey($attributes, $attributeName);
-            $systemButtons[] = [
-                'text'          => Yii::t('bot', (isset($nextAttribute) && !$isEdit) ? 'Next' : 'Finish'),
-                'callback_data' => self::createRoute('next-attribute'),
-            ];
-        }
+        $systemButtons = ArrayHelper::merge($systemButtons, $configSystemButtons);
+        $systemButtons = array_values($systemButtons);
 
         return $systemButtons;
     }
@@ -1450,11 +1652,14 @@ abstract class CrudController extends Controller
         return [$step, $totalSteps];
     }
 
-    private function isPrivateAttribute(string $attributeName, array $rule)
+    /**
+     * @param array $rule
+     *
+     * @return string
+     */
+    public function getModelClassByRule($rule)
     {
-        $config = $rule['attributes'][$attributeName];
-
-        return array_key_exists('relation', $config);
+        return $rule['model'];
     }
 
     /**
@@ -1470,7 +1675,7 @@ abstract class CrudController extends Controller
             return null;
         }
         try {
-            $object = Yii::createObject(['class' => $rule['model']]);
+            $object = Yii::createObject(['class' => $this->getModelClassByRule($rule)]);
             if ($object instanceof ActiveRecord) {
                 return $object;
             }
@@ -1492,13 +1697,13 @@ abstract class CrudController extends Controller
      */
     private function getModel(array $rule, int $id)
     {
-        $modelName = $this->getModelName($rule['model']);
+        $modelName = $this->getModelName($this->getModelClassByRule($rule));
         $getModelMethodName = 'get' . ucfirst($modelName);
         if (method_exists($this, $getModelMethodName)) {
             /* @var ActiveRecord $model */
             $model = call_user_func([$this, $getModelMethodName], $id);
         } else {
-            $model = call_user_func([$rule['model'], 'findOne'], $id);
+            $model = call_user_func([$this->getModelClassByRule($rule), 'findOne'], $id);
         }
 
         return $model ?? null;
@@ -1529,7 +1734,7 @@ abstract class CrudController extends Controller
     {
         $requestedRule = null;
         foreach ($this->rules() as $rule) {
-            if ($this->getModelName($rule['model']) == $modelName) {
+            if ($this->getModelName($this->getModelClassByRule($rule)) == $modelName) {
                 $requestedRule = $rule;
             }
         }
@@ -1658,7 +1863,7 @@ abstract class CrudController extends Controller
     private function canSkipAttribute(array $rule, string $attributeName)
     {
         $attributes = $this->getAttributes($rule);
-        $modelName = $this->getModelName($rule['model']);
+        $modelName = $this->getModelName($this->getModelClassByRule($rule));
         $config = $attributes[$attributeName];
         $isRequired = $config['isRequired'] ?? true;
         $isEmptyAttribute = empty($this->getIntermediateField($modelName, $attributeName, null));

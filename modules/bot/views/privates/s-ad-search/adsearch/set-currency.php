@@ -2,6 +2,4 @@
 if (!empty($error)) {
     echo Yii::t('bot', 'You entered an invalid value') . ': ' . $error . '<br/><br/>';
 } ?>
-<?= Yii::t('bot', 'Send a title') ?>
-<br/><br/>
-<b><?= $model->title ?></b>
+<b><?= Yii::t('bot', 'Choose your currency or type it') ?>:</b>

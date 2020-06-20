@@ -75,14 +75,15 @@ class SAdSearchController extends CrudController
                         'hidden'    => true,
                     ],
                     'keywords'      => [
-                        'relation'  => [
+                        'isRequired' => false,
+                        'relation'   => [
                             'model'      => AdSearchKeyword::class,
                             'attributes' => [
                                 'ad_search_id'  => [AdSearch::class, 'id'],
                                 'ad_keyword_id' => [AdKeyword::class, 'id', 'keyword'],
                             ],
                         ],
-                        'component' => [
+                        'component'  => [
                             'class'      => ExplodeStringFieldComponent::class,
                             'attributes' => [
                                 'delimiters' => [',', '.', "\n"],
@@ -90,14 +91,25 @@ class SAdSearchController extends CrudController
                         ],
                     ],
                     'currency'      => [
-                        'relation' => [
+                        'relation'   => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
                             ],
                         ],
                     ],
                     'max_price'     => [
-                        'isRequired' => false,
+                        'isRequired'    => false,
+                        'buttons'       => [
+                            [
+                                'text'  => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ],
+                        'systemButtons' => [
+                            'back' => [
+                                'item' => 'description',
+                            ],
+                        ],
                     ],
                     'location'      => [
                         'component' => LocationToArrayFieldComponent::class,
@@ -181,6 +193,7 @@ class SAdSearchController extends CrudController
             ],
         ];
 
+        $this->backRoute->set('index', compact('adSection', 'page'));
         if ($adSection == 1) {
             $buttons[count($buttons) - 1][] = [
                 'callback_data' => self::createRoute(
@@ -188,6 +201,7 @@ class SAdSearchController extends CrudController
                     [
                         //                'adSection' => $adSection
                         'm' => $this->getModelName(AdSearch::class),
+                        'b' => 1,
                     ]
                 ),
                 'text'          => Emoji::ADD,

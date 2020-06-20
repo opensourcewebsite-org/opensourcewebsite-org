@@ -93,6 +93,18 @@ class PaginationButtons
                 array_keys($items),
                 $items
             );
+            $buttons = array_filter(
+                $buttons,
+                function ($items) {
+                    foreach ($items as $key => $item) {
+                        if (!$item) {
+                            unset($items[$key]);
+                        }
+                    }
+
+                    return $items;
+                }
+            );
         }
 
         if ($pagination->pageCount > 1) {
