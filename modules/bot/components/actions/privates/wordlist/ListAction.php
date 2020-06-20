@@ -27,9 +27,13 @@ class ListAction extends BaseAction
         }
 
         $this->getState()->setName(null);
-        $phraseQuery = $this->wordModelClass::find()->where(array_merge($this->modelAttributes, [
-            'chat_id' => $chatId
-        ]));
+
+        $phraseQuery = $this->wordModelClass::find()
+            ->where(array_merge($this->modelAttributes, [
+                'chat_id' => $chatId
+            ]))
+            ->orderBy(['text' => SORT_ASC]);
+
         $pagination = new Pagination([
                 'totalCount' => $phraseQuery->count(),
                 'pageSize' => $this->pageWordsCount,
