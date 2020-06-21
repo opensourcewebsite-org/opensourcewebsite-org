@@ -819,7 +819,7 @@ abstract class CrudController extends Controller
             'model' => $model,
         ];
         $messageText = $this->render(
-            ($rule['view'] ?? null) ?: "show",
+            ($rule['view'] ?? null) ?: 'show',
             $this->prepareViewParams($params, $rule, null)
         );
 
@@ -894,13 +894,13 @@ abstract class CrudController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->renderAttribute(
-                    "$m/" . (($rule['view'] ?? null) ?: "show"),
+                    "$m/" . (($rule['view'] ?? null) ?: 'show'),
                     [
                         'model' => $model,
                     ],
                     compact('rule')
                 ),
-                $keyboard ?? [],
+                $keyboard ?: [],
                 true
             )
             ->build();
@@ -929,7 +929,6 @@ abstract class CrudController extends Controller
      */
     protected function beforeEdit(array $rule, string $attributeName, int $id)
     {
-        $state = $this->getState();
         $model = $this->getModel($rule, $id);
         if (isset($model)) {
             $this->setCurrentModelClass($this->getModelClassByRule($rule));
@@ -1152,7 +1151,6 @@ abstract class CrudController extends Controller
 
     private function save(array $rule)
     {
-        $state = $this->getState();
         $modelName = $this->getModelName($this->getModelClassByRule($rule));
         $id = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
         $isNew = is_null($id);
@@ -1198,14 +1196,16 @@ abstract class CrudController extends Controller
                             ];
                             /** @var ActiveRecord $relationModel */
                             $relationModel = call_user_func(
-                                    [$relationModelClass, 'findOne'],
-                                    $conditions
-                                )
-                                ?? Yii::createObject(
+                                [$relationModelClass, 'findOne'],
+                                $conditions
+                            );
+                            if (!$relationModel) {
+                                $relationModel = Yii::createObject(
                                     [
                                         'class' => $relationModelClass,
                                     ]
                                 );
+                            }
                             $secondaryAttributeIds[] = $attributeValue[$secondaryRelation[0]];
                             $relationModel->setAttribute(
                                 $primaryRelation[0],
@@ -1249,7 +1249,6 @@ abstract class CrudController extends Controller
     /**
      * @param array $assocArray
      * @param       $element
-     * @param bool $ignoreWithBehavior
      *
      * @return mixed|null
      */
@@ -1267,7 +1266,6 @@ abstract class CrudController extends Controller
     /**
      * @param array $assocArray
      * @param       $element
-     * @param bool $ignoreWithBehavior
      *
      * @return mixed|null
      */
@@ -1306,12 +1304,10 @@ abstract class CrudController extends Controller
             $buttons = array_merge($buttons, [$configButtons]);
         }
         /* 'Next' button */
-        if ((
-            (!$isAttributeRequired || !$isEmpty)
-            && (!$isEdit
-                || (isset($relation) && count($relation['attributes']) > 1)
+        if ((!$isAttributeRequired || !$isEmpty)
+            && (!$isEdit || (isset($relation) && count($relation['attributes']) > 1)
                 && !isset($relationAttributeName))
-        )) {
+        ) {
             $buttonSkip = $config['buttonSkip'] ?? [];
             $nextAttribute = $this->getNextKey($attributes, $attributeName);
             $buttonSkip = array_merge(
@@ -1324,9 +1320,8 @@ abstract class CrudController extends Controller
 
             $buttons[] = [$buttonSkip];
         }
-        $buttons = array_merge($buttons, [$systemButtons]);
 
-        return $buttons;
+        return array_merge($buttons, [$systemButtons]);
     }
 
     /**
@@ -1414,7 +1409,7 @@ abstract class CrudController extends Controller
             } else {
                 $itemButtons = PaginationButtons::buildFromQuery(
                     $query,
-                    function (int $page) use ($modelName, $attributeName) {
+                    function (int $page) use ($attributeName) {
                         return self::createRoute(
                             's-a',
                             [
@@ -1423,7 +1418,7 @@ abstract class CrudController extends Controller
                             ]
                         );
                     },
-                    function ($key, ActiveRecord $model) use ($modelName, $attributeName, $valueAttribute) {
+                    function ($key, ActiveRecord $model) use ($attributeName, $valueAttribute) {
                         return [
                             'text' => $this->getLabel($model),
                             'callback_data' => self::createRoute(
@@ -1837,12 +1832,12 @@ abstract class CrudController extends Controller
      */
     private function getKeyboard($modelName, $model)
     {
-        $getKeyboardMethodName = 'get' . ucfirst($modelName) . 'Keyboard';
+        $getKeyboardMethodName = "get" . ucfirst($modelName) . "Keyboard";
         if (method_exists($this, $getKeyboardMethodName)) {
             $keyboard = call_user_func([$this, $getKeyboardMethodName], $model);
         }
 
-        return $keyboard ?? null;
+        return $keyboard ?? [];
     }
 
     /**
@@ -1912,7 +1907,7 @@ abstract class CrudController extends Controller
 
                 return null;
             }
-            foreach ($attributes as $attribute => $config) {
+            foreach ($attributes as $config) {
                 if (count($config) < 2) {
                     Yii::warning(
                         "Error occurred when reading '"
@@ -1944,7 +1939,7 @@ abstract class CrudController extends Controller
                                 $value = array_key_first($value);
                             }
                             if (!$model->hasAttribute($value)) {
-                                Yii::warning("$modelClassName doesn't have $refColumn attribute");
+                                Yii::warning("$modelClassName doesn't have $value attribute");
 
                                 return null;
                             }
@@ -2046,7 +2041,7 @@ abstract class CrudController extends Controller
         if ($relationAttributeName && ($rule['attributes'][$attributeName]['enableAddButton'] ?? false)) {
             $pathArray = [
                 $attributeName,
-                "/edit-",
+                '/edit-',
                 $relationAttributeName,
             ];
         } else {

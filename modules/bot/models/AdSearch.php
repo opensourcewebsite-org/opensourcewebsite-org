@@ -17,7 +17,7 @@ use app\models\User as GlobalUser;
 class AdSearch extends ActiveRecord
 {
     public const STATUS_OFF = 0;
-    public const STATUS_ON  = 1;
+    public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
 
@@ -74,7 +74,7 @@ class AdSearch extends ActiveRecord
     public function getKeywords()
     {
         return $this->hasMany(AdKeyword::className(), ['id' => 'ad_keyword_id'])
-                    ->viaTable('{{%ad_search_keyword}}', ['ad_search_id' => 'id']);
+            ->viaTable('{{%ad_search_keyword}}', ['ad_search_id' => 'id']);
     }
 
     public function isActive()
@@ -85,19 +85,19 @@ class AdSearch extends ActiveRecord
     public function getMatches()
     {
         return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
-                    ->viaTable(
-                        '{{%ad_match}}',
-                        ['ad_search_id' => 'id'],
-                        function ($query) {
-                            $query->andWhere(['or', ['type' => 1], ['type' => 2]]);
-                        }
-                    );
+            ->viaTable(
+                '{{%ad_match}}',
+                ['ad_search_id' => 'id'],
+                function ($query) {
+                    $query->andWhere(['or', ['type' => 1], ['type' => 2]]);
+                }
+            );
     }
 
     public function getAllMatches()
     {
         return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
-                    ->viaTable('{{%ad_match}}', ['ad_search_id' => 'id']);
+            ->viaTable('{{%ad_match}}', ['ad_search_id' => 'id']);
     }
 
     public function updateMatches()
@@ -105,13 +105,13 @@ class AdSearch extends ActiveRecord
         $this->unlinkAll('allMatches', true);
 
         $adOfferQuery = AdOffer::find()
-                               ->where(['!=', 'ad_offer.user_id', $this->user_id])
-                               ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
-                               ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-                               ->andWhere(['ad_offer.section' => $this->section])
-                               ->andWhere(
-                                   "ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"
-                               );
+            ->where(['!=', 'ad_offer.user_id', $this->user_id])
+            ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
+            ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->andWhere(['ad_offer.section' => $this->section])
+            ->andWhere(
+                "ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"
+            );
 
         $adOfferQueryNoKeywords = clone $adOfferQuery;
         $adOfferQueryNoKeywords = $adOfferQueryNoKeywords
@@ -167,7 +167,7 @@ class AdSearch extends ActiveRecord
     public function getGlobalUser()
     {
         return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
-                    ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
     }
 
     /**

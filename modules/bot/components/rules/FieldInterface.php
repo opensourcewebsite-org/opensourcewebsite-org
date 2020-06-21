@@ -10,7 +10,7 @@ namespace app\modules\bot\components\rules;
 interface FieldInterface
 {
     /**
-     * @param string $text
+     * @param string|null $text
      *
      * @return string
      */

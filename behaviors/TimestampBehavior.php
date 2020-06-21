@@ -44,6 +44,8 @@ class TimestampBehavior extends \yii\behaviors\TimestampBehavior
      */
     protected function getValue($event)
     {
-        return $this->value ?: time();
+        $value = (int)$this->value;
+
+        return $value ?: time();
     }
 }
