@@ -99,9 +99,6 @@ $this->beginBody();
                 <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?>
               </li>
               <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?>
-              </li>
-              <li class="list-inline-item">
                 <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
               </li>
               <li class="list-inline-item">
