@@ -13,6 +13,7 @@ use app\modules\bot\services\EndRouteService;
 use Exception;
 use Throwable;
 use Yii;
+use yii\base\DynamicModel;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -106,15 +107,15 @@ abstract class CrudController extends Controller
      *      'component' => LocationToArrayField::class,
      * ],
      *
-     * @param $attribute
+     * @param $config
      *
      * @return object|null
      * @throws InvalidConfigException
      */
-    private function createAttributeComponent($attribute)
+    private function createAttributeComponent($config)
     {
-        if (isset($attribute['component'])) {
-            $component = $attribute['component'];
+        if (isset($config['component'])) {
+            $component = $config['component'];
             $objectParams = [];
             if (is_array($component) && isset($component['class'])) {
                 $objectParams['class'] = $component['class'];
@@ -123,7 +124,7 @@ abstract class CrudController extends Controller
                 $objectParams['class'] = $component;
             }
 
-            return Yii::createObject($objectParams, [$this]);
+            return Yii::createObject($objectParams, [$this, $config]);
         }
 
         return null;
@@ -330,6 +331,7 @@ abstract class CrudController extends Controller
                         return $val;
                     }
                 );
+                $relationData = array_values($relationData);
                 $this->setIntermediateField($modelName, $attributeName, $relationData);
             } else {
                 if (!array_key_exists($relationAttributeName, $relationAttributes)) {
@@ -699,6 +701,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
+                    $items = array_values($items);
                     $this->setIntermediateField($modelName, $attributeName, $items);
 
                     return $this->generatePrivateResponse(
@@ -1164,7 +1167,11 @@ abstract class CrudController extends Controller
                             if (!$attributeValue) {
                                 continue;
                             }
-                            if (!is_array($attributeValue)
+                            if (new $secondaryRelation[2] instanceof DynamicModel) {
+                                $text = $attributeValue;
+                                $attributeValue = [];
+                                $attributeValue[$secondaryRelation[0]] = $text;
+                            } elseif (!is_array($attributeValue)
                                 && isset($secondaryRelation[3])
                                 && ($relationModel = $this->findOrCreateRelationModel(
                                     $secondaryRelation[2],
@@ -1496,19 +1503,18 @@ abstract class CrudController extends Controller
                     $label = $item;
                     $id = 'v_' . $key;
                 }
+                $buttonParams = $this->prepareButton($relation, [
+                    'text' => $label,
+                    'callback_data' => self::createRoute(
+                        'e-r-a',
+                        [
+                            'i' => $id,
+                        ]
+                    ),
+                ]);
 
                 return array_merge(
-                    [
-                        [
-                            'text' => $label,
-                            'callback_data' => self::createRoute(
-                                'e-r-a',
-                                [
-                                    'i' => $id,
-                                ]
-                            ),
-                        ],
-                    ],
+                    [$buttonParams],
                     (count($items) == 1 && $isAttributeRequired)
                         ? []
                         : [
@@ -1919,26 +1925,28 @@ abstract class CrudController extends Controller
 
                     return null;
                 }
-                if (!($model instanceof ActiveRecord)) {
-                    Yii::warning("$modelClassName must be inherited from " . ActiveRecord::class);
+                if (!($model instanceof DynamicModel)) {
+                    if (!($model instanceof ActiveRecord)) {
+                        Yii::warning("$modelClassName must be inherited from " . ActiveRecord::class);
 
-                    return null;
-                }
-                if (is_array($refColumn)) {
-                    foreach ($refColumn as $value) {
-                        if (is_array($value)) {
-                            $value = array_key_first($value);
-                        }
-                        if (!$model->hasAttribute($value)) {
-                            Yii::warning("$modelClassName doesn't have $refColumn attribute");
-
-                            return null;
-                        }
+                        return null;
                     }
-                } elseif (!$model->hasAttribute($refColumn)) {
-                    Yii::warning("$modelClassName doesn't have $refColumn attribute");
+                    if (is_array($refColumn)) {
+                        foreach ($refColumn as $value) {
+                            if (is_array($value)) {
+                                $value = array_key_first($value);
+                            }
+                            if (!$model->hasAttribute($value)) {
+                                Yii::warning("$modelClassName doesn't have $refColumn attribute");
 
-                    return null;
+                                return null;
+                            }
+                        }
+                    } elseif (!$model->hasAttribute($refColumn)) {
+                        Yii::warning("$modelClassName doesn't have $refColumn attribute");
+
+                        return null;
+                    }
                 }
             }
 
@@ -2047,5 +2055,23 @@ abstract class CrudController extends Controller
         }
 
         return implode('', $pathArray);
+    }
+
+    /**
+     * Search 'buttonFunction' attribute inside config array
+     * and run function
+     *
+     * @param array $config
+     * @param array $buttonParams
+     *
+     * @return array
+     */
+    private function prepareButton(array $config, array $buttonParams)
+    {
+        if ($buttonFunction = ($config['buttonFunction'] ?? null)) {
+            $buttonParams = call_user_func($buttonFunction, $buttonParams);
+        }
+
+        return $buttonParams;
     }
 }

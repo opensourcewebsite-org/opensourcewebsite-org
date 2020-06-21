@@ -235,6 +235,7 @@ return [
     'Price' => 'Цена',
     'Location' => 'Местонахождение',
     'Delivery radius' => 'Радиус доставки',
+    'Delivery Radius' => 'Радиус доставки',
     'My location' => 'Моя геолокация',
     'Check ad correctness' => 'Проверьте правильность объявления',
     'Category' => 'Категория',

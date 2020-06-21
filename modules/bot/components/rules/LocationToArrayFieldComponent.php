@@ -2,28 +2,13 @@
 
 namespace app\modules\bot\components\rules;
 
-use app\modules\bot\components\CrudController;
-
 /**
  * Class LocationToArrayFieldComponent
  *
  * @package app\modules\bot\components\rules
  */
-class LocationToArrayFieldComponent implements FieldInterface
+class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldInterface
 {
-    /** @var CrudController */
-    public $controller;
-
-    /**
-     * LocationToArrayField constructor.
-     *
-     * @param $controller
-     */
-    public function __construct($controller)
-    {
-        $this->controller = $controller;
-    }
-
     /** @inheritDoc */
     public function prepare($text)
     {
