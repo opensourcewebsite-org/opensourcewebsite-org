@@ -83,7 +83,10 @@ class Debt extends ActiveRecord implements ByDebtInterface
             //            (e.g. in console app)
             [['user', 'direction'], 'required', 'on' => self::SCENARIO_FORM],
             [['from_user_id', 'to_user_id', 'currency_id', 'status'], 'integer'],
+
             ['amount', 'number', 'min' => 0],
+            ['amount', $this->getFloatRuleFilter()],
+
             [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
         ];
     }

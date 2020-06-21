@@ -5,7 +5,7 @@ use Codeception\Configuration;
 use Codeception\Util\Autoload;
 use Helper\debt\redistribution\Common;
 
-class PriorityCest
+class RedistributionPriorityCest
 {
     /** @var Common */
     protected $common;

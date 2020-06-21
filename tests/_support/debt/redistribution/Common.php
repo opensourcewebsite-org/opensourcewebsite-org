@@ -65,7 +65,9 @@ class Common
     public function _before(FunctionalTester $I)
     {
         $I->haveFixtures($this->fixtures());
-        DebtBalance::getDb()->createCommand('UPDATE debt_balance SET processed_at = NULL;')->execute();
+        //This UPDATE emulate that Reduction was already fired.
+        //See `DebtBalanceQuery::canBeRedistributed()`
+        DebtBalance::getDb()->createCommand('UPDATE debt_balance SET reduction_try_at = 1;')->execute();
 
         foreach (self::DEBT_FIXTURE_MAP as $key => $indexFixture) {
             $this->balanceBefore[$key] = $this->findDebtBalanceByFixture($I, $indexFixture);

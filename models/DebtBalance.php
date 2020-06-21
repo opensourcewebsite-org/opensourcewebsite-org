@@ -25,12 +25,12 @@ use yii\db\ActiveRecord;
  * @property int $currency_id
  * @property int $from_user_id          {@see Debt::$from_user_id}
  * @property int $to_user_id            {@see Debt::$to_user_id}
- * @property string $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
- * @property int|null $processed_at     TIMESTAMP - this row is waiting for cron {@see \app\components\debt\Reduction}.
+ * @property float $amount              $amount = sumOfAllCredits - sumOfAllDeposits. Always ($amount > 0) is true
+ * @property int|null $reduction_try_at NULL      - this row is waiting for cron {@see \app\components\debt\Reduction}.
  *                                                  Because amount has been changed.
- *                                      NULL      - {@see Reduction} will not try to reduce it.
+ *                                      TIMESTAMP - {@see Reduction} will not try to reduce it.
  *                                                  Because it has already tried to do that. It will try again, when
- *                                                  `amount` will be changed and `processed_at` will be set.
+ *                                                  `amount` will be changed and become `reduction_try_at IS NULL`.
  * @property int $redistribute_try_at   TIMESTAMP - when {@see Redistribution} tried to resolve it.
  *                                      0         - default. I.e. this is new row, and `Redistribution` have never tried it.
  *
@@ -75,6 +75,16 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     /**
      * {@inheritdoc}
      */
+    public function rules()
+    {
+        return [
+            ['amount', $this->getFloatRuleFilter()],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels()
     {
         return [
@@ -82,7 +92,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             'from_user_id' => 'From User ID',
             'to_user_id'   => 'To User ID',
             'amount'       => 'Amount',
-            'processed_at' => 'Processed At',
+            'reduction_try_at' => 'Reduction Try At',
         ];
     }
 
@@ -223,7 +233,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     /**
      * @throws Exception
      */
-    public static function unsetProcessedAt(self $balance): ?self
+    public static function setReductionTryAt(self $balance): ?self
     {
         $balance = self::findOneForUpdate($balance);
 
@@ -231,7 +241,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             return null; //it became zero or changed direction. This Balance can't be updated anymore.
         }
 
-        $balance->processed_at = null;
+        $balance->reduction_try_at = time();
         $balance->saveCore();
 
         return $balance;
@@ -276,17 +286,17 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     {
         $scale = DebtHelper::getFloatScale();
         if (Number::isFloatEqual(0, $this->amount, $scale)) {
-            $this->processed_at = null; // no sense to run \app\components\debt\Reduction if amount is "0"
+            $this->reduction_try_at = time(); // no sense to run \app\components\debt\Reduction if amount is "0"
             return;
         }
 
         $isAmountBecomeNotZero = $this->isAttributeChanged('amount', false) && !$this->getOldAttribute('amount');
 
         if ($this->isNewRecord || $isAmountBecomeNotZero || $this->isDirectionChanged()) {
-            $this->processed_at = time();
+            $this->reduction_try_at = null;
         }
 
-        // Else: leave `processed_at` as is.
+        // Else: leave `reduction_try_at` as is.
     }
 
     private static function factory(Debt $debt): self
