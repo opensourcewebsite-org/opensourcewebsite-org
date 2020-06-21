@@ -75,7 +75,13 @@ class DebtBalanceQuery extends ActiveQuery
     public function canBeRedistributed(int $timestamp): self
     {
         return $this->canBeReduced(false)
-            ->andWhere('debt_balance.redistribute_try_at <> :timestamp', [':timestamp' => $timestamp]);
+            ->andWhere([
+                'OR',
+                'debt_balance.redistribute_try_at IS NULL',
+                'debt_balance.redistribute_try_at <> :timestamp',
+            ])
+            ->addParams([':timestamp' => $timestamp]);
+
     }
 
     public function amountNotEmpty($alias = 'debt_balance'): self
