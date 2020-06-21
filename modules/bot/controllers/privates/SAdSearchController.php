@@ -193,7 +193,6 @@ class SAdSearchController extends CrudController
             ],
         ];
 
-        $this->backRoute->set('index', compact('adSection', 'page'));
         if ($adSection == 1) {
             $buttons[count($buttons) - 1][] = [
                 'callback_data' => self::createRoute(
@@ -201,7 +200,6 @@ class SAdSearchController extends CrudController
                     [
                         //                'adSection' => $adSection
                         'm' => $this->getModelName(AdSearch::class),
-                        'b' => 1,
                     ]
                 ),
                 'text'          => Emoji::ADD,
@@ -785,7 +783,6 @@ class SAdSearchController extends CrudController
                 'text'          => '🙋‍♂️ ' . $matchedAdOfferCount,
             ];
         }
-        $this->backRoute->set('search', ['adSearchId' => $adSearchId]);
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('index', ['adSection' => $adSearch->section]),
@@ -963,7 +960,6 @@ class SAdSearchController extends CrudController
                 ]
             )
         );
-        $this->backRoute->set('edit-title', ['adSearchId' => $adSearchId]);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
@@ -1020,7 +1016,6 @@ class SAdSearchController extends CrudController
                 ]
             )
         );
-        $this->backRoute->set('edit-description', ['adSearchId' => $adSearchId]);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
@@ -1164,7 +1159,6 @@ class SAdSearchController extends CrudController
                 );
             }
         );
-        $this->backRoute->set('edit-currency', ['adSearchId' => $adSearchId]);
 
         $buttons[] = [
             [
@@ -1218,8 +1212,6 @@ class SAdSearchController extends CrudController
         }
 
         $this->getState()->setName(self::createRoute('edit-max-price-set', ['adSearchId' => $adSearchId]));
-
-        $this->backRoute->set('edit-currency', ['adSearchId' => $adSearchId]);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
@@ -1286,8 +1278,6 @@ class SAdSearchController extends CrudController
     public function actionEditKeywords($adSearchId)
     {
         $this->getState()->setName(self::createRoute('new-keywords', ['adSearchId' => $adSearchId]));
-
-        $this->backRoute->set('edit-keywords', ['adSearchId' => $adSearchId]);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
@@ -1380,8 +1370,6 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-location-send', ['adSearchId' => $adSearchId]));
 
-        $this->backRoute->set('edit-location', ['adSearchId' => $adSearchId]);
-
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(
                                   $this->render('edit-location'),
@@ -1465,8 +1453,6 @@ class SAdSearchController extends CrudController
     public function actionEditRadius($adSearchId)
     {
         $this->getState()->setName(self::createRoute('new-radius', ['adSearchId' => $adSearchId]));
-
-        $this->backRoute->set('edit-radius', ['adSearchId' => $adSearchId]);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
                               ->editMessageTextOrSendMessage(

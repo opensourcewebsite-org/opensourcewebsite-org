@@ -28,6 +28,7 @@ abstract class CrudController extends Controller
     const FIELD_NAME_RELATION    = 'relationAttributeName';
     const FIELD_NAME_MODEL_CLASS = 'modelClass';
     const FIELD_NAME_ATTRIBUTE   = 'attributeName';
+    const FIELD_NAME_ID          = 'id';
 
     /** @var BackRouteService */
     public $backRoute;
@@ -57,13 +58,25 @@ abstract class CrudController extends Controller
         parent::__construct($id, $module, $config);
     }
 
+    /** @inheritDoc */
+    public function bindActionParams($action, $params)
+    {
+        if (!method_exists(self::class, $action->actionMethod)) {
+            $this->backRoute->set($action->id, $params);
+            foreach ($this->rules() as $rule) {
+                $this->setIntermediateField($this->getModelName($rule['model']), self::FIELD_NAME_ID, null);
+            }
+        }
+
+        return parent::bindActionParams($action, $params);
+    }
+
     /**
      * @param string $m $this->getModelName(Model::class)
-     * @param bool   $b Just set 1 if you not forget ->backRoute->set()
      *
      * @return array
      */
-    public function actionCreate($m, $b)
+    public function actionCreate($m)
     {
         $rule = $this->getRule($m);
         $attributes = $this->getAttributes($rule);
@@ -138,7 +151,7 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param string $modelName
+     * @param string $modelName $this->getModelName()
      * @param string $attributeName
      * @param string $value
      */
@@ -250,7 +263,7 @@ abstract class CrudController extends Controller
             $this->setIntermediateField($modelName, $attributeName, $fieldResult);
         }
 
-        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
         $nextAttribute = $this->getNextKey($attributes, $attributeName);
 
         if (isset($nextAttribute) && !$isEdit) {
@@ -387,7 +400,7 @@ abstract class CrudController extends Controller
             }
         }
         if ($isValidRequest) {
-            $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+            $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
             $nextAttribute = $this->getNextKey($attributes, $attributeName);
             if (isset($nextAttribute) && !$isEdit) {
                 return $this->generateResponse($modelName, $nextAttribute, compact('rule'));
@@ -425,13 +438,8 @@ abstract class CrudController extends Controller
         $config = $rule['attributes'][$attributeName];
         if (!isset($p)) {
             $relation = $this->getRelation($config);
-            $attributeNames = array_keys($relation['attributes']);
-            $relationAttributeName = reset($attributeNames);
-            $relationAttribute = $relation['attributes'][$relationAttributeName];
-            if ($relationAttribute[0] == $modelClass) {
-                $relationAttributeName = next($attributeNames);
-            }
-            $this->setIntermediateField($modelName, self::FIELD_NAME_RELATION, $relationAttributeName);
+            [, $secondaryRelation] = $this->getRelationAttributes($modelClass, $relation);
+            $this->setIntermediateField($modelName, self::FIELD_NAME_RELATION, $secondaryRelation[0]);
             $attributeValue = $this->getIntermediateField($modelName, $attributeName, [[]]);
             $attributeLastItem = end($attributeValue);
             if (!empty($attributeLastItem)) {
@@ -496,7 +504,7 @@ abstract class CrudController extends Controller
             if (!$isAttributeRequired) {
                 $this->setIntermediateField($modelName, $attributeName, null);
 
-                $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+                $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
                 if ($isEdit) {
                     return $this->save($rule);
                 }
@@ -522,7 +530,7 @@ abstract class CrudController extends Controller
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
         $attributeName = $a;
-        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
         $rule = $this->getRule($modelName);
         $attributes = $this->getAttributes($rule);
         if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
@@ -545,7 +553,7 @@ abstract class CrudController extends Controller
         } else {
             $response = $this->onCancel(
                 $this->getModelClassByRule($rule),
-                $this->getIntermediateField($modelName, 'id', null)
+                $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null)
             );
             $this->getState()->reset();
 
@@ -568,7 +576,7 @@ abstract class CrudController extends Controller
         $modelName = $this->getModelName($modelClass);
         $attributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, null);
         if (isset($attributeName)) {
-            $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+            $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
             $rule = $this->getRule($modelName);
             $attributes = $this->getAttributes($rule);
             if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
@@ -625,7 +633,7 @@ abstract class CrudController extends Controller
         $modelName = $this->getModelName($modelClass);
         $attributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, null);
         if (isset($attributeName)) {
-            $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+            $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
             $rule = $this->getRule($modelName);
             $attributes = $this->getAttributes($rule);
             if (($relation = $this->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
@@ -649,7 +657,7 @@ abstract class CrudController extends Controller
             } else {
                 $response = $this->onCancel(
                     $this->getModelClassByRule($rule),
-                    $this->getIntermediateField($modelName, 'id', null)
+                    $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null)
                 );
                 $this->getState()->reset();
 
@@ -875,7 +883,7 @@ abstract class CrudController extends Controller
         if (isset($model)) {
             $this->setCurrentModelClass($this->getModelClassByRule($rule));
             $modelName = $this->getModelName($this->getModelClassByRule($rule));
-            $this->setIntermediateField($modelName, 'id', $id);
+            $this->setIntermediateField($modelName, self::FIELD_NAME_ID, $id);
 
             if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
                 $relation = $this->getRelation($this->getAttributes($rule)[$attributeName]);
@@ -983,16 +991,16 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param string|ActiveRecord $model Model::class or Model
+     * @param string|ActiveRecord $mainModel Model::class or Model
      * @param                     $relation
      *
      * @return array [['column_id', 'ref_column_id', 'class'], ['sec_column_id','sec_ref_column_id', 'class', ?'field']]
      */
-    private function getRelationAttributes($model, $relation)
+    private function getRelationAttributes($mainModel, $relation)
     {
-        $className = $model;
-        if ($model instanceof ActiveRecord) {
-            $className = $model::className();
+        $className = $mainModel;
+        if ($mainModel instanceof ActiveRecord) {
+            $className = $mainModel::className();
         }
         $relationAttributes = $relation['attributes'];
         $primaryRelation = [];
@@ -1060,7 +1068,7 @@ abstract class CrudController extends Controller
     private function getFilledModel($rule)
     {
         $modelName = $this->getModelName($this->getModelClassByRule($rule));
-        $id = $this->getIntermediateField($modelName, 'id', null);
+        $id = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
         $isNew = is_null($id);
         $manyToManyRelationAttributes = [];
         /* @var ActiveRecord $model */
@@ -1095,7 +1103,7 @@ abstract class CrudController extends Controller
     {
         $state = $this->getState();
         $modelName = $this->getModelName($this->getModelClassByRule($rule));
-        $id = $this->getIntermediateField($modelName, 'id', null);
+        $id = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
         $isNew = is_null($id);
         $model = $this->getFilledModel($rule);
         if ($model->validate()) {
@@ -1235,7 +1243,7 @@ abstract class CrudController extends Controller
         $isAttributeRequired = $config['isRequired'] ?? true;
         $rule = $this->getRule($modelName);
         $attributes = $this->getAttributes($rule);
-        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
         $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
         $configButtons = $this->attributeButtons->get($rule, $attributeName);
         if ($configButtons) {
@@ -1262,6 +1270,41 @@ abstract class CrudController extends Controller
         $buttons = array_merge($buttons, [$systemButtons]);
 
         return $buttons;
+    }
+
+    /**
+     * Now work only for many to many
+     *
+     * @param array   $rule
+     * @param array   $relation
+     * @param integer $id
+     * @param integer $editableFieldId
+     *
+     * @return ActiveRecord
+     * @throws \Exception
+     */
+    private function getModelByRelation($rule, $relation, $id, $editableFieldId = null)
+    {
+        [$primaryRelation, $secondaryRelation] = $this->getRelationAttributes(
+            $this->getModelClassByRule($rule),
+            $relation
+        );
+        $modelClass = $relation['model'] ?? null;
+        $conditions = [];
+        if ($editableFieldId) {
+            $conditions[$primaryRelation[0]] = $editableFieldId;
+            $conditions[$secondaryRelation[0]] = $id;
+        } else {
+            $conditions[$secondaryRelation[1]] = $id;
+            $modelClass = $secondaryRelation[2];
+        }
+        $model = call_user_func([$modelClass, 'findOne'], $conditions);
+        /* @var ActiveRecord $model */
+        if (!$model) {
+            throw new \Exception($modelClass . ' with params ' . serialize($conditions) . ' was not found');
+        }
+
+        return $model;
     }
 
     /**
@@ -1292,7 +1335,8 @@ abstract class CrudController extends Controller
         $this->setIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, $attributeName);
 
         $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
-        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $editableFieldId = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
+        $isEdit = !is_null($editableFieldId);
         [$step, $totalSteps] = $this->getStepsInfo($attributeName, $this->getRule($modelName));
         $relation = $this->getRelation($config);
         if (isset($relationAttributeName)
@@ -1376,7 +1420,6 @@ abstract class CrudController extends Controller
         }
 
         $isAttributeRequired = $config['isRequired'] ?? true;
-        [, $secondaryField] = $this->getRelationAttributes($this->getModelClassByRule($rule), $relation);
         $items = $this->getIntermediateField($modelName, $attributeName, []);
         $itemButtons = PaginationButtons::buildFromArray(
             $items,
@@ -1389,16 +1432,20 @@ abstract class CrudController extends Controller
                     ]
                 );
             },
-            function ($key, $item) use ($relation, $secondaryField, $isAttributeRequired, $items) {
+            function ($key, $item) use ($rule, $relation, $editableFieldId, $isAttributeRequired, $items) {
                 try {
-                    $modelClass = $relation['model'] ?? null;
-                    /* @var ActiveRecord $model */
-                    $model = call_user_func([$modelClass, 'findOne'], $item);
-                    if (!$model) {
-                        throw new \Exception($modelClass . ' with params ' . serialize($item) . ' was not found');
-                    }
+                    $model = $this->getModelByRelation(
+                        $rule,
+                        $relation,
+                        $item[array_key_first($item)],
+                        $editableFieldId
+                    );
                     $label = $this->getLabel($model);
-                    $id = $item[$secondaryField[0]];
+                    if ($editableFieldId) {
+                        $id = $model->id;
+                    } else {
+                        $id = 'v_' . $key;
+                    }
                 } catch (\Exception $ex) {
                     if (is_array($item)) {
                         return [];
@@ -1491,7 +1538,7 @@ abstract class CrudController extends Controller
         );
         $this->setIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, $attributeName);
 
-        $isEdit = !is_null($this->getIntermediateField($modelName, 'id', null));
+        $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
         $attributeValue = $this->getIntermediateField($modelName, $attributeName, null);
         $isEmpty = empty($attributeValue);
         $systemButtons = $this->generateSystemButtons(
@@ -1585,8 +1632,8 @@ abstract class CrudController extends Controller
         }
         /* 'Menu' button */
         $systemButtons['menu'] = [
-            'callback_data' => MenuController::createRoute(),
-            'text'          => Emoji::MENU,
+            'callback_data' => $this->backRoute->get(),
+            'text'          => Emoji::END,
         ];
 
         return $systemButtons;
