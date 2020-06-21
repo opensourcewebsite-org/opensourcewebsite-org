@@ -219,7 +219,7 @@ class Reduction extends Component
             }
 
             /** @var string $minAmount */
-            $minAmount = - min(ArrayHelper::getColumn($chainMembersRefreshed, 'amount'));
+            $minAmount = min(ArrayHelper::getColumn($chainMembersRefreshed, 'amount'));
             $scale = DebtHelper::getFloatScale();
             if (Number::isFloatEqual(0, $minAmount, $scale)) {
                 return;
@@ -227,7 +227,7 @@ class Reduction extends Component
 
             $group = Debt::generateGroup();
             foreach ($chainMembersRefreshed as $balance) {
-                $debt = Debt::factoryBySource($balance, $minAmount, $group);
+                $debt = Debt::factoryBySource($balance, -$minAmount, $group);
 
                 if (!$debt->save()) {
                     $message = "Unexpected error occurred: Fail to save Debt.\n";
@@ -241,7 +241,7 @@ class Reduction extends Component
                 $chainLog[] = implode(':', $balance->primaryKey);
             }
 
-            $this->log("amount=$minAmount   group=$group     " . implode(' -> ', $chainLog), [Console::BG_GREEN], true);
+            $this->log("amount=-$minAmount   group=$group     " . implode(' -> ', $chainLog), [Console::BG_GREEN], true);
 
             $message = "Created chain. Amount=$debt->amount {$debt->currency->code}; Count of Debts=$count;";
             $message .= ' Count of Users=' . ($count + 1);
@@ -254,7 +254,7 @@ class Reduction extends Component
         $this->log('Found 0 debt chains');
 
         return static function () use ($balance) {
-            DebtBalance::unsetProcessedAt($balance);
+            DebtBalance::setReductionTryAt($balance);
         };
     }
 

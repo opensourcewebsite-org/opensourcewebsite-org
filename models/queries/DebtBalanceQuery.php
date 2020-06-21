@@ -51,7 +51,7 @@ class DebtBalanceQuery extends ActiveQuery
 
     /**
      * {@see Reduction} should process all rows.
-     * To avoid processing of the same row twice we use field `debt_balance.processed_at`.
+     * To avoid processing of the same row twice we use field `debt_balance.reduction_try_at`.
      *
      * @param bool $can
      *
@@ -59,8 +59,8 @@ class DebtBalanceQuery extends ActiveQuery
      */
     public function canBeReduced(bool $can): self
     {
-        $operand = $can ? 'IS NOT' : 'IS';
-        return $this->andWhere("debt_balance.processed_at $operand NULL")
+        $operand = $can ? 'IS' : 'IS NOT';
+        return $this->andWhere("debt_balance.reduction_try_at $operand NULL")
             ->amountNotEmpty();
     }
 
