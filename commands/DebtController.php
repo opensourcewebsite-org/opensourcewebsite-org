@@ -184,7 +184,6 @@ class DebtController extends Controller implements CronChainedInterface
 
             foreach ($debts as $debt) {
                 $debtNew = Debt::factoryBySource($debt, -$debt->amount, $groupNew);
-                $debtNew->setUpdateProcessedFlag(true);
 
                 if (!$debtNew->save()) {
                     $message = "Unexpected error occurred: Fail to save Debt.\n";

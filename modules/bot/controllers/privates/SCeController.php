@@ -22,84 +22,63 @@ class SCeController extends Controller
 
         //TODO PaginationButtons for orders
 
-        //TODO add this check for all controller actions, remove from actions
-        if (($telegramUser->location_lon && $telegramUser->location_lat) && $telegramUser->provider_user_name) {
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('index'),
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('index'),
+                [
                     [
                         [
-                            [
-                                'callback_data' => self::createRoute('order'),
-                                'text' => 'USD/THB',
-                            ],
+                            'callback_data' => self::createRoute('order'),
+                            'text' => 'USD/THB',
                         ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order'),
-                                'text' => 'USD/RUB',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('order'),
-                                'text' => '❌ ' . 'THB/RUB',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '<',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '1/3',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '>',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => ServicesController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => '📱',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('offer'),
-                                'text' => '🙋‍♂️ 3',
-                            ],
-                            [
-                                'callback_data' => self::createRoute('order-create'),
-                                'text' => Emoji::ADD,
-                            ],
-                        ],
-                    ]
-                )
-                ->build();
-        } else {
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('no-requirements'),
+                    ],
                     [
                         [
-                            [
-                                'callback_data' => ServicesController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
+                            'callback_data' => self::createRoute('order'),
+                            'text' => 'USD/RUB',
                         ],
-                    ]
-                )
-                ->build();
-        }
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('order'),
+                            'text' => '❌ ' . 'THB/RUB',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '<',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '1/3',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '>',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => '📱',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('offer'),
+                            'text' => '🙋‍♂️ 3',
+                        ],
+                        [
+                            'callback_data' => self::createRoute('order-create'),
+                            'text' => Emoji::ADD,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     /**

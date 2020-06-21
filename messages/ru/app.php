@@ -70,6 +70,7 @@ return [
     'Yes' => 'Да',
     'No' => 'Нет',
     'Source Code' => 'Исходный код',
+    'Source code' => 'Исходный код',
     'Attention' => 'Внимание',
     'This feature works in test mode' => 'Этот функционал работает в тестовом режиме',
     'Please help to test all functions of this' => 'Пожалуйста помогите протестировать все функции',

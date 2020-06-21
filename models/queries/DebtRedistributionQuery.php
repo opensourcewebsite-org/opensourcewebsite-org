@@ -47,7 +47,7 @@ class DebtRedistributionQuery extends ActiveQuery
         return $this->$method(['debt_redistribution.currency_id' => $id]);
     }
 
-    public function maxAmount($amount, $method = 'andWhere'): self
+    public function maxAmount($amount, $method = 'andWhere', &$condition = null): self
     {
         if ($amount === DebtRedistribution::MAX_AMOUNT_ANY) {
             $condition = 'debt_redistribution.max_amount IS NULL';
@@ -60,8 +60,10 @@ class DebtRedistributionQuery extends ActiveQuery
 
     public function maxAmountIsNotDeny($method = 'andWhere'): self
     {
+        (clone $this)->maxAmount(DebtRedistribution::MAX_AMOUNT_ANY, 'andWhere', $maxAmountAny);
+
         return $this->$method(
-            'debt_redistribution.max_amount IS NULL OR debt_redistribution.max_amount > :drmaDeny',
+            "$maxAmountAny OR debt_redistribution.max_amount > :drmaDeny",
             [':drmaDeny' => DebtRedistribution::MAX_AMOUNT_DENY]
         );
     }
