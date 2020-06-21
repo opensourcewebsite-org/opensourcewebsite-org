@@ -45,7 +45,6 @@ class Reduction extends Component
     {
         return DebtBalance::find()
             ->canBeReduced(true)
-            ->orderBy('debt_balance.processed_at')
             ->limit(1)
             ->one();
     }
