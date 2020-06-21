@@ -51,7 +51,7 @@ class DebtBalanceQuery extends ActiveQuery
 
     /**
      * {@see Reduction} should process all rows.
-     * To avoid processing of the same row twice we use field `debt_balance.processed_at`.
+     * To avoid processing of the same row twice we use field `debt_balance.reduction_try_at`.
      *
      * @param bool $can
      *
@@ -59,8 +59,8 @@ class DebtBalanceQuery extends ActiveQuery
      */
     public function canBeReduced(bool $can): self
     {
-        $operand = $can ? 'IS NOT' : 'IS';
-        return $this->andWhere("debt_balance.processed_at $operand NULL")
+        $operand = $can ? 'IS' : 'IS NOT';
+        return $this->andWhere("debt_balance.reduction_try_at $operand NULL")
             ->amountNotEmpty();
     }
 
@@ -75,7 +75,13 @@ class DebtBalanceQuery extends ActiveQuery
     public function canBeRedistributed(int $timestamp): self
     {
         return $this->canBeReduced(false)
-            ->andWhere('debt_balance.redistribute_try_at <> :timestamp', [':timestamp' => $timestamp]);
+            ->andWhere([
+                'OR',
+                'debt_balance.redistribute_try_at IS NULL',
+                'debt_balance.redistribute_try_at <> :timestamp',
+            ])
+            ->addParams([':timestamp' => $timestamp]);
+
     }
 
     public function amountNotEmpty($alias = 'debt_balance'): self

@@ -8,7 +8,7 @@ use Codeception\Configuration;
 use Codeception\Util\Autoload;
 use Helper\debt\redistribution\Common;
 
-class TargetBalanceHasOwnChainCest
+class RedistributionTargetBalanceHasOwnChainCest
 {
     /** @var Common */
     protected $common;

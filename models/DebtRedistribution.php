@@ -21,11 +21,11 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "debt_redistribution".
  *
- * @property int         $id
- * @property int         $user_id          {@see ByOwnerInterface}, {@see ByDebtInterface}
- * @property int         $link_user_id     {@see ByOwnerInterface}, {@see ByDebtInterface}
- * @property int         $currency_id
- * @property string|null $max_amount   "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
+ * @property int        $id
+ * @property int        $user_id          {@see ByOwnerInterface}, {@see ByDebtInterface}
+ * @property int        $link_user_id     {@see ByOwnerInterface}, {@see ByDebtInterface}
+ * @property int        $currency_id
+ * @property float|null $max_amount "NULL" - no limit - allow any amount. "0" - limit is 0, so deny to redistribute.
  *                                  max_amount is limit of {@see Debt}, which may be created by {@see Redistribution}.
  *                                  Note: other Debts, created not by Redistribution, don't depend from this limit.
  *                                  RU: сколько я (user_id) разрешаю моему контакту (link_user_id) быть должным мне,
@@ -67,6 +67,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
             //max_amount:
             ['max_amount', 'number', 'min' => 0],
             ['max_amount', $this->fnFormatMaxAmount(), 'skipOnEmpty' => false],
+            ['max_amount', $this->getFloatRuleFilter()],
 
             //db:
             'unique' => [['user_id', 'link_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['user_id', 'link_user_id', 'currency_id']],

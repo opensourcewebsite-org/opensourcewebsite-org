@@ -8,7 +8,7 @@ use Codeception\Example;
 use Codeception\Util\Autoload;
 use Helper\debt\redistribution\Common;
 
-class MaxAmountCest
+class RedistributionMaxAmountCest
 {
     /** @var Common */
     protected $common;
