@@ -36,8 +36,26 @@ class SAdSearchController extends CrudController
             [
                 'model' => AdSearch::class,
                 'prepareViewParams' => function ($params) {
-                    return $params;
+                    $model = $params['model'] ?? null;
+
+                    return [
+                        'sectionName' => AdSection::getAdSearchName($model->section),
+                        'keywords' => self::getKeywordsAsString(
+                            $model->getKeywords()->all()
+                        ),
+                        'adSearch' => $model,
+                        'currency' => isset($model->currency_id) ? Currency::findOne(
+                            $model->currency_id
+                        ) : null,
+                        'locationLink' => ExternalLink::getOSMLink(
+                            $model->location_lat,
+                            $model->location_lon
+                        ),
+                        'liveDays' => AdSearch::LIVE_DAYS,
+                        'showDetailedInfo' => true,
+                    ];
                 },
+                'view' => 'search',
                 'attributes' => [
                     'title' => [],
                     'description' => [
@@ -78,6 +96,7 @@ class SAdSearchController extends CrudController
                         'hidden' => true,
                     ],
                     'keywords' => [
+                        //'enableAddButton' = true,
                         'isRequired' => false,
                         'relation' => [
                             'model' => AdSearchKeyword::class,
@@ -892,7 +911,7 @@ class SAdSearchController extends CrudController
                         ),
                         'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => false,
-                    ]
+                    ],
                 ),
                 [
                     [

@@ -9,7 +9,7 @@ use app\modules\bot\components\request\Request;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\rules\FieldInterface;
 use app\modules\bot\services\AttributeButtonsService;
-use app\modules\bot\services\BackRouteService;
+use app\modules\bot\services\EndRouteService;
 use Exception;
 use Throwable;
 use Yii;
@@ -30,8 +30,8 @@ abstract class CrudController extends Controller
     const FIELD_NAME_ATTRIBUTE = 'attributeName';
     const FIELD_NAME_ID = 'id';
 
-    /** @var BackRouteService */
-    public $backRoute;
+    /** @var EndRouteService */
+    public $endRoute;
     /** @var AttributeButtonsService */
     public $attributeButtons;
     /**
@@ -42,9 +42,9 @@ abstract class CrudController extends Controller
     /** @inheritDoc */
     public function __construct($id, $module, $config = [])
     {
-        $this->backRoute = Yii::createObject(
+        $this->endRoute = Yii::createObject(
             [
-                'class' => BackRouteService::class,
+                'class' => EndRouteService::class,
                 'state' => $module->userState,
                 'controller' => $this,
             ]
@@ -62,7 +62,7 @@ abstract class CrudController extends Controller
     public function bindActionParams($action, $params)
     {
         if (!method_exists(self::class, $action->actionMethod)) {
-            $this->backRoute->make($action->id, $params);
+            $this->endRoute->make($action->id, $params);
             foreach ($this->rules() as $rule) {
                 $this->setIntermediateField($this->getModelName($rule['model']), self::FIELD_NAME_ID, null);
             }
@@ -84,9 +84,8 @@ abstract class CrudController extends Controller
         if (!empty($attributes)) {
             $this->beforeCreate($this->getModelClassByRule($rule));
             $attribute = array_keys($attributes)[0];
-            $enableBackRoute = true;
 
-            return $this->generateResponse($m, $attribute, compact('rule', 'enableBackRoute'));
+            return $this->generateResponse($m, $attribute, compact('rule'));
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -806,11 +805,12 @@ abstract class CrudController extends Controller
         $systemButtons = $this->getDefaultSystemButtons($b);
         $systemButtons = array_values($systemButtons);
         $buttons = array_merge($editButtons, [$systemButtons]);
+        $params = [
+            'model' => $model,
+        ];
         $messageText = $this->render(
-            "show",
-            [
-                'model' => $model,
-            ]
+            ($rule['view'] ?? null) ?: "show",
+            $this->prepareViewParams($params, $rule, null)
         );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -884,7 +884,7 @@ abstract class CrudController extends Controller
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->renderAttribute(
-                    "$m/show",
+                    "$m/" . (($rule['view'] ?? null) ?: "show"),
                     [
                         'model' => $model,
                     ],
@@ -1214,9 +1214,9 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $backRoute = $this->backRoute->get();
+                    $endRoute = $this->endRoute->get();
                     $state->reset();
-                    $this->backRoute->set($backRoute);
+                    $this->endRoute->set($endRoute);
                     $transaction->commit();
 
                     return $this->afterSave($model, $isNew);
@@ -1654,18 +1654,16 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * If you call directly - you should use remove keys
+     * If you call directly - you should use remove array keys
      *
      * @param bool $enableBackRoute
      *
      * @return array ['back => ['text' => 'this is text', 'callback_data' => 'route']]
      */
-    private function getDefaultSystemButtons($enableBackRoute = false, $backRoute = '')
+    private function getDefaultSystemButtons($enableBackRoute = false)
     {
-        if ($enableBackRoute && $backRoute) {
-            $backRoute = '';
-        } elseif ($enableBackRoute) {
-            $backRoute = $this->backRoute->get();
+        if ($enableBackRoute) {
+            $backRoute = $this->endRoute->get();
         } else {
             $backRoute = self::createRoute('p-a');
         }
@@ -1677,9 +1675,9 @@ abstract class CrudController extends Controller
                 'callback_data' => $backRoute,
             ];
         }
-        /* 'Menu' button */
-        $systemButtons['menu'] = [
-            'callback_data' => $this->backRoute->get(),
+        /* 'End' button */
+        $systemButtons['end'] = [
+            'callback_data' => $this->endRoute->get(),
             'text' => Emoji::END,
         ];
 
@@ -1687,6 +1685,24 @@ abstract class CrudController extends Controller
     }
 
     /**
+     *  System Buttons
+     *  Possible to replace in controller rules
+     *
+     * 'model_property' => [
+     *      'systemButtons' => [
+     *          'back' => [
+     *              'item' => 'description',
+     *          ],
+     *          'menu' => [
+     *              'text' => Emoji::MENU
+     *              'route' => MenuController::createRoute(),
+     *          ],
+     *          'end' => [
+     *              'text' => 'Some text',
+     *          ],
+     *      ],
+     * ]
+     *
      * @param string $modelName
      * @param string $attributeName
      * @param array $options
@@ -1700,12 +1716,10 @@ abstract class CrudController extends Controller
         $rule = $this->getRule($modelName);
         $attributes = $this->getAttributes($rule);
         $config = $attributes[$attributeName];
-        $backRoute = $config['backRoute'] ?? '';
-        if ((!$enableBackRoute && $backRoute)
-            || !strcmp($attributeName, array_key_first($attributes))) {
+        if (!strcmp($attributeName, array_key_first($attributes))) {
             $enableBackRoute = true;
         }
-        $systemButtons = $this->getDefaultSystemButtons($enableBackRoute, $backRoute);
+        $systemButtons = $this->getDefaultSystemButtons($enableBackRoute);
         $configSystemButtons = $this->attributeButtons->getSystems($rule, $attributeName);
 
         $isAttributeRequired = $config['isRequired'] ?? true;
@@ -1719,7 +1733,7 @@ abstract class CrudController extends Controller
                     'callback_data' => self::createRoute('c-a'),
                 ];
             }
-        } else {
+        } elseif ($config['enableAddButton'] ?? false) {
             /* 'Add' button */
             $systemButtons['add'] = [
                 'text' => Emoji::ADD,
@@ -1732,9 +1746,8 @@ abstract class CrudController extends Controller
             ];
         }
         $systemButtons = ArrayHelper::merge($systemButtons, $configSystemButtons);
-        $systemButtons = array_values($systemButtons);
 
-        return $systemButtons;
+        return array_values($systemButtons);
     }
 
     private function getStepsInfo(string $attributeName, array $rule)
@@ -2015,7 +2028,7 @@ abstract class CrudController extends Controller
         if ($view = $rule['attributes'][$attributeName]['view'] ?? null) {
             $attributeName = $view;
         }
-        if ($relationAttributeName) {
+        if ($relationAttributeName && ($rule['attributes'][$attributeName]['enableAddButton'] ?? false)) {
             $pathArray = [
                 $attributeName,
                 "/edit-",

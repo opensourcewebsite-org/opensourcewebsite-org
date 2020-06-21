@@ -6,12 +6,14 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\models\UserState;
 
 /**
- * Class BackRouteService
+ * Class EndRouteService
  *
  * @package app\modules\bot\services
  */
-class BackRouteService
+class EndRouteService
 {
+    const ROUTE_NAME = 'end-route';
+
     /** @var UserState */
     public $state;
     /** @var Controller */
@@ -24,7 +26,7 @@ class BackRouteService
     public function make($actionName, $params)
     {
         $this->state->setIntermediateField(
-            'back-route',
+            self::ROUTE_NAME,
             $this->controller::createRoute($actionName, $params)
         );
     }
@@ -35,7 +37,7 @@ class BackRouteService
     public function set($route)
     {
         $this->state->setIntermediateField(
-            'back-route',
+            self::ROUTE_NAME,
             $route
         );
     }
@@ -45,6 +47,6 @@ class BackRouteService
      */
     public function get()
     {
-        return $this->state->getIntermediateField('back-route');
+        return $this->state->getIntermediateField(self::ROUTE_NAME);
     }
 }
