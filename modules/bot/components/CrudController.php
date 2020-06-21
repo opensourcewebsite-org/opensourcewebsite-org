@@ -81,6 +81,7 @@ abstract class CrudController extends Controller
     {
         $rule = $this->getRule($m);
         $attributes = $this->getAttributes($rule);
+        $this->resetFields();
 
         if (!empty($attributes)) {
             $this->beforeCreate($this->getModelClassByRule($rule));
@@ -231,10 +232,6 @@ abstract class CrudController extends Controller
         $attributes = $this->getAttributes($rule);
         $config = $attributes[$attributeName];
 
-        if (!is_string($text) || $text === '') {
-            return $this->generatePublicResponse($modelName, $attributeName, compact('config'));
-        }
-
         /* @var ActiveRecord $model */
         $model = $this->createModel($rule);
         $currentAttribute = $attributes[$attributeName];
@@ -261,6 +258,9 @@ abstract class CrudController extends Controller
             $this->setIntermediateFields($modelName, $fieldResult);
         } else {
             $this->setIntermediateField($modelName, $attributeName, $fieldResult);
+        }
+        if (!$fieldResult && (!is_string($text) || $text === '')) {
+            return $this->generatePublicResponse($modelName, $attributeName, compact('config'));
         }
 
         $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
@@ -556,10 +556,17 @@ abstract class CrudController extends Controller
                 $this->getModelClassByRule($rule),
                 $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null)
             );
-            $this->getState()->reset();
+            $this->resetFields();
 
             return $response;
         }
+    }
+
+    public function resetFields()
+    {
+        $endRoute = $this->endRoute->get();
+        $this->getState()->reset();
+        $this->endRoute->set($endRoute);
     }
 
     /**
@@ -660,7 +667,7 @@ abstract class CrudController extends Controller
                     $this->getModelClassByRule($rule),
                     $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null)
                 );
-                $this->getState()->reset();
+                $this->resetFields();
 
                 return $response;
             }
@@ -1168,9 +1175,11 @@ abstract class CrudController extends Controller
                                 continue;
                             }
                             if (new $secondaryRelation[2] instanceof DynamicModel) {
-                                $text = $attributeValue;
-                                $attributeValue = [];
-                                $attributeValue[$secondaryRelation[0]] = $text;
+                                if (!is_array($attributeValue)) {
+                                    $text = $attributeValue;
+                                    $attributeValue = [];
+                                    $attributeValue[$secondaryRelation[0]] = $text;
+                                }
                             } elseif (!is_array($attributeValue)
                                 && isset($secondaryRelation[3])
                                 && ($relationModel = $this->findOrCreateRelationModel(
@@ -1221,9 +1230,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $endRoute = $this->endRoute->get();
-                    $state->reset();
-                    $this->endRoute->set($endRoute);
+                    $this->resetFields();
                     $transaction->commit();
 
                     return $this->afterSave($model, $isNew);
@@ -2073,5 +2080,17 @@ abstract class CrudController extends Controller
         }
 
         return $buttonParams;
+    }
+
+    /** @inheritDoc */
+    public function getState()
+    {
+        return parent::getState();
+    }
+
+    /** @inheritDoc */
+    public function getTelegramUser()
+    {
+        return parent::getTelegramUser();
     }
 }

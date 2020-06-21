@@ -106,7 +106,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return UserState
      */
-    public function getState()
+    protected function getState()
     {
         return $this->module->userState;
     }

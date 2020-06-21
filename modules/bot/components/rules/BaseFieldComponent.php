@@ -5,6 +5,7 @@ namespace app\modules\bot\components\rules;
 
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\CrudController;
+use app\modules\bot\models\User;
 use app\modules\bot\models\UserState;
 
 /**
@@ -22,6 +23,8 @@ abstract class BaseFieldComponent
     public $state;
     /** @var Update */
     public $update;
+    /** @var  User */
+    public $telegramUser;
 
     /**
      * BaseFieldComponent constructor.
@@ -35,5 +38,6 @@ abstract class BaseFieldComponent
         $this->config = $config;
         $this->state = $this->controller->getState();
         $this->update = $this->controller->module->update;
+        $this->telegramUser = $this->controller->getTelegramUser();
     }
 }
