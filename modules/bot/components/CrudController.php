@@ -3,15 +3,15 @@
 namespace app\modules\bot\components;
 
 use app\components\helpers\ArrayHelper;
-use app\models\VacancyLanguage;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\request\Request;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\rules\FieldInterface;
-use app\modules\bot\controllers\privates\MenuController;
 use app\modules\bot\services\AttributeButtonsService;
 use app\modules\bot\services\BackRouteService;
+use Exception;
+use Throwable;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
@@ -25,10 +25,10 @@ use yii\web\BadRequestHttpException;
  */
 abstract class CrudController extends Controller
 {
-    const FIELD_NAME_RELATION    = 'relationAttributeName';
+    const FIELD_NAME_RELATION = 'relationAttributeName';
     const FIELD_NAME_MODEL_CLASS = 'modelClass';
-    const FIELD_NAME_ATTRIBUTE   = 'attributeName';
-    const FIELD_NAME_ID          = 'id';
+    const FIELD_NAME_ATTRIBUTE = 'attributeName';
+    const FIELD_NAME_ID = 'id';
 
     /** @var BackRouteService */
     public $backRoute;
@@ -44,14 +44,14 @@ abstract class CrudController extends Controller
     {
         $this->backRoute = Yii::createObject(
             [
-                'class'      => BackRouteService::class,
-                'state'      => $module->userState,
+                'class' => BackRouteService::class,
+                'state' => $module->userState,
                 'controller' => $this,
             ]
         );
         $this->attributeButtons = Yii::createObject(
             [
-                'class'      => AttributeButtonsService::class,
+                'class' => AttributeButtonsService::class,
                 'controller' => $this,
             ]
         );
@@ -62,7 +62,7 @@ abstract class CrudController extends Controller
     public function bindActionParams($action, $params)
     {
         if (!method_exists(self::class, $action->actionMethod)) {
-            $this->backRoute->set($action->id, $params);
+            $this->backRoute->make($action->id, $params);
             foreach ($this->rules() as $rule) {
                 $this->setIntermediateField($this->getModelName($rule['model']), self::FIELD_NAME_ID, null);
             }
@@ -90,8 +90,8 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
@@ -131,7 +131,7 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param string       $modelName
+     * @param string $modelName
      * @param string|array $fieldName
      *
      * @return string|array
@@ -163,7 +163,7 @@ abstract class CrudController extends Controller
     /**
      * @param string $modelName
      * @param string $attributeName
-     * @param null   $defaultValue
+     * @param null $defaultValue
      *
      * @return mixed|null
      */
@@ -177,7 +177,7 @@ abstract class CrudController extends Controller
 
     /**
      * @param string $modelName
-     * @param array  $values
+     * @param array $values
      */
     private function setIntermediateFields($modelName, $values)
     {
@@ -214,8 +214,8 @@ abstract class CrudController extends Controller
         $attributeName = $a;
         if (!$this->isRequestValid($attributeName)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->answerCallbackQuery()
-                                  ->build();
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $modelClass = $this->getCurrentModelClass();
@@ -224,8 +224,8 @@ abstract class CrudController extends Controller
 
         if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->answerCallbackQuery()
-                                  ->build();
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $attributes = $this->getAttributes($rule);
@@ -276,10 +276,10 @@ abstract class CrudController extends Controller
     /**
      * Set Attribute
      *
-     * @param string $a    Attribute name
-     * @param int    $p    Page number
-     * @param null   $v    Attribute value
-     * @param null   $text User Message
+     * @param string $a Attribute name
+     * @param int $p Page number
+     * @param null $v Attribute value
+     * @param null $text User Message
      *
      * @return array
      * @throws InvalidConfigException
@@ -289,8 +289,8 @@ abstract class CrudController extends Controller
         $attributeName = $a;
         if (!$this->isRequestValid($attributeName)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->answerCallbackQuery()
-                                  ->build();
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $modelClass = $this->getCurrentModelClass();
@@ -299,8 +299,8 @@ abstract class CrudController extends Controller
 
         if (!$this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->answerCallbackQuery()
-                                  ->build();
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $attributes = $this->getAttributes($rule);
@@ -335,8 +335,8 @@ abstract class CrudController extends Controller
             } else {
                 if (!array_key_exists($relationAttributeName, $relationAttributes)) {
                     return ResponseBuilder::fromUpdate($this->getUpdate())
-                                          ->answerCallbackQuery()
-                                          ->build();
+                        ->answerCallbackQuery()
+                        ->build();
                 }
                 $relationAttribute = $relationAttributes[$relationAttributeName];
                 if ($v) {
@@ -429,8 +429,8 @@ abstract class CrudController extends Controller
         $attributeName = $a;
         if (!$this->isRequestValid($attributeName)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->answerCallbackQuery()
-                                  ->build();
+                ->answerCallbackQuery()
+                ->build();
         }
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
@@ -463,7 +463,7 @@ abstract class CrudController extends Controller
      * @param string $m $this->getModelName(Model::class)
      * @param        $a
      * @param        $i
-     * @param bool   $b back route
+     * @param bool $b back route
      *
      * @return array
      */
@@ -481,8 +481,8 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
@@ -514,8 +514,8 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
@@ -602,8 +602,8 @@ abstract class CrudController extends Controller
                     }
 
                     return ResponseBuilder::fromUpdate($this->getUpdate())
-                                          ->answerCallbackQuery()
-                                          ->build();
+                        ->answerCallbackQuery()
+                        ->build();
                 }
             }
             $nextAttributeName = $this->getNextKey($attributes, $attributeName);
@@ -618,8 +618,8 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
@@ -666,8 +666,8 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
@@ -712,8 +712,8 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
@@ -756,13 +756,13 @@ abstract class CrudController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
-     * @param string $m  Model name $this->getModelName(Model::class)
-     * @param int    $id Model id
+     * @param string $m Model name $this->getModelName(Model::class)
+     * @param int $id Model id
      *
      * @return array
      */
@@ -782,7 +782,7 @@ abstract class CrudController extends Controller
 
                 return [
                     [
-                        'text'          => Yii::t('bot', $model->getAttributeLabel($attribute)),
+                        'text' => Yii::t('bot', $model->getAttributeLabel($attribute)),
                         'callback_data' => self::createRoute(
                             'e-a',
                             [
@@ -807,23 +807,63 @@ abstract class CrudController extends Controller
         $systemButtons = array_values($systemButtons);
         $buttons = array_merge($editButtons, [$systemButtons]);
         $messageText = $this->render(
-            "$m/show",
+            "show",
             [
                 'model' => $model,
             ]
         );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->editMessageTextOrSendMessage(
-                                  $messageText,
-                                  $buttons,
-                                  true
-                              )
-                              ->build();
+            ->editMessageTextOrSendMessage(
+                $messageText,
+                $buttons,
+                true
+            )
+            ->build();
     }
 
     /**
-     * @param int $m  Model name
+     * @param array $params
+     * @param array $rule
+     * @param string $attributeName
+     *
+     * @return array
+     */
+    private function prepareViewParams($params, $rule, $attributeName)
+    {
+        if ($attributeName) {
+            $callbackFunction = $rule['attributes'][$attributeName]['prepareViewParams'] ?? null;
+        } else {
+            $callbackFunction = $rule['prepareViewParams'] ?? null;
+        }
+        if ($callbackFunction) {
+            $params = call_user_func($callbackFunction, $params);
+        }
+
+        return $params;
+    }
+
+    /**
+     * @param string $view
+     * @param array $params
+     * @param array $options
+     *
+     * @return helpers\MessageText
+     */
+    private function renderAttribute($view, $params, $options)
+    {
+        $attributeName = ArrayHelper::getValue($options, 'attributeName', null);
+        $rule = ArrayHelper::getValue($options, 'rule', null);
+        $model = $params['model'];
+        if ($attributeName && $model->hasProperty($attributeName)) {
+            $params['currentValue'] = $model->$attributeName;
+        }
+
+        return $this->render($view, $this->prepareViewParams($params, $rule, $attributeName));
+    }
+
+    /**
+     * @param int $m Model name
      * @param int $id Model id
      *
      * @return array
@@ -835,29 +875,30 @@ abstract class CrudController extends Controller
         $model = $this->getModel($rule, $id);
         if (!isset($model)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->answerCallbackQuery()
-                                  ->build();
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $keyboard = $this->getKeyboard($m, $model);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->editMessageTextOrSendMessage(
-                                  $this->render(
-                                      "$m/show",
-                                      [
-                                          'model' => $model,
-                                      ]
-                                  ),
-                                  $keyboard ?? [],
-                                  true
-                              )
-                              ->build();
+            ->editMessageTextOrSendMessage(
+                $this->renderAttribute(
+                    "$m/show",
+                    [
+                        'model' => $model,
+                    ],
+                    compact('rule')
+                ),
+                $keyboard ?? [],
+                true
+            )
+            ->build();
     }
 
     /**
      * @param ActiveRecord $model
-     * @param bool         $isNew
+     * @param bool $isNew
      *
      * @return array
      */
@@ -872,9 +913,9 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param array  $rule
+     * @param array $rule
      * @param string $attributeName
-     * @param int    $id
+     * @param int $id
      */
     protected function beforeEdit(array $rule, string $attributeName, int $id)
     {
@@ -920,7 +961,7 @@ abstract class CrudController extends Controller
 
     /**
      * @param ActiveRecord $model
-     * @param bool         $isNew
+     * @param bool $isNew
      */
     protected function beforeSave(ActiveRecord $model, bool $isNew)
     {
@@ -944,7 +985,7 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param string   $className
+     * @param string $className
      * @param int|null $id
      *
      * @return array
@@ -952,15 +993,15 @@ abstract class CrudController extends Controller
     protected function onCancel(string $className, ?int $id)
     {
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
      * @param ActiveRecord $model
-     * @param string       $attributeName
+     * @param string $attributeName
      * @param              $attributeValue
-     * @param array        $manyToManyRelationAttributes
+     * @param array $manyToManyRelationAttributes
      *
      * @return mixed
      */
@@ -1031,9 +1072,9 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param string       $class
+     * @param string $class
      * @param string|array $field
-     * @param string       $value
+     * @param string $value
      *
      * @return mixed|null
      */
@@ -1134,7 +1175,7 @@ abstract class CrudController extends Controller
                                 $attributeValue[$secondaryRelation[0]] = $relationModel->id;
                             }
                             $conditions = [
-                                $primaryRelation[0]   => $model->getAttribute(
+                                $primaryRelation[0] => $model->getAttribute(
                                     $primaryRelation[1]
                                 ),
                                 $secondaryRelation[0] => $attributeValue[$secondaryRelation[0]],
@@ -1157,8 +1198,8 @@ abstract class CrudController extends Controller
                             $relationModel->setAttributes($attributeValue);
                             if (!$relationModel->save()) {
                                 return ResponseBuilder::fromUpdate($this->getUpdate())
-                                                      ->answerCallbackQuery()
-                                                      ->build();
+                                    ->answerCallbackQuery()
+                                    ->build();
                             }
                         }
 
@@ -1173,27 +1214,28 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-
+                    $backRoute = $this->backRoute->get();
                     $state->reset();
+                    $this->backRoute->set($backRoute);
                     $transaction->commit();
 
                     return $this->afterSave($model, $isNew);
                 }
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 Yii::warning($ex);
                 $transaction->rollBack();
             }
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->answerCallbackQuery()
-                              ->build();
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
      * @param array $assocArray
      * @param       $element
-     * @param bool  $ignoreWithBehavior
+     * @param bool $ignoreWithBehavior
      *
      * @return mixed|null
      */
@@ -1211,7 +1253,7 @@ abstract class CrudController extends Controller
     /**
      * @param array $assocArray
      * @param       $element
-     * @param bool  $ignoreWithBehavior
+     * @param bool $ignoreWithBehavior
      *
      * @return mixed|null
      */
@@ -1237,7 +1279,7 @@ abstract class CrudController extends Controller
     {
         $modelName = ArrayHelper::getValue($options, 'modelName', null);
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', true);
-        $attributeName = ArrayHelper::getValue($options, 'attributeName', null);
+        $attributeName = ArrayHelper::getValue($options, self::FIELD_NAME_ATTRIBUTE, null);
         $config = ArrayHelper::getValue($options, 'config', []);
 
         $isAttributeRequired = $config['isRequired'] ?? true;
@@ -1250,7 +1292,8 @@ abstract class CrudController extends Controller
             $buttons = array_merge($buttons, [$configButtons]);
         }
         /* 'Next' button */
-        if (((!$isAttributeRequired || !$isEmpty)
+        if ((
+            (!$isAttributeRequired || !$isEmpty)
             && (!$isEdit
                 || (isset($relation) && count($relation['attributes']) > 1)
                 && !isset($relationAttributeName))
@@ -1259,7 +1302,7 @@ abstract class CrudController extends Controller
             $nextAttribute = $this->getNextKey($attributes, $attributeName);
             $buttonSkip = array_merge(
                 [
-                    'text'          => Yii::t('bot', (isset($nextAttribute) && !$isEdit) ? 'Skip' : 'Finish'),
+                    'text' => Yii::t('bot', (isset($nextAttribute) && !$isEdit) ? 'Skip' : 'Finish'),
                     'callback_data' => self::createRoute('n-a'),
                 ],
                 $buttonSkip
@@ -1275,13 +1318,13 @@ abstract class CrudController extends Controller
     /**
      * Now work only for many to many
      *
-     * @param array   $rule
-     * @param array   $relation
+     * @param array $rule
+     * @param array $relation
      * @param integer $id
      * @param integer $editableFieldId
      *
      * @return ActiveRecord
-     * @throws \Exception
+     * @throws Exception
      */
     private function getModelByRelation($rule, $relation, $id, $editableFieldId = null)
     {
@@ -1301,7 +1344,7 @@ abstract class CrudController extends Controller
         $model = call_user_func([$modelClass, 'findOne'], $conditions);
         /* @var ActiveRecord $model */
         if (!$model) {
-            throw new \Exception($modelClass . ' with params ' . serialize($conditions) . ' was not found');
+            throw new Exception($modelClass . ' with params ' . serialize($conditions) . ' was not found');
         }
 
         return $model;
@@ -1310,7 +1353,7 @@ abstract class CrudController extends Controller
     /**
      * @param string $modelName
      * @param string $attributeName
-     * @param array  $options ['config' => [], 'page' => 1]
+     * @param array $options ['config' => [], 'page' => 1]
      *
      * @return array
      */
@@ -1368,7 +1411,7 @@ abstract class CrudController extends Controller
                     },
                     function ($key, ActiveRecord $model) use ($modelName, $attributeName, $valueAttribute) {
                         return [
-                            'text'          => $this->getLabel($model),
+                            'text' => $this->getLabel($model),
                             'callback_data' => self::createRoute(
                                 's-a',
                                 [
@@ -1396,27 +1439,27 @@ abstract class CrudController extends Controller
             $buttons = $this->prepareButtons(
                 $itemButtons,
                 $systemButtons,
-                compact('config', 'isEmpty', 'modelName', 'attributeName')
+                compact('config', 'isEmpty', 'modelName', self::FIELD_NAME_ATTRIBUTE)
             );
             $model = $this->getFilledModel($rule);
 
             return ResponseBuilder::fromUpdate($this->getUpdate())
-                                  ->editMessageTextOrSendMessage(
-                                      $this->render(
-                                          "$modelName/$attributeName/set-$relationAttributeName",
-                                          [
-                                              'currentValue' => $currentValue ?? null,
-                                              'step'         => $step,
-                                              'error'        => $error,
-                                              'totalSteps'   => $totalSteps,
-                                              'isEdit'       => $isEdit,
-                                              'model'        => $model,
-                                          ]
-                                      ),
-                                      $buttons,
-                                      true
-                                  )
-                                  ->build();
+                ->editMessageTextOrSendMessage(
+                    $this->renderAttribute(
+                        $this->prepareViewFileName($rule, $attributeName, $relationAttributeName),
+                        [
+                            'step' => $step,
+                            'error' => $error,
+                            'totalSteps' => $totalSteps,
+                            'isEdit' => $isEdit,
+                            'model' => $model,
+                        ],
+                        compact('rule', 'attributeName')
+                    ),
+                    $buttons,
+                    true
+                )
+                ->build();
         }
 
         $isAttributeRequired = $config['isRequired'] ?? true;
@@ -1446,7 +1489,7 @@ abstract class CrudController extends Controller
                     } else {
                         $id = 'v_' . $key;
                     }
-                } catch (\Exception $ex) {
+                } catch (Exception $ex) {
                     if (is_array($item)) {
                         return [];
                     }
@@ -1457,7 +1500,7 @@ abstract class CrudController extends Controller
                 return array_merge(
                     [
                         [
-                            'text'          => $label,
+                            'text' => $label,
                             'callback_data' => self::createRoute(
                                 'e-r-a',
                                 [
@@ -1466,9 +1509,11 @@ abstract class CrudController extends Controller
                             ),
                         ],
                     ],
-                    (count($items) == 1 && $isAttributeRequired) ? [] : [
+                    (count($items) == 1 && $isAttributeRequired)
+                        ? []
+                        : [
                         [
-                            'text'          => Emoji::DELETE,
+                            'text' => Emoji::DELETE,
                             'callback_data' => self::createRoute(
                                 'r-a',
                                 [
@@ -1489,31 +1534,32 @@ abstract class CrudController extends Controller
                 $attributeName,
                 compact('isEmpty', 'enableBackRoute')
             ),
-            compact('isEmpty', 'config', 'attributeName', 'modelName')
+            compact('isEmpty', 'config', self::FIELD_NAME_ATTRIBUTE, 'modelName')
         );
         $model = $this->getFilledModel($rule);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->editMessageTextOrSendMessage(
-                                  $this->render(
-                                      "$modelName/set-$attributeName",
-                                      [
-                                          'step'       => $step,
-                                          'error'      => $error,
-                                          'totalSteps' => $totalSteps,
-                                          'isEdit'     => $isEdit,
-                                          'model'      => $model,
-                                      ]
-                                  ),
-                                  $buttons
-                              )
-                              ->build();
+            ->editMessageTextOrSendMessage(
+                $this->renderAttribute(
+                    $this->prepareViewFileName($rule, $attributeName),
+                    [
+                        'step' => $step,
+                        'error' => $error,
+                        'totalSteps' => $totalSteps,
+                        'isEdit' => $isEdit,
+                        'model' => $model,
+                    ],
+                    compact('rule', 'attributeName')
+                ),
+                $buttons
+            )
+            ->build();
     }
 
     /**
      * @param string $modelName
      * @param string $attributeName
-     * @param array  $options
+     * @param array $options
      *
      * @return array
      * @throws InvalidConfigException
@@ -1522,7 +1568,8 @@ abstract class CrudController extends Controller
         string $modelName,
         string $attributeName,
         array $options
-    ) {
+    )
+    {
         $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
         $config = ArrayHelper::getValue($options, 'config', []);
         $rule = $this->getRule($modelName);
@@ -1550,32 +1597,32 @@ abstract class CrudController extends Controller
         $buttons = $this->prepareButtons(
             [],
             $systemButtons,
-            compact('config', 'isEmpty', 'modelName', 'attributeName')
+            compact('config', 'isEmpty', 'modelName', self::FIELD_NAME_ATTRIBUTE)
         );
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
-                              ->editMessageTextOrSendMessage(
-                                  $this->render(
-                                      "$modelName/set-$attributeName",
-                                      [
-                                          'currentValue' => $attributeValue,
-                                          'error'        => $error,
-                                          'step'         => $step,
-                                          'totalSteps'   => $totalSteps,
-                                          'isEdit'       => $isEdit,
-                                          'model'        => $this->getFilledModel($rule),
-                                      ]
-                                  ),
-                                  $buttons,
-                                  true
-                              )
-                              ->build();
+            ->editMessageTextOrSendMessage(
+                $this->renderAttribute(
+                    $this->prepareViewFileName($rule, $attributeName),
+                    [
+                        'error' => $error,
+                        'step' => $step,
+                        'totalSteps' => $totalSteps,
+                        'isEdit' => $isEdit,
+                        'model' => $this->getFilledModel($rule),
+                    ],
+                    compact('rule', 'attributeName')
+                ),
+                $buttons,
+                true
+            )
+            ->build();
     }
 
     /**
      * @param string $modelName
      * @param string $attributeName
-     * @param array  $options
+     * @param array $options
      *
      * @return array
      */
@@ -1626,14 +1673,14 @@ abstract class CrudController extends Controller
         if ($backRoute) {
             /* 'Back' button */
             $systemButtons['back'] = [
-                'text'          => Emoji::BACK,
+                'text' => Emoji::BACK,
                 'callback_data' => $backRoute,
             ];
         }
         /* 'Menu' button */
         $systemButtons['menu'] = [
             'callback_data' => $this->backRoute->get(),
-            'text'          => Emoji::END,
+            'text' => Emoji::END,
         ];
 
         return $systemButtons;
@@ -1642,7 +1689,7 @@ abstract class CrudController extends Controller
     /**
      * @param string $modelName
      * @param string $attributeName
-     * @param array  $options
+     * @param array $options
      *
      * @return array
      */
@@ -1668,14 +1715,14 @@ abstract class CrudController extends Controller
             /* 'Clear' button */
             if (!$isAttributeRequired && !$isEmpty) {
                 $systemButtons['delete'] = [
-                    'text'          => Emoji::DELETE,
+                    'text' => Emoji::DELETE,
                     'callback_data' => self::createRoute('c-a'),
                 ];
             }
         } else {
             /* 'Add' button */
             $systemButtons['add'] = [
-                'text'          => Emoji::ADD,
+                'text' => Emoji::ADD,
                 'callback_data' => self::createRoute(
                     'a-a',
                     [
@@ -1731,14 +1778,14 @@ abstract class CrudController extends Controller
             );
 
             return null;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }
 
     /**
      * @param array $rule
-     * @param int   $id
+     * @param int $id
      *
      * @return ActiveRecord|null
      */
@@ -1954,5 +2001,38 @@ abstract class CrudController extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * @param array $rule
+     * @param string $attributeName
+     * @param string $relationAttributeName
+     *
+     * @return string
+     */
+    private function prepareViewFileName(array $rule, string $attributeName, $relationAttributeName = null)
+    {
+        if ($view = $rule['attributes'][$attributeName]['view'] ?? null) {
+            $attributeName = $view;
+        }
+        if ($relationAttributeName) {
+            $pathArray = [
+                $attributeName,
+                "/edit-",
+                $relationAttributeName,
+            ];
+        } else {
+            $pathArray = [
+                'edit-',
+                $attributeName,
+            ];
+        }
+        if (!$view) {
+            foreach ($pathArray as $key => $item) {
+                $pathArray[$key] = str_replace('_', '-', $item);
+            }
+        }
+
+        return implode('', $pathArray);
     }
 }

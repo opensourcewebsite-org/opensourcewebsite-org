@@ -19,13 +19,24 @@ class BackRouteService
 
     /**
      * @param string $actionName
-     * @param array  $params
+     * @param array $params
      */
-    public function set($actionName, $params)
+    public function make($actionName, $params)
     {
         $this->state->setIntermediateField(
             'back-route',
             $this->controller::createRoute($actionName, $params)
+        );
+    }
+
+    /**
+     * @param string $route
+     */
+    public function set($route)
+    {
+        $this->state->setIntermediateField(
+            'back-route',
+            $route
         );
     }
 
