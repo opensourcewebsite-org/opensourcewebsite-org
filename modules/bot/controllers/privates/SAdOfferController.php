@@ -173,7 +173,17 @@ class SAdOfferController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                     ],
                     'delivery_radius' => [
-                        'view' => 'radius',
+                        'view' => 'edit-radius',
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'No delivery'),
+                                'callback' => function (AdOffer $model) {
+                                    $model->delivery_radius = 0;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
                 ],
             ],

@@ -14,6 +14,7 @@ class m200622_121041_create_resume_table extends Migration
     {
         $this->createTable('{{%resume}}', [
             'id' => $this->primaryKey()->unsigned(),
+            'user_id' => $this->integer()->unsigned()->notNull(),
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'remote_on' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'name' => $this->string()->notNull(),
@@ -38,6 +39,14 @@ class m200622_121041_create_resume_table extends Migration
             '{{%currency}}',
             'id'
         );
+
+        $this->addForeignKey(
+            'fk-resume-user_id',
+            '{{%resume}}',
+            'user_id',
+            '{{%user}}',
+            'id'
+        );
     }
 
     /**
@@ -45,6 +54,7 @@ class m200622_121041_create_resume_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey('fk-resume-user_id', '{{%resume}}');
         $this->dropForeignKey(
             'fk-resume_currency_id-currency_id',
             '{{%resume}}'

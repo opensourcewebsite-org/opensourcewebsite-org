@@ -151,7 +151,17 @@ class SAdSearchController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                     ],
                     'pickup_radius' => [
-                        'view' => 'radius',
+                        'view' => 'edit-radius',
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'No pickup'),
+                                'callback' => function (AdSearch $model) {
+                                    $model->pickup_radius = 0;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
                 ],
             ],

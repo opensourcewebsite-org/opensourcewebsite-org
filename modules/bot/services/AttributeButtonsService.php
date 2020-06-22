@@ -3,6 +3,7 @@
 namespace app\modules\bot\services;
 
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\CrudController;
 use app\modules\bot\controllers\privates\MenuController;
 
 /**
@@ -16,7 +17,7 @@ class AttributeButtonsService
     public $controller;
 
     /**
-     * @param array  $rule
+     * @param array $rule
      * @param string $attributeName
      *
      * @return array
@@ -26,17 +27,14 @@ class AttributeButtonsService
         $buttons = [];
         $config = $rule['attributes'][$attributeName];
         if ($configButtons = $config['buttons'] ?? []) {
-            foreach ($configButtons as $configButton) {
-                $configButton['callback_data'] = $this->getButtonRoute($configButton);
-                $buttons[] = $configButton;
-            }
+            $buttons = $this->fillButtonsCallbackData($configButtons, $attributeName);
         }
 
         return $buttons;
     }
 
     /**
-     * @param array  $rule
+     * @param array $rule
      * @param string $attributeName
      *
      * @return array
@@ -46,10 +44,24 @@ class AttributeButtonsService
         $buttons = [];
         $config = $rule['attributes'][$attributeName];
         if ($configButtons = $config['systemButtons'] ?? []) {
-            foreach ($configButtons as $key => $configButton) {
-                $configButton['callback_data'] = $this->getButtonRoute($configButton);
-                $buttons[$key] = $configButton;
-            }
+            $buttons = $this->fillButtonsCallbackData($configButtons, $attributeName);
+        }
+
+        return $buttons;
+    }
+
+    /**
+     * @param $configButtons
+     * @param $attributeName
+     *
+     * @return array
+     */
+    private function fillButtonsCallbackData(&$configButtons, $attributeName)
+    {
+        $buttons = [];
+        foreach ($configButtons as $key => $configButton) {
+            $configButton['callback_data'] = $this->getButtonRoute($configButton, $key, $attributeName);
+            $buttons[$key] = $configButton;
         }
 
         return $buttons;
@@ -57,7 +69,7 @@ class AttributeButtonsService
 
     /**
      * @param string $attributeName
-     * @param array  $rule
+     * @param array $rule
      *
      * @return bool
      */
@@ -70,10 +82,12 @@ class AttributeButtonsService
 
     /**
      * @param $configButton
+     * @param $id
+     * @param $attributeName
      *
      * @return string
      */
-    private function getButtonRoute(&$configButton)
+    private function getButtonRoute(&$configButton, $id, $attributeName)
     {
         if (isset($configButton['item'])) {
             $route = $this->controller::createRoute(
@@ -83,9 +97,12 @@ class AttributeButtonsService
                 ]
             );
             unset($configButton['item']);
-        } elseif ($configButton['route']) {
+        } elseif (isset($configButton['route'])) {
             $route = $configButton['route'];
             unset($configButton['route']);
+        } elseif (isset($configButton['callback'])) {
+            $route = $this->controller::createRoute('b-c', ['a' => $attributeName, 'i' => $id]);
+            unset($configButton['callback']);
         } else {
             $route = MenuController::createRoute();
         }

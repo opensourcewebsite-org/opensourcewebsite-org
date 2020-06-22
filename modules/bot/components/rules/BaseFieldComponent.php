@@ -25,6 +25,8 @@ abstract class BaseFieldComponent
     public $update;
     /** @var  User */
     public $telegramUser;
+    /** @var  User */
+    public $user;
 
     /**
      * BaseFieldComponent constructor.
@@ -39,5 +41,6 @@ abstract class BaseFieldComponent
         $this->state = $this->controller->getState();
         $this->update = $this->controller->module->update;
         $this->telegramUser = $this->controller->getTelegramUser();
+        $this->user = $controller->module->user;
     }
 }
