@@ -24,6 +24,8 @@ class Reduction extends Component
     public array $debug = [
         'logConsole' => false,
         'DebtBalanceCondition' => null,
+        //short format more handy to analyze logs. But if you are not familiar with this system yet - set FALSE
+        'logChainShort' => false,
     ];
     /** @var callable|null */
     public $logger;
@@ -86,8 +88,7 @@ class Reduction extends Component
     {
         $chainsWithMiddleMember = [];
         foreach ($chainMembers as $chainMember) {
-            $this->log("$level. " . implode(':', $chainMember->primaryKey), [], true);
-
+            $this->logChain($chainMember, $level);
             $middleChainMembers = $this->findBalanceChains($firstFromUID, $chainMember);
 
             if (empty($middleChainMembers)) {
@@ -96,7 +97,7 @@ class Reduction extends Component
             }
             $chainsWithMiddleMember[] = $middleChainMembers;
 
-            $circledChain = $this->getCircledChain($middleChainMembers);
+            $circledChain = $this->getCircledChain($middleChainMembers, $level);
 
             if ($circledChain) {
                 return $circledChain;
@@ -143,10 +144,13 @@ class Reduction extends Component
      *
      * @return DebtBalance|null if middleMember has any lastMember - this chain is circled
      */
-    private function getCircledChain($middleChainMembers): ?DebtBalance
+    private function getCircledChain($middleChainMembers, int $level): ?DebtBalance
     {
+        ++$level;
+
         foreach ($middleChainMembers as $middle) {
-            $this->log('    middle    ' . implode(':', $middle->primaryKey), [], true);
+            $pk = implode(':', $middle->primaryKey);
+            $this->log("    middle    $pk ($level)", [], true);
 
             if (!empty($middle->chainMembers)) {
                 return $middle; // if it has at least one "last" chain member - then chain is circled
@@ -327,5 +331,19 @@ class Reduction extends Component
     private function isDebugMode(): bool
     {
         return (bool)$this->debug['DebtBalanceCondition'];
+    }
+
+    private function logChain(DebtBalance $chainMember, int $level): void
+    {
+        $chain = $this->getPreviousMembers($chainMember);
+        $chain[] = $chainMember;
+        $list = [];
+
+        foreach ($chain as $key => $balance) {
+            $isShort = $this->debug['logChainShort'] && ($key !== 0);
+            $list[] = $isShort ? $balance->to_user_id : implode(':', $balance->primaryKey);
+        }
+
+        $this->log("$level. " . implode(' => ', $list), [], true);
     }
 }
