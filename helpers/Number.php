@@ -2,6 +2,8 @@
 
 namespace app\helpers;
 
+use InvalidArgumentException;
+
 /**
  * Class Number
  *
@@ -68,5 +70,33 @@ class Number
     public static function floatAdd(?string $leftFloat, ?string $rightFloat, int $scale): string
     {
         return bcadd($leftFloat, $rightFloat, $scale);
+    }
+
+    public static function sizeToInt(string $size) {
+        $size = trim($size);
+        $last = strtolower($size[strlen($size)-1]);
+        $size = substr($size, 0, -1);
+
+        switch($last) {
+            case 'g':
+                return $size * 1073741824; // 1024*1024*1024
+            case 'm':
+                return $size * 1048576; // 1024*1024
+            case 'k':
+                return $size * 1024;
+            default:
+                throw new InvalidArgumentException("Unexpected shorthand byte received: '$last'. \$size = '$size'");
+        }
+    }
+
+    public static function getMemoryLimit()
+    {
+        $limit = ini_get('memory_limit');
+
+        if (!$limit || -1 === (int)$limit || is_numeric($limit)) {
+            return (float)$limit;
+        }
+
+        return self::sizeToInt($limit);
     }
 }
