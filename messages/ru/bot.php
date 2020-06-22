@@ -235,6 +235,7 @@ return [
     'Price' => 'Цена',
     'Location' => 'Местонахождение',
     'Delivery radius' => 'Радиус доставки',
+    'Delivery Radius' => 'Радиус доставки',
     'My location' => 'Моя геолокация',
     'Check ad correctness' => 'Проверьте правильность объявления',
     'Category' => 'Категория',
@@ -272,8 +273,10 @@ return [
     'Photo' => 'Фото',
     'Choose a currency for price' => 'Выберите валюту для цены',
     'Max price' => 'Максимальная цена',
+    'Max Price' => 'Максимальная цена',
     'No delivery' => 'Без доставки',
     'Pickup radius' => 'Радиус самовывоза',
+    'Pickup Radius' => 'Радиус самовывоза',
     'Edit currency' => 'Изменить валюту',
     'No pickup' => 'Без самовывоза',
 ];
