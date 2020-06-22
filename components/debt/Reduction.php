@@ -20,6 +20,8 @@ class Reduction extends Component
 {
     /** @var int|null NULL - mean unlimited. Set this value empirically. */
     private const BREAK_LEVEL = 20;
+    /** @var float as percent: "0.9" mean 90%. It will break loop, if this limit will be reached */
+    private const MEMORY_USAGE_LIMIT = 0.9;
 
     public array $debug = [
         'logConsole' => false,
@@ -108,7 +110,8 @@ class Reduction extends Component
             }
         }
 
-        if (empty($chainsWithMiddleMember) || $this->breakLevel($level, $chainMembers[0])) {
+        $breakLevel = $this->breakLevel($level, $chainMembers[0]);
+        if (empty($chainsWithMiddleMember) || $breakLevel || !$this->validateMemoryLimit()) {
             return null;
         }
 
@@ -323,15 +326,16 @@ class Reduction extends Component
         $firstBalance = $this->getPreviousMembers($balanceMember)[0];
         $condition = DebtController::formatConsoleArgument($firstBalance->primaryKey);
 
-        $message = "Can't find balance chains - script reached BREAK_LEVEL limit.";
+        $message = "Can't find circled chain - script reached BREAK_LEVEL limit.";
+        $message .= $this->isDebugMode() ? '' : ' Balance will be marked as Reduced.';
         $message .= " If you sure it is not bug - increase Reduction::BREAK_LEVEL. Now: $level";
-        $this->log($message);
+        $this->log($message, [Console::FG_RED]);
 
         //cron_job_log.message has limit 255 chars. So we should split message.
         $message = "You can debug exactly this balance:\n";
         $message .= "run `yii debt --debug-reduction=$condition`\n";
         $message .= 'analyze console messages to find bug';
-        $this->log($message);
+        $this->log($message, [Console::FG_RED]);
 
         if ($this->isDebugMode()) {
             exit(ExitCode::SOFTWARE);
@@ -357,5 +361,21 @@ class Reduction extends Component
         }
 
         $this->log("$level. " . implode(' => ', $list), [], true);
+    }
+
+    private function validateMemoryLimit(): bool
+    {
+        $usage = memory_get_usage(true);
+        $limit = Number::getMemoryLimit();
+
+        if ($limit <= 0 || ($usage / $limit) < self::MEMORY_USAGE_LIMIT) {
+            return true;
+        }
+
+        $message = "Can't find circled chain - script reached memory limit.";
+        $message .= $this->isDebugMode() ? '' : ' Balance will be marked as Reduced.';
+        $this->log($message, [Console::FG_RED]);
+
+        return false;
     }
 }
