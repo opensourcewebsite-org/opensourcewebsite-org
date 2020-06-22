@@ -26,32 +26,16 @@ class m200622_121041_create_resume_table extends Migration
             'skills' => $this->text()->notNull(),
             'location_lat' => $this->string(255),
             'location_lon' => $this->string(255),
-            'created_at' => $this->integer()->unsigned(),
+            'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned(),
             'processed_at' => $this->integer()->unsigned(),
         ]);
-
-        $this->addForeignKey(
-            'fk-resume_company_id-company_id',
-            '{{%resume}}',
-            'company_id',
-            '{{%company}}',
-            'id'
-        );
 
         $this->addForeignKey(
             'fk-resume_currency_id-currency_id',
             '{{%resume}}',
             'currency_id',
             '{{%currency}}',
-            'id'
-        );
-
-        $this->addForeignKey(
-            'fk-resume_gender_id-gender_id',
-            '{{%resume}}',
-            'gender_id',
-            '{{%gender}}',
             'id'
         );
     }
@@ -63,16 +47,6 @@ class m200622_121041_create_resume_table extends Migration
     {
         $this->dropForeignKey(
             'fk-resume_currency_id-currency_id',
-            '{{%resume}}'
-        );
-
-        $this->dropForeignKey(
-            'fk-resume_company_id-company_id',
-            '{{%resume}}'
-        );
-
-        $this->dropForeignKey(
-            'fk-resume_gender_id-gender_id',
             '{{%resume}}'
         );
 
