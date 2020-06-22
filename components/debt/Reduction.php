@@ -19,7 +19,7 @@ use yii\helpers\Console;
 class Reduction extends Component
 {
     /** @var int|null NULL - mean unlimited. Set this value empirically. */
-    private const BREAK_LEVEL = 7;
+    private const BREAK_LEVEL = 20;
 
     public array $debug = [
         'logConsole' => false,
@@ -94,6 +94,10 @@ class Reduction extends Component
             if (empty($middleChainMembers)) {
                 $this->log('    dead end fork', [], true);
                 continue; //if $chainMember has no "middle" members - it is dead end chain. It cannot has "last" member
+
+                //REVIEW: maybe it is possible to use somehow members of dead-end chain, and use them as `NOT IN`
+                // condition in self::findBalanceChains(). I'm not sure. But this guess came to me, while analyzing
+                // huge debug logs (when $level >= 7)
             }
             $chainsWithMiddleMember[] = $middleChainMembers;
 
@@ -123,6 +127,9 @@ class Reduction extends Component
      */
     private function findBalanceChains($firstFromUID, DebtBalance $chainMember): array
     {
+        $previousMembers = $this->getPreviousMembers($chainMember);
+        $previousToUID = ArrayHelper::getColumn($previousMembers, 'to_user_id');
+
         return $chainMember->getChainMembers()
             ->joinWith([
                 'chainMembers' => function (DebtBalanceQuery $query) use ($firstFromUID) {
@@ -134,7 +141,8 @@ class Reduction extends Component
                         ->amountNotEmpty('chainMembersLast');
                 }
             ])
-            ->balances($this->getPreviousMembers($chainMember), 'NOT IN') //exclude previous to avoid continuous loop
+            ->balances($previousMembers, 'NOT IN') //exclude previous to avoid continuous loop
+            ->userTo($previousToUID, 'NOT IN')     //exclude previous to optimize
             ->amountNotEmpty()
             ->all();
     }
@@ -273,6 +281,10 @@ class Reduction extends Component
     private function cantReduceBalance(DebtBalance $balance): callable
     {
         $this->log('Found 0 balance chains');
+
+        if ($this->isDebugMode()) {
+            exit(ExitCode::SOFTWARE); //to avoid continuous loop, if debugging balance has no circled chain
+        }
 
         return static function () use ($balance) {
             DebtBalance::setReductionTryAt($balance);
