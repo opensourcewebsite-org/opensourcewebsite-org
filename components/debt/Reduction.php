@@ -108,10 +108,12 @@ class Reduction extends Component
             if ($circledChain) {
                 return $circledChain;
             }
+            if (!$this->validateMemoryLimit()) {
+                return null;
+            }
         }
 
-        $breakLevel = $this->breakLevel($level, $chainMembers[0]);
-        if (empty($chainsWithMiddleMember) || $breakLevel || !$this->validateMemoryLimit()) {
+        if (empty($chainsWithMiddleMember) || $this->breakLevel($level, $chainMembers[0])) {
             return null;
         }
 
