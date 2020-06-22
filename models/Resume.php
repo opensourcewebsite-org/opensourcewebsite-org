@@ -1,27 +1,33 @@
 <?php
 
+
 namespace app\models;
 
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
-class Vacancy extends ActiveRecord
+/**
+ * Class Resume
+ *
+ * @package app\models
+ */
+class Resume extends ActiveRecord
 {
+    /** @inheritDoc */
     public static function tableName()
     {
-        return '{{%vacancy}}';
+        return '{{%resume}}';
     }
 
+    /** @inheritDoc */
     public function rules()
     {
         return [
             [
                 [
                     'user_id',
-                    'company_id',
                     'currency_id',
                     'status',
-                    'gender_id',
                     'created_at',
                     'renewed_at',
                     'processed_at',
@@ -32,8 +38,6 @@ class Vacancy extends ActiveRecord
                 [
                     'location_lat',
                     'location_lon',
-                    'min_hourly_rate',
-                    'max_hourly_rate',
                 ],
                 'double'
             ],
@@ -48,22 +52,30 @@ class Vacancy extends ActiveRecord
                 [
                     'requirements',
                     'conditions',
-                    'responsibilities',
+                    'skills',
                 ],
                 'string',
             ],
             [
                 [
-                    'company_id',
+                    'user_id',
                     'currency_id',
                     'name',
                     'requirements',
                     'conditions',
-                    'responsibilities',
+                    'skills',
                 ],
                 'required',
             ],
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
     }
 
     /** @inheritDoc */
@@ -74,15 +86,5 @@ class Vacancy extends ActiveRecord
                 'class' => TimestampBehavior::class,
             ],
         ];
-    }
-
-    public function getCompany()
-    {
-        return $this->hasOne(Company::class, ['id' => 'company_id']);
-    }
-
-    public function getCurrency()
-    {
-        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
     }
 }

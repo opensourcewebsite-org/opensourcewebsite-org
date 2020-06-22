@@ -1,11 +1,16 @@
 <?php
 namespace app\modules\bot\models;
 
-use Yii;
+use app\behaviors\TimestampBehavior;
+use app\models\Currency;
 use yii\db\ActiveRecord;
-use yii\db\Query;
 use app\models\User as GlobalUser;
 
+/**
+ * Class AdOffer
+ *
+ * @package app\modules\bot\models
+ */
 class AdOffer extends ActiveRecord
 {
     public const STATUS_OFF = 0;
@@ -22,7 +27,7 @@ class AdOffer extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'section', 'title', 'location_lat', 'location_lon', 'delivery_radius', 'status', 'created_at', 'renewed_at'], 'required'],
+            [['user_id', 'section', 'title', 'location_lat', 'location_lon', 'delivery_radius', 'status'], 'required'],
             [['title', 'description', 'location_lat', 'location_lon'], 'string'],
             [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
             [['price'], 'number'],
@@ -33,6 +38,9 @@ class AdOffer extends ActiveRecord
     {
         return [
             // TimestampBehavior::className(),
+            'TimestampBehavior' => [
+                'class' => TimestampBehavior::class,
+            ],
         ];
     }
 
@@ -181,5 +189,13 @@ class AdOffer extends ActiveRecord
     {
         return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
             ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyRelation()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 }
