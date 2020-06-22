@@ -2,6 +2,7 @@
 
 namespace app\components\debt;
 
+use app\commands\DebtController;
 use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Debt;
@@ -10,13 +11,20 @@ use app\models\queries\DebtBalanceQuery;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
+use yii\console\ExitCode;
 use yii\db\Transaction;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 
 class Reduction extends Component
 {
-    public $printConsoleLog = false;
+    /** @var int|null NULL - mean unlimited. Set this value empirically. */
+    private const BREAK_LEVEL = 7;
+
+    public array $debug = [
+        'logConsole' => false,
+        'DebtBalanceCondition' => null,
+    ];
     /** @var callable|null */
     public $logger;
 
@@ -43,10 +51,21 @@ class Reduction extends Component
 
     private function findDebtBalanceFirstMember(): ?DebtBalance
     {
-        return DebtBalance::find()
-            ->canBeReduced(true)
-            ->limit(1)
-            ->one();
+        $query = DebtBalance::find();
+
+        if ($this->debug['DebtBalanceCondition']) {
+            $query->andWhere($this->debug['DebtBalanceCondition'])->amountNotEmpty();
+        } else {
+            $query->canBeReduced(true);
+        }
+
+        $model = $query->limit(1)->one();
+
+        if (!$model && $this->isDebugMode()) {
+            $this->log('This balance is not available anymore', [Console::BG_GREY], true);
+        }
+
+        return $model;
     }
 
     /**
@@ -84,7 +103,7 @@ class Reduction extends Component
             }
         }
 
-        if (empty($chainsWithMiddleMember)) {
+        if (empty($chainsWithMiddleMember) || $this->breakLevel($level, $chainMembers[0])) {
             return null;
         }
 
@@ -173,7 +192,6 @@ class Reduction extends Component
             $minAmount = $isLower ? $chainMember->amount : $minAmount;
         }
 
-        //`array_reverse` is not necessary. Just for cleaner understanding on debugging
         return array_reverse($chainMembersAll);
     }
 
@@ -250,20 +268,25 @@ class Reduction extends Component
 
     private function cantReduceBalance(DebtBalance $balance): callable
     {
-        $this->log('Found 0 debt chains');
+        $this->log('Found 0 balance chains');
 
         return static function () use ($balance) {
             DebtBalance::setReductionTryAt($balance);
         };
     }
 
-    private function log($message, $format = [], $consoleOnly = false)
+    private function log($message, $format = [], $consoleOnly = false): void
     {
-        if ($this->logger && !$consoleOnly) {
-            call_user_func($this->logger, $message, $format);
+        if ($this->isDebugMode()) {
+            $consoleOnly = true;
         }
 
-        if (!$this->printConsoleLog) {
+        if ($this->logger && !$consoleOnly) {
+            call_user_func($this->logger, $message, $format);
+            return;
+        }
+
+        if (!$this->debug['logConsole']) {
             return;
         }
 
@@ -273,5 +296,36 @@ class Reduction extends Component
         }
 
         Console::stdout($message);
+    }
+
+    private function breakLevel(int $level, DebtBalance $balanceMember): bool
+    {
+        if ($level !== self::BREAK_LEVEL) {
+            return false;
+        }
+
+        $firstBalance = $this->getPreviousMembers($balanceMember)[0];
+        $condition = DebtController::formatConsoleArgument($firstBalance->primaryKey);
+
+        $message = "Can't find balance chains - script reached BREAK_LEVEL limit.";
+        $message .= " If you sure it is not bug - increase Reduction::BREAK_LEVEL. Now: $level";
+        $this->log($message);
+
+        //cron_job_log.message has limit 255 chars. So we should split message.
+        $message = "You can debug exactly this balance:\n";
+        $message .= "run `yii debt --debug-reduction=$condition`\n";
+        $message .= 'analyze console messages to find bug';
+        $this->log($message);
+
+        if ($this->isDebugMode()) {
+            exit(ExitCode::SOFTWARE);
+        }
+
+        return true;
+    }
+
+    private function isDebugMode(): bool
+    {
+        return (bool)$this->debug['DebtBalanceCondition'];
     }
 }
