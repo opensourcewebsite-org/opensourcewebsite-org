@@ -15,7 +15,7 @@ class m200622_125105_add_remote_on_column_to_vacancy_table extends Migration
         $this->dropColumn('{{%vacancy}}', 'location_at');
         $this->addColumn('{{%vacancy}}', 'remote_on', $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->after('status'));
         $this->addColumn('{{%vacancy}}', 'created_at', $this->integer()->unsigned()->notNull()->after('location_lon'));
-        $this->addColumn('{{%vacancy}}', 'processed_at', $this->integer()->unsigned()->after('processed_at'));
+        $this->addColumn('{{%vacancy}}', 'processed_at', $this->integer()->unsigned()->after('created_at'));
         $this->addColumn('{{%vacancy}}', 'user_id', $this->integer()->unsigned()->after('id'));
         $this->alterColumn('{{%vacancy}}', 'company_id', $this->integer()->unsigned());
     }
