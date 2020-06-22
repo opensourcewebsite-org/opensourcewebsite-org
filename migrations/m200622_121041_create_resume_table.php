@@ -24,7 +24,7 @@ class m200622_121041_create_resume_table extends Migration
             'search_radius' => $this->integer(),
             'currency_id' => $this->integer()->unsigned()->notNull(),
             'conditions' => $this->text()->notNull(),
-            'responsibilities' => $this->text()->notNull(),
+            'skills' => $this->text()->notNull(),
             'gender_id' => $this->integer()->unsigned()->null()->defaultValue(null),
             'location_lat' => $this->string(255),
             'location_lon' => $this->string(255),
