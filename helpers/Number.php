@@ -72,12 +72,13 @@ class Number
         return bcadd($leftFloat, $rightFloat, $scale);
     }
 
-    public static function sizeToInt(string $size) {
+    public static function sizeToInt(string $size)
+    {
         $size = trim($size);
         $last = strtolower($size[strlen($size)-1]);
         $size = substr($size, 0, -1);
 
-        switch($last) {
+        switch ($last) {
             case 'g':
                 return $size * 1073741824; // 1024*1024*1024
             case 'm':
