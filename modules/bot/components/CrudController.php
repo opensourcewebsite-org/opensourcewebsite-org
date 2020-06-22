@@ -253,10 +253,12 @@ abstract class CrudController extends Controller
         }
         if (is_array($fieldResult)) {
             $model->setAttributes($fieldResult);
+            $isNotValid = !$model->validate(array_keys($fieldResult));
         } else {
             $model->setAttribute($attributeName, $fieldResult);
+            $isNotValid = !$model->validate($attributeName);
         }
-        if (!$model->validate($attributeName)) {
+        if ($isNotValid) {
             $errors = $model->getErrors($attributeName);
 
             return $this->generatePublicResponse(
@@ -521,11 +523,7 @@ abstract class CrudController extends Controller
         $attributes = $this->getAttributes($rule);
         $config = $attributes[$attributeName];
         $id = $this->getIntermediateField($modelName, self::FIELD_NAME_ID);
-        if ($id) {
-            $model = $this->getModel($rule, $id);
-        } else {
-            $model = $this->getFilledModel($rule);
-        }
+        $model = $this->getFilledModel($rule);
         /** @var ActiveRecord $model */
         $model = call_user_func($config['buttons'][$i]['callback'], $model);
         $this->setIntermediateFields($modelName, $model->getAttributes());
@@ -824,12 +822,14 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Action Update
+     *
      * @param string $m Model name $this->getModelName(Model::class)
      * @param int $id Model id
      *
      * @return array
      */
-    public function actionUpdate($m, $i, $b = '')
+    public function actionU($m, $i, $b = '')
     {
         $id = $i;
         $rule = $this->getRule($m);
@@ -866,6 +866,7 @@ abstract class CrudController extends Controller
                 return $val;
             }
         );
+        $this->setCurrentModelClass($this->getModelClassByRule($rule));
         $systemButtons = $this->getDefaultSystemButtons($b);
         $systemButtons = array_values($systemButtons);
         $buttons = array_merge($editButtons, [$systemButtons]);
@@ -927,12 +928,14 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * Action Show
+     *
      * @param int $m Model name
      * @param int $id Model id
      *
      * @return array
      */
-    public function actionShow($m, $i)
+    public function actionSh($m, $i)
     {
         $id = $i;
         $rule = $this->getRule($m);
@@ -1166,6 +1169,25 @@ abstract class CrudController extends Controller
     /**
      * @param array $rule
      *
+     * @return array
+     */
+    private function getRuleBehaviors($rule)
+    {
+        $behaviors = [];
+        foreach ($rule['attributes'] as $attributeName => $attribute) {
+            if (isset($attribute['behaviors'])) {
+                foreach ($attribute['behaviors'] as $behaviorName => $behaviorValue) {
+                    $behaviors[$attributeName . $behaviorName] = $behaviorValue;
+                }
+            }
+        }
+
+        return $behaviors;
+    }
+
+    /**
+     * @param array $rule
+     *
      * @return ActiveRecord
      * @throws InvalidConfigException
      */
@@ -1178,26 +1200,20 @@ abstract class CrudController extends Controller
         /* @var ActiveRecord $model */
         if ($isNew) {
             $model = $this->createModel($rule);
+            foreach ($rule['attributes'] as $attributeName => $attribute) {
+                $component = $this->createAttributeComponent($attribute);
+                if ($component instanceof FieldInterface) {
+                    $fields = $component->getFields();
+                    foreach ($fields as $field) {
+                        $this->fillModel($model, $field, $attribute, $manyToManyRelationAttributes);
+                    }
+                }
+                $this->fillModel($model, $attributeName, $attribute, $manyToManyRelationAttributes);
+            }
+            $model->attachBehaviors($this->getRuleBehaviors($rule));
         } else {
             $model = $this->getModel($rule, $id);
         }
-        $behaviors = [];
-        foreach ($rule['attributes'] as $attributeName => $attribute) {
-            if (isset($attribute['behaviors'])) {
-                foreach ($attribute['behaviors'] as $behaviorName => $behaviorValue) {
-                    $behaviors[$attributeName . $behaviorName] = $behaviorValue;
-                }
-            }
-            $component = $this->createAttributeComponent($attribute);
-            if ($component instanceof FieldInterface) {
-                $fields = $component->getFields();
-                foreach ($fields as $field) {
-                    $this->fillModel($model, $field, $attribute, $manyToManyRelationAttributes);
-                }
-            }
-            $this->fillModel($model, $attributeName, $attribute, $manyToManyRelationAttributes);
-        }
-        $model->attachBehaviors($behaviors);
         $this->manyToManyRelationAttributes = $manyToManyRelationAttributes;
 
         return $model;

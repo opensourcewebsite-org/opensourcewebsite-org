@@ -25,9 +25,6 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
             $coords = explode(' ', $text);
             $latitude = $coords[0];
             $longitude = $coords[1] ?? null;
-            if (!$longitude) {
-                return [];
-            }
         }
 
         return ['location_lat' => $latitude, 'location_lon' => $longitude];

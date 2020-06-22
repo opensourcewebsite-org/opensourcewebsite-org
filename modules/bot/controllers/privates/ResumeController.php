@@ -49,15 +49,9 @@ class ResumeController extends CrudController
                             ],
                         ],
                     ],
-                    'requirements' => [
-                        'isRequired' => false,
-                    ],
-                    'conditions' => [
-                        'isRequired' => false,
-                    ],
-                    'skills' => [
-                        'isRequired' => false,
-                    ],
+                    'requirements' => [],
+                    'conditions' => [],
+                    'skills' => [],
                     'user_id' => [
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
@@ -210,7 +204,7 @@ class ResumeController extends CrudController
                         [
                             'text' => Emoji::EDIT,
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(Resume::class),
                                     'i' => $resumeId,

@@ -233,7 +233,7 @@ class VacancyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('update',
+                            'callback_data' => self::createRoute('u',
                                 [
                                     'm' => $this->getModelName(Vacancy::class),
                                     'i' => $vacancyId,

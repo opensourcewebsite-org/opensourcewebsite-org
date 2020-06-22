@@ -841,7 +841,7 @@ class SAdSearchController extends CrudController
             ],
             [
                 'callback_data' => self::createRoute(
-                    'update',
+                    'u',
                     [
                         'm' => $this->getModelName(AdSearch::class),
                         'i' => $adSearchId,
@@ -1015,7 +1015,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
@@ -1082,7 +1082,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
@@ -1212,7 +1212,7 @@ class SAdSearchController extends CrudController
                 'callback_data' => isset($adSearch->currency_id)
                     ? self::createRoute('edit-max-price', ['adSearchId' => $adSearchId])
                     : self::createRoute(
-                        'update',
+                        'u',
                         [
                             'm' => $this->getModelName(AdSearch::class),
                             'i' => $adSearchId,
@@ -1281,7 +1281,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
@@ -1344,7 +1344,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
@@ -1433,7 +1433,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
@@ -1517,7 +1517,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,

@@ -79,7 +79,7 @@ class CompanyController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        return $this->actionShow($this->getModelName(Company::class), $model->id);
+        return $this->actionView($model->id);
     }
 
     /**
@@ -188,7 +188,7 @@ class CompanyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('update',
+                            'callback_data' => self::createRoute('u',
                                 [
                                     'm' => $this->getModelName(Company::class),
                                     'i' => $companyId,

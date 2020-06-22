@@ -405,7 +405,7 @@ class SAdOfferController extends CrudController
             ],
             [
                 'callback_data' => self::createRoute(
-                    'update',
+                    'u',
                     [
                         'm' => $this->getModelName(AdOffer::class),
                         'i' => $adOfferId,
@@ -519,7 +519,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
@@ -573,7 +573,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
@@ -638,7 +638,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
@@ -710,7 +710,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
@@ -890,7 +890,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
@@ -959,7 +959,7 @@ class SAdOfferController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute(
-                    'update',
+                    'u',
                     [
                         'm' => $this->getModelName(AdOffer::class),
                         'i' => $adOfferId,
@@ -1044,7 +1044,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'update',
+                                'u',
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
