@@ -8,11 +8,10 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "currency".
  *
- * @property int $id
- * @property string $code
- * @property string $name
- * @property string $symbol
- *
+ * @property int                  $id
+ * @property string               $code
+ * @property string               $name
+ * @property string               $symbol
  * @property DebtRedistribution[] $debtRedistributions
  */
 class Currency extends ActiveRecord
@@ -49,9 +48,9 @@ class Currency extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'code' => 'Code',
-            'name' => 'Name',
+            'id'     => 'ID',
+            'code'   => 'Code',
+            'name'   => 'Name',
             'symbol' => 'Symbol',
         ];
     }
@@ -59,5 +58,13 @@ class Currency extends ActiveRecord
     public function getDebtRedistributions()
     {
         return $this->hasMany(DebtRedistribution::className(), ['currency_id' => 'id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrencyLabel()
+    {
+        return $this->code . ' - ' . $this->name;
     }
 }

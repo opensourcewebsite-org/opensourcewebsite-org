@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 
 /**
  * Class UserState
+ *
  * @package app\modules\bot\models
  */
 class UserState
@@ -25,14 +26,44 @@ class UserState
         $this->fields['name'] = $value;
     }
 
+    /**
+     * @param string $name
+     * @param null   $defaultValue
+     *
+     * @return mixed|null
+     */
     public function getIntermediateField(string $name, $defaultValue = null)
     {
         return $this->fields['intermediate'][$name] ?? $defaultValue;
     }
 
-    public function setIntermediateField(string $name, ?string $value)
+    /**
+     * @param array $values
+     */
+    public function setIntermediateFields($values)
+    {
+        foreach ($values as $name => $value) {
+            $this->fields['intermediate'][$name] = $value;
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param        $value
+     */
+    public function setIntermediateField(string $name, $value)
     {
         $this->fields['intermediate'][$name] = $value;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isIntermediateFieldExists(string $name)
+    {
+        return array_key_exists($name, $this->fields['intermediate']);
     }
 
     public function getIntermediateFieldArray(string $name, $defaultValue = null)
@@ -48,6 +79,7 @@ class UserState
     public function save(User $user)
     {
         $user->state = json_encode($this->fields);
+
         return $user->save();
     }
 
@@ -62,6 +94,7 @@ class UserState
         if (!empty($user->state)) {
             $state->fields = json_decode($user->state, true);
         }
+
         return $state;
     }
 }
