@@ -328,16 +328,18 @@ class Reduction extends Component
         $firstBalance = $this->getPreviousMembers($balanceMember)[0];
         $condition = DebtController::formatConsoleArgument($firstBalance->primaryKey);
 
-        $message = "Can't find circled chain - script reached BREAK_LEVEL limit.";
-        $message .= $this->isDebugMode() ? '' : ' Balance will be marked as Reduced.';
-        $message .= " If you sure it is not bug - increase Reduction::BREAK_LEVEL. Now: $level";
-        $this->log($message, [Console::FG_RED]);
+        $message1 = "Can't find circled chain - script reached BREAK_LEVEL limit.";
+        $message1 .= $this->isDebugMode() ? '' : ' Balance will be marked as Reduced.';
+        $message1 .= " If you sure it is not bug - increase Reduction::BREAK_LEVEL. Now: $level";
+        $this->log($message1, [Console::FG_RED]);
 
         //cron_job_log.message has limit 255 chars. So we should split message.
-        $message = "You can debug exactly this balance:\n";
-        $message .= "run `yii debt --debug-reduction=$condition`\n";
-        $message .= 'analyze console messages to find bug';
-        $this->log($message, [Console::FG_RED]);
+        $message2 = "You can debug exactly this balance:\n";
+        $message2 .= "run `yii debt --debug-reduction=$condition`\n";
+        $message2 .= 'analyze console messages to find bug';
+        $this->log($message2, [Console::FG_RED]);
+
+        Yii::error("$message1\n$message2", 'debt\reduction');
 
         if ($this->isDebugMode()) {
             exit(ExitCode::SOFTWARE);
@@ -377,6 +379,7 @@ class Reduction extends Component
         $message = "Can't find circled chain - script reached memory limit.";
         $message .= $this->isDebugMode() ? '' : ' Balance will be marked as Reduced.';
         $this->log($message, [Console::FG_RED]);
+        Yii::error($message, 'debt\reduction');
 
         return false;
     }
