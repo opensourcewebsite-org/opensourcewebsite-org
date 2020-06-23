@@ -177,7 +177,7 @@ class SAdSearchController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        return $this->actionIndex($model->section);
+        return $this->actionSearch($model->id);
     }
 
     public function actionIndex($adSection, $page = 1)

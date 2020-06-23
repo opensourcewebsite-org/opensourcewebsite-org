@@ -13,6 +13,11 @@ use yii\db\ActiveRecord;
  */
 class Resume extends ActiveRecord
 {
+    public const STATUS_OFF = 0;
+    public const STATUS_ON = 1;
+
+    public const LIVE_DAYS = 14;
+
     /** @inheritDoc */
     public static function tableName()
     {
@@ -84,5 +89,13 @@ class Resume extends ActiveRecord
                 'class' => TimestampBehavior::class,
             ],
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 }

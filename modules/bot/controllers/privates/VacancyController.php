@@ -38,6 +38,7 @@ class VacancyController extends CrudController
             [
                 'model' => Vacancy::class,
                 'prepareViewParams' => function ($params) {
+                    /** @var Vacancy $model */
                     $model = $params['model'] ?? null;
 
                     return [
@@ -47,20 +48,22 @@ class VacancyController extends CrudController
                         'conditions' => $model->conditions,
                         'responsibilities' => $model->responsibilities,
                         'currency' => $model->currency,
+                        'company' => $model->company,
+                        'isActive' => $model->isActive(),
                     ];
                 },
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
-                    'max_hourly_rate' => [
-                        'isRequired' => false,
-                    ],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
                             ],
                         ],
+                    ],
+                    'max_hourly_rate' => [
+                        'isRequired' => false,
                     ],
                     'requirements' => [],
                     'conditions' => [],
@@ -186,7 +189,7 @@ class VacancyController extends CrudController
                 ->build();
         }
 
-        $isEnabled = $vacancy->status == 1;
+        $isEnabled = $vacancy->isActive();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -197,6 +200,8 @@ class VacancyController extends CrudController
                     'conditions' => $vacancy->conditions,
                     'responsibilities' => $vacancy->responsibilities,
                     'currency' => $vacancy->currency,
+                    'company' => $vacancy->company,
+                    'isActive' => $vacancy->isActive(),
                 ]),
                 [
                     [
@@ -205,15 +210,6 @@ class VacancyController extends CrudController
                             'callback_data' => self::createRoute('update-status', [
                                 'vacancyId' => $vacancyId,
                                 'isEnabled' => !$isEnabled,
-                                'test' => 0,
-                            ]),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => '🙋‍♂️ 3',
-                            'callback_data' => self::createRoute('show', [
-                                'vacancyId' => $vacancyId,
                             ]),
                         ],
                     ],
@@ -288,7 +284,7 @@ class VacancyController extends CrudController
         $vacancy->setAttribute('status', (int)$isEnabled);
         $vacancy->save();
 
-        return $this->actionShow($vacancyId);
+        return $this->actionView($vacancyId);
     }
 
     protected function getModel($id)

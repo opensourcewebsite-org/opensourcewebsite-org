@@ -5,8 +5,18 @@ namespace app\models;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
+/**
+ * Class Vacancy
+ *
+ * @package app\models
+ */
 class Vacancy extends ActiveRecord
 {
+    public const STATUS_OFF = 0;
+    public const STATUS_ON = 1;
+
+    public const LIVE_DAYS = 14;
+
     public static function tableName()
     {
         return '{{%vacancy}}';
@@ -83,5 +93,13 @@ class Vacancy extends ActiveRecord
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
 }

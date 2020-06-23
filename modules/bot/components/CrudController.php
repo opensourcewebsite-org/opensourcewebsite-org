@@ -879,10 +879,13 @@ abstract class CrudController extends Controller
             }
         );
         $this->setCurrentModelClass($this->getModelClassByRule($rule));
-        $systemButtons = ArrayHelper::merge(
-            $this->getDefaultSystemButtons(true),
-            ['back' => ['callback_data' => $this->endRoute->get()]]
-        );
+        $systemButtons = $this->getDefaultSystemButtons(true);
+        if ($endRoute = $this->endRoute->get()) {
+            $systemButtons = ArrayHelper::merge(
+                $systemButtons,
+                ['back' => ['callback_data' => $endRoute]]
+            );
+        }
 
         $systemButtons = array_values($systemButtons);
         $buttons = array_merge($editButtons, [$systemButtons]);
@@ -1082,17 +1085,17 @@ abstract class CrudController extends Controller
     /**
      * @param ActiveRecord $model
      * @param string $attributeName
-     * @param              $attributeValue
+     * @param array $attributeConfig
      * @param array $manyToManyRelationAttributes
      *
      * @return mixed
      */
-    private function fillModel($model, $attributeName, $attributeValue, &$manyToManyRelationAttributes)
+    private function fillModel($model, $attributeName, $attributeConfig, &$manyToManyRelationAttributes)
     {
         $state = $this->getState();
         $modelName = $this->getModelName($model::className());
         if ($state->isIntermediateFieldExists($this->createIntermediateFieldName($modelName, $attributeName))) {
-            $relation = $this->getRelation($attributeValue);
+            $relation = $this->getRelation($attributeConfig);
             if (isset($relation)) {
                 $relationAttributes = $relation['attributes'];
                 if (count($relationAttributes) > 1) {
@@ -1211,24 +1214,28 @@ abstract class CrudController extends Controller
     {
         $modelName = $this->getModelName($this->getModelClassByRule($rule));
         $id = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
+        $attributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, null);
         $isNew = is_null($id);
         $manyToManyRelationAttributes = [];
         /* @var ActiveRecord $model */
         if ($isNew) {
             $model = $this->createModel($rule);
-            foreach ($rule['attributes'] as $attributeName => $attribute) {
-                $component = $this->createAttributeComponent($attribute);
+            foreach ($rule['attributes'] as $attributeName => $config) {
+                $component = $this->createAttributeComponent($config);
                 if ($component instanceof FieldInterface) {
                     $fields = $component->getFields();
                     foreach ($fields as $field) {
-                        $this->fillModel($model, $field, $attribute, $manyToManyRelationAttributes);
+                        $this->fillModel($model, $field, $config, $manyToManyRelationAttributes);
                     }
                 }
-                $this->fillModel($model, $attributeName, $attribute, $manyToManyRelationAttributes);
+                $this->fillModel($model, $attributeName, $config, $manyToManyRelationAttributes);
             }
             $model->attachBehaviors($this->getRuleBehaviors($rule));
         } else {
             $model = $this->getModel($rule, $id);
+            if ($attributeName) {
+                $this->fillModel($model, $attributeName, $rule['attributes'][$attributeName], $manyToManyRelationAttributes);
+            }
         }
         $this->manyToManyRelationAttributes = $manyToManyRelationAttributes;
 
@@ -1359,7 +1366,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $this->getState()->reset();
+                    $this->resetFields();
                     $transaction->commit();
 
                     return $this->afterSave($model, $isNew);

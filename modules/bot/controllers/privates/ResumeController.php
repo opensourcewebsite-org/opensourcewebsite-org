@@ -27,6 +27,7 @@ class ResumeController extends CrudController
             [
                 'model' => Resume::class,
                 'prepareViewParams' => function ($params) {
+                    /** @var Resume $model */
                     $model = $params['model'] ?? null;
 
                     return [
@@ -36,20 +37,21 @@ class ResumeController extends CrudController
                         'expectations' => $model->expectations,
                         'skills' => $model->skills,
                         'currency' => $model->currency,
+                        'isActive' => $model->isActive(),
                     ];
                 },
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
-                    'min_hourly_rate' => [
-                        'isRequired' => false,
-                    ],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
                             ],
                         ],
+                    ],
+                    'min_hourly_rate' => [
+                        'isRequired' => false,
                     ],
                     'skills' => [],
                     'experiences' => [],
@@ -174,6 +176,7 @@ class ResumeController extends CrudController
                     'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
                     'currency' => $resume->currency,
+                    'isActive' => $resume->isActive(),
                 ]),
                 [
                     [
@@ -182,15 +185,6 @@ class ResumeController extends CrudController
                             'callback_data' => self::createRoute('update-status', [
                                 'resumeId' => $resumeId,
                                 'isEnabled' => !$isEnabled,
-                                'test' => 0,
-                            ]),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => '🙋‍♂️ 3',
-                            'callback_data' => self::createRoute('view', [
-                                'resumeId' => $resumeId,
                             ]),
                         ],
                     ],
