@@ -107,7 +107,7 @@ $config = [
                 'mail' => [
                     'class' => 'yii\log\EmailTarget',
                     'exportInterval' => 1,
-                    'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
+                    'enabled' => !empty($params['securityEmail']) && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
                     'levels' => ['error'],
                     'logVars' => [],
                     'message' => [
