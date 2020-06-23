@@ -230,6 +230,10 @@ class SiteController extends Controller
         try {
             BotUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
+            \app\models\Resume::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\Vacancy::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
             \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
 
             \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
