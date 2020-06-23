@@ -32,8 +32,8 @@ class ResumeController extends CrudController
                     return [
                         'name' => $model->name,
                         'hourlyRate' => $this->getDisplayHourlyRate($model),
-                        'requirements' => $model->requirements,
-                        'conditions' => $model->conditions,
+                        'experiences' => $model->experiences,
+                        'expectations' => $model->expectations,
                         'skills' => $model->skills,
                         'currency' => $model->currency,
                     ];
@@ -170,8 +170,8 @@ class ResumeController extends CrudController
                 $this->render('show', [
                     'name' => $resume->name,
                     'hourlyRate' => $this->getDisplayHourlyRate($resume),
-                    'requirements' => $resume->requirements,
-                    'conditions' => $resume->conditions,
+                    'experiences' => $resume->experiences,
+                    'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
                     'currency' => $resume->currency,
                 ]),
@@ -276,8 +276,8 @@ class ResumeController extends CrudController
      */
     private function getDisplayHourlyRate(Resume $resume)
     {
-        if (isset($resume->min_hour_rate)) {
-            return Yii::t('bot', 'from') . " {$resume->min_hour_rate}";
+        if ($resume->min_hourly_rate) {
+            return Yii::t('bot', 'from') . " {$resume->min_hourly_rate}";
         }
 
         return null;
