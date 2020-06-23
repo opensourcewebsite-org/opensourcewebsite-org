@@ -4,8 +4,8 @@ namespace app\modules\bot\models;
 
 use app\behaviors\CreatedByBehavior;
 use app\behaviors\TimestampBehavior;
+use app\components\helpers\ArrayHelper;
 use app\models\Currency;
-use Yii;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 
@@ -162,6 +162,18 @@ class AdSearch extends ActiveRecord
 
             $this->save();
         }
+    }
+
+    /** @inheritDoc */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'pickup_radius' => 'Pickup radius',
+                'max_price' => 'Max price',
+            ]
+        );
     }
 
     public function getGlobalUser()

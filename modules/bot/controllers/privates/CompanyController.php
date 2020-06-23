@@ -188,11 +188,11 @@ class CompanyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('u',
+                            'callback_data' => self::createRoute(
+                                'u',
                                 [
                                     'm' => $this->getModelName(Company::class),
                                     'i' => $companyId,
-                                    'b' => 1,
                                 ]
                             ),
                         ],

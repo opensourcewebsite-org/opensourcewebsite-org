@@ -52,9 +52,6 @@ class VacancyController extends CrudController
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
-                    'min_hourly_rate' => [
-                        'isRequired' => false,
-                    ],
                     'max_hourly_rate' => [
                         'isRequired' => false,
                     ],
@@ -233,11 +230,11 @@ class VacancyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('u',
+                            'callback_data' => self::createRoute(
+                                'u',
                                 [
                                     'm' => $this->getModelName(Vacancy::class),
                                     'i' => $vacancyId,
-                                    'b' => 1,
                                 ]
                             ),
                         ],
@@ -311,14 +308,8 @@ class VacancyController extends CrudController
      */
     private function getDisplayHourlyRate(Vacancy $vacancy)
     {
-        if (isset($vacancy->min_hour_rate) && isset($vacancy->max_hour_rate)) {
-            return "{$vacancy->min_hour_rate}-{$vacancy->max_hour_rate} {$vacancy->currency->code}";
-        }
-        if (isset($vacancy->min_hour_rate)) {
-            return Yii::t('bot', 'from') . " {$vacancy->min_hour_rate} {$vacancy->currency->code}";
-        }
         if (isset($vacancy->max_hour_rate)) {
-            return Yii::t('bot', 'till') . " {$vacancy->max_hour_rate} {$vacancy->currency->code}";
+            return Yii::t('bot', 'till') . " {$vacancy->max_hour_rate}";
         }
 
         return null;

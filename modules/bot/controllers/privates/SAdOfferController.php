@@ -152,6 +152,7 @@ class SAdOfferController extends CrudController
                         'systemButtons' => [
                             'back' => [
                                 'item' => 'keywords',
+                                'editMode' => false,
                             ],
                         ],
                         'prepareViewParams' => function ($params) {
@@ -409,7 +410,6 @@ class SAdOfferController extends CrudController
                     [
                         'm' => $this->getModelName(AdOffer::class),
                         'i' => $adOfferId,
-                        'b' => 1,
                     ]
                 ),
                 'text' => Emoji::EDIT,
@@ -523,7 +523,6 @@ class SAdOfferController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -577,7 +576,6 @@ class SAdOfferController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -642,7 +640,6 @@ class SAdOfferController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -714,7 +711,6 @@ class SAdOfferController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -894,7 +890,6 @@ class SAdOfferController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -963,7 +958,6 @@ class SAdOfferController extends CrudController
                     [
                         'm' => $this->getModelName(AdOffer::class),
                         'i' => $adOfferId,
-                        'b' => 1,
                     ]
                 ),
                 'text' => Emoji::BACK,
@@ -1048,7 +1042,6 @@ class SAdOfferController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdOffer::class),
                                     'i' => $adOfferId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,

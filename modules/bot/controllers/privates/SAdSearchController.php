@@ -130,6 +130,7 @@ class SAdSearchController extends CrudController
                         'systemButtons' => [
                             'back' => [
                                 'item' => 'description',
+                                'editMode' => false,
                             ],
                         ],
                         'prepareViewParams' => function ($params) {
@@ -845,7 +846,6 @@ class SAdSearchController extends CrudController
                     [
                         'm' => $this->getModelName(AdSearch::class),
                         'i' => $adSearchId,
-                        'b' => 1,
                     ]
                 ),
                 'text' => Emoji::EDIT,
@@ -1019,7 +1019,6 @@ class SAdSearchController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -1086,7 +1085,6 @@ class SAdSearchController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -1216,7 +1214,6 @@ class SAdSearchController extends CrudController
                         [
                             'm' => $this->getModelName(AdSearch::class),
                             'i' => $adSearchId,
-                            'b' => 1,
                         ]
                     ),
                 'text' => Emoji::BACK,
@@ -1285,7 +1282,6 @@ class SAdSearchController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -1348,7 +1344,6 @@ class SAdSearchController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -1437,7 +1432,6 @@ class SAdSearchController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,
@@ -1521,7 +1515,6 @@ class SAdSearchController extends CrudController
                                 [
                                     'm' => $this->getModelName(AdSearch::class),
                                     'i' => $adSearchId,
-                                    'b' => 1,
                                 ]
                             ),
                             'text' => Emoji::BACK,

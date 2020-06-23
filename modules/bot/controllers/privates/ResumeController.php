@@ -13,6 +13,11 @@ use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
+/**
+ * Class ResumeController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
 class ResumeController extends CrudController
 {
     /** @inheritDoc */
@@ -39,9 +44,6 @@ class ResumeController extends CrudController
                     'min_hourly_rate' => [
                         'isRequired' => false,
                     ],
-                    'max_hourly_rate' => [
-                        'isRequired' => false,
-                    ],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
@@ -49,9 +51,9 @@ class ResumeController extends CrudController
                             ],
                         ],
                     ],
-                    'requirements' => [],
-                    'conditions' => [],
                     'skills' => [],
+                    'experiences' => [],
+                    'expectations' => [],
                     'user_id' => [
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
@@ -208,7 +210,6 @@ class ResumeController extends CrudController
                                 [
                                     'm' => $this->getModelName(Resume::class),
                                     'i' => $resumeId,
-                                    'b' => 1,
                                 ]
                             ),
                         ],
@@ -275,14 +276,8 @@ class ResumeController extends CrudController
      */
     private function getDisplayHourlyRate(Resume $resume)
     {
-        if (isset($resume->min_hour_rate) && isset($resume->max_hour_rate)) {
-            return "{$resume->min_hour_rate}-{$resume->max_hour_rate} {$resume->currency->code}";
-        }
         if (isset($resume->min_hour_rate)) {
-            return Yii::t('bot', 'from') . " {$resume->min_hour_rate} {$resume->currency->code}";
-        }
-        if (isset($resume->max_hour_rate)) {
-            return Yii::t('bot', 'till') . " {$resume->max_hour_rate} {$resume->currency->code}";
+            return Yii::t('bot', 'from') . " {$resume->min_hour_rate}";
         }
 
         return null;

@@ -32,7 +32,6 @@ class Vacancy extends ActiveRecord
                 [
                     'location_lat',
                     'location_lon',
-                    'min_hourly_rate',
                     'max_hourly_rate',
                 ],
                 'double'

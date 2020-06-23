@@ -18,9 +18,7 @@
 <?= $conditions ?><br/>
 <br/>
 <?php endif; ?>
-<?= Yii::t('bot', 'Hourly rate') ?>: <?= $hourlyRate ?><br/>
-<br/>
-<b>Company: COMPANY</b><br/>
+<?= Yii::t('bot', 'Hourly rate') ?>: <?= $hourlyRate ?> <?= $currency->code ?><br/>
 <br/>
 Description of company<br/>
 <br/>

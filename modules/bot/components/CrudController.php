@@ -9,6 +9,7 @@ use app\modules\bot\components\request\Request;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\rules\FieldInterface;
 use app\modules\bot\services\AttributeButtonsService;
+use app\modules\bot\services\BackRouteService;
 use app\modules\bot\services\EndRouteService;
 use app\modules\bot\services\ViewFileService;
 use Exception;
@@ -33,20 +34,27 @@ abstract class CrudController extends Controller
     const FIELD_NAME_ID = 'id';
     public const SAFE_ATTRIBUTE = 'vacanciesCompanyId';
 
+    /** @var BackRouteService */
+    public $backRoute;
     /** @var EndRouteService */
     public $endRoute;
     /** @var AttributeButtonsService */
     public $attributeButtons;
     /** @var ViewFileService */
     public $viewFile;
-    /**
-     * @var array|mixed
-     */
+    /** @var array */
     private $manyToManyRelationAttributes;
 
     /** @inheritDoc */
     public function __construct($id, $module, $config = [])
     {
+        $this->backRoute = Yii::createObject(
+            [
+                'class' => BackRouteService::class,
+                'state' => $module->userState,
+                'controller' => $this,
+            ]
+        );
         $this->endRoute = Yii::createObject(
             [
                 'class' => EndRouteService::class,
@@ -73,10 +81,14 @@ abstract class CrudController extends Controller
     public function bindActionParams($action, $params)
     {
         if (!method_exists(self::class, $action->actionMethod)) {
+            $this->backRoute->make($action->id, $params);
             $this->endRoute->make($action->id, $params);
             foreach ($this->rules() as $rule) {
                 $this->setIntermediateField($this->getModelName($rule['model']), self::FIELD_NAME_ID, null);
             }
+        } elseif (!strcmp($action->actionMethod, 'actionU')) {
+            $this->backRoute->make($action->id, $params);
+            $this->resetFields();
         }
 
         return parent::bindActionParams($action, $params);
@@ -477,21 +489,20 @@ abstract class CrudController extends Controller
      * @param string $m $this->getModelName(Model::class)
      * @param        $a
      * @param        $i
-     * @param bool $b back route
      *
      * @return array
      */
-    public function actionEA($m, $a, $i, $b = false)
+    public function actionEA($m, $a, $i)
     {
         $id = $i;
-        $enableBackRoute = $b;
+        $globalBackRoute = true;
         $attributeName = $a;
         $rule = $this->getRule($m);
         $attributes = $this->getAttributes($rule);
         if (!empty($attributes) && array_key_exists($attributeName, $attributes) && isset($id)) {
             $this->beforeEdit($rule, $attributeName, $id);
 
-            return $this->generateResponse($m, $attributeName, compact('rule', 'enableBackRoute'));
+            return $this->generateResponse($m, $attributeName, compact('rule', 'globalBackRoute'));
         }
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
@@ -614,11 +625,13 @@ abstract class CrudController extends Controller
 
     public function resetFields()
     {
+        $backRoute = $this->backRoute->get();
         $endRoute = $this->endRoute->get();
         $safeAttribute = $this->getState()->getIntermediateField(self::SAFE_ATTRIBUTE);
         $this->getState()->reset();
-        $this->getState()->setIntermediateField(self::SAFE_ATTRIBUTE, $safeAttribute);
+        $this->backRoute->set($backRoute);
         $this->endRoute->set($endRoute);
+        $this->getState()->setIntermediateField(self::SAFE_ATTRIBUTE, $safeAttribute);
     }
 
     /**
@@ -829,7 +842,7 @@ abstract class CrudController extends Controller
      *
      * @return array
      */
-    public function actionU($m, $i, $b = '')
+    public function actionU($m, $i)
     {
         $id = $i;
         $rule = $this->getRule($m);
@@ -838,7 +851,7 @@ abstract class CrudController extends Controller
         /* @var ActiveRecord $model */
         $model = $this->getModel($rule, $id);
         $editButtons = array_map(
-            function (string $attribute) use ($b, $id, $m, $model, $rule) {
+            function (string $attribute) use ($id, $m, $model, $rule) {
                 if (isset($rule['attributes'][$attribute]['hidden'])) {
                     return [];
                 }
@@ -852,7 +865,6 @@ abstract class CrudController extends Controller
                                 'i' => $id,
                                 'm' => $m,
                                 'a' => $attribute,
-                                'b' => $b,
                             ]
                         ),
                     ],
@@ -867,7 +879,11 @@ abstract class CrudController extends Controller
             }
         );
         $this->setCurrentModelClass($this->getModelClassByRule($rule));
-        $systemButtons = $this->getDefaultSystemButtons($b);
+        $systemButtons = ArrayHelper::merge(
+            $this->getDefaultSystemButtons(true),
+            ['back' => ['callback_data' => $this->endRoute->get()]]
+        );
+
         $systemButtons = array_values($systemButtons);
         $buttons = array_merge($editButtons, [$systemButtons]);
         $params = [
@@ -1038,7 +1054,7 @@ abstract class CrudController extends Controller
      *
      * @return string
      */
-    protected function getModelName(string $className)
+    public function getModelName(string $className)
     {
         $parts = explode('\\', $className);
 
@@ -1403,23 +1419,20 @@ abstract class CrudController extends Controller
     public function prepareButtons($buttons, $systemButtons, $options = [])
     {
         $modelName = ArrayHelper::getValue($options, 'modelName', null);
-        $isEmpty = ArrayHelper::getValue($options, 'isEmpty', true);
         $attributeName = ArrayHelper::getValue($options, self::FIELD_NAME_ATTRIBUTE, null);
         $config = ArrayHelper::getValue($options, 'config', []);
 
         $isAttributeRequired = $config['isRequired'] ?? true;
         $rule = $this->getRule($modelName);
-        $attributes = $this->getAttributes($rule);
-        $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
+        $modelId = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
+        $isEdit = !is_null($modelId);
         $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
-        $configButtons = $this->attributeButtons->get($rule, $attributeName);
+        $configButtons = $this->attributeButtons->get($rule, $attributeName, $modelId);
         if ($configButtons) {
             $buttons = array_merge($buttons, [$configButtons]);
         }
         /* 'Next' button */
-        if (!isset($relationAttributeName) && (!$isAttributeRequired || !$isEmpty)
-//                || ((isset($relation) && count($relation['attributes']) > 1)))
-        ) {
+        if (!isset($relationAttributeName) && (!$isAttributeRequired)) {
             $buttonSkip = $config['buttonSkip'] ?? [];
 
             $buttonSkip = ArrayHelper::merge(
@@ -1482,7 +1495,7 @@ abstract class CrudController extends Controller
     {
         $config = ArrayHelper::getValue($options, 'config', []);
         $page = ArrayHelper::getValue($options, 'page', 1);
-        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
+        $globalBackRoute = ArrayHelper::getValue($options, 'globalBackRoute', false);
         $error = ArrayHelper::getValue($options, 'error', null);
         $rule = $this->getRule($modelName);
 
@@ -1499,8 +1512,8 @@ abstract class CrudController extends Controller
         $this->setIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, $attributeName);
 
         $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
-        $editableFieldId = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
-        $isEdit = !is_null($editableFieldId);
+        $modelId = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
+        $isEdit = !is_null($modelId);
         [$step, $totalSteps] = $this->getStepsInfo($attributeName, $this->getRule($modelName));
         $relation = $this->getRelation($config);
         if (isset($relationAttributeName)
@@ -1510,7 +1523,7 @@ abstract class CrudController extends Controller
                 $nextAttribute = $this->getNextKey($attributes, $attributeName);
 
                 if (isset($nextAttribute)) {
-                    return $this->generateResponse($modelName, $nextAttribute, compact('rule', 'enableBackRoute'));
+                    return $this->generateResponse($modelName, $nextAttribute, compact('rule', 'globalBackRoute'));
                 }
             }
             /* @var ActiveQuery $query */
@@ -1546,16 +1559,11 @@ abstract class CrudController extends Controller
                 );
             }
             $attributeValue = $this->getIntermediateField($modelName, $attributeName, []);
-            if (!empty($attributeValue) && !isset($attributeValue[0])) {
-                $item = $attributeValue[0];
-                $relationAttributeValue = $item[$relationAttributeName];
-                $currentValue = $query->where([$valueAttribute => $relationAttributeValue])->one();
-            }
             $isEmpty = empty($attributeValue);
             $systemButtons = $this->generateSystemButtons(
                 $modelName,
                 $attributeName,
-                compact('isEmpty', 'enableBackRoute')
+                compact('isEmpty', 'globalBackRoute', 'modelId')
             );
             $buttons = $this->prepareButtons(
                 $itemButtons,
@@ -1596,16 +1604,16 @@ abstract class CrudController extends Controller
                     ]
                 );
             },
-            function ($key, $item) use ($rule, $relation, $editableFieldId, $isAttributeRequired, $items) {
+            function ($key, $item) use ($rule, $relation, $modelId, $isAttributeRequired, $items) {
                 try {
                     $model = $this->getModelByRelation(
                         $rule,
                         $relation,
                         $item[array_key_first($item)],
-                        $editableFieldId
+                        $modelId
                     );
                     $label = $this->getLabel($model);
-                    if ($editableFieldId) {
+                    if ($modelId) {
                         $id = $model->id;
                     } else {
                         $id = 'v_' . $key;
@@ -1652,7 +1660,7 @@ abstract class CrudController extends Controller
             $this->generateSystemButtons(
                 $modelName,
                 $attributeName,
-                compact('isEmpty', 'enableBackRoute')
+                compact('isEmpty', 'globalBackRoute', 'modelId')
             ),
             compact('isEmpty', 'config', self::FIELD_NAME_ATTRIBUTE, 'modelName')
         );
@@ -1690,7 +1698,7 @@ abstract class CrudController extends Controller
         array $options
     )
     {
-        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
+        $globalBackRoute = ArrayHelper::getValue($options, 'globalBackRoute', false);
         $config = ArrayHelper::getValue($options, 'config', []);
         $rule = $this->getRule($modelName);
         $error = ArrayHelper::getValue($options, 'error', null);
@@ -1705,13 +1713,14 @@ abstract class CrudController extends Controller
         );
         $this->setIntermediateField($modelName, self::FIELD_NAME_ATTRIBUTE, $attributeName);
 
-        $isEdit = !is_null($this->getIntermediateField($modelName, self::FIELD_NAME_ID, null));
+        $modelId = $this->getIntermediateField($modelName, self::FIELD_NAME_ID, null);
+        $isEdit = !is_null($modelId);
         $attributeValue = $this->getIntermediateField($modelName, $attributeName, null);
         $isEmpty = empty($attributeValue);
         $systemButtons = $this->generateSystemButtons(
             $modelName,
             $attributeName,
-            compact('isEmpty', 'enableBackRoute')
+            compact('isEmpty', 'globalBackRoute', 'modelId')
         );
         [$step, $totalSteps] = $this->getStepsInfo($attributeName, $this->getRule($modelName));
         $buttons = $this->prepareButtons(
@@ -1749,7 +1758,7 @@ abstract class CrudController extends Controller
     private function generateResponse(string $modelName, string $attributeName, array $options)
     {
         $rule = ArrayHelper::getValue($options, 'rule', []);
-        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
+        $globalBackRoute = ArrayHelper::getValue($options, 'globalBackRoute', false);
         $config = $rule['attributes'][$attributeName];
         if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             $attributes = $config['relation']['attributes'];
@@ -1762,13 +1771,13 @@ abstract class CrudController extends Controller
             return $this->generatePrivateResponse(
                 $modelName,
                 $attributeName,
-                compact('config', 'enableBackRoute')
+                compact('config', 'globalBackRoute')
             );
         } else {
             return $this->generatePublicResponse(
                 $modelName,
                 $attributeName,
-                compact('config', 'enableBackRoute')
+                compact('config', 'globalBackRoute')
             );
         }
     }
@@ -1776,14 +1785,15 @@ abstract class CrudController extends Controller
     /**
      * If you call directly - you should use remove array keys
      *
-     * @param bool $enableBackRoute
+     * @param bool $globalBackRoute
+     * @param bool $enableEndRoute
      *
      * @return array ['back => ['text' => 'this is text', 'callback_data' => 'route']]
      */
-    private function getDefaultSystemButtons($enableBackRoute = false)
+    private function getDefaultSystemButtons($globalBackRoute = false, $enableEndRoute = false)
     {
-        if ($enableBackRoute) {
-            $backRoute = $this->endRoute->get();
+        if ($globalBackRoute) {
+            $backRoute = $this->backRoute->get();
         } else {
             $backRoute = self::createRoute('p-a');
         }
@@ -1795,8 +1805,7 @@ abstract class CrudController extends Controller
                 'callback_data' => $backRoute,
             ];
         }
-        $endButtonRoute = $this->endRoute->get();
-        if ($endButtonRoute) {
+        if ($enableEndRoute && ($endButtonRoute = $this->endRoute->get())) {
             /* 'End' button */
             $systemButtons['end'] = [
                 'callback_data' => $endButtonRoute,
@@ -1835,16 +1844,18 @@ abstract class CrudController extends Controller
     private function generateSystemButtons(string $modelName, string $attributeName, array $options)
     {
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', false);
-        $enableBackRoute = ArrayHelper::getValue($options, 'enableBackRoute', false);
+        $modelId = ArrayHelper::getValue($options, 'modelId', null);
+        $isEdit = !is_null($modelId);
+        $globalBackRoute = ArrayHelper::getValue($options, 'globalBackRoute', false);
         $rule = $this->getRule($modelName);
         $attributes = $this->getAttributes($rule);
         $config = $attributes[$attributeName];
         $isFirstScreen = !strcmp($attributeName, array_key_first($attributes));
-        if ($isFirstScreen) {
-            $enableBackRoute = true;
+        if ($isFirstScreen || $isEdit) {
+            $globalBackRoute = true;
         }
-        $systemButtons = $this->getDefaultSystemButtons($enableBackRoute);
-        $configSystemButtons = $this->attributeButtons->getSystems($rule, $attributeName);
+        $systemButtons = $this->getDefaultSystemButtons($globalBackRoute, !$isEdit);
+        $configSystemButtons = $this->attributeButtons->getSystems($rule, $attributeName, $modelId);
 
         $isAttributeRequired = $config['isRequired'] ?? true;
         $relation = $this->getRelation($config);

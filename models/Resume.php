@@ -36,6 +36,7 @@ class Resume extends ActiveRecord
             ],
             [
                 [
+                    'min_hourly_rate',
                     'location_lat',
                     'location_lon',
                 ],
@@ -50,8 +51,8 @@ class Resume extends ActiveRecord
             ],
             [
                 [
-                    'requirements',
-                    'conditions',
+                    'experiences',
+                    'expectations',
                     'skills',
                 ],
                 'string',
@@ -61,9 +62,6 @@ class Resume extends ActiveRecord
                     'user_id',
                     'currency_id',
                     'name',
-                    'requirements',
-                    'conditions',
-                    'skills',
                 ],
                 'required',
             ],

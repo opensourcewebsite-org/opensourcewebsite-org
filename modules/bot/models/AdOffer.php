@@ -2,6 +2,7 @@
 namespace app\modules\bot\models;
 
 use app\behaviors\TimestampBehavior;
+use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
@@ -197,5 +198,16 @@ class AdOffer extends ActiveRecord
     public function getCurrencyRelation()
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    /** @inheritDoc */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'delivery_radius' => 'Delivery radius',
+            ]
+        );
     }
 }
