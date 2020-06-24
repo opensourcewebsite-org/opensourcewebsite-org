@@ -39,8 +39,8 @@ before_script:
   - php -m
   - mysql --version
   - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;'
-  - ./tests/bin/yii migrate --interactive=0 -c
+  - ./tests/bin/yii migrate --interactive=0 -c --silent-exit-on-exception=0
 
 script:
-  - ./tests/bin/yii fixture/load '*' --interactive=0
+  - ./tests/bin/yii fixture/load '*' --interactive=0 --silent-exit-on-exception=0
   - ./vendor/bin/codecept run -c ./codeception.yml --coverage

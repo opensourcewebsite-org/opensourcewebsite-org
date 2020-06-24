@@ -1,9 +1,11 @@
 <?php
 
 use yii\faker\FixtureController;
+use yii\helpers\ArrayHelper;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
+$common = require __DIR__ . '/common.php';
 
 $config = [
     'id' => 'basic-console',
@@ -36,10 +38,6 @@ $config = [
                     'levels' => ['error'],
                     'logVars' => [],
                     'except' => [
-                        'yii\web\HttpException:400',
-                        'yii\web\HttpException:403',
-                        'yii\web\HttpException:404',
-                        'yii\web\HttpException:429',
                         'yii\i18n\PhpMessageSource',
                     ],
                 ],
@@ -68,6 +66,9 @@ $config = [
         ],
     ],
 ];
+
+//$config have more priority than $common
+$config = ArrayHelper::merge($common, $config);
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
