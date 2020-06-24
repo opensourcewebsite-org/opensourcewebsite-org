@@ -3,11 +3,9 @@
 namespace app\components\debt;
 
 use app\commands\DebtController;
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Debt;
 use app\models\DebtBalance;
-use app\models\queries\DebtBalanceQuery;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -40,21 +38,23 @@ class Reduction extends Component
         while ($balanceChainMemberFirst = $this->findDebtBalanceFirstMember()) {
             $this->log('--- Starting search Circled Chain ---');
 
-            $balanceChainMemberCircled = $this->findCircledChain($balanceChainMemberFirst->from_user_id, [$balanceChainMemberFirst]);
+            $balanceCircledMembers = $this->findCircledChains($balanceChainMemberFirst->from_user_id, [$balanceChainMemberFirst]);
 
-            if ($balanceChainMemberCircled) {
-                $function = $this->reduceCircledChainAmount($balanceChainMemberCircled);
-            } else {
-                $function = $this->cantReduceBalance($balanceChainMemberFirst);
+            if (empty($balanceCircledMembers)) {
+                $this->cantReduceBalance($balanceChainMemberFirst);
+                continue;
             }
 
-            Yii::$app->db->transaction($function, Transaction::READ_COMMITTED);
+            foreach ($balanceCircledMembers as $balanceCircledMember) {
+                $function = $this->reduceCircledChain($balanceCircledMember);
+                Yii::$app->db->transaction($function, Transaction::READ_COMMITTED);
+            }
         }
     }
 
     private function findDebtBalanceFirstMember(): ?DebtBalance
     {
-        $query = DebtBalance::find();
+        $query = DebtBalance::find()->select(DebtBalance::primaryKey())->limit(1);
 
         if ($this->debug['DebtBalanceCondition']) {
             $query->andWhere($this->debug['DebtBalanceCondition']);
@@ -62,7 +62,7 @@ class Reduction extends Component
             $query->canBeReduced(true);
         }
 
-        $model = $query->limit(1)->one();
+        $model = $query->one();
 
         if (!$model && $this->isDebugMode()) {
             $this->log('This balance is not available anymore', [Console::BG_GREY], true);
@@ -83,14 +83,16 @@ class Reduction extends Component
      * @param int           $firstFromUID
      * @param DebtBalance[] $balanceChainMembers
      *
-     * @return DebtBalance|null
+     * @return DebtBalance[]
      */
-    private function findCircledChain($firstFromUID, array $balanceChainMembers, int $level = 0): ?DebtBalance
+    private function findCircledChains($firstFromUID, array $balanceChainMembers, int $level = 0): array
     {
         $chainsWithMiddleMemberBalance = [];
+        $circledBalanceMembers = [];
+
         foreach ($balanceChainMembers as $balanceChainMember) {
             $this->logChain($balanceChainMember, $level);
-            $middleChainMembers = $this->findBalanceChains($firstFromUID, $balanceChainMember);
+            $middleChainMembers = $this->findBalanceChains($balanceChainMember);
 
             if (empty($middleChainMembers)) {
                 $this->log('    dead end fork', [], true);
@@ -100,31 +102,32 @@ class Reduction extends Component
                 // condition in self::findBalanceChains(). I'm not sure. But this guess came to me, while analyzing
                 // huge debug logs (when $level >= 7)
             }
-            $chainsWithMiddleMemberBalance[] = $middleChainMembers;
+            $circledBalanceMember = $this->getCircledMember($middleChainMembers, $firstFromUID, $level);
 
-            $balanceCircledMember = $this->getCircledChain($middleChainMembers, $level);
-
-            if ($balanceCircledMember) {
-                return $balanceCircledMember;
+            if ($circledBalanceMember) {
+                $circledBalanceMembers[] = $circledBalanceMember;
+            } else {
+                $chainsWithMiddleMemberBalance[] = $middleChainMembers;
             }
+        }
+
+        if (!empty($circledBalanceMembers)) {
+            return $circledBalanceMembers;
         }
 
         $breakLevel = $this->breakLevel($level, $balanceChainMembers[0]);
         if (empty($chainsWithMiddleMemberBalance) || $breakLevel || !$this->validateMemoryLimit()) {
-            return null;
+            return [];
         }
 
         $chainsWithMiddleMemberBalance = array_merge(...$chainsWithMiddleMemberBalance);
 
         //try to go deeper - for each "middle" member find next step of chain members - until we find circled chain
         // or till we will try all possible variants
-        return $this->findCircledChain($firstFromUID, $chainsWithMiddleMemberBalance, ++$level);
+        return $this->findCircledChains($firstFromUID, $chainsWithMiddleMemberBalance, ++$level);
     }
 
     /**
-     * @param int         $firstFromUID
-     * @param DebtBalance $balanceChainMember
-     *
      * @return DebtBalance[]
      */
     private function findBalanceChains($firstFromUID, DebtBalance $balanceChainMember): array
@@ -132,28 +135,16 @@ class Reduction extends Component
         $previousBalanceMembers = $this->getPreviousMembers($balanceChainMember);
         $previousToUID = ArrayHelper::getColumn($previousBalanceMembers, 'to_user_id');
 
-        return $chainMember->getChainMembers()
-            ->joinWith([
-                'chainMembers' => function (DebtBalanceQuery $query) use ($firstFromUID) {
-                    $query->alias('chainMembersLast')
-                        ->andOnCondition(
-                            '{{chainMembersLast}}.to_user_id = :first_fromUID',
-                            [':first_fromUID' => $firstFromUID]
-                        )
-                        ->amountNotEmpty('chainMembersLast');
-                }
-            ])
-            ->balances($previousMembers, 'NOT IN') //exclude previous to avoid continuous loop
-            ->userTo($previousToUID, 'NOT IN')     //exclude previous to optimize
+        return $balanceChainMember->getChainMembers()
+            ->select(DebtBalance::primaryKey())
+            ->userTo($previousToUID, 'NOT IN')     //exclude previous to avoid continuous loop and optimize
             ->all();
     }
 
     /**
      * @param DebtBalance[] $middleBalanceChainMembers
-     *
-     * @return DebtBalance|null if middleMember has any lastMember - this chain is circled
      */
-    private function getCircledChain(array $middleBalanceChainMembers, int $level): ?DebtBalance
+    private function getCircledMember(array $middleBalanceChainMembers, string $firstFromUID, int $level): ?DebtBalance
     {
         ++$level;
 
@@ -161,8 +152,8 @@ class Reduction extends Component
             $pk = implode(':', $middleBalance->primaryKey);
             $this->log("    middle    $pk ($level)", [], true);
 
-            if (!empty($middleBalance->chainMembers)) {
-                return $middleBalance; // if it has at least one "last" chain member - then chain is circled
+            if ($firstFromUID === (string)$middleBalance->to_user_id) {
+                return $middleBalance;
             }
         }
 
@@ -170,90 +161,42 @@ class Reduction extends Component
     }
 
     /**
-     * @return DebtBalance[]
-     */
-    private function listChainAsArray(DebtBalance $balanceChainMember): array
-    {
-        $penultimateBalanceMember = clone $balanceChainMember;
-
-        $balanceChainMembersAll   = $this->getPreviousMembers($balanceChainMember, $minAmount);
-        $balanceChainMembersAll[] = $balanceChainMember;
-        $balanceChainMembersAll[] = $this->getLastMember($penultimateBalanceMember, $minAmount);
-
-        return $balanceChainMembersAll;
-    }
-
-    /**
-     * @param DebtBalance  $balance
-     * @param string|float $minAmount
+     * @param DebtBalance $balance
+     * @param bool $previousOnly   FALSE - return all chain members. TRUE - only previous (i.e. without $balance)
      *
      * @return DebtBalance[]
      */
-    private function getPreviousMembers(DebtBalance $balance, &$minAmount = ''): array
+    private function listChainAsArray(DebtBalance $balance, $previousOnly = false): array
     {
         /** @var DebtBalance[] $balanceChainMembers */
         $balanceChainMembers = [];
-        $minAmount = $balance->amount;
-        $scale = DebtHelper::getFloatScale();
+        if (!$previousOnly) {
+            $balanceChainMembers[] = $balance;
+        }
 
         //get all previous chain members
         while ($balance->isRelationPopulated('chainMemberParent')) {
             $balance = $balance->chainMemberParent;
             $balanceChainMembers[] = $balance;
-            $isLower = Number::isFloatLower($balance->amount, $minAmount, $scale);
-
-            $minAmount = $isLower ? $balance->amount : $minAmount;
         }
 
         return array_reverse($balanceChainMembers);
     }
 
-    /**
-     * @param DebtBalance $penultimateBalanceMember
-     * @param string      $minAmount
-     *
-     * @return DebtBalance  this method cannot return NULL!
-     */
-    private function getLastMember(DebtBalance $penultimateBalanceMember, $minAmount): DebtBalance
+    private function reduceCircledChain(DebtBalance $balanceCircledMember): callable
     {
-        /** @var DebtBalance|null $lastMemberBestBalance */
-        $lastMemberBestBalance = null;
-        $scale = DebtHelper::getFloatScale();
-
-        foreach ($penultimateBalanceMember->chainMembers as $lastMemberBalance) {
-            if (Number::isFloatEqual($lastMemberBalance->amount, $minAmount, $scale)) {
-                $lastMemberBestBalance = $lastMemberBalance;
-                break;
-            }
-
-            if (!$lastMemberBestBalance || Number::isFloatGreater($lastMemberBalance->amount, $lastMemberBestBalance->amount, $scale)) {
-                $lastMemberBestBalance = $lastMemberBalance;
-            }
-        }
-
-        $this->log('    last      ' . implode(':', $lastMemberBestBalance->primaryKey), [], true);
-        return $lastMemberBestBalance;
-    }
-
-    private function reduceCircledChainAmount(DebtBalance $balanceChainMemberCircled): callable
-    {
-        return function () use ($balanceChainMemberCircled) {
-            $balanceChainMembers = $this->listChainAsArray($balanceChainMemberCircled);
-            $balanceChainMembersRefreshed = DebtBalance::findAllForUpdate($balanceChainMembers);
+        return function () use ($balanceCircledMember) {
+            $balanceChainMembersAll = $this->listChainAsArray($balanceCircledMember);
+            $balanceChainMembersRefreshed = DebtBalance::findAllForUpdate($balanceChainMembersAll);
 
             $count = count($balanceChainMembersRefreshed);
-            if ($count != count($balanceChainMembers)) {
+            if ($count !== count($balanceChainMembersAll)) {
                 return; //some of balances we need, became zero or changed direction. This chain is not circled anymore
             }
 
-            /** @var string $minAmount */
             $minAmount = min(ArrayHelper::getColumn($balanceChainMembersRefreshed, 'amount'));
-            $scale = DebtHelper::getFloatScale();
-            if (Number::isFloatEqual(0, $minAmount, $scale)) {
-                return;
-            }
-
             $group = Debt::generateGroup();
+
             foreach ($balanceChainMembersRefreshed as $balance) {
                 $debt = Debt::factoryBySource($balance, -$minAmount, $group);
 
@@ -265,7 +208,7 @@ class Reduction extends Component
             }
 
             $chainLog = [];
-            foreach ($balanceChainMembers as $balance) {
+            foreach ($balanceChainMembersAll as $balance) {
                 $chainLog[] = implode(':', $balance->primaryKey);
             }
 
@@ -277,7 +220,10 @@ class Reduction extends Component
         };
     }
 
-    private function cantReduceBalance(DebtBalance $balance): callable
+    /**
+     * @throws \Throwable
+     */
+    private function cantReduceBalance(DebtBalance $balance): void
     {
         $this->log('Found 0 balance chains');
 
@@ -285,9 +231,10 @@ class Reduction extends Component
             exit(ExitCode::SOFTWARE); //to avoid continuous loop, if debugging balance has no circled chain
         }
 
-        return static function () use ($balance) {
+        $function = static function () use ($balance) {
             DebtBalance::setReductionTryAt($balance);
         };
+        Yii::$app->db->transaction($function, Transaction::READ_COMMITTED);
     }
 
     private function log($message, $format = [], $consoleOnly = false): void
@@ -319,7 +266,7 @@ class Reduction extends Component
             return false;
         }
 
-        $firstBalance = $this->getPreviousMembers($balanceMember)[0];
+        $firstBalance = $this->listChainAsArray($balanceMember)[0];
         $condition = DebtController::formatConsoleArgument($firstBalance->primaryKey);
 
         $message1 = "Can't find circled chain - script reached BREAK_LEVEL limit.";
@@ -349,8 +296,7 @@ class Reduction extends Component
 
     private function logChain(DebtBalance $balance, int $level): void
     {
-        $balanceChainMembersAll = $this->getPreviousMembers($balance);
-        $balanceChainMembersAll[] = $balance;
+        $balanceChainMembersAll = $this->listChainAsArray($balance);
         $list = [];
 
         foreach ($balanceChainMembersAll as $key => $balanceChainMember) {
