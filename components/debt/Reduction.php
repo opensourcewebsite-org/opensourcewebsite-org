@@ -130,9 +130,9 @@ class Reduction extends Component
     /**
      * @return DebtBalance[]
      */
-    private function findBalanceChains($firstFromUID, DebtBalance $balanceChainMember): array
+    private function findBalanceChains(DebtBalance $balanceChainMember): array
     {
-        $previousBalanceMembers = $this->getPreviousMembers($balanceChainMember);
+        $previousBalanceMembers = $this->listChainAsArray($balanceChainMember, true);
         $previousToUID = ArrayHelper::getColumn($previousBalanceMembers, 'to_user_id');
 
         return $balanceChainMember->getChainMembers()
