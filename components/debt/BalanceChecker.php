@@ -136,10 +136,6 @@ class BalanceChecker extends Component
 
     private function isBalanceEmpty(array $debtSummary): bool
     {
-        if (DebtBalance::STORE_EMPTY_AMOUNT) {
-            return $this->isFloatEqual($debtSummary['balance'], 0);
-        }
-
         return (null === $debtSummary['balance']);
     }
 

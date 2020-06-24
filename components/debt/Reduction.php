@@ -58,7 +58,7 @@ class Reduction extends Component
         $query = DebtBalance::find();
 
         if ($this->debug['DebtBalanceCondition']) {
-            $query->andWhere($this->debug['DebtBalanceCondition'])->amountNotEmpty();
+            $query->andWhere($this->debug['DebtBalanceCondition']);
         } else {
             $query->canBeReduced(true);
         }
@@ -148,7 +148,6 @@ class Reduction extends Component
             ])
             ->balances($previousMembers, 'NOT IN') //exclude previous to avoid continuous loop
             ->userTo($previousToUID, 'NOT IN')     //exclude previous to optimize
-            ->amountNotEmpty()
             ->all();
     }
 

@@ -87,13 +87,7 @@ class Common
     {
         $test = 'Target DebtBalance was redistributed completely';
 
-        if ($debtBalance && DebtBalance::STORE_EMPTY_AMOUNT) {
-            $isRedistributedCompletely = Number::isFloatEqual($debtBalance->amount, 0, DebtHelper::getFloatScale());
-        } else {
-            $isRedistributedCompletely = !$debtBalance;
-        }
-
-        expect($test, $isRedistributedCompletely)->true();
+        expect($test, $debtBalance)->isEmpty();
     }
 
     public function expectCountOfDebtGroups(int $count)
