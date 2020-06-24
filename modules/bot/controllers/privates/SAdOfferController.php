@@ -108,6 +108,7 @@ class SAdOfferController extends CrudController
                                 'ad_offer_id' => [AdOffer::class, 'id'],
                                 'ad_keyword_id' => [AdKeyword::class, 'id', 'keyword'],
                             ],
+                            'removeOldRows' => true,
                         ],
                         'component' => [
                             'class' => ExplodeStringFieldComponent::class,
@@ -172,6 +173,24 @@ class SAdOfferController extends CrudController
                     ],
                     'location' => [
                         'component' => LocationToArrayFieldComponent::class,
+                        'buttons' => [
+                            [
+                                'createMode' => false,
+                                'text' => Yii::t('bot', 'My location'),
+                                'callback' => function (AdSearch $model) {
+                                    $latitude = $this->getTelegramUser()->location_lat;
+                                    $longitude = $this->getTelegramUser()->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
+
+                                        return $model;
+                                    }
+
+                                    return null;
+                                },
+                            ],
+                        ],
                     ],
                     'delivery_radius' => [
                         'view' => 'edit-radius',

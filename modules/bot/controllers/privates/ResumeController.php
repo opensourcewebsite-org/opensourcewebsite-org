@@ -117,7 +117,7 @@ class ResumeController extends CrudController
         $keyboards = array_map(function ($resume) {
             return [
                 [
-                    'text' => $resume->name,
+                    'text' => ($resume->isActive() ? '' : '❌ ') . $resume->name,
                     'callback_data' => self::createRoute('view', [
                         'resumeId' => $resume->id,
                     ]),

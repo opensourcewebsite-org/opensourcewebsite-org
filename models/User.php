@@ -728,6 +728,11 @@ class User extends ActiveRecord implements IdentityInterface
             ->viaTable('company_user', ['user_id' => 'id']);
     }
 
+    public function getVacancies()
+    {
+        return $this->hasMany(Vacancy::class, ['user_id' => 'id']);
+    }
+
     public function getGender()
     {
         return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);

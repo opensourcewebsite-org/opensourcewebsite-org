@@ -137,7 +137,7 @@ class VacancyController extends CrudController
         $rows = array_map(function ($vacancy) {
             return [
                 [
-                    'text' => $vacancy->name,
+                    'text' => ($vacancy->isActive() ? '' : '❌ ') . $vacancy->name,
                     'callback_data' => self::createRoute('view', [
                         'vacancyId' => $vacancy->id,
                     ]),

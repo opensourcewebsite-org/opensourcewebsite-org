@@ -111,7 +111,7 @@ class AttributeButtonsService
         $buttons = [];
         foreach ($configButtons as $key => $configButton) {
             if (($modelId && !($configButton['editMode'] ?? true))
-                || (!$modelId && !($configButton['editMode'] ?? true))) {
+                || (!$modelId && !($configButton['createMode'] ?? true))) {
                 continue;
             }
             $configButton['callback_data'] = $this->getButtonRoute(
@@ -151,18 +151,11 @@ class AttributeButtonsService
         $id = ArrayHelper::getValue($options, 'modelId', null);
         $rule = ArrayHelper::getValue($options, 'rule', []);
         if (isset($configButton['item'])) {
-            if ($id) {
-                $routeParams = [
-                    'm' => $this->controller->getModelName($rule['model']),
-                    'a' => $configButton['item'],
-                    'i' => $id,
-                ];
-            } else {
-                $routeParams = [
-                    'a' => $configButton['item'],
-                ];
-            }
-            $route = $this->controller::createRoute($id ? 'e-a' : 'sh-a', $routeParams);
+            $route = $this->createAttributeRoute(
+                $this->controller->getModelName($rule['model']),
+                $configButton['item'],
+                $id
+            );
             unset($configButton['item']);
         } elseif (isset($configButton['route'])) {
             $route = $configButton['route'];
@@ -175,5 +168,29 @@ class AttributeButtonsService
         }
 
         return $route;
+    }
+
+    /**
+     * @param $modelName
+     * @param $attribute
+     * @param $id
+     *
+     * @return string
+     */
+    public function createAttributeRoute($modelName, $attribute, $id)
+    {
+        if ($id) {
+            $routeParams = [
+                'm' => $modelName,
+                'a' => $attribute,
+                'i' => $id,
+            ];
+        } else {
+            $routeParams = [
+                'a' => $attribute,
+            ];
+        }
+
+        return $this->controller::createRoute($id ? 'e-a' : 'sh-a', $routeParams);
     }
 }

@@ -19,6 +19,9 @@ class ExplodeStringFieldComponent extends BaseFieldComponent implements FieldInt
     /** @inheritDoc */
     public function prepare($text)
     {
+        if (!$text) {
+            return [];
+        }
         $text = str_replace($this->delimiters, self::MAIN_DELIMITER, $text);
         $text = str_replace(self::MAIN_DELIMITER . self::MAIN_DELIMITER, self::MAIN_DELIMITER, $text);
 
@@ -27,7 +30,7 @@ class ExplodeStringFieldComponent extends BaseFieldComponent implements FieldInt
         if ($this->shouldTrim) {
             $array = array_map(
                 function ($val) {
-                    return trim($val);
+                    return mb_strtolower(trim($val));
                 },
                 $array
             );
