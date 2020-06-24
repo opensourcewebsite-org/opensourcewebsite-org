@@ -728,6 +728,11 @@ class User extends ActiveRecord implements IdentityInterface
             ->viaTable('company_user', ['user_id' => 'id']);
     }
 
+    public function getVacancies()
+    {
+        return $this->hasMany(Vacancy::class, ['user_id' => 'id']);
+    }
+
     public function getGender()
     {
         return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
@@ -741,6 +746,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResumes()
+    {
+        return $this->hasMany(Resume::class, [ 'user_id' => 'id' ]);
     }
 
     public function getLanguages()

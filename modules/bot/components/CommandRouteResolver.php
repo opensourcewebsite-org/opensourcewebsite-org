@@ -44,6 +44,9 @@ class CommandRouteResolver extends Component
 
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
+            if (isset($route) && isset($commandText)) {
+                $params['text'] = $commandText;
+            }
             $isStateRoute = true;
         }
 
