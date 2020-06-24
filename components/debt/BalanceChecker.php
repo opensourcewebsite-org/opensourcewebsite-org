@@ -5,7 +5,6 @@ namespace app\components\debt;
 use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Debt;
-use app\models\DebtBalance;
 use Yii;
 use yii\base\Component;
 
