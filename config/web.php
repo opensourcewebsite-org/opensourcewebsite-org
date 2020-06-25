@@ -1,6 +1,7 @@
 <?php
 
 use yii\web\View;
+use yii\helpers\ArrayHelper;
 
 $params = require __DIR__ . '/params.php';
 $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap 4.x for all Krajee Extensions
@@ -8,6 +9,7 @@ $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap
 $settingValidations = require __DIR__ . '/setting_validations.php';
 $params = array_merge($params, $settingValidations);
 $db = require __DIR__ . '/db.php';
+$common = require __DIR__ . '/common.php';
 
 $config = [
     'id' => 'basic',
@@ -104,25 +106,6 @@ $config = [
                     'logFile' => '@runtime/logs/bad-requests.log',
                     'logVars' => [],
                 ],
-                'mail' => [
-                    'class' => 'yii\log\EmailTarget',
-                    'exportInterval' => 1,
-                    'enabled' => isset($params['securityEmail']) && $params['securityEmail'] && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
-                    'levels' => ['error'],
-                    'logVars' => [],
-                    'message' => [
-                        'from' => $params['adminEmail'],
-                        'subject' => 'OpenSourceWebsite bug log',
-                        'to' => $params['securityEmail'],
-                    ],
-                    'except' => [
-                        'yii\web\HttpException:400',
-                        'yii\web\HttpException:403',
-                        'yii\web\HttpException:404',
-                        'yii\web\HttpException:429',
-                        'yii\i18n\*',
-                    ],
-                ],
             ],
         ],
         'formatter' => [
@@ -163,6 +146,9 @@ $config = [
         'class' => '\app\behaviors\ConfirmEmailBehavior',
     ],
 ];
+
+//$config have more priority than $common
+$config = ArrayHelper::merge($common, $config);
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment

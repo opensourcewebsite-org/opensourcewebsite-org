@@ -49,18 +49,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     use SelectForUpdateTrait;
     use FloatAttributeTrait;
 
-    /**
-     * Should script store zero amount in DB.
-     *      FALSE - system will expect, that there are no row, where `debt_balance.amount = 0`.
-     *           No sense to store zero. Even more - if we will not store zero - system will be more optimized:
-     *           SELECT queries, when searching for DebtDeduction chain, will work faster {@see Reduction}
-     *      TRUE  - system will not delete rows where `amount = 0`. Be careful - this option was not tested deeply.
-     *           May require some fixes.
-     * WARNING: be careful to switch it's value. Highly recommended to clear tables `debt_balance` and `debt` before
-     * switching. Or use migrations to fix `debt_balance`.
-     */
-    public const STORE_EMPTY_AMOUNT = false;
-
     /** @var bool {@see DebtBalance::requireAllowExecute()} */
     private static $allowExecute = false;
 
@@ -161,7 +149,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     public function update($runValidation = true, $attributeNames = null)
     {
         $scale = DebtHelper::getFloatScale();
-        if (Number::isFloatEqual(0, $this->amount, $scale) && !self::STORE_EMPTY_AMOUNT) {
+        if (Number::isFloatEqual(0, $this->amount, $scale)) {
             return (bool)$this->delete();
         }
 
@@ -171,7 +159,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     public function insert($runValidation = true, $attributes = null)
     {
         $scale = DebtHelper::getFloatScale();
-        if (Number::isFloatEqual(0, $this->amount, $scale) && !self::STORE_EMPTY_AMOUNT) {
+        if (Number::isFloatEqual(0, $this->amount, $scale)) {
             return true;
         }
         self::requireAllowExecute();

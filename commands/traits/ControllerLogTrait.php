@@ -22,7 +22,7 @@ trait ControllerLogTrait
     /**
      * @param string[] $options result from {@see \yii\console\Controller::options()}
      *
-     * @return array
+     * @return string[]
      */
     public function optionsAppendLog($options)
     {

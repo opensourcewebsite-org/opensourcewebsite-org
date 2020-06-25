@@ -60,8 +60,7 @@ class DebtBalanceQuery extends ActiveQuery
     public function canBeReduced(bool $can): self
     {
         $operand = $can ? 'IS' : 'IS NOT';
-        return $this->andWhere("debt_balance.reduction_try_at $operand NULL")
-            ->amountNotEmpty();
+        return $this->andWhere("debt_balance.reduction_try_at $operand NULL");
     }
 
     /**
@@ -82,11 +81,6 @@ class DebtBalanceQuery extends ActiveQuery
             ])
             ->addParams([':timestamp' => $timestamp]);
 
-    }
-
-    public function amountNotEmpty($alias = 'debt_balance'): self
-    {
-        return DebtBalance::STORE_EMPTY_AMOUNT ? $this->andWhere("{{{$alias}}}.amount <> 0") : $this;
     }
 
     public function amount($value, $alias = 'debt_balance'): self
