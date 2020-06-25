@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Currency;
 use Yii;
 use app\models\CurrencyExchangeOrder;
 use yii\data\ActiveDataProvider;
@@ -31,12 +32,14 @@ class CurrencyExchangeOrderController extends Controller
 
     /**
      * Lists all CurrencyExchangeOrder models.
+     * @param string $status
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex(string $status = CurrencyExchangeOrder::STATUS_ACTIVE)
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => CurrencyExchangeOrder::find(),
+            'query' => CurrencyExchangeOrder::find()
+                ->where(['status' => $status]),
         ]);
 
         return $this->render('index', [
@@ -64,7 +67,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionCreate()
     {
-        $model = new CurrencyExchangeOrder();
+        $model = new CurrencyExchangeOrder(['user_id' => Yii::$app->user->identity->id]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -72,6 +75,7 @@ class CurrencyExchangeOrderController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'currency' => Currency::find()->all(),
         ]);
     }
 
@@ -93,6 +97,26 @@ class CurrencyExchangeOrderController extends Controller
         return $this->render('update', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Change status.
+     * @param $id
+     * @return bool
+     * @throws NotFoundHttpException
+     */
+    public function actionStatus($id)
+    {
+        if (Yii::$app->request->isAjax) {
+            $postdata = Yii::$app->request->post();
+
+            $model = $this->findModel($id);
+            $model->status = $postdata['status'];
+
+            return $model->save();
+        }
+
+        return false;
     }
 
     /**

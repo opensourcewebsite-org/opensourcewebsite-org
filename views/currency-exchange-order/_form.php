@@ -1,53 +1,72 @@
 <?php
 
-use yii\helpers\Html;
+use app\models\CurrencyExchangeOrder;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\SaveButton;
 use yii\widgets\ActiveForm;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\CurrencyExchangeOrder */
+/* @var $model CurrencyExchangeOrder */
 /* @var $form yii\widgets\ActiveForm */
+
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
-
 <div class="currency-exchange-order-form">
-
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'user_id')->textInput() ?>
-
-    <?= $form->field($model, 'selling_currency_id')->textInput() ?>
-
-    <?= $form->field($model, 'buying_currency_id')->textInput() ?>
-
-    <?= $form->field($model, 'selling_rate')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'buying_rate')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'selling_currency_min_amount')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'selling_currency_max_amount')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'status')->textInput() ?>
-
-    <?= $form->field($model, 'renewed_at')->textInput() ?>
-
-    <?= $form->field($model, 'delivery_radius')->textInput() ?>
-
-    <?= $form->field($model, 'location_lat')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'location_lon')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <?= $form->field($model, 'processed_at')->textInput() ?>
-
-    <?= $form->field($model, 'selling_cash_on')->textInput() ?>
-
-    <?= $form->field($model, 'buying_cash_on')->textInput() ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'selling_currency_id')->widget(Select2::class, [
+                                'data' => ArrayHelper::map($currency, 'id', 'code'),
+                                'options' => [
+                                    'prompt' => '',
+                                ],
+                            ]); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'buying_currency_id')->widget(Select2::class, [
+                                'data' => ArrayHelper::map($currency, 'id', 'code'),
+                                'options' => [
+                                    'prompt' => '',
+                                ],
+                            ]); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'selling_rate')
+                                ->textInput(['maxlength' => true])
+                                ->label($model->getAttributeLabel('selling_rate')); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'selling_currency_min_amount')
+                                ->textInput(['maxlength' => true])
+                                ->label($model->getAttributeLabel('selling_currency_min_amount') . $labelOptional); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'selling_currency_max_amount')
+                                ->textInput(['maxlength' => true])
+                                ->label($model->getAttributeLabel('selling_currency_max_amount') . $labelOptional); ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget(['url' => '/currency-exchange-order']); ?>
+                </div>
+            </div>
+        </div>
     </div>
-
     <?php ActiveForm::end(); ?>
-
 </div>

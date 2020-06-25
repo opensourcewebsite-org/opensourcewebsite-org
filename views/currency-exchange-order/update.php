@@ -1,21 +1,16 @@
 <?php
 
-use yii\helpers\Html;
-
 /* @var $this yii\web\View */
-/* @var $model app\models\CurrencyExchangeOrder */
+/* @var $model app\models\Contact */
 
-$this->title = 'Update Currency Exchange Order: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Currency Exchange Orders', 'url' => ['index']];
+$this->title = Yii::t('app', 'Update Currency Exchange Order ' . $model->id);
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange Order'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="currency-exchange-order-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
+    <?= $this->render('_form2', [
         'model' => $model,
-    ]) ?>
-
+    ]); ?>
 </div>
