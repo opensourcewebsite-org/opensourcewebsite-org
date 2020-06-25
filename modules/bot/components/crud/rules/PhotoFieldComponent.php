@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\modules\bot\components\rules;
+namespace app\modules\bot\components\crud\rules;
 
 /**
  * Class PhotoFieldComponent

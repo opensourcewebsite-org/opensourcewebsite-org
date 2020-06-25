@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\behaviors\SetAttributeValueBehavior;
 use app\models\Company;
 use app\models\Currency;
-use app\modules\bot\components\CrudController;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
 use app\models\Vacancy;

@@ -3,10 +3,10 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\models\CompanyUser;
-use app\modules\bot\components\CrudController;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\rules\CurrentUserFieldComponent;
+use app\modules\bot\components\crud\rules\CurrentUserFieldComponent;
 use Yii;
 
 use app\models\Company;

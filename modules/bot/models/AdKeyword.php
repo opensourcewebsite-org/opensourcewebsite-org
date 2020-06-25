@@ -35,7 +35,7 @@ class AdKeyword extends ActiveRecord
     public function getAdSearches()
     {
         return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
-                    ->viaTable('{{%ad_search_keyword}}', ['ad_keyword_id' => 'id']);
+            ->viaTable('{{%ad_search_keyword}}', ['ad_keyword_id' => 'id']);
     }
 
     /**
@@ -49,6 +49,15 @@ class AdKeyword extends ActiveRecord
     public function getAdOffers()
     {
         return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
-                    ->viaTable('{{%ad_offer_keyword}}', ['ad_keyword_id' => 'id']);
+            ->viaTable('{{%ad_offer_keyword}}', ['ad_keyword_id' => 'id']);
+    }
+
+    /** @inheritDoc */
+    public static function find()
+    {
+        $query = parent::find();
+        $query->orderBy(['keyword' => SORT_ASC]);
+
+        return $query;
     }
 }

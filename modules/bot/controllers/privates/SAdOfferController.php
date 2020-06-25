@@ -3,12 +3,13 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\behaviors\SetAttributeValueBehavior;
-use app\modules\bot\components\CrudController;
-use app\modules\bot\components\rules\ExplodeStringFieldComponent;
-use app\modules\bot\components\rules\LocationToArrayFieldComponent;
-use app\modules\bot\components\rules\PhotoFieldComponent;
+use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\crud\rules\PhotoFieldComponent;
 use app\modules\bot\models\AdOfferKeyword;
 use app\modules\bot\models\AdSection;
+use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
@@ -1096,7 +1097,7 @@ class SAdOfferController extends CrudController
 
             $adOffer = AdOffer::findOne($adOfferId);
 
-            $deliveryRadius = min(AdOffer::MAX_RADIUS, intval($message->getText()));
+            $deliveryRadius = min(RadiusValidator::MAX_RADIUS, intval($message->getText()));
 
             $adOffer->setAttributes([
                 'delivery_radius' => $deliveryRadius,
@@ -1612,7 +1613,7 @@ class SAdOfferController extends CrudController
                 return $this->actionLocation();
             }
 
-            $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
+            $radius = min(intval($message->getText()), RadiusValidator::MAX_RADIUS);
             $this->getState()->setIntermediateField('adOfferDeliveryRadius', $radius);
 
             return $this->actionRadius();

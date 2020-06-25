@@ -6,6 +6,7 @@ use app\behaviors\CreatedByBehavior;
 use app\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
+use app\modules\bot\validators\RadiusValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 
@@ -42,6 +43,7 @@ class AdSearch extends ActiveRecord
                 ],
                 'required',
             ],
+            ['pickup_radius', RadiusValidator::class],
             [['title', 'description', 'location_lat', 'location_lon'], 'string'],
             [
                 [

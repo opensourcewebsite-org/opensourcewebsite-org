@@ -3,10 +3,11 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\behaviors\SetAttributeValueBehavior;
-use app\modules\bot\components\CrudController;
-use app\modules\bot\components\rules\ExplodeStringFieldComponent;
-use app\modules\bot\components\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\models\AdSearchKeyword;
+use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
@@ -784,7 +785,7 @@ class SAdSearchController extends CrudController
             return $this->actionLocation();
         }
 
-        $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
+        $radius = min(intval($message->getText()), RadiusValidator::MAX_RADIUS);
 
         $this->getState()->setIntermediateField('adSearchRadius', $radius);
 
@@ -1572,7 +1573,7 @@ class SAdSearchController extends CrudController
                 return $this->actionEditRadius($adSearchId);
             }
 
-            $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
+            $radius = min(intval($message->getText()), RadiusValidator::MAX_RADIUS);
 
             $adSearch = AdSearch::findOne($adSearchId);
 

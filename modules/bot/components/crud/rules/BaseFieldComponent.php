@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\modules\bot\components\rules;
+namespace app\modules\bot\components\crud\rules;
 
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\CrudController;

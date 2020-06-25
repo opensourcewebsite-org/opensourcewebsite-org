@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\bot\services;
+namespace app\modules\bot\components\crud\services;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\UserState;

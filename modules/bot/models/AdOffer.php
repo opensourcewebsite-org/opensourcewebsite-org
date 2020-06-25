@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 use app\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
+use app\modules\bot\validators\RadiusValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 
@@ -18,7 +19,6 @@ class AdOffer extends ActiveRecord
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
-    public const MAX_RADIUS = 1000;
 
     public static function tableName()
     {
@@ -30,6 +30,7 @@ class AdOffer extends ActiveRecord
         return [
             [['user_id', 'section', 'title', 'location_lat', 'location_lon', 'delivery_radius', 'status'], 'required'],
             [['title', 'description', 'location_lat', 'location_lon'], 'string'],
+            ['delivery_radius', RadiusValidator::class],
             [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
             [['price'], 'number'],
         ];

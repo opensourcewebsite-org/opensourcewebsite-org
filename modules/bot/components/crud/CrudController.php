@@ -1,17 +1,18 @@
 <?php
 
-namespace app\modules\bot\components;
+namespace app\modules\bot\components\crud;
 
 use app\components\helpers\ArrayHelper;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\request\Request;
 use app\modules\bot\components\response\ResponseBuilder;
-use app\modules\bot\components\rules\FieldInterface;
-use app\modules\bot\services\AttributeButtonsService;
-use app\modules\bot\services\BackRouteService;
-use app\modules\bot\services\EndRouteService;
-use app\modules\bot\services\ViewFileService;
+use app\modules\bot\components\crud\rules\FieldInterface;
+use app\modules\bot\components\crud\services\AttributeButtonsService;
+use app\modules\bot\components\crud\services\BackRouteService;
+use app\modules\bot\components\crud\services\EndRouteService;
+use app\modules\bot\components\crud\services\ViewFileService;
 use Exception;
 use Throwable;
 use Yii;
