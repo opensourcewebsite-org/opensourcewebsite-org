@@ -1,24 +1,92 @@
 <?php
+
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\FillablePropertiesController;
+use app\models\CompanyUser;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\crud\rules\CurrentUserFieldComponent;
 use Yii;
 
 use app\models\Company;
+use yii\base\DynamicModel;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 
-class CompaniesController extends FillablePropertiesController
+/**
+ * Class CompanyController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
+class CompanyController extends CrudController
 {
     protected static $properties = [
-            'name',
-            'description',
-            'address',
-            'url'
-        ];
+        'name',
+        'description',
+        'address',
+        'url',
+    ];
 
+    /** @inheritDoc */
+    protected function rules()
+    {
+        return [
+            [
+                'model' => Company::class,
+                'relation' => [
+                    'model' => CompanyUser::class,
+                    'attributes' => [
+                        'company_id' => [Company::class, 'id'],
+                        'user_id' => [DynamicModel::class, 'id'],
+                    ],
+                    'component' => [
+                        'class' => CurrentUserFieldComponent::class,
+                    ],
+                ],
+                'prepareViewParams' => function ($params) {
+                    $model = $params['model'] ?? null;
+
+                    return [
+                        'name' => $model->name,
+                        'url' => $model->url,
+                        'address' => $model->address,
+                        'description' => $model->description,
+                    ];
+                },
+                'view' => 'show',
+                'attributes' => [
+                    'name' => [],
+                    'description' => [
+                        'isRequired' => false,
+                    ],
+                    'address' => [
+                        'isRequired' => false,
+                    ],
+                    'url' => [
+                        'isRequired' => false,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param ActiveRecord $model
+     * @param bool $isNew
+     *
+     * @return array
+     */
+    protected function afterSave(ActiveRecord $model, bool $isNew)
+    {
+        return $this->actionView($model->id);
+    }
+
+    /**
+     * @param int $page
+     *
+     * @return array
+     */
     public function actionIndex($page = 1)
     {
         $user = $this->getUser();
@@ -46,7 +114,7 @@ class CompaniesController extends FillablePropertiesController
             return [
                 [
                     'text' => $company->name,
-                    'callback_data' => self::createRoute('show', [
+                    'callback_data' => self::createRoute('view', [
                         'companyId' => $company->id,
                     ]),
                 ],
@@ -64,9 +132,12 @@ class CompaniesController extends FillablePropertiesController
                 ],
                 [
                     'text' => Emoji::ADD,
-                    'callback_data' => self::createRoute('set-property', [
-                        'property' => reset(static::$properties),
-                    ]),
+                    'callback_data' => self::createRoute(
+                        'create',
+                        [
+                            'm' => $this->getModelName(Company::class),
+                        ]
+                    ),
                 ],
             ],
         ]);
@@ -79,60 +150,8 @@ class CompaniesController extends FillablePropertiesController
             ->build();
     }
 
-    public function actionUpdate($companyId)
-    {
-        return $this->getResponseBuilder()
-            ->editMessageReplyMarkup([
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Name'),
-                            'callback_data' => self::createRoute('set-property', [
-                                'id' => $companyId,
-                                'property' => 'name',
-                            ]),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Description'),
-                            'callback_data' => self::createRoute('set-property', [
-                                'id' => $companyId,
-                                'property' => 'description',
-                            ]),
-                        ]
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Address'),
-                            'callback_data' => self::createRoute('set-property', [
-                                'id' => $companyId,
-                                'property' => 'address',
-                            ]),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Website'),
-                            'callback_data' => self::createRoute('set-property', [
-                                'id' => $companyId,
-                                'property' => 'url',
-                            ]),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('show', [
-                                'companyId' => $companyId,
-                            ]),
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionShow($companyId)
+    /** @inheritDoc */
+    public function actionView($companyId)
     {
         $user = $this->getUser();
 
@@ -153,7 +172,7 @@ class CompaniesController extends FillablePropertiesController
                     [
                         [
                             'text' => Yii::t('bot', 'Vacancies') . ': ' . $company->getVacancies()->count(),
-                            'callback_data' => VacanciesController::createRoute('index', [
+                            'callback_data' => VacancyController::createRoute('index', [
                                 'companyId' => $companyId,
                             ]),
                         ],
@@ -169,9 +188,13 @@ class CompaniesController extends FillablePropertiesController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('update', [
-                                'companyId' => $companyId,
-                            ]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(Company::class),
+                                    'i' => $companyId,
+                                ]
+                            ),
                         ],
                     ],
                 ],
@@ -180,21 +203,13 @@ class CompaniesController extends FillablePropertiesController
             ->build();
     }
 
+    /**
+     * @param array $id
+     *
+     * @return Company|ActiveRecord
+     */
     protected function getModel($id)
     {
         return ($id == null) ? new Company() : Company::findOne($id);
-    }
-
-    /**
-     * @param ActiveRecord $company
-     * @param bool $isNew
-     * @return array
-     */
-    protected function afterSave(ActiveRecord $company, bool $isNew)
-    {
-        if ($isNew) {
-            $this->getUser()->link('companies', $company);
-        }
-        return $this->actionShow($company->id);
     }
 }
