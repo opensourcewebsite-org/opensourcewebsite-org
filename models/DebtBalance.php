@@ -177,15 +177,15 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     /**
      * @throws Exception
      */
-    public function afterRedistribution(int $timestamp): void
+    public function afterRedistribution(): void
     {
         //SELECT FOR UPDATE and transaction is not necessary for this particular field.
         //So we can simply use raw SQL to avoid transaction validation
-        $this->redistribute_try_at = $timestamp;
+        $this->redistribute_try_at = time();
         //row $this may no longer exist in DB on this step. It's ok.
         static::getDb()
             ->createCommand()
-            ->update(static::tableName(), ['redistribute_try_at' => $timestamp], $this->primaryKey)
+            ->update(static::tableName(), ['redistribute_try_at' => $this->redistribute_try_at], $this->primaryKey)
             ->execute();
     }
 
@@ -272,16 +272,11 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     private function updateProcessedAt(): void
     {
-        $scale = DebtHelper::getFloatScale();
-        if (Number::isFloatEqual(0, $this->amount, $scale)) {
-            $this->reduction_try_at = time(); // no sense to run \app\components\debt\Reduction if amount is "0"
-            return;
-        }
-
         $isAmountBecomeNotZero = $this->isAttributeChanged('amount', false) && !$this->getOldAttribute('amount');
 
-        if ($this->isNewRecord || $isAmountBecomeNotZero || $this->isDirectionChanged()) {
+        if ($isAmountBecomeNotZero || $this->isDirectionChanged()) {
             $this->reduction_try_at = null;
+            $this->redistribute_try_at = null;
         }
 
         // Else: leave `reduction_try_at` as is.

@@ -67,20 +67,12 @@ class DebtBalanceQuery extends ActiveQuery
      * {@see Redistribution} should process all rows.
      * To avoid processing of the same row twice we use field `debt_balance.redistribute_try_at`.
      *
-     * @param int $timestamp
-     *
      * @return DebtBalanceQuery
      */
-    public function canBeRedistributed(int $timestamp): self
+    public function canBeRedistributed(): self
     {
         return $this->canBeReduced(false)
-            ->andWhere([
-                'OR',
-                'debt_balance.redistribute_try_at IS NULL',
-                'debt_balance.redistribute_try_at <> :timestamp',
-            ])
-            ->addParams([':timestamp' => $timestamp]);
-
+            ->andWhere('debt_balance.redistribute_try_at IS NULL');
     }
 
     public function amount($value, $alias = 'debt_balance'): self

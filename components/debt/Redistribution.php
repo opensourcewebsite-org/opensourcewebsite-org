@@ -22,7 +22,6 @@ class Redistribution extends Component
     /** @var callable|null */
     public $logger;
 
-    private $timestamp;
     private $wasRedistributed = false;
 
     /**
@@ -39,7 +38,7 @@ class Redistribution extends Component
             $validEnd = $this->tryRedistribute($debtBalance, [$chainMemberFirst], $debtBalance->amount);
 
             if ($validEnd) {
-                $debtBalance->afterRedistribution($this->timestamp);
+                $debtBalance->afterRedistribution();
             }
 
             if (!$this->wasRedistributed) {
@@ -59,7 +58,7 @@ class Redistribution extends Component
 
         return DebtBalance::find()
             ->where($pk)
-            ->canBeRedistributed($this->timestamp)
+            ->canBeRedistributed()
             ->limit(1);
     }
 
