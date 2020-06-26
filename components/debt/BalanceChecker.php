@@ -5,7 +5,6 @@ namespace app\components\debt;
 use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Debt;
-use app\models\DebtBalance;
 use Yii;
 use yii\base\Component;
 
@@ -136,10 +135,6 @@ class BalanceChecker extends Component
 
     private function isBalanceEmpty(array $debtSummary): bool
     {
-        if (DebtBalance::STORE_EMPTY_AMOUNT) {
-            return $this->isFloatEqual($debtSummary['balance'], 0);
-        }
-
         return (null === $debtSummary['balance']);
     }
 
