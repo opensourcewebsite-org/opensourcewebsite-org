@@ -1,8 +1,14 @@
 <?php
+
 namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * Class AdKeyword
+ *
+ * @package app\modules\bot\models
+ */
 class AdKeyword extends ActiveRecord
 {
     public static function tableName()
@@ -32,9 +38,26 @@ class AdKeyword extends ActiveRecord
             ->viaTable('{{%ad_search_keyword}}', ['ad_keyword_id' => 'id']);
     }
 
+    /**
+     * @return string
+     */
+    public function getAdKeywordLabel()
+    {
+        return $this->keyword;
+    }
+
     public function getAdOffers()
     {
         return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
             ->viaTable('{{%ad_offer_keyword}}', ['ad_keyword_id' => 'id']);
+    }
+
+    /** @inheritDoc */
+    public static function find()
+    {
+        $query = parent::find();
+        $query->orderBy(['keyword' => SORT_ASC]);
+
+        return $query;
     }
 }
