@@ -42,5 +42,5 @@ before_script:
   - ./tests/bin/yii migrate --interactive=0 -c --silent-exit-on-exception=0
 
 script:
-  - ./tests/bin/yii fixture/load '*' --interactive=0 --silent-exit-on-exception=0
+  - ./tests/bin/yii fixture/load '*' --interactive=0
   - ./vendor/bin/codecept run -c ./codeception.yml --coverage
