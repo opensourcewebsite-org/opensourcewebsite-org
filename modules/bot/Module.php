@@ -295,7 +295,7 @@ class Module extends \yii\base\Module
         }
 
         if (!$isStateRoute) {
-            $this->userState->setName(null);
+            $this->userState->setName($state);
         }
 
         /* Temporary solution for filter in groups */

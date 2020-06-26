@@ -13,43 +13,48 @@ use app\modules\bot\components\helpers\Emoji;
  */
 class SJobController extends Controller
 {
+    /**
+     * @return array
+     */
     public function actionIndex()
     {
+        $buttons = [
+            [
+                [
+                    'text' => Yii::t('bot', 'Resumes'),
+                    'callback_data' => ResumeController::createRoute(),
+                ],
+            ],
+            [
+                [
+                    'text' => Yii::t('bot', 'Vacancies'),
+                    'callback_data' => CompanyController::createRoute(),
+                ],
+            ],
+            [
+                [
+                    'text' => Yii::t('bot', 'Companies'),
+                    'callback_data' => CompanyController::createRoute(),
+                ],
+            ],
+            [
+                [
+                    'text' => Emoji::BACK,
+                    'callback_data' => ServicesController::createRoute(),
+                ],
+                [
+                    'callback_data' => MenuController::createRoute(),
+                    'text' => '📱',
+                ],
+            ],
+        ];
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'isNotificationsEnabled' => true,
                 ]),
-                [
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Resumes'),
-                            'callback_data' => ResumesController::createRoute(),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Vacancies'),
-                            'callback_data' => CompaniesController::createRoute(),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Companies'),
-                            'callback_data' => CompaniesController::createRoute(),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => ServicesController::createRoute(),
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => '📱',
-                        ],
-                    ],
-                ]
+                $buttons
             )
             ->build();
     }

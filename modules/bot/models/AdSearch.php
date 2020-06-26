@@ -1,10 +1,20 @@
 <?php
+
 namespace app\modules\bot\models;
 
-use Yii;
+use app\behaviors\CreatedByBehavior;
+use app\behaviors\TimestampBehavior;
+use app\components\helpers\ArrayHelper;
+use app\models\Currency;
+use app\modules\bot\validators\RadiusValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 
+/**
+ * Class AdSearch
+ *
+ * @package app\modules\bot\models
+ */
 class AdSearch extends ActiveRecord
 {
     public const STATUS_OFF = 0;
@@ -17,20 +27,49 @@ class AdSearch extends ActiveRecord
         return 'ad_search';
     }
 
+    /**
+     * @return array|array[]
+     */
     public function rules()
     {
         return [
-            [['user_id', 'section', 'title', 'pickup_radius', 'location_lat', 'location_lon', 'status', 'created_at', 'renewed_at'], 'required'],
+            [
+                [
+                    'title',
+                    'pickup_radius',
+                    'location_lat',
+                    'location_lon',
+                    'status',
+                ],
+                'required',
+            ],
+            ['pickup_radius', RadiusValidator::class],
             [['title', 'description', 'location_lat', 'location_lon'], 'string'],
-            [['user_id', 'section', 'currency_id', 'pickup_radius', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
+            [
+                [
+                    'user_id',
+                    'section',
+                    'currency_id',
+                    'pickup_radius',
+                    'status',
+                    'created_at',
+                    'renewed_at',
+                    'processed_at',
+                ],
+                'integer',
+            ],
             [['max_price'], 'number'],
         ];
     }
 
+    /** @inheritDoc */
     public function behaviors()
     {
         return [
             // TimestampBehavior::className(),
+            'TimestampBehavior' => [
+                'class' => TimestampBehavior::class,
+            ],
         ];
     }
 
@@ -48,9 +87,13 @@ class AdSearch extends ActiveRecord
     public function getMatches()
     {
         return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
-            ->viaTable('{{%ad_match}}', ['ad_search_id' => 'id'], function ($query) {
-                $query->andWhere(['or', ['type' => 1], ['type' => 2]]);
-            });
+            ->viaTable(
+                '{{%ad_match}}',
+                ['ad_search_id' => 'id'],
+                function ($query) {
+                    $query->andWhere(['or', ['type' => 1], ['type' => 2]]);
+                }
+            );
     }
 
     public function getAllMatches()
@@ -68,7 +111,9 @@ class AdSearch extends ActiveRecord
             ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
             ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_offer.section' => $this->section])
-            ->andWhere("ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)");
+            ->andWhere(
+                "ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"
+            );
 
         $adOfferQueryNoKeywords = clone $adOfferQuery;
         $adOfferQueryNoKeywords = $adOfferQueryNoKeywords
@@ -76,12 +121,16 @@ class AdSearch extends ActiveRecord
 
         $adOfferQueryKeywords = clone $adOfferQuery;
         $adOfferQueryKeywords = $adOfferQueryKeywords
-                ->joinWith(['keywords' => function ($query) {
-                    $query
-                        ->joinWith('adSearches')
-                        ->andWhere(['ad_search.id' => $this->id]);
-                }])
-                ->groupBy('ad_offer.id');
+            ->joinWith(
+                [
+                    'keywords' => function ($query) {
+                        $query
+                            ->joinWith('adSearches')
+                            ->andWhere(['ad_search.id' => $this->id]);
+                    },
+                ]
+            )
+            ->groupBy('ad_offer.id');
 
         if ($this->getKeywords()->count() > 0) {
             foreach ($adOfferQueryKeywords->all() as $adOffer) {
@@ -107,17 +156,39 @@ class AdSearch extends ActiveRecord
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
 
-            $this->setAttributes([
-                'processed_at' => null,
-            ]);
+            $this->setAttributes(
+                [
+                    'processed_at' => null,
+                ]
+            );
 
             $this->save();
         }
+    }
+
+    /** @inheritDoc */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'pickup_radius' => 'Pickup radius',
+                'max_price' => 'Max price',
+            ]
+        );
     }
 
     public function getGlobalUser()
     {
         return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
             ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyRelation()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 }
