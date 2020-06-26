@@ -456,6 +456,9 @@ abstract class CrudController extends Controller
             $editingAttributes = $this->getEditingAttributes($modelName);
             $prevAttribute = $this->getPrevKey($editingAttributes, $attributeName);
             if ($prevAttribute) {
+                $model = $this->getFilledModel($rule);
+                $model->save();
+
                 return $this->generateResponse($modelName, $prevAttribute, compact('rule'));
             }
 
