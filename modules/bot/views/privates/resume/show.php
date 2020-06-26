@@ -20,7 +20,7 @@
 <?php endif;
 if($hourlyRate):
 ?>
-<?= Yii::t('bot', 'Hourly rate') ?>: <?= $hourlyRate ?> <?= $currency->code ?><br/>
+<?= Yii::t('bot', 'Hourly rate') ?>: <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
 <?php
 endif;

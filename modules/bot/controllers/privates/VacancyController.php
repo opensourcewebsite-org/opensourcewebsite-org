@@ -47,7 +47,7 @@ class VacancyController extends CrudController
                         'requirements' => $model->requirements,
                         'conditions' => $model->conditions,
                         'responsibilities' => $model->responsibilities,
-                        'currency' => $model->currency,
+                        'currencyCode' => $model->currencyCode,
                         'company' => $model->company,
                         'isActive' => $model->isActive(),
                     ];
@@ -64,6 +64,20 @@ class VacancyController extends CrudController
                     ],
                     'max_hourly_rate' => [
                         'isRequired' => false,
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ],
+                        'prepareViewParams' => function ($params) {
+                            /** @var Vacancy $model */
+                            $model = $params['model'];
+
+                            return array_merge($params, [
+                                'currencyCode' => $model->currencyCode,
+                            ]);
+                        },
                     ],
                     'requirements' => [],
                     'conditions' => [],
@@ -199,7 +213,7 @@ class VacancyController extends CrudController
                     'requirements' => $vacancy->requirements,
                     'conditions' => $vacancy->conditions,
                     'responsibilities' => $vacancy->responsibilities,
-                    'currency' => $vacancy->currency,
+                    'currencyCode' => $vacancy->currencyCode,
                     'company' => $vacancy->company,
                     'isActive' => $vacancy->isActive(),
                 ]),
@@ -304,8 +318,8 @@ class VacancyController extends CrudController
      */
     private function getDisplayHourlyRate(Vacancy $vacancy)
     {
-        if (isset($vacancy->max_hour_rate)) {
-            return Yii::t('bot', 'till') . " {$vacancy->max_hour_rate}";
+        if (isset($vacancy->max_hourly_rate)) {
+            return Yii::t('bot', 'till') . " {$vacancy->max_hourly_rate}";
         }
 
         return null;

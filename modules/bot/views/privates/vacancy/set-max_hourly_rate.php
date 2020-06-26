@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send maximum hourly rate of the vacancy') ?>
+<?= Yii::t('bot', 'Send maximum hourly rate of the vacancy') ?> (<?= $currencyCode ?>)

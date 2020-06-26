@@ -36,7 +36,7 @@ class ResumeController extends CrudController
                         'experiences' => $model->experiences,
                         'expectations' => $model->expectations,
                         'skills' => $model->skills,
-                        'currency' => $model->currency,
+                        'currencyCode' => $model->currencyCode,
                         'isActive' => $model->isActive(),
                     ];
                 },
@@ -52,10 +52,30 @@ class ResumeController extends CrudController
                     ],
                     'min_hourly_rate' => [
                         'isRequired' => false,
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ],
+                        'prepareViewParams' => function ($params) {
+                            /** @var Resume $model */
+                            $model = $params['model'];
+
+                            return array_merge($params, [
+                                'currencyCode' => $model->currencyCode,
+                            ]);
+                        },
                     ],
-                    'skills' => [],
-                    'experiences' => [],
-                    'expectations' => [],
+                    'skills' => [
+                        'isRequired' => false,
+                    ],
+                    'experiences' => [
+                        'isRequired' => false,
+                    ],
+                    'expectations' => [
+                        'isRequired' => false,
+                    ],
                     'user_id' => [
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
@@ -175,7 +195,7 @@ class ResumeController extends CrudController
                     'experiences' => $resume->experiences,
                     'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
-                    'currency' => $resume->currency,
+                    'currencyCode' => $resume->currencyCode,
                     'isActive' => $resume->isActive(),
                 ]),
                 [

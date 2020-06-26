@@ -44,7 +44,7 @@ class Vacancy extends ActiveRecord
                     'location_lon',
                     'max_hourly_rate',
                 ],
-                'double'
+                'double',
             ],
             [
                 [
@@ -92,7 +92,7 @@ class Vacancy extends ActiveRecord
 
     public function getCurrency()
     {
-        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**
@@ -101,5 +101,28 @@ class Vacancy extends ActiveRecord
     public function isActive()
     {
         return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyRelation()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrencyCode()
+    {
+        $currency = $this->currencyRelation;
+        if ($currency) {
+            $currencyCode = $currency->code;
+        } else {
+            $currencyCode = '';
+        }
+
+        return $currencyCode;
     }
 }

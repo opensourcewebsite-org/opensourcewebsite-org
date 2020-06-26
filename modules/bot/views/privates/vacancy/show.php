@@ -18,7 +18,7 @@
 <?= nl2br($conditions) ?><br/>
 <br/>
 <?php endif; ?>
-<?= Yii::t('bot', 'Hourly rate') ?>: <?= $hourlyRate ?><br/>
+<?= Yii::t('bot', 'Hourly rate') ?>: <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
 <?php
 if ($company):

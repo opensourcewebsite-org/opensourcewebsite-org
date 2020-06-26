@@ -98,4 +98,27 @@ class Resume extends ActiveRecord
     {
         return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyRelation()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrencyCode()
+    {
+        $currency = $this->currencyRelation;
+        if ($currency) {
+            $currencyCode = $currency->code;
+        } else {
+            $currencyCode = '';
+        }
+
+        return $currencyCode;
+    }
 }

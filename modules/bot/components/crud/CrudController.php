@@ -1129,9 +1129,10 @@ abstract class CrudController extends Controller
     {
         $attributeConfig = ArrayHelper::getValue($options, 'config', []);
         $editingAttributes = ArrayHelper::getValue($options, 'editingAttributes', []);
+        $ignoreEditingAttributes = ArrayHelper::getValue($options, 'ignoreEditingAttributes', false);
         $state = $this->getState();
         $modelName = $this->getModelName($model::className());
-        if (!$editingAttributes) {
+        if (!$ignoreEditingAttributes && !$editingAttributes) {
             $editingAttributes = $this->getEditingAttributes($modelName);
             unset($editingAttributes[$attributeName]);
             $rule = $this->getRule($modelName);
@@ -1149,7 +1150,10 @@ abstract class CrudController extends Controller
         if ($component instanceof FieldInterface) {
             $fields = $component->getFields();
             foreach ($fields as $field) {
-                $this->fillModel($model, $field, $manyToManyRelationAttributes, ['config' => $attributeConfig['component']]);
+                $this->fillModel($model, $field, $manyToManyRelationAttributes, [
+                    'config' => $attributeConfig['component'],
+                    'ignoreEditingAttributes' => true,
+                ]);
             }
         }
         if ($state->isIntermediateFieldExists($this->createIntermediateFieldName($modelName, $attributeName))) {
@@ -1511,7 +1515,14 @@ abstract class CrudController extends Controller
         if ($configButtons) {
             $buttons = array_merge($buttons, [$configButtons]);
         }
-        $relationAttributeName = $this->getIntermediateField($modelName, self::FIELD_NAME_RELATION, null);
+        $relationAttributeName = null;
+        $relation = $this->getRelation($config);
+        if ($relation) {
+            [, $secondaryRelation] = $this->getRelationAttributes($rule['model'], $relation);
+            if ($secondaryRelation[0] ?? null) {
+                $relationAttributeName = $secondaryRelation[0];
+            }
+        }
         /* 'Next' button */
         if (!isset($relationAttributeName) && (!$isAttributeRequired)) {
             $buttonSkip = $config['buttonSkip'] ?? [];
@@ -1813,8 +1824,9 @@ abstract class CrudController extends Controller
         $buttons = $this->prepareButtons(
             [],
             $systemButtons,
-            compact('config', 'isEmpty', 'modelName', self::FIELD_NAME_ATTRIBUTE)
+            compact('config', 'isEmpty', 'modelName', 'attributeName')
         );
+        $model = $this->getFilledModel($rule);
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
@@ -1825,7 +1837,7 @@ abstract class CrudController extends Controller
                         'step' => $step,
                         'totalSteps' => $totalSteps,
                         'isEdit' => $isEdit,
-                        'model' => $this->getFilledModel($rule),
+                        'model' => $model,
                     ],
                     compact('rule', 'attributeName')
                 ),
