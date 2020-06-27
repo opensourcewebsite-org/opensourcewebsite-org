@@ -29,13 +29,12 @@ class Redistribution extends Component
      */
     public function run(): void
     {
-        $this->timestamp = time();
-        while ($debtBalance = $this->findCandidateToRedistribute()->one()) {
+        while ($debtBalance = $this->findDebtBalanceToRedistribute()) {
             $this->log('--- Starting search Circled Chain ---');
             $this->wasRedistributed = false;
 
-            $chainMemberFirst = $debtBalance->factoryContact(true);
-            $validEnd = $this->tryRedistribute($debtBalance, [$chainMemberFirst], $debtBalance->amount);
+            $chainMemberFirstContact = $debtBalance->factoryContact(true);
+            $validEnd = $this->tryRedistribute($debtBalance, [$chainMemberFirstContact], $debtBalance->amount);
 
             if ($validEnd) {
                 $debtBalance->afterRedistribution();
@@ -52,7 +51,7 @@ class Redistribution extends Component
      * If it can't - try to Redistribute.
      * @return DebtBalanceQuery
      */
-    private function findCandidateToRedistribute(DebtBalance $debtBalance = null): DebtBalanceQuery
+    private function queryDebtBalanceToRedistribute(DebtBalance $debtBalance = null): DebtBalanceQuery
     {
         $pk = $debtBalance ? $debtBalance->getPrimaryKey(true) : null;
 
@@ -60,6 +59,11 @@ class Redistribution extends Component
             ->where($pk)
             ->canBeRedistributed()
             ->limit(1);
+    }
+
+    private function findDebtBalanceToRedistribute(): ?DebtBalance
+    {
+        return $this->queryDebtBalanceToRedistribute()->one();
     }
 
     /**
@@ -70,23 +74,23 @@ class Redistribution extends Component
      * 3) else [recursion] return to point 1) and do the same for each ReceiverFriend
      *
      * @param DebtBalance $debtBalance
-     * @param Contact[] $chainMembers
+     * @param Contact[] $contactChainMembers
      * @param string $amountToRedistribute
      * @param int $level
      *
      * @return bool FALSE - some data become invalid. Need retry. TRUE - process finished normally.
      * @throws \Throwable
      */
-    private function tryRedistribute(DebtBalance $debtBalance, $chainMembers, $amountToRedistribute, int $level = 1): bool
+    private function tryRedistribute(DebtBalance $debtBalance, $contactChainMembers, $amountToRedistribute, int $level = 1): bool
     {
-        $chainMemberMiddle = [];
+        $contactChainMembersMiddle = [];
         $scale = DebtHelper::getFloatScale();
 
-        foreach ($chainMembers as $chainMember) {
-            $debtReceiverContacts = $this->findDebtReceiverCandidatesRedistributeInto($debtBalance, $chainMember, $level);
+        foreach ($contactChainMembers as $contactChainMember) {
+            $contactsReceiver = $this->findDebtReceiverCandidatesRedistributeInto($debtBalance, $contactChainMember, $level);
 
-            foreach ($debtReceiverContacts as $receiverContact) {
-                if ($this->checkOwnLimits($debtBalance, $receiverContact, $amountToRedistribute)) {
+            foreach ($contactsReceiver as $contactReceiver) {
+                if ($this->checkOwnLimits($debtBalance, $contactReceiver, $amountToRedistribute)) {
                     //Script may reach this IF only when $level==1 and only once.
                     // In this IF you don't see any conditions to ensure it, because similar conditions implemented
                     // in method `findDebtReceiverCandidatesRedistributeInto()` via SQL using `$level`.
@@ -97,9 +101,9 @@ class Redistribution extends Component
                     continue;
                 }
 
-                $contactCircled = $this->findContactCircled($debtBalance, $receiverContact);
+                $contactCircled = $this->findContactCircled($debtBalance, $contactReceiver);
                 if (!$contactCircled) {
-                    $chainMemberMiddle[] = $receiverContact;
+                    $contactChainMembersMiddle[] = $contactReceiver;
                     continue;
                 }
 
@@ -115,11 +119,11 @@ class Redistribution extends Component
             }
         }
 
-        if (empty($chainMemberMiddle)) {
+        if (empty($contactChainMembersMiddle)) {
             return true;
         }
 
-        return $this->tryRedistribute($debtBalance, $chainMemberMiddle, $amountToRedistribute, ++$level);
+        return $this->tryRedistribute($debtBalance, $contactChainMembersMiddle, $amountToRedistribute, ++$level);
     }
 
     /**
@@ -136,10 +140,10 @@ class Redistribution extends Component
         int $level
     ): array
     {
-        $chainList = ($level === 1) ? [] : $this->listChainMembers($contact);
+        $contactChainList = ($level === 1) ? [] : $this->listChainMembers($contact);
 
         return $contact->getChainMembers()
-            ->models($chainList, 'NOT IN', ['user_id', 'link_user_id'])
+            ->models($contactChainList, 'NOT IN', ['user_id', 'link_user_id'])
             ->canRedistributeInto($debtBalance->currency_id)
             ->orderBy('debt_redistribution_priority')
             ->all();
@@ -151,18 +155,18 @@ class Redistribution extends Component
      *   So we should either break or decrease $amountToRedistribute.
      *
      * @param DebtBalance $debtBalance
-     * @param Contact $receiverContact
+     * @param Contact $contactReceiver
      * @param string $amount
      *
      * @return bool
      */
-    private function checkOwnLimits(DebtBalance $debtBalance, Contact $receiverContact, &$amount): bool
+    private function checkOwnLimits(DebtBalance $debtBalance, Contact $contactReceiver, &$amount): bool
     {
-        if (!$debtBalance->toContact || $debtBalance->toContact->id != $receiverContact->id) {
+        if (!$debtBalance->toContact || $debtBalance->toContact->id != $contactReceiver->id) {
             return false;
         }
 
-        $cfg = $receiverContact->debtRedistributionByDebtorCustom;
+        $cfg = $contactReceiver->debtRedistributionByDebtorCustom;
         $scale = DebtHelper::getFloatScale();
 
         if ($cfg->isMaxAmountAny() || Number::isFloatGreaterE($cfg->max_amount, $amount, $scale)) {
@@ -180,13 +184,13 @@ class Redistribution extends Component
      * is ReceiverContact has Contact linked to Debtor?
      *
      * @param DebtBalance $debtBalance
-     * @param Contact $receiverContact
+     * @param Contact $contactReceiver
      *
      * @return Contact|null
      */
-    private function findContactCircled(DebtBalance $debtBalance, Contact $receiverContact): ?Contact
+    private function findContactCircled(DebtBalance $debtBalance, Contact $contactReceiver): ?Contact
     {
-        return $receiverContact->getChainMembers()
+        return $contactReceiver->getChainMembers()
             ->userLinked($debtBalance->debtorUID())
             ->canRedistributeInto($debtBalance->currency_id)
             ->one();
@@ -255,19 +259,19 @@ class Redistribution extends Component
     /**
      * Extract all chain members from last member into array
      *
-     * @param Contact $chainMemberLast
+     * @param Contact $chainMemberLastContact
      *
      * @return Contact[]
      */
-    private function listChainMembers(Contact $chainMemberLast): array
+    private function listChainMembers(Contact $chainMemberLastContact): array
     {
         /** @var Contact[] $chainMembersAll */
-        $chainMembersAll = [$chainMemberLast];
+        $chainMembersAll = [$chainMemberLastContact];
 
         //get all previous chain members
-        while ($chainMemberLast->isRelationPopulated('chainMemberParent')) {
-            $chainMemberLast = $chainMemberLast->chainMemberParent;
-            $chainMembersAll[] = $chainMemberLast;
+        while ($chainMemberLastContact->isRelationPopulated('chainMemberParent')) {
+            $chainMemberLastContact = $chainMemberLastContact->chainMemberParent;
+            $chainMembersAll[] = $chainMemberLastContact;
         }
 
         //`array_reverse` is not necessary. Just for cleaner understanding on debugging
@@ -279,7 +283,7 @@ class Redistribution extends Component
      */
     private function lockDebtBalance(DebtBalance $debtBalance): DebtBalance
     {
-        $query = $this->findCandidateToRedistribute($debtBalance)
+        $query = $this->queryDebtBalanceToRedistribute($debtBalance)
             ->amount($debtBalance->amount);
         $debtBalanceFresh = DebtBalance::findOneForUpdate($query);
 
