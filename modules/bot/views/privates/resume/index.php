@@ -1,2 +1,1 @@
-🏗 <b><?= Yii::t('bot', 'Resumes') ?> (<?= Yii::t('bot', 'in development') ?>)</b><br/>
-<br/>
+<b><?= Yii::t('bot', 'Your Resumes') ?></b>

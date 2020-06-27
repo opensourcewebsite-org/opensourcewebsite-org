@@ -43,7 +43,7 @@ class VacancyController extends CrudController
 
                     return [
                         'name' => $model->name,
-                        'hourlyRate' => $this->getDisplayHourlyRate($model),
+                        'hourlyRate' => $model->max_hourly_rate,
                         'requirements' => $model->requirements,
                         'conditions' => $model->conditions,
                         'responsibilities' => $model->responsibilities,
@@ -55,6 +55,9 @@ class VacancyController extends CrudController
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
+                    'responsibilities' => [],
+                    'requirements' => [],
+                    'conditions' => [],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
@@ -79,9 +82,6 @@ class VacancyController extends CrudController
                             ]);
                         },
                     ],
-                    'requirements' => [],
-                    'conditions' => [],
-                    'responsibilities' => [],
                     'company_id' => [
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
@@ -209,7 +209,7 @@ class VacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $vacancy->name,
-                    'hourlyRate' => $this->getDisplayHourlyRate($vacancy),
+                    'hourlyRate' => $vacancy->max_hourly_rate,
                     'requirements' => $vacancy->requirements,
                     'conditions' => $vacancy->conditions,
                     'responsibilities' => $vacancy->responsibilities,
@@ -309,19 +309,5 @@ class VacancyController extends CrudController
                 'company_id' => $this->getState()->getIntermediateField('companyId', null),
                 'currency_id' => Currency::findOne(['code' => 'USD'])->id,
             ]);
-    }
-
-    /**
-     * @param Vacancy $vacancy
-     *
-     * @return string|null
-     */
-    private function getDisplayHourlyRate(Vacancy $vacancy)
-    {
-        if (isset($vacancy->max_hourly_rate)) {
-            return Yii::t('bot', 'till') . " {$vacancy->max_hourly_rate}";
-        }
-
-        return null;
     }
 }

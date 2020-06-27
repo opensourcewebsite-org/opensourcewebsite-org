@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send minimum hourly rate of the resume') ?> (<?= $currencyCode ?>)
+<?= Yii::t('bot', 'Send a minimum hourly rate') ?> (<?= $currencyCode ?>)

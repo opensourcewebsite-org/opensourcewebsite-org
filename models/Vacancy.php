@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -72,6 +73,17 @@ class Vacancy extends ActiveRecord
                 ],
                 'required',
             ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'max_hourly_rate' => Yii::t('app', 'Max. hourly rate'),
         ];
     }
 

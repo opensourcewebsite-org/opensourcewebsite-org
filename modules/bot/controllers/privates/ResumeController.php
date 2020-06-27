@@ -32,7 +32,7 @@ class ResumeController extends CrudController
 
                     return [
                         'name' => $model->name,
-                        'hourlyRate' => $this->getDisplayHourlyRate($model),
+                        'hourlyRate' => $model->min_hourly_rate,
                         'experiences' => $model->experiences,
                         'expectations' => $model->expectations,
                         'skills' => $model->skills,
@@ -43,6 +43,15 @@ class ResumeController extends CrudController
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
+                    'skills' => [
+                        'isRequired' => false,
+                    ],
+                    'experiences' => [
+                        'isRequired' => false,
+                    ],
+                    'expectations' => [
+                        'isRequired' => false,
+                    ],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
@@ -66,15 +75,6 @@ class ResumeController extends CrudController
                                 'currencyCode' => $model->currencyCode,
                             ]);
                         },
-                    ],
-                    'skills' => [
-                        'isRequired' => false,
-                    ],
-                    'experiences' => [
-                        'isRequired' => false,
-                    ],
-                    'expectations' => [
-                        'isRequired' => false,
                     ],
                     'user_id' => [
                         'behaviors' => [
@@ -191,7 +191,7 @@ class ResumeController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $resume->name,
-                    'hourlyRate' => $this->getDisplayHourlyRate($resume),
+                    'hourlyRate' => $resume->min_hourly_rate,
                     'experiences' => $resume->experiences,
                     'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
@@ -281,20 +281,6 @@ class ResumeController extends CrudController
         $resume->save();
 
         return $this->actionView($resumeId);
-    }
-
-    /**
-     * @param Resume $resume
-     *
-     * @return string|null
-     */
-    private function getDisplayHourlyRate(Resume $resume)
-    {
-        if ($resume->min_hourly_rate) {
-            return Yii::t('bot', 'from') . " {$resume->min_hourly_rate}";
-        }
-
-        return null;
     }
 
     /**

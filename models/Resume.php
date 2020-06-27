@@ -1,8 +1,8 @@
 <?php
 
-
 namespace app\models;
 
+use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -70,6 +70,17 @@ class Resume extends ActiveRecord
                 ],
                 'required',
             ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
         ];
     }
 
