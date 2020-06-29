@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     </tr>
                                     <tr>
                                         <th class="align-middle"><?= Yii::t('app', 'Location'); ?></th>
-                                        <td class="align-middle"><?= $model->location_lat . ' ' . $model->location_lon; ?></td>
+                                        <td class="align-middle"><?= $model->location_lat . ', ' . $model->location_lon; ?></td>
                                         <td></td>
                                     </tr>
                                 </tbody>

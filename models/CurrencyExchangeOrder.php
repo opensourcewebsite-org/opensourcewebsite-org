@@ -123,4 +123,19 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     {
         return Currency::findOne(['id' => $this->buying_currency_id]);
     }
+
+    /**
+     * @param string $location
+     * @return $this
+     */
+    public function setLocation(string $location): self
+    {
+        $latLon = explode(',', $location);
+        if (count($latLon) === 2) {
+            $this->location_lat = $latLon[0] ?? '';
+            $this->location_lon = $latLon[1] ?? '';
+        }
+
+        return $this;
+    }
 }

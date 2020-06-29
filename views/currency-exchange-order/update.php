@@ -1,7 +1,7 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Contact */
+/* @var $model app\models\CurrencyExchangeOrder */
 
 $this->title = Yii::t('app', 'Update Currency Exchange Order ' . $model->id);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange Order'), 'url' => ['index']];

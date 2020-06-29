@@ -22,7 +22,7 @@ class CurrencyExchangeOrderController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -89,6 +89,7 @@ class CurrencyExchangeOrderController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->setLocation(Yii::$app->request->post()['location'] ?? '');
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
