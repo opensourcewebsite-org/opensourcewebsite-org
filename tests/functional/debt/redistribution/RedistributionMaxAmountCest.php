@@ -74,6 +74,8 @@ class RedistributionMaxAmountCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends chainLimitIsLowestLimitAmongMembers
      */
     public function skipChainIfAnyMemberHasLimitDeny(FunctionalTester $I): void
     {
@@ -90,6 +92,8 @@ class RedistributionMaxAmountCest
      *
      * @example [123.12, 456.45]
      * @example [456.45, 123.12]
+     *
+     * @depends skipChainIfAnyMemberHasLimitDeny
      */
     public function eachChainHasOwnLimit(FunctionalTester $I, Example $example): void
     {
@@ -114,6 +118,8 @@ class RedistributionMaxAmountCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends eachChainHasOwnLimit
      */
     public function testCaseWhenLimitGreaterThanTargetAmount(FunctionalTester $I): void
     {

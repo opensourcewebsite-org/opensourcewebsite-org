@@ -42,6 +42,8 @@ class RedistributionPriorityCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends RedistributionMaxAmountCest:testCaseWhenLimitGreaterThanTargetAmount
      */
     public function debtRedistributionPriority_1(FunctionalTester $I): void
     {
@@ -54,6 +56,8 @@ class RedistributionPriorityCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends debtRedistributionPriority_1
      */
     public function debtRedistributionPriority_2(FunctionalTester $I): void
     {
@@ -68,6 +72,8 @@ class RedistributionPriorityCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends debtRedistributionPriority_2
      */
     public function debtRedistributionPriority_255(FunctionalTester $I): void
     {
@@ -86,6 +92,8 @@ class RedistributionPriorityCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends debtRedistributionPriority_255
      */
     public function debtRedistributionPriorityDeny(FunctionalTester $I): void
     {

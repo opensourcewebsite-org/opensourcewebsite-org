@@ -46,6 +46,8 @@ class RedistributionTargetBalanceHasOwnChainCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends RedistributionPriorityCest:debtRedistributionPriorityDeny
      */
     public function ownChainIsFirst(FunctionalTester $I): void
     {
@@ -60,6 +62,8 @@ class RedistributionTargetBalanceHasOwnChainCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends ownChainIsFirst
      */
     public function ownChainIsNotFirst(FunctionalTester $I): void
     {
@@ -72,6 +76,8 @@ class RedistributionTargetBalanceHasOwnChainCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends ownChainIsNotFirst
      */
     public function ownChainIsFirstButDeny(FunctionalTester $I): void
     {
@@ -84,6 +90,8 @@ class RedistributionTargetBalanceHasOwnChainCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends ownChainIsFirstButDeny
      */
     public function ownChainIsUnlimitedAndFirst(FunctionalTester $I): void
     {
@@ -95,6 +103,8 @@ class RedistributionTargetBalanceHasOwnChainCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends ownChainIsUnlimitedAndFirst
      */
     public function ownChainIsUnlimitedButSecond(FunctionalTester $I): void
     {
@@ -108,6 +118,8 @@ class RedistributionTargetBalanceHasOwnChainCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
+     *
+     * @depends ownChainIsUnlimitedButSecond
      */
     public function ownChainIsLimitedAndSecond(FunctionalTester $I): void
     {
