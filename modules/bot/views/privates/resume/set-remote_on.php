@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Remote Job') ?>
+<?= Yii::t('bot', 'Remote work') ?>

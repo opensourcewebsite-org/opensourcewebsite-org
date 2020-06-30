@@ -6,6 +6,8 @@ use app\behaviors\SetAttributeValueBehavior;
 use app\models\Company;
 use app\models\Currency;
 use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
 use app\models\Vacancy;
@@ -42,6 +44,7 @@ class VacancyController extends CrudController
                     $model = $params['model'] ?? null;
 
                     return [
+                        'model' => $model,
                         'name' => $model->name,
                         'hourlyRate' => $model->max_hourly_rate,
                         'requirements' => $model->requirements,
@@ -51,6 +54,7 @@ class VacancyController extends CrudController
                         'company' => $model->company,
                         'isActive' => $model->isActive(),
                         'remote_on' => $model->remote_on,
+                        'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                     ];
                 },
                 'view' => 'show',
@@ -84,7 +88,6 @@ class VacancyController extends CrudController
                         },
                     ],
                     'remote_on' => [
-                        'isRequired' => false,
                         'buttons' => [
                             [
                                 'text' => Yii::t('bot', 'Yes'),
@@ -92,6 +95,36 @@ class VacancyController extends CrudController
                                     $model->remote_on = Vacancy::REMOTE_ON;
 
                                     return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'No'),
+                                'callback' => function (Vacancy $model) {
+                                    $model->remote_on = Vacancy::REMOTE_OFF;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
+                    ],
+                    'location' => [
+                        'isRequired' => false,
+                        'component' => LocationToArrayFieldComponent::class,
+                        'buttons' => [
+                            [
+                                'createMode' => false,
+                                'text' => Yii::t('bot', 'My location'),
+                                'callback' => function (Vacancy $model) {
+                                    $latitude = $this->getTelegramUser()->location_lat;
+                                    $longitude = $this->getTelegramUser()->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
+
+                                        return $model;
+                                    }
+
+                                    return null;
                                 },
                             ],
                         ],
@@ -263,6 +296,7 @@ class VacancyController extends CrudController
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
+                    'model' => $vacancy,
                     'name' => $vacancy->name,
                     'hourlyRate' => $vacancy->max_hourly_rate,
                     'requirements' => $vacancy->requirements,
@@ -272,6 +306,7 @@ class VacancyController extends CrudController
                     'company' => $vacancy->company,
                     'isActive' => $vacancy->isActive(),
                     'remote_on' => $vacancy->remote_on,
+                    'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                 ]),
                 [
                     [

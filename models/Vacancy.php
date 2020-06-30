@@ -86,7 +86,7 @@ class Vacancy extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'max_hourly_rate' => Yii::t('app', 'Max. hourly rate'),
-            'remote_on' => 'Remote Job',
+            'remote_on' => Yii::t('bot', 'Remote work'),
         ];
     }
 

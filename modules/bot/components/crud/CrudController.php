@@ -1528,9 +1528,10 @@ abstract class CrudController extends Controller
         $isEdit = !is_null($modelId);
         $configButtons = $this->attributeButtons->get($rule, $attributeName, $modelId);
         if ($configButtons) {
-            $buttons = array_merge($buttons, [$configButtons]);
+            foreach ($configButtons as $configButton) {
+                $buttons[] = [$configButton];
+            }
         }
-        $relationAttributeName = null;
         $relation = $this->getRelation($config);
         if ($relation) {
             [, $secondaryRelation] = $this->getRelationAttributes($rule['model'], $relation);

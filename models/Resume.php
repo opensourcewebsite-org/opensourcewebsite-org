@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -42,6 +43,7 @@ class Resume extends ActiveRecord
                 ],
                 'integer',
             ],
+            ['search_radius', RadiusValidator::class],
             [
                 [
                     'min_hourly_rate',
@@ -84,7 +86,8 @@ class Resume extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
-            'remote_on' => 'Remote Job',
+            'remote_on' => Yii::t('bot', 'Remote work'),
+            'search_radius' => Yii::t('bot', 'Search radius'),
         ];
     }
 
