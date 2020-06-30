@@ -1,1 +1,1 @@
-<b><?= $companyName ?> - <?= Yii::t('bot', 'Vacancies') ?></b>
+<b><?= $companyName ? ($companyName . ' - ') : '' ?><?= Yii::t('bot', 'Vacancies') ?></b>
