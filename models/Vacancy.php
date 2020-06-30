@@ -3,7 +3,7 @@
 namespace app\models;
 
 use app\behaviors\TimestampBehavior;
-use app\components\helpers\ArrayHelper;
+use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -78,6 +78,18 @@ class Vacancy extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'max_hourly_rate' => Yii::t('app', 'Max. hourly rate'),
+            'remote_on' => 'Remote Job',
+        ];
+    }
+
     /** @inheritDoc */
     public function behaviors()
     {
@@ -127,16 +139,5 @@ class Vacancy extends ActiveRecord
         }
 
         return $currencyCode;
-    }
-
-    /** @inheritDoc */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(
-            parent::attributeLabels(),
-            [
-                'remote_on' => 'Remote Job',
-            ]
-        );
     }
 }

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send skills of the resume') ?>
+<?= Yii::t('bot', 'Send a skills') ?>

@@ -12,6 +12,8 @@ class m200622_125105_add_remote_on_column_to_vacancy_table extends Migration
      */
     public function safeUp()
     {
+        $this->truncateTable('{{%vacancy}}');
+
         $this->dropColumn('{{%vacancy}}', 'location_at');
         $this->dropColumn('{{%vacancy}}', 'min_hourly_rate');
         $this->addColumn('{{%vacancy}}', 'remote_on', $this->tinyInteger()

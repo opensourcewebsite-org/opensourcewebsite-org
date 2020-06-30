@@ -1,8 +1,8 @@
 <?php
 
-
 namespace app\models;
 
+use Yii;
 use app\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
 use yii\db\ActiveRecord;
@@ -78,11 +78,22 @@ class Resume extends ActiveRecord
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
+        ];
+    }
+
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getCurrency()
     {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
     }
 
     /** @inheritDoc */
