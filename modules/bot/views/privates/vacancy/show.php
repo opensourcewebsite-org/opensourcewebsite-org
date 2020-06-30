@@ -1,3 +1,8 @@
+<?php
+
+use app\models\Vacancy;
+
+?>
 <b><?= Yii::t('bot', 'Vacancy') ?>: <?= $name ?></b><br/>
 <br/>
 <?php if ($responsibilities) : ?>
@@ -19,6 +24,8 @@
 <br/>
 <?php endif; ?>
 <b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
+<br/>
+<?= Yii::t('bot', 'Remote Job') ?>: <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
 <?php if ($company) : ?>
 ————<br/>

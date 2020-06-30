@@ -178,7 +178,7 @@ class SAdOfferController extends CrudController
                             [
                                 'createMode' => false,
                                 'text' => Yii::t('bot', 'My location'),
-                                'callback' => function (AdSearch $model) {
+                                'callback' => function (AdOffer $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
                                     $longitude = $this->getTelegramUser()->location_lon;
                                     if ($latitude && $longitude) {

@@ -1,3 +1,8 @@
+<?php
+
+use app\models\Resume;
+
+?>
 <b><?= Yii::t('bot', 'Resume') ?>: <?= $name ?></b><br/>
 <br/>
 <?php if ($skills) : ?>
@@ -22,6 +27,8 @@
 <b><?= Yii::t('bot', 'Min. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
 <?php endif; ?>
+<?= Yii::t('bot', 'Remote Job') ?>: <?= $remote_on == Resume::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
+<br/>
 <?php if ($isActive) : ?>
 ————<br/>
 <br/>
