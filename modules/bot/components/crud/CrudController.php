@@ -1387,10 +1387,12 @@ abstract class CrudController extends Controller
                         $attributeValues = $this->getIntermediateField($modelName, $attributeName, []);
                         $secondaryAttributeIds = [];
                         foreach ($attributeValues as $attributeValue) {
-                            if (!$attributeValue || (is_array($attributeValue) && !$attributeValue[$secondaryRelation[0]])) {
+                            if (!$attributeValue) {
                                 continue;
                             }
+                            $useDynamicModel = false;
                             if (new $secondaryRelation[2] instanceof DynamicModel) {
+                                $useDynamicModel = true;
                                 if (!is_array($attributeValue)) {
                                     $text = $attributeValue;
                                     $attributeValue = [];
@@ -1410,14 +1412,24 @@ abstract class CrudController extends Controller
                                 $primaryRelation[0] => $model->getAttribute(
                                     $primaryRelation[1]
                                 ),
-                                $secondaryRelation[0] => $attributeValue[$secondaryRelation[0]],
                             ];
+                            if (!$useDynamicModel) {
+                                $conditions[$secondaryRelation[0]] = $attributeValue[$secondaryRelation[0]];
+                            }
                             /** @var ActiveRecord $relationModel */
                             $relationModel = call_user_func(
                                 [$relationModelClass, 'findOne'],
                                 $conditions
                             );
-                            if (!$relationModel) {
+                            if ($relationModel) {
+                                if (is_array($attributeValue) && !$attributeValue[$secondaryRelation[0]]) {
+                                    $relationModel->delete();
+                                    continue;
+                                }
+                            } else {
+                                if (is_array($attributeValue) && !$attributeValue[$secondaryRelation[0]]) {
+                                    continue;
+                                }
                                 $relationModel = Yii::createObject(
                                     [
                                         'class' => $relationModelClass,
@@ -1527,7 +1539,7 @@ abstract class CrudController extends Controller
             }
         }
         /* 'Next' button */
-        if (!isset($relationAttributeName) && (!$isAttributeRequired)) {
+        if (!$isAttributeRequired) {
             $buttonSkip = $config['buttonSkip'] ?? [];
             $isPrivateAttribute = $this->attributeButtons->isPrivateAttribute($attributeName, $rule);
             $buttonSkip = ArrayHelper::merge(
