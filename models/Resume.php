@@ -4,6 +4,7 @@
 namespace app\models;
 
 use app\behaviors\TimestampBehavior;
+use app\components\helpers\ArrayHelper;
 use yii\db\ActiveRecord;
 
 /**
@@ -17,6 +18,9 @@ class Resume extends ActiveRecord
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
+
+    const REMOTE_OFF = 0;
+    const REMOTE_ON = 1;
 
     /** @inheritDoc */
     public static function tableName()
@@ -45,7 +49,7 @@ class Resume extends ActiveRecord
                     'location_lat',
                     'location_lon',
                 ],
-                'double'
+                'double',
             ],
             [
                 [
@@ -78,7 +82,7 @@ class Resume extends ActiveRecord
      */
     public function getCurrency()
     {
-        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /** @inheritDoc */
@@ -120,5 +124,16 @@ class Resume extends ActiveRecord
         }
 
         return $currencyCode;
+    }
+
+    /** @inheritDoc */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'remote_on' => 'Remote Job',
+            ]
+        );
     }
 }

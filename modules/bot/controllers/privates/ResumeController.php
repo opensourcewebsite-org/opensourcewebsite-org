@@ -38,6 +38,7 @@ class ResumeController extends CrudController
                         'skills' => $model->skills,
                         'currencyCode' => $model->currencyCode,
                         'isActive' => $model->isActive(),
+                        'remote_on' => $model->remote_on,
                     ];
                 },
                 'view' => 'show',
@@ -75,6 +76,19 @@ class ResumeController extends CrudController
                     ],
                     'expectations' => [
                         'isRequired' => false,
+                    ],
+                    'remote_on' => [
+                        'isRequired' => false,
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Yes'),
+                                'callback' => function (Resume $model) {
+                                    $model->remote_on = Resume::REMOTE_ON;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
                     'user_id' => [
                         'behaviors' => [
@@ -197,6 +211,7 @@ class ResumeController extends CrudController
                     'skills' => $resume->skills,
                     'currencyCode' => $resume->currencyCode,
                     'isActive' => $resume->isActive(),
+                    'remote_on' => $resume->remote_on,
                 ]),
                 [
                     [

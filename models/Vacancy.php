@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\behaviors\TimestampBehavior;
+use app\components\helpers\ArrayHelper;
 use yii\db\ActiveRecord;
 
 /**
@@ -16,6 +17,9 @@ class Vacancy extends ActiveRecord
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
+
+    const REMOTE_OFF = 0;
+    const REMOTE_ON = 1;
 
     public static function tableName()
     {
@@ -63,7 +67,6 @@ class Vacancy extends ActiveRecord
             ],
             [
                 [
-                    'company_id',
                     'currency_id',
                     'name',
                     'requirements',
@@ -124,5 +127,16 @@ class Vacancy extends ActiveRecord
         }
 
         return $currencyCode;
+    }
+
+    /** @inheritDoc */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'remote_on' => 'Remote Job',
+            ]
+        );
     }
 }
