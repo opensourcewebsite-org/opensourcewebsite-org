@@ -43,21 +43,19 @@ class VacancyController extends CrudController
 
                     return [
                         'name' => $model->name,
-                        'hourlyRate' => $model->max_hourly_rate,
+                        'hourlyRate' => $this->getDisplayHourlyRate($model),
                         'requirements' => $model->requirements,
                         'conditions' => $model->conditions,
                         'responsibilities' => $model->responsibilities,
                         'currencyCode' => $model->currencyCode,
                         'company' => $model->company,
                         'isActive' => $model->isActive(),
+                        'remote_on' => $model->remote_on,
                     ];
                 },
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
-                    'responsibilities' => [],
-                    'requirements' => [],
-                    'conditions' => [],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
@@ -82,6 +80,22 @@ class VacancyController extends CrudController
                             ]);
                         },
                     ],
+                    'requirements' => [],
+                    'conditions' => [],
+                    'responsibilities' => [],
+                    'remote_on' => [
+                        'isRequired' => false,
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Yes'),
+                                'callback' => function (Vacancy $model) {
+                                    $model->remote_on = Vacancy::REMOTE_ON;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
+                    ],
                     'company_id' => [
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
@@ -92,6 +106,21 @@ class VacancyController extends CrudController
                                 ],
                                 'attribute' => 'company_id',
                                 'value' => $this->getState()->getIntermediateField(CrudController::SAFE_ATTRIBUTE),
+                            ],
+                        ],
+                        'hidden' => true,
+                    ],
+                    'user_id' => [
+                        'behaviors' => [
+                            'SetAttributeValueBehavior' => [
+                                'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['user_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
+                                ],
+                                'attribute' => 'user_id',
+                                'value' => $this->getState()->getIntermediateField(CrudController::SAFE_ATTRIBUTE)
+                                    ? null : $this->module->user->id,
                             ],
                         ],
                         'hidden' => true,
@@ -118,17 +147,23 @@ class VacancyController extends CrudController
      *
      * @return array
      */
-    public function actionIndex($companyId, $page = 1)
+    public function actionIndex($companyId = null, $page = 1)
     {
         $this->getState()->setIntermediateField(self::SAFE_ATTRIBUTE, $companyId);
         $company = Company::findOne($companyId);
-        if (!isset($company)) {
+        if ($companyId && !isset($company)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+        $user = $this->getUser();
 
-        $vacanciesCount = $company->getVacancies()->count();
+        if ($company) {
+            $query = $company->getVacancies();
+        } else {
+            $query = $user->getVacancies();
+        }
+        $vacanciesCount = $query->count();
         $pagination = new Pagination([
             'totalCount' => $vacanciesCount,
             'pageSize' => 9,
@@ -138,8 +173,7 @@ class VacancyController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-        $vacancies = $company->getVacancies()
-            ->offset($pagination->offset)
+        $vacancies = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
@@ -159,21 +193,29 @@ class VacancyController extends CrudController
             ];
         }, $vacancies);
         $rows = array_merge($rows, [$paginationButtons]);
+        if ($company) {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => CompanyController::createRoute('view', [
+                    'companyId' => $companyId,
+                ]),
+            ];
+        } else {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => SJobController::createRoute(),
+            ];
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'companyName' => $company->name,
+                    'companyName' => $company ? $company->name : null,
                     'vacanciesCount' => $vacanciesCount,
                 ]),
                 array_merge($rows, [
                     [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => CompanyController::createRoute('view', [
-                                'companyId' => $companyId,
-                            ]),
-                        ],
+                        $backButton,
                         [
                             'text' => Emoji::MENU,
                             'callback_data' => MenuController::createRoute(),
@@ -204,18 +246,32 @@ class VacancyController extends CrudController
         }
 
         $isEnabled = $vacancy->isActive();
+        if ($company = $vacancy->company) {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => self::createRoute('index', [
+                    'companyId' => $company->id,
+                ]),
+            ];
+        } else {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => self::createRoute(),
+            ];
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $vacancy->name,
-                    'hourlyRate' => $vacancy->max_hourly_rate,
+                    'hourlyRate' => $this->getDisplayHourlyRate($vacancy),
                     'requirements' => $vacancy->requirements,
                     'conditions' => $vacancy->conditions,
                     'responsibilities' => $vacancy->responsibilities,
                     'currencyCode' => $vacancy->currencyCode,
                     'company' => $vacancy->company,
                     'isActive' => $vacancy->isActive(),
+                    'remote_on' => $vacancy->remote_on,
                 ]),
                 [
                     [
@@ -228,12 +284,7 @@ class VacancyController extends CrudController
                         ],
                     ],
                     [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('index', [
-                                'companyId' => $vacancy->company->id,
-                            ]),
-                        ],
+                        $backButton,
                         [
                             'text' => Emoji::MENU,
                             'callback_data' => MenuController::createRoute(),
@@ -309,5 +360,19 @@ class VacancyController extends CrudController
                 'company_id' => $this->getState()->getIntermediateField('companyId', null),
                 'currency_id' => Currency::findOne(['code' => 'USD'])->id,
             ]);
+    }
+
+    /**
+     * @param Vacancy $vacancy
+     *
+     * @return string|null
+     */
+    private function getDisplayHourlyRate(Vacancy $vacancy)
+    {
+        if (isset($vacancy->max_hourly_rate)) {
+            return Yii::t('bot', 'till') . " {$vacancy->max_hourly_rate}";
+        }
+
+        return null;
     }
 }

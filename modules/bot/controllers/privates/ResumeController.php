@@ -11,7 +11,6 @@ use Yii;
 use app\modules\bot\components\helpers\Emoji;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
-use yii\db\StaleObjectException;
 
 /**
  * Class ResumeController
@@ -38,6 +37,7 @@ class ResumeController extends CrudController
                         'skills' => $model->skills,
                         'currencyCode' => $model->currencyCode,
                         'isActive' => $model->isActive(),
+                        'remote_on' => $model->remote_on,
                     ];
                 },
                 'view' => 'show',
@@ -75,6 +75,19 @@ class ResumeController extends CrudController
                                 'currencyCode' => $model->currencyCode,
                             ]);
                         },
+                    ],
+                    'remote_on' => [
+                        'isRequired' => false,
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Yes'),
+                                'callback' => function (Resume $model) {
+                                    $model->remote_on = Resume::REMOTE_ON;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
                     'user_id' => [
                         'behaviors' => [
@@ -197,6 +210,7 @@ class ResumeController extends CrudController
                     'skills' => $resume->skills,
                     'currencyCode' => $resume->currencyCode,
                     'isActive' => $resume->isActive(),
+                    'remote_on' => $resume->remote_on,
                 ]),
                 [
                     [
