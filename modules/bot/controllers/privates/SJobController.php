@@ -28,7 +28,7 @@ class SJobController extends Controller
             [
                 [
                     'text' => Yii::t('bot', 'Vacancies'),
-                    'callback_data' => CompanyController::createRoute(),
+                    'callback_data' => VacancyController::createRoute(),
                 ],
             ],
             [

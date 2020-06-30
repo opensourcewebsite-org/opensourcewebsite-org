@@ -18,6 +18,9 @@ class Resume extends ActiveRecord
 
     public const LIVE_DAYS = 14;
 
+    const REMOTE_OFF = 0;
+    const REMOTE_ON = 1;
+
     /** @inheritDoc */
     public static function tableName()
     {
@@ -81,6 +84,7 @@ class Resume extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
+            'remote_on' => 'Remote Job',
         ];
     }
 
