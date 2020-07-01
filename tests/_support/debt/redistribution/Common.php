@@ -256,6 +256,18 @@ class Common
         $debtRedistribution->save();
     }
 
+    public function createContact(DebtBalance $debtBalance, int $priority, bool $sameDirection = true): Contact
+    {
+        $contact_own_1 = new Contact();
+        $contact_own_1->debt_redistribution_priority = $priority;
+        $contact_own_1->link_user_id = $sameDirection ? $debtBalance->from_user_id : $debtBalance->to_user_id;
+        $contact_own_1->user_id = $sameDirection ? $debtBalance->to_user_id : $debtBalance->from_user_id;
+        $contact_own_1->name = "Contact for debt Redistribution chain. Own to target balance (have the same users). Priority: #$priority. Member: 1st";
+        $contact_own_1->save();
+
+        return $contact_own_1;
+    }
+
     public static function getContactKey(int $priority, bool $isMemberFirst): string
     {
         return "Chain Priority #$priority. Member: " . ($isMemberFirst ? '1st' : 'LAST');

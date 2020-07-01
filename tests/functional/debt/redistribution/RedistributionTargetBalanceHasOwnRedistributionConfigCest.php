@@ -9,7 +9,7 @@ use Codeception\Example;
 use Codeception\Util\Autoload;
 use Helper\debt\redistribution\Common;
 
-class RedistributionTargetBalanceHasOwnChainCest
+class RedistributionTargetBalanceHasOwnRedistributionConfigCest
 {
     /** @var Common */
     protected $common;
@@ -50,9 +50,9 @@ class RedistributionTargetBalanceHasOwnChainCest
      *
      * @depends RedistributionMaxAmountCest:testCaseWhenLimitGreaterThanTargetAmount
      */
-    public function ownChainHasHighestPriorityAmongChains(FunctionalTester $I): void
+    public function ownConfigHasHighestPriorityAmongChains(FunctionalTester $I): void
     {
-        $this->createChainOwnToTargetBalance($I, 1, 123.45);
+        $this->createRedistributionConfigOwnToTargetBalance($I, 1, 123.45);
 
         $this->common->testDefault($I, 0);
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
@@ -62,17 +62,17 @@ class RedistributionTargetBalanceHasOwnChainCest
      * @throws Throwable
      * @throws \yii\db\Exception
      *
-     * @depends ownChainHasHighestPriorityAmongChains
+     * @depends ownConfigHasHighestPriorityAmongChains
      *
      * @example [null]
      * @example [456.78]
      */
-    public function ownChainHasLowerPriorityAmongChains(FunctionalTester $I, Example $example): void
+    public function ownConfigHasLowerPriorityAmongChains(FunctionalTester $I, Example $example): void
     {
         if ($example[0]) {
             $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, $example[0], true);
         }
-        $this->createChainOwnToTargetBalance($I, 2, 123.45);
+        $this->createRedistributionConfigOwnToTargetBalance($I, 2, 123.45);
 
         $this->common->testDefault($I, 1, -$example[0]);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $example[0] ?: $this->common->getTargetAmount());
@@ -82,17 +82,17 @@ class RedistributionTargetBalanceHasOwnChainCest
      * @throws Throwable
      * @throws \yii\db\Exception
      *
-     * @depends ownChainHasLowerPriorityAmongChains
+     * @depends ownConfigHasLowerPriorityAmongChains
      *
      * @example [null]
      * @example [456.78]
      */
-    public function ownChainHasSamePriorityAmongChains(FunctionalTester $I, Example $example): void
+    public function ownConfigHasSamePriorityAmongChains(FunctionalTester $I, Example $example): void
     {
         if ($example[0]) {
             $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, $example[0], true);
         }
-        $this->createChainOwnToTargetBalance($I, 1, $limitOwn = 123.45, false);
+        $this->createRedistributionConfigOwnToTargetBalance($I, 1, $limitOwn = 123.45, false);
 
         $scale = DebtHelper::getFloatScale();
         $targetAmountToAdd = $example[0] ?: Number::floatSub($this->common->getTargetAmount(), $limitOwn, $scale);
@@ -105,11 +105,11 @@ class RedistributionTargetBalanceHasOwnChainCest
      * @throws Throwable
      * @throws \yii\db\Exception
      *
-     * @depends ownChainHasSamePriorityAmongChains
+     * @depends ownConfigHasSamePriorityAmongChains
      */
-    public function ownChainIsFirstButDenyViaMaxAmount(FunctionalTester $I): void
+    public function ownConfigIsFirstButDenyViaMaxAmount(FunctionalTester $I): void
     {
-        $this->createChainOwnToTargetBalance($I, 1, DebtRedistribution::MAX_AMOUNT_DENY);
+        $this->createRedistributionConfigOwnToTargetBalance($I, 1, DebtRedistribution::MAX_AMOUNT_DENY);
 
         $this->common->testDefault($I);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->getTargetAmount());
@@ -119,11 +119,11 @@ class RedistributionTargetBalanceHasOwnChainCest
      * @throws Throwable
      * @throws \yii\db\Exception
      *
-     * @depends ownChainIsFirstButDenyViaMaxAmount
+     * @depends ownConfigIsFirstButDenyViaMaxAmount
      */
-    public function ownChainIsFirstButDenyViaNotExistDebtRedistribution(FunctionalTester $I): void
+    public function ownConfigIsFirstButDenyViaNotExistDebtRedistribution(FunctionalTester $I): void
     {
-        $this->createContactForTargetBalance(1);
+        $this->common->createContact($this->common->balanceBefore[Common::CHAIN_TARGET], 1);
         $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, DebtRedistribution::MAX_AMOUNT_DENY);
 
         $this->common->testDefault($I);
@@ -135,11 +135,11 @@ class RedistributionTargetBalanceHasOwnChainCest
      * @throws Throwable
      * @throws \yii\db\Exception
      *
-     * @depends ownChainIsFirstButDenyViaNotExistDebtRedistribution
+     * @depends ownConfigIsFirstButDenyViaNotExistDebtRedistribution
      */
-    public function ownChainIsFirstButDenyViaPriority(FunctionalTester $I): void
+    public function ownConfigIsFirstButDenyViaPriority(FunctionalTester $I): void
     {
-        $this->createContactForTargetBalance(Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY);
+        $this->common->createContact($this->common->balanceBefore[Common::CHAIN_TARGET], Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY);
         $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, DebtRedistribution::MAX_AMOUNT_DENY);
 
         $this->common->testDefault($I);
@@ -152,7 +152,7 @@ class RedistributionTargetBalanceHasOwnChainCest
 
 
 
-    private function createChainOwnToTargetBalance(FunctionalTester $I, int $priority, $limit, bool $denySamePriorityChain = true): void
+    private function createRedistributionConfigOwnToTargetBalance(FunctionalTester $I, int $priority, $limit, bool $denySamePriorityChain = true): void
     {
         if ($denySamePriorityChain) {
             $mapPriority = [
@@ -162,32 +162,8 @@ class RedistributionTargetBalanceHasOwnChainCest
             $this->common->setMaxAmountLimit($I, $mapPriority[$priority], true, DebtRedistribution::MAX_AMOUNT_DENY);
         }
 
-        $balanceTarget = $this->common->balanceBefore[Common::CHAIN_TARGET];
-        $contact_own_1 = $this->createContactForTargetBalance($priority);
+        $contact_own_1 = $this->common->createContact($this->common->balanceBefore[Common::CHAIN_TARGET], $priority);
 
         $this->common->createDebtRedistribution($contact_own_1, $limit);
-
-        $this->createDebtRedistribution($contact_own_1, $limit);
-
-        $contact_own_last = new Contact();
-        $contact_own_last->debt_redistribution_priority = $priority;
-        $contact_own_last->link_user_id = $balanceTarget->from_user_id;
-        $contact_own_last->user_id = $contact_own_1->link_user_id;
-        $contact_own_last->name = "Contact for debt Redistribution chain. Own to target balance (have the same users). Priority: #$priority. Member: LAST";
-        $contact_own_last->save();
-
-        $this->common->createDebtRedistribution($contact_own_last, $limit);
-    }
-
-    private function createContactForTargetBalance(int $priority): Contact
-    {
-        $contact_own_1 = new Contact();
-        $contact_own_1->debt_redistribution_priority = $priority;
-        $contact_own_1->link_user_id = $this->common->balanceBefore[Common::CHAIN_TARGET]->from_user_id;
-        $contact_own_1->user_id = $this->common->balanceBefore[Common::CHAIN_TARGET]->to_user_id;
-        $contact_own_1->name = "Contact for debt Redistribution chain. Own to target balance (have the same users). Priority: #$priority. Member: 1st";
-        $contact_own_1->save();
-
-        return $contact_own_1;
     }
 }
