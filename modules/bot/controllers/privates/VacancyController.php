@@ -6,6 +6,8 @@ use app\behaviors\SetAttributeValueBehavior;
 use app\models\Company;
 use app\models\Currency;
 use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
 use app\models\Vacancy;
@@ -42,6 +44,7 @@ class VacancyController extends CrudController
                     $model = $params['model'] ?? null;
 
                     return [
+                        'model' => $model,
                         'name' => $model->name,
                         'hourlyRate' => $model->max_hourly_rate,
                         'requirements' => $model->requirements,
@@ -50,6 +53,8 @@ class VacancyController extends CrudController
                         'currencyCode' => $model->currencyCode,
                         'company' => $model->company,
                         'isActive' => $model->isActive(),
+                        'remote_on' => $model->remote_on,
+                        'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                     ];
                 },
                 'view' => 'show',
@@ -82,6 +87,48 @@ class VacancyController extends CrudController
                             ]);
                         },
                     ],
+                    'remote_on' => [
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Yes'),
+                                'callback' => function (Vacancy $model) {
+                                    $model->remote_on = Vacancy::REMOTE_ON;
+
+                                    return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'No'),
+                                'callback' => function (Vacancy $model) {
+                                    $model->remote_on = Vacancy::REMOTE_OFF;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
+                    ],
+                    'location' => [
+                        'isRequired' => false,
+                        'component' => LocationToArrayFieldComponent::class,
+                        'buttons' => [
+                            [
+                                'createMode' => false,
+                                'text' => Yii::t('bot', 'My location'),
+                                'callback' => function (Vacancy $model) {
+                                    $latitude = $this->getTelegramUser()->location_lat;
+                                    $longitude = $this->getTelegramUser()->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
+
+                                        return $model;
+                                    }
+
+                                    return null;
+                                },
+                            ],
+                        ],
+                    ],
                     'company_id' => [
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
@@ -92,6 +139,21 @@ class VacancyController extends CrudController
                                 ],
                                 'attribute' => 'company_id',
                                 'value' => $this->getState()->getIntermediateField(CrudController::SAFE_ATTRIBUTE),
+                            ],
+                        ],
+                        'hidden' => true,
+                    ],
+                    'user_id' => [
+                        'behaviors' => [
+                            'SetAttributeValueBehavior' => [
+                                'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['user_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
+                                ],
+                                'attribute' => 'user_id',
+                                'value' => $this->getState()->getIntermediateField(CrudController::SAFE_ATTRIBUTE)
+                                    ? null : $this->module->user->id,
                             ],
                         ],
                         'hidden' => true,
@@ -118,17 +180,23 @@ class VacancyController extends CrudController
      *
      * @return array
      */
-    public function actionIndex($companyId, $page = 1)
+    public function actionIndex($companyId = null, $page = 1)
     {
         $this->getState()->setIntermediateField(self::SAFE_ATTRIBUTE, $companyId);
         $company = Company::findOne($companyId);
-        if (!isset($company)) {
+        if ($companyId && !isset($company)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+        $user = $this->getUser();
 
-        $vacanciesCount = $company->getVacancies()->count();
+        if ($company) {
+            $query = $company->getVacancies();
+        } else {
+            $query = $user->getVacancies();
+        }
+        $vacanciesCount = $query->count();
         $pagination = new Pagination([
             'totalCount' => $vacanciesCount,
             'pageSize' => 9,
@@ -138,8 +206,7 @@ class VacancyController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-        $vacancies = $company->getVacancies()
-            ->offset($pagination->offset)
+        $vacancies = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
@@ -159,21 +226,29 @@ class VacancyController extends CrudController
             ];
         }, $vacancies);
         $rows = array_merge($rows, [$paginationButtons]);
+        if ($company) {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => CompanyController::createRoute('view', [
+                    'companyId' => $companyId,
+                ]),
+            ];
+        } else {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => SJobController::createRoute(),
+            ];
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'companyName' => $company->name,
+                    'companyName' => $company ? $company->name : null,
                     'vacanciesCount' => $vacanciesCount,
                 ]),
                 array_merge($rows, [
                     [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => CompanyController::createRoute('view', [
-                                'companyId' => $companyId,
-                            ]),
-                        ],
+                        $backButton,
                         [
                             'text' => Emoji::MENU,
                             'callback_data' => MenuController::createRoute(),
@@ -204,10 +279,24 @@ class VacancyController extends CrudController
         }
 
         $isEnabled = $vacancy->isActive();
+        if ($company = $vacancy->company) {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => self::createRoute('index', [
+                    'companyId' => $company->id,
+                ]),
+            ];
+        } else {
+            $backButton = [
+                'text' => Emoji::BACK,
+                'callback_data' => self::createRoute(),
+            ];
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
+                    'model' => $vacancy,
                     'name' => $vacancy->name,
                     'hourlyRate' => $vacancy->max_hourly_rate,
                     'requirements' => $vacancy->requirements,
@@ -216,6 +305,8 @@ class VacancyController extends CrudController
                     'currencyCode' => $vacancy->currencyCode,
                     'company' => $vacancy->company,
                     'isActive' => $vacancy->isActive(),
+                    'remote_on' => $vacancy->remote_on,
+                    'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                 ]),
                 [
                     [
@@ -228,12 +319,7 @@ class VacancyController extends CrudController
                         ],
                     ],
                     [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('index', [
-                                'companyId' => $vacancy->company->id,
-                            ]),
-                        ],
+                        $backButton,
                         [
                             'text' => Emoji::MENU,
                             'callback_data' => MenuController::createRoute(),

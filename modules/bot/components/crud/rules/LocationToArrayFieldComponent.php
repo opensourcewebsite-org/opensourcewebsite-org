@@ -12,15 +12,14 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
     /** @inheritDoc */
     public function prepare($text)
     {
+        $latitude = null;
+        $longitude = null;
         if (!$text) {
             $message = $this->update->getMessage();
             if ($message) {
                 $location = $message->getLocation();
                 $latitude = $location->getLatitude();
                 $longitude = $location->getLongitude();
-            } else {
-                $latitude = null;
-                $longitude = null;
             }
             if (!$latitude || !$longitude) {
                 $latitude = $this->telegramUser->location_lat;
@@ -29,8 +28,10 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
         } else {
             $text = str_replace([';'], ' ', $text);
             $coords = explode(' ', $text);
-            $latitude = $coords[0];
-            $longitude = $coords[1] ?? null;
+            if (is_numeric($coords[0]) && is_numeric($coords[1] ?? null)) {
+                $latitude = $coords[0];
+                $longitude = $coords[1] ?? null;
+            }
         }
 
         return ['location_lat' => (string)$latitude, 'location_lon' => (string)$longitude];
