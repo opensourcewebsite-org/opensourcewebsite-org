@@ -138,10 +138,15 @@ class Redistribution extends Component
         int $level
     ): array
     {
-        $contactChainList = $this->listChainMembers($contact);
+        if ($level === 1) {
+            $previousLinkUID = [$debtBalance->from_user_id];
+        } else {
+            $contactChainList = $this->listChainMembers($contact);
+            $previousLinkUID = ArrayHelper::getColumn($contactChainList, 'link_user_id');
+        }
 
         return $contact->getChainMembers()
-            ->models($contactChainList, 'NOT IN', ['user_id', 'link_user_id'])
+            ->userLinked($previousLinkUID, 'NOT IN') //exclude previous to avoid continuous loop and optimize
             ->canRedistributeInto($debtBalance, $level)
             ->orderBy('contact.debt_redistribution_priority')
             ->all();
