@@ -18,6 +18,9 @@ class Vacancy extends ActiveRecord
 
     public const LIVE_DAYS = 14;
 
+    const REMOTE_OFF = 0;
+    const REMOTE_ON = 1;
+
     public static function tableName()
     {
         return '{{%vacancy}}';
@@ -64,7 +67,6 @@ class Vacancy extends ActiveRecord
             ],
             [
                 [
-                    'company_id',
                     'currency_id',
                     'name',
                     'requirements',
@@ -84,6 +86,7 @@ class Vacancy extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'max_hourly_rate' => Yii::t('app', 'Max. hourly rate'),
+            'remote_on' => Yii::t('bot', 'Remote work'),
         ];
     }
 
