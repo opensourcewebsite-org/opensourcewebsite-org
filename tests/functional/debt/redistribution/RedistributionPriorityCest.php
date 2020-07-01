@@ -1,5 +1,7 @@
 <?php
 
+use app\components\debt\Redistribution;
+use app\models\DebtBalance;
 use Codeception\Configuration;
 use Codeception\Example;
 use Codeception\Util\Autoload;
@@ -81,14 +83,43 @@ class RedistributionPriorityCest
         $this->common->denyChainPriority($I, 'Chain Priority #1. Member: 1st');
         $this->common->denyChainPriority($I, 'Chain Priority #2. Member: LAST');
 
-        $this->common->testDefault($I);
+        $this->test255($I, $expectCountOfDebtGroups = 1, $changedChain = Common::CHAIN_255, $amountToAdd = $this->common->getTargetAmount());
 
+
+
+
+        $I->wantToTest("On next Reduction running balance of changed chain #$changedChain should NOT redistributed back into target balance, if target balance has SAME or LOWER priority");
+
+        /** @var DebtBalance $balance255First */
+        $balance255First = $this->common->findBalanceByChainMember($I, $changedChain, true);
+        expect("DebtBalance should exist. Chain: {{ $changedChain }}", $balance255First)->notEmpty();
+        $balanceTarget = $this->common->balanceBefore[Common::CHAIN_TARGET];
+        $contactTargetChainFirst = $this->common->createChain($balance255First, $balanceTarget, $changedChain);
+
+        $this->common->markBalanceAsNeedReduction();
+        //this run should affect nothing. All balances remain the same.
+        $this->test255($I, $expectCountOfDebtGroups, $changedChain, $amountToAdd);
+
+
+
+
+        $I->wantToTest("On next Reduction running balance of changed chain #$changedChain should BE redistributed back into target balance, if target balance has higher priority");
+
+        $contactTargetChainFirst->debt_redistribution_priority = rand(1, $changedChain - 1);
+        $contactTargetChainFirst->save();
+
+        $this->common->markBalanceAsNeedReduction();
+        (new Redistribution())->run();
+
+        $balanceTarget = $this->common->findBalanceByFixtureDebt($I, Common::DEBT_FIXTURE_MAP[Common::CHAIN_TARGET]);
+
+        $this->common->expectBalanceChanged($balanceTarget, 0, $amountToAdd, Common::CHAIN_TARGET);
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
-        $this->common->expectBalanceChangedByKey($I, Common::CHAIN_255, $this->common->getTargetAmount());
-
-        $balanceChain255 = $this->common->getFixtureDebtRedistribution($I, 'Chain Priority #255. Member: 1st')->debtBalanceDirectionSame;
-        $this->common->expectBalanceChanged($balanceChain255, 0, $this->common->getTargetAmount(), 255);
+        $this->common->expectCountOfDebtGroups($expectCountOfDebtGroups + 1);
+        expect("DebtBalance should not exist. Chain: {{ $changedChain }}. Member: 1st", $balance255First->refresh())->false();
+        $balance255Last = $this->common->findBalanceByChainMember($I, Common::CHAIN_255, false);
+        expect('DebtBalance (second) should not exist. . Chain: {{ $changedChain }}. Member: LAST', $balance255Last)->isEmpty();
     }
 
     /**
@@ -109,7 +140,20 @@ class RedistributionPriorityCest
 
         $this->common->testDefault($I, 0);
 
-        $debtRedistributionChainDeny = $this->common->getFixtureDebtRedistribution($I, Common::CHAIN_0_DENY, true);
-        expect('DebtBalance not exist. Chain: #0 (Deny)', $debtRedistributionChainDeny->debtBalanceDirectionBack)->isEmpty();
+        $balance0 = $this->common->findBalanceByChainMember($I, Common::CHAIN_0_DENY, true);
+        expect('DebtBalance not exist. Chain: #0 (Deny)', $balance0)->isEmpty();
+    }
+
+    /**
+     * @throws Throwable
+     * @throws \yii\db\Exception
+     */
+    private function test255(FunctionalTester $I, $expectCountOfDebtGroups, $changedChain, $amountToAdd)
+    {
+        $this->common->testDefault($I, $expectCountOfDebtGroups);
+
+        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
+        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
+        $this->common->expectBalanceChangedByKey($I, $changedChain, $amountToAdd);
     }
 }

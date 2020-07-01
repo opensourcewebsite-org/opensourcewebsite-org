@@ -32,7 +32,7 @@ class Common
     public const CHAIN_255 = 255;
     public const CHAIN_0_DENY = 0;
 
-    private const DEBT_FIXTURE_MAP = [
+    public const DEBT_FIXTURE_MAP = [
         self::CHAIN_TARGET => "It's balance should be redistributed",
         self::CHAIN_1 => "It's balance belongs to: Chain Priority #1. Member: 1st",
         self::CHAIN_2 => "It's balance belongs to: Chain Priority #2. Member: LAST",
@@ -72,12 +72,10 @@ class Common
     public function _before(FunctionalTester $I)
     {
         $I->haveFixtures($this->fixtures());
-        //This UPDATE emulate that Reduction was already fired.
-        //See `DebtBalanceQuery::canBeRedistributed()`
-        DebtBalance::getDb()->createCommand('UPDATE debt_balance SET reduction_try_at = 1;')->execute();
+        $this->markBalanceAsNeedReduction();
 
         foreach (self::DEBT_FIXTURE_MAP as $key => $indexFixture) {
-            $this->balanceBefore[$key] = $indexFixture ? $this->findDebtBalanceByFixture($I, $indexFixture) : new DebtBalance();
+            $this->balanceBefore[$key] = $indexFixture ? $this->findBalanceByFixtureDebt($I, $indexFixture) : new DebtBalance();
         }
     }
 
@@ -90,7 +88,7 @@ class Common
         expect('BalanceChecker found no bugs in DB', $errors)->equals([]);
     }
 
-    public function expectDebtBalanceBecomeZero(?DebtBalance $debtBalance)
+    public function expectBalanceBecomeZero(?DebtBalance $debtBalance)
     {
         $test = 'Target DebtBalance was redistributed completely';
 
@@ -126,10 +124,16 @@ class Common
         return $I->grabFixture('debt_redistribution', self::getContactKey($chainPriority, $isMemberFirst));
     }
 
-    public function findDebtBalanceByFixture(FunctionalTester $I, $indexDebt): ?DebtBalance
+    public function findBalanceByFixtureDebt(FunctionalTester $I, $indexDebt): ?DebtBalance
     {
         $debtBalance = $this->getFixtureDebt($I, $indexDebt)->getDebtBalance();
         return $debtBalance->refresh() ? clone $debtBalance : null;
+    }
+
+    public function findBalanceByChainMember(FunctionalTester $I, int $chainPriority, bool $isMemberFirst): ?DebtBalance
+    {
+        $debtBalance = $this->getFixtureDebtRedistribution($I, $chainPriority, $isMemberFirst)->debtBalanceDirectionBack;
+        return ($debtBalance && $debtBalance->refresh()) ? clone $debtBalance : null;
     }
 
     /**
@@ -145,8 +149,8 @@ class Common
         } elseif (0 === $expectCountOfDebtGroups) {
             $this->expectBalanceNotChangedByKey($I, self::CHAIN_TARGET);
         } else {
-            $balanceTarget = $this->findDebtBalanceByFixture($I, self::DEBT_FIXTURE_MAP[self::CHAIN_TARGET]);
-            $this->expectDebtBalanceBecomeZero($balanceTarget);
+            $balanceTarget = $this->findBalanceByFixtureDebt($I, self::DEBT_FIXTURE_MAP[self::CHAIN_TARGET]);
+            $this->expectBalanceBecomeZero($balanceTarget);
         }
 
         $this->expectCountOfDebtGroups($expectCountOfDebtGroups);
@@ -166,10 +170,10 @@ class Common
     public function expectBalanceNotChangedByKey(FunctionalTester $I, $chainKey): void
     {
         if (self::DEBT_FIXTURE_MAP[$chainKey]) {
-            $balance = $this->findDebtBalanceByFixture($I, self::DEBT_FIXTURE_MAP[$chainKey]);
+            $balance = $this->findBalanceByFixtureDebt($I, self::DEBT_FIXTURE_MAP[$chainKey]);
             $this->expectBalanceNotChanged($this->balanceBefore[$chainKey], $balance, $chainKey);
         } else {
-            $balance = $this->getFixtureDebtRedistribution($I, $chainKey, true)->debtBalanceDirectionBack;
+            $balance = $this->findBalanceByChainMember($I, $chainKey, true);
             expect('DebtBalance should not exist', $balance)->isEmpty();
         }
 
@@ -178,7 +182,7 @@ class Common
         }
 
         $isMemberFirst = ($chainKey === self::CHAIN_2);
-        $balance = $this->getFixtureDebtRedistribution($I, $chainKey, $isMemberFirst)->debtBalanceDirectionBack;
+        $balance = $this->findBalanceByChainMember($I, $chainKey, $isMemberFirst);
         expect('DebtBalance (second) should not exist', $balance)->isEmpty();
     }
 
@@ -200,9 +204,9 @@ class Common
     public function expectBalanceChangedByKey(FunctionalTester $I, $chainKey, $amountToAdd): void
     {
         if (self::DEBT_FIXTURE_MAP[$chainKey]) {
-            $balance = $this->findDebtBalanceByFixture($I, self::DEBT_FIXTURE_MAP[$chainKey]);
+            $balance = $this->findBalanceByFixtureDebt($I, self::DEBT_FIXTURE_MAP[$chainKey]);
         } else {
-            $balance = $this->getFixtureDebtRedistribution($I, $chainKey, true)->debtBalanceDirectionBack;
+            $balance = $this->findBalanceByChainMember($I, $chainKey, true);
         }
         $this->expectBalanceChanged($balance, $this->balanceBefore[$chainKey]->amount, $amountToAdd, $chainKey);
 
@@ -212,7 +216,7 @@ class Common
 
         $isMemberFirst = ($chainKey === self::CHAIN_2);
         $amountToAdd *= ($chainKey === self::CHAIN_2) ? -1 : 1;
-        $balance = $this->getFixtureDebtRedistribution($I, $chainKey, $isMemberFirst)->debtBalanceDirectionBack;
+        $balance = $this->findBalanceByChainMember($I, $chainKey, $isMemberFirst);
         $this->expectBalanceChanged($balance, 0, $amountToAdd, "$chainKey : next balance");
     }
 
@@ -262,7 +266,8 @@ class Common
         $contact_own_1->debt_redistribution_priority = $priority;
         $contact_own_1->link_user_id = $sameDirection ? $debtBalance->from_user_id : $debtBalance->to_user_id;
         $contact_own_1->user_id = $sameDirection ? $debtBalance->to_user_id : $debtBalance->from_user_id;
-        $contact_own_1->name = "Contact for debt Redistribution chain. Own to target balance (have the same users). Priority: #$priority. Member: 1st";
+        $pk = implode(':', $debtBalance->primaryKey);
+        $contact_own_1->name = "Contact Own to balance with PK=$pk.";
         $contact_own_1->save();
 
         return $contact_own_1;
@@ -271,5 +276,39 @@ class Common
     public static function getContactKey(int $priority, bool $isMemberFirst): string
     {
         return "Chain Priority #$priority. Member: " . ($isMemberFirst ? '1st' : 'LAST');
+    }
+
+    /**
+     * This UPDATE emulate that Reduction was already fired.
+     * @see DebtBalanceQuery::canBeRedistributed()
+     *
+     * @throws \yii\db\Exception
+     */
+    public function markBalanceAsNeedReduction()
+    {
+        DebtBalance::getDb()->createCommand('UPDATE debt_balance SET reduction_try_at = 1, redistribute_try_at = null;')->execute();
+    }
+
+    public function createChain(DebtBalance $balanceToRedistribute, DebtBalance $balanceReceiver, ?int $priority = null): Contact
+    {
+        $contactTargetChainFirst = new Contact();
+        if ($priority === null) {
+            //priority of first chain member must be greater than priority of balance, which should be redistributed
+            $priority = rand(1, $balanceToRedistribute->toContact->debt_redistribution_priority - 1);
+        }
+        $contactTargetChainFirst->debt_redistribution_priority = $priority;
+        $contactTargetChainFirst->user_id = $balanceToRedistribute->from_user_id;
+        $contactTargetChainFirst->link_user_id = $balanceReceiver->to_user_id;
+        $contactTargetChainFirst->name = "Contact for debt Redistribution chain related to target balance. Member: 1st";
+        $contactTargetChainFirst->save();
+
+        $this->createDebtRedistribution($contactTargetChainFirst, DebtRedistribution::MAX_AMOUNT_ANY);
+
+        //priority of other chain members can be any except Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY (i.e. `rand(1, 255)`)
+        //so we are using here the lowest possible - to check this rule
+        $contactTargetChainLast = $this->createContact($balanceReceiver, Contact::DEBT_REDISTRIBUTION_PRIORITY_MAX);
+        $this->createDebtRedistribution($contactTargetChainLast, DebtRedistribution::MAX_AMOUNT_ANY);
+
+        return $contactTargetChainFirst;
     }
 }
