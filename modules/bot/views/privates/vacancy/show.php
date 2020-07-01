@@ -25,10 +25,12 @@ use app\models\Vacancy;
 <?php endif; ?>
 <b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
-<?= Yii::t('bot', 'Remote work') ?>: <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
+<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
+<?php if($model->location_lat && $model->location_lon) : ?>
 <b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>
 <br/>
+<?php endif; ?>
 <?php if ($company) : ?>
 ————<br/>
 <br/>

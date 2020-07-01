@@ -171,7 +171,7 @@ class CompanyController extends CrudController
                 [
                     [
                         [
-                            'text' => Yii::t('bot', 'Vacancies') . ': ' . $company->getVacancies()->count(),
+                            'text' => Yii::t('bot', 'Vacancies'),
                             'callback_data' => VacancyController::createRoute('index', [
                                 'companyId' => $companyId,
                             ]),
