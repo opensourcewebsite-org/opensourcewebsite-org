@@ -89,16 +89,14 @@ class Redistribution extends Component
         foreach ($contactChainMembers as $contactChainMember) {
             $contactsReceiver = $this->findDebtReceiverCandidatesRedistributeInto($debtBalance, $contactChainMember, $level);
 
+            $ownLimitsChecked = false;
             foreach ($contactsReceiver as $contactReceiver) {
-                if ($this->checkOwnLimits($debtBalance, $contactReceiver, $amountToRedistribute)) {
-                    //Script may reach this IF only when $level==1 and only once.
-                    // In this IF you don't see any conditions to ensure it, because similar conditions implemented
-                    // in method `findDebtReceiverCandidatesRedistributeInto()` via SQL using `$level`.
-                    // So they will be redundant here.
+                if ($level===1 && !$ownLimitsChecked && $this->applyOwnLimits($debtBalance, $contactReceiver, $amountToRedistribute)) {
                     if (Number::isFloatEqual($amountToRedistribute, 0, $scale)) {
                         return true;
                     }
-                    continue;
+                    //Script may reach this IF only when $level==1 and only once.
+                    $ownLimitsChecked = true;
                 }
 
                 $contactCircled = $this->findContactCircled($debtBalance, $contactReceiver);
@@ -140,41 +138,34 @@ class Redistribution extends Component
         int $level
     ): array
     {
-        $contactChainList = ($level === 1) ? [] : $this->listChainMembers($contact);
+        $contactChainList = $this->listChainMembers($contact);
 
         return $contact->getChainMembers()
             ->models($contactChainList, 'NOT IN', ['user_id', 'link_user_id'])
-            ->canRedistributeInto($debtBalance->currency_id)
-            ->orderBy('debt_redistribution_priority')
+            ->canRedistributeInto($debtBalance, $level)
+            ->orderBy('contact.debt_redistribution_priority')
             ->all();
     }
 
-    /**
-     * if we reached to Contact which is related to $debtBalance
-     *   then this contact is the most prioritized Contact now.
-     *   So we should either break or decrease $amountToRedistribute.
-     *
-     * @param DebtBalance $debtBalance
-     * @param Contact $contactReceiver
-     * @param string $amount
-     *
-     * @return bool
-     */
-    private function checkOwnLimits(DebtBalance $debtBalance, Contact $contactReceiver, &$amount): bool
+    private function applyOwnLimits(DebtBalance $debtBalance, Contact $contactReceiver, &$amount): bool
     {
-        if (!$debtBalance->toContact || $debtBalance->toContact->id != $contactReceiver->id) {
+        if (
+            !$debtBalance->hasRedistributionConfig() ||
+            $debtBalance->toContact->debt_redistribution_priority > $contactReceiver->debt_redistribution_priority
+        ) {
             return false;
         }
 
-        $cfg = $contactReceiver->debtRedistributionByDebtorCustom;
+        $debtRedistribution = $debtBalance->toDebtRedistribution;
         $scale = DebtHelper::getFloatScale();
+        $isLimitGreaterE = Number::isFloatGreaterE($debtRedistribution->max_amount, $amount, $scale);
 
-        if ($cfg->isMaxAmountAny() || Number::isFloatGreaterE($cfg->max_amount, $amount, $scale)) {
+        if ($isLimitGreaterE || $debtRedistribution->isMaxAmountAny()) {
             //this DebtBalance have not reached DebtRedistribution limit of his own Contact yet.
             $amount = '0';
         } else {
             //we should redistribute only part of debt: amount above limit (max_amount)
-            $amount = Number::floatSub($amount, $cfg->max_amount, $scale);
+            $amount = Number::floatSub($amount, $debtRedistribution->max_amount, $scale);
         }
 
         return true;
@@ -192,7 +183,7 @@ class Redistribution extends Component
     {
         return $contactReceiver->getChainMembers()
             ->userLinked($debtBalance->debtorUID())
-            ->canRedistributeInto($debtBalance->currency_id)
+            ->canRedistributeInto($debtBalance, null)
             ->one();
     }
 
@@ -214,9 +205,6 @@ class Redistribution extends Component
     {
         return function () use (&$debtBalance, $contactCircled, $amountWanted): ?string {
             $contacts = $this->listChainMembers($contactCircled);
-            //we don't need First contact here. (generated from $debtBalance).
-            // More convenient to use exactly $debtBalance to generate First Debt
-            array_shift($contacts);
             $debtRedistributions = ArrayHelper::getColumn($contacts, 'debtRedistributionByDebtorCustom');
             $debtBalances = ArrayHelper::getColumn($debtRedistributions, 'debtBalanceDirectionBack');
             $debtBalances = array_filter($debtBalances, static function ($item) { return (bool)$item; });
@@ -273,6 +261,9 @@ class Redistribution extends Component
             $chainMemberLastContact = $chainMemberLastContact->chainMemberParent;
             $chainMembersAll[] = $chainMemberLastContact;
         }
+
+        //First contact is fake - it is generated from $debtBalance and need only for first select.
+        array_pop($chainMembersAll);
 
         //`array_reverse` is not necessary. Just for cleaner understanding on debugging
         return array_reverse($chainMembersAll);
@@ -396,8 +387,6 @@ class Redistribution extends Component
 
         /** @var Debt[] $debts */
         $debts = [];
-        //this first Debt has (Debt::isUpdateProcessedFlag() == FALSE). It's ok.
-        // We don't need it on amount decreasing if amount remain greater than 0
         $debts[] = Debt::factoryBySource($debtBalance, -$amount, $group);
 
         foreach ($debtRedistributions as $debtRedistribution) {

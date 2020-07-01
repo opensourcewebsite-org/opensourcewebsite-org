@@ -1,7 +1,7 @@
 <?php
 
-use app\models\Contact;
 use Codeception\Configuration;
+use Codeception\Example;
 use Codeception\Util\Autoload;
 use Helper\debt\redistribution\Common;
 
@@ -42,15 +42,14 @@ class RedistributionPriorityCest
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
-     *
-     * @depends RedistributionMaxAmountCest:testCaseWhenLimitGreaterThanTargetAmount
      */
     public function debtRedistributionPriority_1(FunctionalTester $I): void
     {
         $this->common->testDefault($I);
 
-        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $this->common->getTargetAmount());
+        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
+        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_255);
     }
 
     /**
@@ -61,12 +60,13 @@ class RedistributionPriorityCest
      */
     public function debtRedistributionPriority_2(FunctionalTester $I): void
     {
-        $this->denyChainPriority($I, 'Chain Priority #1. Member: 1st');
+        $this->common->denyChainPriority($I, 'Chain Priority #1. Member: 1st');
 
         $this->common->testDefault($I);
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->getTargetAmount());
+        $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_255);
     }
 
     /**
@@ -77,13 +77,15 @@ class RedistributionPriorityCest
      */
     public function debtRedistributionPriority_255(FunctionalTester $I): void
     {
-        $this->denyChainPriority($I, 'Chain Priority #1. Member: 1st');
-        $this->denyChainPriority($I, 'Chain Priority #2. Member: 1st');
+        //if at least one contact is deny - chain is impossible
+        $this->common->denyChainPriority($I, 'Chain Priority #1. Member: 1st');
+        $this->common->denyChainPriority($I, 'Chain Priority #2. Member: LAST');
 
         $this->common->testDefault($I);
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_2);
+        $this->common->expectBalanceChangedByKey($I, Common::CHAIN_255, $this->common->getTargetAmount());
 
         $balanceChain255 = $this->common->getFixtureDebtRedistribution($I, 'Chain Priority #255. Member: 1st')->debtBalanceDirectionSame;
         $this->common->expectBalanceChanged($balanceChain255, 0, $this->common->getTargetAmount(), 255);
@@ -94,26 +96,20 @@ class RedistributionPriorityCest
      * @throws \yii\db\Exception
      *
      * @depends debtRedistributionPriority_255
+     *
+     * @example ["deny"]
+     * @example ["Contact not exist"]
      */
-    public function debtRedistributionPriorityDeny(FunctionalTester $I): void
+    public function debtRedistributionPriorityDeny(FunctionalTester $I, Example $example): void
     {
-        $this->denyChainPriority($I, 'Chain Priority #1. Member: 1st');
-        $this->denyChainPriority($I, 'Chain Priority #2. Member: 1st');
-        $this->denyChainPriority($I, 'Chain Priority #255. Member: 1st');
+        $delete = $example[0] === 'Contact not exist';
+        $this->common->denyChainPriority($I, 'Chain Priority #1. Member: 1st', $delete);
+        $this->common->denyChainPriority($I, 'Chain Priority #2. Member: 1st', $delete);
+        $this->common->denyChainPriority($I, 'Chain Priority #255. Member: LAST', $delete);
 
         $this->common->testDefault($I, 0);
 
-        $balanceChainDeny = $this->common->getFixtureDebtRedistribution($I, 'Chain Priority #0 (Deny). Member: 1st')->debtBalanceDirectionSame;
-        expect('DebtBalance not exist. Chain: #0 (Deny)', $balanceChainDeny)->isEmpty();
-    }
-
-
-
-
-    private function denyChainPriority(FunctionalTester $I, $indexContact): void
-    {
-        $contact = $this->common->getFixtureContact($I, $indexContact);
-        $contact->debt_redistribution_priority = Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY;
-        $contact->save();
+        $debtRedistributionChainDeny = $this->common->getFixtureDebtRedistribution($I, Common::CHAIN_0_DENY, true);
+        expect('DebtBalance not exist. Chain: #0 (Deny)', $debtRedistributionChainDeny->debtBalanceDirectionBack)->isEmpty();
     }
 }

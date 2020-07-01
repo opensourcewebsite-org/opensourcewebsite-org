@@ -24,7 +24,7 @@ use yii\helpers\VarDumper;
  * @property int $user_id
  * @property int $link_user_id
  * @property string $name
- * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority.
+ * @property int $debt_redistribution_priority "1" - the highest. "0" - no priority. Priority of "Creditor Reliability"
  * @property int $vote_delegation_priority
  * @property int $is_real
  * @property int $relation
@@ -173,14 +173,17 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     public function attributeHints()
     {
+        $labelUserIdOrName = $this->getAttributeLabel('userIdOrName');
+
         return [
             'debt_redistribution_priority' => Html::ul([
+                "It's priority of debtor's reliability. Balance will not redistributed into contact with lower priority.",
                 '"1" - the highest.',
-                "Note: it has no affect, if field \"{$this->getAttributeLabel('userIdOrName')}\" is empty",
+                "Note: it has no affect, if field \"$labelUserIdOrName\" is empty.",
             ]),
             'vote_delegation_priority' => Html::ul([
                 '"1" - the highest.',
-                "Note: it has no affect, if field \"{$this->getAttributeLabel('userIdOrName')}\" is empty",
+                "Note: it has no affect, if field \"$labelUserIdOrName\" is empty.",
             ]),
         ];
     }
@@ -223,8 +226,8 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function getDebtRedistributionByDebtorCustom()
     {
         return $this->hasOne(DebtRedistribution::className(), [
-            'user_id' => DebtRedistribution::getDebtorAttribute(),
-            'link_user_id' => DebtRedistribution::getDebtReceiverAttribute(),
+            'user_id' => DebtRedistribution::getOwnerAttribute(),
+            'link_user_id' => DebtRedistribution::getLinkedAttribute(),
         ]);
     }
 
@@ -277,14 +280,14 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return !$this->link_user_id;
     }
 
-    public function isDebtRedistributionPriorityEmpty(): bool
+    public function isDebtRedistributionPriorityDeny(): bool
     {
         return (int)$this->debt_redistribution_priority === self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
     }
 
     public function renderDebtRedistributionPriority(): string
     {
-        if ($this->isDebtRedistributionPriorityEmpty()) {
+        if ($this->isDebtRedistributionPriorityDeny()) {
             return $this->getAttributeLabel('debt_redistribution_priority:empty');
         }
 
@@ -393,7 +396,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         if (Yii::$app->user->identity->hasEmptyContactGroup()) {
             $this->addError('contact_group_ids', 'You already have an empty group!');
-            return;
         }
     }
 }

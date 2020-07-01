@@ -335,4 +335,14 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
         throw new NotSupportedException($message);
     }
+
+    public function hasRedistributionConfig(): bool
+    {
+        return (
+            $this->toContact &&
+            !$this->toContact->isDebtRedistributionPriorityDeny() &&
+            $this->toDebtRedistribution &&
+            !$this->toDebtRedistribution->isMaxAmountDeny()
+        );
+    }
 }

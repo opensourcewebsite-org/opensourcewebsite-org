@@ -237,8 +237,8 @@ class Debt extends ActiveRecord implements ByDebtInterface
         $isAmountPositive = Number::isFloatGreater($amount, 0, DebtHelper::getFloatScale());
 
         if ($source instanceof DebtRedistribution) {
-            $debtorUID = ($isAmountPositive) ? $source->ownerUID() : $source->linkedUID();
-            $debtReceiverUID = ($isAmountPositive) ? $source->linkedUID() : $source->ownerUID();
+            $debtorUID = ($isAmountPositive) ? $source->linkedUID() : $source->ownerUID();
+            $debtReceiverUID = ($isAmountPositive) ? $source->ownerUID() : $source->linkedUID();
         } else {
             $debtorUID = ($isAmountPositive) ? $source->debtorUID() : $source->debtReceiverUID();
             $debtReceiverUID = ($isAmountPositive) ? $source->debtReceiverUID() : $source->debtorUID();
