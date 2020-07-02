@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\behaviors\SetAttributeValueBehavior;
+use Yii;
 use app\modules\bot\components\crud\CrudController;
+use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\models\AdSearchKeyword;
 use app\modules\bot\validators\RadiusValidator;
-use Yii;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
@@ -175,7 +175,7 @@ class SAdSearchController extends CrudController
                         'view' => 'edit-radius',
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No pickup'),
+                                'text' => Yii::t('bot', 'No'),
                                 'callback' => function (AdSearch $model) {
                                     $model->pickup_radius = 0;
 

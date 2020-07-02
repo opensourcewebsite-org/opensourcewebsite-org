@@ -2,15 +2,15 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\behaviors\SetAttributeValueBehavior;
+use Yii;
 use app\modules\bot\components\crud\CrudController;
+use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\rules\PhotoFieldComponent;
 use app\modules\bot\models\AdOfferKeyword;
 use app\modules\bot\models\AdSection;
 use app\modules\bot\validators\RadiusValidator;
-use Yii;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
@@ -197,7 +197,7 @@ class SAdOfferController extends CrudController
                         'view' => 'edit-radius',
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No delivery'),
+                                'text' => Yii::t('bot', 'No'),
                                 'callback' => function (AdOffer $model) {
                                     $model->delivery_radius = 0;
 
