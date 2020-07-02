@@ -23,6 +23,15 @@ use app\models\Vacancy;
 <?= nl2br($conditions) ?><br/>
 <br/>
 <?php endif; ?>
+<?php if (!empty($languages)) :
+    echo '<br/>';
+    echo Yii::t('bot', 'Languages') . ':<br/>';
+    foreach ($languages as $language) {
+        echo $language . '<br/>';
+    }
+?>
+<br/>
+<?php endif; ?>
 <b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
 <b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
