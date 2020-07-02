@@ -3,6 +3,7 @@
 namespace app\tests\_extra;
 
 use app\models\DebtBalance;
+use app\tests\fixtures\DebtFixture;
 use yii\base\InvalidCallException;
 use yii\test\ActiveFixture;
 
