@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\Contact;
+use app\models\DebtBalance;
 use app\models\DebtRedistribution;
 use app\models\queries\traits\RandomTrait;
 use app\models\queries\traits\SelfSearchTrait;
@@ -38,9 +39,9 @@ class ContactQuery extends ActiveQuery
         return $this->$method(['contact.user_id' => $id ?? Yii::$app->user->id]);
     }
 
-    public function userLinked($id, $method = 'andWhere'): self
+    public function userLinked($id, $operand = 'IN', $method = 'andWhere'): self
     {
-        return $this->$method(['contact.link_user_id' => $id]);
+        return $this->$method([$operand, 'contact.link_user_id', $id]);
     }
 
     public function forDebtRedistribution($contactId): self
@@ -66,23 +67,26 @@ class ContactQuery extends ActiveQuery
      * - it has DebtRedistribution;
      * - And DebtBalance.amount did not reached limit (DebtRedistribution.max_amount) yet.
      *
-     * @param $currencyId
-     *
      * @return ContactQuery
      */
-    public function canRedistributeInto($currencyId): self
+    public function canRedistributeInto(DebtBalance $debtBalance, ?int $level): self
     {
         DebtRedistribution::find()
             ->maxAmount(DebtRedistribution::MAX_AMOUNT_ANY, 'andWhere', $maxAmountIsAny);
         $maxAmountIsGreater = 'debt_redistribution.max_amount > debt_balance.amount';
+        $balanceIsNotExist = 'debt_balance.currency_id IS NULL';
 
-        return $this->andWhere('contact.debt_redistribution_priority <> ' . Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
-            ->withDebtRedistributionByCurrency($currencyId, 'JOIN')
+        $query = $this->andWhere('contact.debt_redistribution_priority <> ' . Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
+            ->withDebtRedistributionByCurrency($debtBalance->currency_id, 'INNER JOIN')
             ->joinWith('debtRedistributionByDebtorCustom.debtBalanceDirectionBack')
-            ->andWhere([
-                'OR',
-                'debt_balance.currency_id IS NULL',
-                "$maxAmountIsAny OR $maxAmountIsGreater",
-            ]);
+            ->andWhere("($maxAmountIsAny) OR ($balanceIsNotExist) OR ($maxAmountIsGreater)");
+
+        if ($level === 1 && $debtBalance->hasRedistributionConfig()) {
+            //deny redistribute first balance into contacts with lower priority
+            $params = [':firstContactPriority' => $debtBalance->toContact->debt_redistribution_priority];
+            $query->andWhere('contact.debt_redistribution_priority <= :firstContactPriority', $params);
+        }
+
+        return $query;
     }
 }

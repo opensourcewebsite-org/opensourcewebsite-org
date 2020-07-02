@@ -117,3 +117,4 @@ plugins:
     enabled: true
 exclude_patterns:
   - "/vendor/"
+  - "/tests/"
