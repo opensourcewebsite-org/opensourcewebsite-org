@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -16,6 +17,9 @@ class Vacancy extends ActiveRecord
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
+
+    const REMOTE_OFF = 0;
+    const REMOTE_ON = 1;
 
     public static function tableName()
     {
@@ -63,7 +67,6 @@ class Vacancy extends ActiveRecord
             ],
             [
                 [
-                    'company_id',
                     'currency_id',
                     'name',
                     'requirements',
@@ -72,6 +75,18 @@ class Vacancy extends ActiveRecord
                 ],
                 'required',
             ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'max_hourly_rate' => Yii::t('app', 'Max. hourly rate'),
+            'remote_on' => Yii::t('bot', 'Remote work'),
         ];
     }
 

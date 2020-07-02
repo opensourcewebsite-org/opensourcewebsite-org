@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send responsibilities of the vacancy') ?>
+<?= Yii::t('bot', 'Send a responsibilities') ?>

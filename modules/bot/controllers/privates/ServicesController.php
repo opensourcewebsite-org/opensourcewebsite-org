@@ -31,7 +31,7 @@ class ServicesController extends Controller
                     [
                         [
                             'callback_data' => SJobController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Jobs'),
+                            'text' => Yii::t('bot', 'Jobs'),
                         ],
                     ],
                     [

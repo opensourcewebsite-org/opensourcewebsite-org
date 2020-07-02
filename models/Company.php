@@ -1,6 +1,8 @@
 <?php
+
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -30,6 +32,17 @@ class Company extends ActiveRecord
             [['url'], 'url'],
             [['description'], 'string'],
             [['name'], 'required'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'url' => Yii::t('app', 'Website'),
         ];
     }
 

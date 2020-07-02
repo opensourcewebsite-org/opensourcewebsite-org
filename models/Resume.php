@@ -1,8 +1,9 @@
 <?php
 
-
 namespace app\models;
 
+use app\modules\bot\validators\RadiusValidator;
+use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -17,6 +18,9 @@ class Resume extends ActiveRecord
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 14;
+
+    const REMOTE_OFF = 0;
+    const REMOTE_ON = 1;
 
     /** @inheritDoc */
     public static function tableName()
@@ -39,6 +43,7 @@ class Resume extends ActiveRecord
                 ],
                 'integer',
             ],
+            ['search_radius', RadiusValidator::class],
             [
                 [
                     'min_hourly_rate',
@@ -70,6 +75,19 @@ class Resume extends ActiveRecord
                 ],
                 'required',
             ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
+            'remote_on' => Yii::t('bot', 'Remote work'),
+            'search_radius' => Yii::t('bot', 'Search radius'),
         ];
     }
 

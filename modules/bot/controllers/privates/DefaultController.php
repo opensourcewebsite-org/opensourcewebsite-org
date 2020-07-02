@@ -29,6 +29,16 @@ class DefaultController extends Controller
     /**
      * @return array
      */
+    public function actionDeleteMessage():array
+    {
+        return $this->getResponseBuilder()
+            ->deleteMessage()
+            ->build();
+    }
+
+    /**
+     * @return array
+     */
     public function actionCommandNotFound()
     {
         return $this->getResponseBuilder()

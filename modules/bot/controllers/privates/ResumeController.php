@@ -6,6 +6,8 @@ use app\behaviors\SetAttributeValueBehavior;
 use app\models\Currency;
 use app\models\Resume;
 use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
 use app\modules\bot\components\helpers\Emoji;
@@ -31,18 +33,30 @@ class ResumeController extends CrudController
                     $model = $params['model'] ?? null;
 
                     return [
+                        'model' => $model,
                         'name' => $model->name,
-                        'hourlyRate' => $this->getDisplayHourlyRate($model),
+                        'hourlyRate' => $model->min_hourly_rate,
                         'experiences' => $model->experiences,
                         'expectations' => $model->expectations,
                         'skills' => $model->skills,
                         'currencyCode' => $model->currencyCode,
                         'isActive' => $model->isActive(),
+                        'remote_on' => $model->remote_on,
+                        'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                     ];
                 },
                 'view' => 'show',
                 'attributes' => [
                     'name' => [],
+                    'skills' => [
+                        'isRequired' => false,
+                    ],
+                    'experiences' => [
+                        'isRequired' => false,
+                    ],
+                    'expectations' => [
+                        'isRequired' => false,
+                    ],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
@@ -67,14 +81,59 @@ class ResumeController extends CrudController
                             ]);
                         },
                     ],
-                    'skills' => [
-                        'isRequired' => false,
+                    'remote_on' => [
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Yes'),
+                                'callback' => function (Resume $model) {
+                                    $model->remote_on = Resume::REMOTE_ON;
+
+                                    return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'No'),
+                                'callback' => function (Resume $model) {
+                                    $model->remote_on = Resume::REMOTE_OFF;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
-                    'experiences' => [
+                    'location' => [
                         'isRequired' => false,
+                        'component' => LocationToArrayFieldComponent::class,
+                        'buttons' => [
+                            [
+                                'createMode' => false,
+                                'text' => Yii::t('bot', 'My location'),
+                                'callback' => function (Resume $model) {
+                                    $latitude = $this->getTelegramUser()->location_lat;
+                                    $longitude = $this->getTelegramUser()->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
+
+                                        return $model;
+                                    }
+
+                                    return null;
+                                },
+                            ],
+                        ],
                     ],
-                    'expectations' => [
-                        'isRequired' => false,
+                    'search_radius' => [
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'No'),
+                                'callback' => function (Resume $model) {
+                                    $model->search_radius = 0;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
                     'user_id' => [
                         'behaviors' => [
@@ -190,13 +249,16 @@ class ResumeController extends CrudController
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
+                    'model' => $resume,
                     'name' => $resume->name,
-                    'hourlyRate' => $this->getDisplayHourlyRate($resume),
+                    'hourlyRate' => $resume->min_hourly_rate,
                     'experiences' => $resume->experiences,
                     'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
                     'currencyCode' => $resume->currencyCode,
                     'isActive' => $resume->isActive(),
+                    'remote_on' => $resume->remote_on,
+                    'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                 ]),
                 [
                     [
@@ -281,20 +343,6 @@ class ResumeController extends CrudController
         $resume->save();
 
         return $this->actionView($resumeId);
-    }
-
-    /**
-     * @param Resume $resume
-     *
-     * @return string|null
-     */
-    private function getDisplayHourlyRate(Resume $resume)
-    {
-        if ($resume->min_hourly_rate) {
-            return Yii::t('bot', 'from') . " {$resume->min_hourly_rate}";
-        }
-
-        return null;
     }
 
     /**

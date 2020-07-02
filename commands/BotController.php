@@ -2,17 +2,27 @@
 
 namespace app\commands;
 
-use yii\console\Controller;
-use app\modules\bot\models\Bot;
 use Yii;
+use yii\console\Controller;
+use app\interfaces\CronChainedInterface;
+use app\commands\traits\ControllerLogTrait;
+use app\modules\bot\models\Bot;
 
 /**
  * Class BotController
  *
  * @package app\commands
  */
-class BotController extends Controller
+class BotController extends Controller implements CronChainedInterface
 {
+    use ControllerLogTrait;
+
+    public function actionIndex()
+    {
+        // TODO add new feature
+        return true;
+    }
+
     /**
      * Enable all inactive bots
      *
