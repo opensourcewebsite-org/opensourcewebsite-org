@@ -225,7 +225,9 @@ abstract class CrudController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
+        if ($text == self::VALUE_NO) {
+            $text = null;
+        }
         $modelClass = $this->getCurrentModelClass();
         $modelName = $this->getModelName($modelClass);
         $rule = $this->getRule($modelName);
@@ -322,6 +324,12 @@ abstract class CrudController extends Controller
         }
         $editableId = null;
         $error = null;
+        if ($text == self::VALUE_NO) {
+            $shouldRemove = true;
+            $text = null;
+        } else {
+            $shouldRemove = false;
+        }
         if (isset($relation) && (isset($v) || isset($text))) {
             $relationAttributeName = $this->field->get($modelName, self::FIELD_NAME_RELATION, null);
             if (!$relationAttributeName && $secondaryRelation) {
@@ -434,7 +442,9 @@ abstract class CrudController extends Controller
             } else {
                 $error = "not found";
             }
-        } else {
+        }
+        if ($shouldRemove) {
+            $this->field->set($modelName, $attributeName, []);
             $isValidRequest = true;
         }
         if ($isValidRequest) {

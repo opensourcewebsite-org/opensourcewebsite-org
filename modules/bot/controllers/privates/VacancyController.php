@@ -231,7 +231,7 @@ class VacancyController extends CrudController
             ->limit($pagination->limit)
             ->all();
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
-            return self::createRoute('show', [
+            return self::createRoute('index', [
                 'companyId' => $companyId,
                 'page' => $page,
             ]);
