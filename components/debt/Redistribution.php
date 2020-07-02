@@ -99,13 +99,12 @@ class Redistribution extends Component
                     $ownLimitsChecked = true;
                 }
 
-                $contactCircled = $this->findContactCircled($debtBalance, $contactReceiver);
-                if (!$contactCircled) {
+                if ($level === 1 || (string)$debtBalance->debtorUID() !== (string)$contactReceiver->link_user_id) {
                     $contactChainMembersMiddle[] = $contactReceiver;
                     continue;
                 }
 
-                $function = $this->redistributeChain($debtBalance, $contactCircled, $amountToRedistribute);
+                $function = $this->redistributeChain($debtBalance, $contactReceiver, $amountToRedistribute);
                 /** @var null|string $amountToRedistribute */
                 $amountToRedistribute = Yii::$app->db->transaction($function, Transaction::READ_COMMITTED);
 
@@ -139,14 +138,16 @@ class Redistribution extends Component
     ): array
     {
         if ($level === 1) {
-            $previousLinkUID = [$debtBalance->from_user_id];
+            //exclude $debtBalance->toContact
+            $excludeLinkUID = [$debtBalance->from_user_id];
         } else {
-            $contactChainList = $this->listChainMembers($contact);
-            $previousLinkUID = ArrayHelper::getColumn($contactChainList, 'link_user_id');
+            //exclude previous to avoid continuous loop and optimize
+            $contactChainListPrevious = $this->listChainMembers($contact);
+            $excludeLinkUID = ArrayHelper::getColumn($contactChainListPrevious, 'link_user_id');
         }
 
         return $contact->getChainMembers()
-            ->userLinked($previousLinkUID, 'NOT IN') //exclude previous to avoid continuous loop and optimize
+            ->userLinked($excludeLinkUID, 'NOT IN')
             ->canRedistributeInto($debtBalance, $level)
             ->orderBy('contact.debt_redistribution_priority')
             ->all();
@@ -174,22 +175,6 @@ class Redistribution extends Component
         }
 
         return true;
-    }
-
-    /**
-     * is ReceiverContact has Contact linked to Debtor?
-     *
-     * @param DebtBalance $debtBalance
-     * @param Contact $contactReceiver
-     *
-     * @return Contact|null
-     */
-    private function findContactCircled(DebtBalance $debtBalance, Contact $contactReceiver): ?Contact
-    {
-        return $contactReceiver->getChainMembers()
-            ->userLinked($debtBalance->debtorUID())
-            ->canRedistributeInto($debtBalance, null)
-            ->one();
     }
 
     /**
