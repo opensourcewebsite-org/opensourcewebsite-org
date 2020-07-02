@@ -1,9 +1,16 @@
 <?php
+
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
+/**
+ * Class Company
+ *
+ * @package app\models
+ */
 class Company extends ActiveRecord
 {
     public static function tableName()
@@ -28,10 +35,21 @@ class Company extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'url' => Yii::t('app', 'Website'),
+        ];
+    }
+
     public function getMembers()
     {
         return $this->hasMany(User::className(), ['id', 'user_id'])
-            ->viaTable('company_user', ['company_id' => 'id']);
+            ->viaTable(CompanyUser::tableName(), ['company_id' => 'id']);
     }
 
     public function getVacancies()

@@ -34,7 +34,5 @@ class InsertAction extends BaseAction
         $this->getState()->setName($this->createRoute($this->listActionId, [
             'chatId' => $chatId,
         ]));
-
-        $this->dispatchRoute();
     }
 }

@@ -32,7 +32,7 @@ class m200602_165213_create_ad_photo_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-ad_photo_ad_offer_id-ad_offer_id');
+        $this->dropForeignKey('fk-ad_photo_ad_offer_id-ad_offer_id', '{{%ad_photo}}');
 
         $this->dropTable('{{%ad_photo}}');
     }

@@ -56,9 +56,4 @@ abstract class BaseAction extends Action
         $controllerClass = $this->controller->className();
         return $controllerClass::createRoute($actionName, $params);
     }
-
-    public function dispatchRoute()
-    {
-        return $this->controller->module->dispatchRoute($this->controller->module->update);
-    }
 }

@@ -1,7 +1,7 @@
 💰 <b><?= $sectionName ?></b> - <b><?= $adOffer->title ?></b><br/>
 <br/>
 <?php if ($adOffer->description !== null) : ?>
-<?= $adOffer->description ?><br/>
+<?= nl2br($adOffer->description); ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>
@@ -19,5 +19,7 @@
 <br/>
 <?php endif; ?>
 <?php if ($adOffer->isActive() && $showDetailedInfo) : ?>
-<i><?= Yii::t('bot', 'This ad is active for {0,number} more days', $liveDays) ?>. <?= Yii::t('bot', 'Visit this page again before this term to automatically renew this') ?>.</i>
+————<br/>
+<br/>
+<i><?= Yii::t('bot', 'You will receive a notification in case of matches with offers of other users') ?>. <?= Yii::t('bot', 'This page is active for {0,number} more days', $liveDays) ?>. <?= Yii::t('bot', 'Visit this page again before this term to automatically renew this') ?>.</i>
 <?php endif; ?>

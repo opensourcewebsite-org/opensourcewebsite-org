@@ -20,12 +20,28 @@ class DebtController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 
+    public $debugReduction;
+
+    public static function formatConsoleArgument($value)
+    {
+        if (is_array($value)) {
+            return base64_encode(json_encode($value));
+        } else {
+            return json_decode(base64_decode($value), true);
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
     public function options($actionID)
     {
-        return $this->optionsAppendLog(parent::options($actionID));
+        $options = parent::options($actionID);
+        if ('index' === $actionID) {
+            $options[] = 'debugReduction';
+        }
+
+        return $this->optionsAppendLog($options);
     }
 
     /**
@@ -112,6 +128,11 @@ class DebtController extends Controller implements CronChainedInterface
         $reduction->logger = function ($message, $format = []) {
             $this->output($message, $format);
         };
+        if ($this->debugReduction) {
+            $reduction->debug['DebtBalanceCondition'] = self::formatConsoleArgument($this->debugReduction);
+            $reduction->debug['logConsole'] = true;
+            $this->log = true;
+        }
         $reduction->run();
 
         $this->output("Finished $class");
@@ -184,7 +205,6 @@ class DebtController extends Controller implements CronChainedInterface
 
             foreach ($debts as $debt) {
                 $debtNew = Debt::factoryBySource($debt, -$debt->amount, $groupNew);
-                $debtNew->setUpdateProcessedFlag(true);
 
                 if (!$debtNew->save()) {
                     $message = "Unexpected error occurred: Fail to save Debt.\n";

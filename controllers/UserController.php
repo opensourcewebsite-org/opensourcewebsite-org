@@ -18,6 +18,7 @@ use app\models\UserStatistic;
 use Yii;
 use app\models\User;
 use app\models\UserMoqupFollow;
+use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\filters\AccessControl;
@@ -168,6 +169,22 @@ class UserController extends Controller
             'realConfirmations' => $realConfirmations,
         ];
         return $this->render('profile', $params);
+    }
+
+    public function actionRating()
+    {
+        $rating = $this->user->getRatings();
+        $countQuery = clone $rating;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $rating->offset($pages->offset)
+            ->limit($pages->limit)
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+
+        return $this->render('details/rating', [
+            'models' => $models,
+            'pages' => $pages,
+        ]);
     }
 
     public function actionChangeEmail()

@@ -15,15 +15,6 @@ use yii\widgets\Breadcrumbs;
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 
-$this->registerCss('#lang-menu{
-    overflow: auto;
-    max-height: 200px;
-}');
-
-$this->registerCss('.main-sidebar:hover{
-    width: 4.6rem !important;
-}');
-
 //List of language options
 $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 $langOpt = [];
@@ -128,7 +119,6 @@ $this->beginBody();
         <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
         <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?> |
         <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?> |
-        <?= Html::a(Yii::t('app', 'Email'), 'mailto:hello@opensourcewebsite.org') ?> |
         <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
     </footer>
 </div>

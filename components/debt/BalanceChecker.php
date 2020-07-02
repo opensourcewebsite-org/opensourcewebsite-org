@@ -2,16 +2,14 @@
 
 namespace app\components\debt;
 
+use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Debt;
-use app\models\DebtBalance;
 use Yii;
 use yii\base\Component;
 
 class BalanceChecker extends Component
 {
-    private const DEBT_FLOAT_SCALE = 2;
-
     /**
      * @throws \yii\db\Exception
      */
@@ -93,10 +91,10 @@ class BalanceChecker extends Component
                      * E.g. if ($debtSummary is Deposit) then {$inverseDebtSummary is Credit}
                      */
                     $inverseDebtSummary = $sumOfAllDebt[$currencyId][$toUID][$fromUID] ?? null;
-                    $debtSumDiff = bcsub(
+                    $debtSumDiff = Number::floatSub(
                         $debtSummary['debt_sum'],
                         ($inverseDebtSummary['debt_sum'] ?? 0),
-                        self::DEBT_FLOAT_SCALE
+                        DebtHelper::getFloatScale()
                     );
 
                     $errorParams = [
@@ -137,10 +135,6 @@ class BalanceChecker extends Component
 
     private function isBalanceEmpty(array $debtSummary): bool
     {
-        if (DebtBalance::STORE_EMPTY_AMOUNT) {
-            return $this->isFloatEqual($debtSummary['balance'], 0);
-        }
-
         return (null === $debtSummary['balance']);
     }
 
@@ -194,11 +188,11 @@ class BalanceChecker extends Component
 
     private function isFloatEqual(string $leftFloat, string $rightFloat): bool
     {
-        return Number::isFloatEqual($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
+        return Number::isFloatEqual($leftFloat, $rightFloat, DebtHelper::getFloatScale());
     }
 
     private function isFloatLower(string $leftFloat, string $rightFloat): bool
     {
-        return Number::isFloatLower($leftFloat, $rightFloat, self::DEBT_FLOAT_SCALE);
+        return Number::isFloatLower($leftFloat, $rightFloat, DebtHelper::getFloatScale());
     }
 }

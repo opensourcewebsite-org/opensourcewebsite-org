@@ -37,7 +37,7 @@ abstract class FillablePropertiesController extends Controller
             ]));
             return ResponseBuilder::fromUpdate($update)
                 ->answerCallbackQuery()
-                ->sendMessage(
+                ->editMessageTextOrSendMessage(
                     $this->render("set-$property")
                 )
                 ->build();
@@ -61,7 +61,7 @@ abstract class FillablePropertiesController extends Controller
 
         return ResponseBuilder::fromUpdate($update)
             ->answerCallbackQuery()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render("set-$nextProperty"),
                 [
                     [
@@ -96,7 +96,7 @@ abstract class FillablePropertiesController extends Controller
         }
 
         return ResponseBuilder::fromUpdate($update)
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 new MessageText(json_encode($model->getErrors()))
             )
             ->build();

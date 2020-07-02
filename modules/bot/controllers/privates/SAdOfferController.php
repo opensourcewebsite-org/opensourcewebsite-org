@@ -2,29 +2,226 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\behaviors\SetAttributeValueBehavior;
+use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\crud\rules\PhotoFieldComponent;
+use app\modules\bot\models\AdOfferKeyword;
+use app\modules\bot\models\AdSection;
+use app\modules\bot\validators\RadiusValidator;
 use Yii;
-use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdKeyword;
 use app\modules\bot\models\AdOffer;
-use app\modules\bot\models\AdSection;
 use app\modules\bot\models\AdSearch;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\models\AdPhoto;
 use app\models\User;
+use yii\base\DynamicModel;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\models\Currency;
+use yii\db\ActiveRecord;
 
 /**
  * Class SAdOfferController
  *
  * @package app\modules\bot\controllers\privates
  */
-class SAdOfferController extends Controller
+class SAdOfferController extends CrudController
 {
+    /** @inheritDoc */
+    protected function rules()
+    {
+        return [
+            [
+                'model' => AdOffer::class,
+                'prepareViewParams' => function ($params) {
+                    $model = $params['model'] ?? null;
+
+                    return [
+                        'adOffer' => $model,
+                        'currency' => Currency::findOne($model->currency_id),
+                        'sectionName' => AdSection::getAdOfferName($model->section),
+                        'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
+                        'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
+                        'liveDays' => AdOffer::LIVE_DAYS,
+                        'showDetailedInfo' => false,
+                    ];
+                },
+                'view' => 'offer',
+                'attributes' => [
+                    'title' => [],
+                    'description' => [
+                        'isRequired' => false,
+                    ],
+                    'user_id' => [
+                        'behaviors' => [
+                            'SetAttributeValueBehavior' => [
+                                'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['user_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
+                                ],
+                                'attribute' => 'user_id',
+                                'value' => $this->module->user->id,
+                            ],
+                        ],
+                        'hidden' => true,
+                    ],
+                    'section' => [
+                        'behaviors' => [
+                            'SetAttributeValueBehavior' => [
+                                'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['section'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['section'],
+                                ],
+                                'attribute' => 'section',
+                                'value' => AdSection::BUY_SELL,
+                            ],
+                        ],
+                        'hidden' => true,
+                    ],
+                    'status' => [
+                        'behaviors' => [
+                            'SetAttributeValueBehavior' => [
+                                'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['status'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['status'],
+                                ],
+                                'attribute' => 'status',
+                                'value' => AdOffer::STATUS_OFF,
+                            ],
+                        ],
+                        'hidden' => true,
+                    ],
+                    'keywords' => [
+                        //'enableAddButton' = true,
+                        'isRequired' => false,
+                        'relation' => [
+                            'model' => AdOfferKeyword::class,
+                            'attributes' => [
+                                'ad_offer_id' => [AdOffer::class, 'id'],
+                                'ad_keyword_id' => [AdKeyword::class, 'id', 'keyword'],
+                            ],
+                            'removeOldRows' => true,
+                        ],
+                        'component' => [
+                            'class' => ExplodeStringFieldComponent::class,
+                            'attributes' => [
+                                'delimiters' => [',', '.', "\n"],
+                            ],
+                        ],
+                    ],
+                    'photo' => [
+                        'isRequired' => false,
+                        'relation' => [
+                            'model' => AdPhoto::class,
+                            'attributes' => [
+                                'ad_offer_id' => [AdOffer::class, 'id', 'code'],
+                                'file_id' => [DynamicModel::class, 'id', 'keyword'],
+                            ],
+                            'buttonFunction' => function ($params) { //pay attention. It inside relation attribute
+                                $params['text'] = 'Uploaded photo';
+
+                                return $params;
+                            },
+                        ],
+                        'component' => [
+                            'class' => PhotoFieldComponent::class,
+                        ],
+                    ],
+                    'currency' => [
+                        'relation' => [
+                            'attributes' => [
+                                'currency_id' => [Currency::class, 'id', 'code'],
+                            ],
+                        ],
+                    ],
+                    'price' => [
+                        'isRequired' => false,
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ],
+                        'systemButtons' => [
+                            'back' => [
+                                'item' => 'keywords',
+                                'editMode' => false,
+                            ],
+                        ],
+                        'prepareViewParams' => function ($params) {
+                            /** @var AdSearch $model */
+                            $model = $params['model'];
+                            $currency = $model->currencyRelation;
+                            if ($currency) {
+                                $currencyCode = $currency->code;
+                            } else {
+                                $currencyCode = '';
+                            }
+
+                            return array_merge($params, [
+                                'currencyCode' => $currencyCode,
+                            ]);
+                        },
+                    ],
+                    'location' => [
+                        'component' => LocationToArrayFieldComponent::class,
+                        'buttons' => [
+                            [
+                                'createMode' => false,
+                                'text' => Yii::t('bot', 'My location'),
+                                'callback' => function (AdOffer $model) {
+                                    $latitude = $this->getTelegramUser()->location_lat;
+                                    $longitude = $this->getTelegramUser()->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
+
+                                        return $model;
+                                    }
+
+                                    return null;
+                                },
+                            ],
+                        ],
+                    ],
+                    'delivery_radius' => [
+                        'view' => 'edit-radius',
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'No delivery'),
+                                'callback' => function (AdOffer $model) {
+                                    $model->delivery_radius = 0;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param ActiveRecord $model
+     * @param bool $isNew
+     *
+     * @return array
+     */
+    protected function afterSave(ActiveRecord $model, bool $isNew)
+    {
+        return $this->actionPost($model->id);
+    }
+
     public function actionIndex($adSection, $page = 1)
     {
         $this->getState()->setName(null);
@@ -78,7 +275,12 @@ class SAdOfferController extends Controller
 
         if ($adSection == 1) {
             $buttons[count($buttons) - 1][] = [
-                'callback_data' => self::createRoute('add', ['adSection' => $adSection]),
+                'callback_data' => self::createRoute(
+                    'create',
+                    [
+                        'm' => $this->getModelName(AdOffer::class),
+                    ]
+                ),
                 'text' => Emoji::ADD,
             ];
         }
@@ -223,7 +425,13 @@ class SAdOfferController extends Controller
                 'text' => Emoji::MENU,
             ],
             [
-                'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute(
+                    'u',
+                    [
+                        'm' => $this->getModelName(AdOffer::class),
+                        'i' => $adOfferId,
+                    ]
+                ),
                 'text' => Emoji::EDIT,
             ],
             [
@@ -330,7 +538,13 @@ class SAdOfferController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                    'i' => $adOfferId,
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -377,7 +591,13 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                    'i' => $adOfferId,
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -435,7 +655,13 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                    'i' => $adOfferId,
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -500,7 +726,13 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                    'i' => $adOfferId,
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -650,10 +882,11 @@ class SAdOfferController extends Controller
         $this->getState()->setName(self::createRoute('new-price', ['adOfferId' => $adOfferId]));
 
         $adOffer = AdOffer::findOne($adOfferId);
+
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
-                    'currencyCode' => Currency::findOne($adOffer->currency_id)->code
+                    'currencyCode' => Currency::findOne($adOffer->currency_id)->code,
                 ]),
                 [
                     [
@@ -672,7 +905,13 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                    'i' => $adOfferId,
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -734,7 +973,13 @@ class SAdOfferController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute(
+                    'u',
+                    [
+                        'm' => $this->getModelName(AdOffer::class),
+                        'i' => $adOfferId,
+                    ]
+                ),
                 'text' => Emoji::BACK,
             ],
             [
@@ -812,7 +1057,13 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute(
+                                'u',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                    'i' => $adOfferId,
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -846,7 +1097,7 @@ class SAdOfferController extends Controller
 
             $adOffer = AdOffer::findOne($adOfferId);
 
-            $deliveryRadius = min(AdOffer::MAX_RADIUS, intval($message->getText()));
+            $deliveryRadius = min(RadiusValidator::MAX_RADIUS, intval($message->getText()));
 
             $adOffer->setAttributes([
                 'delivery_radius' => $deliveryRadius,
@@ -922,9 +1173,12 @@ class SAdOfferController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('add', [
-                                'adSection' => $this->getState()->getIntermediateField('adOfferSection'),
-                            ]),
+                            'callback_data' => self::createRoute(
+                                'create',
+                                [
+                                    'm' => $this->getModelName(AdOffer::class),
+                                ]
+                            ),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1015,6 +1269,7 @@ class SAdOfferController extends Controller
         if (isset($adOffer)) {
             $adSection = $adOffer->section;
 
+            $adOffer->unlinkAll('photos', true);
             $adOffer->unlinkAll('keywords', true);
             $adOffer->delete();
 
@@ -1156,7 +1411,7 @@ class SAdOfferController extends Controller
                     'currencyCode' => Currency::findOne(
                         $this->getState()->getIntermediateField('adOfferCurrencyId')
                     )
-                    ->code,
+                        ->code,
                 ]),
                 [
                     [
@@ -1358,7 +1613,7 @@ class SAdOfferController extends Controller
                 return $this->actionLocation();
             }
 
-            $radius = min(intval($message->getText()), AdOffer::MAX_RADIUS);
+            $radius = min(intval($message->getText()), RadiusValidator::MAX_RADIUS);
             $this->getState()->setIntermediateField('adOfferDeliveryRadius', $radius);
 
             return $this->actionRadius();

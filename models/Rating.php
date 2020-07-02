@@ -23,6 +23,13 @@ class Rating extends \yii\db\ActiveRecord
     const DONATE = 2;
     const USE_TELEGRAM_BOT = 3;
 
+    public static $types = [
+        0 => 'Registration',
+        1 => 'Contribution',
+        2 => 'Donation',
+        3 => 'Registration',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -74,5 +81,10 @@ class Rating extends \yii\db\ActiveRecord
         $result = static::find()->sum('amount');
 
         return $result ?: 0;
+    }
+
+    public function getTypeName()
+    {
+        return self::$types[$this->type];
     }
 }

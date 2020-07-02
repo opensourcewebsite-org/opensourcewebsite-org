@@ -1,4 +1,4 @@
-# Contributing Guidelines
+# Contribution Guidelines
 
 [Русская версия](CONTRIBUTING.ru.md)
 
@@ -139,7 +139,7 @@ Columns:
 
 https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeDown()-detail
 
-Use only for deletion of objects of the database structure (tables, fields, keys, indexes).
+Use only for deletion of objects of the database structure (tables, fields, keys, indexes). After creating a new migration, check if it can be rolled back and applied again.
 
 ##### Upgrade data in the database
 

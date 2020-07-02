@@ -37,8 +37,8 @@ class m200330_105848_add_language_id_column_to_bot_user_table extends Migration
         foreach ($usedLanguages as $usedLanguage) {
             $this->update(
                 '{{%bot_user}}',
-                [ 'language_id' => $usedLanguage['id'] ],
-                [ 'language_code' => $usedLanguage['code'] ]
+                ['language_id' => $usedLanguage['id']],
+                ['language_code' => $usedLanguage['code']]
             );
         }
     }
@@ -58,8 +58,8 @@ class m200330_105848_add_language_id_column_to_bot_user_table extends Migration
         foreach ($usedLanguages as $usedLanguage) {
             $this->update(
                 '{{%bot_user}}',
-                [ 'language_code' => $usedLanguage['code'] ],
-                [ 'language_id' => $usedLanguage['id'] ]
+                ['language_code' => $usedLanguage['code']],
+                ['language_id' => $usedLanguage['id']]
             );
         }
 
