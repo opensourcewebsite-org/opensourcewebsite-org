@@ -74,7 +74,7 @@ class RefreshController extends Controller
         $response = $this->getResponseBuilder()
                 ->deleteMessage();
 
-        if (!$currentUserIsAdministrator) {
+        if ($currentUserIsAdministrator) {
             $response->editMessageTextOrSendMessage(
                 $this->render('index')
             );
