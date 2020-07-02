@@ -228,10 +228,12 @@ class SAdOfferController extends CrudController
 
         $buttons = [];
 
-        $adOfferQuery = AdOffer::find()->where([
-            'user_id' => $this->getTelegramUser()->id,
-            'section' => $adSection,
-        ]);
+        $adOfferQuery = AdOffer::find()
+            ->where([
+                'user_id' => $this->getTelegramUser()->id,
+                'section' => $adSection,
+            ])
+            ->orderBy(['status' => SORT_DESC, 'title' => SORT_ASC]);
 
         $adOfferCount = $adOfferQuery->count();
 

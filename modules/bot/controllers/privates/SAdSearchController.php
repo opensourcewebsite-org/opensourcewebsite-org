@@ -206,12 +206,12 @@ class SAdSearchController extends CrudController
 
         $buttons = [];
 
-        $adSearchQuery = AdSearch::find()->where(
-            [
+        $adSearchQuery = AdSearch::find()
+            ->where([
                 'user_id' => $this->getTelegramUser()->id,
                 'section' => $adSection,
-            ]
-        );
+            ])
+            ->orderBy(['status' => SORT_DESC, 'title' => SORT_ASC]);;
 
         $adSearchCount = $adSearchQuery->count();
 
