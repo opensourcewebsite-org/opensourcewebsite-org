@@ -3,11 +3,11 @@
 namespace app\commands;
 
 use Yii;
-use app\commands\traits\ControllerLogTrait;
+use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
+use app\commands\traits\ControllerLogTrait;
 use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
-use yii\console\Controller;
 use yii\httpclient\Client;
 
 class WikinewsParserController extends Controller implements CronChainedInterface
@@ -16,15 +16,15 @@ class WikinewsParserController extends Controller implements CronChainedInterfac
 
     public function actionIndex()
     {
-        $this->output('Running wikinews parser...');
         $this->parse();
     }
 
     protected function parse()
     {
-        $needParse = WikinewsPage::findAll(['parsed_at' => null]);
+        $pages = WikinewsPage::findAll(['parsed_at' => null]);
+
         /** @var object $news */
-        foreach ($needParse as $news) {
+        foreach ($pages as $news) {
             $group_id = !empty($news->group_id) ? $news->group_id : $news->id;
             $identity = !$news->pageid ? urldecode($news->title) : $news->pageid;
             $data = $this->api($news->language->code, $identity);
@@ -63,11 +63,6 @@ class WikinewsParserController extends Controller implements CronChainedInterfac
                 $news->parsed_at = time();
                 $news->save();
             }
-        }
-        if ($needParse) {
-            $this->output('Parsing is done.');
-        } else {
-            $this->output('No page for parsing.');
         }
     }
 

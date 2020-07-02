@@ -17,13 +17,13 @@ use yii\console\Exception;
  * Instance https://github.com/opensourcewebsite-org/osw-devops/blob/master/pillar/prod/supervisor.sls#L22
  *
  * @property array $map
- * @property bool $log
+ * @property bool $log use param --log to show logs
  */
 class CronController extends Controller
 {
     use ControllerLogTrait;
 
-    const INTERVAL = 60; // sec
+    const INTERVAL = 60; // seconds
     const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
 
@@ -65,7 +65,6 @@ class CronController extends Controller
 
     /**
      * Main starter of all scripts
-     * Use param --log to show logs in console
      */
     public function actionIndex()
     {
@@ -95,7 +94,7 @@ class CronController extends Controller
 
                 $this->output(
                     "[STARTED] $script->name",
-                    [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
+                    [CustomConsole::FG_GREEN, CustomConsole::BOLD]
                 );
 
                 /** @var ControllerLogTrait|CronChainedInterface $controller */

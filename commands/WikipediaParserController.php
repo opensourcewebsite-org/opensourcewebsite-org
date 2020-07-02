@@ -2,15 +2,15 @@
 
 namespace app\commands;
 
+use Yii;
+use yii\console\Controller;
+use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\components\WikipediaParser;
-use app\interfaces\CronChainedInterface;
 use app\models\UserWikiToken;
 use app\models\WikiLanguage;
 use app\models\WikiPage;
-use Yii;
 use yii\base\ErrorException;
-use yii\console\Controller;
 use yii\helpers\ArrayHelper;
 use yii\httpclient\Client;
 use yii\web\ServerErrorHttpException;
@@ -35,14 +35,11 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
 
     public function actionIndex()
     {
-        $this->output('Running watchlists parser...');
-        $this->processPages();
-
-        $this->output('Running languages parser...');
-        $this->parse();
+        $this->parseWatchlists();
+        $this->parsePages();
     }
 
-    protected function parse()
+    protected function parsePages()
     {
         $baseUrl = 'https://wikidata.org/w';
         $client = new Client([
@@ -155,7 +152,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
             ->andWhere(['is not', 'user.id', null])
             ->exists()
         ) {
-            $this->parse();
+            $this->parsePages();
         } else {
             return true;
         }
@@ -166,8 +163,10 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
         return WikiPage::find()->max('group_id') + 1;
     }
 
-    protected function processPages()
+    protected function parseWatchlists()
     {
+        $updatesCount = 0;
+
         $tokens = UserWikiToken::find()
             ->andWhere([
                 'or',
@@ -176,11 +175,14 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
             ])
             ->andWhere(['!=', 'status', UserWikiToken::STATUS_HAS_ERROR])
             ->all();
-        $counter = count($tokens);
-        $this->output("Found $counter tokens to update");
 
         foreach ($tokens as $token) {
+            $updatesCount++;
             $this->updatePages($token);
+        }
+
+        if ($updatesCount) {
+            $this->output($updatesCount . ' tokens updated');
         }
     }
 
@@ -190,9 +192,9 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
             'user_id'     => $token->user_id,
             'language_id' => $token->language_id,
         ]);
+
         try {
             $parser->run();
-            $this->output("Updated token #{$token->id}");
 
             Yii::$app->db->createCommand()->update(
                 '{{%user_wiki_token}}',

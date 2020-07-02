@@ -4,8 +4,8 @@ namespace app\commands;
 
 use Yii;
 use yii\console\Controller;
-use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
+use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\Bot;
 
 /**
@@ -19,7 +19,8 @@ class BotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        $this->output('Running bot controller...');
+        // TODO add new feature
+        return true;
     }
 
     /**
