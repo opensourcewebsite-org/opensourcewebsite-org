@@ -22,6 +22,17 @@ class ModelRelationService
     public $rule = [];
 
     /**
+     * @param $modelClass
+     * @param $attributes
+     *
+     * @return ActiveRecord
+     */
+    public function fillModel($modelClass, $attributes)
+    {
+        return new $modelClass($attributes);
+    }
+
+    /**
      * @param $attributeConfig
      * @param $id
      *
@@ -101,8 +112,8 @@ class ModelRelationService
      */
     public function getRelationAttributes($relation)
     {
-        $className = $this->controller->getModelClassByRule($this->rule);
-        $relationAttributes = $relation['attributes'];
+        $className = $this->controller->getModelClassByRule($this->controller->rule);
+        $relationAttributes = $relation['attributes'] ?? [];
         $primaryRelation = [];
         $secondaryRelation = [];
         $thirdRelation = [];

@@ -36,6 +36,7 @@ abstract class CrudController extends Controller
     const FIELD_NAME_ATTRIBUTE = 'attributeName';
     const FIELD_EDITING_ATTRIBUTES = 'editingAttributes';
     const FIELD_NAME_ID = 'id';
+    const VALUE_NO = 'NO';
 
     /** @var BackRouteService */
     public $backRoute;
@@ -79,7 +80,7 @@ abstract class CrudController extends Controller
         );
         $this->viewFile = Yii::createObject(['class' => ViewFileService::class, 'controller' => $this,]);
         $this->modelRelation = Yii::createObject([
-            'class' => ModelRelationService::class, 'controller' => $this, 'rule' => $this->rule,
+            'class' => ModelRelationService::class, 'controller' => $this,
         ]);
         $this->field = Yii::createObject([
             'class' => IntermediateFieldService::class, 'controller' => $this, 'state' => $module->userState,
@@ -102,8 +103,8 @@ abstract class CrudController extends Controller
         }
         if (isset($params['m'])) {
             $this->rule = $this->getRule($params['m']);
-        } else {
-            $this->rule = $this->getRule($this->getModelName($this->getCurrentModelClass()));
+        } elseif ($modelClass = $this->getCurrentModelClass()) {
+            $this->rule = $this->getRule($this->getModelName($modelClass));
         }
 
         return parent::bindActionParams($action, $params);
@@ -351,8 +352,11 @@ abstract class CrudController extends Controller
                 }
                 $relationAttribute = $relationAttributes[$relationAttributeName];
                 if ($v) {
-                    if (!($relationModel = $this->modelRelation->getThirdModel($config, $v))
-                        && !($relationModel = $this->modelRelation->getSecondModel($config, $v))) {
+                    if (in_array($relationAttributeName, $thirdRelation)) {
+                        $relationModel = $this->modelRelation->getThirdModel($config, $v);
+                    } elseif (in_array($relationAttributeName, $secondaryRelation)) {
+                        $relationModel = $this->modelRelation->getSecondModel($config, $v);
+                    } elseif (in_array($relationAttributeName, $primaryRelation)) {
                         $relationModel = $this->modelRelation->getFirstModel($config, $v);
                     }
                 } elseif ($text && ($field = ($relationAttribute[2] ?? null))) {
@@ -415,7 +419,7 @@ abstract class CrudController extends Controller
                     }
                 );
                 $relationData = array_values($relationData);
-                $editableId = array_key_last($relationData);
+                $editableId = 'v_' . array_key_last($relationData);
                 if ($isManyToOne && ($modelField = array_key_first($relationAttributes))) {
                     $this->field->set($modelName, $modelField, $relationModel->id);
                 }
@@ -777,27 +781,24 @@ abstract class CrudController extends Controller
             if (($relation = $this->modelRelation->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
                 [, $secondaryRelation] = $this->modelRelation->getRelationAttributes($relation);
                 $relationAttributeName = $this->field->get($modelName, self::FIELD_NAME_RELATION, null);
-                if (!isset($relationAttributeName)) {
-                    $items = $this->field->get($modelName, $attributeName, []);
-                    if (preg_match('|v_(\d+)|', $i, $match)) {
-                        unset($items[$match[1]]);
-                    } else {
-                        foreach ($items as $key => $item) {
-                            if ($item[$secondaryRelation[0]] == $i) {
-                                unset($items[$key]);
-                                break;
-                            }
-                        }
-                    }
-                    $items = array_values($items);
-                    $this->field->set($modelName, $attributeName, $items);
 
-                    return $this->generatePrivateResponse(
-                        $modelName,
-                        $attributeName,
-                        ['config' => $attributes[$attributeName]]
-                    );
+                $items = $this->field->get($modelName, $attributeName, []);
+                if (preg_match('|v_(\d+)|', $i, $match)) {
+                    unset($items[$match[1]]);
+                } else {
+                    $model = $this->getModel($relation, $i);
+                    if ($model) {
+                        $model->delete();
+                    }
                 }
+                $items = array_values($items);
+                $this->field->set($modelName, $attributeName, $items);
+
+                return $this->generateResponse(
+                    $modelName,
+                    $attributeName,
+                    ['config' => $attributes[$attributeName], 'rule' => $this->rule]
+                );
             }
         }
 
@@ -1372,9 +1373,6 @@ abstract class CrudController extends Controller
                             ];
                             if (!$useDynamicModel) {
                                 $conditions[$secondaryRelation[0]] = $attributeValue[$secondaryRelation[0]];
-                                if ($thirdRelation) {
-                                    $conditions[$thirdRelation[0]] = $attributeValue[$thirdRelation[0]];
-                                }
                             }
                             /** @var ActiveRecord $relationModel */
                             $relationModel = call_user_func(
@@ -1415,9 +1413,9 @@ abstract class CrudController extends Controller
                             $query = call_user_func([$relationModelClass, 'find'], []);
                             $itemsToDelete = $query->where([
                                 'NOT IN',
-                                $primaryRelation[0],
+                                $primaryRelation[1],
                                 $appendedIds,
-                            ])->andWhere([$secondaryRelation[0] => $model->id])->all();
+                            ])->andWhere([$primaryRelation[0] => $model->id])->all();
                             foreach ($itemsToDelete as $itemToDelete) {
                                 $itemToDelete->delete();
                             }
@@ -1506,7 +1504,7 @@ abstract class CrudController extends Controller
                     'text' => Yii::t('bot', $isEdit ? 'No' : 'Skip'),
                     'callback_data' => self::createRoute(
                         $isPrivateAttribute ? 's-a' : 'en-a',
-                        ['a' => $attributeName]
+                        ['a' => $attributeName, 'text' => self::VALUE_NO]
                     ),
                 ],
                 $buttonSkip
@@ -1559,7 +1557,6 @@ abstract class CrudController extends Controller
         if ($editableId && in_array($relationAttributeName, $thirdRelation)) {
             if (preg_match('|v_(\d+)|', $editableId, $match)) {
                 $id = $attributeValues[$match[1]][$secondaryRelation[0]] ?? null;
-                $relationModel = $this->modelRelation->getMainModel($rule, $relation, $id);
             } else {
                 $model = $this->getModel($relation, $editableId);
                 $id = $model->{$secondaryRelation[0]};
@@ -1613,7 +1610,7 @@ abstract class CrudController extends Controller
             $systemButtons = $this->generateSystemButtons(
                 $modelName,
                 $attributeName,
-                compact('isEmpty', 'enableGlobalBackRoute', 'modelId')
+                compact('isEmpty', 'enableGlobalBackRoute', 'modelId', 'editableId')
             );
             $buttons = $this->prepareButtons(
                 $itemButtons,
@@ -1656,12 +1653,15 @@ abstract class CrudController extends Controller
             },
             function ($key, $item) use ($rule, $relation, $modelId, $isAttributeRequired, $secondaryRelation, $attributeValues) {
                 try {
-                    $model = $this->modelRelation->getMainModel(
-                        $rule,
-                        $relation,
-                        $modelId,
-                        $item[$secondaryRelation[0]],
-                    );
+                    if ($modelId) {
+                        $model = $this->modelRelation->getMainModel(
+                            $relation,
+                            $modelId,
+                            $item[$secondaryRelation[0]],
+                        );
+                    } else {
+                        $model = $this->modelRelation->fillModel($relation['model'], $item);
+                    }
                     $label = $this->getLabel($model);
                     if ($modelId) {
                         $id = $model->id;
@@ -1813,7 +1813,7 @@ abstract class CrudController extends Controller
     {
         $rule = ArrayHelper::getValue($options, 'rule', []);
         $enableGlobalBackRoute = ArrayHelper::getValue($options, 'enableGlobalBackRoute', false);
-        $config = $rule['attributes'][$attributeName];
+        $config = $this->rule['attributes'][$attributeName];
         if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
             $attributes = $config['relation']['attributes'];
             $relationAttributeName = (count($attributes) == 1) ? array_keys($attributes)[0] : null;
@@ -1900,6 +1900,7 @@ abstract class CrudController extends Controller
     {
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', false);
         $modelId = ArrayHelper::getValue($options, 'modelId', null);
+        $editableId = ArrayHelper::getValue($options, 'editableId', null);
         $isEdit = !is_null($modelId);
         $enableGlobalBackRoute = ArrayHelper::getValue($options, 'enableGlobalBackRoute', false);
         $rule = $this->getRule($modelName);
@@ -1919,7 +1920,7 @@ abstract class CrudController extends Controller
         $relationAttributeName = $this->field->get($modelName, self::FIELD_NAME_RELATION, null);
         $isAttributeRequired = $config['isRequired'] ?? true;
         $relation = $this->modelRelation->getRelation($config);
-
+        [, $secondRelation, $thirdRelation] = $this->modelRelation->getRelationAttributes($relation);
         if (($config['enableDeleteButton'] ?? false) && (!isset($relation) || count($relation['attributes']) == 1)) {
             /* 'Clear' button */
             if (!$isAttributeRequired && !$isEmpty) {
@@ -1940,13 +1941,13 @@ abstract class CrudController extends Controller
                 ),
             ];
         }
-        if ($relationAttributeName) {
+        if ($relationAttributeName && in_array($relationAttributeName, $thirdRelation)) {
             $systemButtons['delete'] = [
                 'text' => Emoji::DELETE,
                 'callback_data' => self::createRoute(
                     'r-a',
                     [
-                        'i' => 1,
+                        'i' => $editableId,
                     ]
                 ),
             ];
