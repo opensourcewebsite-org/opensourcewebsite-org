@@ -286,7 +286,7 @@ class Module extends \yii\base\Module
         }
 
         $defaultRoute = $this->telegramChat->isPrivate()
-            ? 'default/command-not-found'
+            ? 'default/delete-message'
             : 'message/index';
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
 

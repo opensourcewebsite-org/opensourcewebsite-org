@@ -86,7 +86,7 @@ class CronJobController extends Controller
      */
     protected function findJobModel()
     {
-        if (($model = CronJob::findAll([1 => 1])) !== null) {
+        if (($model = CronJob::find()->all()) !== null) {
             return $model;
         }
 

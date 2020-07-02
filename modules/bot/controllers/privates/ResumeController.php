@@ -126,7 +126,7 @@ class ResumeController extends CrudController
                     'search_radius' => [
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No radius'),
+                                'text' => Yii::t('bot', 'No'),
                                 'callback' => function (Resume $model) {
                                     $model->search_radius = 0;
 
