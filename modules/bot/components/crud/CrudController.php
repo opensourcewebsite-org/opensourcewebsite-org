@@ -368,7 +368,7 @@ abstract class CrudController extends Controller
                         $relationModel = $this->modelRelation->getFirstModel($config, $v);
                     }
                 } elseif ($text && ($field = ($relationAttribute[2] ?? null))) {
-                    $relationQuery = call_user_func([$primaryRelation[2], 'find']);
+                    $relationQuery = call_user_func([$relationAttribute[0], 'find']);
                     $queryConditions = [];
                     if (is_array($field)) {
                         foreach ($field as $item) {
