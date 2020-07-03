@@ -1416,9 +1416,15 @@ abstract class CrudController extends Controller
                             foreach ($attributeValue as $name => $value) {
                                 $relationModel->setAttribute($name, $value);
                             }
-                            if (!$relationModel->save()) {
-                                throw new Exception("not possible to save "
-                                    . $relationModel->formName() . " because " . serialize($relationModel->getErrors()));
+                            try {
+                                if (!$relationModel->save()) {
+                                    throw new Exception("not possible to save "
+                                        . $relationModel->formName() . " because " . serialize($relationModel->getErrors()));
+                                }
+                            } catch (\yii\db\Exception $exception) {
+                                Yii::error("Row in " . $relationModelClass
+                                    . " was not added with attributes " . serialize($attributeValue)
+                                    . " because: " . $exception->getMessage());
                             }
                             $appendedIds[] = $relationModel->id;
                         }

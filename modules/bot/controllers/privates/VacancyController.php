@@ -85,6 +85,7 @@ class VacancyController extends CrudController
                         ],
                         'buttons' => [
                             [
+                                'editMode' => false,
                                 'text' => Yii::t('bot', 'Next'),
                                 'callback' => function (Vacancy $model) {
                                     return $model;
