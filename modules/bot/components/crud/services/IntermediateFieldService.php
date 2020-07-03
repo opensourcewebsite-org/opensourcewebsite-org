@@ -1,0 +1,89 @@
+<?php
+
+
+namespace app\modules\bot\components\crud\services;
+
+use app\modules\bot\components\Controller;
+use app\modules\bot\models\UserState;
+
+/**
+ * Class IntermediateFieldService
+ *
+ * @package app\modules\bot\components\crud\services
+ */
+class IntermediateFieldService
+{
+    public const SAFE_ATTRIBUTE = 'vacanciesCompanyId';
+    /** @var Controller */
+    public $controller;
+    /** @var UserState */
+    public $state;
+
+    /**
+     * @param string $modelName $this->getModelName()
+     * @param string|array $attributeName
+     * @param string|array $value
+     */
+    public function set($modelName, $attributeName, $value = '')
+    {
+        if (is_array($attributeName) && !$value) {
+            $this->setArray($modelName, $attributeName);
+        } else {
+            $this->state->setIntermediateField($this->createName($modelName, $attributeName), $value);
+        }
+    }
+
+    /**
+     * @param string $modelName
+     * @param string $attributeName
+     * @param null $defaultValue
+     *
+     * @return mixed|null
+     */
+    public function get($modelName, $attributeName, $defaultValue = null)
+    {
+        $name = $this->createName($modelName, $attributeName);
+
+        return $this->state->getIntermediateField($name, $defaultValue);
+    }
+
+    /**
+     * @param string $modelName
+     * @param array $values
+     */
+    private function setArray($modelName, $values)
+    {
+        $this->state->setIntermediateFields($this->createName($modelName, $values));
+    }
+
+    public function reset()
+    {
+        $backRoute = $this->controller->backRoute->get();
+        $endRoute = $this->controller->endRoute->get();
+        $safeAttribute = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE);
+        $this->state->reset();
+        $this->controller->backRoute->set($backRoute);
+        $this->controller->endRoute->set($endRoute);
+        $this->state->setIntermediateField(self::SAFE_ATTRIBUTE, $safeAttribute);
+    }
+
+    /**
+     * @param string $modelName
+     * @param string|array $fieldName
+     *
+     * @return string|array
+     */
+    public function createName($modelName, $fieldName)
+    {
+        if (is_array($fieldName)) {
+            $names = [];
+            foreach ($fieldName as $key => $item) {
+                $names[$this->createName($modelName, $key)] = $item;
+            }
+
+            return $names;
+        }
+
+        return $modelName . $fieldName;
+    }
+}
