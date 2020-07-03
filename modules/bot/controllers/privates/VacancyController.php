@@ -71,8 +71,8 @@ class VacancyController extends CrudController
                     'requirements' => [],
                     'conditions' => [],
                     'languages' => [
+                        'samePageAfterAdd' => true,
                         'enableAddButton' => true,
-                        'isRequired' => false,
                         'showRowsList' => true,
                         'relation' => [
                             'model' => VacancyLanguage::class,
@@ -82,6 +82,14 @@ class VacancyController extends CrudController
                                 'language_level_id' => [LanguageLevel::class, 'id', 'code'],
                             ],
                             'removeOldRows' => true,
+                        ],
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Next'),
+                                'callback' => function (Vacancy $model) {
+                                    return $model;
+                                },
+                            ],
                         ],
                     ],
                     'currency' => [
@@ -133,7 +141,6 @@ class VacancyController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
-                                'createMode' => false,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (Vacancy $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -159,7 +166,8 @@ class VacancyController extends CrudController
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['company_id'],
                                 ],
                                 'attribute' => 'company_id',
-                                'value' => $this->getState()->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
+                                'value' => $this->getState()
+                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
                             ],
                         ],
                         'hidden' => true,
@@ -173,7 +181,8 @@ class VacancyController extends CrudController
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
                                 ],
                                 'attribute' => 'user_id',
-                                'value' => $this->getState()->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE)
+                                'value' => $this->getState()
+                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE)
                                     ? null : $this->module->user->id,
                             ],
                         ],

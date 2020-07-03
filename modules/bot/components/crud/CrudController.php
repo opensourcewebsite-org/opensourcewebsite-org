@@ -449,7 +449,12 @@ abstract class CrudController extends Controller
         }
         if ($isValidRequest) {
             $isEdit = !is_null($this->field->get($modelName, self::FIELD_NAME_ID, null));
-            $nextAttribute = $this->getNextKey($attributes, $attributeName);
+
+            if ($config['samePageAfterAdd'] ?? false) {
+                $nextAttribute = $attributeName;
+            } else {
+                $nextAttribute = $this->getNextKey($attributes, $attributeName);
+            }
             if (isset($nextAttribute) && !$isEdit) {
                 return $this->generateResponse($modelName, $nextAttribute, compact('rule'));
             }
@@ -750,7 +755,7 @@ abstract class CrudController extends Controller
                     );
                 }
             }
-            if ($thirdRelation) {
+            if ($thirdRelation && $relationAttributeName) {
                 $prevAttributeName = $attributeName;
             } else {
                 $prevAttributeName = $this->getPrevKey($attributes, $attributeName);
@@ -1499,7 +1504,11 @@ abstract class CrudController extends Controller
         $rule = $this->getRule($modelName);
         $modelId = $this->field->get($modelName, self::FIELD_NAME_ID, null);
         $isEdit = !is_null($modelId);
-        $configButtons = $this->attributeButtons->get($rule, $attributeName, $modelId);
+        if (!$relationAttributeName) {
+            $configButtons = $this->attributeButtons->get($rule, $attributeName, $modelId);
+        } else {
+            $configButtons = [];
+        }
         if ($configButtons) {
             foreach ($configButtons as $configButton) {
                 $buttons[] = [$configButton];
