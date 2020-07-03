@@ -8,6 +8,7 @@ use app\models\Vacancy;
 use yii\db\ActiveQuery;
 use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
+use yii\db\Expression;
 
 /**
  * Class VacancyQuery
@@ -26,22 +27,15 @@ class VacancyQuery extends ActiveQuery
     }
 
     /**
-     * @return $this
+     * @return VacancyQuery
      */
-    public function languages($userId)
+    public function languages()
     {
-        $userLanguages = UserLanguage::findAll(['user_id' => $userId]);
         $this->joinWith('languagesRelation as lang');
-        $conditions = [];
-        foreach ($userLanguages as $userLanguage) {
-            $conditions[] = new AndCondition([
-                ['lang.language_id' => $userLanguage->language_id],
-                ['<=', 'lang.language_level_id', $userLanguage->language_level_id],
-            ]);
-        }
-        if ($conditions) {
-            $this->andWhere(new OrCondition($conditions));
-        }
+        $this->leftJoin(UserLanguage::tableName(), UserLanguage::tableName() . '.user_id=' . Vacancy::tableName() . '.user_id');
+        $this->andWhere(new Expression('(SELECT ' . UserLanguage::tableName()
+            . '.language_level_id FROM ' . UserLanguage::tableName() . ' WHERE '
+            . UserLanguage::tableName() . '.language_id = lang.language_id) >= lang.language_level_id'));
 
         return $this;
     }

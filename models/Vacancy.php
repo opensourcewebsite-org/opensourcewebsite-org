@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\models\queries\VacancyQuery;
+use app\models\User as GlobalUser;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -144,6 +145,33 @@ class Vacancy extends ActiveRecord
 
     /**
      * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getAllMatches()
+    {
+        return $this->hasMany(Resume::className(), ['id' => 'resume_id'])
+            ->viaTable('{{%job_match}}', ['vacancy_id' => 'id']);
+    }
+
+    public function updateMatches()
+    {
+        $this->unlinkAll('allMatches', true);
+    }
+
+    public function markToUpdateMatches()
+    {
+        if ($this->processed_at !== null) {
+            $this->unlinkAll('matches', true);
+
+            $this->setAttributes([
+                'processed_at' => null,
+            ]);
+            $this->save();
+        }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
      */
     public function getCurrencyRelation()
     {
@@ -155,7 +183,7 @@ class Vacancy extends ActiveRecord
      */
     public function getLanguagesRelation()
     {
-        return $this->hasMany(VacancyLanguage::class, [ 'vacancy_id' => 'id' ]);
+        return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
     }
 
     /**
@@ -171,5 +199,15 @@ class Vacancy extends ActiveRecord
         }
 
         return $currencyCode;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getGlobalUser()
+    {
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
     }
 }

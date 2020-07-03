@@ -3,10 +3,12 @@
 namespace app\models;
 
 use app\models\queries\ResumeQuery;
+use app\models\User as GlobalUser;
 use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\conditions\AndCondition;
 
 /**
  * Class Resume
@@ -132,12 +134,42 @@ class Resume extends ActiveRecord
      */
     public function getMatches()
     {
-        $query = Vacancy::find()->active()->languages($this->user_id);
+        $query = Vacancy::find()->active()->languages();
         if ($this->min_hourly_rate) {
-            $query->andWhere(['>=', 'max_hourly_rate', $this->min_hourly_rate]);
+            $conditions = [];
+            $conditions[] = ['>=', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate];
+            $conditions[] = [Vacancy::tableName() . '.currency_id' => $this->currency_id];
+            $query->andWhere(new AndCondition($conditions));
         }
 
         return $query;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getAllMatches()
+    {
+        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+            ->viaTable('{{%job_match}}', ['resume_id' => 'id']);
+    }
+
+    public function updateMatches()
+    {
+        $this->unlinkAll('allMatches', true);
+    }
+
+    public function markToUpdateMatches()
+    {
+        if ($this->processed_at !== null) {
+            $this->unlinkAll('matches', true);
+
+            $this->setAttributes([
+                'processed_at' => null,
+            ]);
+            $this->save();
+        }
     }
 
     /**
@@ -161,5 +193,15 @@ class Resume extends ActiveRecord
         }
 
         return $currencyCode;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getGlobalUser()
+    {
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
     }
 }

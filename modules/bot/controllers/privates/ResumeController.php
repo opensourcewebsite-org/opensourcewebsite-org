@@ -163,6 +163,8 @@ class ResumeController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
+        $model->markToUpdateMatches();
+
         return $this->actionView($model->id);
     }
 
