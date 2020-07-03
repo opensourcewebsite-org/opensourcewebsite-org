@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\VacancyQuery;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -79,6 +80,14 @@ class Vacancy extends ActiveRecord
     }
 
     /**
+     * @return VacancyQuery|\yii\db\ActiveQuery
+     */
+    public static function find()
+    {
+        return new VacancyQuery(get_called_class());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function attributeLabels()
@@ -116,6 +125,21 @@ class Vacancy extends ActiveRecord
     public function isActive()
     {
         return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getMatches()
+    {
+        $query = Resume::find()->active();
+        if ($this->max_hourly_rate) {
+            $query->andWhere(['<=', 'min_hourly_rate', $this->max_hourly_rate])
+                ->andWhere(['IS NOT', 'min_hourly_rate', null]);
+        }
+
+        return $query;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\ResumeQuery;
 use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\behaviors\TimestampBehavior;
@@ -50,7 +51,7 @@ class Resume extends ActiveRecord
                     'location_lat',
                     'location_lon',
                 ],
-                'double'
+                'double',
             ],
             [
                 [
@@ -79,6 +80,14 @@ class Resume extends ActiveRecord
     }
 
     /**
+     * @return ResumeQuery
+     */
+    public static function find()
+    {
+        return new ResumeQuery(get_called_class());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function attributeLabels()
@@ -96,7 +105,7 @@ class Resume extends ActiveRecord
      */
     public function getCurrency()
     {
-        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /** @inheritDoc */
@@ -115,6 +124,20 @@ class Resume extends ActiveRecord
     public function isActive()
     {
         return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getMatches()
+    {
+        $query = Vacancy::find()->active()->languages($this->user_id);
+        if ($this->min_hourly_rate) {
+            $query->andWhere(['>=', 'max_hourly_rate', $this->min_hourly_rate]);
+        }
+
+        return $query;
     }
 
     /**

@@ -13,6 +13,7 @@ use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\response\ResponseBuilder;
 use Yii;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
@@ -324,6 +325,49 @@ class VacancyController extends CrudController
             ];
         }
 
+        $buttons = [];
+        $buttons[] = [
+            [
+                'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', $isEnabled ? 'ON' : 'OFF'),
+                'callback_data' => self::createRoute('update-status', [
+                    'vacancyId' => $vacancyId,
+                    'isEnabled' => !$isEnabled,
+                ]),
+            ],
+        ];
+
+        $matchedResumeCount = $vacancy->getMatches()->count();
+        if ($matchedResumeCount > 0) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('resume-matches', ['vacancyId' => $vacancyId]),
+                'text' => '🙋‍♂️ ' . $matchedResumeCount,
+            ];
+        }
+
+        $buttons[] = [
+            $backButton,
+            [
+                'text' => Emoji::MENU,
+                'callback_data' => MenuController::createRoute(),
+            ],
+            [
+                'text' => Emoji::EDIT,
+                'callback_data' => self::createRoute(
+                    'u',
+                    [
+                        'm' => $this->getModelName(Vacancy::class),
+                        'i' => $vacancyId,
+                    ]
+                ),
+            ],
+            [
+                'text' => Emoji::DELETE,
+                'callback_data' => self::createRoute('delete', [
+                    'vacancyId' => $vacancyId,
+                ]),
+            ],
+        ];
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
@@ -342,40 +386,79 @@ class VacancyController extends CrudController
                         return $vacancyLanguage->getDisplayName();
                     }, $vacancy->languagesRelation),
                 ]),
-                [
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', $isEnabled ? 'ON' : 'OFF'),
-                            'callback_data' => self::createRoute('update-status', [
-                                'vacancyId' => $vacancyId,
-                                'isEnabled' => !$isEnabled,
-                            ]),
-                        ],
-                    ],
-                    [
-                        $backButton,
-                        [
-                            'text' => Emoji::MENU,
-                            'callback_data' => MenuController::createRoute(),
-                        ],
-                        [
-                            'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(Vacancy::class),
-                                    'i' => $vacancyId,
-                                ]
-                            ),
-                        ],
-                        [
-                            'text' => Emoji::DELETE,
-                            'callback_data' => self::createRoute('delete', [
-                                'vacancyId' => $vacancyId,
-                            ]),
-                        ],
-                    ],
+                $buttons,
+                true
+            )
+            ->build();
+    }
+
+    public function actionResumeMatches($vacancyId, $page = 1)
+    {
+        $resume = Vacancy::findOne($vacancyId);
+        $vacanciesQuery = $resume->getMatches();
+
+        $pagination = new Pagination(
+            [
+                'totalCount' => $vacanciesQuery->count(),
+                'pageSize' => 1,
+                'params' => [
+                    'page' => $page,
                 ],
+                'pageSizeParam' => false,
+                'validatePage' => true,
+            ]
+        );
+
+        $paginationButtons = PaginationButtons::build(
+            $pagination,
+            function ($page) use ($vacancyId) {
+                return self::createRoute(
+                    'resume-matches',
+                    [
+                        'vacancyId' => $vacancyId,
+                        'page' => $page,
+                    ]
+                );
+            }
+        );
+
+        $buttons = [];
+
+        $buttons[] = $paginationButtons;
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', ['vacancyId' => $vacancyId]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $resume = $vacanciesQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all()[0];
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render(
+                    'resume-matches',
+                    [
+                        'model' => $resume,
+                        'name' => $resume->name,
+                        'hourlyRate' => $resume->min_hourly_rate,
+                        'experiences' => $resume->experiences,
+                        'expectations' => $resume->expectations,
+                        'skills' => $resume->skills,
+                        'currencyCode' => $resume->currencyCode,
+                        'isActive' => $resume->isActive(),
+                        'remote_on' => $resume->remote_on,
+                        'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
+                    ]
+                ),
+                $buttons,
                 true
             )
             ->build();
