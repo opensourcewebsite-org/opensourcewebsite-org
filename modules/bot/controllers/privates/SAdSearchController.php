@@ -208,7 +208,7 @@ class SAdSearchController extends CrudController
 
         $adSearchQuery = AdSearch::find()
             ->where([
-                'user_id' => $this->getTelegramUser()->id,
+                'user_id' => $this->getTelegramUser()->user_id,
                 'section' => $adSection,
             ])
             ->orderBy(['status' => SORT_DESC, 'title' => SORT_ASC]);;
