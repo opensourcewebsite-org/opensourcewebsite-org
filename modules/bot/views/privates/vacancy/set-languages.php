@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Your Languages') ?>
+<?= Yii::t('bot', 'Required languages') ?>

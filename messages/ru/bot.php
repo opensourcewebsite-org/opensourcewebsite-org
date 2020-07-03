@@ -291,4 +291,7 @@ return [
     'Edit currency' => 'Изменить валюту',
     'No pickup' => 'Без самовывоза',
     'Remote work' => 'Удаленная занятость',
+    'Required languages' => 'Необходимые языки',
+    'Choose a language or type it' => 'Выберите язык или введите его',
+    'Choose a minimum level of' => 'Выберите минимальный уровень для',
 ];
