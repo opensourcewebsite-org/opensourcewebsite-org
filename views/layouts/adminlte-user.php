@@ -197,6 +197,12 @@ $leftMenuItems = [
         'route' => '/wikinews-pages/index',
     ],
     [
+        'title' => 'Currency Exchange',
+        'icon' => 'far fa-circle',
+        'url' => 'currency-exchange-order',
+        'route' => '/currency-exchange-order',
+    ],
+    [
         'title' => 'COMMUNITY',
         'icon' => 'fas fa-users',
     ],
