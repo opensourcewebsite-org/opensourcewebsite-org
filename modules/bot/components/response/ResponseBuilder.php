@@ -269,7 +269,7 @@ class ResponseBuilder
      * @return $this
      */
     public function editMessageReplyMarkup(
-        array $replyMarkup = null
+        array $replyMarkup = []
     ) {
         if ($callbackQuery = $this->update->getCallbackQuery()) {
             $this->answerCallbackQuery();
@@ -321,7 +321,7 @@ class ResponseBuilder
      * @param bool $disablePreview
      * @return $this
      */
-    public function sendMessage(MessageText $messageText, array $replyMarkup = null, bool $disablePreview = false, array $optionalParams = [])
+    public function sendMessage(MessageText $messageText, array $replyMarkup = [], bool $disablePreview = false, array $optionalParams = [])
     {
         $chatId = null;
         if ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
