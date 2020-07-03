@@ -46,4 +46,12 @@ class Language extends \yii\db\ActiveRecord
             'name_ascii' => Yii::t('app', 'Name Ascii'),
         ];
     }
+
+    /**
+     * @return string
+     */
+    public function getLanguageLabel()
+    {
+        return strtoupper($this->code) . ' - ' . $this->name;
+    }
 }
