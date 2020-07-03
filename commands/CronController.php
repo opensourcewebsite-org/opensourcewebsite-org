@@ -1,14 +1,15 @@
 <?php
+
 namespace app\commands;
 
+use Yii;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\CronJob;
 use app\models\CronJobConsole;
 use yii\console\Controller;
 use app\components\CustomConsole;
-use Yii;
-use yii\web\NotFoundHttpException;
+use yii\console\Exception;
 
 /**
  * CronController is a cron manager.
@@ -16,20 +17,20 @@ use yii\web\NotFoundHttpException;
  * Instance https://github.com/opensourcewebsite-org/osw-devops/blob/master/pillar/prod/supervisor.sls#L22
  *
  * @property array $map
- * @property bool $log
+ * @property bool $log use param --log to show logs
  */
 class CronController extends Controller
 {
     use ControllerLogTrait;
 
-    const INTERVAL = 60;
+    const INTERVAL = 60; // seconds
     const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
 
-    private $_cronJobs;
+    private $cronJobs;
 
     /**
-     * Map of input data
+     * Map of input data with cron jobs
      *
      * @var array
      */
@@ -38,6 +39,7 @@ class CronController extends Controller
         'WikinewsParser',
         'Debt',
         'AdMatches',
+        'Bot'
     ];
 
     /**
@@ -67,11 +69,12 @@ class CronController extends Controller
     public function actionIndex()
     {
         $this->outputLogState();
-        $this->_cronJobs = CronJobConsole::find()->all();
+        $this->cronJobs = CronJobConsole::find()->all();
 
-        if (empty($this->_cronJobs)) {
-            //TODO bug: `web` Exception throwed in `console` app
-            throw new NotFoundHttpException;
+//$this->cronJobs = [];
+
+        if (empty($this->cronJobs)) {
+            throw new Exception('Cron jobs not found');
         }
 
         while (true) {
@@ -82,7 +85,7 @@ class CronController extends Controller
             );
 
             /** @var CronJobConsole $script */
-            foreach ($this->_cronJobs as $script) {
+            foreach ($this->cronJobs as $script) {
                 if ($script->status !== CronJobConsole::STATUS_ON) {
                     continue;
                 }
@@ -90,8 +93,8 @@ class CronController extends Controller
                 $job = static::PREFIX . $script->name . static::POSTFIX;
 
                 $this->output(
-                    "[PROCESS] Started script: $script->name",
-                    [CustomConsole::FG_YELLOW, CustomConsole::BOLD]
+                    "[STARTED] $script->name",
+                    [CustomConsole::FG_GREEN, CustomConsole::BOLD]
                 );
 
                 /** @var ControllerLogTrait|CronChainedInterface $controller */
@@ -102,7 +105,7 @@ class CronController extends Controller
                 CronJob::updateAll(['updated_at' => time()], ['name' => $script->name]);
 
                 $this->output(
-                    "[OK]script $script->name finished ",
+                    "[FINISHED] $script->name",
                     [CustomConsole::FG_GREEN, CustomConsole::BOLD]
                 );
             }

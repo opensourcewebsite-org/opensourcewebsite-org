@@ -21,7 +21,7 @@ class CoreController extends Controller
 
     public function actionCheckRating()
     {
-        echo "Checking: Ratings\n";
+        echo "Checking: Ratings.\n";
 
         $totalRatingByRatings = Rating::getTotalRating();
         $totalRatingByUsers = User::getTotalRating();
@@ -35,9 +35,9 @@ class CoreController extends Controller
                 $user->updateRating();
             }
 
-            echo "Updated user ratings...\n";
+            echo "Updated user ratings.\n";
         }
 
-        echo "Checked: Ratings\n";
+        echo "Checked: Ratings.\n";
     }
 }

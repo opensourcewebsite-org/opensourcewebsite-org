@@ -3,12 +3,9 @@
 namespace app\commands;
 
 use Yii;
-use app\commands\traits\ControllerLogTrait;
-use app\interfaces\CronChainedInterface;
-use app\models\WikinewsLanguage;
-use app\models\WikinewsPage;
 use yii\console\Controller;
-use yii\httpclient\Client;
+use app\interfaces\CronChainedInterface;
+use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\AdOffer;
 use app\modules\bot\models\AdSearch;
 
@@ -18,21 +15,18 @@ class AdMatchesController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        $this->output('Running ad matches...');
         $this->update();
     }
 
     protected function update()
     {
-        $this->output('Runnning update...');
-
         $this->updateAdOffers();
         $this->updateAdSearches();
     }
 
     protected function updateAdSearches()
     {
-        $this->output('Running updateAdSearch...');
+        $updatesCount = 0;
 
         $adSearchQuery = AdSearch::find()
             ->where(['ad_search.processed_at' => null])
@@ -43,6 +37,7 @@ class AdMatchesController extends Controller implements CronChainedInterface
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($adSearchQuery->all() as $adSearch) {
+            $updatesCount++;
             $adSearch->updateMatches();
 
             $adSearch->setAttributes([
@@ -50,11 +45,15 @@ class AdMatchesController extends Controller implements CronChainedInterface
             ]);
             $adSearch->save();
         }
+
+        if ($updatesCount) {
+            $this->output('Searches updated: ' . $updatesCount);
+        }
     }
 
     protected function updateAdOffers()
     {
-        $this->output('Running updateAdOffer...');
+        $updatesCount = 0;
 
         $adOfferQuery = AdOffer::find()
             ->where(['ad_offer.processed_at' => null])
@@ -65,12 +64,17 @@ class AdMatchesController extends Controller implements CronChainedInterface
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($adOfferQuery->all() as $adOffer) {
+            $updatesCount++;
             $adOffer->updateMatches();
 
             $adOffer->setAttributes([
                 'processed_at' => time(),
             ]);
             $adOffer->save();
+        }
+
+        if ($updatesCount) {
+            $this->output('Offers updated: ' . $updatesCount);
         }
     }
 }
