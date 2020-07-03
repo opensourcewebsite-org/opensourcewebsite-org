@@ -5,8 +5,12 @@ namespace app\modules\bot\controllers\privates;
 use app\behaviors\SetAttributeValueBehavior;
 use app\models\Company;
 use app\models\Currency;
+use app\models\Language;
+use app\models\LanguageLevel;
+use app\models\VacancyLanguage;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use Yii;
@@ -55,6 +59,9 @@ class VacancyController extends CrudController
                         'isActive' => $model->isActive(),
                         'remote_on' => $model->remote_on,
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
+                        'languages' => array_map(function ($vacancyLanguage) {
+                            return $vacancyLanguage->getDisplayName();
+                        }, $model->languagesRelation),
                     ];
                 },
                 'view' => 'show',
@@ -63,6 +70,28 @@ class VacancyController extends CrudController
                     'responsibilities' => [],
                     'requirements' => [],
                     'conditions' => [],
+                    'languages' => [
+                        'samePageAfterAdd' => true,
+                        'enableAddButton' => true,
+                        'showRowsList' => true,
+                        'relation' => [
+                            'model' => VacancyLanguage::class,
+                            'attributes' => [
+                                'vacancy_id' => [Vacancy::class, 'id'],
+                                'language_id' => [Language::class, 'id', 'code'],
+                                'language_level_id' => [LanguageLevel::class, 'id', 'code'],
+                            ],
+                            'removeOldRows' => true,
+                        ],
+                        'buttons' => [
+                            [
+                                'text' => Yii::t('bot', 'Next'),
+                                'callback' => function (Vacancy $model) {
+                                    return $model;
+                                },
+                            ],
+                        ],
+                    ],
                     'currency' => [
                         'relation' => [
                             'attributes' => [
@@ -112,7 +141,6 @@ class VacancyController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
-                                'createMode' => false,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (Vacancy $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -138,7 +166,8 @@ class VacancyController extends CrudController
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['company_id'],
                                 ],
                                 'attribute' => 'company_id',
-                                'value' => $this->getState()->getIntermediateField(CrudController::SAFE_ATTRIBUTE),
+                                'value' => $this->getState()
+                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
                             ],
                         ],
                         'hidden' => true,
@@ -152,7 +181,8 @@ class VacancyController extends CrudController
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
                                 ],
                                 'attribute' => 'user_id',
-                                'value' => $this->getState()->getIntermediateField(CrudController::SAFE_ATTRIBUTE)
+                                'value' => $this->getState()
+                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE)
                                     ? null : $this->module->user->id,
                             ],
                         ],
@@ -182,7 +212,7 @@ class VacancyController extends CrudController
      */
     public function actionIndex($companyId = null, $page = 1)
     {
-        $this->getState()->setIntermediateField(self::SAFE_ATTRIBUTE, $companyId);
+        $this->getState()->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
         $company = Company::findOne($companyId);
         if ($companyId && !isset($company)) {
             return $this->getResponseBuilder()
@@ -210,7 +240,7 @@ class VacancyController extends CrudController
             ->limit($pagination->limit)
             ->all();
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
-            return self::createRoute('show', [
+            return self::createRoute('index', [
                 'companyId' => $companyId,
                 'page' => $page,
             ]);
@@ -307,6 +337,9 @@ class VacancyController extends CrudController
                     'isActive' => $vacancy->isActive(),
                     'remote_on' => $vacancy->remote_on,
                     'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
+                    'languages' => array_map(function ($vacancyLanguage) {
+                        return $vacancyLanguage->getDisplayName();
+                    }, $vacancy->languagesRelation),
                 ]),
                 [
                     [
