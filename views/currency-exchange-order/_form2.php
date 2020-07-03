@@ -11,6 +11,9 @@ use dosamigos\leaflet\widgets\Map;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use \dosamigos\leaflet\LeafLet;
+use \app\components\helpers\ArrayHelper;
+use \kartik\select2\Select2;
+use \app\models\PaymentMethod;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
@@ -64,16 +67,20 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'selling_cash_on')
-                                ->textInput(['maxlength' => true])
-                                ->label($model->getAttributeLabel('selling_cash_on')); ?>
+                            <?= $form->field($model, 'selling_cash_on')->widget(Select2::class, [
+                                'data' => ArrayHelper::map(PaymentMethod::find()->asArray()->all(), 'id', 'name'),
+                                'options' => ['placeholder' => 'Select a payment...'],
+                                'pluginOptions' => ['allowClear' => true],
+                            ]); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'buying_cash_on')
-                                ->textInput(['maxlength' => true])
-                                ->label($model->getAttributeLabel('buying_cash_on')); ?>
+                            <?= $form->field($model, 'buying_cash_on')->widget(Select2::class, [
+                                'data' => ArrayHelper::map(PaymentMethod::find()->asArray()->all(), 'id', 'name'),
+                                'options' => ['placeholder' => 'Select a payment...'],
+                                'pluginOptions' => ['allowClear' => true],
+                            ]); ?>
                         </div>
                     </div>
                 </div>
