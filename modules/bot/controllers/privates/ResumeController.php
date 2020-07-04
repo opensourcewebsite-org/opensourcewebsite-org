@@ -10,6 +10,7 @@ use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\User as TelegramUser;
 use Yii;
 use app\modules\bot\components\helpers\Emoji;
 use yii\data\Pagination;
@@ -107,7 +108,6 @@ class ResumeController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
-                                'createMode' => false,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (Resume $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -383,6 +383,7 @@ class ResumeController extends CrudController
                         'languages' => array_map(function ($vacancyLanguage) {
                             return $vacancyLanguage->getDisplayName();
                         }, $vacancy->languagesRelation),
+                        'user' => TelegramUser::findOne($vacancy->user_id),
                     ]
                 ),
                 $buttons,

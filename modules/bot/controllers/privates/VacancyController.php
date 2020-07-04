@@ -14,6 +14,7 @@ use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\User as TelegramUser;
 use Yii;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
@@ -183,9 +184,7 @@ class VacancyController extends CrudController
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
                                 ],
                                 'attribute' => 'user_id',
-                                'value' => $this->getState()
-                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE)
-                                    ? null : $this->module->user->id,
+                                'value' => $this->module->user->id,
                             ],
                         ],
                         'hidden' => true,
@@ -458,6 +457,7 @@ class VacancyController extends CrudController
                         'isActive' => $resume->isActive(),
                         'remote_on' => $resume->remote_on,
                         'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
+                        'user' => TelegramUser::findOne($resume->user_id),
                     ]
                 ),
                 $buttons,

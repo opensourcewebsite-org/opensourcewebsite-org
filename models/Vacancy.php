@@ -181,6 +181,14 @@ class Vacancy extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getCompanyRelation()
+    {
+        return $this->hasOne(Company::class, ['id' => 'company_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getLanguagesRelation()
     {
         return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
