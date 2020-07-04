@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Choose a currency for price') ?>
+<?= Yii::t('bot', 'Choose a currency for price or type it') ?>
