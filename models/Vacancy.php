@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
+use app\modules\bot\models\JobKeyword;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -217,5 +218,15 @@ class Vacancy extends ActiveRecord
     {
         return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
             ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getKeywordsRelation()
+    {
+        return $this->hasMany(JobKeyword::className(), ['id' => 'job_keyword_id'])
+            ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id']);
     }
 }

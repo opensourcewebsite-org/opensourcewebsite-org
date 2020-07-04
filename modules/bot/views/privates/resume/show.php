@@ -5,6 +5,10 @@ use app\models\Resume;
 ?>
 <b><?= Yii::t('bot', 'Resume') ?>: <?= $name ?></b><br/>
 <br/>
+<?php if ($keywords != '') : ?>
+# <i><?= $keywords ?></i><br/>
+<br/>
+<?php endif; ?>
 <?php if ($skills) : ?>
 <b><?= Yii::t('bot', 'Skills') ?>:</b><br/>
 <br/>

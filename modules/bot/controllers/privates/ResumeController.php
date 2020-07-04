@@ -6,10 +6,13 @@ use app\behaviors\SetAttributeValueBehavior;
 use app\models\Currency;
 use app\models\Resume;
 use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\JobKeyword;
+use app\modules\bot\models\JobResumeKeyword;
 use app\modules\bot\models\User as TelegramUser;
 use Yii;
 use app\modules\bot\components\helpers\Emoji;
@@ -42,6 +45,7 @@ class ResumeController extends CrudController
                         'expectations' => $model->expectations,
                         'skills' => $model->skills,
                         'currencyCode' => $model->currencyCode,
+                        'keywords' => self::getKeywordsAsString($model->getKeywordsRelation()->all()),
                         'isActive' => $model->isActive(),
                         'remote_on' => $model->remote_on,
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
@@ -58,6 +62,24 @@ class ResumeController extends CrudController
                     ],
                     'expectations' => [
                         'isRequired' => false,
+                    ],
+                    'keywords' => [
+                        //'enableAddButton' = true,
+                        'isRequired' => false,
+                        'relation' => [
+                            'model' => JobResumeKeyword::class,
+                            'attributes' => [
+                                'resume_id' => [Resume::class, 'id'],
+                                'job_keyword_id' => [JobKeyword::class, 'id', 'keyword'],
+                            ],
+                            'removeOldRows' => true,
+                        ],
+                        'component' => [
+                            'class' => ExplodeStringFieldComponent::class,
+                            'attributes' => [
+                                'delimiters' => [',', '.', "\n"],
+                            ],
+                        ],
                     ],
                     'currency' => [
                         'relation' => [
@@ -237,6 +259,22 @@ class ResumeController extends CrudController
             ->build();
     }
 
+    /**
+     * @param ActiveRecord[] $keywords
+     *
+     * @return string
+     */
+    private static function getKeywordsAsString($keywords)
+    {
+        $resultKeywords = [];
+
+        foreach ($keywords as $keyword) {
+            $resultKeywords[] = $keyword->keyword;
+        }
+
+        return implode(', ', $resultKeywords);
+    }
+
     /** @inheritDoc */
     public function actionView($resumeId)
     {
@@ -305,6 +343,7 @@ class ResumeController extends CrudController
                     'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
                     'currencyCode' => $resume->currencyCode,
+                    'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
                     'isActive' => $resume->isActive(),
                     'remote_on' => $resume->remote_on,
                     'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
@@ -379,6 +418,7 @@ class ResumeController extends CrudController
                         'company' => $vacancy->company,
                         'isActive' => $vacancy->isActive(),
                         'remote_on' => $vacancy->remote_on,
+                        'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
                         'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                         'languages' => array_map(function ($vacancyLanguage) {
                             return $vacancyLanguage->getDisplayName();

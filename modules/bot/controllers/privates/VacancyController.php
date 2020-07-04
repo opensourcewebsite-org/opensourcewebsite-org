@@ -9,11 +9,14 @@ use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\VacancyLanguage;
 use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\JobKeyword;
+use app\modules\bot\models\JobVacancyKeyword;
 use app\modules\bot\models\User as TelegramUser;
 use Yii;
 use app\models\Vacancy;
@@ -60,6 +63,7 @@ class VacancyController extends CrudController
                         'company' => $model->company,
                         'isActive' => $model->isActive(),
                         'remote_on' => $model->remote_on,
+                        'keywords' => self::getKeywordsAsString($model->getKeywordsRelation()->all()),
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                         'languages' => array_map(function ($vacancyLanguage) {
                             return $vacancyLanguage->getDisplayName();
@@ -72,6 +76,24 @@ class VacancyController extends CrudController
                     'responsibilities' => [],
                     'requirements' => [],
                     'conditions' => [],
+                    'keywords' => [
+                        //'enableAddButton' = true,
+                        'isRequired' => false,
+                        'relation' => [
+                            'model' => JobVacancyKeyword::class,
+                            'attributes' => [
+                                'vacancy_id' => [Vacancy::class, 'id'],
+                                'job_keyword_id' => [JobKeyword::class, 'id', 'keyword'],
+                            ],
+                            'removeOldRows' => true,
+                        ],
+                        'component' => [
+                            'class' => ExplodeStringFieldComponent::class,
+                            'attributes' => [
+                                'delimiters' => [',', '.', "\n"],
+                            ],
+                        ],
+                    ],
                     'languages' => [
                         'samePageAfterAdd' => true,
                         'enableAddButton' => true,
@@ -227,7 +249,7 @@ class VacancyController extends CrudController
         if ($company) {
             $query = $company->getVacancies();
         } else {
-            $query = $user->getVacancies();
+            $query = $user->getVacancies()->andWhere(['IS', 'company_id', null]);
         }
         $vacanciesCount = $query->count();
         $pagination = new Pagination([
@@ -382,6 +404,7 @@ class VacancyController extends CrudController
                     'company' => $vacancy->company,
                     'isActive' => $vacancy->isActive(),
                     'remote_on' => $vacancy->remote_on,
+                    'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
                     'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
                         return $vacancyLanguage->getDisplayName();
@@ -391,6 +414,22 @@ class VacancyController extends CrudController
                 true
             )
             ->build();
+    }
+
+    /**
+     * @param ActiveRecord[] $keywords
+     *
+     * @return string
+     */
+    private static function getKeywordsAsString($keywords)
+    {
+        $resultKeywords = [];
+
+        foreach ($keywords as $keyword) {
+            $resultKeywords[] = $keyword->keyword;
+        }
+
+        return implode(', ', $resultKeywords);
     }
 
     public function actionResumeMatches($vacancyId, $page = 1)
@@ -456,6 +495,7 @@ class VacancyController extends CrudController
                         'currencyCode' => $resume->currencyCode,
                         'isActive' => $resume->isActive(),
                         'remote_on' => $resume->remote_on,
+                        'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
                         'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                         'user' => TelegramUser::findOne($resume->user_id),
                     ]
