@@ -135,6 +135,21 @@ class Resume extends ActiveRecord
      */
     public function getMatches()
     {
+        if (!YII_DEBUG) {
+            return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+                ->viaTable('{{%job_match}}', ['resume_id' => 'id'], function ($query) {
+                    $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
+                });
+        }
+
+        return $this->getMatchedVacancies();
+    }
+
+    /**
+     * @return queries\VacancyQuery
+     */
+    public function getMatchedVacancies()
+    {
         $query = Vacancy::find()->active()->languages();
         if ($this->min_hourly_rate) {
             $conditions = [];
@@ -159,6 +174,10 @@ class Resume extends ActiveRecord
     public function updateMatches()
     {
         $this->unlinkAll('allMatches', true);
+        $vacancies = $this->getMatchedVacancies()->all();
+        foreach ($vacancies as $vacancy) {
+            $this->link('matches', $vacancy, ['type' => 2]);
+        }
     }
 
     public function markToUpdateMatches()

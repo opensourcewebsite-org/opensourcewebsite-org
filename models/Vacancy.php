@@ -135,6 +135,21 @@ class Vacancy extends ActiveRecord
      */
     public function getMatches()
     {
+        if (!YII_DEBUG) {
+            return $this->hasMany(Resume::className(), ['id' => 'resume_id'])
+                ->viaTable('{{%job_match}}', ['vacancy_id' => 'id'], function ($query) {
+                    $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
+                });
+        }
+
+        return $this->getMatchedResumes();
+    }
+
+    /**
+     * @return queries\ResumeQuery
+     */
+    public function getMatchedResumes()
+    {
         $query = Resume::find()->active();
         if ($this->max_hourly_rate) {
             $query->andWhere(['<=', 'min_hourly_rate', $this->max_hourly_rate])
@@ -157,6 +172,10 @@ class Vacancy extends ActiveRecord
     public function updateMatches()
     {
         $this->unlinkAll('allMatches', true);
+        $resumes = $this->getMatchedResumes()->all();
+        foreach ($resumes as $resume) {
+            $this->link('matches', $resume, ['type' => 2]);
+        }
     }
 
     public function markToUpdateMatches()
@@ -189,8 +208,18 @@ class Vacancy extends ActiveRecord
 
     /**
      * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
      */
     public function getLanguagesRelation()
+    {
+        return $this->hasMany(Language::className(), ['id' => 'language_id'])
+            ->viaTable('{{%vacancy_language}}', ['vacancy_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVacancyLanguagesRelation()
     {
         return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
     }

@@ -422,7 +422,7 @@ class ResumeController extends CrudController
                         'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                         'languages' => array_map(function ($vacancyLanguage) {
                             return $vacancyLanguage->getDisplayName();
-                        }, $vacancy->languagesRelation),
+                        }, $vacancy->vacancyLanguagesRelation),
                         'user' => TelegramUser::findOne($vacancy->user_id),
                     ]
                 ),

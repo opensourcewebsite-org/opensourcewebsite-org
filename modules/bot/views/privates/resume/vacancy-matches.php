@@ -5,6 +5,10 @@ use app\models\Vacancy;
 ?>
 <b><?= Yii::t('bot', 'Vacancy') ?>: <?= $name ?></b><br/>
 <br/>
+<?php if ($keywords != '') : ?>
+# <i><?= $keywords ?></i><br/>
+<br/>
+<?php endif; ?>
 <?php if ($responsibilities) : ?>
 <b><?= Yii::t('bot', 'Responsibilities') ?>:</b><br/>
 <br/>

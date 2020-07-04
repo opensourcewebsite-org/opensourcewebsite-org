@@ -31,7 +31,7 @@ class VacancyQuery extends ActiveQuery
      */
     public function languages()
     {
-        $this->joinWith('languagesRelation as lang');
+        $this->joinWith('vacancyLanguagesRelation as lang');
         $this->leftJoin(UserLanguage::tableName(), UserLanguage::tableName() . '.user_id=' . Vacancy::tableName() . '.user_id');
         $this->andWhere(new Expression('(SELECT ' . UserLanguage::tableName()
             . '.language_level_id FROM ' . UserLanguage::tableName() . ' WHERE '

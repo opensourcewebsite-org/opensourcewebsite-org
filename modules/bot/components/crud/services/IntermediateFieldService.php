@@ -13,7 +13,9 @@ use app\modules\bot\models\UserState;
  */
 class IntermediateFieldService
 {
-    public const SAFE_ATTRIBUTE = 'vacanciesCompanyId';
+    const SAFE_ATTRIBUTE = 'safeAttribute';
+    const SAFE_ATTRIBUTE_FLAG = 'safeAttributeFlag';
+
     /** @var Controller */
     public $controller;
     /** @var UserState */
@@ -85,5 +87,24 @@ class IntermediateFieldService
         }
 
         return $modelName . $fieldName;
+    }
+
+    /**
+     * remove flag after check
+     */
+    public function hasFlag()
+    {
+        $flag = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE_FLAG, null);
+        $this->state->setIntermediateField(self::SAFE_ATTRIBUTE_FLAG, null);
+
+        return $flag;
+    }
+
+    /**
+     * set flag for check in loop
+     */
+    public function enableFlag()
+    {
+        $this->state->setIntermediateField(self::SAFE_ATTRIBUTE_FLAG, true);
     }
 }

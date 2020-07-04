@@ -67,7 +67,7 @@ class VacancyController extends CrudController
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                         'languages' => array_map(function ($vacancyLanguage) {
                             return $vacancyLanguage->getDisplayName();
-                        }, $model->languagesRelation),
+                        }, $model->vacancyLanguagesRelation),
                     ];
                 },
                 'view' => 'show',
@@ -98,6 +98,7 @@ class VacancyController extends CrudController
                         'samePageAfterAdd' => true,
                         'enableAddButton' => true,
                         'showRowsList' => true,
+                        'createIfEmpty' => true,
                         'relation' => [
                             'model' => VacancyLanguage::class,
                             'attributes' => [
@@ -408,7 +409,7 @@ class VacancyController extends CrudController
                     'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
                         return $vacancyLanguage->getDisplayName();
-                    }, $vacancy->languagesRelation),
+                    }, $vacancy->vacancyLanguagesRelation),
                 ]),
                 $buttons,
                 true
