@@ -3,6 +3,7 @@
 namespace app\modules\bot\components\crud\services;
 
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\crud\CrudController;
 use Exception;
 use Yii;
 use yii\base\DynamicModel;
@@ -18,8 +19,6 @@ class ModelRelationService
 {
     /** @var Controller */
     public $controller;
-    /** @var array */
-    public $rule = [];
 
     /**
      * @param $modelClass
@@ -29,7 +28,78 @@ class ModelRelationService
      */
     public function fillModel($modelClass, $attributes)
     {
+        if (!is_array($attributes)) {
+            return null;
+        }
+
         return new $modelClass($attributes);
+    }
+
+    /**
+     * Возвращает связанные модели
+     *
+     * @param ActiveRecord $model
+     * @param $attributeName
+     *
+     * @return ActiveRecord[]
+     */
+    public function findAll(ActiveRecord $model, $attributeName)
+    {
+        $relation = $this->getRelation($this->controller->rule['attributes'][$attributeName]);
+        [$primaryRelation] = $this->getRelationAttributes($relation);
+
+        return call_user_func([$relation['model'], 'findAll'], [$primaryRelation[0] => $model->id]);
+    }
+
+    /**
+     * @param $attributeName
+     * @param int|null $modelId
+     *
+     * @return int
+     */
+    public function filledRelationCount($attributeName, $modelId = null)
+    {
+        $rule = $this->controller->rule;
+        $modelName = $this->controller->getModelName($rule['model']);
+        if (!$modelId) {
+            $modelId = $this->controller->field->get($modelName, CrudController::FIELD_NAME_ID, null);
+        }
+        if ($modelId) {
+            $model = $this->controller->getRuleModel($rule, $modelId);
+            $relationData = $this->findAll($model, $attributeName);
+        } else {
+            $relationData = $this->controller->field->get($modelName, $attributeName, []);
+            $relationData = $this->prepareRelationData($attributeName, $relationData);
+        }
+
+        return count($relationData);
+    }
+
+    /**
+     * @param array $relationData
+     *
+     * @return array
+     */
+    public function prepareRelationData($attributeName, $relationData)
+    {
+        $rule = $this->controller->rule;
+        $attributes = $this->controller->getAttributes($rule);
+        $relation = $this->getRelation($attributes[$attributeName]);
+        [, , $thirdRelation] = $this->getRelationAttributes($relation);
+
+        $relationData = array_filter(
+            $relationData,
+            function ($val) use ($thirdRelation) {
+                if ($thirdRelation && !($val[$thirdRelation[0]] ?? false)) {
+                    return false;
+                }
+
+                return $val;
+            }
+        );
+
+
+        return array_values($relationData);
     }
 
     /**
