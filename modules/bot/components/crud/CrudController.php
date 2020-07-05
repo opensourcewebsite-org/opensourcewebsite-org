@@ -742,7 +742,7 @@ abstract class CrudController extends Controller
                 if (isset($relationAttributeName) && !in_array($relationAttributeName, $thirdRelation)) {
                     $prevRelationAttributeName = $this->getPrevKey($relationAttributes, $relationAttributeName);
                     $this->field->set($modelName, self::FIELD_NAME_RELATION, $prevRelationAttributeName);
-                    if (!($config['createIfEmpty'] ?? false) || $this->modelRelation->filledRelationCount($attributeName)) {
+                    if (!($config['createRelationIfEmpty'] ?? false) || $this->modelRelation->filledRelationCount($attributeName)) {
                         return $this->generatePrivateResponse(
                             $modelName,
                             $attributeName,
@@ -1854,7 +1854,7 @@ abstract class CrudController extends Controller
                 compact('config', 'enableGlobalBackRoute')
             );
 
-            if (($config['createIfEmpty'] ?? false) && !$this->modelRelation->filledRelationCount($attributeName)) {
+            if (($config['createRelationIfEmpty'] ?? false) && !$this->modelRelation->filledRelationCount($attributeName)) {
                 return $this->actionAA($attributeName);
             }
 
@@ -1990,7 +1990,7 @@ abstract class CrudController extends Controller
         if ($relationAttributeName) {
             unset($systemButtons['add']);
         }
-        if (($config['createIfEmpty'] ?? false) && $this->modelRelation->filledRelationCount($attributeName) <= 1) {
+        if (($config['createRelationIfEmpty'] ?? false) && $this->modelRelation->filledRelationCount($attributeName) <= 1) {
             unset($systemButtons['delete']);
         }
 

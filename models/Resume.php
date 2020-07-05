@@ -158,7 +158,7 @@ class Resume extends ActiveRecord
             $query->andWhere(new AndCondition($conditions));
         }
 
-        return $query;
+        return $query->groupBy(Vacancy::tableName() . '.id');
     }
 
     /**

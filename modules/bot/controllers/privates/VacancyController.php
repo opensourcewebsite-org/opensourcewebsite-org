@@ -98,7 +98,7 @@ class VacancyController extends CrudController
                         'samePageAfterAdd' => true,
                         'enableAddButton' => true,
                         'showRowsList' => true,
-                        'createIfEmpty' => true,
+                        'createRelationIfEmpty' => true,
                         'relation' => [
                             'model' => VacancyLanguage::class,
                             'attributes' => [

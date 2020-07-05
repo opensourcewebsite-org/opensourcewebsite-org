@@ -156,7 +156,7 @@ class Vacancy extends ActiveRecord
                 ->andWhere(['IS NOT', 'min_hourly_rate', null]);
         }
 
-        return $query;
+        return $query->groupBy(Resume::tableName() . '.id');
     }
 
     /**
