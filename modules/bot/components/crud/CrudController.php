@@ -1690,8 +1690,10 @@ abstract class CrudController extends Controller
                         $label = $this->getLabel($model);
                         $id = $model->id;
                     } else {
-                        $id = 'v_' . $key;
                         $label = $item;
+                    }
+                    if (!$id) {
+                        $id = 'v_' . $key;
                     }
                 } catch (Exception $ex) {
                     if (is_array($item)) {

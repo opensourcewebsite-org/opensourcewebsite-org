@@ -157,6 +157,9 @@ class Resume extends ActiveRecord
             $conditions[] = [Vacancy::tableName() . '.currency_id' => $this->currency_id];
             $query->andWhere(new AndCondition($conditions));
         }
+        if (!YII_DEBUG) {
+            $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
+        }
 
         return $query->groupBy(Vacancy::tableName() . '.id');
     }
