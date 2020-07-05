@@ -27,7 +27,7 @@ use app\models\Resume;
 <?= nl2br($expectations) ?><br/>
 <br/>
 <?php endif; ?>
-<?php if($hourlyRate) : ?>
+<?php if ($hourlyRate) : ?>
 <b><?= Yii::t('bot', 'Min. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
 <?php endif; ?>

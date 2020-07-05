@@ -307,4 +307,11 @@ return [
     'Choose a required language or type it' => 'Выберите необходимый язык или введите его',
     'Choose a minimum level of' => 'Выберите минимальный уровень для',
     'Only you see this information' => 'Только вы видите эту информацию',
+    'Your offer with a search radius sees other offers that contain a location that is within your search radius' => 'Ваше предложение с радиусом поиска видит другие предложения, которые содержат местонахождение которое входит в ваш радиус поиска',
+    'Your offer with this active option sees other offers with the same active option' => 'Ваше предложение с этой активной опцией видит другие предложения с такой же активной опцией',
+    'Your offer with a hourly rate sees other offers that contain the same or higher hourly rate' => 'Ваше предложение с часовой ставкой видит другие предложения, которые содержат такую же или более высокую часовую ставку',
+    'Your offer with a hourly rate sees other offers that contain the same or lower hourly rate' => 'Ваше предложение с часовой ставкой видит другие предложения, которые содержат такую же или более низкую часовую ставку',
+    'Your offer without a hourly rate sees all other offers with and without any hourly rates' => 'Ваше предложение без часовой ставки видит все другие предложения с часовыми ставками и без них',
+    'Your offer with a required languages sees other offers from users who know these languages at the same or higher level' => 'Ваше предложение с необходимыми языками видит другие предложения от пользователей, которые знают эти языки на таком же или более высоком уровне',
+    'Send a title of a job position' => 'Отправьте название должности',
 ];
