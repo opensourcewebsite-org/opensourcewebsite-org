@@ -33,6 +33,8 @@ return [
     'Dating' => 'Знакомства',
     'New contacts' => 'Новые контакты',
     'Currency and cryptocurrency exchange' => 'Обмен валют и криптовалют',
+    'Currency exchange' => 'Обмен валют',
+    'Cryptocurrency exchange' => 'Обмен криптовалют',
     'Paid surveys from companies for users' => 'Платные опросы от компаний для пользователей',
     'Personalized news' => 'Персонализированные новости',
     'Personalized commercial offers from companies for users' => 'Персонализированная коммерческие предложения от компаний для пользователей',
@@ -302,5 +304,7 @@ return [
     'Remote work' => 'Удаленная занятость',
     'Required languages' => 'Необходимые языки',
     'Choose a language or type it' => 'Выберите язык или введите его',
+    'Choose a required language or type it' => 'Выберите необходимый язык или введите его',
     'Choose a minimum level of' => 'Выберите минимальный уровень для',
+    'Only you see this information' => 'Только вы видите эту информацию',
 ];
