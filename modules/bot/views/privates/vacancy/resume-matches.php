@@ -33,16 +33,8 @@ use app\models\Resume;
 <?php endif; ?>
 <b><?= Yii::t('bot', 'Remote work') ?></b>: <?= $remote_on == Resume::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
-<?php if($model->location_lat && $model->location_lon) : ?>
-<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>
-<br/>
-<?php endif; ?>
-<?php if ($model->search_radius > 0) : ?>
-<b><?= Yii::t('bot', 'Search radius') ?>:</b> <?= $model->search_radius ?> <?= Yii::t('bot', 'km') ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($isActive) : ?>
-————<br/>
-<br/>
-<i><?= Yii::t('bot', 'You will receive a notification in case of matches with offers of other users') ?>. <?= Yii::t('bot', 'This page is active for {0,number} more days', 14) ?>. <?= Yii::t('bot', 'Visit this page again before this term to automatically renew this')?>.</i>
+<?php if ($user && $user->provider_user_name) : ?>
+<b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
+<?php elseif($user) : ?>
+<b><?= Yii::t('bot', 'Contact') ?>:</b> <a href = "tg://user?id=<?= $user->provider_user_id ?>"><?= $user->provider_user_first_name ?> <?= $user->provider_user_last_name ?></a>
 <?php endif; ?>

@@ -309,7 +309,12 @@ abstract class CrudController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
+        if ($text == self::VALUE_NO) {
+            $shouldRemove = true;
+            $text = null;
+        } else {
+            $shouldRemove = false;
+        }
         $attributes = $this->getAttributes($rule);
         $config = $attributes[$attributeName];
         $relation = $this->modelRelation->getRelation($config);
@@ -322,14 +327,8 @@ abstract class CrudController extends Controller
         if ($component instanceof FieldInterface) {
             $text = $component->prepare($text);
         }
-        $editableId = null;
+        $editableRelationId = null;
         $error = null;
-        if ($text == self::VALUE_NO) {
-            $shouldRemove = true;
-            $text = null;
-        } else {
-            $shouldRemove = false;
-        }
         if (isset($relation) && (isset($v) || isset($text))) {
             $relationAttributeName = $this->field->get($modelName, self::FIELD_NAME_RELATION, null);
             if (!$relationAttributeName && $secondaryRelation) {
@@ -344,13 +343,7 @@ abstract class CrudController extends Controller
                 } else {
                     $relationData[] = $text;
                 }
-                $relationData = array_filter(
-                    $relationData,
-                    function ($val) {
-                        return $val;
-                    }
-                );
-                $relationData = array_values($relationData);
+                $relationData = $this->modelRelation->prepareRelationData($attributeName, $relationData);
                 $this->field->set($modelName, $attributeName, $relationData);
             } else {
                 if (!array_key_exists($relationAttributeName, $relationAttributes)) {
@@ -386,7 +379,7 @@ abstract class CrudController extends Controller
                 if (preg_match('|v_(\d+)|', $i, $match)) {
                     $id = $match[1];
                 } elseif ($i) {
-                    $model = $this->getModel($relation, $i);
+                    $model = $this->getRuleModel($relation, $i);
                     foreach ($relationData as $key => $relationItem) {
                         if (!is_array($relationItem)) {
                             continue;
@@ -427,7 +420,7 @@ abstract class CrudController extends Controller
                     }
                 );
                 $relationData = array_values($relationData);
-                $editableId = 'v_' . array_key_last($relationData);
+                $editableRelationId = 'v_' . array_key_last($relationData);
                 if ($isManyToOne && ($modelField = array_key_first($relationAttributes))) {
                     $this->field->set($modelName, $modelField, $relationModel->id);
                 }
@@ -473,7 +466,7 @@ abstract class CrudController extends Controller
         return $this->generatePrivateResponse(
             $modelName,
             $attributeName,
-            ['config' => $config, 'page' => $p, 'error' => $error, 'editableId' => $editableId]
+            ['config' => $config, 'page' => $p, 'error' => $error, 'editableRelationId' => $editableRelationId]
         );
     }
 
@@ -735,11 +728,13 @@ abstract class CrudController extends Controller
         $modelName = $this->getModelName($modelClass);
         $attributeName = $this->field->get($modelName, self::FIELD_NAME_ATTRIBUTE, null);
         if (isset($attributeName)) {
-            $isEdit = !is_null($this->field->get($modelName, self::FIELD_NAME_ID, null));
+            $modelId = $this->field->get($modelName, self::FIELD_NAME_ID, null);
+            $isEdit = !is_null($modelId);
             $rule = $this->getRule($modelName);
             $attributes = $this->getAttributes($rule);
+            $config = $attributes[$attributeName];
             $thirdRelation = [];
-            if (($relation = $this->modelRelation->getRelation($attributes[$attributeName])) && count($relation['attributes']) > 1) {
+            if (($relation = $this->modelRelation->getRelation($config)) && count($relation['attributes']) > 1) {
                 $relationAttributes = $relation['attributes'];
                 array_shift($relationAttributes);
                 $relationAttributeName = $this->field->get($modelName, self::FIELD_NAME_RELATION, null);
@@ -747,12 +742,15 @@ abstract class CrudController extends Controller
                 if (isset($relationAttributeName) && !in_array($relationAttributeName, $thirdRelation)) {
                     $prevRelationAttributeName = $this->getPrevKey($relationAttributes, $relationAttributeName);
                     $this->field->set($modelName, self::FIELD_NAME_RELATION, $prevRelationAttributeName);
-
-                    return $this->generatePrivateResponse(
-                        $modelName,
-                        $attributeName,
-                        ['config' => $attributes[$attributeName]]
-                    );
+                    if (!($config['createRelationIfEmpty'] ?? false) || $this->modelRelation->filledRelationCount($attributeName)) {
+                        return $this->generatePrivateResponse(
+                            $modelName,
+                            $attributeName,
+                            ['config' => $attributes[$attributeName]]
+                        );
+                    } else {
+                        $relationAttributeName = null;
+                    }
                 }
             }
             if ($thirdRelation && $relationAttributeName) {
@@ -801,7 +799,7 @@ abstract class CrudController extends Controller
                 if (preg_match('|v_(\d+)|', $i, $match)) {
                     unset($items[$match[1]]);
                 } else {
-                    $model = $this->getModel($relation, $i);
+                    $model = $this->getRuleModel($relation, $i);
                     if ($model) {
                         $model->delete();
                     }
@@ -866,7 +864,7 @@ abstract class CrudController extends Controller
                         $attributeName,
                         [
                             'config' => $attributes[$attributeName],
-                            'editableId' => $i,
+                            'editableRelationId' => $i,
                         ]
                     );
                 }
@@ -893,7 +891,7 @@ abstract class CrudController extends Controller
         $attributes = array_keys($rule['attributes']);
 
         /* @var ActiveRecord $model */
-        $model = $this->getModel($rule, $id);
+        $model = $this->getRuleModel($rule, $id);
         $editButtons = array_map(
             function (string $attribute) use ($id, $m, $model, $rule) {
                 if (isset($rule['attributes'][$attribute]['hidden'])) {
@@ -1002,7 +1000,7 @@ abstract class CrudController extends Controller
     {
         $id = $i;
         $rule = $this->getRule($m);
-        $model = $this->getModel($rule, $id);
+        $model = $this->getRuleModel($rule, $id);
         if (!isset($model)) {
             return ResponseBuilder::fromUpdate($this->getUpdate())
                 ->answerCallbackQuery()
@@ -1049,7 +1047,7 @@ abstract class CrudController extends Controller
      */
     protected function beforeEdit(array $rule, string $attributeName, int $id)
     {
-        $model = $this->getModel($rule, $id);
+        $model = $this->getRuleModel($rule, $id);
         if (isset($model)) {
             $this->setCurrentModelClass($this->getModelClassByRule($rule));
             $modelName = $this->getModelName($this->getModelClassByRule($rule));
@@ -1258,7 +1256,7 @@ abstract class CrudController extends Controller
             }
             $model->attachBehaviors($this->getRuleBehaviors($rule));
         } else {
-            $model = $this->getModel($rule, $id);
+            $model = $this->getRuleModel($rule, $id);
             if ($attributeName) {
                 $this->fillModel(
                     $model,
@@ -1554,7 +1552,7 @@ abstract class CrudController extends Controller
         $page = ArrayHelper::getValue($options, 'page', 1);
         $enableGlobalBackRoute = ArrayHelper::getValue($options, 'enableGlobalBackRoute', false);
         $error = ArrayHelper::getValue($options, 'error', null);
-        $editableId = ArrayHelper::getValue($options, 'editableId', null);
+        $editableRelationId = ArrayHelper::getValue($options, 'editableRelationId', null);
         $rule = $this->getRule($modelName);
 
         $state = $this->getState();
@@ -1571,6 +1569,7 @@ abstract class CrudController extends Controller
 
         $relationAttributeName = $this->field->get($modelName, self::FIELD_NAME_RELATION, null);
         $modelId = $this->field->get($modelName, self::FIELD_NAME_ID, null);
+
         $isEdit = !is_null($modelId);
         [$step, $totalSteps] = $this->getStepsInfo($attributeName, $this->getRule($modelName));
         $relation = $this->modelRelation->getRelation($config);
@@ -1579,11 +1578,11 @@ abstract class CrudController extends Controller
             $primaryRelation, $secondaryRelation, $thirdRelation,
         ] = $this->modelRelation->getRelationAttributes($relation);
         $relationModel = null;
-        if ($editableId && in_array($relationAttributeName, $thirdRelation)) {
-            if (preg_match('|v_(\d+)|', $editableId, $match)) {
+        if ($editableRelationId && in_array($relationAttributeName, $thirdRelation)) {
+            if (preg_match('|v_(\d+)|', $editableRelationId, $match)) {
                 $id = $attributeValues[$match[1]][$secondaryRelation[0]] ?? null;
             } else {
-                $model = $this->getModel($relation, $editableId);
+                $model = $this->getRuleModel($relation, $editableRelationId);
                 $id = $model->{$secondaryRelation[0]};
             }
             $relationModel = call_user_func([$secondaryRelation[2], 'findOne'], $id);
@@ -1615,7 +1614,7 @@ abstract class CrudController extends Controller
                             ]
                         );
                     },
-                    function ($key, ActiveRecord $model) use ($editableId, $attributeName, $valueAttribute) {
+                    function ($key, ActiveRecord $model) use ($editableRelationId, $attributeName, $valueAttribute) {
                         return [
                             'text' => $this->getLabel($model),
                             'callback_data' => self::createRoute(
@@ -1623,7 +1622,7 @@ abstract class CrudController extends Controller
                                 [
                                     'a' => $attributeName,
                                     'v' => $model->getAttribute($valueAttribute),
-                                    'i' => $editableId,
+                                    'i' => $editableRelationId,
                                 ]
                             ),
                         ];
@@ -1635,7 +1634,7 @@ abstract class CrudController extends Controller
             $systemButtons = $this->generateSystemButtons(
                 $modelName,
                 $attributeName,
-                compact('isEmpty', 'enableGlobalBackRoute', 'modelId', 'editableId')
+                compact('isEmpty', 'enableGlobalBackRoute', 'modelId', 'editableRelationId')
             );
             $buttons = $this->prepareButtons(
                 $itemButtons,
@@ -1687,11 +1686,12 @@ abstract class CrudController extends Controller
                     } else {
                         $model = $this->modelRelation->fillModel($relation['model'], $item);
                     }
-                    $label = $this->getLabel($model);
-                    if ($modelId) {
+                    if ($model) {
+                        $label = $this->getLabel($model);
                         $id = $model->id;
                     } else {
                         $id = 'v_' . $key;
+                        $label = $item;
                     }
                 } catch (Exception $ex) {
                     if (is_array($item)) {
@@ -1712,7 +1712,7 @@ abstract class CrudController extends Controller
 
                 return array_merge(
                     [$buttonParams],
-                    count($item) > 1 || (count($attributeValues) == 1 && $isAttributeRequired)
+                    (is_array($item) && count($item) > 1) || (count($attributeValues) == 1 && $isAttributeRequired)
                         ? []
                         : [
                         [
@@ -1840,19 +1840,25 @@ abstract class CrudController extends Controller
         $enableGlobalBackRoute = ArrayHelper::getValue($options, 'enableGlobalBackRoute', false);
         $config = $this->rule['attributes'][$attributeName];
         if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
-            $attributes = $config['relation']['attributes'];
-            $relationAttributeName = (count($attributes) == 1) ? array_keys($attributes)[0] : null;
+            $relationAttributes = $config['relation']['attributes'];
+            $relationAttributeName = (count($relationAttributes) == 1) ? array_keys($relationAttributes)[0] : null;
             $this->field->set(
                 $modelName,
                 self::FIELD_NAME_RELATION,
                 $relationAttributeName
             );
 
-            return $this->generatePrivateResponse(
+            $response = $this->generatePrivateResponse(
                 $modelName,
                 $attributeName,
                 compact('config', 'enableGlobalBackRoute')
             );
+
+            if (($config['createRelationIfEmpty'] ?? false) && !$this->modelRelation->filledRelationCount($attributeName)) {
+                return $this->actionAA($attributeName);
+            }
+
+            return $response;
         } else {
             return $this->generatePublicResponse(
                 $modelName,
@@ -1925,7 +1931,7 @@ abstract class CrudController extends Controller
     {
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', false);
         $modelId = ArrayHelper::getValue($options, 'modelId', null);
-        $editableId = ArrayHelper::getValue($options, 'editableId', null);
+        $editableRelationId = ArrayHelper::getValue($options, 'editableRelationId', null);
         $isEdit = !is_null($modelId);
         $enableGlobalBackRoute = ArrayHelper::getValue($options, 'enableGlobalBackRoute', false);
         $rule = $this->getRule($modelName);
@@ -1972,7 +1978,7 @@ abstract class CrudController extends Controller
                 'callback_data' => self::createRoute(
                     'r-a',
                     [
-                        'i' => $editableId,
+                        'i' => $editableRelationId,
                     ]
                 ),
             ];
@@ -1983,6 +1989,9 @@ abstract class CrudController extends Controller
         }
         if ($relationAttributeName) {
             unset($systemButtons['add']);
+        }
+        if (($config['createRelationIfEmpty'] ?? false) && $this->modelRelation->filledRelationCount($attributeName) <= 1) {
+            unset($systemButtons['delete']);
         }
 
         return array_values($systemButtons);
@@ -2040,7 +2049,7 @@ abstract class CrudController extends Controller
      *
      * @return ActiveRecord|null
      */
-    private function getModel(array $rule, int $id)
+    public function getRuleModel(array $rule, int $id)
     {
         $modelName = $this->getModelName($this->getModelClassByRule($rule));
         $getModelMethodName = 'get' . ucfirst($modelName);
@@ -2092,7 +2101,7 @@ abstract class CrudController extends Controller
      *
      * @return mixed|null
      */
-    private function getAttributes(array $rule)
+    public function getAttributes(array $rule)
     {
         if (is_array($rule) && array_key_exists('attributes', $rule) && is_array($rule['attributes'])) {
             return $rule['attributes'];
