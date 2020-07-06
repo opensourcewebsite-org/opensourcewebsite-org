@@ -5,6 +5,7 @@ namespace app\models;
 use app\models\queries\ResumeQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
+use app\modules\bot\models\JobMatch;
 use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\behaviors\TimestampBehavior;
@@ -135,14 +136,10 @@ class Resume extends ActiveRecord
      */
     public function getMatches()
     {
-        if (!YII_DEBUG) {
-            return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
-                ->viaTable('{{%job_match}}', ['resume_id' => 'id'], function ($query) {
-                    $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
-                });
-        }
-
-        return $this->getMatchedVacancies();
+        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+            ->viaTable('{{%job_match}}', ['resume_id' => 'id'], function ($query) {
+                $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
+            });
     }
 
     /**
@@ -150,16 +147,8 @@ class Resume extends ActiveRecord
      */
     public function getMatchedVacancies()
     {
-        $query = Vacancy::find()->active()->languages();
-        if ($this->min_hourly_rate) {
-            $conditions = [];
-            $conditions[] = ['>=', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate];
-            $conditions[] = [Vacancy::tableName() . '.currency_id' => $this->currency_id];
-            $query->andWhere(new AndCondition($conditions));
-        }
-        if (!YII_DEBUG) {
-            $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
-        }
+        $query = Vacancy::find()->active()->matchLanguages()->matchRadius($this);
+        $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
 
         return $query->groupBy(Vacancy::tableName() . '.id');
     }
@@ -177,9 +166,35 @@ class Resume extends ActiveRecord
     public function updateMatches()
     {
         $this->unlinkAll('allMatches', true);
-        $vacancies = $this->getMatchedVacancies()->all();
-        foreach ($vacancies as $vacancy) {
-            $this->link('matches', $vacancy, ['type' => 2]);
+        $vacanciesQuery = $this->getMatchedVacancies();
+
+        $vacanciesQueryNoRateQuery = clone $vacanciesQuery;
+        $vacanciesQueryRateQuery = clone $vacanciesQuery;
+
+        if ($this->min_hourly_rate) {
+            $vacanciesQueryRateQuery->andWhere(new AndCondition([
+                ['IS NOT', Vacancy::tableName() . '.max_hourly_rate', null],
+                ['>=', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate],
+                [Vacancy::tableName() . '.currency_id' => $this->currency_id],
+            ]));
+            $vacanciesQueryNoRateQuery->andWhere(
+                new AndCondition([
+                    ['<', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate],
+                    ['<>', Vacancy::tableName() . '.currency_id', $this->currency_id],
+                ])
+            );
+
+            foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
+                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_BOTH]);
+            }
+
+            foreach ($vacanciesQueryNoRateQuery->all() as $vacancy) {
+                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_THEY]);
+            }
+        } else {
+            foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
+                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_SELF]);
+            }
         }
     }
 
