@@ -1217,6 +1217,22 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * @param array $config
+     *
+     * @return array
+     */
+    private function getAttributeBehaviors($config)
+    {
+        $behaviors = [];
+        $behaviorId = uniqid();
+        foreach ($config['behaviors'] ?? [] as $behaviorName => $behaviorValue) {
+            $behaviors[$behaviorId . $behaviorName] = $behaviorValue;
+        }
+
+        return $behaviors;
+    }
+
+    /**
      * @param array $rule
      *
      * @return array
@@ -1224,12 +1240,8 @@ abstract class CrudController extends Controller
     private function getRuleBehaviors($rule)
     {
         $behaviors = [];
-        foreach ($rule['attributes'] as $attributeName => $attribute) {
-            if (isset($attribute['behaviors'])) {
-                foreach ($attribute['behaviors'] as $behaviorName => $behaviorValue) {
-                    $behaviors[$attributeName . $behaviorName] = $behaviorValue;
-                }
-            }
+        foreach ($rule['attributes'] as $attributeConfig) {
+            $behaviors = array_merge($behaviors, $this->getAttributeBehaviors($attributeConfig));
         }
 
         return $behaviors;
@@ -1457,6 +1469,30 @@ abstract class CrudController extends Controller
     }
 
     /**
+     * @param ActiveRecord $model
+     * @param string $attributeName
+     */
+    private function getModelDataForAttribute($model, $attributeName)
+    {
+        $rule = $this->rule;
+        $attributes = $this->getAttributes($rule);
+        $relation = $this->modelRelation->getRelation($attributes[$attributeName]);
+        $data = '';
+        if ($relation) {
+            $data = [];
+            [$primaryRelation, $secondaryRelation] = $this->modelRelation->getRelationAttributes($relation);
+            if (!$secondaryRelation) {
+                $attributeName = $primaryRelation[0];
+                $data[] = [$attributeName => $model->$attributeName];
+            }
+        } else {
+            $data = $model->$attributeName;
+        }
+
+        return $data;
+    }
+
+    /**
      * @param array $assocArray
      * @param       $element
      *
@@ -1467,6 +1503,15 @@ abstract class CrudController extends Controller
         $keys = array_keys($assocArray);
         $nextKey = $keys[array_search($element, $keys) + 1] ?? null;
         if (isset($assocArray[$nextKey]['hidden'])) {
+            if (isset($assocArray[$nextKey]['behaviors'])) {
+                $model = $this->getFilledModel($this->rule);
+                $model->validate();
+                $data = $this->getModelDataForAttribute($model, $nextKey);
+                if ($data) {
+                    $modelName = $this->getModelName($this->getModelClassByRule($this->rule));
+                    $this->field->set($modelName, $nextKey, $data);
+                }
+            }
             $nextKey = $this->getNextKey($assocArray, $nextKey);
         }
 

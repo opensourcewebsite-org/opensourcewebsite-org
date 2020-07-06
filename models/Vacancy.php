@@ -5,9 +5,12 @@ namespace app\models;
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
+use app\modules\bot\models\JobMatch;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\conditions\AndCondition;
+use yii\db\Expression;
 
 /**
  * Class Vacancy
@@ -135,14 +138,10 @@ class Vacancy extends ActiveRecord
      */
     public function getMatches()
     {
-        if (!YII_DEBUG) {
-            return $this->hasMany(Resume::className(), ['id' => 'resume_id'])
-                ->viaTable('{{%job_match}}', ['vacancy_id' => 'id'], function ($query) {
-                    $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
-                });
-        }
-
-        return $this->getMatchedResumes();
+        return $this->hasMany(Resume::className(), ['id' => 'resume_id'])
+            ->viaTable('{{%job_match}}', ['vacancy_id' => 'id'], function ($query) {
+                $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
+            });
     }
 
     /**
@@ -150,14 +149,8 @@ class Vacancy extends ActiveRecord
      */
     public function getMatchedResumes()
     {
-        $query = Resume::find()->active();
-        if ($this->max_hourly_rate) {
-            $query->andWhere(['<=', 'min_hourly_rate', $this->max_hourly_rate])
-                ->andWhere(['IS NOT', 'min_hourly_rate', null]);
-        }
-        if (!YII_DEBUG) {
-            $query->andWhere(['!=', Resume::tableName() . '.user_id', $this->user_id]);
-        }
+        $query = Resume::find()->active()->matchRadius($this);
+        $query->andWhere(['!=', Resume::tableName() . '.user_id', $this->user_id]);
 
         return $query->groupBy(Resume::tableName() . '.id');
     }
@@ -175,9 +168,34 @@ class Vacancy extends ActiveRecord
     public function updateMatches()
     {
         $this->unlinkAll('allMatches', true);
-        $resumes = $this->getMatchedResumes()->all();
-        foreach ($resumes as $resume) {
-            $this->link('matches', $resume, ['type' => 2]);
+        $resumesQuery = $this->getMatchedResumes();
+        $resumesQueryNoRateQuery = clone $resumesQuery;
+        $resumesQueryRateQuery = clone $resumesQuery;
+
+        if ($this->max_hourly_rate) {
+            $resumesQueryRateQuery->andWhere(new AndCondition([
+                ['IS NOT', Resume::tableName() . '.min_hourly_rate', null],
+                ['<=', Resume::tableName() . '.min_hourly_rate', $this->max_hourly_rate],
+                [Resume::tableName() . '.currency_id' => $this->currency_id],
+            ]));
+            $resumesQueryNoRateQuery->andWhere(
+                new AndCondition([
+                    ['>', Resume::tableName() . '.min_hourly_rate', $this->max_hourly_rate],
+                    ['<>', Resume::tableName() . '.currency_id', $this->currency_id],
+                ])
+            );
+
+            foreach ($resumesQueryRateQuery->all() as $resume) {
+                $this->link('matches', $resume, ['type' => JobMatch::TYPE_BOTH]);
+            }
+
+            foreach ($resumesQueryNoRateQuery->all() as $resume) {
+                $this->link('matches', $resume, ['type' => JobMatch::TYPE_THEY]);
+            }
+        } else {
+            foreach ($resumesQueryRateQuery->all() as $resume) {
+                $this->link('matches', $resume, ['type' => JobMatch::TYPE_SELF]);
+            }
         }
     }
 
