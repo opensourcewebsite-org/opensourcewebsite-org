@@ -142,12 +142,6 @@ class SAdSearchController extends CrudController
                                 'item' => 'currency',
                             ],
                         ],
-                        'systemButtons' => [
-                            'back' => [
-                                'item' => 'description',
-                                'editMode' => false,
-                            ],
-                        ],
                         'prepareViewParams' => function ($params) {
                             /** @var AdSearch $model */
                             $model = $params['model'];
