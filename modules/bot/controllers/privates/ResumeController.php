@@ -18,7 +18,6 @@ use app\modules\bot\models\JobResumeKeyword;
 use app\modules\bot\models\User as TelegramUser;
 use Yii;
 use app\modules\bot\components\helpers\Emoji;
-use yii\base\ModelEvent;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -483,6 +482,14 @@ class ResumeController extends CrudController
                 ->build();
         }
 
+        if ($isEnabled && !$resume->possibleToChangeStatus()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('status-error'),
+                    true
+                )
+                ->build();
+        }
         $resume->setAttribute('status', (int)$isEnabled);
         $resume->save();
 

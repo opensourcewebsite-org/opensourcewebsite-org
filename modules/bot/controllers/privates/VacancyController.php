@@ -555,6 +555,15 @@ class VacancyController extends CrudController
                 ->build();
         }
 
+        if ($isEnabled && !$vacancy->possibleToChangeStatus()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('status-error'),
+                    true
+                )
+                ->build();
+        }
+
         $vacancy->setAttribute('status', (int)$isEnabled);
         $vacancy->save();
 
