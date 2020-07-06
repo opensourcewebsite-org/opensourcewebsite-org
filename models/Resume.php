@@ -259,6 +259,18 @@ class Resume extends ActiveRecord
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
             $this->unlinkAll('matches', true);
         }
+        if ($this->status == self::STATUS_ON && !$this->possibleToChangeStatus()) {
+            $this->status = self::STATUS_OFF;
+            $this->save();
+        }
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * @return bool
+     */
+    public function possibleToChangeStatus()
+    {
+        return $this->remote_on == self::REMOTE_ON || ($this->location_lon && $this->location_lat);
     }
 }
