@@ -164,12 +164,6 @@ class SAdOfferController extends CrudController
                                 'item' => 'currency',
                             ],
                         ],
-                        'systemButtons' => [
-                            'back' => [
-                                'item' => 'keywords',
-                                'editMode' => false,
-                            ],
-                        ],
                         'prepareViewParams' => function ($params) {
                             /** @var AdSearch $model */
                             $model = $params['model'];

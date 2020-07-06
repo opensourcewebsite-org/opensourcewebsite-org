@@ -167,7 +167,6 @@ class SAdSearchController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
-                                'createMode' => false,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (AdSearch $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
