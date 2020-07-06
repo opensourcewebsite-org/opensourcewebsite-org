@@ -5,6 +5,7 @@ use yii\helpers\ArrayHelper;
 
 $params = require __DIR__ . '/params.php';
 $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap 4.x for all Krajee Extensions
+$params['currency'] = 'USD';
 
 $settingValidations = require __DIR__ . '/setting_validations.php';
 $params = array_merge($params, $settingValidations);
@@ -32,10 +33,10 @@ $config = [
             'class' => 'app\modules\guest\Module',
         ],
         'comment' => [
-            'class' => 'app\modules\comment\Module'
+            'class' => 'app\modules\comment\Module',
         ],
         'bot' => [
-            'class' => 'app\modules\bot\Module'
+            'class' => 'app\modules\bot\Module',
         ],
     ],
     'components' => [

@@ -3,10 +3,12 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\behaviors\SetAttributeValueBehavior;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Company;
 use app\models\Currency;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\models\User;
 use app\models\VacancyLanguage;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
@@ -22,6 +24,7 @@ use Yii;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
 
+use yii\base\ModelEvent;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -119,6 +122,17 @@ class VacancyController extends CrudController
                         ],
                     ],
                     'currency' => [
+                        'behaviors' => [
+                            'SetDefaultCurrencyBehavior' => [
+                                'class' => SetDefaultCurrencyBehavior::class,
+                                'telegramUser' => $this->getTelegramUser(),
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
+                                ],
+                            ],
+                        ],
+                        'hidden' => true,
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
@@ -485,7 +499,7 @@ class VacancyController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render(
-                    'resume-matches',
+                    'match',
                     [
                         'model' => $resume,
                         'name' => $resume->name,
