@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\behaviors\SetDefaultCurrencyBehavior;
 use Yii;
 use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
@@ -21,6 +22,7 @@ use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\models\AdPhoto;
 use app\models\User;
 use yii\base\DynamicModel;
+use yii\base\ModelEvent;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\models\Currency;
@@ -137,6 +139,17 @@ class SAdOfferController extends CrudController
                         ],
                     ],
                     'currency' => [
+                        'behaviors' => [
+                            'SetDefaultCurrencyBehavior' => [
+                                'class' => SetDefaultCurrencyBehavior::class,
+                                'telegramUser' => $this->getTelegramUser(),
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
+                                ],
+                            ],
+                        ],
+                        'hidden' => true,
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],

@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\behaviors\SetAttributeValueBehavior;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\User;
@@ -85,30 +86,13 @@ class ResumeController extends CrudController
                     ],
                     'currency' => [
                         'behaviors' => [
-                            'SetAttributeValueBehavior' => [
-                                'class' => SetAttributeValueBehavior::class,
+                            'SetDefaultCurrencyBehavior' => [
+                                'class' => SetDefaultCurrencyBehavior::class,
+                                'telegramUser' => $this->getTelegramUser(),
                                 'attributes' => [
                                     ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
                                 ],
-                                'attribute' => 'currency_id',
-                                'value' => function (ModelEvent $event) {
-                                    /** @var Resume $model */
-                                    $model = $event->sender;
-                                    if (!$model->currency_id) {
-                                        $user = User::findOne($this->getTelegramUser()->user_id);
-                                        if ($user->currency_id) {
-                                            return $user->currency_id;
-                                        } elseif ($currencyCode = (Yii::$app->params['currency'] ?? '')) {
-                                            $currency = Currency::findOne(['code' => $currencyCode]);
-                                            if ($currency) {
-                                                return $currency->id;
-                                            }
-                                        }
-                                    }
-
-                                    return $model->currency_id;
-                                },
                             ],
                         ],
                         'hidden' => true,

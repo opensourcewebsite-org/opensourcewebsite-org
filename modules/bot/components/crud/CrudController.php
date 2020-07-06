@@ -1505,12 +1505,11 @@ abstract class CrudController extends Controller
         if (isset($assocArray[$nextKey]['hidden'])) {
             if (isset($assocArray[$nextKey]['behaviors'])) {
                 $model = $this->getFilledModel($this->rule);
-                if ($model->validate()) {
-                    $data = $this->getModelDataForAttribute($model, $nextKey);
-                    if ($data) {
-                        $modelName = $this->getModelName($this->getModelClassByRule($this->rule));
-                        $this->field->set($modelName, $nextKey, $data);
-                    }
+                $model->validate();
+                $data = $this->getModelDataForAttribute($model, $nextKey);
+                if ($data) {
+                    $modelName = $this->getModelName($this->getModelClassByRule($this->rule));
+                    $this->field->set($modelName, $nextKey, $data);
                 }
             }
             $nextKey = $this->getNextKey($assocArray, $nextKey);
