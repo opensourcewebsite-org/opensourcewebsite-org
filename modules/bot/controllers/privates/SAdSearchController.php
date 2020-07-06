@@ -56,7 +56,7 @@ class SAdSearchController extends CrudController
                         'showDetailedInfo' => true,
                     ];
                 },
-                'view' => 'search',
+                'view' => 'show',
                 'attributes' => [
                     'title' => [],
                     'description' => [
@@ -879,7 +879,7 @@ class SAdSearchController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render(
-                    'search',
+                    'show',
                     [
                         'sectionName' => AdSection::getAdSearchName($adSearch->section),
                         'keywords' => self::getKeywordsAsString(
@@ -925,7 +925,7 @@ class SAdSearchController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render(
-                    'search',
+                    'show',
                     [
                         'sectionName' => AdSection::getAdSearchName($adSearch->section),
                         'keywords' => self::getKeywordsAsString(
