@@ -27,7 +27,7 @@ class SetDefaultCurrencyBehavior extends AttributeBehavior
     protected function getValue($event)
     {
         if (!$this->telegramUser) {
-            throw new \Exception("You should set the telegramUser property");
+            throw new \Exception('You should set the telegramUser property');
         }
         /** @var ActiveRecord $model */
         $model = $event->sender;
