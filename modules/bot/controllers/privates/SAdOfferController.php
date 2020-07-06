@@ -52,7 +52,7 @@ class SAdOfferController extends CrudController
                         'showDetailedInfo' => false,
                     ];
                 },
-                'view' => 'offer',
+                'view' => 'show',
                 'attributes' => [
                     'title' => [],
                     'description' => [
@@ -324,7 +324,7 @@ class SAdOfferController extends CrudController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('offer', [
+                $this->render('show', [
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
@@ -444,7 +444,7 @@ class SAdOfferController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
-                $this->render('offer', [
+                $this->render('show', [
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),

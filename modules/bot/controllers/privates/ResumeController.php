@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\behaviors\SetAttributeValueBehavior;
 use app\models\Currency;
 use app\models\Resume;
+use app\models\User;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
@@ -16,6 +17,7 @@ use app\modules\bot\models\JobResumeKeyword;
 use app\modules\bot\models\User as TelegramUser;
 use Yii;
 use app\modules\bot\components\helpers\Emoji;
+use yii\base\ModelEvent;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -82,6 +84,34 @@ class ResumeController extends CrudController
                         ],
                     ],
                     'currency' => [
+                        'behaviors' => [
+                            'SetAttributeValueBehavior' => [
+                                'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
+                                ],
+                                'attribute' => 'currency_id',
+                                'value' => function (ModelEvent $event) {
+                                    /** @var Resume $model */
+                                    $model = $event->sender;
+                                    if (!$model->currency_id) {
+                                        $user = User::findOne($this->getTelegramUser()->user_id);
+                                        if ($user->currency_id) {
+                                            return $user->currency_id;
+                                        } elseif ($currencyCode = (Yii::$app->params['currency'] ?? '')) {
+                                            $currency = Currency::findOne(['code' => $currencyCode]);
+                                            if ($currency) {
+                                                return $currency->id;
+                                            }
+                                        }
+                                    }
+
+                                    return $model->currency_id;
+                                },
+                            ],
+                        ],
+                        'hidden' => true,
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
@@ -406,7 +436,7 @@ class ResumeController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render(
-                    'vacancy-matches',
+                    'match',
                     [
                         'model' => $vacancy,
                         'name' => $vacancy->name,
