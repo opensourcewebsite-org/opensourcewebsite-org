@@ -225,6 +225,8 @@ class SAdOfferController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
+        $model->markToUpdateMatches();
+
         return $this->actionPost($model->id);
     }
 

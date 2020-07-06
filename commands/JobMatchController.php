@@ -49,7 +49,7 @@ class JobMatchController extends Controller implements CronChainedInterface
                 $resume->save();
                 $updatesCount++;
             } catch (\Exception $ex) {
-                echo "ERROR: resume #" . $resume->id . ": " . $ex->getMessage() . "\n";
+                echo 'ERROR: resume #' . $resume->id . ': ' . $ex->getMessage() . "\n";
             }
         }
 
@@ -78,7 +78,7 @@ class JobMatchController extends Controller implements CronChainedInterface
                 $vacancy->save();
                 $updatesCount++;
             } catch (\Exception $ex) {
-                echo "ERROR: vacancy #" . $vacancy->id . ": " . $ex->getMessage() . "\n";
+                echo 'ERROR: vacancy #' . $vacancy->id . ': ' . $ex->getMessage() . "\n";
             }
         }
 

@@ -203,6 +203,8 @@ class SAdSearchController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
+        $model->markToUpdateMatches();
+
         return $this->actionSearch($model->id);
     }
 
