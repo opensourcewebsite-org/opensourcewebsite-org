@@ -39,7 +39,7 @@ class ResumeQuery extends ActiveQuery
         $radiusExpression = '';
         if ($model->location_lat && $model->location_lon) {
             $radiusExpression = new Expression(
-                'IF((' . Resume::tableName() . '.location_lon AND ' . Resume::tableName() . '.location_lat),' .
+                'IF((' . Resume::tableName() . '.location_lon AND ' . Resume::tableName() . '.location_lat AND ' . Resume::tableName() . '.search_radius > 0),' .
                 'ST_Distance_Sphere(' .
                 'POINT(' . $model->location_lon . ', ' . $model->location_lat . '), ' .
                 'POINT(' . Resume::tableName() . '.location_lon, ' . Resume::tableName() . '.location_lat)' .
