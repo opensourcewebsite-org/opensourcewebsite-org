@@ -85,7 +85,7 @@ class AdOffer extends ActiveRecord
             ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
             ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_search.section' => $this->section])
-            ->andWhere("ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_search.location_lat, ad_search.location_lon)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
+            ->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_search.location_lon, ad_search.location_lat)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
 
         $adSearchQueryNoKeywords = clone $adSearchQuery;
         $adSearchQueryNoKeywords = $adSearchQueryNoKeywords
@@ -210,5 +210,14 @@ class AdOffer extends ActiveRecord
                 'delivery_radius' => 'Delivery radius',
             ]
         );
+    }
+
+    /** @inheritDoc */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
+            $this->unlinkAll('matches', true);
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 }

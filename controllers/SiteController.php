@@ -254,6 +254,14 @@ class SiteController extends Controller
 
             \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
 
+            \app\models\DebtBalance::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
+
+            \app\models\DebtBalance::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+
+            \app\models\DebtRedistribution::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\DebtRedistribution::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
+
             \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             \app\modules\comment\models\IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");

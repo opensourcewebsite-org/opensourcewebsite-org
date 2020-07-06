@@ -112,7 +112,7 @@ class AdSearch extends ActiveRecord
             ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_offer.section' => $this->section])
             ->andWhere(
-                "ST_Distance_Sphere(POINT($this->location_lat, $this->location_lon), POINT(ad_offer.location_lat, ad_offer.location_lon)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"
+                "ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_offer.location_lon, ad_offer.location_lat)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"
             );
 
         $adOfferQueryNoKeywords = clone $adOfferQuery;
@@ -190,5 +190,14 @@ class AdSearch extends ActiveRecord
     public function getCurrencyRelation()
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    /** @inheritDoc */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
+            $this->unlinkAll('matches', true);
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 }

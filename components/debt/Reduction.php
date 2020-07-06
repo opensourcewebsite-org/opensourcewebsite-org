@@ -35,8 +35,8 @@ class Reduction extends Component
      */
     public function run(): void
     {
-        while ($balanceChainMemberFirst = $this->findDebtBalanceFirstMember()) {
-            $this->log('--- Starting search Circled Chain ---');
+        while ($balanceChainMemberFirst = $this->findDebtBalanceToReduce()) {
+            $this->log('--- Starting search Circled Chain ---', [], true);
 
             $balanceCircledMembers = $this->findCircledChains($balanceChainMemberFirst->from_user_id, [$balanceChainMemberFirst]);
 
@@ -52,7 +52,7 @@ class Reduction extends Component
         }
     }
 
-    private function findDebtBalanceFirstMember(): ?DebtBalance
+    private function findDebtBalanceToReduce(): ?DebtBalance
     {
         $query = DebtBalance::find()->select(DebtBalance::primaryKey())->limit(1);
 
@@ -212,9 +212,9 @@ class Reduction extends Component
                 $chainLog[] = implode(':', $balance->primaryKey);
             }
 
-            $this->log("amount=-$minAmount   group=$group     " . implode(' -> ', $chainLog), [Console::BG_GREEN], true);
+            $this->log("amount=-$minAmount {$debt->currency->code}  group=$group     " . implode('->', $chainLog), [Console::BG_GREEN], true);
 
-            $message = "Created chain. Amount=$debt->amount {$debt->currency->code}; Count of Debts=$count;";
+            $message = "Reduction chain. Amount=$debt->amount {$debt->currency->code}; Count of Debts=$count;";
             $message .= ' Count of Users=' . ($count + 1);
             $this->log($message);
         };
@@ -225,7 +225,7 @@ class Reduction extends Component
      */
     private function cantReduceBalance(DebtBalance $balance): void
     {
-        $this->log('Found 0 balance chains');
+        $this->log('Found 0 balance chains', [Console::FG_GREY], true);
 
         if ($this->isDebugMode()) {
             exit(ExitCode::SOFTWARE); //to avoid continuous loop, if debugging balance has no circled chain

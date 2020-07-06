@@ -66,7 +66,7 @@ abstract class FillablePropertiesController extends Controller
                 [
                     [
                         [
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                             'callback_data' => self::createRoute("set-property", [
                                 'property' => $nextProperty,
                             ]),

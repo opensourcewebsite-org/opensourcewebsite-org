@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\behaviors\SetDefaultCurrencyBehavior;
 use Yii;
 use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
@@ -16,6 +17,7 @@ use app\modules\bot\models\AdSection;
 use app\modules\bot\models\AdKeyword;
 use app\modules\bot\models\AdOffer;
 use app\modules\bot\models\AdSearch;
+use yii\base\ModelEvent;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\User as TelegramUser;
@@ -56,7 +58,7 @@ class SAdSearchController extends CrudController
                         'showDetailedInfo' => true,
                     ];
                 },
-                'view' => 'search',
+                'view' => 'show',
                 'attributes' => [
                     'title' => [],
                     'description' => [
@@ -115,6 +117,17 @@ class SAdSearchController extends CrudController
                         ],
                     ],
                     'currency' => [
+                        'behaviors' => [
+                            'SetDefaultCurrencyBehavior' => [
+                                'class' => SetDefaultCurrencyBehavior::class,
+                                'telegramUser' => $this->getTelegramUser(),
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
+                                ],
+                            ],
+                        ],
+                        'hidden' => true,
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
@@ -127,12 +140,6 @@ class SAdSearchController extends CrudController
                             [
                                 'text' => Yii::t('bot', 'Edit currency'),
                                 'item' => 'currency',
-                            ],
-                        ],
-                        'systemButtons' => [
-                            'back' => [
-                                'item' => 'description',
-                                'editMode' => false,
                             ],
                         ],
                         'prepareViewParams' => function ($params) {
@@ -154,7 +161,6 @@ class SAdSearchController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
-                                'createMode' => false,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (AdSearch $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -175,7 +181,7 @@ class SAdSearchController extends CrudController
                         'view' => 'edit-radius',
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No'),
+                                'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (AdSearch $model) {
                                     $model->pickup_radius = 0;
 
@@ -197,6 +203,8 @@ class SAdSearchController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
+        $model->markToUpdateMatches();
+
         return $this->actionSearch($model->id);
     }
 
@@ -208,7 +216,7 @@ class SAdSearchController extends CrudController
 
         $adSearchQuery = AdSearch::find()
             ->where([
-                'user_id' => $this->getTelegramUser()->id,
+                'user_id' => $this->getTelegramUser()->user_id,
                 'section' => $adSection,
             ])
             ->orderBy(['status' => SORT_DESC, 'title' => SORT_ASC]);;
@@ -349,7 +357,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('description-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -402,7 +410,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('keywords-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -511,7 +519,7 @@ class SAdSearchController extends CrudController
 
         $buttons[][] = [
             'callback_data' => self::createRoute('currency-skip'),
-            'text' => Yii::t('bot', 'Skip'),
+            'text' => Yii::t('bot', 'SKIP'),
         ];
 
         $buttons[] = [
@@ -564,7 +572,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('max-price-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -879,7 +887,7 @@ class SAdSearchController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render(
-                    'search',
+                    'show',
                     [
                         'sectionName' => AdSection::getAdSearchName($adSearch->section),
                         'keywords' => self::getKeywordsAsString(
@@ -925,7 +933,7 @@ class SAdSearchController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
                 $this->render(
-                    'search',
+                    'show',
                     [
                         'sectionName' => AdSection::getAdSearchName($adSearch->section),
                         'keywords' => self::getKeywordsAsString(
@@ -1095,7 +1103,7 @@ class SAdSearchController extends CrudController
                                     'adSearchId' => $adSearchId,
                                 ]
                             ),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -1354,7 +1362,7 @@ class SAdSearchController extends CrudController
                                     'adSearchId' => $adSearchId,
                                 ]
                             ),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [

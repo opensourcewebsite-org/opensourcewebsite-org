@@ -2,10 +2,15 @@
 
 namespace app\models;
 
+use app\models\queries\ResumeQuery;
+use app\models\User as GlobalUser;
+use app\modules\bot\models\JobKeyword;
+use app\modules\bot\models\JobMatch;
 use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\conditions\AndCondition;
 
 /**
  * Class Resume
@@ -50,7 +55,7 @@ class Resume extends ActiveRecord
                     'location_lat',
                     'location_lon',
                 ],
-                'double'
+                'double',
             ],
             [
                 [
@@ -79,6 +84,14 @@ class Resume extends ActiveRecord
     }
 
     /**
+     * @return ResumeQuery
+     */
+    public static function find()
+    {
+        return new ResumeQuery(get_called_class());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function attributeLabels()
@@ -96,7 +109,7 @@ class Resume extends ActiveRecord
      */
     public function getCurrency()
     {
-        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /** @inheritDoc */
@@ -115,6 +128,86 @@ class Resume extends ActiveRecord
     public function isActive()
     {
         return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getMatches()
+    {
+        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+            ->viaTable('{{%job_match}}', ['resume_id' => 'id'], function ($query) {
+                $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
+            });
+    }
+
+    /**
+     * @return queries\VacancyQuery
+     */
+    public function getMatchedVacancies()
+    {
+        $query = Vacancy::find()->active()->matchLanguages()->matchRadius($this);
+        $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
+
+        return $query->groupBy(Vacancy::tableName() . '.id');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getAllMatches()
+    {
+        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+            ->viaTable('{{%job_match}}', ['resume_id' => 'id']);
+    }
+
+    public function updateMatches()
+    {
+        $this->unlinkAll('allMatches', true);
+        $vacanciesQuery = $this->getMatchedVacancies();
+
+        $vacanciesQueryNoRateQuery = clone $vacanciesQuery;
+        $vacanciesQueryRateQuery = clone $vacanciesQuery;
+
+        if ($this->min_hourly_rate) {
+            $vacanciesQueryRateQuery->andWhere(new AndCondition([
+                ['IS NOT', Vacancy::tableName() . '.max_hourly_rate', null],
+                ['>=', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate],
+                [Vacancy::tableName() . '.currency_id' => $this->currency_id],
+            ]));
+            $vacanciesQueryNoRateQuery->andWhere(
+                new AndCondition([
+                    ['<', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate],
+                    ['<>', Vacancy::tableName() . '.currency_id', $this->currency_id],
+                ])
+            );
+
+            foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
+                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_BOTH]);
+            }
+
+            foreach ($vacanciesQueryNoRateQuery->all() as $vacancy) {
+                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_THEY]);
+            }
+        } else {
+            foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
+                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_SELF]);
+            }
+        }
+    }
+
+    public function markToUpdateMatches()
+    {
+        if ($this->processed_at !== null) {
+            $this->unlinkAll('matches', true);
+
+            $this->setAttributes([
+                'processed_at' => null,
+            ]);
+            $this->save();
+        }
     }
 
     /**
@@ -138,5 +231,34 @@ class Resume extends ActiveRecord
         }
 
         return $currencyCode;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getGlobalUser()
+    {
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getKeywordsRelation()
+    {
+        return $this->hasMany(JobKeyword::className(), ['id' => 'job_keyword_id'])
+            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
+    }
+
+    /** @inheritDoc */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
+            $this->unlinkAll('matches', true);
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 }

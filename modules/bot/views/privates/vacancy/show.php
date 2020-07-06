@@ -5,6 +5,10 @@ use app\models\Vacancy;
 ?>
 <b><?= Yii::t('bot', 'Vacancy') ?>: <?= $name ?></b><br/>
 <br/>
+<?php if ($keywords != '') : ?>
+# <i><?= $keywords ?></i><br/>
+<br/>
+<?php endif; ?>
 <?php if ($responsibilities) : ?>
 <b><?= Yii::t('bot', 'Responsibilities') ?>:</b><br/>
 <br/>
@@ -23,11 +27,21 @@ use app\models\Vacancy;
 <?= nl2br($conditions) ?><br/>
 <br/>
 <?php endif; ?>
+<?php if ($languages) : ?>
+<b><?= Yii::t('bot', 'Required languages') ?>:</b><br/>
+<br/>
+<?php foreach ($languages as $language) : ?>
+<?= $language ?><br/>
+<?php endforeach; ?>
+<br/>
+<?php endif; ?>
+<?php if ($hourlyRate) : ?>
 <b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
+<?php endif; ?>
 <b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
-<?php if($model->location_lat && $model->location_lon) : ?>
+<?php if ($model->location_lat && $model->location_lon) : ?>
 <b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>
 <br/>
 <?php endif; ?>
