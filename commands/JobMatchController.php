@@ -40,13 +40,17 @@ class JobMatchController extends Controller implements CronChainedInterface
             ->addOrderBy(['gu.created_at' => SORT_ASC]);
 
         foreach ($resumeQuery->all() as $resume) {
-            $updatesCount++;
-            $resume->updateMatches();
+            try {
+                $resume->updateMatches();
 
-            $resume->setAttributes([
-                'processed_at' => time(),
-            ]);
-            $resume->save();
+                $resume->setAttributes([
+                    'processed_at' => time(),
+                ]);
+                $resume->save();
+                $updatesCount++;
+            } catch (\Exception $ex) {
+                echo "ERROR: resume #" . $resume->id . ": " . $ex->getMessage() . "\n";
+            }
         }
 
         if ($updatesCount) {
@@ -65,13 +69,17 @@ class JobMatchController extends Controller implements CronChainedInterface
             ->addOrderBy(['gu.created_at' => SORT_ASC]);
 
         foreach ($vacancyQuery->all() as $vacancy) {
-            $updatesCount++;
-            $vacancy->updateMatches();
+            try {
+                $vacancy->updateMatches();
 
-            $vacancy->setAttributes([
-                'processed_at' => time(),
-            ]);
-            $vacancy->save();
+                $vacancy->setAttributes([
+                    'processed_at' => time(),
+                ]);
+                $vacancy->save();
+                $updatesCount++;
+            } catch (\Exception $ex) {
+                echo "ERROR: vacancy #" . $vacancy->id . ": " . $ex->getMessage() . "\n";
+            }
         }
 
         if ($updatesCount) {
