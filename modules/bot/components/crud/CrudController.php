@@ -1570,7 +1570,7 @@ abstract class CrudController extends Controller
             $isPrivateAttribute = $this->attributeButtons->isPrivateAttribute($attributeName, $rule);
             $buttonSkip = ArrayHelper::merge(
                 [
-                    'text' => Yii::t('bot', $isEdit ? 'No' : 'Skip'),
+                    'text' => Yii::t('bot', $isEdit ? 'NO' : 'SKIP'),
                     'callback_data' => self::createRoute(
                         $isPrivateAttribute ? 's-a' : 'en-a',
                         ['a' => $attributeName, 'text' => self::VALUE_NO]

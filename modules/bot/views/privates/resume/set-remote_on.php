@@ -1,4 +1,4 @@
-<?= Yii::t('bot', 'Remote work') ?>>.<br/>
+<?= Yii::t('bot', 'Remote work') ?>.<br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>

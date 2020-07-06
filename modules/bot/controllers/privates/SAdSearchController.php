@@ -175,7 +175,7 @@ class SAdSearchController extends CrudController
                         'view' => 'edit-radius',
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No'),
+                                'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (AdSearch $model) {
                                     $model->pickup_radius = 0;
 
@@ -349,7 +349,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('description-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -402,7 +402,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('keywords-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -511,7 +511,7 @@ class SAdSearchController extends CrudController
 
         $buttons[][] = [
             'callback_data' => self::createRoute('currency-skip'),
-            'text' => Yii::t('bot', 'Skip'),
+            'text' => Yii::t('bot', 'SKIP'),
         ];
 
         $buttons[] = [
@@ -564,7 +564,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('max-price-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1095,7 +1095,7 @@ class SAdSearchController extends CrudController
                                     'adSearchId' => $adSearchId,
                                 ]
                             ),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -1354,7 +1354,7 @@ class SAdSearchController extends CrudController
                                     'adSearchId' => $adSearchId,
                                 ]
                             ),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [

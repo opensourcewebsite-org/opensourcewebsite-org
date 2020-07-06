@@ -196,7 +196,7 @@ class SAdOfferController extends CrudController
                         'view' => 'edit-radius',
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No'),
+                                'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (AdOffer $model) {
                                     $model->delivery_radius = 0;
 
@@ -587,7 +587,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-description-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -651,7 +651,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-photo-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -722,7 +722,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-keywords-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -901,7 +901,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-price-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -1169,7 +1169,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('description-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1245,7 +1245,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('photo-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1302,7 +1302,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('keywords-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1424,7 +1424,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('price-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
