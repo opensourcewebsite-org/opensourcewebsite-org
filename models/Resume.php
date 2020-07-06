@@ -252,4 +252,13 @@ class Resume extends ActiveRecord
         return $this->hasMany(JobKeyword::className(), ['id' => 'job_keyword_id'])
             ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
     }
+
+    /** @inheritDoc */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
+            $this->unlinkAll('matches', true);
+        }
+        parent::afterSave($insert, $changedAttributes);
+    }
 }
