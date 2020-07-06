@@ -59,11 +59,11 @@ class VacancyQuery extends ActiveQuery
         $radiusExpression = '';
         if ($model->search_radius && $model->location_lat && $model->location_lon) {
             $radiusExpression = new Expression(
-                "IF((" . Vacancy::tableName() . ".location_lon AND " . Vacancy::tableName() . ".location_lat)," .
-                "ST_Distance_Sphere(" .
-                "POINT($model->location_lon, $model->location_lat), " .
-                "POINT(" . Vacancy::tableName() . ".location_lon, " . Vacancy::tableName() . ".location_lat)" .
-                "),0) <= 1000 * " . $model->search_radius
+                'IF((' . Vacancy::tableName() . '.location_lon AND ' . Vacancy::tableName() . '.location_lat),' .
+                'ST_Distance_Sphere(' .
+                'POINT(' . $model->location_lon . ', ' . $model->location_lat . '), ' .
+                'POINT(' . Vacancy::tableName() . '.location_lon, ' . Vacancy::tableName() . '.location_lat)' .
+                '),0) <= 1000 * ' . $model->search_radius
             );
         }
         if ($model->remote_on == Resume::REMOTE_ON) {

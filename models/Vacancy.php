@@ -279,4 +279,13 @@ class Vacancy extends ActiveRecord
         return $this->hasMany(JobKeyword::className(), ['id' => 'job_keyword_id'])
             ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id']);
     }
+
+    /** @inheritDoc */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
+            $this->unlinkAll('matches', true);
+        }
+        parent::afterSave($insert, $changedAttributes);
+    }
 }
