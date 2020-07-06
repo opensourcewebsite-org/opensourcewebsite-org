@@ -9,7 +9,12 @@ use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\AdOffer;
 use app\modules\bot\models\AdSearch;
 
-class AdMatchesController extends Controller implements CronChainedInterface
+/**
+ * Class AdMatchController
+ *
+ * @package app\commands
+ */
+class AdMatchController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 

@@ -38,7 +38,8 @@ class CronController extends Controller
         'WikipediaParser',
         'WikinewsParser',
         'Debt',
-        'AdMatches',
+        'AdMatch',
+        'JobMatch',
         'Bot'
     ];
 
