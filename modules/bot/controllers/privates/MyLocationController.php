@@ -23,15 +23,12 @@ class MyLocationController extends Controller
 
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
             return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('header')
-                )
                 ->sendLocation(
                     $telegramUser->location_lat,
                     $telegramUser->location_lon
                 )
-                ->sendMessage(
-                    $this->render('footer'),
+                ->editMessageTextOrSendMessage(
+                    $this->render('index'),
                     [
                         [
                             [

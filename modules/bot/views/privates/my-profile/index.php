@@ -1,42 +1,48 @@
 
 <b><?= Yii::t('bot', 'Your Profile') ?></b><br/>
 <br/>
-<?php
-if (isset($firstName)) {
-    echo Yii::t('bot', 'First Name') . ': ' . $firstName . '<br/>';
-}
-if (isset($lastName)) {
-    echo Yii::t('bot', 'Last Name') . ': ' . $lastName . '<br/>';
-}
-if (isset($username)) {
-    echo Yii::t('bot', 'Telegram') . ': @' . $username . '<br/>';
-}
-if (isset($gender)) {
-    echo Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender) . '<br/>';
-}
-if (isset($sexuality)) {
-    echo Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $sexuality) . '<br/>';
-}
-if (isset($birthday)) {
-    echo Yii::t('bot', 'Birthday') . ': ' . $birthday . '<br/>';
-}
-if (isset($currency)) {
-    echo Yii::t('bot', 'Currency') . ': ' .  $currency . '<br/>';
-}
-if (isset($timezone)) {
-     echo Yii::t('bot', 'Timezone') . ': ' . $timezone . '<br/>';
-}
-if (!empty($languages)) {
-    echo '<br/>';
-    echo Yii::t('bot', 'Languages') . ':<br/>';
-    foreach ($languages as $language) {
-        echo $language . '<br/>';
-    }
-}
-if (!empty($citizenships)) {
-    echo '<br/>';
-    echo Yii::t('bot', 'Citizenship') . ':<br/>';
-    foreach ($citizenships as $citizenship) {
-        echo $citizenship . '<br/>';
-    }
-}
+<?php if (isset($firstName)) : ?>
+<?= Yii::t('bot', 'First Name') . ': ' . $firstName; ?><br/>
+<?php endif; ?>
+<?php if (isset($lastName)) : ?>
+<?= Yii::t('bot', 'Last Name') . ': ' . $lastName; ?><br/>
+<?php endif; ?>
+<?php if (isset($username)) : ?>
+<?= Yii::t('bot', 'Telegram') . ': @' . $username; ?><br/>
+<?php endif; ?>
+<br/>
+<?php if (isset($gender)) : ?>
+<?= Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender); ?><br/>
+<?php endif; ?>
+<?php if (isset($sexuality)) : ?>
+<?= Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $sexuality); ?><br/>
+<?php endif; ?>
+<?php if (isset($birthday)) : ?>
+<?= Yii::t('bot', 'Birthday') . ': ' . $birthday; ?><br/>
+<?php endif; ?>
+<?php if (!empty($languages)) : ?>
+<br/>
+<?=  Yii::t('bot', 'Languages') ?>:<br/>
+<br/>
+<?php foreach ($languages as $language) : ?>
+<?= $language ?><br/>
+<?php endforeach; ?>
+<?php endif; ?>
+<?php if (!empty($citizenships)) : ?>
+<br/>
+<?= Yii::t('bot', 'Citizenships') ?>:<br/>
+<br/>
+<?php foreach ($citizenships as $citizenship) : ?>
+<?= $citizenship ?><br/>
+<?php endforeach; ?>
+<?php endif; ?>
+<br/>
+<?php if ($location_lat && $location_lon) : ?>
+<?= Yii::t('bot', 'Location') ?>: <a href = "<?= $locationLink ?>"><?= $location_lat ?> <?= $location_lon ?></a><br/>
+<?php endif; ?>
+<?php if (isset($timezone)) : ?>
+<?= Yii::t('bot', 'Timezone') . ': ' . $timezone; ?><br/>
+<?php endif; ?>
+<?php if (isset($currency)) : ?>
+<?= Yii::t('bot', 'Currency') . ': ' .  $currency; ?><br/>
+<?php endif; ?>

@@ -1,2 +1,1 @@
-<b><?= Yii::t('bot', 'Your Citizenship') ?></b><br/>
-<br/>
+<b><?= Yii::t('bot', 'Your Citizenships') ?></b>
