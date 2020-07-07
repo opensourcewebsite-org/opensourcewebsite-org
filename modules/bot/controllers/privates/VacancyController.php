@@ -24,7 +24,6 @@ use Yii;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
 
-use yii\base\ModelEvent;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -181,6 +180,7 @@ class VacancyController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
+                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (Vacancy $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
