@@ -183,6 +183,7 @@ class SAdOfferController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
+                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (AdOffer $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
