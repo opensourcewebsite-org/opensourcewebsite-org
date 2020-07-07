@@ -198,6 +198,16 @@ class Resume extends ActiveRecord
         }
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getLanguagesRelation()
+    {
+        return $this->hasMany(Language::className(), ['id' => 'language_id'])
+            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
+    }
+
     public function markToUpdateMatches()
     {
         if ($this->processed_at !== null) {
@@ -271,6 +281,9 @@ class Resume extends ActiveRecord
      */
     public function possibleToChangeStatus()
     {
-        return $this->remote_on == self::REMOTE_ON || ($this->location_lon && $this->location_lat);
+        $location = ($this->search_radius && $this->location_lon && $this->location_lat);
+        $languagesCnt = $this->getLanguagesRelation()->count();
+
+        return $languagesCnt && ($this->remote_on == self::REMOTE_ON || $location);
     }
 }

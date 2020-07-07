@@ -298,6 +298,9 @@ class Vacancy extends ActiveRecord
      */
     public function possibleToChangeStatus()
     {
-        return $this->remote_on == self::REMOTE_ON || ($this->location_lon && $this->location_lat);
+        $location = ($this->location_lon && $this->location_lat);
+        $languagesCnt = $this->getLanguagesRelation()->count();
+
+        return $languagesCnt && ($this->remote_on == self::REMOTE_ON || $location);
     }
 }

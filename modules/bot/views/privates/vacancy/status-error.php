@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Status error'); ?>
+<?= Yii::t('bot', 'Vacancy status error'); ?>
