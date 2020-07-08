@@ -286,7 +286,7 @@ class Vacancy extends ActiveRecord
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
             $this->unlinkAll('matches', true);
         }
-        if ($this->status == self::STATUS_ON && !$this->possibleToChangeStatus()) {
+        if ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
             $this->status = self::STATUS_OFF;
             $this->save();
         }
@@ -296,7 +296,7 @@ class Vacancy extends ActiveRecord
     /**
      * @return array
      */
-    public function possibleToChangeStatus()
+    public function notPossibleToChangeStatus()
     {
         $location = ($this->location_lon && $this->location_lat);
         $languagesCount = $this->getLanguagesRelation()->count();
