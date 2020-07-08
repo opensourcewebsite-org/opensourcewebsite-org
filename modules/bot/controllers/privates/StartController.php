@@ -73,7 +73,7 @@ class StartController extends Controller
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),
-                            'text' => Emoji::LANGUAGE,
+                            'text' => Emoji::LANGUAGE  . ' ' . strtoupper(Yii::$app->language),
                         ],
                     ],
                 ]

@@ -1,11 +1,5 @@
-<?= Yii::t('bot', 'Vacancy status error'); ?>
+<?= Yii::t('bot', 'To activate, fill in the following fields'); ?>:<br/>
 <br/>
-<?= Yii::t('bot', 'Please fill'); ?>
-<?php
-foreach ($notFilledFields as $field) :
-    ?>
-<br/>
-<?= Yii::t('bot', $field); ?>
-<?php
-endforeach;
-?>
+<?php foreach ($notFilledFields as $field) : ?>
+<?= Yii::t('bot', $field); ?><br/>
+<?php endforeach; ?>

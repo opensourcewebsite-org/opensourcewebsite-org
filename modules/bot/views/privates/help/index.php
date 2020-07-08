@@ -3,10 +3,11 @@
 /my_profile - <?= Yii::t('bot', 'Profile') ?><br/>
 /my_location - <?= Yii::t('bot', 'Location') ?><br/>
 /my_timezone - <?= Yii::t('bot', 'Timezone') ?><br/>
-/my_languages - <?= Yii::t('bot', 'Languages') ?><br/>
 /my_gender - <?= Yii::t('bot', 'Gender') ?><br/>
+/my_sexuality - <?= Yii::t('bot', 'Sexuality') ?><br/>
 /my_birthday - <?= Yii::t('bot', 'Birthday') ?><br/>
-/my_citizenship - <?= Yii::t('bot', 'Citizenship') ?><br/>
+/my_languages - <?= Yii::t('bot', 'Languages') ?><br/>
+/my_citizenship - <?= Yii::t('bot', 'Citizenships') ?><br/>
 /my_currency - <?= Yii::t('bot', 'Currency') ?><br/>
 /my_email - <?= Yii::t('bot', 'Email') ?><br/>
 <br/>

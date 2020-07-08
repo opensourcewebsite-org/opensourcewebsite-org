@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MenuController
@@ -76,7 +75,7 @@ class MenuController extends Controller
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),
-                            'text' => Emoji::LANGUAGE,
+                            'text' => Emoji::LANGUAGE . ' ' . strtoupper(Yii::$app->language),
                         ],
                     ],
                 ]
