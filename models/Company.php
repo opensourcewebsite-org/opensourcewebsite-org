@@ -36,20 +36,24 @@ class Company extends ActiveRecord
                 'filter',
                 'skipOnEmpty' => true,
                 'filter' => function ($value) {
-                    $pattern = '/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4})(?:[^\s()<>]+|\(([^\s()<>\/]+|(\([^\s()<>\/]+\)))*\))+(?:\(([^\s()<>\/]+|(\([^\s()<>\/]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’\/]))/';
-                    if (preg_match($pattern, $value, $match)) {
-                        $value = $match[1];
-                    }
-                    if (preg_match('/(?i)\b([a-zA-Z0-9.\-]+[.][a-zA-Z]{2,4})/', $value, $match)) {
-                        $value = $match[1];
+                    $parsedUrl = parse_url($value);
+                    if ($parsedUrl['host'] ?? false) {
+                        $url = trim($parsedUrl['host'], " \t\n\r\0\x0B.");
+                        if ($path = ($parsedUrl['path'] ?? '')) {
+                            $url .= $path;
+                        }
+                        if ($query = ($parsedUrl['query'] ?? '')) {
+                            $url .= '?' . $query;
+                        }
+                        $value = $url;
                     }
 
-                    return preg_replace('|^https?:\/\/|', '', $value);
+                    return $value;
                 },
             ],
             [
                 ['url'], 'url',
-                'pattern' => '/\b(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
+                'pattern' => '/^(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
             ],
             [['description'], 'string'],
             [['name'], 'required'],
