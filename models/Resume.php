@@ -286,13 +286,17 @@ class Resume extends ActiveRecord
         $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || $location);
         $notFilledFields = [];
         if (!$canChangeStatus) {
-            if (!$location) {
-                $notFilledFields[] = $this->getAttributeLabel('location');
-            }
-            if ($languagesCount) {
+            if (!$languagesCount) {
                 $notFilledFields[] = $this->getAttributeLabel('languages');
             }
             if ($this->remote_on == self::REMOTE_ON) {
+                if (!$location) {
+                    $notFilledFields[] = $this->getAttributeLabel('location');
+                }
+                if (!$this->search_radius) {
+                    $notFilledFields[] = $this->getAttributeLabel('search_radius');
+                }
+            } else {
                 $notFilledFields[] = $this->getAttributeLabel('remote_on');
             }
         }

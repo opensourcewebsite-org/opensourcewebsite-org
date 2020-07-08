@@ -90,7 +90,7 @@ class Company extends ActiveRecord
     public function getUrl()
     {
         $url = $this->url;
-        if (!preg_match('|^https?:\/\/|', $url)) {
+        if ($url && !preg_match('|^https?:\/\/|', $url)) {
             $url = Yii::$app->params['defaultScheme'] . '://' . $url;
         }
 
