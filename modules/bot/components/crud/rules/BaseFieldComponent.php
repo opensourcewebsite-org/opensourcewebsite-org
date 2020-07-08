@@ -38,9 +38,15 @@ abstract class BaseFieldComponent
     {
         $this->controller = $controller;
         $this->config = $config;
-        $this->state = $this->controller->getState();
+        if (method_exists($controller, 'getState')
+            && is_callable($controller, 'getState')) {
+            $this->state = $this->controller->getState();
+        }
         $this->update = $this->controller->module->update;
-        $this->telegramUser = $this->controller->getTelegramUser();
+        if (method_exists($controller, 'getTelegramUser')
+            && is_callable($controller, 'getTelegramUser')) {
+            $this->telegramUser = $this->controller->getTelegramUser();
+        }
         $this->user = $controller->module->user;
     }
 }

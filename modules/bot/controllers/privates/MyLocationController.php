@@ -2,8 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\Controller;
+use Yii;
 
 /**
  * Class MyLocationController
@@ -59,12 +61,18 @@ class MyLocationController extends Controller
     public function actionUpdate()
     {
         $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
-
-        if ($update->getMessage() && ($location = $update->getMessage()->getLocation())) {
+        $locationComponent = Yii::createObject([
+            'class' => LocationToArrayFieldComponent::class,
+        ], [$this, []]);
+        $text = '';
+        if ($message = $this->getUpdate()->getMessage()) {
+            $text = $message->getText();
+        }
+        $locations = $locationComponent->prepare($text);
+        if ($locations['location_lat'] && $locations['location_lon']) {
             $telegramUser->setAttributes([
-                'location_lon' => $location->getLongitude(),
-                'location_lat' => $location->getLatitude(),
+                'location_lon' => $locations['location_lon'],
+                'location_lat' => $locations['location_lat'],
                 'location_at' => time(),
             ]);
             $telegramUser->save();

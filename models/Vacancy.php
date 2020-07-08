@@ -306,10 +306,10 @@ class Vacancy extends ActiveRecord
             if (!$location) {
                 $notFilledFields[] = $this->getAttributeLabel('location');
             }
-            if ($languagesCount) {
+            if (!$languagesCount) {
                 $notFilledFields[] = $this->getAttributeLabel('languages');
             }
-            if ($this->remote_on == self::REMOTE_ON) {
+            if ($this->remote_on == self::REMOTE_OFF) {
                 $notFilledFields[] = $this->getAttributeLabel('remote_on');
             }
         }
