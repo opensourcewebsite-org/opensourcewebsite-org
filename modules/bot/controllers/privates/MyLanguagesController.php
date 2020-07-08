@@ -103,7 +103,7 @@ class MyLanguagesController extends Controller
                         'languageId' => $language->id,
                     ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name,
-                ]
+                ],
             ];
         }, $languages);
 
@@ -159,11 +159,11 @@ class MyLanguagesController extends Controller
                         'languageId' => $languageId,
                         'levelId' => $level->id,
                     ]),
-                ]
+                ],
             ];
         }, $levels);
 
-        $isEdit = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->exists();
+        $languagesCount = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->count();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -174,13 +174,13 @@ class MyLanguagesController extends Controller
                     array_merge([
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => $isEdit
+                            'callback_data' => $languagesCount
                                 ? self::createRoute()
                                 : self::createRoute('create-language'),
                         ],
                     ],
-                    ($isEdit)
-                        ? [
+                        ($languagesCount > 1)
+                            ? [
                             [
                                 'text' => Emoji::DELETE,
                                 'callback_data' => self::createRoute('delete', [
@@ -188,7 +188,7 @@ class MyLanguagesController extends Controller
                                 ]),
                             ],
                         ]
-                        : []
+                            : []
                     ),
                 ])
             )
@@ -256,9 +256,11 @@ class MyLanguagesController extends Controller
 
         if (isset($language)) {
             $this->DeleteLastMessage($chatId, $messageId);
+
             return $this->actionCreateLevel($language->id);
         } else {
             $this->DeleteLastMessage($chatId, $messageId);
+
             return $this->actionCreateLanguage();
         }
     }

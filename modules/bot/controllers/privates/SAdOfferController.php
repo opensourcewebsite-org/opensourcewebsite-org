@@ -183,6 +183,7 @@ class SAdOfferController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
+                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (AdOffer $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -471,7 +472,9 @@ class SAdOfferController extends CrudController
     public function updatePost($adOfferId)
     {
         $adOffer = AdOffer::findOne($adOfferId);
-
+        if (!$adOffer->isActive()) {
+            $adOffer->markToUpdateMatches();
+        }
         $adOffer->setAttributes([
             'renewed_at' => time(),
         ]);

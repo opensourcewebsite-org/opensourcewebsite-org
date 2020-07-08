@@ -198,6 +198,16 @@ class Resume extends ActiveRecord
         }
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getLanguagesRelation()
+    {
+        return $this->hasMany(Language::className(), ['id' => 'language_id'])
+            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
+    }
+
     public function markToUpdateMatches()
     {
         if ($this->processed_at !== null) {
@@ -259,6 +269,34 @@ class Resume extends ActiveRecord
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
             $this->unlinkAll('matches', true);
         }
+        if ($this->status == self::STATUS_ON && !$this->possibleToChangeStatus()) {
+            $this->status = self::STATUS_OFF;
+            $this->save();
+        }
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * @return array
+     */
+    public function possibleToChangeStatus()
+    {
+        $location = ($this->search_radius && $this->location_lon && $this->location_lat);
+        $languagesCount = $this->getLanguagesRelation()->count();
+        $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || $location);
+        $notFilledFields = [];
+        if (!$canChangeStatus) {
+            if (!$location) {
+                $notFilledFields[] = $this->getAttributeLabel('location');
+            }
+            if ($languagesCount) {
+                $notFilledFields[] = $this->getAttributeLabel('languages');
+            }
+            if ($this->remote_on == self::REMOTE_ON) {
+                $notFilledFields[] = $this->getAttributeLabel('remote_on');
+            }
+        }
+
+        return $notFilledFields;
     }
 }
