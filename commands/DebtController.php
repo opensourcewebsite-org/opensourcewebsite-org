@@ -121,9 +121,6 @@ class DebtController extends Controller implements CronChainedInterface
      */
     public function actionIndex()
     {
-        $class = Reduction::class;
-        $this->output("Running $class ...");
-
         $reduction = new Reduction();
         $reduction->logger = function ($message, $format = []) {
             $this->output($message, $format);
@@ -135,15 +132,9 @@ class DebtController extends Controller implements CronChainedInterface
         }
         $reduction->run();
 
-        $this->output("Finished $class");
-        $class = Redistribution::class;
-        $this->output("Running $class ...");
-
         $redistribution = new Redistribution();
         $redistribution->logger = $reduction->logger;
         $redistribution->run();
-
-        $this->output("Finished $class");
     }
 
     /**
