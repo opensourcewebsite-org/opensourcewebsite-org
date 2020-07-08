@@ -482,6 +482,8 @@ class ResumeController extends CrudController
                 ->answerCallbackQuery()
                 ->build();
         }
+        $this->backRoute->make('view', compact('resumeId'));
+        $this->endRoute->make('view', compact('resumeId'));
 
         if ($isEnabled && ($notFilledFields = $resume->possibleToChangeStatus())) {
             return $this->getResponseBuilder()
