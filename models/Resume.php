@@ -281,9 +281,9 @@ class Resume extends ActiveRecord
      */
     public function possibleToChangeStatus()
     {
-        $location = ($this->search_radius && $this->location_lon && $this->location_lat);
+        $location = ($this->location_lon && $this->location_lat);
         $languagesCount = $this->getLanguagesRelation()->count();
-        $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || $location);
+        $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || ($this->search_radius && $location));
         $notFilledFields = [];
         if (!$canChangeStatus) {
             if (!$languagesCount) {
