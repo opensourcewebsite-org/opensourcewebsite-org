@@ -557,7 +557,7 @@ class VacancyController extends CrudController
         $this->backRoute->make('view', compact('vacancyId'));
         $this->endRoute->make('view', compact('vacancyId'));
 
-        if ($isEnabled && ($notFilledFields = $vacancy->possibleToChangeStatus())) {
+        if ($isEnabled && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('status-error', compact('notFilledFields')),
