@@ -321,4 +321,5 @@ return [
     'Send a title of a job position' => 'Отправьте название должности',
     'This information is used for the following bot services' => 'Эта информация используется для следующих сервисов бота',
     'This information is used for all bot services' => 'Эта информация используется для всех сервисов бота',
+    'To activate, fill in the following fields' => 'Для активации заполните следующие поля',
 ];

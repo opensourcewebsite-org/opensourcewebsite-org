@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\behaviors\SetDefaultCurrencyBehavior;
 use Yii;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
@@ -528,7 +528,7 @@ class SAdOfferController extends CrudController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('search-matches', [
+                $this->render('match', [
                     'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
                     'adSearch' => $matchedAdSearch,
                     'user' => TelegramUser::findOne($matchedAdSearch->user_id),
