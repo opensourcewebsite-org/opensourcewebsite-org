@@ -39,7 +39,8 @@ class Company extends ActiveRecord
                     $pattern = '/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4})(?:[^\s()<>]+|\(([^\s()<>\/]+|(\([^\s()<>\/]+\)))*\))+(?:\(([^\s()<>\/]+|(\([^\s()<>\/]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’\/]))/';
                     if (preg_match($pattern, $value, $match)) {
                         $value = $match[1];
-                    } elseif (preg_match('/(?i)\b([a-zA-Z0-9.\-]+[.][a-zA-Z]{2,4})/', $value, $match)) {
+                    }
+                    if (preg_match('/(?i)\b([a-zA-Z0-9.\-]+[.][a-zA-Z]{2,4})/', $value, $match)) {
                         $value = $match[1];
                     }
 
