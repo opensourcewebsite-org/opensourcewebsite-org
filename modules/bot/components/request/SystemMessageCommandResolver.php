@@ -8,8 +8,11 @@ class SystemMessageCommandResolver implements ICommandResolver
 {
     public function resolveCommand(Update $update)
     {
-        if ($update->getMessage()
-            && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {
+        if ($update->getMessage() && $update->getMessage()->getNewChatMember()) {
+            $commandText = SystemMessageController::createRoute('show-captcha', ['joinedUser' => $update->getMessage()->getFrom()->getId()]);
+        }
+
+        if ($update->getMessage() && $update->getMessage()->getLeftChatMember()) {
             $commandText = SystemMessageController::createRoute();
         }
 
