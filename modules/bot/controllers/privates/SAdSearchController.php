@@ -915,7 +915,9 @@ class SAdSearchController extends CrudController
     public function updateSearch($adSearchId)
     {
         $adSearch = AdSearch::findOne($adSearchId);
-
+        if (!$adSearch->isActive()) {
+            $adSearch->markToUpdateMatches();
+        }
         $adSearch->setAttributes(
             [
                 'renewed_at' => time(),

@@ -472,7 +472,9 @@ class SAdOfferController extends CrudController
     public function updatePost($adOfferId)
     {
         $adOffer = AdOffer::findOne($adOfferId);
-
+        if (!$adOffer->isActive()) {
+            $adOffer->markToUpdateMatches();
+        }
         $adOffer->setAttributes([
             'renewed_at' => time(),
         ]);

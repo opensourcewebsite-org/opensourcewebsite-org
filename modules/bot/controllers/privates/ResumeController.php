@@ -483,10 +483,10 @@ class ResumeController extends CrudController
                 ->build();
         }
 
-        if ($isEnabled && !$resume->possibleToChangeStatus()) {
+        if ($isEnabled && ($notFilledFields = $resume->possibleToChangeStatus())) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
-                    $this->render('status-error'),
+                    $this->render('status-error', compact('notFilledFields')),
                     true
                 )
                 ->build();

@@ -163,7 +163,7 @@ class MyLanguagesController extends Controller
             ];
         }, $levels);
 
-        $languagesCnt = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->count();
+        $languagesCount = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->count();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -174,12 +174,12 @@ class MyLanguagesController extends Controller
                     array_merge([
                         [
                             'text' => Emoji::BACK,
-                            'callback_data' => $languagesCnt
+                            'callback_data' => $languagesCount
                                 ? self::createRoute()
                                 : self::createRoute('create-language'),
                         ],
                     ],
-                        ($languagesCnt > 1)
+                        ($languagesCount > 1)
                             ? [
                             [
                                 'text' => Emoji::DELETE,

@@ -277,13 +277,26 @@ class Resume extends ActiveRecord
     }
 
     /**
-     * @return bool
+     * @return array
      */
     public function possibleToChangeStatus()
     {
         $location = ($this->search_radius && $this->location_lon && $this->location_lat);
-        $languagesCnt = $this->getLanguagesRelation()->count();
+        $languagesCount = $this->getLanguagesRelation()->count();
+        $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || $location);
+        $notFilledFields = [];
+        if (!$canChangeStatus) {
+            if (!$location) {
+                $notFilledFields[] = $this->getAttributeLabel('location');
+            }
+            if ($languagesCount) {
+                $notFilledFields[] = $this->getAttributeLabel('languages');
+            }
+            if ($this->remote_on == self::REMOTE_ON) {
+                $notFilledFields[] = $this->getAttributeLabel('remote_on');
+            }
+        }
 
-        return $languagesCnt && ($this->remote_on == self::REMOTE_ON || $location);
+        return $notFilledFields;
     }
 }

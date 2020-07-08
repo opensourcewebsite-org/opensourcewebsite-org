@@ -555,10 +555,10 @@ class VacancyController extends CrudController
                 ->build();
         }
 
-        if ($isEnabled && !$vacancy->possibleToChangeStatus()) {
+        if ($isEnabled && ($notFilledFields = $vacancy->possibleToChangeStatus())) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
-                    $this->render('status-error'),
+                    $this->render('status-error', compact('notFilledFields')),
                     true
                 )
                 ->build();
