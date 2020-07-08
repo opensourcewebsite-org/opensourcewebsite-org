@@ -16,8 +16,7 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
         $longitude = null;
         if (!$text) {
             $message = $this->update->getMessage();
-            if ($message) {
-                $location = $message->getLocation();
+            if ($message && ($location = $message->getLocation())) {
                 $latitude = $location->getLatitude();
                 $longitude = $location->getLongitude();
             }
