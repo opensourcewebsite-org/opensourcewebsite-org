@@ -164,7 +164,7 @@ class CompanyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'name' => $company->name,
-                    'url' => $company->url,
+                    'url' => $company->getUrl(),
                     'address' => $company->address,
                     'description' => $company->description,
                 ]),
