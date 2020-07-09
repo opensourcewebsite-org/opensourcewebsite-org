@@ -65,7 +65,7 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => MenuController::createRoute(),
-                            'text' => '📱',
+                            'text' => Emoji::MENU,
                         ],
                         [
                             'callback_data' => self::createRoute('offer'),
@@ -466,7 +466,7 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                            'text' => '🗑',
+                            'text' => Emoji::DELETE,
                         ],
                     ],
                 ]

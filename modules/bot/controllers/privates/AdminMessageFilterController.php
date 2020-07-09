@@ -10,6 +10,7 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Phrase;
 use yii\data\Pagination;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
 * Class AdminMessageFilterController
@@ -125,7 +126,7 @@ class AdminMessageFilterController extends Controller
                             'callback_data' => AdminChatController::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => '🔙',
+                            'text' => Emoji::BACK,
                         ],
                     ]
                 ]

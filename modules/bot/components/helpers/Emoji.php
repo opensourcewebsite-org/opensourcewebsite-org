@@ -13,4 +13,7 @@ class Emoji
     public const MENU = '📱';
     public const NOTIFICATIONS_ON = '🔔';
     public const GREETING = '🆘';
+    public const REFRESH = '🔄';
+    public const INACTIVE = '❌';
+    public const OFFERS = '🙋‍♂️';
 }
