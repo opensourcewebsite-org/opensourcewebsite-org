@@ -12,4 +12,5 @@ class Emoji
     public const LANGUAGE = '🌐';
     public const MENU = '📱';
     public const NOTIFICATIONS_ON = '🔔';
+    public const GREETING = '🆘';
 }

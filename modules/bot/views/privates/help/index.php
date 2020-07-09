@@ -15,6 +15,9 @@
 /my_referrals - <?= Yii::t('bot', 'Referrals') ?><br/>
 <br/>
 /services - <?= Yii::t('bot', 'Services') ?><br/>
+/s_ad - <?= Yii::t('bot', 'Ads') ?><br/>
+/s_job - <?= Yii::t('bot', 'Jobs') ?><br/>
+<br/>
 /admin - <?= Yii::t('bot', 'Groups') ?><br/>
 /menu - <?= Yii::t('bot', 'Menu') ?><br/>
 <br/>

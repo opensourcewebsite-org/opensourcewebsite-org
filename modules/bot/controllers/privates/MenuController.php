@@ -71,7 +71,7 @@ class MenuController extends Controller
                     [
                         [
                             'callback_data' => StartController::createRoute(),
-                            'text' => '👋',
+                            'text' => Emoji::GREETING,
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),
