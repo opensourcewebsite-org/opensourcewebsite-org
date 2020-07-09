@@ -13,10 +13,10 @@ class m200708_190158_create_bot_chat_captcha_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%bot_chat_captcha}}', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey()->unsigned(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'provider_user_id' => $this->integer()->unsigned()->notNull(),
-            'sent_at' => $this->integer(11),
+            'sent_at' => $this->integer()->unsigned(),
         ]);
 
         $this->addForeignKey(

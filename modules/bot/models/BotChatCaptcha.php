@@ -110,6 +110,7 @@ class BotChatCaptcha extends ActiveRecord
 
             $botCaptcha->save();
 
+            return true;
         }
 
         return false;
