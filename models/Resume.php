@@ -296,7 +296,6 @@ class Resume extends ActiveRecord
                 if (!$this->search_radius) {
                     $notFilledFields[] = $this->getAttributeLabel('search_radius');
                 }
-                $notFilledFields[] = $this->getAttributeLabel('remote_on');
             }
         }
 

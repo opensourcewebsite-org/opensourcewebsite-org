@@ -310,7 +310,6 @@ class Vacancy extends ActiveRecord
                 if (!$location) {
                     $notFilledFields[] = $this->getAttributeLabel('location');
                 }
-                $notFilledFields[] = $this->getAttributeLabel('remote_on');
             }
         }
 
