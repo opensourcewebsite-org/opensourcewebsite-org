@@ -2,13 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\models\Rating;
 use app\models\User;
 use app\components\Converter;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MyRatingController
@@ -37,6 +36,10 @@ class MyRatingController extends Controller
                         ],
                     ],
                     [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,

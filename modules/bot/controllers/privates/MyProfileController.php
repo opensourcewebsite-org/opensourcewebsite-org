@@ -55,6 +55,18 @@ class MyProfileController extends Controller
                 [
                     [
                         [
+                            'callback_data' => MyRatingController::createRoute(),
+                            'text' => Yii::t('bot', 'Rating'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyReferralsController::createRoute(),
+                            'text' => Yii::t('bot', 'Referrals')
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyLocationController::createRoute(),
                             'text' => Yii::t('bot', 'Location'),
                         ],

@@ -16,4 +16,5 @@ class Emoji
     public const REFRESH = '🔄';
     public const INACTIVE = '❌';
     public const OFFERS = '🙋‍♂️';
+    public const INFO = 'ℹ️';
 }

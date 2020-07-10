@@ -39,10 +39,6 @@ class SJobController extends Controller
             ],
             [
                 [
-                    'text' => Emoji::BACK,
-                    'callback_data' => ServicesController::createRoute(),
-                ],
-                [
                     'callback_data' => MenuController::createRoute(),
                     'text' => Emoji::MENU,
                 ],
