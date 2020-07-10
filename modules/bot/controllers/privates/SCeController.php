@@ -41,7 +41,7 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('order'),
-                            'text' => '❌ ' . 'THB/RUB',
+                            'text' => Emoji::INACTIVE . ' ' . 'THB/RUB',
                         ],
                     ],
                     [
@@ -69,7 +69,7 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('offer'),
-                            'text' => '🙋‍♂️ 3',
+                            'text' => Emoji::OFFERS . ' ' . '3',
                         ],
                         [
                             'callback_data' => self::createRoute('order-create'),
@@ -146,7 +146,7 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('offer'),
-                            'text' => '🙋‍♂️ 3',
+                            'text' => Emoji::OFFERS . ' ' . '3',
                         ],
                     ],
                     [

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
@@ -16,7 +17,6 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobResumeKeyword;
 use app\modules\bot\models\User as TelegramUser;
-use Yii;
 use app\modules\bot\components\helpers\Emoji;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
@@ -235,7 +235,7 @@ class ResumeController extends CrudController
         $keyboards = array_map(function ($resume) {
             return [
                 [
-                    'text' => ($resume->isActive() ? '' : '❌ ') . $resume->name,
+                    'text' => ($resume->isActive() ? '' : Emoji::INACTIVE . ' ') . $resume->name,
                     'callback_data' => self::createRoute('view', [
                         'resumeId' => $resume->id,
                     ]),
@@ -316,7 +316,7 @@ class ResumeController extends CrudController
         if ($matchedVacancyCount > 0) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('vacancy-matches', ['resumeId' => $resumeId]),
-                'text' => '🙋‍♂️ ' . $matchedVacancyCount,
+                'text' => Emoji::OFFERS . ' ' . $matchedVacancyCount,
             ];
         }
 

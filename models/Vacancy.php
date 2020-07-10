@@ -2,11 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobMatch;
-use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
@@ -129,7 +129,7 @@ class Vacancy extends ActiveRecord
      */
     public function isActive()
     {
-        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON;
     }
 
     /**
