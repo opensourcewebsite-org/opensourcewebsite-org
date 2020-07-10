@@ -54,7 +54,6 @@ class SAdSearchController extends CrudController
                             $model->location_lat,
                             $model->location_lon
                         ),
-                        'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => true,
                     ];
                 },
@@ -902,7 +901,6 @@ class SAdSearchController extends CrudController
                             $adSearch->location_lat,
                             $adSearch->location_lon
                         ),
-                        'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => true,
                     ]
                 ),
@@ -950,7 +948,6 @@ class SAdSearchController extends CrudController
                             $adSearch->location_lat,
                             $adSearch->location_lon
                         ),
-                        'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => false,
                     ],
                 ),

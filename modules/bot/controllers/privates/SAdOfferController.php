@@ -50,7 +50,6 @@ class SAdOfferController extends CrudController
                         'sectionName' => AdSection::getAdOfferName($model->section),
                         'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
-                        'liveDays' => AdOffer::LIVE_DAYS,
                         'showDetailedInfo' => false,
                     ];
                 },
@@ -340,7 +339,6 @@ class SAdOfferController extends CrudController
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
                     'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
-                    'liveDays' => AdOffer::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
                 [
@@ -460,7 +458,6 @@ class SAdOfferController extends CrudController
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
                     'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
-                    'liveDays' => AdOffer::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,

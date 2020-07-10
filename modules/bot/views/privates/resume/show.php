@@ -44,5 +44,5 @@ use app\models\Resume;
 <?php if ($isActive) : ?>
 ————<br/>
 <br/>
-<i><?= Yii::t('bot', 'You will receive a notification in case of matches with offers of other users') ?>. <?= Yii::t('bot', 'This page is active for {0,number} more days', 14) ?>. <?= Yii::t('bot', 'Visit this page again before this term to automatically renew this')?>.</i>
+<i><?= Yii::t('bot', 'You will receive a notification in case of matches with offers of other users') ?>.</i>
 <?php endif; ?>
