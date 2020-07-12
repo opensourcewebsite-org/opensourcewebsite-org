@@ -2,10 +2,12 @@
 
 namespace app\modules\bot\controllers\publics;
 
+use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use app\modules\bot\components\Controller;
+use yii\web\Request;
 
 /**
  * Class JoinCaptchaController
@@ -14,7 +16,6 @@ use app\modules\bot\components\Controller;
  */
 class JoinCaptchaController extends Controller
 {
-
 
     /**
      * Action shows captcha
@@ -30,7 +31,7 @@ class JoinCaptchaController extends Controller
 
             $telegramUser = $this->getTelegramUser();
 
-            $needShowCaptcha = BotChatCaptcha::checkCaptcha($chat->id,$telegramUser->provider_user_id);
+            $needShowCaptcha = BotChatCaptcha::passedCaptcha($chat->id,$telegramUser->provider_user_id);
 
             if ($needShowCaptcha) {
 
@@ -57,9 +58,43 @@ class JoinCaptchaController extends Controller
 
     }
 
+
+    /**
+     * Action allows user to pass captcha. This actions checks if joined user is interracting
+     *
+     * @return array
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
     public function actionPassCaptcha()
     {
-        /* here will be the process of passing captcha */
+        $update = $this->module->update;
+        $data = $update->getCallbackQuery()->getData();
+        $urlParts = parse_url($data, PHP_URL_QUERY);
+        parse_str($urlParts, $output);
+        $provider_user_id = $output['provider_user_id'];
+
+        if ($this->update->getCallbackQuery()->getFrom()->getId() == $provider_user_id){
+
+            $chatId = $this->getTelegramChat()->id;
+            $chatCaptcha = BotChatCaptcha::findOne(['chat_id' => $chatId,'provider_user_id' => $provider_user_id]);
+            if(isset($chatCaptcha)){
+
+                $chatCaptcha->delete();
+                $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
+                $text = new MessageText(Yii::t('bot', 'Thank you for validating,') . ', ' . $toUserName);
+                return $this->getResponseBuilder()->sendMessage($text)->build();
+
+            }
+
+        }
+        else{
+
+            $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
+            $text = new MessageText(Yii::t('bot', 'This captcha is not for you') . ', ' . $toUserName);
+            return $this->getResponseBuilder()->sendMessage($text)->build();
+
+        }
     }
 
 }

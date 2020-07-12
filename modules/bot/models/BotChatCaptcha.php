@@ -94,7 +94,7 @@ class BotChatCaptcha extends ActiveRecord
      * @return bool
      * @throws Exception
      */
-    public static function checkCaptcha($chatId, $providerUserId)
+    public static function passedCaptcha($chatId, $providerUserId)
     {
         $botCaptcha = self::find()->where([
             'chat_id' => $chatId,
