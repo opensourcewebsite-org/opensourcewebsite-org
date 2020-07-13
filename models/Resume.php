@@ -98,7 +98,7 @@ class Resume extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
+            'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'remote_on' => Yii::t('bot', 'Remote work'),
             'search_radius' => Yii::t('bot', 'Search radius'),
         ];
@@ -287,14 +287,14 @@ class Resume extends ActiveRecord
         $notFilledFields = [];
         if (!$canChangeStatus) {
             if (!$languagesCount) {
-                $notFilledFields[] = $this->getAttributeLabel('languages');
+                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages')) . ' (' . Yii::t('bot', 'in your profile') . ')';
             }
             if ($this->remote_on == self::REMOTE_OFF) {
                 if (!$location) {
-                    $notFilledFields[] = $this->getAttributeLabel('location');
+                    $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
                 }
                 if (!$this->search_radius) {
-                    $notFilledFields[] = $this->getAttributeLabel('search_radius');
+                    $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('search_radius'));
                 }
             }
         }
