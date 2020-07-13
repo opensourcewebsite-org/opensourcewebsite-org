@@ -16,21 +16,22 @@ class SystemMessageCommandResolver implements ICommandResolver
             $chatId = $update->getMessage()->getChat()->getId();
             $telegramUser = $update->getMessage()->getFrom();
             $isAdmin = false;
-            if (isset($chat) && isset($user)){
+            if (isset($chatId) && isset($telegramUser)){
+
                 $chatMember = ChatMember::find()
                             ->select('bot_chat_member.id')
                             ->leftJoin('bot_chat','bot_chat_member.chat_id = bot_chat.id')
                             ->leftJoin('bot_user','bot_chat_member.user_id = bot_user.id')
                             ->where(['bot_chat.chat_id' => $chatId, 'bot_user.provider_user_id' => $telegramUser->getId()])->one();
 
+                if(isset($chatMember)){
+                    $isAdmin = $chatMember->isAdmin();
+                }
             }
-            if(isset($chatMember)){
-                $isAdmin = $chatMember->isAdmin();
-            }
+
             if(!$isAdmin) {
                 $commandText = JoinCaptchaController::createRoute('show-captcha');
             }
-
 
         }
 

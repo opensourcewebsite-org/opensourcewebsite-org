@@ -7,7 +7,6 @@ use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use app\modules\bot\components\Controller;
-use yii\web\Request;
 
 /**
  * Class JoinCaptchaController
@@ -38,7 +37,6 @@ class JoinCaptchaController extends Controller
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
                         $this->render('show-captcha', [
-                            'provider_user_id' => $telegramUser->provider_user_id,
                             'chatName' => $chat->title,
                             'firstName' => $telegramUser->provider_user_first_name,
                             'lastName' => $telegramUser->provider_user_last_name,
@@ -66,15 +64,9 @@ class JoinCaptchaController extends Controller
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionPassCaptcha()
+    public function actionPassCaptcha($provider_user_id = null)
     {
-        $update = $this->module->update;
-        $data = $update->getCallbackQuery()->getData();
-        $urlParts = parse_url($data, PHP_URL_QUERY);
-        parse_str($urlParts, $output);
-        $provider_user_id = $output['provider_user_id'];
-
-        if ($this->update->getCallbackQuery()->getFrom()->getId() == $provider_user_id){
+        if (isset($provider_user_id) && $this->update->getCallbackQuery()->getFrom()->getId() == $provider_user_id){
 
             $chatId = $this->getTelegramChat()->id;
             $chatCaptcha = BotChatCaptcha::findOne(['chat_id' => $chatId,'provider_user_id' => $provider_user_id]);
