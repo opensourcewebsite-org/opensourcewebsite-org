@@ -266,12 +266,13 @@ class Resume extends ActiveRecord
     /** @inheritDoc */
     public function afterSave($insert, $changedAttributes)
     {
-        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
-            $this->unlinkAll('matches', true);
-        }
-        if ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
-            $this->status = self::STATUS_OFF;
-            $this->save();
+        if (isset($changedAttributes['status'])) {
+            if ($this->status == self::STATUS_OFF) {
+                $this->unlinkAll('matches', true);
+            } elseif ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
+                $this->status = self::STATUS_OFF;
+                $this->save();
+            }
         }
         parent::afterSave($insert, $changedAttributes);
     }

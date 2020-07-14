@@ -50,6 +50,13 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
         ],
+        'i18n' => [
+            'translations' => [
+                '*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                ],
+            ],
+        ],
     ],
     'params' => $params,
     'modules' => [

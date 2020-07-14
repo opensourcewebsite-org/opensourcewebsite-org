@@ -15,7 +15,6 @@ $common = require __DIR__ . '/common.php';
 
 $config = [
     'id' => 'basic',
-    'name' => 'OpenSourceWebsite',
     'defaultRoute' => 'guest/default',
     'layout' => 'adminlte-user',
     'basePath' => dirname(__DIR__),
@@ -24,7 +23,6 @@ $config = [
         ['class' => 'app\components\LanguageSelector'],
         'maintenanceMode',
     ],
-    'language' => 'en',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
