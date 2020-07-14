@@ -4,7 +4,6 @@ namespace app\commands\traits;
 
 use app\components\CustomConsole;
 use app\interfaces\CronChainedInterface;
-use Exception;
 
 /**
  * Optionally, to extend controller options add next:
