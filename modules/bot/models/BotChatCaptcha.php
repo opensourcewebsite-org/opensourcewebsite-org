@@ -12,7 +12,7 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $chat_id
  * @property int $provider_user_id
- * @property int $passed_captcha
+ * @property int $secret
  * @property int|null $sent_at
  *
  * @property Chat $chat
@@ -34,8 +34,8 @@ class BotChatCaptcha extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'provider_user_id'], 'required'],
-            [['chat_id', 'provider_user_id', 'sent_at'], 'integer'],
+            [['chat_id', 'provider_user_id', 'secret'], 'required'],
+            [['chat_id', 'provider_user_id', 'sent_at', 'secret'], 'integer'],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['provider_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['provider_user_id' => 'provider_user_id']],
         ];
@@ -50,6 +50,7 @@ class BotChatCaptcha extends ActiveRecord
             'id' => Yii::t('bot', 'ID'),
             'chat_id' => Yii::t('bot', 'Chat ID'),
             'provider_user_id' => Yii::t('bot', 'Provider User ID'),
+            'secret' => Yii::t('bot', 'Secret'),
             'sent_at' => Yii::t('bot', 'Sent At'),
         ];
     }
@@ -106,6 +107,7 @@ class BotChatCaptcha extends ActiveRecord
             $botCaptcha = new self([
                 'chat_id' => $chatId,
                 'provider_user_id' => $providerUserId,
+                'secret' => rand(1,3)
             ]);
 
             $botCaptcha->save();

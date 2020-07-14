@@ -49,6 +49,8 @@ class JoinCaptchaController extends Controller
 
             if ($needShowCaptcha && !$isAdmin) {
 
+                $chatCaptcha = BotChatCaptcha::findOne(['chat_id' => $chat->id, 'provider_user_id' => $telegramUser->provider_user_id]);
+
                 /* Restrict users to write messages*/
                 $api = $this->module->getBotApi();
                 $api->call('restrictChatMember',[
@@ -67,12 +69,21 @@ class JoinCaptchaController extends Controller
                             'chatName' => $chat->title,
                             'firstName' => $telegramUser->provider_user_first_name,
                             'lastName' => $telegramUser->provider_user_last_name,
+                            'secret' => $chatCaptcha->secret
                         ]),
                         [
                             [
                                 [
-                                    'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id]),
-                                    'text' => Yii::t('bot', 'Please click here to pass the captcha'),
+                                    'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id, 'secret' => 1]),
+                                    'text' => Yii::t('bot', '1'),
+                                ],
+                                [
+                                    'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id, 'secret' => 2]),
+                                    'text' => Yii::t('bot', '2'),
+                                ],
+                                [
+                                    'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id, 'secret' => 3]),
+                                    'text' => Yii::t('bot', '3'),
                                 ],
                             ],
                         ]
@@ -86,20 +97,23 @@ class JoinCaptchaController extends Controller
 
 
     /**
-     * Action allows user to pass captcha. This actions checks if joined user is interracting
+     * Action allows user to pass captcha. This actions checks if joined user is interracting. Also this action
+     * checks if user choose the correct secret
+     *
      * @param integer $provider_user_id
+      @param integer $secret
      * @return array
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionPassCaptcha($provider_user_id)
+    public function actionPassCaptcha($provider_user_id, $secret)
     {
         if (isset($provider_user_id) && $this->update->getCallbackQuery()->getFrom()->getId() == $provider_user_id){
 
             $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
             $chatCaptcha = BotChatCaptcha::findOne(['chat_id' => $chat->id,'provider_user_id' => $provider_user_id]);
-            if(isset($chatCaptcha)){
+            if(isset($chatCaptcha) && $chatCaptcha->secret == $secret){
 
                 /* Allow user to send messages*/
                 $api = $this->module->getBotApi();
