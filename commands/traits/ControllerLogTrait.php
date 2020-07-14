@@ -4,6 +4,7 @@ namespace app\commands\traits;
 
 use app\components\CustomConsole;
 use app\interfaces\CronChainedInterface;
+use Exception;
 
 /**
  * Optionally, to extend controller options add next:
@@ -18,6 +19,12 @@ use app\interfaces\CronChainedInterface;
 trait ControllerLogTrait
 {
     public $log = false;
+
+    public function init() {
+        if(YII_ENV_DEV) {
+            $this->log = true;
+        }
+    }
 
     /**
      * @param string[] $options result from {@see \yii\console\Controller::options()}
@@ -51,19 +58,5 @@ trait ControllerLogTrait
         }
 
         return CustomConsole::output($message, $options);
-    }
-
-    protected function outputLogState(): void
-    {
-        if ($this->log) {
-            return;
-        }
-
-        $this->log = true;
-        $this->output(
-            'LOGS MUTED (user param --log)',
-            [CustomConsole::FG_BLACK, CustomConsole::BG_YELLOW, CustomConsole::BOLD]
-        );
-        $this->log = false;
     }
 }
