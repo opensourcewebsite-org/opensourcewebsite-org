@@ -69,7 +69,6 @@ class CronController extends Controller
      */
     public function actionIndex()
     {
-        $this->outputLogState();
         $this->cronJobs = CronJobConsole::find()->all();
 
 //$this->cronJobs = [];
