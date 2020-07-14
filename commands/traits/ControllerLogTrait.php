@@ -19,8 +19,9 @@ trait ControllerLogTrait
 {
     public $log = false;
 
-    public function init() {
-        if(YII_ENV_DEV) {
+    public function init()
+    {
+        if (YII_ENV_DEV) {
             $this->log = true;
         }
     }
