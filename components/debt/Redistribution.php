@@ -171,7 +171,7 @@ class Redistribution extends Component
         //проверяет, превышен ли лимит
         $isLimitGreaterE = Number::isFloatGreaterE($debtRedistribution->max_amount, $amount, $scale);
 
-        //если лимит не превышен или сумма безгранична 
+        //если лимит не превышен или сумма безгранична
         if ($isLimitGreaterE || $debtRedistribution->isMaxAmountAny()) {
             //this DebtBalance have not reached DebtRedistribution limit of his own Contact yet.
             $amount = '0';

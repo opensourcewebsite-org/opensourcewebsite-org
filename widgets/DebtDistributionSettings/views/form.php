@@ -3,7 +3,8 @@
 use app\widgets\DebtDistributionSettings\DebtRedistributionSettings;
 use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
-use app\widgets\buttons\{SaveButton, CancelButton};
+use app\widgets\buttons\SaveButton;
+use app\widgets\buttons\CancelButton;
 use yii\widgets\Pjax;
 
 /* @var $this    yii\web\View */
