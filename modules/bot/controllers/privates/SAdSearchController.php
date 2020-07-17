@@ -1664,7 +1664,7 @@ class SAdSearchController extends CrudController
                     'match',
                     [
                         'adOffer' => $adOffer,
-                        'user' => TelegramUser::findOne($adOffer->user_id),
+                        'user' => TelegramUser::findOne(['user_id' => $adOffer->user_id]),
                         'currency' => Currency::findOne($adOffer->currency_id),
                         'sectionName' => AdSection::getAdOfferName($adOffer->section),
                         'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),

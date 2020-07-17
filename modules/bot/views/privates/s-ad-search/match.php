@@ -12,8 +12,10 @@
 <b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOffer->price ?> <?= $currency->code ?><br/>
 <br/>
 <?php endif; ?>
+<?php if ($user) : ?>
 <?php if ($user->provider_user_name) : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
 <?php else : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> <a href = "tg://user?id=<?= $user->provider_user_id ?>"><?= $user->provider_user_first_name ?> <?= $user->provider_user_last_name ?></a>
+<?php endif; ?>
 <?php endif; ?>

@@ -511,7 +511,7 @@ class VacancyController extends CrudController
                         'remote_on' => $resume->remote_on,
                         'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
                         'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
-                        'user' => TelegramUser::findOne($resume->user_id),
+                        'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                     ]
                 ),
                 $buttons,

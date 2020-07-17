@@ -437,7 +437,7 @@ class ResumeController extends CrudController
                         'languages' => array_map(function ($vacancyLanguage) {
                             return $vacancyLanguage->getDisplayName();
                         }, $vacancy->vacancyLanguagesRelation),
-                        'user' => TelegramUser::findOne($vacancy->user_id),
+                        'user' => TelegramUser::findOne(['user_id' => $vacancy->user_id]),
                     ]
                 ),
                 $buttons,

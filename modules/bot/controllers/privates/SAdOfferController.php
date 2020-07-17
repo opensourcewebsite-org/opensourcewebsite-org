@@ -514,7 +514,7 @@ class SAdOfferController extends CrudController
                 $this->render('match', [
                     'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
                     'adSearch' => $matchedAdSearch,
-                    'user' => TelegramUser::findOne($matchedAdSearch->user_id),
+                    'user' => TelegramUser::findOne(['user_id' => $matchedAdSearch->user_id]),
                     'keywords' => self::getKeywordsAsString($matchedAdSearch->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_lat, $matchedAdSearch->location_lon),
                 ]),
