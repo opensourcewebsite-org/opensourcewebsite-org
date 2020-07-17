@@ -16,6 +16,11 @@ use yii\db\Transaction;
 use yii\helpers\Console;
 use yii\helpers\VarDumper;
 
+/*
+Пользователи создают записи о том сколько должны денег друг другу.
+После создания долга (и его подтверждении) система ищет цепочки для аннулирования долгов
+и переноса долгов к пользователям с более высоким приоритетом.
+*/
 class DebtController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
