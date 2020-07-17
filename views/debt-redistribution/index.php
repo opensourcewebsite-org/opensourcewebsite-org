@@ -19,8 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $pjaxId      = 'pjax-grid-debt-redistribution';
 $modalId     = 'modal-debt-redistribution-form';
-$modalFooter = SaveButton::widget();
-$modalFooter.= CancelButton::widget();
 ?>
 
 <?= ModalAjax::widget([
@@ -28,7 +26,6 @@ $modalFooter.= CancelButton::widget();
     'selector'      => '.btn-action:not([data-method="post"])', // all buttons in grid view with href attribute
     'pjaxContainer' => "#$pjaxId",
     'autoClose'     => true,
-    'footer'        => $modalFooter,
     'events'        => [
         ModalAjax::EVENT_MODAL_SHOW_COMPLETE => new JsExpression('function(event, xhr, textStatus) {
             if (xhr.status >= 400) {
