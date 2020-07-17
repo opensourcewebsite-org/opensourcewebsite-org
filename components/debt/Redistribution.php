@@ -29,6 +29,7 @@ class Redistribution extends Component
      */
     public function run(): void
     {
+        //находит баланс для перераспределения
         while ($debtBalance = $this->findDebtBalanceToRedistribute()) {
             $this->log('--- Starting search Circled Chain ---', [], true);
             $this->wasRedistributed = false;
@@ -87,6 +88,7 @@ class Redistribution extends Component
         $scale = DebtHelper::getFloatScale();
 
         foreach ($contactChainMembers as $contactChainMember) {
+            //список отправителей
             $contactsReceiver = $this->findDebtReceiverCandidatesRedistributeInto($debtBalance, $contactChainMember, $level);
 
             $ownLimitsChecked = false;
@@ -155,6 +157,7 @@ class Redistribution extends Component
 
     private function applyOwnLimits(DebtBalance $debtBalance, Contact $contactReceiver, &$amount): bool
     {
+        //если приоритеты у контактов не одинаковые, вернёт false
         if (
             !$debtBalance->hasRedistributionConfig() ||
             $debtBalance->toContact->debt_redistribution_priority > $contactReceiver->debt_redistribution_priority
@@ -164,12 +167,16 @@ class Redistribution extends Component
 
         $debtRedistribution = $debtBalance->toDebtRedistribution;
         $scale = DebtHelper::getFloatScale();
+
+        //проверяет, превышен ли лимит
         $isLimitGreaterE = Number::isFloatGreaterE($debtRedistribution->max_amount, $amount, $scale);
 
+        //если лимит не превышен или сумма безгранична 
         if ($isLimitGreaterE || $debtRedistribution->isMaxAmountAny()) {
             //this DebtBalance have not reached DebtRedistribution limit of his own Contact yet.
             $amount = '0';
         } else {
+            //лимит превышен, вычитаем сумму от макс. суммы
             //we should redistribute only part of debt: amount above limit (max_amount)
             $amount = Number::floatSub($amount, $debtRedistribution->max_amount, $scale);
         }

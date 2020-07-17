@@ -3,6 +3,8 @@
 use app\widgets\DebtDistributionSettings\DebtRedistributionSettings;
 use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
+use app\widgets\buttons\{SaveButton, CancelButton};
+use yii\widgets\Pjax;
 
 /* @var $this    yii\web\View */
 /* @var $context DebtRedistributionSettings */
@@ -12,6 +14,8 @@ use yii\widgets\ActiveForm;
 $context = $this->context;
 $model   = $context->debtRed;
 ?>
+
+<?php Pjax::begin(); ?>
 
 <?php $form = ActiveForm::begin([
     //we need to specify ID for each widget, which is loaded via AJAX.
@@ -42,8 +46,12 @@ $model   = $context->debtRed;
             ]); ?>
         </div>
     </div>
-
+    <?= SaveButton::widget([
+        'options' => ['data-pjax' => 0]
+    ]); ?>
+    <?= CancelButton::widget(); ?>
     <button type="submit" style="display:none;"></button><!-- to allow to submit form on `enter` key -->
 <?php ActiveForm::end() ?>
+<?php Pjax::end(); ?>
 
 <div id="headerForModal" style="display:none;"><h5 class="modal-title"><?=$header?></h5></div>
