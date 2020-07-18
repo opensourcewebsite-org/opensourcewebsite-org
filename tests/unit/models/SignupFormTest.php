@@ -2,6 +2,7 @@
 
 namespace tests\models;
 
+use Yii;
 use app\models\LoginForm;
 use app\models\Rating;
 use app\models\SignupForm;
@@ -145,6 +146,6 @@ class SignupFormTest extends Unit
     protected function _after()
     {
         Rating::deleteAll();
-        \Yii::$app->user->logout();
+        Yii::$app->user->logout();
     }
 }

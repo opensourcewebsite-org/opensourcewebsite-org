@@ -33,11 +33,10 @@ class JobMatchController extends Controller implements CronChainedInterface
     {
         $updatesCount = 0;
 
-        $resumeQuery = Resume::find()->active()
+        $resumeQuery = Resume::find()->live()
             ->where([Resume::tableName() . '.processed_at' => null])
-            ->joinWith('globalUser gu')
-            ->orderBy(['gu.rating' => SORT_DESC])
-            ->addOrderBy(['gu.created_at' => SORT_ASC]);
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($resumeQuery->all() as $resume) {
             try {
@@ -62,11 +61,10 @@ class JobMatchController extends Controller implements CronChainedInterface
     {
         $updatesCount = 0;
 
-        $vacancyQuery = Vacancy::find()->active()
+        $vacancyQuery = Vacancy::find()->live()
             ->where([Vacancy::tableName() . '.processed_at' => null])
-            ->joinWith('globalUser gu')
-            ->orderBy(['gu.rating' => SORT_DESC])
-            ->addOrderBy(['gu.created_at' => SORT_ASC]);
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($vacancyQuery->all() as $vacancy) {
             try {

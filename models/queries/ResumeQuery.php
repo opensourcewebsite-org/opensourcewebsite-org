@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\models\queries;
 
 use app\models\Resume;
@@ -19,10 +18,11 @@ class ResumeQuery extends ActiveQuery
     /**
      * @return ResumeQuery
      */
-    public function active()
+    public function live()
     {
         return $this->andWhere([Resume::tableName() . '.status' => Resume::STATUS_ON])
-            ->andWhere(['>=', Resume::tableName() . '.renewed_at', time() - Resume::LIVE_DAYS * 24 * 60 * 60]);
+            ->joinWith('globalUser')
+            ->andWhere(['>=', 'user.last_activity_at', time() - Resume::LIVE_DAYS * 24 * 60 * 60]);
     }
 
     /**

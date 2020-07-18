@@ -822,7 +822,6 @@ class SAdSearchController extends CrudController
                 'location_lat' => $state->getIntermediateField('adSearchLocationLatitude'),
                 'location_lon' => $state->getIntermediateField('adSearchLocationLongitude'),
                 'created_at' => time(),
-                'renewed_at' => time(),
                 'status' => AdSearch::STATUS_OFF,
             ]
         );
