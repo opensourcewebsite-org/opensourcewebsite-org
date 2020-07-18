@@ -3,11 +3,11 @@
  * @var $chatName string
  * @var $firstName string
  * @var $lastName string
- * @var $secret integer
+ * @var $provider_user_name string
  */
 ?>
 <?= Yii::t('bot', 'Welcome to group') . ' ' . $chatName . ',' ?><br/>
-<?= $firstName . ' ' . $lastName ?><br/>
-<?= Yii::t('bot', 'Please press') . ' ' . $secret . ' ' . Yii::t('bot', 'to proceed') ?><br/>
+
+<?= $provider_user_name ?? ($firstName . ' ' . $lastName) ?><br/>
 
 

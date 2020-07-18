@@ -3,6 +3,16 @@ namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "bot_chat_member".
+ *
+ * @property int $id
+ * @property int $chat_id
+ * @property int $user_id
+ * @property string $status
+ * @property int $passed_captcha
+ *
+ */
 class ChatMember extends ActiveRecord
 {
     public const STATUS_CREATOR = 'creator';
@@ -20,8 +30,8 @@ class ChatMember extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'user_id', 'status'], 'required'],
-            [['id', 'chat_id', 'user_id'], 'integer'],
+            [['chat_id', 'user_id', 'status', 'passed_captcha'], 'required'],
+            [['id', 'chat_id', 'user_id', 'passed_captcha'], 'integer'],
             [['status'], 'string'],
         ];
     }

@@ -12,7 +12,6 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $chat_id
  * @property int $provider_user_id
- * @property int $secret
  * @property int|null $sent_at
  *
  * @property Chat $chat
@@ -34,8 +33,8 @@ class BotChatCaptcha extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'provider_user_id', 'secret'], 'required'],
-            [['chat_id', 'provider_user_id', 'sent_at', 'secret'], 'integer'],
+            [['chat_id', 'provider_user_id'], 'required'],
+            [['chat_id', 'provider_user_id', 'sent_at'], 'integer'],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['provider_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['provider_user_id' => 'provider_user_id']],
         ];
@@ -50,7 +49,6 @@ class BotChatCaptcha extends ActiveRecord
             'id' => Yii::t('bot', 'ID'),
             'chat_id' => Yii::t('bot', 'Chat ID'),
             'provider_user_id' => Yii::t('bot', 'Provider User ID'),
-            'secret' => Yii::t('bot', 'Secret'),
             'sent_at' => Yii::t('bot', 'Sent At'),
         ];
     }
@@ -91,12 +89,19 @@ class BotChatCaptcha extends ActiveRecord
      * Returns true if captcha needed, false otherwise
      *
      * @param $chatId
-     * @param $providerUserId
+     * @param $user_id
      * @return bool
      * @throws Exception
      */
-    public static function passedCaptcha($chatId, $providerUserId)
+    public static function passedCaptcha($chatId, $user_id)
     {
+        $chatMember = ChatMember::findOne([
+            'chat_id' => $chatId,
+            'user_id' => $user_id
+        ]);
+
+        return $chatMember->passed_captcha;
+        /*
         $botCaptcha = self::find()->where([
             'chat_id' => $chatId,
             'provider_user_id' => $providerUserId
@@ -107,15 +112,14 @@ class BotChatCaptcha extends ActiveRecord
             $botCaptcha = new self([
                 'chat_id' => $chatId,
                 'provider_user_id' => $providerUserId,
-                'secret' => rand(1,3)
             ]);
 
             $botCaptcha->save();
 
-            return true;
+            return false;
         }
 
-        return false;
+        return true;*/
     }
 
 
