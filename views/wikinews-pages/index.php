@@ -12,7 +12,7 @@ use app\widgets\ModalAjax;
 
 /* @var $this \yii\web\View */
 
-$this->title = Yii::t('menu', 'Wikinews pages');
+$this->title = Yii::t('app', 'Wikinews pages');
 ?>
 <div class="card">
     <div class="card-header d-flex p-0">

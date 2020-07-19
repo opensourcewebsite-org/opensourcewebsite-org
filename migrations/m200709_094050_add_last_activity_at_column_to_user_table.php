@@ -31,6 +31,7 @@ class m200709_094050_add_last_activity_at_column_to_user_table extends Migration
         $this->dropColumn('{{%ad_offer}}', 'renewed_at');
         $this->dropColumn('{{%ad_search}}', 'renewed_at');
         $this->dropColumn('{{%resume}}', 'renewed_at');
+        $this->dropColumn('{{%bot_user}}', 'last_message_at');
     }
 
     /**
@@ -39,10 +40,11 @@ class m200709_094050_add_last_activity_at_column_to_user_table extends Migration
     public function safeDown()
     {
         $this->addColumn('currency_exchange_order', 'renewed_at', $this->integer()->unsigned()->notNull());
-        $this->addColumn('%{{%vacancy}}', 'renewed_at', $this->integer()->unsigned()->notNull());
+        $this->addColumn('{{%vacancy}}', 'renewed_at', $this->integer()->unsigned()->notNull());
         $this->addColumn('{{%ad_offer}}', 'renewed_at', $this->integer()->unsigned()->notNull());
         $this->addColumn('{{%ad_search}}', 'renewed_at', $this->integer()->unsigned()->notNull());
         $this->addColumn('{{%resume}}', 'renewed_at', $this->integer()->unsigned()->notNull());
+        $this->addColumn('{{%bot_user}}', 'last_message_at', $this->integer()->unsigned());
 
         $this->alterColumn('{{%user}}', 'created_at', $this->integer()->notNull());
         $this->alterColumn('{{%user}}', 'updated_at', $this->integer()->notNull());

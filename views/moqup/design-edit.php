@@ -8,7 +8,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\assets\AceEditorAsset;
 
-$this->title = Yii::t('menu', ($moqup->isNewRecord) ? 'Add design' : 'Edit design');
+$this->title = Yii::t('app', ($moqup->isNewRecord) ? 'Add design' : 'Edit design');
 $this->beginBlock('content-header-data');
 $this->endBlock();
 

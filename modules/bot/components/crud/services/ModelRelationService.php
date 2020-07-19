@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\components\crud\services;
 
+use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\crud\CrudController;
-use Exception;
-use Yii;
 use yii\base\DynamicModel;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
@@ -169,7 +168,7 @@ class ModelRelationService
         $model = call_user_func([$modelClass, 'findOne'], $conditions);
         /* @var ActiveRecord $model */
         if (!$model) {
-            throw new Exception($modelClass . ' with params ' . serialize($conditions) . ' was not found');
+            throw new \Exception($modelClass . ' with params ' . serialize($conditions) . ' was not found');
         }
 
         return $model;
@@ -276,7 +275,7 @@ class ModelRelationService
                 try {
                     /* @var $model ActiveRecord */
                     $model = Yii::createObject($modelClassName);
-                } catch (InvalidConfigException $ex) {
+                } catch (InvalidConfigException $e) {
                     Yii::warning("$modelClassName doesn't exist.");
 
                     return null;

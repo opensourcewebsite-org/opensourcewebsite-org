@@ -14,20 +14,29 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 use yii\bootstrap4\Modal;
+use app\models\Language;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 AdminLteUserAsset::register($this);
 
 //List of language options
-$languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
+$languages = Language::find()
+    ->orderBy(['name_ascii' => SORT_ASC])
+    ->all();
 $langOpt = [];
 
 if (!empty($languages)) {
     foreach ($languages as $lang) {
         //Check if the language is the active
         $active = ($lang->code == Yii::$app->language) ? 'active' : '';
-        $langOpt[] = ['label' => Yii::t('language', $lang->name_ascii), 'url'=>Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]), 'linkOptions' => ['class' => "dropdown-item $active"]];
+        $langOpt[] = [
+            'label' => $lang->name_ascii,
+            'url' => Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]),
+            'linkOptions' => [
+                'class' => 'dropdown-item ' . $active,
+            ]
+        ];
     }
 }
 ?>
@@ -134,7 +143,9 @@ if (!empty($languages)) {
                 <?php
 
                 //List of language options
-                $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
+                $languages = Language::find()
+                    ->orderBy(['name_ascii' => SORT_ASC])
+                    ->all();
 
                 if (!empty($languages)) {
                     foreach ($languages as $language) {

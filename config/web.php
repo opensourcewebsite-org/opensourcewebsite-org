@@ -171,7 +171,6 @@ if (YII_ENV_DEV) {
     $config['components']['log']['targets']['file']['levels'] = ['error', 'warning'];
 }
 
-// TODO добавить обновление last_activity_at в момент обращения пользователя к боту в приватной переписке
 // TODO в момент обновления поля last_activity_at, надо проверять разницу с последним обновлением. и если разница больше чем требуемая (30 дней) то в сервисах бота очищать совпадения всех обьектов пользователя и processed_at обьектов занести null
 Event::on(Application::class, Application::EVENT_BEFORE_REQUEST, function ($event) {
     /** @var Application $app */

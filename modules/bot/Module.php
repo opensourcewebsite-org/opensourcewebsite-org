@@ -2,10 +2,10 @@
 
 namespace app\modules\bot;
 
+use Yii;
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
-use Yii;
 use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\models\Bot;
@@ -243,6 +243,7 @@ class Module extends \yii\base\Module
             $this->userState = UserState::fromUser($telegramUser);
             $this->telegramChat = $telegramChat;
             if ($telegramChat->isPrivate()) {
+                $this->user->updateLastActivity();
                 $this->update->setPrivateMessageFromState($this->userState);
             }
 
@@ -323,8 +324,8 @@ class Module extends \yii\base\Module
                                 $privateMessageIds []= $messageId;
                             }
                         }
-                    } catch (\Exception $ex) {
-                        Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
+                    } catch (\Exception $e) {
+                        Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
                     }
                 }
                 $this->userState->setIntermediateField('private_message_ids', json_encode($privateMessageIds));

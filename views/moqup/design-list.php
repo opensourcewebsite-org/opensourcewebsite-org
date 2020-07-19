@@ -8,7 +8,7 @@ use yii\grid\GridView;
 use yii\widgets\Pjax;
 use app\components\Converter;
 
-$this->title = Yii::t('menu', 'Moqups');
+$this->title = Yii::t('app', 'Moqups');
 ?>
 <?php if ($viewYours): ?>
     <?php $this->beginBlock('content-header-data'); ?>
