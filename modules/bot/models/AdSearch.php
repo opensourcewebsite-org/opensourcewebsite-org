@@ -81,7 +81,7 @@ class AdSearch extends ActiveRecord
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON;
     }
 
     public function getMatches()

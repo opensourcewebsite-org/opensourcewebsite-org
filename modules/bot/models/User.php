@@ -145,7 +145,8 @@ class User extends ActiveRecord
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
-        });
+            })
+            ->orderBy(['title' => SORT_ASC]);
     }
 
     public function getLanguage()

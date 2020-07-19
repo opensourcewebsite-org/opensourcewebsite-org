@@ -2,11 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobMatch;
-use Yii;
 use app\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
@@ -99,7 +99,7 @@ class Vacancy extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'max_hourly_rate' => Yii::t('app', 'Max. hourly rate'),
+            'max_hourly_rate' => Yii::t('bot', 'Max. hourly rate'),
             'remote_on' => Yii::t('bot', 'Remote work'),
         ];
     }
@@ -129,7 +129,7 @@ class Vacancy extends ActiveRecord
      */
     public function isActive()
     {
-        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON;
     }
 
     /**
@@ -283,12 +283,13 @@ class Vacancy extends ActiveRecord
     /** @inheritDoc */
     public function afterSave($insert, $changedAttributes)
     {
-        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
-            $this->unlinkAll('matches', true);
-        }
-        if ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
-            $this->status = self::STATUS_OFF;
-            $this->save();
+        if (isset($changedAttributes['status'])) {
+            if ($this->status == self::STATUS_OFF) {
+                 $this->unlinkAll('matches', true);
+            } elseif ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
+                $this->status = self::STATUS_OFF;
+                $this->save();
+            }
         }
         parent::afterSave($insert, $changedAttributes);
     }
@@ -304,13 +305,12 @@ class Vacancy extends ActiveRecord
         $notFilledFields = [];
         if (!$canChangeStatus) {
             if (!$languagesCount) {
-                $notFilledFields[] = $this->getAttributeLabel('languages');
+                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages'));
             }
             if ($this->remote_on == self::REMOTE_OFF) {
                 if (!$location) {
-                    $notFilledFields[] = $this->getAttributeLabel('location');
+                    $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
                 }
-                $notFilledFields[] = $this->getAttributeLabel('remote_on');
             }
         }
 

@@ -24,32 +24,30 @@ class ServicesController extends Controller
                 [
                     [
                         [
-                            'callback_data' => SAdController::createRoute(),
-                            'text' => Yii::t('bot', 'Ads'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => SJobController::createRoute(),
-                            'text' => Yii::t('bot', 'Jobs'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => SCeController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Currency Exchange'),
+                            'text' => Yii::t('bot', 'Currency Exchange'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => SDaController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Dating'),
+                            'text' => Yii::t('bot', 'Dating'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => SReController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Real Estates'),
+                            'text' => Yii::t('bot', 'Real Estates'),
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
+                        ],
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],
                     [

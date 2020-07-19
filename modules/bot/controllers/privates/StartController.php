@@ -28,36 +28,6 @@ class StartController extends Controller
                 [
                     [
                         [
-                            'url' => 'https://opensourcewebsite.org',
-                            'text' => Yii::t('bot', 'Website'),
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY',
-                            'text' => Yii::t('bot', 'Slack'),
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => 'https://discord.gg/94WpSPJ',
-                            'text' => Yii::t('bot', 'Discord'),
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => 'https://gitter.im/opensourcewebsite-org',
-                            'text' => Yii::t('bot', 'Gitter'),
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
-                            'text' => Yii::t('bot', 'Source Code'),
-                        ],
-                    ],
-                    [
-                        [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
                             'text' => '👼 ' . Yii::t('bot', 'Donate'),
                         ],
@@ -69,14 +39,15 @@ class StartController extends Controller
                     [
                         [
                             'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
+                            'text' => Emoji::MENU . ' ' . Yii::t('bot', 'BEGIN'),
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),
                             'text' => Emoji::LANGUAGE  . ' ' . strtoupper(Yii::$app->language),
                         ],
                     ],
-                ]
+                ],
+                true
             )
             ->build();
     }

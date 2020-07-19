@@ -76,7 +76,7 @@ class AdminChatController extends Controller
                             [
                                 [
                                     'callback_data' => AdminController::createRoute(),
-                                    'text' => '🔙',
+                                    'text' => Emoji::BACK,
                                 ],
                                 [
                                     'callback_data' => MenuController::createRoute(),
@@ -86,7 +86,7 @@ class AdminChatController extends Controller
                                     'callback_data' => AdminChatRefreshController::createRoute('index', [
                                         'chatId' => $chatId,
                                     ]),
-                                    'text' => '🔄',
+                                    'text' => Emoji::REFRESH,
                                 ],
                             ],
                         ]
@@ -117,7 +117,7 @@ class AdminChatController extends Controller
                         [
                             [
                                 'callback_data' => AdminController::createRoute(),
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                         ],
                     ]

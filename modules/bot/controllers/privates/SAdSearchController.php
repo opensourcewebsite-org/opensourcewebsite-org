@@ -54,7 +54,6 @@ class SAdSearchController extends CrudController
                             $model->location_lat,
                             $model->location_lon
                         ),
-                        'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => true,
                     ];
                 },
@@ -242,7 +241,7 @@ class SAdSearchController extends CrudController
             ->all() as $adSearch) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('search', ['adSearchId' => $adSearch->id]),
-                'text' => ($adSearch->isActive() ? '' : '❌ ') . $adSearch->title,
+                'text' => ($adSearch->isActive() ? '' : Emoji::INACTIVE . ' ') . $adSearch->title,
             ];
         }
 
@@ -825,7 +824,6 @@ class SAdSearchController extends CrudController
                 'created_at' => time(),
                 'renewed_at' => time(),
                 'status' => AdSearch::STATUS_OFF,
-                'edited_at' => null,
             ]
         );
 
@@ -842,14 +840,12 @@ class SAdSearchController extends CrudController
 
     public function actionSearch($adSearchId)
     {
-        $this->updateSearch($adSearchId);
-
         $adSearch = AdSearch::findOne($adSearchId);
         $buttons = [];
 
         $buttons[][] = [
             'callback_data' => self::createRoute('status', ['adSearchId' => $adSearchId]),
-            'text' => 'Status: ' . ($adSearch->isActive() ? 'ON' : 'OFF'),
+            'text' => Yii::t('bot', 'Status') . ': ' . ($adSearch->isActive() ? 'ON' : 'OFF'),
         ];
 
         $matchedAdOfferCount = $adSearch->getMatches()->count();
@@ -857,7 +853,7 @@ class SAdSearchController extends CrudController
         if ($matchedAdOfferCount > 0) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('ad-offer-matches', ['adSearchId' => $adSearchId]),
-                'text' => '🙋‍♂️ ' . $matchedAdOfferCount,
+                'text' => Emoji::OFFERS . ' ' . $matchedAdOfferCount,
             ];
         }
         $buttons[] = [
@@ -902,7 +898,6 @@ class SAdSearchController extends CrudController
                             $adSearch->location_lat,
                             $adSearch->location_lon
                         ),
-                        'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => true,
                     ]
                 ),
@@ -910,21 +905,6 @@ class SAdSearchController extends CrudController
                 true
             )
             ->build();
-    }
-
-    public function updateSearch($adSearchId)
-    {
-        $adSearch = AdSearch::findOne($adSearchId);
-        if (!$adSearch->isActive()) {
-            $adSearch->markToUpdateMatches();
-        }
-        $adSearch->setAttributes(
-            [
-                'renewed_at' => time(),
-            ]
-        );
-
-        $adSearch->save();
     }
 
     public function actionEdit($adSearchId)
@@ -950,7 +930,6 @@ class SAdSearchController extends CrudController
                             $adSearch->location_lat,
                             $adSearch->location_lon
                         ),
-                        'liveDays' => AdSearch::LIVE_DAYS,
                         'showDetailedInfo' => false,
                     ],
                 ),
@@ -1615,11 +1594,9 @@ class SAdSearchController extends CrudController
             $adSearch->markToUpdateMatches();
         } else {
             $adSearch->unlinkAll('matches', true);
-            $adSearch->setAttributes(
-                [
-                    'edited_at' => time(),
-                ]
-            );
+            $adSearch->setAttributes([
+                'processed_at' => time(),
+            ]);
             $adSearch->save();
         }
 
@@ -1687,7 +1664,7 @@ class SAdSearchController extends CrudController
                     'match',
                     [
                         'adOffer' => $adOffer,
-                        'user' => TelegramUser::findOne($adOffer->user_id),
+                        'user' => TelegramUser::findOne(['user_id' => $adOffer->user_id]),
                         'currency' => Currency::findOne($adOffer->currency_id),
                         'sectionName' => AdSection::getAdOfferName($adOffer->section),
                         'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),

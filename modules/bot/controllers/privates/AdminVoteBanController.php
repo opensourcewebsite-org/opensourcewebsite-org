@@ -9,6 +9,7 @@ use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotRouteAlias;
 use app\modules\bot\components\actions\privates\wordlist\WordlistAdminComponent;
 use app\modules\bot\controllers\publics\VotebanController;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
 * Class AdminVoteBanController
@@ -96,7 +97,7 @@ class AdminVoteBanController extends Controller
                             'callback_data' => AdminChatController::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => '🔙',
+                            'text' => Emoji::BACK,
                         ],
                     ]
 
@@ -141,7 +142,7 @@ class AdminVoteBanController extends Controller
                             'callback_data' => self::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => '🔙',
+                            'text' => Emoji::BACK,
                         ],
                     ]
                 ]

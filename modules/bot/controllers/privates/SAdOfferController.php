@@ -50,7 +50,6 @@ class SAdOfferController extends CrudController
                         'sectionName' => AdSection::getAdOfferName($model->section),
                         'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
-                        'liveDays' => AdOffer::LIVE_DAYS,
                         'showDetailedInfo' => false,
                     ];
                 },
@@ -261,7 +260,7 @@ class SAdOfferController extends CrudController
             ->limit($pagination->limit)
             ->all() as $adOffer) {
             $buttons[][] = [
-                'text' => ($adOffer->isActive() ? '' : '❌ ') . $adOffer->title,
+                'text' => ($adOffer->isActive() ? '' : Emoji::INACTIVE . ' ') . $adOffer->title,
                 'callback_data' => self::createRoute('post', ['adOfferId' => $adOffer->id]),
             ];
         }
@@ -340,7 +339,6 @@ class SAdOfferController extends CrudController
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
                     'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
-                    'liveDays' => AdOffer::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
                 [
@@ -404,8 +402,6 @@ class SAdOfferController extends CrudController
 
     public function actionPost($adOfferId)
     {
-        $this->updatePost($adOfferId);
-
         $adOffer = AdOffer::findOne($adOfferId);
 
         $this->getState()->setName(null);
@@ -414,7 +410,7 @@ class SAdOfferController extends CrudController
 
         $buttons[][] = [
             'callback_data' => self::createRoute('status', ['adOfferId' => $adOfferId]),
-            'text' => 'Status: ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
+            'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
         ];
 
         $matchedAdSearchesCount = $adOffer->getMatches()->count();
@@ -422,7 +418,7 @@ class SAdOfferController extends CrudController
         if ($matchedAdSearchesCount > 0) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('matched-ad-searches', ['adOfferId' => $adOfferId]),
-                'text' => '🙋‍♂️ ' . $matchedAdSearchesCount,
+                'text' => Emoji::OFFERS . ' ' . $matchedAdSearchesCount,
             ];
         }
 
@@ -460,25 +456,12 @@ class SAdOfferController extends CrudController
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
                     'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
-                    'liveDays' => AdOffer::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
                 true
             )
             ->build();
-    }
-
-    public function updatePost($adOfferId)
-    {
-        $adOffer = AdOffer::findOne($adOfferId);
-        if (!$adOffer->isActive()) {
-            $adOffer->markToUpdateMatches();
-        }
-        $adOffer->setAttributes([
-            'renewed_at' => time(),
-        ]);
-        $adOffer->save();
     }
 
     public function actionMatchedAdSearches($adOfferId, $page = 1)
@@ -531,7 +514,7 @@ class SAdOfferController extends CrudController
                 $this->render('match', [
                     'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
                     'adSearch' => $matchedAdSearch,
-                    'user' => TelegramUser::findOne($matchedAdSearch->user_id),
+                    'user' => TelegramUser::findOne(['user_id' => $matchedAdSearch->user_id]),
                     'keywords' => self::getKeywordsAsString($matchedAdSearch->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_lat, $matchedAdSearch->location_lon),
                 ]),
@@ -1656,7 +1639,6 @@ class SAdOfferController extends CrudController
             'status' => AdOffer::STATUS_OFF,
             'created_at' => time(),
             'renewed_at' => time(),
-            'edited_at' => null,
         ]);
 
         $adOffer->save();

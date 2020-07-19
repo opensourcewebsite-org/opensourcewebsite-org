@@ -197,7 +197,7 @@ class MyEmailController extends Controller
         return $this->getResponseBuilder()
             ->removeInlineKeyboardMarkup()
             ->answerCallbackQuery(
-                new MessageText(Yii::t('bot', $deleted
+                new MessageText(Yii::t('bot', isset($deleted)
                     ? 'Request was successfully discarded'
                     : 'Nothing to discard')),
                 true

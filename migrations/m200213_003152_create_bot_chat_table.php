@@ -36,7 +36,6 @@ class m200213_003152_create_bot_chat_table extends Migration
 
         $rows = (new Query())
             ->select([
-                'bot_id',
                 'provider_user_id',
                 'provider_user_first_name',
                 'provider_user_last_name',
@@ -45,10 +44,12 @@ class m200213_003152_create_bot_chat_table extends Migration
             ->from('bot_user')
             ->all();
 
+        $botId = (new Query())->select('id')->from('bot')->one();
+
         foreach ($rows as $row) {
             $this->insert('{{%bot_chat}}',
                 [
-                    'bot_id' => $row['bot_id'],
+                    'bot_id' => $botId,
                     'chat_id' => $row['provider_user_id'],
                     'username' => $row['provider_user_name'],
                     'first_name' => $row['provider_user_first_name'],
@@ -59,13 +60,6 @@ class m200213_003152_create_bot_chat_table extends Migration
                 ]
             );
         }
-
-        $this->dropForeignKey(
-            'fk-bot_client-bot_id',
-            'bot_user'
-        );
-
-        $this->dropColumn('{{%bot_user}}', 'bot_id');
     }
 
     /**
@@ -73,26 +67,6 @@ class m200213_003152_create_bot_chat_table extends Migration
      */
     public function safeDown()
     {
-        $this->addColumn('{{%bot_user}}', 'bot_id', $this->integer()->unsigned());
-
-        $this->addForeignKey(
-            'fk-bot_client-bot_id',
-            'bot_user',
-            'bot_id',
-            'bot',
-            'id',
-            'CASCADE'
-        );
-
-        $rows = (new Query())->select(['bot_id', 'chat_id'])->from('bot_chat')->all();
-        foreach ($rows as $row) {
-            $this->update(
-                '{{%bot_user}}',
-                ['bot_id' => $row['bot_id']],
-                ['provider_user_id' => $row['chat_id']]
-            );
-        }
-
         $this->dropForeignKey(
             'fk-bot_chat-bot_id',
             '{{%bot_chat}}'
