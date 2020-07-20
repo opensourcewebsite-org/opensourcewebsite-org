@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\BotChatCaptcha;
 
 /**
 * Class SystemMessageController
@@ -27,6 +28,9 @@ class SystemMessageController extends Controller
         if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
             $deleteMessage = true;
         }
+
+        $telegramUser = $this->getTelegramUser();
+        BotChatCaptcha::removeCaptchaInfo($chat->id,$telegramUser->provider_user_id);
 
         if ($deleteMessage) {
             return $this->getResponseBuilder()

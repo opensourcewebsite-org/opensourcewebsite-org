@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use app\modules\bot\models\BotChatCaptcha;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
@@ -103,4 +104,37 @@ class BotController extends Controller implements CronChainedInterface
         echo 'Bot with the same token already exists';
         return false;
     }
+
+    public function actionBanUnverifiedUsers()
+    {
+
+        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
+        if(isset($bots)) {
+
+            foreach ($bots as $bot) {
+
+                $botApi = new \TelegramBot\Api\BotApi($bot->token);
+
+                $usersToBan = BotChatCaptcha::find()
+                    ->with('chat')
+                    ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
+                    ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
+                    ->where(['<', 'sent_at', time() - CronController::INTERVAL])
+                    ->andFilterWhere(['bot.id' => $bot->id])->all();
+
+                if (isset($usersToBan)) {
+                    foreach ($usersToBan as $record) {
+                        BotChatCaptcha::deleteAll([
+                            'chat_id' => $record->chat_id,
+                            'provider_user_id' =>  $record->provider_user_id
+                        ]);
+                        $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                    }
+                }
+
+            }
+        }
+
+    }
+
 }
