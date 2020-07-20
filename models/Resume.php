@@ -147,10 +147,9 @@ class Resume extends ActiveRecord
      */
     public function getMatchedVacancies()
     {
-        $query = Vacancy::find()->active()->matchLanguages()->matchRadius($this);
-        $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
+        $query = Vacancy::find()->active()->matchLanguages($this)->matchRadius($this);
 
-        return $query->groupBy(Vacancy::tableName() . '.id');
+        return $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
     }
 
     /**
@@ -206,6 +205,15 @@ class Resume extends ActiveRecord
     {
         return $this->hasMany(Language::className(), ['id' => 'language_id'])
             ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getUserLanguagesRelation()
+    {
+        return $this->hasMany(UserLanguage::class, ['user_id' => 'user_id']);
     }
 
     public function markToUpdateMatches()
