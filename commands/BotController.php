@@ -2,14 +2,12 @@
 
 namespace app\commands;
 
-use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatCaptcha;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\Bot;
-use app\commands\CronController;
 
 /**
  * Class BotController
