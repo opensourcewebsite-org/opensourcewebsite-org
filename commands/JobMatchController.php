@@ -1,8 +1,8 @@
 <?php
 
-
 namespace app\commands;
 
+use Yii;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\Resume;
@@ -33,8 +33,9 @@ class JobMatchController extends Controller implements CronChainedInterface
     {
         $updatesCount = 0;
 
-        $resumeQuery = Resume::find()->live()
+        $resumeQuery = Resume::find()
             ->where([Resume::tableName() . '.processed_at' => null])
+            ->live()
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
@@ -61,8 +62,9 @@ class JobMatchController extends Controller implements CronChainedInterface
     {
         $updatesCount = 0;
 
-        $vacancyQuery = Vacancy::find()->live()
+        $vacancyQuery = Vacancy::find()
             ->where([Vacancy::tableName() . '.processed_at' => null])
+            ->live()
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
@@ -83,5 +85,24 @@ class JobMatchController extends Controller implements CronChainedInterface
         if ($updatesCount) {
             $this->output('Vacancies updated: ' . $updatesCount);
         }
+    }
+
+    public function actionClearMatches()
+    {
+        Yii::$app->db->createCommand()
+            ->truncateTable('{{%job_match}}')
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->update(
+                '{{%resume}}',
+                ['processed_at' => null])
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->update(
+                '{{%vacancy}}',
+                ['processed_at' => null])
+            ->execute();
     }
 }

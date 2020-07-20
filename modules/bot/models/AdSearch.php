@@ -20,7 +20,7 @@ class AdSearch extends ActiveRecord
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 14;
+    public const LIVE_DAYS = 30;
 
     public static function tableName()
     {
