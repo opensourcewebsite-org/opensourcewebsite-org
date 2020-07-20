@@ -82,4 +82,23 @@ class AdMatchController extends Controller implements CronChainedInterface
             $this->output('Offers updated: ' . $updatesCount);
         }
     }
+
+    public function actionClearMatches()
+    {
+        Yii::$app->db->createCommand()
+            ->truncateTable('{{%ad_match}}')
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->update(
+                '{{%ad_search}}',
+                ['processed_at' => null])
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->update(
+                '{{%ad_offer}}',
+                ['processed_at' => null])
+            ->execute();
+    }
 }
