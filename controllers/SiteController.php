@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Contact;
 use app\models\Gender;
 use app\models\LoginForm;
@@ -15,7 +16,6 @@ use app\models\Sexuality;
 use app\modules\bot\models\User as BotUser;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
-use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -287,7 +287,7 @@ class SiteController extends Controller
             $userToMerge->delete();
 
             $transaction->commit();
-        } catch (\Throwable $ex) {
+        } catch (\Throwable $e) {
             $transaction->rollBack();
             return false;
         }

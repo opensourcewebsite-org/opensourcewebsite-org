@@ -2,13 +2,13 @@
 
 namespace app\models;
 
+use Yii;
 use app\models\queries\ResumeQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobMatch;
 use app\modules\bot\validators\RadiusValidator;
-use Yii;
-use app\behaviors\TimestampBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
 
@@ -22,7 +22,7 @@ class Resume extends ActiveRecord
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 14;
+    public const LIVE_DAYS = 30;
 
     const REMOTE_OFF = 0;
     const REMOTE_ON = 1;
@@ -43,7 +43,6 @@ class Resume extends ActiveRecord
                     'currency_id',
                     'status',
                     'created_at',
-                    'renewed_at',
                     'processed_at',
                 ],
                 'integer',
@@ -98,7 +97,7 @@ class Resume extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'min_hourly_rate' => Yii::t('app', 'Min. hourly rate'),
+            'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'remote_on' => Yii::t('bot', 'Remote work'),
             'search_radius' => Yii::t('bot', 'Search radius'),
         ];
@@ -116,8 +115,9 @@ class Resume extends ActiveRecord
     public function behaviors()
     {
         return [
-            'TimestampBehavior' => [
-                'class' => TimestampBehavior::class,
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
             ],
         ];
     }
@@ -127,7 +127,7 @@ class Resume extends ActiveRecord
      */
     public function isActive()
     {
-        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON;
     }
 
     /**
@@ -147,7 +147,7 @@ class Resume extends ActiveRecord
      */
     public function getMatchedVacancies()
     {
-        $query = Vacancy::find()->active()->matchLanguages()->matchRadius($this);
+        $query = Vacancy::find()->live()->matchLanguages()->matchRadius($this);
         $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
 
         return $query->groupBy(Vacancy::tableName() . '.id');
@@ -196,6 +196,16 @@ class Resume extends ActiveRecord
                 $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_SELF]);
             }
         }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getLanguagesRelation()
+    {
+        return $this->hasMany(Language::className(), ['id' => 'language_id'])
+            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
     }
 
     public function markToUpdateMatches()
@@ -256,9 +266,40 @@ class Resume extends ActiveRecord
     /** @inheritDoc */
     public function afterSave($insert, $changedAttributes)
     {
-        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
-            $this->unlinkAll('matches', true);
+        if (isset($changedAttributes['status'])) {
+            if ($this->status == self::STATUS_OFF) {
+                $this->unlinkAll('matches', true);
+            } elseif ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
+                $this->status = self::STATUS_OFF;
+                $this->save();
+            }
         }
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * @return array
+     */
+    public function notPossibleToChangeStatus()
+    {
+        $location = ($this->location_lon && $this->location_lat);
+        $languagesCount = $this->getLanguagesRelation()->count();
+        $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || ($this->search_radius && $location));
+        $notFilledFields = [];
+        if (!$canChangeStatus) {
+            if (!$languagesCount) {
+                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages')) . ' (' . Yii::t('bot', 'in your profile') . ')';
+            }
+            if ($this->remote_on == self::REMOTE_OFF) {
+                if (!$location) {
+                    $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
+                }
+                if (!$this->search_radius) {
+                    $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('search_radius'));
+                }
+            }
+        }
+
+        return $notFilledFields;
     }
 }

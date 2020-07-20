@@ -3,7 +3,7 @@
 namespace app\modules\bot\models;
 
 use app\behaviors\CreatedByBehavior;
-use app\behaviors\TimestampBehavior;
+use yii\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\modules\bot\validators\RadiusValidator;
@@ -20,7 +20,7 @@ class AdSearch extends ActiveRecord
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 14;
+    public const LIVE_DAYS = 30;
 
     public static function tableName()
     {
@@ -53,7 +53,6 @@ class AdSearch extends ActiveRecord
                     'pickup_radius',
                     'status',
                     'created_at',
-                    'renewed_at',
                     'processed_at',
                 ],
                 'integer',
@@ -66,9 +65,9 @@ class AdSearch extends ActiveRecord
     public function behaviors()
     {
         return [
-            // TimestampBehavior::className(),
-            'TimestampBehavior' => [
-                'class' => TimestampBehavior::class,
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
             ],
         ];
     }
@@ -81,7 +80,7 @@ class AdSearch extends ActiveRecord
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ON && (time() - $this->renewed_at) <= self::LIVE_DAYS * 24 * 60 * 60;
+        return $this->status == self::STATUS_ON;
     }
 
     public function getMatches()
@@ -109,7 +108,8 @@ class AdSearch extends ActiveRecord
         $adOfferQuery = AdOffer::find()
             ->where(['!=', 'ad_offer.user_id', $this->user_id])
             ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
-            ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->joinWith('globalUser')
+            ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_offer.section' => $this->section])
             ->andWhere(
                 "ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_offer.location_lon, ad_offer.location_lat)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"

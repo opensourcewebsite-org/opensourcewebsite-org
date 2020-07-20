@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'name' => 'OpenSourceWebsite',
+    'language' => 'en',
     'components' => [
         'log' => [
             'targets' => [

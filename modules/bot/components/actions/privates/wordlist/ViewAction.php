@@ -6,6 +6,7 @@ use app\modules\bot\components\actions\BaseAction;
 use app\modules\bot\models\Chat;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
+use app\modules\bot\components\helpers\Emoji;
 
 class ViewAction extends BaseAction
 {
@@ -32,19 +33,19 @@ class ViewAction extends BaseAction
                             'callback_data' => $this->createRoute($this->listActionId, [
                                 'chatId' => $phrase->chat_id,
                             ]),
-                            'text' => '🔙',
+                            'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => $this->createRoute($this->changeActionId, [
                                 'phraseId' => $phraseId,
                             ]),
-                            'text' => '✏️',
+                            'text' => Emoji::EDIT,
                         ],
                         [
                             'callback_data' => $this->createRoute($this->deleteActionId, [
                                 'phraseId' => $phraseId,
                             ]),
-                            'text' => '🗑',
+                            'text' => Emoji::DELETE,
                         ],
                     ],
                 ]

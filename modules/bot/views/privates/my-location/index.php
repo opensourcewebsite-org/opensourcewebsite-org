@@ -1,3 +1,5 @@
 <b><?= Yii::t('bot', 'Your Location') ?></b><br/>
 <br/>
-<?= Yii::t('bot', 'Unknown') ?>. <?= Yii::t('bot', 'Please, send your location using app feature or type it in format «Latitude Longitude»') ?>.
+<?= Yii::t('bot', 'Please, send your location using app feature or type it in format «Latitude Longitude»') ?>.<br/>
+<br/>
+<i><?= Yii::t('bot', 'This information is used for all bot services') ?>.</i>

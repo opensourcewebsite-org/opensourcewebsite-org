@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MenuController
@@ -25,38 +24,32 @@ class MenuController extends Controller
                 [
                     [
                         [
+                            'callback_data' => SAdController::createRoute(),
+                            'text' => Yii::t('bot', 'Ads'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => SJobController::createRoute(),
+                            'text' => Yii::t('bot', 'Jobs'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => AdminController::createRoute(),
+                            'text' => Yii::t('bot', 'Telegram groups'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyProfileController::createRoute(),
                             'text' => Yii::t('bot', 'Profile'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => MyRatingController::createRoute(),
-                            'text' => Yii::t('bot', 'Rating'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyReferralsController::createRoute(),
-                            'text' => Yii::t('bot', 'Referrals')
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => ServicesController::createRoute(),
-                            'text' => Yii::t('bot', 'Services')
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => AdminController::createRoute(),
-                            'text' => Yii::t('bot', 'Groups')
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => HelpController::createRoute(),
-                            'text' => Yii::t('bot', 'Commands')
+                            'text' => '🏗 ' . Yii::t('bot', 'Development'),
                         ],
                     ],
                     [
@@ -72,11 +65,15 @@ class MenuController extends Controller
                     [
                         [
                             'callback_data' => StartController::createRoute(),
-                            'text' => '👋',
+                            'text' => Emoji::GREETING,
+                        ],
+                        [
+                            'callback_data' => HelpController::createRoute(),
+                            'text' => Emoji::INFO,
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),
-                            'text' => Emoji::LANGUAGE,
+                            'text' => Emoji::LANGUAGE . ' ' . strtoupper(Yii::$app->language),
                         ],
                     ],
                 ]

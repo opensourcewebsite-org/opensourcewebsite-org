@@ -54,8 +54,8 @@ class WebhookController extends Controller
                     throw new NotFoundHttpException('The requested page does not exist.');
                 }
             }
-        } catch (\Exception $ex) {
-            \Yii::error($ex->getMessage());
+        } catch (\Exception $e) {
+            \Yii::error($e->getMessage());
         }
 
         return $result;

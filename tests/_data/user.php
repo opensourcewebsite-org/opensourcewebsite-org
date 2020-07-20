@@ -12,6 +12,7 @@ return [
         'referrer_id' => null,
         'created_at' => time(),
         'updated_at' => time(),
+        'last_activity_at' => time(),
     ],
     [
         'id' => 101,
@@ -24,6 +25,7 @@ return [
         'referrer_id' => 100,
         'created_at' => time(),
         'updated_at' => time(),
+        'last_activity_at' => time(),
     ],
     [
         'id' => 102,
@@ -36,6 +38,7 @@ return [
         'referrer_id' => 100,
         'created_at' => time(),
         'updated_at' => time(),
+        'last_activity_at' => time(),
     ],
     [
         'id' => 103,
@@ -48,5 +51,6 @@ return [
         'referrer_id' => 100,
         'created_at' => time(),
         'updated_at' => time(),
+        'last_activity_at' => time(),
     ],
 ];

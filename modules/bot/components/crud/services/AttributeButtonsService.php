@@ -20,6 +20,7 @@ class AttributeButtonsService
      *  'attribute_name' => [
      *      'buttons' => [
      *      [
+     *          'hideCondition' => true,
      *          'createMode' => false, //default is true
      *          'editMode' => false, //default is true
      *          'text' => Yii::t('bot', 'Edit attribute'),
@@ -60,6 +61,7 @@ class AttributeButtonsService
      *  'attribute_name' => [
      *      'systemButtons' => [
      *          'back' => [
+     *              'hideCondition' => true,
      *              'createMode' => false, //default is true
      *              'editMode' => false, //default is true
      *              'text' => Yii::t('bot', 'Edit attribute'),
@@ -110,6 +112,9 @@ class AttributeButtonsService
         $rule = ArrayHelper::getValue($options, 'rule', []);
         $buttons = [];
         foreach ($configButtons as $key => $configButton) {
+            if (isset($configButton['hideCondition']) && $configButton['hideCondition']) {
+                continue;
+            }
             if (($modelId && !($configButton['editMode'] ?? true))
                 || (!$modelId && !($configButton['createMode'] ?? true))) {
                 continue;
@@ -165,6 +170,9 @@ class AttributeButtonsService
             unset($configButton['callback']);
         } else {
             $route = MenuController::createRoute();
+        }
+        if (isset($configButton['hideCondition'])) {
+            unset($configButton['hideCondition']);
         }
 
         return $route;

@@ -24,6 +24,7 @@ use yii\db\Query;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ * @property integer $last_activity_at
  * @property string $password write-only password
  * @property string $name
  * @property string $birthday
@@ -72,6 +73,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['is_authenticated', 'boolean'],
             [['gender_id', 'sexuality_id', 'currency_id', 'rating'], 'integer'],
+            [['created_at', 'updated_at', 'last_activity_at'], 'integer'],
+            [['created_at', 'updated_at', 'last_activity_at'], 'default', 'value' => time()],
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 'UTC'],
 
@@ -826,5 +829,15 @@ class User extends ActiveRecord implements IdentityInterface
         $result = static::find()->where(['>', 'rating', 0])->count();
 
         return $result ?: 0;
+    }
+
+    /**
+     * @throws \yii\db\Exception
+     */
+    public function updateLastActivity()
+    {
+        Yii::$app->db->createCommand()
+            ->update('{{%user}}', ['last_activity_at' => time()], ['id' => $this->id])
+            ->execute();
     }
 }

@@ -34,10 +34,10 @@ class AdMatchController extends Controller implements CronChainedInterface
         $updatesCount = 0;
 
         $adSearchQuery = AdSearch::find()
-            ->where(['ad_search.processed_at' => null])
-            ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
+            ->where([AdSearch::tableName() . '.processed_at' => null])
+            ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
             ->joinWith('globalUser')
+            ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
@@ -61,10 +61,10 @@ class AdMatchController extends Controller implements CronChainedInterface
         $updatesCount = 0;
 
         $adOfferQuery = AdOffer::find()
-            ->where(['ad_offer.processed_at' => null])
-            ->andWhere(['>=', 'ad_offer.renewed_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere(['ad_offer.status' => AdOffer::STATUS_ON])
+            ->where([AdOffer::tableName() . '.processed_at' => null])
+            ->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
             ->joinWith('globalUser')
+            ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
             ->orderBy(['user.rating' => SORT_DESC])
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
@@ -81,5 +81,24 @@ class AdMatchController extends Controller implements CronChainedInterface
         if ($updatesCount) {
             $this->output('Offers updated: ' . $updatesCount);
         }
+    }
+
+    public function actionClearMatches()
+    {
+        Yii::$app->db->createCommand()
+            ->truncateTable('{{%ad_match}}')
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->update(
+                '{{%ad_search}}',
+                ['processed_at' => null])
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->update(
+                '{{%ad_offer}}',
+                ['processed_at' => null])
+            ->execute();
     }
 }

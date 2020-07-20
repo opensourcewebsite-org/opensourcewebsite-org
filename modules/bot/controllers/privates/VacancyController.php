@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Company;
@@ -20,11 +21,8 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobVacancyKeyword;
 use app\modules\bot\models\User as TelegramUser;
-use Yii;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
-
-use yii\base\ModelEvent;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -181,6 +179,7 @@ class VacancyController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
+                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (Vacancy $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -288,7 +287,7 @@ class VacancyController extends CrudController
         $rows = array_map(function ($vacancy) {
             return [
                 [
-                    'text' => ($vacancy->isActive() ? '' : '❌ ') . $vacancy->name,
+                    'text' => ($vacancy->isActive() ? '' : Emoji::INACTIVE . ' ') . $vacancy->name,
                     'callback_data' => self::createRoute('view', [
                         'vacancyId' => $vacancy->id,
                     ]),
@@ -378,7 +377,7 @@ class VacancyController extends CrudController
         if ($matchedResumeCount > 0) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('resume-matches', ['vacancyId' => $vacancyId]),
-                'text' => '🙋‍♂️ ' . $matchedResumeCount,
+                'text' => Emoji::OFFERS . ' ' . $matchedResumeCount,
             ];
         }
 
@@ -512,7 +511,7 @@ class VacancyController extends CrudController
                         'remote_on' => $resume->remote_on,
                         'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
                         'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
-                        'user' => TelegramUser::findOne($resume->user_id),
+                        'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                     ]
                 ),
                 $buttons,
@@ -552,6 +551,17 @@ class VacancyController extends CrudController
         if (!isset($vacancy)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
+                ->build();
+        }
+        $this->backRoute->make('view', compact('vacancyId'));
+        $this->endRoute->make('view', compact('vacancyId'));
+
+        if ($isEnabled && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('status-error', compact('notFilledFields')),
+                    true
+                )
                 ->build();
         }
 

@@ -6,6 +6,7 @@ use app\modules\bot\components\actions\BaseAction;
 use app\modules\bot\models\Chat;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
+use app\modules\bot\components\helpers\Emoji;
 
 class ListAction extends BaseAction
 {
@@ -78,13 +79,13 @@ class ListAction extends BaseAction
                     'callback_data' => $this->createRoute('index', [
                         'chatId' => $chatId,
                     ]),
-                    'text' => '🔙',
+                    'text' => Emoji::BACK,
                 ],
                 [
                     'callback_data' => $this->createRoute($this->enterActionId, [
                         'chatId' => $chatId,
                     ]),
-                    'text' => '➕',
+                    'text' => Emoji::ADD,
                 ],
             ];
 

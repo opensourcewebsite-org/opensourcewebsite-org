@@ -54,7 +54,6 @@ class DebtController extends Controller implements CronChainedInterface
     {
         //in this action no sense to disable log.
         $this->log = true;
-        $this->outputLogState();
 
         $this->output("Check #1. Data collision between DB tables `debt` and `debt_balance`:");
         $errors = (new BalanceChecker)->run();
@@ -121,9 +120,6 @@ class DebtController extends Controller implements CronChainedInterface
      */
     public function actionIndex()
     {
-        $class = Reduction::class;
-        $this->output("Running $class ...");
-
         $reduction = new Reduction();
         $reduction->logger = function ($message, $format = []) {
             $this->output($message, $format);
@@ -135,15 +131,9 @@ class DebtController extends Controller implements CronChainedInterface
         }
         $reduction->run();
 
-        $this->output("Finished $class");
-        $class = Redistribution::class;
-        $this->output("Running $class ...");
-
         $redistribution = new Redistribution();
         $redistribution->logger = $reduction->logger;
         $redistribution->run();
-
-        $this->output("Finished $class");
     }
 
     /**

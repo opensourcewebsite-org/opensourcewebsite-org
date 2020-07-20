@@ -67,7 +67,6 @@ class DefaultController extends FixtureController
             $this->printHelpMessage();
             return ExitCode::OK;
         }
-        $this->outputLogState();
 
         return parent::actionLoad($fixturesInput);
     }

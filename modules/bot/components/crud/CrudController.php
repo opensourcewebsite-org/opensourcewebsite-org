@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components\crud;
 
+use Yii;
 use app\components\helpers\ArrayHelper;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\crud\services\IntermediateFieldService;
@@ -15,9 +16,6 @@ use app\modules\bot\components\crud\services\AttributeButtonsService;
 use app\modules\bot\components\crud\services\BackRouteService;
 use app\modules\bot\components\crud\services\EndRouteService;
 use app\modules\bot\components\crud\services\ViewFileService;
-use Exception;
-use Throwable;
-use Yii;
 use yii\base\DynamicModel;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
@@ -1353,7 +1351,7 @@ abstract class CrudController extends Controller
                 if ($model->save()) {
                     $relationModel = $this->createRelationModel($model, $rule);
                     if ($relationModel && !$relationModel->save()) {
-                        throw new Exception("not possible to save "
+                        throw new \Exception("not possible to save "
                             . $relationModel->formName() . " because " . serialize($relationModel->getErrors()));
                     }
                     foreach ($this->manyToManyRelationAttributes as $attributeName) {
@@ -1428,7 +1426,7 @@ abstract class CrudController extends Controller
                             }
                             try {
                                 if (!$relationModel->save()) {
-                                    throw new Exception("not possible to save "
+                                    throw new \Exception("not possible to save "
                                         . $relationModel->formName() . " because " . serialize($relationModel->getErrors()));
                                 }
                             } catch (\yii\db\Exception $exception) {
@@ -1457,8 +1455,8 @@ abstract class CrudController extends Controller
 
                     return $this->afterSave($model, $isNew);
                 }
-            } catch (Exception $ex) {
-                Yii::warning($ex);
+            } catch (\Exception $e) {
+                Yii::warning($e);
                 $transaction->rollBack();
             }
         }
@@ -1740,7 +1738,8 @@ abstract class CrudController extends Controller
                     if (!$id) {
                         $id = 'v_' . $key;
                     }
-                } catch (Exception $ex) {
+                } catch (\Exception $e) {
+                    Yii::warning($e);
                     if (is_array($item)) {
                         return [];
                     }
@@ -2085,7 +2084,7 @@ abstract class CrudController extends Controller
             );
 
             return null;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return null;
         }
     }

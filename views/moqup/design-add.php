@@ -6,7 +6,7 @@ use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 
-$this->title = Yii::t('menu', 'Edit design');
+$this->title = Yii::t('app', 'Edit design');
 ?>
 <div class="card">
     <div class="card-header d-flex p-0">
