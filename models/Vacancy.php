@@ -7,7 +7,7 @@ use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobMatch;
-use app\behaviors\TimestampBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
 use yii\db\Expression;
@@ -22,7 +22,7 @@ class Vacancy extends ActiveRecord
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 14;
+    public const LIVE_DAYS = 30;
 
     const REMOTE_OFF = 0;
     const REMOTE_ON = 1;
@@ -43,7 +43,6 @@ class Vacancy extends ActiveRecord
                     'status',
                     'gender_id',
                     'created_at',
-                    'renewed_at',
                     'processed_at',
                 ],
                 'integer',
@@ -108,8 +107,9 @@ class Vacancy extends ActiveRecord
     public function behaviors()
     {
         return [
-            'TimestampBehavior' => [
-                'class' => TimestampBehavior::class,
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
             ],
         ];
     }
@@ -149,7 +149,7 @@ class Vacancy extends ActiveRecord
      */
     public function getMatchedResumes()
     {
-        $query = Resume::find()->active()->matchRadius($this);
+        $query = Resume::find()->live()->matchRadius($this);
         $query->andWhere(['!=', Resume::tableName() . '.user_id', $this->user_id]);
 
         return $query->groupBy(Resume::tableName() . '.id');

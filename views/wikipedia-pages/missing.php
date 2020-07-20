@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
-$this->title = $language->name . ' ' . Yii::t('menu', 'wikipedia missing pages');
+$this->title = $language->name . ' ' . Yii::t('app', 'wikipedia missing pages');
 
 ?>
 <div class="card">

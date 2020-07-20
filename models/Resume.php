@@ -8,7 +8,7 @@ use app\models\User as GlobalUser;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobMatch;
 use app\modules\bot\validators\RadiusValidator;
-use app\behaviors\TimestampBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
 
@@ -22,7 +22,7 @@ class Resume extends ActiveRecord
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 14;
+    public const LIVE_DAYS = 30;
 
     const REMOTE_OFF = 0;
     const REMOTE_ON = 1;
@@ -43,7 +43,6 @@ class Resume extends ActiveRecord
                     'currency_id',
                     'status',
                     'created_at',
-                    'renewed_at',
                     'processed_at',
                 ],
                 'integer',
@@ -116,8 +115,9 @@ class Resume extends ActiveRecord
     public function behaviors()
     {
         return [
-            'TimestampBehavior' => [
-                'class' => TimestampBehavior::class,
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
             ],
         ];
     }
@@ -147,7 +147,7 @@ class Resume extends ActiveRecord
      */
     public function getMatchedVacancies()
     {
-        $query = Vacancy::find()->active()->matchLanguages()->matchRadius($this);
+        $query = Vacancy::find()->live()->matchLanguages()->matchRadius($this);
         $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
 
         return $query->groupBy(Vacancy::tableName() . '.id');

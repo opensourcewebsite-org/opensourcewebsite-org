@@ -10,7 +10,7 @@ use yii\grid\GridView;
 /* @var $jobs \app\models\CronJob[] */
 /* @var $jobId int|null */
 
-$this->title = Yii::t('menu', 'Cron Job Log');
+$this->title = Yii::t('app', 'Cron Job Log');
 
 ?>
 
