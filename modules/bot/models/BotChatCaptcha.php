@@ -85,45 +85,6 @@ class BotChatCaptcha extends ActiveRecord
     }
 
     /**
-     * Checks if captcha is needed to be shown to user.
-     * Returns true if captcha needed, false otherwise
-     *
-     * @param $chatId
-     * @param $user_id
-     * @return bool
-     * @throws Exception
-     */
-    public static function passedCaptcha($chatId, $user_id)
-    {
-        $chatMember = ChatMember::findOne([
-            'chat_id' => $chatId,
-            'user_id' => $user_id
-        ]);
-
-        return $chatMember->passed_captcha;
-        /*
-        $botCaptcha = self::find()->where([
-            'chat_id' => $chatId,
-            'provider_user_id' => $providerUserId
-        ])->exists();
-
-        if (!$botCaptcha){
-
-            $botCaptcha = new self([
-                'chat_id' => $chatId,
-                'provider_user_id' => $providerUserId,
-            ]);
-
-            $botCaptcha->save();
-
-            return false;
-        }
-
-        return true;*/
-    }
-
-
-    /**
      * Removes captha record
      *
      * @param $chatId

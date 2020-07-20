@@ -7,7 +7,8 @@
  */
 ?>
 <?= Yii::t('bot', 'Welcome to group') . ' ' . $chatName . ',' ?><br/>
-
 <?= $provider_user_name ?? ($firstName . ' ' . $lastName) ?><br/>
+<?= Yii::t('bot', 'Press' . ' 👍 ' . 'to avoid ban' )?><br/>
+
 
 

@@ -40,15 +40,15 @@ class JoinCaptchaController extends Controller
             $isAdmin = false;
 
             if (isset($chat->id) && isset($telegramUser)){
-                $chatMember = ChatMember::find()
-                    ->select('bot_chat_member.id,bot_chat_member.passed_captcha')
-                    ->leftJoin('bot_chat','bot_chat_member.chat_id = bot_chat.id')
-                    ->leftJoin('bot_user','bot_chat_member.user_id = bot_user.id')
-                    ->where(['bot_chat.id' => $chat->id, 'bot_user.provider_user_id' => $telegramUser->provider_user_id])->one();
+                $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
             }
 
             if(isset($chatMember)){
                 $isAdmin = $chatMember->isAdmin();
+                if($isAdmin){
+                    $chatMember->passed_captcha = 1;
+                    $chatMember->save();
+                }
                 $passedCaptcha = $chatMember->passed_captcha;
             }
 
@@ -69,33 +69,21 @@ class JoinCaptchaController extends Controller
                     $botCaptcha->save();
                 }
 
-                /* Restrict users to write messages*/
-                $api = $this->module->getBotApi();
-                $api->call('restrictChatMember',[
-                    'chat_id' => $chat->chat_id,
-                    'user_id' => $telegramUser->provider_user_id,
-                    'permissions' =>json_encode([
-                        'can_send_messages' => false,
-                        'can_send_media_messages' => false,
-                        'can_send_polls' => false,
-                    ]),
-                ]);
-
                 $choices = [
                     [
                         'callback_data' => self::createRoute('pass-captcha', [
                             'provider_user_id' => $telegramUser->provider_user_id,
                             'choice' => self::PASS
                         ]),
-                        'text' => Yii::t('bot', 'Pass'),
+                        'text' => Yii::t('bot', 'Pass captcha' . ' ' .'👍'),
                     ],
                     [
                         'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id ,'choice' => self::DUMMY]),
-                        'text' => Yii::t('bot', 'Dummy'),
+                        'text' => Yii::t('bot', 'Dummy ' . ' ' . '👌'),
                     ],
                     [
                         'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id, 'choice' => self::BAN]),
-                        'text' => Yii::t('bot', 'Ban'),
+                        'text' => Yii::t('bot', 'Ban me' . ' ' . '👎'),
                     ],
                 ];
                 shuffle($choices);
@@ -166,17 +154,6 @@ class JoinCaptchaController extends Controller
                     ]);
                     if(!$chatMember->passed_captcha){
 
-                        /* Allow user to send messages*/
-                        $api->call('restrictChatMember',[
-                            'chat_id' => $chat->chat_id,
-                            'user_id' => $telegramUser->provider_user_id,
-                            'permissions' =>json_encode([
-                                'can_send_messages' => true,
-                                'can_send_media_messages' => true,
-                                'can_send_polls' => true,
-                            ]),
-                        ]);
-
                         // Delete record about captcha
                         BotChatCaptcha::deleteAll([
                             'chat_id' => $chat->id,
@@ -187,7 +164,7 @@ class JoinCaptchaController extends Controller
                         $chatMember->passed_captcha = 1;
                         $chatMember->save();
 
-                        $text = new MessageText(Yii::t('bot', 'Thank you for validating,') . ', ' . $toUserName);
+                        $text = new MessageText(Yii::t('bot', 'Thank you for validating,') . ', ' . $toUserName . '🔥');
 
                     }
                     else{
