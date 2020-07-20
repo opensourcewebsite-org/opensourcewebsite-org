@@ -2,6 +2,7 @@
 
 namespace tests\models;
 
+use Yii;
 use app\models\LoginForm;
 use app\tests\fixtures\CssFixture;
 use app\tests\fixtures\MoqupFixture;
@@ -13,7 +14,7 @@ use app\tests\fixtures\RatingFixture;
 class LoginFormTest extends \Codeception\Test\Unit
 {
     private $model;
-	
+
 	public function _fixtures()
     {
         return [
@@ -44,7 +45,7 @@ class LoginFormTest extends \Codeception\Test\Unit
             ],
         ];
     }
-	
+
     public function testLoginNoUser()
     {
         $this->model = new LoginForm([
@@ -94,7 +95,6 @@ class LoginFormTest extends \Codeception\Test\Unit
 
     protected function _after()
     {
-        \Yii::$app->user->logout();
+        Yii::$app->user->logout();
     }
-
 }

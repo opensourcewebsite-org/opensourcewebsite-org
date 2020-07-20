@@ -11,7 +11,7 @@ use app\models\UserWikiPage;
 use app\components\TitleColumn;
 /* @var $this \yii\web\View */
 
-$this->title = Yii::t('menu', 'Wikipedia watchlists');
+$this->title = Yii::t('app', 'Wikipedia watchlists');
 $countTokens = $tokensDataProvider->count;
 
 ?>

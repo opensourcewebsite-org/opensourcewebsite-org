@@ -7,7 +7,7 @@ use app\modules\comment\Comment;
 use app\assets\AceEditorAsset;
 use app\widgets\buttons\EditButton;
 
-$this->title = Yii::t('menu', 'View design');
+$this->title = Yii::t('app', 'View design');
 $followed = in_array($moqup->id, Yii::$app->user->identity->followedMoqupsId);
 
 AceEditorAsset::register($this);

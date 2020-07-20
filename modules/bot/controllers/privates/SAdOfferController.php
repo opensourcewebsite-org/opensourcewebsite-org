@@ -1638,7 +1638,6 @@ class SAdOfferController extends CrudController
             'section' => intval($state->getIntermediateField('adOfferSection')),
             'status' => AdOffer::STATUS_OFF,
             'created_at' => time(),
-            'renewed_at' => time(),
         ]);
 
         $adOffer->save();

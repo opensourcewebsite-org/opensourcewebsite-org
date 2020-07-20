@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\models\queries;
 
 use app\models\Resume;
@@ -21,10 +20,11 @@ class VacancyQuery extends ActiveQuery
     /**
      * @return VacancyQuery
      */
-    public function active()
+    public function live()
     {
         return $this->andWhere([Vacancy::tableName() . '.status' => Vacancy::STATUS_ON])
-            ->andWhere(['>=', Vacancy::tableName() . '.renewed_at', time() - Vacancy::LIVE_DAYS * 24 * 60 * 60]);
+            ->joinWith('globalUser')
+            ->andWhere(['>=', 'user.last_activity_at', time() - Vacancy::LIVE_DAYS * 24 * 60 * 60]);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\models;
 
-use app\behaviors\TimestampBehavior;
+use yii\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\modules\bot\validators\RadiusValidator;
@@ -19,7 +19,7 @@ class AdOffer extends ActiveRecord
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 14;
+    public const LIVE_DAYS = 30;
 
     public static function tableName()
     {
@@ -32,7 +32,7 @@ class AdOffer extends ActiveRecord
             [['user_id', 'section', 'title', 'location_lat', 'location_lon', 'delivery_radius', 'status'], 'required'],
             [['title', 'description', 'location_lat', 'location_lon'], 'string'],
             ['delivery_radius', RadiusValidator::class],
-            [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'renewed_at', 'processed_at'], 'integer'],
+            [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'processed_at'], 'integer'],
             [['price'], 'number'],
         ];
     }
@@ -40,9 +40,9 @@ class AdOffer extends ActiveRecord
     public function behaviors()
     {
         return [
-            // TimestampBehavior::className(),
-            'TimestampBehavior' => [
-                'class' => TimestampBehavior::class,
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
             ],
         ];
     }
@@ -84,7 +84,8 @@ class AdOffer extends ActiveRecord
         $adSearchQuery = AdSearch::find()
             ->where(['!=', 'ad_search.user_id', $this->user_id])
             ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
-            ->andWhere(['>=', 'ad_search.renewed_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
+            ->joinWith('globalUser')
+            ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere(['ad_search.section' => $this->section])
             ->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_search.location_lon, ad_search.location_lat)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
 

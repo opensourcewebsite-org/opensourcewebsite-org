@@ -2,6 +2,8 @@
 
 use yii\web\View;
 use yii\helpers\ArrayHelper;
+use yii\base\Event;
+use yii\web\Application;
 
 $params = require __DIR__ . '/params.php';
 $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap 4.x for all Krajee Extensions
@@ -168,5 +170,18 @@ if (YII_ENV_DEV) {
 
     $config['components']['log']['targets']['file']['levels'] = ['error', 'warning'];
 }
+
+// TODO в момент обновления поля last_activity_at, надо проверять разницу с последним обновлением. и если разница больше чем требуемая (30 дней) то в сервисах бота очищать совпадения всех обьектов пользователя и processed_at обьектов занести null
+Event::on(Application::class, Application::EVENT_BEFORE_REQUEST, function ($event) {
+    /** @var Application $app */
+    $app = $event->sender;
+
+    /** @var \app\models\User|null $user */
+    $user = $app->user->getIdentity();
+
+    if (($user !== null) && !(Yii::$app->user->isGuest)) {
+        $user->updateLastActivity();
+    }
+});
 
 return $config;
