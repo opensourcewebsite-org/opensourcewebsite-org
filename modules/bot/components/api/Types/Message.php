@@ -44,7 +44,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'contact' => Contact::class,
         'location' => Location::class,
         'venue' => Venue::class,
-        'new_chat_member' => User::class,
+        'new_chat_members' => User::class,
         'left_chat_member' => User::class,
         'new_chat_title' => true,
         'new_chat_photo' => ArrayOfPhotoSize::class,
