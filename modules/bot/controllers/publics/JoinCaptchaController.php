@@ -75,15 +75,15 @@ class JoinCaptchaController extends Controller
                             'provider_user_id' => $telegramUser->provider_user_id,
                             'choice' => self::PASS
                         ]),
-                        'text' => Yii::t('bot', 'Pass captcha' . ' ' .'👍'),
+                        'text' => Yii::t('bot', '👍'),
                     ],
                     [
                         'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id ,'choice' => self::DUMMY]),
-                        'text' => Yii::t('bot', 'Dummy ' . ' ' . '👌'),
+                        'text' => Yii::t('bot', '👌'),
                     ],
                     [
                         'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id, 'choice' => self::BAN]),
-                        'text' => Yii::t('bot', 'Ban me' . ' ' . '👎'),
+                        'text' => Yii::t('bot', '👎'),
                     ],
                 ];
                 shuffle($choices);
@@ -91,9 +91,7 @@ class JoinCaptchaController extends Controller
                     ->editMessageTextOrSendMessage(
                         $this->render('show-captcha', [
                             'chatName' => $chat->title,
-                            'firstName' => $telegramUser->provider_user_first_name,
-                            'lastName' => $telegramUser->provider_user_last_name,
-                            'provider_user_name' => $telegramUser->provider_user_name
+                            'user' => $telegramUser
                         ]),
                         [
                             $choices
