@@ -20,31 +20,31 @@ class SAdController extends Controller
             [
                 [
                     'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
-                    'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::BUY_SELL),
+                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::BUY_SELL),
                 ],
                 [
                     'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
-                    'text' => '💰 ' . AdSection::getAdOfferName(AdSection::BUY_SELL),
+                    'text' => Emoji::AD_OFFER . ' ' . AdSection::getAdOfferName(AdSection::BUY_SELL),
                 ],
             ],
             [
                 [
                     'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::RENT]),
-                    'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::RENT),
+                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::RENT),
                 ],
                 [
                     'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::RENT]),
-                    'text' => '💰 ' . AdSection::getAdOfferName(AdSection::RENT),
+                    'text' => Emoji::AD_OFFER . ' ' . AdSection::getAdOfferName(AdSection::RENT),
                 ],
             ],
             [
                 [
                     'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::SERVICES]),
-                    'text' => '🔍 ' . AdSection::getAdSearchName(AdSection::SERVICES),
+                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::SERVICES),
                 ],
                 [
                     'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::SERVICES]),
-                    'text' => '💰 ' . AdSection::getAdOfferName(AdSection::SERVICES),
+                    'text' => Emoji::AD_OFFER . ' ' . AdSection::getAdOfferName(AdSection::SERVICES),
                 ],
             ],
             [

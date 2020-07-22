@@ -1,4 +1,9 @@
-💰 <b><?= $sectionName ?></b> - <b><?= $adOffer->title ?></b><br/>
+<?php
+
+use app\modules\bot\components\helpers\Emoji;
+
+?>
+<b><?= Emoji::AD_OFFER . ' ' . Yii::t('bot', $sectionName) ?>: <?= $adOffer->title ?></b><br/>
 <br/>
 <?php if ($adOffer->description !== null) : ?>
 <?= nl2br($adOffer->description); ?><br/>

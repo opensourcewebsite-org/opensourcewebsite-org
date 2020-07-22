@@ -400,7 +400,15 @@ class ResumeController extends CrudController
 
         $buttons = [];
 
+        $buttons[] = [
+            [
+                'text' => $resume->name,
+                'callback_data' => self::createRoute('view', ['resumeId' => $resume->id]),
+            ]
+        ];
+
         $buttons[] = $paginationButtons;
+
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('view', ['resumeId' => $resumeId]),

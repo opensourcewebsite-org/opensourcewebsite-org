@@ -17,4 +17,8 @@ class Emoji
     public const INACTIVE = '❌';
     public const OFFERS = '🙋‍♂️';
     public const INFO = 'ℹ️';
+    public const AD_SEARCH = '🔍';
+    public const AD_OFFER = '💰';
+    public const JOB_RESUME = '💪';
+    public const JOB_VACANCY = '🧰';
 }
