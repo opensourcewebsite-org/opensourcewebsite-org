@@ -47,4 +47,9 @@ class ChatMember extends ActiveRecord
     {
         return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
     }
+
+    public function getBotUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
 }

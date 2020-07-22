@@ -41,6 +41,8 @@ class JoinCaptchaController extends Controller
             $telegramUser = $this->getTelegramUser();
 
             $isAdmin = false;
+            $passedCaptcha = false;
+            $isBot = $this->getUpdate()->getMessage()->getFrom()->isBot();
 
             if (isset($chat->id) && isset($telegramUser)){
                 $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
@@ -51,7 +53,27 @@ class JoinCaptchaController extends Controller
                 $passedCaptcha = $chatMember->role == self::ROLE_VERIFIED;
             }
 
-            if (!$passedCaptcha && !$isAdmin) {
+            // check if user was added by group admin
+            $addedByAdmin = $isAdmin && ($this->getUpdate()->getMessage()->getFrom() !== $this->getUpdate()->getMessage()->getNewChatMember());
+
+            if($addedByAdmin){
+                $chatMember = ChatMember::find()
+                    ->joinWith('botUser')
+                    ->where([
+                        'bot_user.provider_user_id' => $this->getUpdate()->getMessage()->getNewChatMember()->getId(),
+                        'chat_id' => $chat->id
+                    ])
+                    ->one();
+
+                if($chatMember) {
+                    $chatMember->role = self::ROLE_VERIFIED;
+                    $chatMember->save();
+                    $passedCaptcha = true;
+                }
+            }
+
+
+            if (!$passedCaptcha && !$isAdmin && !$isBot) {
 
                 $choices = [
                     [
