@@ -20,7 +20,47 @@ class BotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        // TODO add new feature
+
+        $this->log = true;
+
+        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
+
+        if(isset($bots)) {
+
+            foreach ($bots as $bot) {
+
+                $botApi = new \TelegramBot\Api\BotApi($bot->token);
+
+                $usersToBan = BotChatCaptcha::find()
+                    ->with('chat')
+                    ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
+                    ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
+                    ->where(['<', 'sent_at', time() - CronController::INTERVAL])
+                    ->andFilterWhere(['bot.id' => $bot->id])->all();
+
+                if (isset($usersToBan)) {
+
+                    try {
+                        foreach ($usersToBan as $record) {
+                            BotChatCaptcha::deleteAll([
+                                'chat_id' => $record->chat_id,
+                                'provider_user_id' => $record->provider_user_id
+                            ]);
+
+                            $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                            $this->output("Kicked user {$record->provider_user_id} from chat {$record->chat->chat_id}");
+                        }
+                    }
+                    catch (\Throwable $t){
+
+                        $this->output("Error {$t->getMessage()} while kicking unverified users");
+                        return false;
+                    }
+                }
+
+            }
+        }
+
         return true;
     }
 
@@ -103,38 +143,6 @@ class BotController extends Controller implements CronChainedInterface
 
         echo 'Bot with the same token already exists';
         return false;
-    }
-
-    public function actionBanUnverifiedUsers()
-    {
-
-        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
-        if(isset($bots)) {
-
-            foreach ($bots as $bot) {
-
-                $botApi = new \TelegramBot\Api\BotApi($bot->token);
-
-                $usersToBan = BotChatCaptcha::find()
-                    ->with('chat')
-                    ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
-                    ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
-                    ->where(['<', 'sent_at', time() - CronController::INTERVAL])
-                    ->andFilterWhere(['bot.id' => $bot->id])->all();
-
-                if (isset($usersToBan)) {
-                    foreach ($usersToBan as $record) {
-                        BotChatCaptcha::deleteAll([
-                            'chat_id' => $record->chat_id,
-                            'provider_user_id' =>  $record->provider_user_id
-                        ]);
-                        $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
-                    }
-                }
-
-            }
-        }
-
     }
 
 }
