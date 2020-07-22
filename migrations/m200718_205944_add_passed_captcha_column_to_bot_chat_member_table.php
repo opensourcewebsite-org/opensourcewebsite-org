@@ -12,7 +12,8 @@ class m200718_205944_add_passed_captcha_column_to_bot_chat_member_table extends 
      */
     public function safeUp()
     {
-        $this->addColumn('{{%bot_chat_member}}', 'role', $this->tinyInteger()->notNull()->defaultValue(0)->unsigned());
+        $this->addColumn('{{%bot_chat_member}}', 'role', $this->tinyInteger()->notNull()->defaultValue(1)->unsigned());
+        $this->update('bot_chat_member',['role' => 1]);
     }
 
     /**
