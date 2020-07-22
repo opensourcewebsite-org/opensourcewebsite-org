@@ -33,7 +33,7 @@ class MessageController extends Controller
         /* Captcha handle*/
         if($captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON){
             $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
-            if(!$chatMember->passed_captcha) {
+            if($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) {
                 return $this->getResponseBuilder()
                     ->deleteMessage()
                     ->build();

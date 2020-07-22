@@ -1,7 +1,6 @@
 <?php
 namespace app\modules\bot\components\request;
 
-use app\modules\bot\controllers\publics\JoinCaptchaController;
 use app\modules\bot\controllers\publics\SystemMessageController;
 use TelegramBot\Api\Types\Update;
 
@@ -11,7 +10,7 @@ class SystemMessageCommandResolver implements ICommandResolver
     {
 
         if ($update->getMessage() && $update->getMessage()->getNewChatMember()) {
-            $commandText = JoinCaptchaController::createRoute('show-captcha');
+            $commandText = SystemMessageController::createRoute();
         }
 
         if ($update->getMessage() && $update->getMessage()->getLeftChatMember()) {
