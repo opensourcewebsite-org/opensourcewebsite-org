@@ -3,6 +3,16 @@ namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "bot_chat_member".
+ *
+ * @property int $id
+ * @property int $chat_id
+ * @property int $user_id
+ * @property string $status
+ * @property int $role
+ *
+ */
 class ChatMember extends ActiveRecord
 {
     public const STATUS_CREATOR = 'creator';
@@ -20,8 +30,8 @@ class ChatMember extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'user_id', 'status'], 'required'],
-            [['id', 'chat_id', 'user_id'], 'integer'],
+            [['chat_id', 'user_id', 'status', 'role'], 'required'],
+            [['id', 'chat_id', 'user_id', 'role'], 'integer'],
             [['status'], 'string'],
         ];
     }
@@ -36,5 +46,10 @@ class ChatMember extends ActiveRecord
     public function isAdmin()
     {
         return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
+    }
+
+    public function getBotUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 }

@@ -51,6 +51,14 @@ class AdminChatController extends Controller
                             ],
                             [
                                 [
+                                    'callback_data' => AdminJoinCaptchaController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Join Captcha'),
+                                ],
+                            ],
+                            [
+                                [
                                     'callback_data' => AdminMessageFilterController::createRoute('index', [
                                         'chatId' => $chatId,
                                     ]),
