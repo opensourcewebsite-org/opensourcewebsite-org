@@ -205,7 +205,7 @@ class SAdSearchController extends CrudController
     {
         $model->markToUpdateMatches();
 
-        return $this->actionSearch($model->id);
+        return $this->actionView($model->id);
     }
 
     public function actionIndex($adSection, $page = 1)
@@ -240,7 +240,7 @@ class SAdSearchController extends CrudController
             ->offset($pagination->offset)
             ->all() as $adSearch) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('search', ['adSearchId' => $adSearch->id]),
+                'callback_data' => self::createRoute('view', ['adSearchId' => $adSearch->id]),
                 'text' => ($adSearch->isActive() ? '' : Emoji::INACTIVE . ' ') . $adSearch->title,
             ];
         }
@@ -834,10 +834,10 @@ class SAdSearchController extends CrudController
             $adSearch->link('keywords', $adKeyword);
         }
 
-        return $this->actionSearch($adSearch->id);
+        return $this->actionView($adSearch->id);
     }
 
-    public function actionSearch($adSearchId)
+    public function actionView($adSearchId)
     {
         $adSearch = AdSearch::findOne($adSearchId);
         $buttons = [];
@@ -990,7 +990,7 @@ class SAdSearchController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute(
-                                'search',
+                                'view',
                                 ['adSearchId' => $adSearchId]
                             ),
                             'text' => Emoji::BACK,
@@ -1055,7 +1055,7 @@ class SAdSearchController extends CrudController
 
             $adSearch->save();
 
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         } else {
             return $this->actionEditTitle($adSearchId);
         }
@@ -1120,7 +1120,7 @@ class SAdSearchController extends CrudController
 
         $adSearch->save();
 
-        return $this->actionSearch($adSearchId);
+        return $this->actionView($adSearchId);
     }
 
     public function actionNewDescription($adSearchId)
@@ -1136,7 +1136,7 @@ class SAdSearchController extends CrudController
 
             $adSearch->save();
 
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         } else {
             return $this->actionEditDescription($adSearchId);
         }
@@ -1323,7 +1323,7 @@ class SAdSearchController extends CrudController
             );
             $adSearch->save();
 
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         }
     }
 
@@ -1375,7 +1375,7 @@ class SAdSearchController extends CrudController
 
         $adSearch->markToUpdateMatches();
 
-        return $this->actionSearch($adSearchId);
+        return $this->actionView($adSearchId);
     }
 
     public function actionNewKeywords($adSearchId)
@@ -1413,7 +1413,7 @@ class SAdSearchController extends CrudController
 
             $adSearch->markToUpdateMatches();
 
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         }
     }
 
@@ -1494,7 +1494,7 @@ class SAdSearchController extends CrudController
             );
             $adSearch->save();
 
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         } else {
             return $this->actionEditLocation($adSearchId);
         }
@@ -1552,7 +1552,7 @@ class SAdSearchController extends CrudController
             $adSearch->save();
         }
 
-        return $this->actionSearch($adSearchId);
+        return $this->actionView($adSearchId);
     }
 
     public function actionNewRadius($adSearchId)
@@ -1574,7 +1574,7 @@ class SAdSearchController extends CrudController
             $adSearch->save();
             $adSearch->markToUpdateMatches();
 
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         }
     }
 
@@ -1599,7 +1599,7 @@ class SAdSearchController extends CrudController
             $adSearch->save();
         }
 
-        return $this->actionSearch($adSearchId);
+        return $this->actionView($adSearchId);
     }
 
     public function actionAdOfferMatches($adSearchId, $page = 1)
@@ -1609,7 +1609,7 @@ class SAdSearchController extends CrudController
         $adOfferQuery = $adSearch->getMatches();
 
         if ($adOfferQuery->count() == 0) {
-            return $this->actionSearch($adSearchId);
+            return $this->actionView($adSearchId);
         }
 
         $pagination = new Pagination(
@@ -1624,25 +1624,25 @@ class SAdSearchController extends CrudController
             ]
         );
 
-        $paginationButtons = PaginationButtons::build(
-            $pagination,
-            function ($page) use ($adSearchId) {
-                return self::createRoute(
-                    'ad-offer-matches',
-                    [
-                        'adSearchId' => $adSearchId,
-                        'page' => $page,
-                    ]
-                );
-            }
-        );
-
         $buttons = [];
 
-        $buttons[] = $paginationButtons;
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('search', ['adSearchId' => $adSearchId]),
+                'text' => $adSearch->title,
+                'callback_data' => self::createRoute('view', ['adSearchId' => $adSearch->id]),
+            ]
+        ];
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adSearchId) {
+            return self::createRoute('ad-offer-matches', [
+                'adSearchId' => $adSearchId,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', ['adSearchId' => $adSearchId]),
                 'text' => Emoji::BACK,
             ],
             [

@@ -21,13 +21,13 @@ class SJobController extends Controller
         $buttons = [
             [
                 [
-                    'text' => Yii::t('bot', 'Resumes'),
+                    'text' => Emoji::JOB_RESUME . ' ' . Yii::t('bot', 'Resumes'),
                     'callback_data' => ResumeController::createRoute(),
                 ],
             ],
             [
                 [
-                    'text' => Yii::t('bot', 'Vacancies'),
+                    'text' => Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
                     'callback_data' => VacancyController::createRoute(),
                 ],
             ],
