@@ -48,10 +48,6 @@ class JoinCaptchaController extends Controller
 
             if(isset($chatMember)){
                 $isAdmin = $chatMember->isAdmin();
-                if(!$isAdmin){
-                    $chatMember->role = self::ROLE_UNVERIFIED;
-                    $chatMember->save();
-                }
                 $passedCaptcha = $chatMember->role == self::ROLE_VERIFIED;
             }
 
