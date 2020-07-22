@@ -227,7 +227,7 @@ class SAdOfferController extends CrudController
     {
         $model->markToUpdateMatches();
 
-        return $this->actionPost($model->id);
+        return $this->actionView($model->id);
     }
 
     public function actionIndex($adSection, $page = 1)
@@ -261,7 +261,7 @@ class SAdOfferController extends CrudController
             ->all() as $adOffer) {
             $buttons[][] = [
                 'text' => ($adOffer->isActive() ? '' : Emoji::INACTIVE . ' ') . $adOffer->title,
-                'callback_data' => self::createRoute('post', ['adOfferId' => $adOffer->id]),
+                'callback_data' => self::createRoute('view', ['adOfferId' => $adOffer->id]),
             ];
         }
 
@@ -386,7 +386,7 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('view', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -400,7 +400,7 @@ class SAdOfferController extends CrudController
             ->build();
     }
 
-    public function actionPost($adOfferId)
+    public function actionView($adOfferId)
     {
         $adOffer = AdOffer::findOne($adOfferId);
 
@@ -471,7 +471,7 @@ class SAdOfferController extends CrudController
         $matchedAdSearchesQuery = $adOffer->getMatches();
 
         if ($matchedAdSearchesQuery->count() == 0) {
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
 
         $pagination = new Pagination([
@@ -486,6 +486,13 @@ class SAdOfferController extends CrudController
 
         $buttons = [];
 
+        $buttons[] = [
+            [
+                'text' => $adOffer->title,
+                'callback_data' => self::createRoute('view', ['adOfferId' => $adOffer->id]),
+            ]
+        ];
+
         $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adOfferId) {
             return self::createRoute('matched-ad-searches', [
                 'adOfferId' => $adOfferId,
@@ -495,7 +502,7 @@ class SAdOfferController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('post', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('view', ['adOfferId' => $adOfferId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -565,7 +572,7 @@ class SAdOfferController extends CrudController
             ]);
             $adOffer->save();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -615,7 +622,7 @@ class SAdOfferController extends CrudController
         ]);
         $adOffer->save();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewDescription($adOfferId)
@@ -629,7 +636,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->save();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -676,7 +683,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->unlinkAll('photos', true);
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewPhoto($adOfferId)
@@ -698,7 +705,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->link('photos', $adPhoto);
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         } else {
             return $this->actionEditPhoto($adOfferId);
         }
@@ -749,7 +756,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->markToUpdateMatches();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewKeywords($adOfferId)
@@ -783,7 +790,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->markToUpdateMatches();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         } else {
             return $this->actionEditKeyword($adOfferId);
         }
@@ -930,7 +937,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->save();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewPrice($adOfferId)
@@ -950,7 +957,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->save();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -1032,7 +1039,7 @@ class SAdOfferController extends CrudController
             $adOffer->markToUpdateMatches();
         }
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionEditRadius($adOfferId)
@@ -1081,7 +1088,7 @@ class SAdOfferController extends CrudController
         ]);
         $adOffer->save();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewRadius($adOfferId)
@@ -1102,7 +1109,7 @@ class SAdOfferController extends CrudController
             $adOffer->save();
             $adOffer->markToUpdateMatches();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -1128,7 +1135,7 @@ class SAdOfferController extends CrudController
             $adOffer->save();
         }
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     private static function getKeywordsAsString($adKeywords)
@@ -1660,6 +1667,6 @@ class SAdOfferController extends CrudController
             $adOffer->link('photos', $adPhoto);
         }
 
-        return $this->actionPost($adOffer->id);
+        return $this->actionView($adOffer->id);
     }
 }

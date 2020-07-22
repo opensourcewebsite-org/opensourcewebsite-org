@@ -1,9 +1,10 @@
 <?php
 
 use app\models\Vacancy;
+use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Yii::t('bot', 'Vacancy') ?>: <?= $name ?></b><br/>
+<b><?= Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $name ?></b><br/>
 <br/>
 <?php if ($keywords != '') : ?>
 # <i><?= $keywords ?></i><br/>

@@ -1,4 +1,9 @@
-🔍 <b><?= $sectionName ?></b> - <b><?= $adSearch->title ?></b><br/>
+<?php
+
+use app\modules\bot\components\helpers\Emoji;
+
+?>
+<b><?= Emoji::AD_SEARCH . ' ' . Yii::t('bot', $sectionName) ?>: <?= $adSearch->title ?></b><br/>
 <br/>
 <?php if ($adSearch->description !== null) : ?>
 <?= nl2br($adSearch->description); ?><br/>

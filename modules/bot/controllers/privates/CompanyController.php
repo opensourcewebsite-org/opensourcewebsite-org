@@ -2,14 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
+use app\models\Company;
 use app\models\CompanyUser;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\crud\rules\CurrentUserFieldComponent;
-use Yii;
-
-use app\models\Company;
 use yii\base\DynamicModel;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
@@ -171,7 +170,7 @@ class CompanyController extends CrudController
                 [
                     [
                         [
-                            'text' => Yii::t('bot', 'Vacancies'),
+                            'text' => Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
                             'callback_data' => VacancyController::createRoute('index', [
                                 'companyId' => $companyId,
                             ]),

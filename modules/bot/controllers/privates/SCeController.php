@@ -226,7 +226,7 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('order-delivery-radius'),
-                            'text' => 'Delivery radius: 2 km',
+                            'text' => 'Delivery radius',
                         ],
                     ],
                     [

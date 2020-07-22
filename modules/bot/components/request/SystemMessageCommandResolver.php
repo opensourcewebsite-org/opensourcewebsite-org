@@ -9,7 +9,7 @@ class SystemMessageCommandResolver implements ICommandResolver
     public function resolveCommand(Update $update)
     {
         if ($update->getMessage()
-            && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {
+            && ($update->getMessage()->getNewChatMembers() || $update->getMessage()->getLeftChatMember())) {
             $commandText = SystemMessageController::createRoute();
         }
 
