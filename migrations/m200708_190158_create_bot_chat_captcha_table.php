@@ -17,6 +17,7 @@ class m200708_190158_create_bot_chat_captcha_table extends Migration
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'provider_user_id' => $this->integer()->unsigned()->notNull(),
             'sent_at' => $this->integer()->unsigned()->notNull(),
+            'captcha_message_id' => $this->integer()->unsigned()->notNull(),
         ]);
 
         $this->addForeignKey(

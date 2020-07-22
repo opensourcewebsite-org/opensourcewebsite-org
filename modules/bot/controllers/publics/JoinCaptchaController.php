@@ -21,6 +21,9 @@ class JoinCaptchaController extends Controller
     public const BAN = 2;
     public const DUMMY = 3;
 
+    public const ROLE_UNVERIFIED = 0;
+    public const ROLE_VERIFIED = 1;
+
     public const BAN_DURATION = 365*24*60*60;
 
     /**
@@ -46,28 +49,13 @@ class JoinCaptchaController extends Controller
             if(isset($chatMember)){
                 $isAdmin = $chatMember->isAdmin();
                 if($isAdmin){
-                    $chatMember->passed_captcha = 1;
+                    $chatMember->role = self::ROLE_VERIFIED;
                     $chatMember->save();
                 }
-                $passedCaptcha = $chatMember->passed_captcha;
+                $passedCaptcha = $chatMember->role;
             }
 
             if (!$passedCaptcha && !$isAdmin) {
-
-                $botCaptcha = BotChatCaptcha::find()->where([
-                    'chat_id' => $chat->id,
-                    'provider_user_id' => $telegramUser->provider_user_id
-                ])->exists();
-
-                if (!$botCaptcha) {
-
-                    $botCaptcha = new BotChatCaptcha([
-                        'chat_id' => $chat->id,
-                        'provider_user_id' => $telegramUser->provider_user_id,
-                    ]);
-
-                    $botCaptcha->save();
-                }
 
                 $choices = [
                     [
@@ -87,10 +75,10 @@ class JoinCaptchaController extends Controller
                     ],
                 ];
                 shuffle($choices);
-                return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
+
+                $command =  $this->getResponseBuilder()
+                    ->sendMessage(
                         $this->render('show-captcha', [
-                            'chatName' => $chat->title,
                             'user' => $telegramUser
                         ]),
                         [
@@ -98,6 +86,28 @@ class JoinCaptchaController extends Controller
                         ]
                     )->build();
 
+                $response = $this->send($command);
+
+                if($response){
+
+                    $botCaptcha = BotChatCaptcha::find()->where([
+                        'chat_id' => $chat->id,
+                        'provider_user_id' => $telegramUser->provider_user_id
+                    ])->exists();
+
+                    if (!$botCaptcha) {
+
+                        $botCaptcha = new BotChatCaptcha([
+                            'chat_id' => $chat->id,
+                            'provider_user_id' => $telegramUser->provider_user_id,
+                            'captcha_message_id' => $response->getMessageId()
+                        ]);
+
+                        $botCaptcha->save();
+                    }
+
+                }
+                return [];
             }
         }
 
@@ -120,8 +130,16 @@ class JoinCaptchaController extends Controller
 
             $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
-            $api = $this->module->getBotApi();
+            $api = $this->getBotApi();
             $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
+
+            $botCaptcha = BotChatCaptcha::find()->where([
+                'chat_id' => $chat->id,
+                'provider_user_id' => $telegramUser->provider_user_id
+            ])->one();
+            if (isset($botCaptcha)){
+                $captchaMessageId = $botCaptcha->captcha_message_id;
+            }
 
             switch ($choice){
 
@@ -129,7 +147,11 @@ class JoinCaptchaController extends Controller
 
                     BotChatCaptcha::removeCaptchaInfo($chat->id,$telegramUser->provider_user_id);
 
+                    //kick member
                     $api->kickChatMember($chat->chat_id,$telegramUser->provider_user_id,time() + self::BAN_DURATION);
+
+                    //remove captcha message
+                    $api->deleteMessage($chat->chat_id, $captchaMessageId);
 
                     $text = new MessageText(Yii::t('bot', 'User: {provider_user_name} was banned in chat: {chat_title} for: {ban_duration} minutes',[
                         'provider_user_name' => $telegramUser->provider_user_name,
@@ -150,16 +172,16 @@ class JoinCaptchaController extends Controller
                         'chat_id' => $chat->id,
                         'user_id' => $telegramUser->id
                     ]);
-                    if(!$chatMember->passed_captcha){
+                    if($chatMember->role == self::ROLE_UNVERIFIED){
 
                         // Delete record about captcha
-                        BotChatCaptcha::deleteAll([
-                            'chat_id' => $chat->id,
-                            'provider_user_id' => $provider_user_id
-                        ]);
+                        BotChatCaptcha::removeCaptchaInfo($chat->id,$provider_user_id);
 
-                        // Set status passed_captcha = 1 in bot_chat_member table
-                        $chatMember->passed_captcha = 1;
+                        //remove captcha message
+                        $api->deleteMessage($chat->chat_id, $captchaMessageId);
+
+                        // Set role = 1 in bot_chat_member table
+                        $chatMember->role = self::ROLE_VERIFIED;
                         $chatMember->save();
 
                         $text = new MessageText(Yii::t('bot', 'Thank you for validating,') . ', ' . $toUserName . '🔥');
@@ -189,4 +211,14 @@ class JoinCaptchaController extends Controller
         return $this->getResponseBuilder()->sendMessage($text)->build();
     }
 
+
+    private function send(array $messageCommand)
+    {
+        if(isset($messageCommand)) {
+            $command = reset($messageCommand);
+            $response = $command->send($this->getBotApi());
+            return $response;
+        }
+        return false;
+    }
 }

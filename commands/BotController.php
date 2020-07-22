@@ -137,4 +137,16 @@ class BotController extends Controller implements CronChainedInterface
 
     }
 
+    public function actionDeleteDummy()
+    {
+        $bot = Bot::findOne(['status' => Bot::BOT_STATUS_ENABLED]);
+        $botApi = new \TelegramBot\Api\BotApi($bot->token);
+        //$m = $botApi->get
+        //$botApi->deleteMessage(-1001209762296,1102);
+        $botApi->call('deleteMessage',[
+            'chat_id' => -1001209762296,
+            'message_id' => 1234,
+        ]);
+    }
+
 }

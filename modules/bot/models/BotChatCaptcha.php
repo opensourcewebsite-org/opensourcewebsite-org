@@ -13,6 +13,7 @@ use yii\db\ActiveRecord;
  * @property int $chat_id
  * @property int $provider_user_id
  * @property int|null $sent_at
+ * @property int $captcha_message_id
  *
  * @property Chat $chat
  * @property User $providerUser
@@ -33,8 +34,8 @@ class BotChatCaptcha extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'provider_user_id'], 'required'],
-            [['chat_id', 'provider_user_id', 'sent_at'], 'integer'],
+            [['chat_id', 'provider_user_id', 'captcha_message_id'], 'required'],
+            [['chat_id', 'provider_user_id', 'sent_at', 'captcha_message_id'], 'integer'],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['provider_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['provider_user_id' => 'provider_user_id']],
         ];

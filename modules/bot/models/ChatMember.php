@@ -10,7 +10,7 @@ use yii\db\ActiveRecord;
  * @property int $chat_id
  * @property int $user_id
  * @property string $status
- * @property int $passed_captcha
+ * @property int $role
  *
  */
 class ChatMember extends ActiveRecord
@@ -30,8 +30,8 @@ class ChatMember extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'user_id', 'status', 'passed_captcha'], 'required'],
-            [['id', 'chat_id', 'user_id', 'passed_captcha'], 'integer'],
+            [['chat_id', 'user_id', 'status', 'role'], 'required'],
+            [['id', 'chat_id', 'user_id', 'role'], 'integer'],
             [['status'], 'string'],
         ];
     }
