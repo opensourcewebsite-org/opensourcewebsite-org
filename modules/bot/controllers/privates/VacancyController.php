@@ -478,7 +478,15 @@ class VacancyController extends CrudController
 
         $buttons = [];
 
+        $buttons[] = [
+            [
+                'text' => $vacancy->name,
+                'callback_data' => self::createRoute('view', ['vacancyId' => $vacancy->id]),
+            ]
+        ];
+
         $buttons[] = $paginationButtons;
+
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('view', ['vacancyId' => $vacancyId]),

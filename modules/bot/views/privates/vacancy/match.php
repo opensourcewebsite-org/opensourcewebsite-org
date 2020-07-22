@@ -1,9 +1,10 @@
 <?php
 
 use app\models\Resume;
+use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Yii::t('bot', 'Resume') ?>: <?= $name ?></b><br/>
+<b><?= Emoji::JOB_RESUME . ' ' . Yii::t('bot', 'Resume') ?>: <?= $name ?></b><br/>
 <br/>
 <?php if ($keywords != '') : ?>
 # <i><?= $keywords ?></i><br/>
