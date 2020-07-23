@@ -26,24 +26,24 @@ class MyCurrencyController extends Controller
     {
         $user = $this->getUser();
 
-        $currency = null;
         if ($currencyCode) {
             $currency = Currency::findOne(['code' => $currencyCode]);
             if ($currency) {
-                if ($user) {
-                    $user->currency_id = $currency->id;
-                    $user->save();
-                }
+                $user->currency_id = $currency->id;
+                $user->save();
             }
         }
 
-        $currency = $currency ?? $user->currency;
-        $currencyCode = isset($currency) ? $currency->code : null;
-        $currencyName = isset($currency) ? $currency->name : null;
+        if (!$user->currency_id) {
+            return $this->actionUpdate();
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('currencyCode', 'currencyName')),
+                $this->render('index', [
+                    'currencyCode' => $user->currency->code,
+                    'currencyName' => $user->currency->name,
+                ]),
                 [
                     [
                         [
@@ -51,7 +51,11 @@ class MyCurrencyController extends Controller
                             'text' => Emoji::BACK,
                         ],
                         [
-                            'callback_data' => MyCurrencyController::createRoute('list'),
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => MyCurrencyController::createRoute('update'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -65,9 +69,12 @@ class MyCurrencyController extends Controller
      *
      * @return array
      */
-    public function actionList($page = 1)
+    public function actionUpdate($page = 1)
     {
+        $user = $this->getUser();
+
         $this->getState()->setName(self::createRoute('search'));
+
         $currencyQuery = Currency::find()->orderBy('code ASC');
         $pagination = new Pagination([
             'totalCount' => $currencyQuery->count(),
@@ -85,11 +92,13 @@ class MyCurrencyController extends Controller
             ->all();
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('list', [
+            return self::createRoute('update', [
                 'page' => $page,
             ]);
         });
+
         $buttons = [];
+
         if ($currencies) {
             foreach ($currencies as $currency) {
                 $buttons[][] = [
@@ -105,14 +114,14 @@ class MyCurrencyController extends Controller
             }
 
             $buttons[][] = [
-                'callback_data' => self::createRoute(),
+                'callback_data' => ($user->currency_id ? self::createRoute() : MyProfileController::createRoute()),
                 'text' => Emoji::BACK,
             ];
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('update'),
                 $buttons
             )
             ->build();
@@ -120,8 +129,7 @@ class MyCurrencyController extends Controller
 
     public function actionSearch()
     {
-        $update = $this->getUpdate();
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (strlen($text) <= 3) {
             $currency = Currency::find()
@@ -133,23 +141,8 @@ class MyCurrencyController extends Controller
                 ->one();
         }
 
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
         if (isset($currency)) {
-            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionIndex($currency->code);
-        } else {
-            $this->DeleteLastMessage($chatId, $messageId);
-            return $this->actionList();
         }
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }

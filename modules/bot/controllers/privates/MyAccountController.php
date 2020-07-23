@@ -11,11 +11,11 @@ use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class MyProfileController
+ * Class MyAccountController
  *
  * @package app\modules\bot\controllers
  */
-class MyProfileController extends Controller
+class MyAccountController extends Controller
 {
     /**
      * @return array
@@ -54,57 +54,29 @@ class MyProfileController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MyTimezoneController::createRoute(),
-                            'text' => Yii::t('bot', 'Timezone'),
+                            'callback_data' => MyRatingController::createRoute(),
+                            'text' => Yii::t('bot', 'Rating'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => MyGenderController::createRoute(),
-                            'text' => Yii::t('bot', 'Gender'),
+                            'callback_data' => MyReferralsController::createRoute(),
+                            'text' => Yii::t('bot', 'Referrals')
                         ],
                     ],
                     [
                         [
-                            'callback_data' => MySexualityController::createRoute(),
-                            'text' => Yii::t('bot', 'Sexuality'),
+                            'callback_data' => MyLocationController::createRoute(),
+                            'text' => Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => MyBirthdayController::createRoute(),
-                            'text' => Yii::t('bot', 'Birthday'),
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Yii::t('bot', 'Profile'),
                         ],
                     ],
                     [
-                        [
-                            'text' => Yii::t('bot', 'Languages'),
-                            'callback_data' => MyLanguagesController::createRoute(),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyCitizenshipsController::createRoute(),
-                            'text' => Yii::t('bot', 'Citizenships'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyCurrencyController::createRoute(),
-                            'text' => Yii::t('bot', 'Currency'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyEmailController::createRoute(),
-                            'text' => Yii::t('bot', 'Email'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyAccountController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
