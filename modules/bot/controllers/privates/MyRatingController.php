@@ -37,7 +37,7 @@ class MyRatingController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyProfileController::createRoute(),
+                            'callback_data' => MyAccountController::createRoute(),
                             'text' => Emoji::BACK,
                         ],
                         [

@@ -28,6 +28,12 @@ class StartController extends Controller
                 [
                     [
                         [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU . ' ' . Yii::t('bot', 'BEGIN'),
+                        ],
+                    ],
+                    [
+                        [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
                             'text' => '👼 ' . Yii::t('bot', 'Donate'),
                         ],
@@ -38,8 +44,8 @@ class StartController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU . ' ' . Yii::t('bot', 'BEGIN'),
+                            'callback_data' => HelpController::createRoute(),
+                            'text' => Emoji::INFO . ' ' . Yii::t('bot', 'Commands'),
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),

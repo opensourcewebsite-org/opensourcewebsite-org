@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\Controller;
-use Yii;
 
 /**
  * Class MyLocationController
@@ -34,8 +34,12 @@ class MyLocationController extends Controller
                     [
                         [
                             [
-                                'callback_data' => MyProfileController::createRoute(),
+                                'callback_data' => MyAccountController::createRoute(),
                                 'text' => Emoji::BACK,
+                            ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
                             ],
                         ],
                     ]
@@ -49,8 +53,12 @@ class MyLocationController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MyProfileController::createRoute(),
+                            'callback_data' => MyAccountController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]

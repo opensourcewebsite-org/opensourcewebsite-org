@@ -2,9 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class HelpController
@@ -24,8 +23,8 @@ class HelpController extends Controller
                 [
                     [
                         [
-                            'text' => Emoji::MENU,
-                            'callback_data' => MenuController::createRoute(),
+                            'callback_data' => StartController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
                     ]
                 ]

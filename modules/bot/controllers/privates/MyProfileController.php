@@ -2,14 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
 use app\models\Currency;
 use app\models\Language;
 use app\components\helpers\TimeHelper;
 use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MyProfileController
@@ -55,24 +54,6 @@ class MyProfileController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MyRatingController::createRoute(),
-                            'text' => Yii::t('bot', 'Rating'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyReferralsController::createRoute(),
-                            'text' => Yii::t('bot', 'Referrals')
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyLocationController::createRoute(),
-                            'text' => Yii::t('bot', 'Location'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MyTimezoneController::createRoute(),
                             'text' => Yii::t('bot', 'Timezone'),
                         ],
@@ -103,7 +84,7 @@ class MyProfileController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyCitizenshipController::createRoute(),
+                            'callback_data' => MyCitizenshipsController::createRoute(),
                             'text' => Yii::t('bot', 'Citizenships'),
                         ],
                     ],
@@ -120,6 +101,10 @@ class MyProfileController extends Controller
                         ],
                     ],
                     [
+                        [
+                            'callback_data' => MyAccountController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,

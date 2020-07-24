@@ -14,11 +14,11 @@ use TelegramBot\Api\BotApi;
 use function foo\func;
 
 /**
- * Class MyCitizenshipController
+ * Class MyCitizenshipsController
  *
  * @package app\modules\bot\controllers
  */
-class MyCitizenshipController extends Controller
+class MyCitizenshipsController extends Controller
 {
     /**
      * @return array
@@ -206,8 +206,7 @@ class MyCitizenshipController extends Controller
 
     public function actionSearch()
     {
-        $update = $this->getUpdate();
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (strlen($text) <= 3) {
             $country = Country::find()
@@ -220,23 +219,8 @@ class MyCitizenshipController extends Controller
                 ->one();
         }
 
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
         if (isset($country)) {
-            $this->DeleteLastMessage($chatId, $messageId);
             return $this->actionCreate($country->id);
-        } else {
-            $this->DeleteLastMessage($chatId, $messageId);
-            return $this->actionCreateCountry();
         }
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }
