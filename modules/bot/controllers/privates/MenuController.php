@@ -42,14 +42,14 @@ class MenuController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyProfileController::createRoute(),
-                            'text' => Yii::t('bot', 'Profile'),
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => '🏗 ' . Yii::t('bot', 'Development'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => ServicesController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Development'),
+                            'callback_data' => MyAccountController::createRoute(),
+                            'text' => Yii::t('bot', 'Account'),
                         ],
                     ],
                     [
@@ -66,10 +66,6 @@ class MenuController extends Controller
                         [
                             'callback_data' => StartController::createRoute(),
                             'text' => Emoji::GREETING,
-                        ],
-                        [
-                            'callback_data' => HelpController::createRoute(),
-                            'text' => Emoji::INFO,
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),

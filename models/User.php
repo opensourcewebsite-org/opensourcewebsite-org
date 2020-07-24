@@ -45,7 +45,7 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
-    const DATE_FORMAT = 'd.m.Y';
+    const DATE_FORMAT = 'Y-m-d';
 
     /**
      * {@inheritdoc}

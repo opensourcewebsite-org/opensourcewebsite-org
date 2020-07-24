@@ -51,7 +51,7 @@ class LanguageController extends Controller
         $languageRows = array_map(function ($language) {
             return [
                 [
-                    'callback_data' => self::createRoute('save', [
+                    'callback_data' => self::createRoute('update', [
                         'languageCode' => $language->code,
                     ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name,
@@ -61,7 +61,7 @@ class LanguageController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('update'),
                 array_merge($languageRows, [$paginationButtons], [
                     [
                         [
@@ -74,7 +74,7 @@ class LanguageController extends Controller
             ->build();
     }
 
-    public function actionSave($languageCode)
+    public function actionUpdate($languageCode)
     {
         if ($languageCode) {
             $language = Language::findOne(['code' => $languageCode]);
@@ -96,8 +96,7 @@ class LanguageController extends Controller
 
     public function actionSearch()
     {
-        $update = $this->getUpdate();
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (strlen($text) <= 3) {
             $language = Language::find()
@@ -110,23 +109,8 @@ class LanguageController extends Controller
                 ->one();
         }
 
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
         if (isset($language)) {
-            $this->DeleteLastMessage($chatId, $messageId);
-            return $this->actionSave($language->code);
-        } else {
-            $this->DeleteLastMessage($chatId, $messageId);
-            return $this->actionIndex();
+            return $this->actionUpdate($language->code);
         }
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }

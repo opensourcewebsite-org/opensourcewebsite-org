@@ -2,12 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
 use app\modules\bot\components\Controller as Controller;
 use app\components\helpers\TimeHelper;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MyTimezoneController
@@ -101,7 +100,7 @@ class MyTimezoneController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $text = $this->render('list'),
+                $this->render('list'),
                 $buttons
             )
             ->build();

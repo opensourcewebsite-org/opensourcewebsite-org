@@ -163,7 +163,7 @@ class MyLanguagesController extends Controller
             ];
         }, $levels);
 
-        $languagesCount = $this->getUser()->getLanguages()->where(['language_id' => $languageId])->count();
+        $languagesCount = $this->getUser()->getLanguages()->count();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -179,16 +179,16 @@ class MyLanguagesController extends Controller
                                 : self::createRoute('create-language'),
                         ],
                     ],
-                        ($languagesCount > 1)
-                            ? [
+                        ($languagesCount > 1) ?
                             [
-                                'text' => Emoji::DELETE,
-                                'callback_data' => self::createRoute('delete', [
-                                    'languageId' => $languageId,
-                                ]),
-                            ],
-                        ]
-                            : []
+                                [
+                                    'text' => Emoji::DELETE,
+                                    'callback_data' => self::createRoute('delete', [
+                                        'languageId' => $languageId,
+                                    ]),
+                                ],
+                            ] :
+                            []
                     ),
                 ])
             )
@@ -236,8 +236,7 @@ class MyLanguagesController extends Controller
 
     public function actionSearch()
     {
-        $update = $this->getUpdate();
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (strlen($text) <= 3) {
             $language = Language::find()
@@ -251,25 +250,8 @@ class MyLanguagesController extends Controller
                 ->one();
         }
 
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
         if (isset($language)) {
-            $this->DeleteLastMessage($chatId, $messageId);
-
             return $this->actionCreateLevel($language->id);
-        } else {
-            $this->DeleteLastMessage($chatId, $messageId);
-
-            return $this->actionCreateLanguage();
         }
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }
