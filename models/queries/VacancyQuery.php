@@ -2,11 +2,12 @@
 
 namespace app\models\queries;
 
+use app\models\LanguageLevel;
 use app\models\Resume;
 use app\models\UserLanguage;
 use app\models\Vacancy;
+use app\models\VacancyLanguage;
 use yii\db\ActiveQuery;
-use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 use yii\db\Expression;
 
@@ -34,13 +35,22 @@ class VacancyQuery extends ActiveQuery
      *
      * @return VacancyQuery
      */
-    public function matchLanguages()
+    public function matchLanguages(Resume $model)
     {
-        $this->joinWith('vacancyLanguagesRelation as lang');
-        $this->leftJoin(UserLanguage::tableName(), UserLanguage::tableName() . '.user_id=' . Vacancy::tableName() . '.user_id');
-        $this->andWhere(new Expression('(SELECT ' . UserLanguage::tableName()
-            . '.language_level_id FROM ' . UserLanguage::tableName() . ' WHERE '
-            . UserLanguage::tableName() . '.language_id = lang.language_id LIMIT 1) >= lang.language_level_id'));
+        /** @var UserLanguage[] $userLanguages */
+        $userLanguages = $model->userLanguagesRelation;
+        $sql = '(SELECT COUNT(*) FROM ' . VacancyLanguage::tableName() . ' `lang` '
+            . 'INNER JOIN ' . LanguageLevel::tableName() . ' ON lang.language_level_id = ' . LanguageLevel::tableName() . '.id '
+            . 'WHERE ' . Vacancy::tableName() . '.`id` = `lang`.`vacancy_id` AND (';
+        foreach ($userLanguages as $key => $userLanguage) {
+            $languageLevel = $userLanguage->level;
+            if ($key) {
+                $sql .= ' OR ';
+            }
+            $sql .= 'lang.language_id = ' . $userLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value <= ' . $languageLevel->value;
+        }
+        $sql .= ')) = (SELECT COUNT(*) FROM `vacancy_language` WHERE `vacancy`.`id` = `vacancy_language`.`vacancy_id`)';
+        $this->andWhere(new Expression($sql));
 
         return $this;
     }

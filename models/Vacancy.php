@@ -149,7 +149,7 @@ class Vacancy extends ActiveRecord
      */
     public function getMatchedResumes()
     {
-        $query = Resume::find()->live()->matchRadius($this);
+        $query = Resume::find()->live()->matchLanguages($this)->matchRadius($this);
         $query->andWhere(['!=', Resume::tableName() . '.user_id', $this->user_id]);
 
         return $query->groupBy(Resume::tableName() . '.id');
