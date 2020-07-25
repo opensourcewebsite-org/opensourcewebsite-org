@@ -151,7 +151,6 @@ class JoinCaptchaController extends Controller
             }
 
             switch ($choice) {
-
                 case self::BAN:
 
                     BotChatCaptcha::removeCaptchaInfo($chat->id, $telegramUser->provider_user_id);
@@ -163,13 +162,11 @@ class JoinCaptchaController extends Controller
                     $api->deleteMessage($chat->chat_id, $captchaMessageId);
 
                     break;
-
                 case self::DUMMY:
 
                     return [];
 
                     break;
-
                 case self::PASS:
 
                     $chatMember = ChatMember::findOne([
@@ -177,7 +174,6 @@ class JoinCaptchaController extends Controller
                         'user_id' => $telegramUser->id
                     ]);
                     if ($chatMember->role == self::ROLE_UNVERIFIED) {
-
                         // Delete record about captcha
                         BotChatCaptcha::removeCaptchaInfo($chat->id, $provider_user_id);
 
@@ -191,7 +187,6 @@ class JoinCaptchaController extends Controller
                         return [];
                     }
                     break;
-
                 default:
 
                     return [];

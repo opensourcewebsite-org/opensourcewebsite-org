@@ -201,8 +201,7 @@ class Module extends \yii\base\Module
                 $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
                 if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
                     $role = JoinCaptchaController::ROLE_UNVERIFIED;
-                }
-                else{
+                } else {
                     $role = JoinCaptchaController::ROLE_VERIFIED;
                 }
 
