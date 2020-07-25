@@ -23,71 +23,34 @@ class MyBirthdayController extends Controller
     {
         $user = $this->getUser();
 
-        $birthday = $user->birthday;
-
-        if (isset($birthday)) {
+        if ($user->birthday) {
+            $birthday = $user->birthday;
             try {
                 $birthday = (new \DateTime($birthday))->format(User::DATE_FORMAT);
             } catch (\Exception $e) {
             }
-        }
-
-        if (!isset($birthday)) {
-            $this->getState()->setName(self::createRoute('create'));
-        }
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('index', compact('birthday')),
-                [
-                    array_merge(
-                        [
-
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                        ],
-                        (isset($birthday) ?
-                            [
-                                [
-                                    'callback_data' => self::createRoute('update'),
-                                    'text' => Emoji::EDIT,
-                                ]
-                            ]
-                            : [])
-                    ),
-                ]
-            )
-            ->build();
-    }
-
-    public function actionCreate()
-    {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
-        $chatId = $this->getUpdate()->getMessage()->getChat()->getId();
-        $messageId = $this->getUpdate()->getMessage()->getMessageId();
-
-        $this->DeleteLastMessage($chatId, $messageId);
-
-        $text = $update->getMessage()->getText();
-        if ($this->validateDate($text, User::DATE_FORMAT)) {
-            $user->birthday = Yii::$app->formatter->format($text, 'date');
-            $user->save();
-            $this->getState()->setName(null);
-            return $this->actionIndex();
+        } else {
+            return $this->actionUpdate();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
+                $this->render('index', [
+                    'birthday' => $birthday,
+                ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(),
+                            'callback_data' => MyProfileController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                        [
+                            'callback_data' => self::createRoute('update'),
+                            'text' => Emoji::EDIT,
                         ],
                     ],
                 ]
@@ -97,9 +60,8 @@ class MyBirthdayController extends Controller
 
     public function actionUpdate()
     {
-        $update = $this->getUpdate();
-
-        $this->getState()->setName(self::createRoute('create'));
+        $this->getState()->setName(self::createRoute('search'));
+        $user = $this->getUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -107,7 +69,7 @@ class MyBirthdayController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(),
+                            'callback_data' => ($user->birthday ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],
@@ -116,17 +78,24 @@ class MyBirthdayController extends Controller
             ->build();
     }
 
+    public function actionSearch()
+    {
+        $text = $this->getUpdate()->getMessage()->getText();
+        $user = $this->getUser();
+
+        if ($this->validateDate($text, User::DATE_FORMAT)) {
+            $user->birthday = Yii::$app->formatter->format($text, 'date');
+            $user->save();
+
+            $this->getState()->setName(null);
+
+            return $this->actionIndex();
+        }
+    }
+
     private function validateDate($date, $format)
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
-    }
-
-    public function deleteLastMessage($chatId, $messageId)
-    {
-        $deleteBotMessage = new DeleteMessageCommand($chatId, $messageId - 1);
-        $deleteBotMessage->send($this->getBotApi());
-        $deleteUserMessage = new DeleteMessageCommand($chatId, $messageId);
-        $deleteUserMessage->send($this->getBotApi());
     }
 }

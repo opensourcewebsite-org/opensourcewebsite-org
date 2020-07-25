@@ -2,8 +2,12 @@
 
 namespace app\models\queries;
 
+use app\models\Language;
+use app\models\LanguageLevel;
 use app\models\Resume;
+use app\models\UserLanguage;
 use app\models\Vacancy;
+use app\models\VacancyLanguage;
 use yii\db\ActiveQuery;
 use yii\db\conditions\OrCondition;
 use yii\db\Expression;
@@ -55,6 +59,34 @@ class ResumeQuery extends ActiveQuery
             }
         } elseif ($radiusExpression) {
             $this->andWhere($radiusExpression);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Требуемый уровень языка в вакансии соответствует такому же или большему уровню в резюме.
+     * Если в вакансии несколько языков, то они все должны быть в резюме (условие AND, языки берутся из профиля пользователя).
+     *
+     * @return ResumeQuery
+     */
+    public function matchLanguages(Vacancy $model)
+    {
+        /** @var VacancyLanguage[] $vacancyLanguages */
+        $vacancyLanguages = $model->vacancyLanguagesRelation;
+        if ($vacancyLanguages) {
+            $sql = '(SELECT COUNT(*) FROM ' . UserLanguage::tableName() . ' `lang` '
+                . 'INNER JOIN ' . LanguageLevel::tableName() . ' ON lang.language_level_id = ' . LanguageLevel::tableName() . '.id '
+                . 'WHERE (';
+            foreach ($vacancyLanguages as $key => $vacancyLanguage) {
+                $languageLevel = $vacancyLanguage->levelRelation;
+                if ($key) {
+                    $sql .= ' OR ';
+                }
+                $sql .= 'lang.language_id = ' . $vacancyLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value >= ' . $languageLevel->value;
+            }
+            $sql .= ')) = ' . count($vacancyLanguages);
+            $this->andWhere(new Expression($sql));
         }
 
         return $this;

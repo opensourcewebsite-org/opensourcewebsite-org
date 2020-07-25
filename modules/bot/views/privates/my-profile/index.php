@@ -1,4 +1,3 @@
-
 <b><?= Yii::t('bot', 'Your Profile') ?></b><br/>
 <br/>
 <?php if (isset($firstName)) : ?>
@@ -23,17 +22,15 @@
 <?php if (!empty($languages)) : ?>
 <br/>
 <?=  Yii::t('bot', 'Languages') ?>:<br/>
-<br/>
 <?php foreach ($languages as $language) : ?>
-<?= $language ?><br/>
+    <?= $language ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
 <?php if (!empty($citizenships)) : ?>
 <br/>
 <?= Yii::t('bot', 'Citizenships') ?>:<br/>
-<br/>
 <?php foreach ($citizenships as $citizenship) : ?>
-<?= $citizenship ?><br/>
+    <?= $citizenship ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
 <br/>
