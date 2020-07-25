@@ -31,9 +31,9 @@ class MessageController extends Controller
         }
 
         /* Captcha handle*/
-        if($captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON){
+        if ($captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
             $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
-            if($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) {
+            if ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) {
                 return $this->getResponseBuilder()
                     ->deleteMessage()
                     ->build();
@@ -43,11 +43,9 @@ class MessageController extends Controller
         $deleteMessage = false;
 
         if ($this->getMessage()->getText() !== null) {
-
             $adminUser = $chat->getAdministrators()->where(['id' => $telegramUser->user_id])->one();
 
             if (!isset($adminUser)) {
-
                 if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                     $deleteMessage = false;
 
@@ -71,7 +69,6 @@ class MessageController extends Controller
                         }
                     }
                 }
-
             }
         }
 

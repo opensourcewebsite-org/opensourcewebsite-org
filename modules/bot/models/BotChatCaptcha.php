@@ -100,7 +100,7 @@ class BotChatCaptcha extends ActiveRecord
             'provider_user_id' => $providerUserId
         ])->one();
 
-        if ($botCaptcha){
+        if ($botCaptcha) {
             $botCaptcha->delete();
         }
     }

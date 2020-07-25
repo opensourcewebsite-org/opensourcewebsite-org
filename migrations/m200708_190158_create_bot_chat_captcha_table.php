@@ -32,7 +32,8 @@ class m200708_190158_create_bot_chat_captcha_table extends Migration
             'idx-provider_user_id',
             '{{%bot_user}}',
             'provider_user_id',
-            true);
+            true
+        );
 
         $this->addForeignKey(
             'fk-bot_chat_captcha-provider_user_id',

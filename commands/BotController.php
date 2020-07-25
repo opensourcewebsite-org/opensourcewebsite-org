@@ -22,13 +22,10 @@ class BotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-
         $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
 
-        if(isset($bots)) {
-
+        if (isset($bots)) {
             foreach ($bots as $bot) {
-
                 $botApi = new \TelegramBot\Api\BotApi($bot->token);
 
                 $usersToBan = BotChatCaptcha::find()
@@ -40,7 +37,6 @@ class BotController extends Controller implements CronChainedInterface
                     ->andFilterWhere(['bot.id' => $bot->id])->all();
 
                 if (isset($usersToBan)) {
-
                     try {
                         foreach ($usersToBan as $record) {
                             BotChatCaptcha::deleteAll([
@@ -48,18 +44,15 @@ class BotController extends Controller implements CronChainedInterface
                                 'provider_user_id' => $record->provider_user_id
                             ]);
 
-                            $botApi->deleteMessage($record->chat_id,$record->captcha_message_id);
+                            $botApi->deleteMessage($record->chat_id, $record->captcha_message_id);
                             $botApi->kickChatMember($record->chat_id, $record->provider_user_id);
                             $this->output("Kicked user {$record->provider_user_id} from chat {$record->chat->chat_id}");
                         }
-                    }
-                    catch (\Throwable $t){
-
+                    } catch (\Throwable $t) {
                         $this->output("Error {$t->getMessage()} while kicking unverified users");
                         return false;
                     }
                 }
-
             }
         }
 
@@ -89,7 +82,7 @@ class BotController extends Controller implements CronChainedInterface
         }
     }
 
-	/**
+    /**
      * Disable all active bots
      *
      * @throws \TelegramBot\Api\Exception
@@ -146,5 +139,4 @@ class BotController extends Controller implements CronChainedInterface
         echo 'Bot with the same token already exists';
         return false;
     }
-
 }

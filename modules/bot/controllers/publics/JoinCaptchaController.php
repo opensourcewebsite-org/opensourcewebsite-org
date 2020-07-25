@@ -16,7 +16,6 @@ use app\modules\bot\components\Controller;
  */
 class JoinCaptchaController extends Controller
 {
-
     public const PASS = 1;
     public const BAN = 2;
     public const DUMMY = 3;
@@ -35,18 +34,17 @@ class JoinCaptchaController extends Controller
         $joinCaptchaStatus = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
 
         if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
-
             $telegramUser = $this->getTelegramUser();
 
             $isAdmin = false;
             $passedCaptcha = false;
             $isBot = $this->getUpdate()->getMessage()->getFrom()->isBot();
 
-            if (isset($chat->id) && isset($telegramUser)){
+            if (isset($chat->id) && isset($telegramUser)) {
                 $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
             }
 
-            if(isset($chatMember)){
+            if (isset($chatMember)) {
                 $isAdmin = $chatMember->isAdmin();
                 $passedCaptcha = $chatMember->role == self::ROLE_VERIFIED;
             }
@@ -54,7 +52,7 @@ class JoinCaptchaController extends Controller
             // check if user was added by group admin
             $addedByAdmin = $isAdmin && ($this->getUpdate()->getMessage()->getFrom() !== $this->getUpdate()->getMessage()->getNewChatMember());
 
-            if($addedByAdmin){
+            if ($addedByAdmin) {
                 $chatMember = ChatMember::find()
                     ->joinWith('botUser')
                     ->where([
@@ -63,7 +61,7 @@ class JoinCaptchaController extends Controller
                     ])
                     ->one();
 
-                if($chatMember) {
+                if ($chatMember) {
                     $chatMember->role = self::ROLE_VERIFIED;
                     $chatMember->save();
                     $passedCaptcha = true;
@@ -72,7 +70,6 @@ class JoinCaptchaController extends Controller
 
 
             if (!$passedCaptcha && !$isAdmin && !$isBot) {
-
                 $choices = [
                     [
                         'callback_data' => self::createRoute('pass-captcha', [
@@ -104,15 +101,13 @@ class JoinCaptchaController extends Controller
 
                 $response = $this->send($command);
 
-                if($response){
-
+                if ($response) {
                     $botCaptcha = BotChatCaptcha::find()->where([
                         'chat_id' => $chat->id,
                         'provider_user_id' => $telegramUser->provider_user_id
                     ])->exists();
 
                     if (!$botCaptcha) {
-
                         $botCaptcha = new BotChatCaptcha([
                             'chat_id' => $chat->id,
                             'provider_user_id' => $telegramUser->provider_user_id,
@@ -121,7 +116,6 @@ class JoinCaptchaController extends Controller
 
                         $botCaptcha->save();
                     }
-
                 }
                 return [];
             }
@@ -142,8 +136,7 @@ class JoinCaptchaController extends Controller
      */
     public function actionPassCaptcha($provider_user_id, $choice)
     {
-        if (isset($provider_user_id) && $this->update->getCallbackQuery()->getFrom()->getId() == $provider_user_id){
-
+        if (isset($provider_user_id) && $this->update->getCallbackQuery()->getFrom()->getId() == $provider_user_id) {
             $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
             $api = $this->getBotApi();
@@ -153,18 +146,18 @@ class JoinCaptchaController extends Controller
                 'chat_id' => $chat->id,
                 'provider_user_id' => $telegramUser->provider_user_id
             ])->one();
-            if (isset($botCaptcha)){
+            if (isset($botCaptcha)) {
                 $captchaMessageId = $botCaptcha->captcha_message_id;
             }
 
-            switch ($choice){
+            switch ($choice) {
 
                 case self::BAN:
 
-                    BotChatCaptcha::removeCaptchaInfo($chat->id,$telegramUser->provider_user_id);
+                    BotChatCaptcha::removeCaptchaInfo($chat->id, $telegramUser->provider_user_id);
 
                     //kick member
-                    $api->kickChatMember($chat->chat_id,$telegramUser->provider_user_id);
+                    $api->kickChatMember($chat->chat_id, $telegramUser->provider_user_id);
 
                     //remove captcha message
                     $api->deleteMessage($chat->chat_id, $captchaMessageId);
@@ -183,10 +176,10 @@ class JoinCaptchaController extends Controller
                         'chat_id' => $chat->id,
                         'user_id' => $telegramUser->id
                     ]);
-                    if($chatMember->role == self::ROLE_UNVERIFIED){
+                    if ($chatMember->role == self::ROLE_UNVERIFIED) {
 
                         // Delete record about captcha
-                        BotChatCaptcha::removeCaptchaInfo($chat->id,$provider_user_id);
+                        BotChatCaptcha::removeCaptchaInfo($chat->id, $provider_user_id);
 
                         //remove captcha message
                         $api->deleteMessage($chat->chat_id, $captchaMessageId);
@@ -194,9 +187,7 @@ class JoinCaptchaController extends Controller
                         // Set role = 1 in bot_chat_member table
                         $chatMember->role = self::ROLE_VERIFIED;
                         $chatMember->save();
-
-                    }
-                    else{
+                    } else {
                         return [];
                     }
                     break;
@@ -207,15 +198,9 @@ class JoinCaptchaController extends Controller
 
                     break;
             }
-
-
-
-        }
-        else{
-
+        } else {
             $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
             $text = new MessageText(Yii::t('bot', 'This captcha is not for you') . ', ' . $toUserName);
-
         }
         return $this->getResponseBuilder()->sendMessage($text)->build();
     }
@@ -223,7 +208,7 @@ class JoinCaptchaController extends Controller
 
     private function send(array $messageCommand)
     {
-        if(isset($messageCommand)) {
+        if (isset($messageCommand)) {
             $command = reset($messageCommand);
             $response = $command->send($this->getBotApi());
             return $response;
