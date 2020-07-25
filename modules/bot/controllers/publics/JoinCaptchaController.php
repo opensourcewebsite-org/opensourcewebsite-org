@@ -24,8 +24,6 @@ class JoinCaptchaController extends Controller
     public const ROLE_UNVERIFIED = 0;
     public const ROLE_VERIFIED = 1;
 
-    public const BAN_DURATION = 365*24*60*60;
-
     /**
      * Action shows captcha and restricts user to send messages
      *
@@ -166,16 +164,11 @@ class JoinCaptchaController extends Controller
                     BotChatCaptcha::removeCaptchaInfo($chat->id,$telegramUser->provider_user_id);
 
                     //kick member
-                    $api->kickChatMember($chat->chat_id,$telegramUser->provider_user_id,time() + self::BAN_DURATION);
+                    $api->kickChatMember($chat->chat_id,$telegramUser->provider_user_id);
 
                     //remove captcha message
                     $api->deleteMessage($chat->chat_id, $captchaMessageId);
 
-                    $text = new MessageText(Yii::t('bot', 'User: {provider_user_name} was banned in chat: {chat_title} for: {ban_duration} minutes',[
-                        'provider_user_name' => $telegramUser->provider_user_name,
-                        'chat_title' => $chat->title,
-                        'ban_duration' => self::BAN_DURATION
-                        ]));
                     break;
 
                 case self::DUMMY:

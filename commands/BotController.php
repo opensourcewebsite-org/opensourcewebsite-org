@@ -18,10 +18,10 @@ class BotController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 
+    const INTERVAL = 60; // seconds
+
     public function actionIndex()
     {
-
-        $this->log = true;
 
         $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
 
@@ -32,10 +32,11 @@ class BotController extends Controller implements CronChainedInterface
                 $botApi = new \TelegramBot\Api\BotApi($bot->token);
 
                 $usersToBan = BotChatCaptcha::find()
+                    ->select('bot_chat_captcha.*,bot_chat.chat_id as chat_id')
                     ->with('chat')
                     ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
                     ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
-                    ->where(['<', 'sent_at', time() - CronController::INTERVAL])
+                    ->where(['<', 'sent_at', time() - self::INTERVAL])
                     ->andFilterWhere(['bot.id' => $bot->id])->all();
 
                 if (isset($usersToBan)) {
@@ -47,7 +48,8 @@ class BotController extends Controller implements CronChainedInterface
                                 'provider_user_id' => $record->provider_user_id
                             ]);
 
-                            $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                            $botApi->deleteMessage($record->chat_id,$record->captcha_message_id);
+                            $botApi->kickChatMember($record->chat_id, $record->provider_user_id);
                             $this->output("Kicked user {$record->provider_user_id} from chat {$record->chat->chat_id}");
                         }
                     }
