@@ -195,8 +195,6 @@ class JoinCaptchaController extends Controller
                         $chatMember->role = self::ROLE_VERIFIED;
                         $chatMember->save();
 
-                        $text = new MessageText(Yii::t('bot', 'Thank you for validating,') . ', ' . $toUserName . '🔥');
-
                     }
                     else{
                         return [];
