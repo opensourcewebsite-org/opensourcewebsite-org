@@ -152,7 +152,6 @@ class JoinCaptchaController extends Controller
 
             switch ($choice) {
                 case self::BAN:
-
                     BotChatCaptcha::removeCaptchaInfo($chat->id, $telegramUser->provider_user_id);
 
                     //kick member
@@ -160,15 +159,11 @@ class JoinCaptchaController extends Controller
 
                     //remove captcha message
                     $api->deleteMessage($chat->chat_id, $captchaMessageId);
-
                     break;
                 case self::DUMMY:
-
                     return [];
-
                     break;
                 case self::PASS:
-
                     $chatMember = ChatMember::findOne([
                         'chat_id' => $chat->id,
                         'user_id' => $telegramUser->id
@@ -188,9 +183,7 @@ class JoinCaptchaController extends Controller
                     }
                     break;
                 default:
-
                     return [];
-
                     break;
             }
         } else {

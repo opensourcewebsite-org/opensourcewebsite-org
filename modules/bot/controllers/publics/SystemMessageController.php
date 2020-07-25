@@ -30,8 +30,7 @@ class SystemMessageController extends Controller
         }
 
         //Remove captcha info if user left channel
-        if ($this->getUpdate()->getMessage()->getLeftChatMember()){
-
+        if ($this->getUpdate()->getMessage()->getLeftChatMember()) {
             $telegramUser = $this->getTelegramUser();
             $chat = $this->getTelegramChat();
 
@@ -40,8 +39,7 @@ class SystemMessageController extends Controller
                 'provider_user_id' => $telegramUser->provider_user_id
             ])->one();
 
-            if (isset($botCaptcha)){
-
+            if (isset($botCaptcha)) {
                 $captchaMessageId = $botCaptcha->captcha_message_id;
 
                 $this->getBotApi()->deleteMessage(

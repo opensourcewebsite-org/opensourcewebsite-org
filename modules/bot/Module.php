@@ -209,7 +209,6 @@ class Module extends \yii\base\Module
                     'status' => $telegramChatMember->getStatus(),
                     'role' => $role
                 ]);
-
             }
 
             // $telegramChatMember = $this->botApi->getChatMember(
