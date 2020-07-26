@@ -33,7 +33,7 @@ class SJobController extends Controller
             ],
             [
                 [
-                    'text' => Yii::t('bot', 'Companies'),
+                    'text' => Emoji::JOB_COMPANY . ' ' . Yii::t('bot', 'Companies'),
                     'callback_data' => CompanyController::createRoute(),
                 ],
             ],

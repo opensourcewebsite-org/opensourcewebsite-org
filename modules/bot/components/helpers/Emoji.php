@@ -21,4 +21,5 @@ class Emoji
     public const AD_OFFER = '💰';
     public const JOB_RESUME = '💪';
     public const JOB_VACANCY = '🧰';
+    public const JOB_COMPANY = '🏢';
 }

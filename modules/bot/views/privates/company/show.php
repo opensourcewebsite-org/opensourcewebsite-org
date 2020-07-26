@@ -1,4 +1,9 @@
-<b><?= $name ?></b><br/>
+<?php
+
+use app\modules\bot\components\helpers\Emoji;
+
+?>
+<b><?= Emoji::JOB_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $name ?></b><br/>
 <br/>
 <?php if ($description) : ?>
 <?= nl2br($description) ?><br/>
