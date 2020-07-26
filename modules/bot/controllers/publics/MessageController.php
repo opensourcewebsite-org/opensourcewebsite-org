@@ -3,7 +3,7 @@
 namespace app\modules\bot\controllers\publics;
 
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 
 /**
@@ -24,8 +24,20 @@ class MessageController extends Controller
         $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
         $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
-        if (!isset($statusSetting) || !isset($modeSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) {
+        $captchaSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
+
+        if ((!isset($statusSetting) || !isset($modeSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) && $captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_OFF) {
             return [];
+        }
+
+        /* Captcha handle*/
+        if ($captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
+            $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
+            if ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) {
+                return $this->getResponseBuilder()
+                    ->deleteMessage()
+                    ->build();
+            }
         }
 
         $deleteMessage = false;

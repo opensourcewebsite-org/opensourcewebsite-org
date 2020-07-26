@@ -19,7 +19,19 @@ class BotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        // TODO add new feature
+        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
+
+        if (isset($bots)) {
+            foreach ($bots as $bot) {
+                if($bot->removeUnverifiedUsers()) {
+                    $this->output("Removed users who didn\'t pass the captcha for {$bot->id}");
+                } else {
+                    $this->output("Error while removing users who didn\'t pass the captcha for {
+                        $bot->id}");
+                };
+            }
+        }
+
         return true;
     }
 
@@ -46,7 +58,7 @@ class BotController extends Controller implements CronChainedInterface
         }
     }
 
-	/**
+    /**
      * Disable all active bots
      *
      * @throws \TelegramBot\Api\Exception
