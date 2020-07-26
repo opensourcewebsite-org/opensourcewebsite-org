@@ -137,8 +137,6 @@ class Bot extends \yii\db\ActiveRecord
 
     public function removeUnverifiedUsers()
     {
-        $botApi = new \TelegramBot\Api\BotApi($this->token);
-
         $usersToBan = BotChatCaptcha::find()
             ->select('bot_chat_captcha.*,bot_chat.chat_id as chat_id')
             ->with('chat')
@@ -148,6 +146,8 @@ class Bot extends \yii\db\ActiveRecord
             ->andFilterWhere(['bot.id' => $this->id])->all();
 
         if (isset($usersToBan)) {
+            $botApi = new \TelegramBot\Api\BotApi($this->token);
+
             try {
                 foreach ($usersToBan as $record) {
                     BotChatCaptcha::deleteAll([
