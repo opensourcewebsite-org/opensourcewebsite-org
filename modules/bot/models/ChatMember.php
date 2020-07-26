@@ -32,6 +32,7 @@ class ChatMember extends ActiveRecord
         return [
             [['chat_id', 'user_id', 'status', 'role'], 'required'],
             [['id', 'chat_id', 'user_id', 'role'], 'integer'],
+            ['role', 'default', 'value' => 1],
             [['status'], 'string'],
         ];
     }

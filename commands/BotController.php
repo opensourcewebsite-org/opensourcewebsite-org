@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
@@ -18,8 +19,6 @@ class BotController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 
-    const INTERVAL = 60; // seconds
-
     public function actionIndex()
     {
         $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
@@ -33,7 +32,7 @@ class BotController extends Controller implements CronChainedInterface
                     ->with('chat')
                     ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
                     ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
-                    ->where(['<', 'sent_at', time() - self::INTERVAL])
+                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_RESPONSE_AWAIT])
                     ->andFilterWhere(['bot.id' => $bot->id])->all();
 
                 if (isset($usersToBan)) {

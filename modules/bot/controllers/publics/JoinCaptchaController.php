@@ -130,7 +130,7 @@ class JoinCaptchaController extends Controller
      *
      * @param integer $provider_user_id
      * @param integer $choice
-     * @return array
+     * @return boolean
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
@@ -161,7 +161,7 @@ class JoinCaptchaController extends Controller
                     $api->deleteMessage($chat->chat_id, $captchaMessageId);
                     break;
                 case self::DUMMY:
-                    return [];
+                    return false;
                     break;
                 case self::PASS:
                     $chatMember = ChatMember::findOne([
@@ -179,18 +179,17 @@ class JoinCaptchaController extends Controller
                         $chatMember->role = self::ROLE_VERIFIED;
                         $chatMember->save();
                     } else {
-                        return [];
+                        return false;
                     }
                     break;
                 default:
-                    return [];
+                    return false;
                     break;
             }
         } else {
-            $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
-            $text = new MessageText(Yii::t('bot', 'This captcha is not for you') . ', ' . $toUserName);
+            return false;
         }
-        return $this->getResponseBuilder()->sendMessage($text)->build();
+        return true;
     }
 
 

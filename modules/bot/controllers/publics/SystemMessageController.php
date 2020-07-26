@@ -4,9 +4,9 @@ namespace app\modules\bot\controllers\publics;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\BotChatCaptcha;
 
 /**
 * Class SystemMessageController
@@ -40,17 +40,13 @@ class SystemMessageController extends Controller
             ])->one();
 
             if (isset($botCaptcha)) {
-                $captchaMessageId = $botCaptcha->captcha_message_id;
-
                 $this->getBotApi()->deleteMessage(
                     $chat->chat_id,
-                    $captchaMessageId
+                    $botCaptcha->captcha_message_id
                 );
-
             }
 
             BotChatCaptcha::removeCaptchaInfo($chat->id, $telegramUser->provider_user_id);
-
         }
 
         // forward to captcha if a new member
@@ -63,7 +59,6 @@ class SystemMessageController extends Controller
                 ->deleteMessage()
                 ->build();
         }
-
     }
 
     public function actionGroupToSupergroup()
