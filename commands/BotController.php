@@ -2,6 +2,8 @@
 
 namespace app\commands;
 
+use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
@@ -19,7 +21,40 @@ class BotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        // TODO add new feature
+        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
+
+        if (isset($bots)) {
+            foreach ($bots as $bot) {
+                $botApi = new \TelegramBot\Api\BotApi($bot->token);
+
+                $usersToBan = BotChatCaptcha::find()
+                    ->select('bot_chat_captcha.*,bot_chat.chat_id as chat_id')
+                    ->with('chat')
+                    ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
+                    ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
+                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_RESPONSE_AWAIT])
+                    ->andFilterWhere(['bot.id' => $bot->id])->all();
+
+                if (isset($usersToBan)) {
+                    try {
+                        foreach ($usersToBan as $record) {
+                            BotChatCaptcha::deleteAll([
+                                'chat_id' => $record->chat_id,
+                                'provider_user_id' => $record->provider_user_id
+                            ]);
+
+                            $botApi->deleteMessage($record->chat_id, $record->captcha_message_id);
+                            $botApi->kickChatMember($record->chat_id, $record->provider_user_id);
+                            $this->output("Kicked user {$record->provider_user_id} from chat {$record->chat->chat_id}");
+                        }
+                    } catch (\Throwable $t) {
+                        $this->output("Error {$t->getMessage()} while kicking unverified users");
+                        return false;
+                    }
+                }
+            }
+        }
+
         return true;
     }
 
@@ -46,7 +81,7 @@ class BotController extends Controller implements CronChainedInterface
         }
     }
 
-	/**
+    /**
      * Disable all active bots
      *
      * @throws \TelegramBot\Api\Exception

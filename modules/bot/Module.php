@@ -2,6 +2,8 @@
 
 namespace app\modules\bot;
 
+use app\modules\bot\controllers\publics\JoinCaptchaController;
+use app\modules\bot\models\ChatSetting;
 use Yii;
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
@@ -196,7 +198,17 @@ class Module extends \yii\base\Module
             if (!$telegramChat->hasUser($telegramUser)) {
                 $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
 
-                $telegramChat->link('users', $telegramUser, ['status' => $telegramChatMember->getStatus()]);
+                $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
+                if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
+                    $role = JoinCaptchaController::ROLE_UNVERIFIED;
+                } else {
+                    $role = JoinCaptchaController::ROLE_VERIFIED;
+                }
+
+                $telegramChat->link('users', $telegramUser, [
+                    'status' => $telegramChatMember->getStatus(),
+                    'role' => $role
+                ]);
             }
 
             // $telegramChatMember = $this->botApi->getChatMember(
