@@ -61,7 +61,7 @@ return PhpCsFixer\Config::create()
         'array_indentation' => true,
         'array_syntax' => ['syntax'=>'short'],
         'method_chaining_indentation' => true,
-        //'class_attributes_separation' => ['method'],
+        'class_attributes_separation' => ['method'],
     ])
     ->setFinder(PhpCsFixer\Finder::create()
         ->exclude('vendor')
