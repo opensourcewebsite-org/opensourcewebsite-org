@@ -11,6 +11,7 @@ class ChatSetting extends ActiveRecord
     public const VOTE_BAN_STATUS = 'vote_ban_status';
     public const VOTE_BAN_LIMIT = 'vote_ban_limit';
     public const STAR_TOP_STATUS = 'top_list_status';
+    public const JOIN_CAPTCHA_STATUS = 'join_captcha_status';
 
     public const FILTER_MODE_BLACKLIST = 'blacklist';
     public const FILTER_MODE_WHITELIST = 'whitelist';
@@ -30,6 +31,10 @@ class ChatSetting extends ActiveRecord
 
     public const STAR_TOP_STATUS_ON = 'on';
     public const STAR_TOP_STATUS_OFF = 'off';
+
+    public const JOIN_CAPTCHA_STATUS_OFF = 'off';
+    public const JOIN_CAPTCHA_STATUS_ON = 'on';
+    public const JOIN_CAPTCHA_RESPONSE_AWAIT = 60;
 
     public static function tableName()
     {

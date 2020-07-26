@@ -13,7 +13,6 @@ return [
     'username' => $username,
     'password' => $password,
     'charset' => $charset,
-    'attributes' => [PDO::ATTR_CASE => PDO::CASE_LOWER],
 
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,
