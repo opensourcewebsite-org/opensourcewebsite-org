@@ -50,7 +50,7 @@ class SystemMessageController extends Controller
         }
 
         // forward to captcha if a new member
-        if ($this->getUpdate()->getMessage()->getNewChatMember()) {
+        if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
             $this->run('join-captcha/show-captcha');
         }
 
