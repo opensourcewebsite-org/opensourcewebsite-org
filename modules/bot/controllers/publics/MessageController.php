@@ -50,7 +50,7 @@ class MessageController extends Controller
                     ->one();
 
                 if (!isset($adminUser)) {
-                    if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+                    if ($messageFilterModeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                         $deleteMessage = false;
 
                         $phrases = $chat->getBlacklistPhrases()->all();
