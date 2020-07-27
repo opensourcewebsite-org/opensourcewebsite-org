@@ -67,7 +67,7 @@ class SystemMessageController extends Controller
             if (isset($botCaptcha)) {
                 $this->getBotApi()->deleteMessage(
                     $chat->chat_id,
-                    $botCaptcha->captcha_message_id,
+                    $botCaptcha->captcha_message_id
                 );
             }
 
