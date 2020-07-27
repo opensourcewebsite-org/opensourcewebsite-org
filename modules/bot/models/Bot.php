@@ -138,12 +138,13 @@ class Bot extends \yii\db\ActiveRecord
     public function removeUnverifiedUsers()
     {
         $usersToBan = BotChatCaptcha::find()
-            ->select('bot_chat_captcha.*,bot_chat.chat_id as chat_id')
+            ->select('bot_chat_captcha.*')
             ->with('chat')
             ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
             ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
             ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_RESPONSE_AWAIT])
-            ->andFilterWhere(['bot.id' => $this->id])->all();
+            ->andFilterWhere(['bot.id' => $this->id])
+            ->all();
 
         if (isset($usersToBan)) {
             $botApi = new \TelegramBot\Api\BotApi($this->token);
@@ -155,8 +156,8 @@ class Bot extends \yii\db\ActiveRecord
                         'provider_user_id' => $record->provider_user_id
                     ]);
 
-                    $botApi->deleteMessage($record->chat_id, $record->captcha_message_id);
-                    $botApi->kickChatMember($record->chat_id, $record->provider_user_id);
+                    $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
+                    $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
                 }
             } catch (\Throwable $t) {
                 return false;

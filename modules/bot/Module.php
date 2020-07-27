@@ -197,17 +197,16 @@ class Module extends \yii\base\Module
 
             if (!$telegramChat->hasUser($telegramUser)) {
                 $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
+                $role = JoinCaptchaController::ROLE_VERIFIED;
 
                 $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-                if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
+                if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON && $this->update->getMessage()->getNewChatMembers()) {
                     $role = JoinCaptchaController::ROLE_UNVERIFIED;
-                } else {
-                    $role = JoinCaptchaController::ROLE_VERIFIED;
                 }
 
                 $telegramChat->link('users', $telegramUser, [
                     'status' => $telegramChatMember->getStatus(),
-                    'role' => $role,
+                    'role' => $role
                 ]);
             }
 

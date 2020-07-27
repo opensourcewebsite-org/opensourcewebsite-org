@@ -2,8 +2,6 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use Yii;
-use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -49,14 +47,17 @@ class JoinCaptchaController extends Controller
                 $passedCaptcha = $chatMember->role == self::ROLE_VERIFIED;
             }
 
+            $newChatMember = $this->getUpdate()->getMessage()->getNewChatMembers();
+            $newChatMember = reset($newChatMember);
+
             // check if user was added by group admin
-            $addedByAdmin = $isAdmin && ($this->getUpdate()->getMessage()->getFrom() !== $this->getUpdate()->getMessage()->getNewChatMember());
+            $addedByAdmin = $isAdmin && ($this->getUpdate()->getMessage()->getFrom() !== $newChatMember);
 
             if ($addedByAdmin) {
                 $chatMember = ChatMember::find()
                     ->joinWith('botUser')
                     ->where([
-                        'bot_user.provider_user_id' => $this->getUpdate()->getMessage()->getNewChatMember()->getId(),
+                        'bot_user.provider_user_id' => $newChatMember->getId(),
                         'chat_id' => $chat->id
                     ])
                     ->one();
@@ -138,7 +139,6 @@ class JoinCaptchaController extends Controller
             $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
             $api = $this->getBotApi();
-            $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
 
             $botCaptcha = BotChatCaptcha::find()
                 ->where([
