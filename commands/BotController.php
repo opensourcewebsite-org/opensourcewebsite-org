@@ -24,10 +24,9 @@ class BotController extends Controller implements CronChainedInterface
         if (isset($bots)) {
             foreach ($bots as $bot) {
                 if($bot->removeUnverifiedUsers()) {
-                    $this->output("Removed users who didn\'t pass the captcha for {$bot->id}");
+                    $this->output('Removed users who didn\'t pass the captcha in groups.');
                 } else {
-                    $this->output("Error while removing users who didn\'t pass the captcha for {
-                        $bot->id}");
+                    $this->output('Error while removing users who didn\'t pass the captcha for ' . $bot->id);
                 };
             }
         }

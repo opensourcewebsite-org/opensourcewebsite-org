@@ -238,6 +238,7 @@ return [
     'To start a vote, send a reply «<b>voteban</b>» to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ «<b>voteban</b>» на сообщение любого участника группы',
     'Not applicable for administrators' => 'Не применимо к администраторам',
     'allows members to leave likes and dislikes for any member of the group' => 'позволяет участникам оставлять лайки и дизлайки для любого участника группы',
+    'requires filling in captcha for recently joined members' => 'требует заполнить капчу для недавно присоединившихся участников',
     'Sexuality' => 'Сексуальная ориентация',
     'Your Sexuality' => 'Ваша сексуальная ориентация',
     'Choose your sexuality' => 'Выберите вашу сексуальную ориентацию',

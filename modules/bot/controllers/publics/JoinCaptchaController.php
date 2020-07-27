@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\publics;
 
+use Yii;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
-use Yii;
 use app\modules\bot\components\Controller;
 
 /**
@@ -68,7 +68,6 @@ class JoinCaptchaController extends Controller
                 }
             }
 
-
             if (!$passedCaptcha && !$isAdmin && !$isBot) {
                 $choices = [
                     [
@@ -76,15 +75,15 @@ class JoinCaptchaController extends Controller
                             'provider_user_id' => $telegramUser->provider_user_id,
                             'choice' => self::PASS
                         ]),
-                        'text' => Yii::t('bot', '👍'),
+                        'text' => '👍',
                     ],
                     [
                         'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id ,'choice' => self::DUMMY]),
-                        'text' => Yii::t('bot', '👌'),
+                        'text' => '👌',
                     ],
                     [
                         'callback_data' => self::createRoute('pass-captcha', ['provider_user_id' => $telegramUser->provider_user_id, 'choice' => self::BAN]),
-                        'text' => Yii::t('bot', '👎'),
+                        'text' => '👎',
                     ],
                 ];
                 shuffle($choices);
@@ -92,10 +91,10 @@ class JoinCaptchaController extends Controller
                 $command =  $this->getResponseBuilder()
                     ->sendMessage(
                         $this->render('show-captcha', [
-                            'user' => $telegramUser
+                            'user' => $telegramUser,
                         ]),
                         [
-                            $choices
+                            $choices,
                         ]
                     )->build();
 
@@ -124,7 +123,6 @@ class JoinCaptchaController extends Controller
         return [];
     }
 
-
     /**
      * Action allows user to pass captcha. This actions checks if joined user is interracting.
      *
@@ -142,10 +140,13 @@ class JoinCaptchaController extends Controller
             $api = $this->getBotApi();
             $toUserName = $this->update->getCallbackQuery()->getFrom()->getUsername();
 
-            $botCaptcha = BotChatCaptcha::find()->where([
-                'chat_id' => $chat->id,
-                'provider_user_id' => $telegramUser->provider_user_id
-            ])->one();
+            $botCaptcha = BotChatCaptcha::find()
+                ->where([
+                    'chat_id' => $chat->id,
+                    'provider_user_id' => $telegramUser->provider_user_id,
+                ])
+                ->one();
+
             if (isset($botCaptcha)) {
                 $captchaMessageId = $botCaptcha->captcha_message_id;
             }
@@ -168,6 +169,7 @@ class JoinCaptchaController extends Controller
                         'chat_id' => $chat->id,
                         'user_id' => $telegramUser->id
                     ]);
+
                     if ($chatMember->role == self::ROLE_UNVERIFIED) {
                         // Delete record about captcha
                         BotChatCaptcha::removeCaptchaInfo($chat->id, $provider_user_id);
@@ -191,7 +193,6 @@ class JoinCaptchaController extends Controller
         }
         return true;
     }
-
 
     private function send(array $messageCommand)
     {

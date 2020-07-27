@@ -55,7 +55,7 @@ class SystemMessageController extends Controller
         }
 
         if ($deleteMessage) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
+            return $this->getResponseBuilder()
                 ->deleteMessage()
                 ->build();
         }

@@ -34,7 +34,7 @@ class ChatSetting extends ActiveRecord
 
     public const JOIN_CAPTCHA_STATUS_OFF = 'off';
     public const JOIN_CAPTCHA_STATUS_ON = 'on';
-    public const JOIN_CAPTCHA_RESPONSE_AWAIT = 60;
+    public const JOIN_CAPTCHA_RESPONSE_AWAIT = 300; // seconds
 
     public static function tableName()
     {
