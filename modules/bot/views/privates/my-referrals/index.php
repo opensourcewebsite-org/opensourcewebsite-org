@@ -1,6 +1,6 @@
 <b><?= Yii::t('bot', 'Your referrals'); ?></b><br/>
 <br/>
-<b><?= Yii::t('bot', 'Referrals') ?> (<?= \Yii::t('bot', 'Level {0,number}', 1) ?>): <?= $referralsCount ?></b><br/>
+<b><?= Yii::t('bot', 'Referrals') ?> (<?= Yii::t('bot', 'Level {0,number}', 1) ?>): <?= $referralsCount ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Loyalty program provides') ?>:<br/>
   - <?= Yii::t('bot', 'You get rewards from your referrals for their purchases on the Website and websites of our partner companies, and from offline partners using a discount card'); ?>.<br/>
