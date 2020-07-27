@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\publics;
 
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
@@ -21,6 +20,7 @@ class SystemMessageController extends Controller
     public function actionNewChatMembers()
     {
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
+            $deleteMessage = false;
             $chat = $this->getTelegramChat();
 
             $joinHiderStatus = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
