@@ -9,11 +9,11 @@ use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class AdminJoinCaptchaController
+ * Class AdminGreetingController
  *
  * @package app\controllers\bot
  */
-class AdminJoinCaptchaController extends Controller
+class AdminGreetingController extends Controller
 {
     /**
      * @return array
@@ -26,22 +26,22 @@ class AdminJoinCaptchaController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
+        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
 
         if (!isset($statusSetting)) {
             $statusSetting = new ChatSetting();
 
             $statusSetting->setAttributes([
                 'chat_id' => $chatId,
-                'setting' => ChatSetting::JOIN_CAPTCHA_STATUS,
-                'value' => ChatSetting::JOIN_CAPTCHA_STATUS_OFF,
+                'setting' => ChatSetting::GREETING_STATUS,
+                'value' => ChatSetting::GREETING_STATUS_OFF,
             ]);
 
             $statusSetting->save();
         }
 
         $chatTitle = $chat->title;
-        $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
+        $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -76,12 +76,12 @@ class AdminJoinCaptchaController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
+        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
 
-        if ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
-            $statusSetting->value = ChatSetting::JOIN_CAPTCHA_STATUS_OFF;
+        if ($statusSetting->value == ChatSetting::GREETING_STATUS_ON) {
+            $statusSetting->value = ChatSetting::GREETING_STATUS_OFF;
         } else {
-            $statusSetting->value = ChatSetting::JOIN_CAPTCHA_STATUS_ON;
+            $statusSetting->value = ChatSetting::GREETING_STATUS_ON;
         }
 
         $statusSetting->save();

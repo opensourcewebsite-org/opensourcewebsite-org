@@ -18,26 +18,51 @@ class SystemMessageController extends Controller
     /**
     * @return array
     */
-    public function actionIndex()
+    public function actionNewChatMembers()
     {
-        $chat = $this->getTelegramChat();
-
-        $deleteMessage = false;
-        $joinHiderStatus = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-
-        if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
-            $deleteMessage = true;
-        }
-
-        //Remove captcha info if user left channel
-        if ($this->getUpdate()->getMessage()->getLeftChatMember()) {
-            $telegramUser = $this->getTelegramUser();
+        if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
             $chat = $this->getTelegramChat();
 
-            $botCaptcha = BotChatCaptcha::find()->where([
-                'chat_id' => $chat->id,
-                'provider_user_id' => $telegramUser->provider_user_id
-            ])->one();
+            $joinHiderStatus = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
+
+            if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
+                $deleteMessage = true;
+            }
+
+            // Forward to captcha if a new member
+            $this->run('join-captcha/show-captcha');
+
+            if ($deleteMessage) {
+                return $this->getResponseBuilder()
+                    ->deleteMessage()
+                    ->build();
+            }
+        }
+    }
+
+    /**
+    * @return array
+    */
+    public function actionLeftChatMember()
+    {
+        if ($this->getUpdate()->getMessage()->getLeftChatMember()) {
+            $chat = $this->getTelegramChat();
+            $telegramUser = $this->getTelegramUser();
+
+            $deleteMessage = false;
+            $joinHiderStatus = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
+
+            if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
+                $deleteMessage = true;
+            }
+
+            // Remove captcha info if user left channel
+            $botCaptcha = BotChatCaptcha::find()
+                ->where([
+                    'chat_id' => $chat->id,
+                    'provider_user_id' => $telegramUser->provider_user_id,
+                ])
+                ->one();
 
             if (isset($botCaptcha)) {
                 $this->getBotApi()->deleteMessage(
@@ -47,31 +72,26 @@ class SystemMessageController extends Controller
             }
 
             BotChatCaptcha::removeCaptchaInfo($chat->id, $telegramUser->provider_user_id);
-        }
 
-        // forward to captcha if a new member
-        if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
-            $this->run('join-captcha/show-captcha');
-        }
-
-        if ($deleteMessage) {
-            return ResponseBuilder::fromUpdate($this->getUpdate())
-                ->deleteMessage()
-                ->build();
+            if ($deleteMessage) {
+                return $this->getResponseBuilder()
+                    ->deleteMessage()
+                    ->build();
+            }
         }
     }
 
     public function actionGroupToSupergroup()
     {
-        $chat = $this->getTelegramChat();
+        if ($update->getMessage()->getMigrateToChatId()) {
+            $chat = $this->getTelegramChat();
 
-        $chat->setAttributes([
-            'type' => Chat::TYPE_SUPERGROUP,
-            'chat_id' => $this->getMessage()->getMigrateToChatId(),
-        ]);
+            $chat->setAttributes([
+                'type' => Chat::TYPE_SUPERGROUP,
+                'chat_id' => $this->getMessage()->getMigrateToChatId(),
+            ]);
 
-        $chat->save();
-
-        return [];
+            $chat->save();
+        }
     }
 }

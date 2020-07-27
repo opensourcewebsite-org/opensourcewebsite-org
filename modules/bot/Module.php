@@ -2,8 +2,6 @@
 
 namespace app\modules\bot;
 
-use app\modules\bot\controllers\publics\JoinCaptchaController;
-use app\modules\bot\models\ChatSetting;
 use Yii;
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
@@ -19,6 +17,8 @@ use app\models\User;
 use app\models\Rating;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\ChatSetting;
+use app\modules\bot\controllers\publics\JoinCaptchaController;
 
 /**
  * OSW Bot module definition class
@@ -207,7 +207,7 @@ class Module extends \yii\base\Module
 
                 $telegramChat->link('users', $telegramUser, [
                     'status' => $telegramChatMember->getStatus(),
-                    'role' => $role
+                    'role' => $role,
                 ]);
             }
 

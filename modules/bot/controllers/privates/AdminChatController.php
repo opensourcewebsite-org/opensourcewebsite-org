@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
@@ -55,6 +54,14 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => Yii::t('bot', 'Join Captcha'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => AdminGreetingController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Greeting'),
                                 ],
                             ],
                             [

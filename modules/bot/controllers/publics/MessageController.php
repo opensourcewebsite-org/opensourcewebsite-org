@@ -21,18 +21,14 @@ class MessageController extends Controller
         $telegramUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
-        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
-        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
-
-        $captchaSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-
-        if ((!isset($statusSetting) || !isset($modeSetting) || $statusSetting->value == ChatSetting::FILTER_STATUS_OFF) && $captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_OFF) {
-            return [];
-        }
+        $joinCaptchaStatusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
 
         /* Captcha handle*/
-        if ($captchaSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
-            $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $telegramUser->id ]);
+        if (isset($joinCaptchaStatusSetting) && ($joinCaptchaStatusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
+            $chatMember = ChatMember::findOne([
+                'chat_id' => $chat->id,
+                'user_id' => $telegramUser->id,
+            ]);
             if ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) {
                 return $this->getResponseBuilder()
                     ->deleteMessage()
@@ -40,42 +36,53 @@ class MessageController extends Controller
             }
         }
 
+        $messageFilterStatusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
+        $messageFilterModeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
+
         $deleteMessage = false;
 
-        if ($this->getMessage()->getText() !== null) {
-            $adminUser = $chat->getAdministrators()->where(['id' => $telegramUser->user_id])->one();
+        if (isset($messageFilterStatusSetting) && isset($messageFilterModeSetting) && ($messageFilterStatusSetting->value == ChatSetting::FILTER_STATUS_ON)) {
+            if ($this->getMessage()->getText() !== null) {
+                $adminUser = $chat->getAdministrators()
+                    ->where([
+                        'id' => $telegramUser->user_id,
+                    ])
+                    ->one();
 
-            if (!isset($adminUser)) {
-                if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
-                    $deleteMessage = false;
+                if (!isset($adminUser)) {
+                    if ($messageFilterModeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+                        $deleteMessage = false;
 
-                    $phrases = $chat->getBlacklistPhrases()->all();
+                        $phrases = $chat->getBlacklistPhrases()->all();
 
-                    foreach ($phrases as $phrase) {
-                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                            $deleteMessage = true;
-                            break;
+                        foreach ($phrases as $phrase) {
+                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                $deleteMessage = true;
+                                break;
+                            }
                         }
-                    }
-                } else {
-                    $deleteMessage = true;
+                    } else {
+                        $deleteMessage = true;
 
-                    $phrases = $chat->getWhitelistPhrases()->all();
+                        $phrases = $chat->getWhitelistPhrases()->all();
 
-                    foreach ($phrases as $phrase) {
-                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                            $deleteMessage = false;
-                            break;
+                        foreach ($phrases as $phrase) {
+                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                $deleteMessage = false;
+                                break;
+                            }
                         }
                     }
                 }
             }
+
+            if ($deleteMessage) {
+                return $this->getResponseBuilder()
+                    ->deleteMessage()
+                    ->build();
+            }
         }
 
-        if ($deleteMessage) {
-            return $this->getResponseBuilder()
-                ->deleteMessage()
-                ->build();
-        }
+        return [];
     }
 }

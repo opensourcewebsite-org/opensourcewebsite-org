@@ -23,11 +23,11 @@ class BotController extends Controller implements CronChainedInterface
 
         if (isset($bots)) {
             foreach ($bots as $bot) {
-                if($bot->removeUnverifiedUsers()) {
-                    $this->output("Removed users who didn\'t pass the captcha for {$bot->id}");
+                if ($bot->removeUnverifiedUsers()) {
+                    // TODO вывести количество забаненных участников и количество обработанных групп
+                    //$this->output('Removed users who didn\'t pass the captcha in groups.');
                 } else {
-                    $this->output("Error while removing users who didn\'t pass the captcha for {
-                        $bot->id}");
+                    echo 'ERROR: while removing users who didn\'t pass the captcha for ' . $bot->id;
                 };
             }
         }
@@ -50,11 +50,11 @@ class BotController extends Controller implements CronChainedInterface
         if ($bots) {
             foreach ($bots as $bot) {
                 if ($bot->setWebhook()) {
-                    echo "The bot \"{$bot->name}\" has been enabled\n";
+                    echo 'The bot "' . $bot->name . '" has been enabled' . "\n";
                 }
             }
         } else {
-            echo "No inactive bots found.\n";
+            echo 'No inactive bots found' ."\n";
         }
     }
 
@@ -73,11 +73,11 @@ class BotController extends Controller implements CronChainedInterface
         if ($bots) {
             foreach ($bots as $bot) {
                 if ($bot->deleteWebhook()) {
-                    echo "The bot \"{$bot->name}\" has been disabled\n";
+                    echo 'The bot "' . $bot->name . '" has been disabled' . "\n";
                 }
             }
         } else {
-            echo "No active bots found.\n";
+            echo 'No active bots found' . "\n";
         }
     }
 
@@ -102,7 +102,7 @@ class BotController extends Controller implements CronChainedInterface
             $bot->status = 0;
 
             if ($bot->save()) {
-                echo "The bot \"$bot->name\" has been successfully saved\n";
+                echo 'The bot "' . $bot->name . '" has been successfully saved' . "\n";
 
                 return true;
             } else {
@@ -113,6 +113,7 @@ class BotController extends Controller implements CronChainedInterface
         }
 
         echo 'Bot with the same token already exists';
+
         return false;
     }
 }
