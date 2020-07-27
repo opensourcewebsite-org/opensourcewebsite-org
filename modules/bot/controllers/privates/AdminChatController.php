@@ -58,6 +58,14 @@ class AdminChatController extends Controller
                             ],
                             [
                                 [
+                                    'callback_data' => AdminGreetingController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Greeting'),
+                                ],
+                            ],
+                            [
+                                [
                                     'callback_data' => AdminMessageFilterController::createRoute('index', [
                                         'chatId' => $chatId,
                                     ]),
