@@ -8,6 +8,7 @@ use app\interfaces\CronChainedInterface;
 use app\models\Resume;
 use app\models\Vacancy;
 use yii\console\Controller;
+use yii\console\Exception;
 
 /**
  * Class JobMatchController
@@ -48,8 +49,8 @@ class JobMatchController extends Controller implements CronChainedInterface
                 ]);
                 $resume->save();
                 $updatesCount++;
-            } catch (\Exception $e) {
-                echo 'ERROR: resume #' . $resume->id . ': ' . $e->getMessage() . "\n";
+            } catch (Exception $e) {
+                echo 'ERROR: Resume #' . $resume->id . ': ' . $e->getMessage() . "\n";
             }
         }
 
@@ -77,8 +78,8 @@ class JobMatchController extends Controller implements CronChainedInterface
                 ]);
                 $vacancy->save();
                 $updatesCount++;
-            } catch (\Exception $e) {
-                echo 'ERROR: vacancy #' . $vacancy->id . ': ' . $e->getMessage() . "\n";
+            } catch (Exception $e) {
+                echo 'ERROR: Vacancy #' . $vacancy->id . ': ' . $e->getMessage() . "\n";
             }
         }
 

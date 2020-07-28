@@ -7,6 +7,8 @@ use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\Bot;
+use app\modules\bot\models\BotChatCaptcha;
+use yii\console\Exception;
 
 /**
  * Class BotController
@@ -19,20 +21,7 @@ class BotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
-
-        if (isset($bots)) {
-            foreach ($bots as $bot) {
-                if ($bot->removeUnverifiedUsers()) {
-                    // TODO вывести количество забаненных участников и количество обработанных групп
-                    //$this->output('Removed users who didn\'t pass the captcha in groups.');
-                } else {
-                    echo 'ERROR: while removing users who didn\'t pass the captcha for ' . $bot->id;
-                };
-            }
-        }
-
-        return true;
+        $this->removeUnverifiedUsers();
     }
 
     /**
@@ -115,5 +104,55 @@ class BotController extends Controller implements CronChainedInterface
         echo 'Bot with the same token already exists';
 
         return false;
+    }
+
+    public function removeUnverifiedUsers()
+    {
+        $updatesCount = 0;
+
+        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
+
+        if ($bots) {
+            foreach ($bots as $bot) {
+                $usersToBan = BotChatCaptcha::find()
+                    ->select('bot_chat_captcha.*')
+                    ->with('chat')
+                    ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
+                    ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
+                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_RESPONSE_AWAIT])
+                    ->andFilterWhere(['bot.id' => $this->id])
+                    ->all();
+
+                if (isset($usersToBan)) {
+                    $botApi = new \TelegramBot\Api\BotApi($this->token);
+
+                    foreach ($usersToBan as $record) {
+                        BotChatCaptcha::deleteAll([
+                            'chat_id' => $record->chat->chat_id,
+                            'provider_user_id' => $record->chat->provider_user_id,
+                        ]);
+
+                        try {
+                            $botApi->deleteMessage($record->chat_id, $record->captcha_message_id);
+                        } catch (Exception $e) {
+                            echo 'ERROR: BotChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
+                        }
+
+                        try {
+                            $botApi->kickChatMember($record->chat_id, $record->provider_user_id);
+                        } catch (Exception $e) {
+                            echo 'ERROR: BotChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
+                        }
+                        $updatesCount++;
+                    }
+                }
+            }
+        }
+
+        if ($updatesCount) {
+            $this->output('Users kicked from telegram groups (Join Captcha): ' . $updatesCount);
+        }
+
+        return true;
     }
 }
