@@ -84,24 +84,4 @@ class BotChatCaptcha extends ActiveRecord
     {
         return $this->hasOne(User::class, ['provider_user_id' => 'provider_user_id']);
     }
-
-    /**
-     * Removes captha record
-     *
-     * @param $chatId
-     * @param $providerUserId
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    public static function removeCaptchaInfo($chatId, $providerUserId)
-    {
-        $botCaptcha = self::find()->where([
-            'chat_id' => $chatId,
-            'provider_user_id' => $providerUserId
-        ])->one();
-
-        if ($botCaptcha) {
-            $botCaptcha->delete();
-        }
-    }
 }

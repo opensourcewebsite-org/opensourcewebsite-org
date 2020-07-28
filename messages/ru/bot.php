@@ -343,7 +343,7 @@ return [
     'in your profile' => 'в вашем профиле',
     'Cross rate' => 'Кросс-курс',
     'cross rate' => 'кросс-курс',
-    'Press {0} to verify that you are a human' => 'Нажмите {0} чтобы доказать, что вы человек',
+    'Before sending any message, press {0} to verify that you are a human' => 'Перед тем как отправить любое сообщение, нажмите {0} чтобы доказать, что вы человек',
     'If you don\'t solve the captcha in {0,number} mins, you will be automatically kicked out of the group' => 'Если вы не решите эту капчу в течение {0,number} минут, вы будете автоматически исключены из группы',
     'Greeting' => 'Приветствие',
     'sends a welcome message for recently joined members' => 'отправляет приветственное сообщение для недавно присоединившихся участников',

@@ -18,7 +18,6 @@ use app\models\Rating;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\controllers\publics\JoinCaptchaController;
 
 /**
  * OSW Bot module definition class
@@ -123,7 +122,9 @@ class Module extends \yii\base\Module
         }
         if (isset($updateUser) && isset($updateChat)) {
             $isNewUser = false;
-            $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
+            $telegramUser = TelegramUser::findOne([
+                'provider_user_id' => $updateUser->getId(),
+            ]);
             // Store telegram user if it doesn't exist yet
             if (!isset($telegramUser)) {
                 $isNewUser = true;
@@ -196,18 +197,13 @@ class Module extends \yii\base\Module
             $this->setupPaths($namespace);
 
             if (!$telegramChat->hasUser($telegramUser)) {
-                $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
-
-                $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-                if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
-                    $role = JoinCaptchaController::ROLE_UNVERIFIED;
-                } else {
-                    $role = JoinCaptchaController::ROLE_VERIFIED;
-                }
+                $telegramChatMember = $this->botApi->getChatMember(
+                    $telegramChat->chat_id,
+                    $telegramUser->provider_user_id
+                );
 
                 $telegramChat->link('users', $telegramUser, [
                     'status' => $telegramChatMember->getStatus(),
-                    'role' => $role,
                 ]);
             }
 

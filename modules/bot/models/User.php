@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\models;
 
-use \yii\db\ActiveRecord;
+use yii\db\ActiveRecord;
 use app\models\Language;
 use models\User as GlobalUser;
 
@@ -38,8 +38,9 @@ class User extends ActiveRecord
         $language = Language::findOne([
             'code' => $updateUser->getLanguageCode(),
         ]);
+
         if (!isset($language)) {
-            $language = Language::findOne([ 'code' => 'en' ]);
+            $language = Language::findOne(['code' => 'en']);
         }
 
         $newUser = new User();
@@ -48,7 +49,6 @@ class User extends ActiveRecord
             'language_id' => $language->id,
             'is_authenticated' => true,
         ]);
-
         $newUser->save();
 
         return $newUser;
