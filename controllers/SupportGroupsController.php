@@ -44,6 +44,8 @@ class SupportGroupsController extends Controller
     public function init()
     {
         $this->supportComponent = new SupportGroupComponent\Keeper();
+
+        parent::init();
     }
 
     /**
