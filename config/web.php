@@ -28,6 +28,7 @@ $config = [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
+        '@bot' => '@app/modules/bot',
     ],
     'modules' => [
         'guest' => [

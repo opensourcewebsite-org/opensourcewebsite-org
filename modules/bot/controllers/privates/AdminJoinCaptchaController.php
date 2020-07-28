@@ -21,6 +21,7 @@ class AdminJoinCaptchaController extends Controller
     public function actionIndex($chatId = null)
     {
         $chat = Chat::findOne($chatId);
+        $telegramUser = $this->getTelegramUser();
 
         if (!isset($chat)) {
             return [];
@@ -45,7 +46,7 @@ class AdminJoinCaptchaController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle')),
+                $this->render('index', compact('chatTitle', 'telegramUser')),
                 [
                         [
                             [

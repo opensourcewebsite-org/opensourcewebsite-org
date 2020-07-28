@@ -238,7 +238,8 @@ return [
     'To start a vote, send a reply «<b>voteban</b>» to a message of any member of the group' => 'Для того чтобы начать голосование, отправьте ответ «<b>voteban</b>» на сообщение любого участника группы',
     'Not applicable for administrators' => 'Не применимо к администраторам',
     'allows members to leave likes and dislikes for any member of the group' => 'позволяет участникам оставлять лайки и дизлайки для любого участника группы',
-    'requires filling in captcha for recently joined members' => 'требует заполнить капчу для недавно присоединившихся участников',
+    'sends a captcha message to newly joined members' => 'отправляет сообщение с капчей новым участникам',
+    'Ignores telegram bots' => 'Игнорирует телеграм ботов',
     'Sexuality' => 'Сексуальная ориентация',
     'Your Sexuality' => 'Ваша сексуальная ориентация',
     'Choose your sexuality' => 'Выберите вашу сексуальную ориентацию',
@@ -346,5 +347,5 @@ return [
     'Before sending any messages, press {0} to verify that you are a human' => 'Перед отправкой любых сообщений, нажмите {0} чтобы доказать, что вы человек',
     'If you don\'t solve the captcha in {0,number} mins, you will be automatically kicked out of the group' => 'Если вы не решите эту капчу в течение {0,number} минут, вы будете автоматически исключены из группы',
     'Greeting' => 'Приветствие',
-    'sends a welcome message for recently joined members' => 'отправляет приветственное сообщение для недавно присоединившихся участников',
+    'sends a welcome message to newly joined members' => 'отправляет приветственное сообщение новым участникам',
 ];

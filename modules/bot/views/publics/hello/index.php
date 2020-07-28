@@ -12,7 +12,9 @@
 <br/>
 <?= Yii::t('bot', 'Join Hider') ?> - <?= Yii::t('bot', 'to automatic delete joining and leaving system messages in the group') ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'Join Captcha') ?> - <?= Yii::t('bot', 'requires filling in captcha for recently joined members') ?>.<br/>
+<?= Yii::t('bot', 'Join Captcha') ?> - <?= Yii::t('bot', 'sends a captcha message to newly joined members') ?>.<br/>
+<br/>
+<?= Yii::t('bot', 'Greeting') ?> - <?= Yii::t('bot', 'sends a welcome message to newly joined members') ?>.<br/>
 <br/>
 <?= Yii::t('bot', 'Message Filter') ?> - <?= Yii::t('bot', 'to filter messages in the group using a list of allowed phrases (Whitelist) or a list of forbidden phrases (Blacklist)') ?>.<br/>
 <br/>

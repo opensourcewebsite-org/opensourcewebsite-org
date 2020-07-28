@@ -10,4 +10,3 @@ if ($user->provider_user_name) {
 }
 ?>
 <?= Yii::t('bot', 'Welcome') ?>, <?= $userLink ?>!<br/>
-<br/>

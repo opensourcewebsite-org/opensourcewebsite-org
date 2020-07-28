@@ -75,9 +75,11 @@ class SystemMessageController extends Controller
 
                 // Send greeting message
                 if (isset($greetingStatus) && ($greetingStatus->value == ChatSetting::GREETING_STATUS_ON)) {
-                    $this->run('greeting/show-greeting', [
-                        'telegramUserId' => $telegramUser->id,
-                    ]);
+                    if (!$newChatMember->isBot()) {
+                        $this->run('greeting/show-greeting', [
+                            'telegramUserId' => $telegramUser->id,
+                        ]);
+                    }
                 }
             }
         }
