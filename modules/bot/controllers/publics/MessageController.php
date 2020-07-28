@@ -2,9 +2,12 @@
 
 namespace app\modules\bot\controllers\publics;
 
+use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\BotChatCaptcha;
+use TelegramBot\Api\HttpException;
 
 /**
  * Class MessageController
@@ -19,41 +22,58 @@ class MessageController extends Controller
     public function actionIndex()
     {
         $telegramUser = $this->getTelegramUser();
-        $chat = $this->getTelegramChat();
+        $telegramChat = $this->getTelegramChat();
 
-        $joinCaptchaStatusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
+        $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
 
-        /* Captcha handle*/
-        if (isset($joinCaptchaStatusSetting) && ($joinCaptchaStatusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
+        if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
             $chatMember = ChatMember::findOne([
-                'chat_id' => $chat->id,
+                'chat_id' => $telegramChat->id,
                 'user_id' => $telegramUser->id,
             ]);
-            if ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) {
-                return $this->getResponseBuilder()
-                    ->deleteMessage()
-                    ->build();
+
+            if (($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdmin()) {
+                try {
+                    $this->getBotApi()->deleteMessage(
+                        $telegramChat->chat_id,
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                } catch (HttpException $e) {
+                    Yii::warning($e);
+                }
+
+                $botCaptcha = BotChatCaptcha::find()
+                    ->where([
+                        'chat_id' => $telegramChat->id,
+                        'provider_user_id' => $telegramUser->provider_user_id,
+                    ])
+                    ->one();
+
+                // Forward to captcha if a new member
+                if (!isset($botCaptcha)) {
+                    $this->run('join-captcha/show-captcha');
+                }
             }
         }
 
-        $messageFilterStatusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
-        $messageFilterModeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
+        $messageFilterStatus = $telegramChat->getSetting(ChatSetting::FILTER_STATUS);
+        $messageFilterMode = $telegramChat->getSetting(ChatSetting::FILTER_MODE);
 
         $deleteMessage = false;
 
-        if (isset($messageFilterStatusSetting) && isset($messageFilterModeSetting) && ($messageFilterStatusSetting->value == ChatSetting::FILTER_STATUS_ON)) {
+        if (isset($messageFilterStatus) && isset($messageFilterMode) && ($messageFilterStatus->value == ChatSetting::FILTER_STATUS_ON)) {
             if ($this->getMessage()->getText() !== null) {
-                $adminUser = $chat->getAdministrators()
+                $adminUser = $telegramChat->getAdministrators()
                     ->where([
                         'id' => $telegramUser->user_id,
                     ])
                     ->one();
 
                 if (!isset($adminUser)) {
-                    if ($messageFilterModeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+                    if ($messageFilterMode->value == ChatSetting::FILTER_MODE_BLACKLIST) {
                         $deleteMessage = false;
 
-                        $phrases = $chat->getBlacklistPhrases()->all();
+                        $phrases = $telegramChat->getBlacklistPhrases()->all();
 
                         foreach ($phrases as $phrase) {
                             if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
@@ -64,7 +84,7 @@ class MessageController extends Controller
                     } else {
                         $deleteMessage = true;
 
-                        $phrases = $chat->getWhitelistPhrases()->all();
+                        $phrases = $telegramChat->getWhitelistPhrases()->all();
 
                         foreach ($phrases as $phrase) {
                             if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
@@ -77,9 +97,14 @@ class MessageController extends Controller
             }
 
             if ($deleteMessage) {
-                return $this->getResponseBuilder()
-                    ->deleteMessage()
-                    ->build();
+                try {
+                    $this->getBotApi()->deleteMessage(
+                        $telegramChat->chat_id,
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                } catch (HttpException $e) {
+                    Yii::warning($e);
+                }
             }
         }
 

@@ -10,5 +10,3 @@ if ($user->provider_user_name) {
 }
 ?>
 <?= Yii::t('bot', 'Welcome') ?>, <?= $userLink ?>!<br/>
-<br/>
-<?= Yii::t('bot', 'Before sending any messages, press {0} to verify that you are a human', '👍') ?>. <?= Yii::t('bot', 'If you don\'t solve the captcha in {0,number} mins, you will be automatically kicked out of the group', 5) ?>.<br/>

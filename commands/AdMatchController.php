@@ -8,6 +8,7 @@ use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\AdOffer;
 use app\modules\bot\models\AdSearch;
+use yii\console\Exception;
 
 /**
  * Class AdMatchController
@@ -42,13 +43,17 @@ class AdMatchController extends Controller implements CronChainedInterface
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($adSearchQuery->all() as $adSearch) {
-            $updatesCount++;
-            $adSearch->updateMatches();
+            try {
+                $updatesCount++;
+                $adSearch->updateMatches();
 
-            $adSearch->setAttributes([
-                'processed_at' => time(),
-            ]);
-            $adSearch->save();
+                $adSearch->setAttributes([
+                    'processed_at' => time(),
+                ]);
+                $adSearch->save();
+            } catch (Exception $e) {
+                echo 'ERROR: AdSearch #' . $adSearch->id . ': ' . $e->getMessage() . "\n";
+            }
         }
 
         if ($updatesCount) {
@@ -69,13 +74,17 @@ class AdMatchController extends Controller implements CronChainedInterface
             ->addOrderBy(['user.created_at' => SORT_ASC]);
 
         foreach ($adOfferQuery->all() as $adOffer) {
-            $updatesCount++;
-            $adOffer->updateMatches();
+            try {
+                $updatesCount++;
+                $adOffer->updateMatches();
 
-            $adOffer->setAttributes([
-                'processed_at' => time(),
-            ]);
-            $adOffer->save();
+                $adOffer->setAttributes([
+                    'processed_at' => time(),
+                ]);
+                $adOffer->save();
+            } catch (Exception $e) {
+                echo 'ERROR: AdOffer #' . $adOffer->id . ': ' . $e->getMessage() . "\n";
+            }
         }
 
         if ($updatesCount) {

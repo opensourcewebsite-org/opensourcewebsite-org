@@ -7,25 +7,25 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "bot_chat_captcha".
+ * This is the model class for table "bot_chat_greeting".
  *
  * @property int $id
  * @property int $chat_id
  * @property int $provider_user_id
  * @property int|null $sent_at
- * @property int $captcha_message_id
+ * @property int $message_id
  *
  * @property Chat $chat
  * @property User $providerUser
  */
-class BotChatCaptcha extends ActiveRecord
+class BotChatGreeting extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bot_chat_captcha';
+        return 'bot_chat_greeting';
     }
 
     /**
@@ -34,8 +34,8 @@ class BotChatCaptcha extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'provider_user_id', 'captcha_message_id'], 'required'],
-            [['chat_id', 'provider_user_id', 'sent_at', 'captcha_message_id'], 'integer'],
+            [['chat_id', 'provider_user_id', 'message_id'], 'required'],
+            [['chat_id', 'provider_user_id', 'sent_at', 'message_id'], 'integer'],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['provider_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['provider_user_id' => 'provider_user_id']],
         ];
