@@ -8,6 +8,7 @@ use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\ChatSetting;
 use yii\console\Exception;
 
 /**
