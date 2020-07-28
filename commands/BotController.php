@@ -125,7 +125,7 @@ class BotController extends Controller implements CronChainedInterface
                     ->all();
 
                 if (isset($usersToBan)) {
-                    $botApi = new \TelegramBot\Api\BotApi($this->token);
+                    $botApi = new \TelegramBot\Api\BotApi($bot->token);
 
                     foreach ($usersToBan as $record) {
                         BotChatCaptcha::deleteAll([
