@@ -24,7 +24,7 @@ class JoinCaptchaController extends Controller
     public const ROLE_VERIFIED = 1;
 
     /**
-     * Action shows captcha and restricts user to send messages
+     * Action shows captcha
      *
      * @return array
      */

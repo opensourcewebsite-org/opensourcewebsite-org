@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\publics;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use TelegramBot\Api\HttpException;
@@ -25,13 +26,27 @@ class SystemMessageController extends Controller
     {
         $telegramChat = $this->getTelegramChat();
 
+        $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
         $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
+        $greetingStatus = $telegramChat->getSetting(ChatSetting::GREETING_STATUS);
         $role = JoinCaptchaController::ROLE_VERIFIED;
 
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
+            // Remove join message
+            if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
+                try {
+                    $this->getBotApi()->deleteMessage(
+                        $telegramChat->chat_id,
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                } catch (HttpException $e) {
+                    Yii::warning($e);
+                }
+            }
+
             foreach ($this->getUpdate()->getMessage()->getNewChatMembers() as $newChatMember) {
                 $telegramUser = TelegramUser::findOne([
-                    'provider_user_id' => $newChatMember->getId()
+                    'provider_user_id' => $newChatMember->getId(),
                 ]);
 
                 if (!$telegramUser) {
@@ -57,18 +72,12 @@ class SystemMessageController extends Controller
                         'role' => $role,
                     ]);
                 }
-            }
 
-            $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-
-            if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
+                // Send greeting message
+                if (isset($greetingStatus) && ($greetingStatus->value == ChatSetting::GREETING_STATUS_ON)) {
+                    $this->run('greeting/show-greeting', [
+                        'telegramUserId' => $telegramUser->id,
+                    ]);
                 }
             }
         }
@@ -96,7 +105,8 @@ class SystemMessageController extends Controller
                 }
             }
 
-            // Remove captcha info if user left channel
+            // Remove captcha message if user left the group
+            // Doesn't work if someone kicked the user from the group
             $botCaptcha = BotChatCaptcha::find()
                 ->where([
                     'chat_id' => $telegramChat->id,
@@ -115,6 +125,28 @@ class SystemMessageController extends Controller
                 }
 
                 $botCaptcha->delete();
+            }
+
+            // Remove greeting message if user left the group
+            // Doesn't work if someone kicked the user from the group
+            $botGreeting = BotChatGreeting::find()
+                ->where([
+                    'chat_id' => $telegramChat->id,
+                    'provider_user_id' => $telegramUser->provider_user_id,
+                ])
+                ->one();
+
+            if (isset($botGreeting)) {
+                try {
+                    $this->getBotApi()->deleteMessage(
+                        $telegramChat->chat_id,
+                        $botGreeting->message_id
+                    );
+                } catch (HttpException $e) {
+                    Yii::warning($e);
+                }
+
+                $botGreeting->delete();
             }
         }
     }

@@ -7,6 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotChatCaptcha;
+use TelegramBot\Api\HttpException;
 
 /**
  * Class MessageController
@@ -96,9 +97,14 @@ class MessageController extends Controller
             }
 
             if ($deleteMessage) {
-                return $this->getResponseBuilder()
-                    ->deleteMessage()
-                    ->build();
+                try {
+                    $this->getBotApi()->deleteMessage(
+                        $telegramChat->chat_id,
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                } catch (HttpException $e) {
+                    Yii::warning($e);
+                }
             }
         }
 

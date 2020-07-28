@@ -8,6 +8,7 @@ use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\ChatSetting;
 use yii\console\Exception;
 
@@ -23,6 +24,7 @@ class BotController extends Controller implements CronChainedInterface
     public function actionIndex()
     {
         $this->removeUnverifiedUsers();
+        $this->removeGreetings();
     }
 
     /**
@@ -115,32 +117,29 @@ class BotController extends Controller implements CronChainedInterface
 
         if ($bots) {
             foreach ($bots as $bot) {
-                $usersToBan = BotChatCaptcha::find()
-                    ->select('bot_chat_captcha.*')
-                    ->with('chat')
-                    ->leftJoin('bot_chat', 'bot_chat_captcha.chat_id = bot_chat.id')
-                    ->leftJoin('bot', 'bot_chat.bot_id = bot.id')
-                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_RESPONSE_AWAIT])
-                    ->andFilterWhere(['bot.id' => $this->id])
+                $messagesToRemove = BotChatCaptcha::find()
+                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_LIFETIME_DEFAULT])
+                    ->joinWith('chat')
+                    ->andWhere(['bot_chat.bot_id' => $bot->id])
                     ->all();
 
-                if (isset($usersToBan)) {
+                if ($messagesToRemove) {
                     $botApi = new \TelegramBot\Api\BotApi($bot->token);
 
-                    foreach ($usersToBan as $record) {
+                    foreach ($messagesToRemove as $record) {
                         BotChatCaptcha::deleteAll([
-                            'chat_id' => $record->chat->chat_id,
-                            'provider_user_id' => $record->chat->provider_user_id,
+                            'chat_id' => $record->chat_id,
+                            'provider_user_id' => $record->provider_user_id,
                         ]);
 
                         try {
-                            $botApi->deleteMessage($record->chat_id, $record->captcha_message_id);
+                            $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
                         } catch (Exception $e) {
                             echo 'ERROR: BotChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
 
                         try {
-                            $botApi->kickChatMember($record->chat_id, $record->provider_user_id);
+                            $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
                         } catch (Exception $e) {
                             echo 'ERROR: BotChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
                         }
@@ -151,7 +150,49 @@ class BotController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Users kicked from telegram groups (Join Captcha): ' . $updatesCount);
+            $this->output('Join Captcha. Users kicked from telegram groups: ' . $updatesCount);
+        }
+
+        return true;
+    }
+
+    public function removeGreetings()
+    {
+        $updatesCount = 0;
+
+        $bots = Bot::findAll(['status' => Bot::BOT_STATUS_ENABLED]);
+
+        if ($bots) {
+            foreach ($bots as $bot) {
+                $messagesToRemove = BotChatGreeting::find()
+                    ->where(['<', 'sent_at', time() - ChatSetting::GREETING_LIFETIME_DEFAULT])
+                    ->joinWith('chat')
+                    ->andWhere(['bot_chat.bot_id' => $bot->id])
+                    ->all();
+
+                if ($messagesToRemove) {
+                    $botApi = new \TelegramBot\Api\BotApi($bot->token);
+
+                    foreach ($messagesToRemove as $record) {
+                        BotChatGreeting::deleteAll([
+                            'chat_id' => $record->chat_id,
+                            'provider_user_id' => $record->provider_user_id,
+                        ]);
+
+                        try {
+                            $botApi->deleteMessage($record->chat->chat_id, $record->message_id);
+                        } catch (Exception $e) {
+                            echo 'ERROR: BotChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
+                        }
+
+                        $updatesCount++;
+                    }
+                }
+            }
+        }
+
+        if ($updatesCount) {
+            $this->output('Greeting. Greetings removed from telegram groups: ' . $updatesCount);
         }
 
         return true;
