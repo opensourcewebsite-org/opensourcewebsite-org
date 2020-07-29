@@ -56,7 +56,16 @@ class AdminGreetingController extends Controller
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
                             ],
                         ],
+                    [
                         [
+                            'callback_data' => self::createRoute('message', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Message'),
+                        ],
+                    ],
+
+                    [
                             [
                                 'callback_data' => AdminChatController::createRoute('index', [
                                     'chatId' => $chatId,
@@ -64,7 +73,8 @@ class AdminGreetingController extends Controller
                                 'text' => Emoji::BACK,
                             ],
                         ]
-                    ]
+                    ],
+
             )
             ->build();
     }
@@ -88,5 +98,9 @@ class AdminGreetingController extends Controller
         $statusSetting->save();
 
         return $this->actionIndex($chatId);
+    }
+
+    public function actionMessage(int $chatId)
+    {
     }
 }
