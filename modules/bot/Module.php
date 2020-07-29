@@ -84,7 +84,6 @@ class Module extends \yii\base\Module
     public function handleInput($input, $token)
     {
         $result = false;
-
         $updateArray = json_decode($input, true);
         $this->update = Update::fromResponse($updateArray);
         $this->botInfo = Bot::findOne(['token' => $token]);

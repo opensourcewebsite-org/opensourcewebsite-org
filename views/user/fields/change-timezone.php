@@ -7,6 +7,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 
+$timezones = TimeHelper::timezonesList();
 ?>
 <div class="profile-form">
     <?php
@@ -23,27 +24,26 @@ use kartik\select2\Select2;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?php
-                            $timezones = TimeHelper::timezonesList();
-
-                            echo $timezoneForm->field($user, 'timezone')->widget(
-                                Select2::class,
-                                [
-                                    'name'    => 'change-timezone',
-                                    'value'   => Yii::$app->user->identity->timezone,
-                                    'data'    => $timezones,
-                                    'options' => [
-                                        'id'     => 'timezone-value',
-                                        'prompt' => '',
-                                    ]
-                                ])->label(Yii::t('app', 'Timezone')); ?>
+                            <?= $timezoneForm->field($user, 'timezone')->widget(
+                                    Select2::class,
+                                    [
+                                        'name'    => 'change-timezone',
+                                        'value'   => Yii::$app->user->identity->timezone,
+                                        'data'    => $timezones,
+                                        'options' => [
+                                            'id'     => 'timezone-value',
+                                            'prompt' => '',
+                                        ]
+                                    ])->label(Yii::t('app', 'Timezone')); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
                     <?= CancelButton::widget([
-                        'url' => ['/account']
+                        'url' => [
+                            '/account',
+                        ],
                     ]); ?>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
 use app\modules\bot\components\Controller as Controller;
@@ -23,17 +24,15 @@ class MyTimezoneController extends Controller
         $user = $this->getUser();
         $timezones = TimeHelper::timezonesList();
 
-        if ($timezone) {
-            if (array_key_exists($timezone, $timezones)) {
-                $user->timezone = $timezone;
-                $user->save();
-            }
+        if (($timezone >= -720) && ($timezone <= 840)) {
+            $user->timezone = $timezone;
+            $user->save();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => $timezones[$user->timezone],
+                    'timezone' => TimeHelper::getNameByOffset($user->timezone),
                 ]),
                 [
                     [
@@ -51,11 +50,8 @@ class MyTimezoneController extends Controller
             ->build();
     }
 
-    public function actionList($page = 22)
+    public function actionList($page = 2)
     {
-        $update = $this->getUpdate();
-        $user = $this->getUser();
-
         $timezones = TimeHelper::timezonesList();
 
         $pagination = new Pagination([
@@ -68,35 +64,33 @@ class MyTimezoneController extends Controller
 
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
-
-        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit);
+        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('list', [
                 'page' => $page,
             ]);
         });
+
         $buttons = [];
 
-        if ($timezones) {
-            foreach ($timezones as $timezone => $fullName) {
-                $buttons[][] = [
-                    'text' => $fullName,
-                    'callback_data' => self::createRoute('index', [
-                        'timezone' => $timezone,
-                    ]),
-                ];
-            }
-
-            if ($paginationButtons) {
-                $buttons[] = $paginationButtons;
-            }
-
+        foreach ($timezones as $timezone => $name) {
             $buttons[][] = [
-                'callback_data' => self::createRoute(),
-                'text' => Emoji::BACK,
+                'text' => $name,
+                'callback_data' => self::createRoute('index', [
+                    'timezone' => $timezone,
+                ]),
             ];
         }
+
+        if ($paginationButtons) {
+            $buttons[] = $paginationButtons;
+        }
+
+        $buttons[][] = [
+            'callback_data' => self::createRoute(),
+            'text' => Emoji::BACK,
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
