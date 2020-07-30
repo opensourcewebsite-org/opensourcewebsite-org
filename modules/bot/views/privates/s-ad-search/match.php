@@ -20,9 +20,5 @@ use app\modules\bot\components\helpers\Emoji;
 <?php if ($user) : ?>
 ————<br/>
 <br/>
-<?php if ($user->provider_user_name) : ?>
-<b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
-<?php else : ?>
-<b><?= Yii::t('bot', 'Contact') ?>:</b> <a href="tg://user?id=<?= $user->provider_user_id ?>"><?= $user->provider_user_first_name ?> <?= $user->provider_user_last_name ?></a>
-<?php endif; ?>
+<b><?= Yii::t('bot', 'Contact') ?>:</b> <?= $user->getFullLink(); ?>
 <?php endif; ?>
