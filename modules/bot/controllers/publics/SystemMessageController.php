@@ -8,6 +8,7 @@ use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\ChatMember;
 use TelegramBot\Api\HttpException;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\controllers\publics\JoinCaptchaController;
@@ -55,22 +56,27 @@ class SystemMessageController extends Controller
                     $telegramUser->save();
                 }
 
-                if (!$telegramChat->hasUser($telegramUser)) {
+                if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
+                    if (!$newChatMember->isBot()) {
+                        $role = JoinCaptchaController::ROLE_UNVERIFIED;
+                    }
+                }
+
+                if (!$chatMember = $telegramChat->getChatMemberByUser($telegramUser)) {
                     $telegramChatMember = $this->getBotApi()->getChatMember(
                         $telegramChat->chat_id,
                         $telegramUser->provider_user_id
                     );
 
-                    if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
-                        if (!$newChatMember->isBot()) {
-                            $role = JoinCaptchaController::ROLE_UNVERIFIED;
-                        }
-                    }
-
                     $telegramChat->link('users', $telegramUser, [
                         'status' => $telegramChatMember->getStatus(),
                         'role' => $role,
                     ]);
+                } else {
+                    $chatMember->setAttributes([
+                         'role' => $role,
+                    ]);
+                    $chatMember->save();
                 }
 
                 // Send greeting message

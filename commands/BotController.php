@@ -82,11 +82,12 @@ class BotController extends Controller implements CronChainedInterface
     {
         if (!$bot = Bot::findOne(['token' => $token])) {
             $bot = new Bot();
-
             $botApi = new \TelegramBot\Api\BotApi($token);
+
             if (isset(Yii::$app->params['telegramProxy'])) {
                 $botApi->setProxy(Yii::$app->params['telegramProxy']);
             }
+
             $user = $botApi->getMe();
 
             $bot->name = $user->getUsername();
@@ -184,7 +185,6 @@ class BotController extends Controller implements CronChainedInterface
                         } catch (Exception $e) {
                             echo 'ERROR: BotChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
-
                         $updatesCount++;
                     }
                 }
