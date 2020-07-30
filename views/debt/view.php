@@ -38,53 +38,21 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                 'columns' => [
                     [
                         'label' => 'User',
-                        'value' => function ($data) use ($direction) {
-                            return $data->getUserDisplayName($direction);
-                        },
-                        'format' => 'html',
-                    ],
-                    [
-                        'label' => 'Amount',
-                        'value' => function ($data) {
-                            return $data->amount ?? null;
-                        },
-                        'format' => 'html',
-                    ],
-                    [
-                        'label' => 'Created At',
-                        'value' => function ($data) {
-                            return $data->created_at ?? null;
-                        },
-                        'format' => 'relativeTime',
-                    ],
-                    [
-                        'value' => function (Debt $data) {
-                            if ($data->isStatusPending()) {
-                                return '<span class="badge badge-warning">Pending</span>';
+                        'value' => function ($data) use ($direction, $currencyId) {
+                            if ($direction == Debt::DIRECTION_DEPOSIT) {
+                                $userId = $data->fromUser->id;
+                            } elseif ($direction == Debt::DIRECTION_CREDIT) {
+                                $userId = $data->toUser->id;
                             }
-                            return '';
+
+                            return Html::a($data->getUserDisplayName($direction), [
+                                'view-user', 
+                                'direction'   => $direction, 
+                                'userId'      => $userId, 
+                                'currencyId'  => $currencyId
+                            ]);
                         },
                         'format' => 'html',
-                    ],
-                    [
-                        'class' => ActionColumn::class,
-                        'template' => '{confirm} {cancel}',
-                        'buttons' => [
-                            'confirm' => function ($url, $data) use ($direction, $currencyId) {
-                                return Html::a('Confirm', ['debt/confirm', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-success']);
-                            },
-                            'cancel' => function ($url, $data) use ($direction, $currencyId) {
-                                return Html::a('Cancel', ['debt/cancel', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-danger']);
-                            },
-                        ],
-                        'visibleButtons' => [
-                            'confirm' => function ($data) use ($direction) {
-                                return $data->canConfirmDebt($direction);
-                            },
-                            'cancel' => function ($data) {
-                                return $data->canCancelDebt();
-                            },
-                        ],
                     ],
                 ],
                 'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
