@@ -65,6 +65,8 @@ use app\modules\bot\components\helpers\Emoji;
 <?php endif; ?>
 <?php endif; ?>
 <?php if ($user) : ?>
+————<br/>
+<br/>
 <?php if ($user->provider_user_name) : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
 <?php else : ?>

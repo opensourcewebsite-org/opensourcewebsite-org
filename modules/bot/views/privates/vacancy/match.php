@@ -35,6 +35,8 @@ use app\modules\bot\components\helpers\Emoji;
 <b><?= Yii::t('bot', 'Remote work') ?></b>: <?= $remote_on == Resume::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
 <?php if ($user) : ?>
+————<br/>
+<br/>
 <?php if ($user->provider_user_name) : ?>
 <b><?= Yii::t('bot', 'Contact') ?>:</b> @<?= $user->provider_user_name ?>
 <?php else : ?>
