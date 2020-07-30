@@ -32,13 +32,13 @@ class AdminChatController extends Controller
 
             $chatTitle = $chat->title;
 
-            // TODO refactoring
-            $update = $this->getUpdate();
+            // TODO refactoring, для того чтобы ограничить доступ к настройкам группы
+            if ($this->getUpdate()->getCallbackQuery()) {
+                $admins = $chat->getAdministrators()->all();
 
-            if ($update->getCallbackQuery()) {
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
-                        $this->render('index', compact('chatTitle')),
+                        $this->render('index', compact('chatTitle', 'admins')),
                         [
                             [
                                 [
@@ -109,34 +109,7 @@ class AdminChatController extends Controller
                     ->build();
             }
 
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('index', compact('chatTitle')),
-                    [
-                        [
-                            [
-                                'callback_data' => AdminMessageFilterController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Message Filter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminJoinHiderController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Join Hider'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                        ],
-                    ]
-                )->build();
+            return [];
         }
     }
 }

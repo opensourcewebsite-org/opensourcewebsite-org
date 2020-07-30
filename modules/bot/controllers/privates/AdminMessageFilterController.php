@@ -27,7 +27,7 @@ class AdminMessageFilterController extends Controller
                 'class' => WordlistAdminComponent::className(),
                 'wordModelClass' => Phrase::className(),
                 'modelAttributes' => [
-                    'type' => Chat::FILTER_MODE_BLACKLIST
+                    'type' => ChatSetting::FILTER_MODE_BLACKLIST
                 ],
                 'actionGroupName' => 'blacklist',
             ])->actions(),
@@ -35,7 +35,7 @@ class AdminMessageFilterController extends Controller
                 'class' => WordlistAdminComponent::className(),
                 'wordModelClass' => Phrase::className(),
                 'modelAttributes' => [
-                    'type' => Chat::FILTER_MODE_WHITELIST
+                    'type' => ChatSetting::FILTER_MODE_WHITELIST
                 ],
                 'actionGroupName' => 'whitelist',
             ])->actions()

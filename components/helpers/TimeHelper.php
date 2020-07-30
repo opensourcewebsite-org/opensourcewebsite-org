@@ -13,19 +13,56 @@ class TimeHelper
 {
     public static function timezonesList()
     {
-        $zones_array = $sorted = [];
-        $timestamp = time();
-        foreach (timezone_identifiers_list() as $key => $zone) {
-            date_default_timezone_set($zone);
-            $zones_array[str_replace(':', '', date('P', $timestamp))][$zone] = ($zone != 'UTC' ? ' (UTC ' . date('P', $timestamp) . ') ' . $zone : $zone);
-        }
-        ksort($zones_array);
-        foreach ($zones_array as $zones) {
-            foreach ($zones as $key => $zone) {
-                $sorted[$key] = $zone;
-            }
+        $timeOffsets = [
+            -720,
+            -660,
+            -600,
+            -570,
+            -540,
+            -480,
+            -420,
+            -360,
+            -300,
+            -240,
+            -210,
+            -180,
+            -150,
+            -120,
+            -60,
+            0,
+            60,
+            120,
+            180,
+            240,
+            270,
+            300,
+            330,
+            345,
+            360,
+            390,
+            420,
+            480,
+            525,
+            540,
+            570,
+            600,
+            630,
+            660,
+            720,
+            765,
+            780,
+            840];
+
+        $timeOffsetsNames = [];
+        foreach ($timeOffsets as $timeOffset) {
+            $timeOffsetsNames[$timeOffset] = self::getNameByOffset($timeOffset);
         }
 
-        return $sorted;
+        return $timeOffsetsNames;
+    }
+
+    public static function getNameByOffset($timeOffset)
+    {
+        return 'UTC ' . ($timeOffset < 0 ? '-' : '+') . date('H:i', abs($timeOffset) * 60);
     }
 }

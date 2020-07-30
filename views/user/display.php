@@ -70,7 +70,7 @@ use yii\data\ArrayDataProvider;
                             ]); ?>
                         </li>
                         <li class="nav-item">
-                            <?= Html::a(Yii::t('app', 'Citizenship'), ['user/display', 'type' => UserStatistic::CITIZENSHIP], [
+                            <?= Html::a(Yii::t('app', 'Citizenships'), ['user/display', 'type' => UserStatistic::CITIZENSHIP], [
                                 'class' => 'nav-link show ' .
                                     (Yii::$app->request->get('type') === UserStatistic::CITIZENSHIP ? 'active' : '')
                             ]); ?>

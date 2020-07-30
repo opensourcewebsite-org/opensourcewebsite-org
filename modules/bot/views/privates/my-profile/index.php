@@ -10,14 +10,14 @@
 <?= Yii::t('bot', 'Telegram') . ': @' . $username; ?><br/>
 <?php endif; ?>
 <br/>
+<?php if (isset($birthday)) : ?>
+<?= Yii::t('bot', 'Birthday') . ': ' . $birthday; ?><br/>
+<?php endif; ?>
 <?php if (isset($gender)) : ?>
 <?= Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender); ?><br/>
 <?php endif; ?>
 <?php if (isset($sexuality)) : ?>
 <?= Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $sexuality); ?><br/>
-<?php endif; ?>
-<?php if (isset($birthday)) : ?>
-<?= Yii::t('bot', 'Birthday') . ': ' . $birthday; ?><br/>
 <?php endif; ?>
 <?php if (!empty($languages)) : ?>
 <br/>

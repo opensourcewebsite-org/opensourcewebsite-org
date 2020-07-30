@@ -24,9 +24,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
 {
     use ControllerLogTrait;
 
-    const UPDATE_INTERVAL = 24 * 3600;
-    const PAGE_PARSE_RETRY_INTERVAL = 5;
-    const PAGE_PARSE_RETRY_COUNT = 3;
+    const UPDATE_INTERVAL = 24 * 60 * 60; // seconds
 
     public function options($actionID)
     {
@@ -41,6 +39,8 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
 
     protected function parsePages()
     {
+        $updatesCount = 0;
+
         $baseUrl = 'https://wikidata.org/w';
         $client = new Client([
             'baseUrl' => $baseUrl,
@@ -50,7 +50,8 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
             ->indexBy('code')
             ->column();
         $baseQuery = WikiPage::find()->select('id');
-        if ($page = WikiPage::find()
+
+        $pages = WikiPage::find()
             ->with('language')
             ->joinWith('users')
             ->where([
@@ -59,31 +60,23 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                 ['<', 'wiki_page.updated_at', time() - self::UPDATE_INTERVAL],
             ])
             ->andWhere(['is not', 'user.id', null])
-            ->one()
-        ) {
-            for ($retry = 0; $retry <= self::PAGE_PARSE_RETRY_COUNT; $retry++) {
-                try {
-                    $response = $client->get('api.php', [
-                        'action'    => 'wbgetentities',
-                        'format'    => 'json',
-                        'props'     => 'sitelinks',
-                        'utf8'      => 1,
-                        'normalize' => 1,
-                        'sites'     => "{$page->language->code}wiki",
-                        'titles'    => $page->title,
-                    ])->send();
+            ->all();
 
-                    $this->output("Page parsed: {$page->title}");
-                    break;
-                } catch (ErrorException $e) {
-                    $this->output("Error parsing page: $page->title - {$e->getMessage()}");
-                    if ($retry == self::PAGE_PARSE_RETRY_COUNT) {
-                        $page->updateAttributes(['group_id' => $this->getGroupId(), 'updated_at' => time()]);
-                    } else {
-                        sleep(self::PAGE_PARSE_RETRY_INTERVAL);
-                    }
-                }
+        foreach ($pages as $page) {
+            try {
+                $response = $client->get('api.php', [
+                    'action'    => 'wbgetentities',
+                    'format'    => 'json',
+                    'props'     => 'sitelinks',
+                    'utf8'      => 1,
+                    'normalize' => 1,
+                    'sites'     => $page->language->code . 'wiki',
+                    'titles'    => $page->title,
+                ])->send();
+            } catch (ErrorException $e) {
+                echo 'ERROR: parsing page ' . $page->title . ': ' . $e->getMessage() . "\n";
             }
+
             if (isset($response)) {
                 $data = $response->data;
                 if ($data['success'] == 1 && count($data['entities'])) {
@@ -113,7 +106,13 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                         }
                         $pageIds = $query->column();
                         $time = time();
-                        WikiPage::updateAll(['group_id' => $groupId, 'updated_at' => $time], ['id' => $pageIds]);
+                        WikiPage::updateAll([
+                            'group_id' => $groupId,
+                            'updated_at' => $time,
+                        ],
+                        [
+                            'id' => $pageIds,
+                        ]);
                         $existingLanguageIds = WikiPage::find()
                             ->select('language_id')
                             ->where(['id' => $pageIds])
@@ -134,27 +133,19 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                             ['language_id', 'ns', 'title', 'group_id', 'updated_at'],
                             $rows
                         )->execute();
-                    } else {
-                        $page->updateAttributes(['group_id' => $this->getGroupId(), 'updated_at' => time()]);
                     }
-                } else {
-                    $page->updateAttributes(['group_id' => $this->getGroupId(), 'updated_at' => time()]);
                 }
             }
+            $page->updateAttributes([
+                'group_id' => $this->getGroupId(),
+                'updated_at' => time(),
+            ]);
+
+            $updatesCount++;
         }
-        if (WikiPage::find()
-            ->joinWith('users')
-            ->where([
-                'or',
-                ['wiki_page.updated_at' => null],
-                ['<', 'wiki_page.updated_at', time() - self::UPDATE_INTERVAL],
-            ])
-            ->andWhere(['is not', 'user.id', null])
-            ->exists()
-        ) {
-            $this->parsePages();
-        } else {
-            return true;
+
+        if ($updatesCount) {
+            $this->output('Pages parsed: ' . $updatesCount);
         }
     }
 
@@ -202,20 +193,23 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                 ['id' => $token->id]
             )->execute();
         } catch (ServerErrorHttpException $e) {
-            $this->output("Error updating token: #{$token->id} ServerErrorHttpException: ");
-            $this->output($e->getMessage());
+            echo 'ERROR: updating token #' . $token->id . ': ServerErrorHttpException: ' . $e->getMessage() . "\n";
 
-            Yii::$app->db->createCommand()->update(
-                '{{%user_wiki_token}}',
-                [
-                    'updated_at' => time(),
-                    'status'     => UserWikiToken::STATUS_HAS_ERROR,
-                ],
-                ['user_id' => $token->user_id, 'language_id' => $token->language_id]
-            )->execute();
+            Yii::$app->db->createCommand()
+                ->update(
+                    '{{%user_wiki_token}}',
+                    [
+                        'updated_at' => time(),
+                        'status'     => UserWikiToken::STATUS_HAS_ERROR,
+                    ],
+                    [
+                        'user_id' => $token->user_id,
+                        'language_id' => $token->language_id
+                    ]
+                )
+                ->execute();
         } catch (\Exception $e) {
-            $this->output("Error updating token: #{$token->id} Exception: ");
-            $this->output($e->getMessage());
+            echo 'ERROR: updating token #' . $token->id . ': Exception: ' . $e->getMessage() . "\n";
         }
     }
 }

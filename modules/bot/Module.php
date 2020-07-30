@@ -84,7 +84,6 @@ class Module extends \yii\base\Module
     public function handleInput($input, $token)
     {
         $result = false;
-
         $updateArray = json_decode($input, true);
         $this->update = Update::fromResponse($updateArray);
         $this->botInfo = Bot::findOne(['token' => $token]);
@@ -196,7 +195,7 @@ class Module extends \yii\base\Module
                 : Controller::TYPE_PUBLIC;
             $this->setupPaths($namespace);
 
-            if (!$telegramChat->hasUser($telegramUser)) {
+            if (!$chatMember = $telegramChat->getChatMemberByUser($telegramUser)) {
                 $telegramChatMember = $this->botApi->getChatMember(
                     $telegramChat->chat_id,
                     $telegramUser->provider_user_id
@@ -206,16 +205,6 @@ class Module extends \yii\base\Module
                     'status' => $telegramChatMember->getStatus(),
                 ]);
             }
-
-            // $telegramChatMember = $this->botApi->getChatMember(
-            //     $telegramChat->chat_id,
-            //     $telegramUser->provider_user_id
-            // );
-            // $chatMember->setAttributes([
-            //     'status' => $telegramChatMember->getStatus(),
-            // ]);
-
-            // $chatMember->save();
 
             if (!isset($telegramUser->user_id)) {
                 $user = User::createWithRandomPassword();

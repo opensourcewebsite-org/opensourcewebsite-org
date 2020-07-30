@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-
 $this->title = 'Loyalty program';
 $this->blocks['content-header'] = $this->title;
 
@@ -13,7 +12,7 @@ $this->registerJsFile('//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.0/clipb
 /** @var \app\models\User $user */
 $user = Yii::$app->user->identity;
 $inviteLink = Url::toRoute([
-    '/invite/'.$user->id,
+    '/invite/' . $user->id,
 ], true);
 
 ?>

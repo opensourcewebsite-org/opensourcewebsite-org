@@ -161,6 +161,7 @@ return [
     'Add the bot to your group as administrator' => 'Добавьте этого бота в вашу группу как администратора',
     'Give the bot a permission to delete messages and ban users' => 'Дайте этому боту разрешение на удаление сообщений и бан пользователей',
     'Select a feature to manage the group' => 'Выберите функцию для управления группой',
+    'Administrators who can manage the group' => 'Администраторы, которые могут управлять этой группой',
     'Add phrase' => 'Добавить фразу',
     'Main menu' => 'В главное меню',
     'Message Filter' => 'Фильтр сообщений',
@@ -348,4 +349,5 @@ return [
     'If you don\'t solve the captcha in {0,number} mins, you will be automatically kicked out of the group' => 'Если вы не решите эту капчу в течение {0,number} минут, вы будете автоматически исключены из группы',
     'Greeting' => 'Приветствие',
     'sends a welcome message to newly joined members' => 'отправляет приветственное сообщение новым участникам',
+    'Limit' => 'Лимит',
 ];
