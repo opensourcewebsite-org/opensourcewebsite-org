@@ -14,9 +14,6 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Account');
-
-$timezones = TimeHelper::timezonesList();
-
 ?>
 
 <div class="account-index">
@@ -179,8 +176,7 @@ $timezones = TimeHelper::timezonesList();
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Timezone'); ?></th>
-                                    <td class="align-middle" id="timezone"><?= Yii::t('app',
-                                            $timezones[$model->timezone]); ?></td>
+                                    <td class="align-middle" id="timezone"><?= TimeHelper::getNameByOffset($model->timezone); ?></td>
                                     <td>
                                         <?= EditButton::widget([
                                             'url' => '/user/change-timezone',

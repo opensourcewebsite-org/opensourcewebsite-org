@@ -21,16 +21,19 @@ class WikinewsParserController extends Controller implements CronChainedInterfac
 
     protected function parse()
     {
-        $pages = WikinewsPage::findAll(['parsed_at' => null]);
+        $updatesCount = 0;
 
-        /** @var object $news */
-        foreach ($pages as $news) {
-            $group_id = !empty($news->group_id) ? $news->group_id : $news->id;
-            $identity = !$news->pageid ? urldecode($news->title) : $news->pageid;
-            $data = $this->api($news->language->code, $identity);
-            $news->title = str_replace('_', ' ', $news->title);
+        $pages = WikinewsPage::findAll([
+            'parsed_at' => null,
+        ]);
+
+        /** @var object $page */
+        foreach ($pages as $page) {
+            $group_id = !empty($page->group_id) ? $page->group_id : $page->id;
+            $identity = !$page->pageid ? urldecode($page->title) : $page->pageid;
+            $data = $this->api($page->language->code, $identity);
+            $page->title = str_replace('_', ' ', $page->title);
             if ($data) {
-                $this->output("Parsing page: {$news->title}");
                 foreach ($data['langlinks'] as $check) {
                     $exist = WikinewsPage::findOne(['title' => $check['*']]);
                     if (empty($exist)) {
@@ -42,27 +45,33 @@ class WikinewsParserController extends Controller implements CronChainedInterfac
                         break;
                     }
                 }
-                $news->group_id = $group_id;
-                $news->pageid = $data['pageid'];
-                $news->parsed_at = time();
-                $news->save();
+                $page->group_id = $group_id;
+                $page->pageid = $data['pageid'];
+                $page->parsed_at = time();
+                $page->save();
                 foreach ($data['langlinks'] as $langlink) {
                     $dataLink = $this->api($langlink['lang'], $langlink['*']);
-                    $newsTranslate = WikinewsPage::findOne(['pageid' => $dataLink['pageid']]);
+                    $pageTranslate = WikinewsPage::findOne(['pageid' => $dataLink['pageid']]);
                     $this->output("Parsing by language link: {$dataLink['title']}");
-                    $newsAnotherLang = !empty($newsTranslate) ? $newsTranslate : new WikinewsPage();
-                    $newsAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $langlink['lang']])->id;
-                    $newsAnotherLang->title = $dataLink['title'];
-                    $newsAnotherLang->group_id = $group_id;
-                    $newsAnotherLang->pageid = $dataLink['pageid'];
-                    $newsAnotherLang->parsed_at = time();
-                    $newsAnotherLang->save();
+                    $pageAnotherLang = !empty($pageTranslate) ? $pageTranslate : new WikinewsPage();
+                    $pageAnotherLang->language_id = WikinewsLanguage::findOne(['code' => $langlink['lang']])->id;
+                    $pageAnotherLang->title = $dataLink['title'];
+                    $pageAnotherLang->group_id = $group_id;
+                    $pageAnotherLang->pageid = $dataLink['pageid'];
+                    $pageAnotherLang->parsed_at = time();
+                    $pageAnotherLang->save();
                 }
+
+                $updatesCount++;
             } else {
-                $this->output("Page is not exist: {$news->title}");
-                $news->parsed_at = time();
-                $news->save();
+                echo 'ERROR: page is not exist: ' . $page->title;
+                $page->parsed_at = time();
+                $page->save();
             }
+        }
+
+        if ($updatesCount) {
+            $this->output('Pages parsed: ' . $updatesCount);
         }
     }
 

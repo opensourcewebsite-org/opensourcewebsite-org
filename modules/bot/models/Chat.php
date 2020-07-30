@@ -11,9 +11,6 @@ class Chat extends ActiveRecord
     public const TYPE_SUPERGROUP = 'supergroup';
     public const TYPE_CHANNEL = 'channel';
 
-    public const FILTER_MODE_BLACKLIST = 'blacklist';
-    public const FILTER_MODE_WHITELIST = 'whitelist';
-
     public static function tableName()
     {
         return 'bot_chat';
@@ -47,12 +44,12 @@ class Chat extends ActiveRecord
 
     public function getBlacklistPhrases()
     {
-        return $this->getPhrases()->where(['type' => self::FILTER_MODE_BLACKLIST]);
+        return $this->getPhrases()->where(['type' => ChatSetting::FILTER_MODE_BLACKLIST]);
     }
 
     public function getWhitelistPhrases()
     {
-        return $this->getPhrases()->where(['type' => self::FILTER_MODE_WHITELIST]);
+        return $this->getPhrases()->where(['type' => ChatSetting::FILTER_MODE_WHITELIST]);
     }
 
     public function getSettings()
@@ -71,17 +68,13 @@ class Chat extends ActiveRecord
             ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
     }
 
-    public function hasUser($user)
+    public function getChatMemberByUser($user)
     {
-        $users = $this->getUsers()->all();
-
-        foreach ($users as $chatUser) {
-            if ($chatUser->id == $user->id) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->hasOne(ChatMember::className(), ['chat_id' => 'id'])
+            ->where([
+                'user_id' => $user->id,
+            ])
+            ->one();
     }
 
     public function getAdministrators()

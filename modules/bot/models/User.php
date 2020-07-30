@@ -112,18 +112,19 @@ class User extends ActiveRecord
      */
     public function getFullName()
     {
-        if (!empty($this->provider_user_first_name) || !empty($this->provider_user_last_name)) {
-            return trim($this->provider_user_first_name) . ' ' . trim($this->provider_user_last_name);
+        if (!empty($this->provider_user_first_name) && !empty($this->provider_user_last_name)) {
+            return $this->provider_user_first_name . ' ' . $this->provider_user_last_name;
         }
         if (!empty($this->provider_user_first_name)) {
-            return trim($this->provider_user_first_name);
+            return $this->provider_user_first_name;
         }
         if (!empty($this->provider_user_last_name)) {
-            return trim($this->provider_user_last_name);
+            return $this->provider_user_last_name;
         }
         if (!empty($this->provider_user_name)) {
-            return trim($this->provider_user_name);
+            return $this->provider_user_name;
         }
+
         return '';
     }
 
@@ -166,5 +167,9 @@ class User extends ActiveRecord
         ]);
 
         $this->save();
+    }
+
+    public function getFullLink() {
+        return '<a href="tg://user?id=' . $this->provider_user_id . '">' . $this->getFullName() . '</a>' . ($this->provider_user_name ? ' @' . $this->provider_user_name : '');
     }
 }

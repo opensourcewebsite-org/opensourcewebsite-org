@@ -2,6 +2,7 @@
 
 namespace  app\modules\bot\controllers\publics;
 
+use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
@@ -13,9 +14,9 @@ use app\modules\bot\models\RatingVote;
 use app\modules\bot\models\RatingVoting;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Message;
-use Yii;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use app\modules\bot\components\helpers\Emoji;
 
 class TopController extends Controller
 {
@@ -204,11 +205,11 @@ class TopController extends Controller
                 [
                     [
                         'callback_data' => self::createRoute('like-message', ['messageId' => $messageId]),
-                        'text' => '👍' . ( $likeVotes !=0 ? ' ' . $likeVotes : ''),
+                        'text' => Emoji::LIKE . ( $likeVotes != 0 ? ' ' . $likeVotes : ''),
                     ],
                     [
                         'callback_data' => self::createRoute('dislike-message', ['messageId' => $messageId]),
-                        'text' => '👎' . ( $dislikeVotes !=0 ? ' ' . $dislikeVotes : ''),
+                        'text' => Emoji::DISLIKE . ( $dislikeVotes != 0 ? ' ' . $dislikeVotes : ''),
                     ],
                 ]
             ];

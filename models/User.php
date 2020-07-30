@@ -28,7 +28,7 @@ use yii\db\Query;
  * @property string $password write-only password
  * @property string $name
  * @property string $birthday
- * @property string $timezone
+ * @property integer $timezone
  * @property integer $referrer_id
  * @property integer $gender_id
  * @property integer $currency_id
@@ -76,8 +76,8 @@ class User extends ActiveRecord implements IdentityInterface
             [['created_at', 'updated_at', 'last_activity_at'], 'integer'],
             [['created_at', 'updated_at', 'last_activity_at'], 'default', 'value' => time()],
             ['birthday', 'date'],
-            [['timezone'], 'default', 'value' => 'UTC'],
-
+            [['timezone'], 'default', 'value' => 0],
+            [['timezone'], 'integer', 'min' => -720, 'max' => 840],
             ['status',
                 'default',
                 'value' => self::STATUS_ACTIVE],
@@ -90,7 +90,6 @@ class User extends ActiveRecord implements IdentityInterface
                 'unique',
                 'message' => 'Email must be unique.'
             ],
-
             ['username', 'trim'],
             ['username',
                 'match',

@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="callout callout-danger">
     <h5><?= Yii::t('app', 'Attention') ?>!</h5>
     <p>
-        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted from 2020-08-01 or earlier') ?>. <?= Yii::t('app', 'After that, this feature will work in an operating mode') ?>.
+        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted from {0} or earlier', '2020-09-01') ?>. <?= Yii::t('app', 'After that, this feature will work in an operating mode') ?>.
     </p>
 </div>
 
@@ -24,17 +24,42 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item align-self-center mr-4">
-                            <?= AddButton::widget([
-                                'url' => ['debt/create'],
-                                'options' => [
-                                    'title' => 'New Debt',
-                                ]
-                            ]); ?>
-                        </li>
-                    </ul>
+            <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item">
+                                    <?php
+                                        if ((int)Debt::countStatusPending() !== 0) {
+                                            echo Html::a(Yii::t('app', 'New'), ['debt/index',], [
+                                                'class' => 'btn btn-outline-primary mr-2',
+                                            ]);
+                                        }
+                                    ?>
+                                </li>
+                                <li class="nav-item">
+                                    <?= Html::a(Yii::t('app', 'Current'), ['debt/current',], [
+                                        'class' => 'btn btn-outline-primary mr-2 active',
+                                    ]); ?>
+                                </li>
+                                <li class="nav-item">
+                                    <?= Html::a(Yii::t('app', 'History'), ['debt/history',], [
+                                        'class' => 'btn btn-outline-primary',
+                                    ]); ?>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="right-buttons float-right">
+                                <?= AddButton::widget([
+                                    'url' => 'debt/create',
+                                    'options' => [
+                                        'title' => 'New debt',
+                                    ]
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
@@ -52,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => 'My Deposits',
                                 'value' => function (Debt $data) {
-                                    $text = DebtHelper::renderAmount($data->depositPending, $data->depositConfirmed);
+                                    $text = $data->depositConfirmed;
                                     return Html::a($text, ['/debt/view', 'direction' => Debt::DIRECTION_DEPOSIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
@@ -60,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => 'My Credits',
                                 'value' => function (Debt $data) {
-                                    $text = DebtHelper::renderAmount($data->creditPending, $data->creditConfirmed);
+                                    $text = $data->creditConfirmed;
                                     return Html::a($text, ['/debt/view', 'direction' => Debt::DIRECTION_CREDIT, 'currencyId' => $data->currency_id]);
                                 },
                                 'format' => 'html',
