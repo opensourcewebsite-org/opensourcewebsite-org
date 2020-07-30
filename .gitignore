@@ -9,6 +9,9 @@ nbproject
 .project
 .settings
 
+# vscode project files
+.vscode
+
 # windows thumbnail cache
 Thumbs.db
 
@@ -29,9 +32,9 @@ phpunit.phar
 tests/_output/*
 tests/_support/_generated
 
+# local configs
 .env
 .env.test
-
 /config/web-local.php
 /config/params.php
 
