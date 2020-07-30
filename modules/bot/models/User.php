@@ -170,6 +170,6 @@ class User extends ActiveRecord
     }
 
     public function getFullLink() {
-        return '<a href="tg://user?id=' . $this->provider_user_id . '">' . $this->getFullName() . '</a>' . ($this->provider_user_name ? ' (@' . $this->provider_user_name . ')' : '');
+        return '<a href="tg://user?id=' . $this->provider_user_id . '">' . $this->getFullName() . '</a>' . ($this->provider_user_name ? ' @' . $this->provider_user_name : '');
     }
 }
