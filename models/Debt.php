@@ -60,6 +60,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
     public $creditPending;
     public $depositConfirmed;
     public $creditConfirmed;
+    public $totalAmount;
 
     /**
      * {@inheritdoc}
@@ -211,6 +212,14 @@ class Debt extends ActiveRecord implements ByDebtInterface
             $this->from_user_id = $contactUserId;
             $this->to_user_id   = $contactLinkedUserId;
         }
+    }
+
+    /*
+    Return count of debts with pending status
+    */
+    public static function countStatusPending()
+    {
+        return Debt::find()->where(['status' => static::STATUS_PENDING])->count();
     }
 
     public function beforeSave($insert)
