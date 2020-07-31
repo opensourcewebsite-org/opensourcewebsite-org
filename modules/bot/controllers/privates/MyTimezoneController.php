@@ -41,6 +41,10 @@ class MyTimezoneController extends Controller
                             'text' => Emoji::BACK,
                         ],
                         [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
                             'callback_data' => self::createRoute('list'),
                             'text' => Emoji::EDIT,
                         ],
