@@ -29,7 +29,7 @@ class SDaController extends Controller
                         ],
                         [
                             'callback_data' => MenuController::createRoute(),
-                            'text' => '📱',
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]

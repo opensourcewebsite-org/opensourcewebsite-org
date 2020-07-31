@@ -2,6 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\Controller;
 
@@ -23,20 +25,21 @@ class MyLocationController extends Controller
 
         if (isset($telegramUser->location_lon) && isset($telegramUser->location_lat)) {
             return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('header')
-                )
                 ->sendLocation(
                     $telegramUser->location_lat,
                     $telegramUser->location_lon
                 )
-                ->sendMessage(
-                    $this->render('footer'),
+                ->editMessageTextOrSendMessage(
+                    $this->render('index'),
                     [
                         [
                             [
-                                'callback_data' => MyProfileController::createRoute(),
+                                'callback_data' => MyAccountController::createRoute(),
                                 'text' => Emoji::BACK,
+                            ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
                             ],
                         ],
                     ]
@@ -50,8 +53,12 @@ class MyLocationController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MyProfileController::createRoute(),
+                            'callback_data' => MyAccountController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ]
@@ -62,12 +69,18 @@ class MyLocationController extends Controller
     public function actionUpdate()
     {
         $telegramUser = $this->getTelegramUser();
-        $update = $this->getUpdate();
-
-        if ($update->getMessage() && ($location = $update->getMessage()->getLocation())) {
+        $locationComponent = Yii::createObject([
+            'class' => LocationToArrayFieldComponent::class,
+        ], [$this, []]);
+        $text = '';
+        if ($message = $this->getUpdate()->getMessage()) {
+            $text = $message->getText();
+        }
+        $locations = $locationComponent->prepare($text);
+        if ($locations['location_lat'] && $locations['location_lon']) {
             $telegramUser->setAttributes([
-                'location_lon' => $location->getLongitude(),
-                'location_lat' => $location->getLatitude(),
+                'location_lon' => $locations['location_lon'],
+                'location_lat' => $locations['location_lat'],
                 'location_at' => time(),
             ]);
             $telegramUser->save();

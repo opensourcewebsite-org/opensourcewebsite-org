@@ -41,7 +41,7 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('order'),
-                            'text' => '❌ ' . 'THB/RUB',
+                            'text' => Emoji::INACTIVE . ' ' . 'THB/RUB',
                         ],
                     ],
                     [
@@ -65,11 +65,11 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => MenuController::createRoute(),
-                            'text' => '📱',
+                            'text' => Emoji::MENU,
                         ],
                         [
                             'callback_data' => self::createRoute('offer'),
-                            'text' => '🙋‍♂️ 3',
+                            'text' => Emoji::OFFERS . ' ' . '3',
                         ],
                         [
                             'callback_data' => self::createRoute('order-create'),
@@ -146,7 +146,7 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('offer'),
-                            'text' => '🙋‍♂️ 3',
+                            'text' => Emoji::OFFERS . ' ' . '3',
                         ],
                     ],
                     [
@@ -226,7 +226,7 @@ class SCeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('order-delivery-radius'),
-                            'text' => 'Delivery radius: 2 km',
+                            'text' => 'Delivery radius',
                         ],
                     ],
                     [
@@ -259,6 +259,12 @@ class SCeController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('order-selling-rate'),
+                            'text' => Yii::t('bot', 'Cross rate'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('order'),
                             'text' => Emoji::BACK,
                         ],
@@ -277,6 +283,12 @@ class SCeController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('order-selling-rate'),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('order-buying-rate'),
+                            'text' => Yii::t('bot', 'Cross rate'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('order'),
@@ -466,7 +478,7 @@ class SCeController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('order-selling-currency-payment-method'),
-                            'text' => '🗑',
+                            'text' => Emoji::DELETE,
                         ],
                     ],
                 ]

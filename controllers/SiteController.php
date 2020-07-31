@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Contact;
 use app\models\Gender;
 use app\models\LoginForm;
@@ -15,7 +16,6 @@ use app\models\Sexuality;
 use app\modules\bot\models\User as BotUser;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
-use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -254,6 +254,14 @@ class SiteController extends Controller
 
             \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
 
+            \app\models\DebtBalance::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
+
+            \app\models\DebtBalance::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+
+            \app\models\DebtRedistribution::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
+            \app\models\DebtRedistribution::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
+
             \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             \app\modules\comment\models\IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
@@ -279,7 +287,7 @@ class SiteController extends Controller
             $userToMerge->delete();
 
             $transaction->commit();
-        } catch (\Throwable $ex) {
+        } catch (\Throwable $e) {
             $transaction->rollBack();
             return false;
         }

@@ -6,6 +6,8 @@
 
 ## Telegram Bot
 
+Values for callback buttons should be between 1-64 bytes. [Read more](https://core.telegram.org/bots/api#inlinekeyboardbutton).
+
 The bot deletes previous messages in private chat that are not related to the current request. In this case, the `editMessageTextOrSendMessage` command is used to display the message. If you need to send several messages (for example, display a text message "Your geolocation", then send a message with a geolocation, and then a message with a keyboard for editing or return), then you must first call the editMessageTextOrSendMessage command, and then sendLocation and sendMessage.
 
 The bot deletes its previous messages in a private chat with a user that are not related to the current request, and deletes all user messages. In this case, the command `editMessageTextOrSendMessage` is used to display the bot message. When you need to send several messages (for example, first display the text message “Your Location”, then send a message with geolocation, and then a message with a keyboard), you should first call the command `editMessageTextOrSendMessage`, and then the commands `sendLocation` and `sendMessage`.

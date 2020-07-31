@@ -61,8 +61,6 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
             ->andWhere(['is not', 'user.id', null])
             ->one()
         ) {
-            $this->output("Parsing page: {$page->title}");
-
             for ($retry = 0; $retry <= self::PAGE_PARSE_RETRY_COUNT; $retry++) {
                 try {
                     $response = $client->get('api.php', [
@@ -74,9 +72,11 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                         'sites'     => "{$page->language->code}wiki",
                         'titles'    => $page->title,
                     ])->send();
+
+                    $this->output("Page parsed: {$page->title}");
                     break;
                 } catch (ErrorException $e) {
-                    $this->output("Error parsing page $page->title - {$e->getMessage()}");
+                    $this->output("Error parsing page: $page->title - {$e->getMessage()}");
                     if ($retry == self::PAGE_PARSE_RETRY_COUNT) {
                         $page->updateAttributes(['group_id' => $this->getGroupId(), 'updated_at' => time()]);
                     } else {
@@ -182,7 +182,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
         }
 
         if ($updatesCount) {
-            $this->output($updatesCount . ' tokens updated');
+            $this->output('Tokens updated: ' . $updatesCount);
         }
     }
 
@@ -202,7 +202,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                 ['id' => $token->id]
             )->execute();
         } catch (ServerErrorHttpException $e) {
-            $this->output("Error updating token #{$token->id} ServerErrorHttpException: ");
+            $this->output("Error updating token: #{$token->id} ServerErrorHttpException: ");
             $this->output($e->getMessage());
 
             Yii::$app->db->createCommand()->update(
@@ -214,7 +214,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                 ['user_id' => $token->user_id, 'language_id' => $token->language_id]
             )->execute();
         } catch (\Exception $e) {
-            $this->output("Error updating token #{$token->id} Exception: ");
+            $this->output("Error updating token: #{$token->id} Exception: ");
             $this->output($e->getMessage());
         }
     }

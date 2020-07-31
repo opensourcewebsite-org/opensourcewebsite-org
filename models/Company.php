@@ -18,6 +18,7 @@ class Company extends ActiveRecord
         return '{{%company}}';
     }
 
+    /** @inheritDoc */
     public function behaviors()
     {
         return [
@@ -25,11 +26,35 @@ class Company extends ActiveRecord
         ];
     }
 
+    /** @inheritDoc */
     public function rules()
     {
         return [
             [['name', 'address'], 'string', 'max' => 256],
-            [['url'], 'url'],
+            [
+                ['url'],
+                'filter',
+                'skipOnEmpty' => true,
+                'filter' => function ($value) {
+                    $parsedUrl = parse_url($value);
+                    if ($parsedUrl['host'] ?? false) {
+                        $url = trim($parsedUrl['host'], " \t\n\r\0\x0B.");
+                        if ($path = ($parsedUrl['path'] ?? '')) {
+                            $url .= $path;
+                        }
+                        if ($query = ($parsedUrl['query'] ?? '')) {
+                            $url .= '?' . $query;
+                        }
+                        $value = $url;
+                    }
+
+                    return $value;
+                },
+            ],
+            [
+                ['url'], 'url',
+                'pattern' => '/^(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
+            ],
             [['description'], 'string'],
             [['name'], 'required'],
         ];
@@ -46,14 +71,34 @@ class Company extends ActiveRecord
         ];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
     public function getMembers()
     {
         return $this->hasMany(User::className(), ['id', 'user_id'])
             ->viaTable(CompanyUser::tableName(), ['company_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getVacancies()
     {
         return $this->hasMany(Vacancy::className(), ['company_id' => 'id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        $url = $this->url;
+        if ($url && !preg_match('|^https?:\/\/|', $url)) {
+            $url = Yii::$app->params['defaultScheme'] . '://' . $url;
+        }
+
+        return $url;
     }
 }

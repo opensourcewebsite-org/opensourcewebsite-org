@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
 use app\models\Currency;
 use app\models\Language;
 use app\components\helpers\TimeHelper;
+use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MyProfileController
@@ -43,6 +43,9 @@ class MyProfileController extends Controller
             'citizenships' => array_map(function ($citizenship) {
                 return $citizenship->country->name;
             }, $user->citizenships),
+            'location_lat' => $telegramUser->location_lat,
+            'location_lon' => $telegramUser->location_lon,
+            'locationLink' => ExternalLink::getOSMLink($telegramUser->location_lat, $telegramUser->location_lon),
         ];
 
         return $this->getResponseBuilder()
@@ -51,20 +54,8 @@ class MyProfileController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MyLocationController::createRoute(),
-                            'text' => Yii::t('bot', 'Location'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MyTimezoneController::createRoute(),
                             'text' => Yii::t('bot', 'Timezone'),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Languages'),
-                            'callback_data' => MyLanguagesController::createRoute(),
                         ],
                     ],
                     [
@@ -87,8 +78,14 @@ class MyProfileController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyCitizenshipController::createRoute(),
-                            'text' => Yii::t('bot', 'Citizenship'),
+                            'text' => Yii::t('bot', 'Languages'),
+                            'callback_data' => MyLanguagesController::createRoute(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyCitizenshipsController::createRoute(),
+                            'text' => Yii::t('bot', 'Citizenships'),
                         ],
                     ],
                     [
@@ -105,11 +102,16 @@ class MyProfileController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => MyAccountController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
                     ],
-                ]
+                ],
+                true
             )
             ->build();
     }

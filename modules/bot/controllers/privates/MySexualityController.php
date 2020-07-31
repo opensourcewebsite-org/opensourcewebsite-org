@@ -2,11 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\models\Sexuality;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-
-use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
 use yii\data\Pagination;
@@ -33,16 +32,24 @@ class MySexualityController extends Controller
             }
         }
 
+        if (!$user->sexuality_id) {
+            return $this->actionUpdate();
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'sexuality' => isset($user->sexuality) ? $user->sexuality->name : null,
+                    'sexuality' => $user->sexuality->name,
                 ]),
                 [
                     [
                         [
                             'callback_data' => MyProfileController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                         [
                             'callback_data' => self::createRoute('update'),
@@ -56,6 +63,8 @@ class MySexualityController extends Controller
 
     public function actionUpdate($page = 1)
     {
+        $user = $this->getUser();
+
         $sexualityQuery = Sexuality::find();
         $pagination = new Pagination([
             'totalCount' => $sexualityQuery->count(),
@@ -88,11 +97,11 @@ class MySexualityController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $text = $this->render('update'),
+                $this->render('update'),
                 array_merge($sexualityRows, [$paginationButtons], [
                     [
                         [
-                            'callback_data' => self::createRoute(),
+                            'callback_data' => ($user->sexuality_id ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],

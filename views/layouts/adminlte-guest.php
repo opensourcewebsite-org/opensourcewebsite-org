@@ -11,19 +11,28 @@ use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
+use app\models\Language;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 
 //List of language options
-$languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
+$languages = Language::find()
+    ->orderBy(['name_ascii' => SORT_ASC])
+    ->all();
 $langOpt = [];
 
 if (!empty($languages)) {
     foreach ($languages as $lang) {
         //Check if the language is the active
         $active = ($lang->code == Yii::$app->language) ? 'active' : '';
-        $langOpt[] = ['label'=>Yii::t('language', $lang->name_ascii), 'url'=>Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]), 'options'=>['class'=>$active]];
+        $langOpt[] = [
+            'label' => $lang->name_ascii,
+            'url' => Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]),
+            'options' => [
+                'class' => $active,
+                ]
+            ];
     }
 }
 

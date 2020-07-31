@@ -2,9 +2,13 @@
 
 use yii\web\View;
 use yii\helpers\ArrayHelper;
+use yii\base\Event;
+use yii\web\Application;
 
 $params = require __DIR__ . '/params.php';
 $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap 4.x for all Krajee Extensions
+$params['currency'] = 'USD';
+$params['defaultScheme'] = 'https';
 
 $settingValidations = require __DIR__ . '/setting_validations.php';
 $params = array_merge($params, $settingValidations);
@@ -13,7 +17,6 @@ $common = require __DIR__ . '/common.php';
 
 $config = [
     'id' => 'basic',
-    'name' => 'OpenSourceWebsite',
     'defaultRoute' => 'guest/default',
     'layout' => 'adminlte-user',
     'basePath' => dirname(__DIR__),
@@ -22,20 +25,20 @@ $config = [
         ['class' => 'app\components\LanguageSelector'],
         'maintenanceMode',
     ],
-    'language' => 'en',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
+        '@bot' => '@app/modules/bot',
     ],
     'modules' => [
         'guest' => [
             'class' => 'app\modules\guest\Module',
         ],
         'comment' => [
-            'class' => 'app\modules\comment\Module'
+            'class' => 'app\modules\comment\Module',
         ],
         'bot' => [
-            'class' => 'app\modules\bot\Module'
+            'class' => 'app\modules\bot\Module',
         ],
     ],
     'components' => [
@@ -168,5 +171,18 @@ if (YII_ENV_DEV) {
 
     $config['components']['log']['targets']['file']['levels'] = ['error', 'warning'];
 }
+
+// TODO в момент обновления поля last_activity_at, надо проверять разницу с последним обновлением. и если разница больше чем требуемая (30 дней) то в сервисах бота очищать совпадения всех обьектов пользователя и processed_at обьектов занести null
+Event::on(Application::class, Application::EVENT_BEFORE_REQUEST, function ($event) {
+    /** @var Application $app */
+    $app = $event->sender;
+
+    /** @var \app\models\User|null $user */
+    $user = $app->user->getIdentity();
+
+    if (($user !== null) && !(Yii::$app->user->isGuest)) {
+        $user->updateLastActivity();
+    }
+});
 
 return $config;

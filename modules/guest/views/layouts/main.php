@@ -7,6 +7,7 @@
 use app\assets\AgencyAsset;
 use app\assets\FontAwesomeAsset;
 use yii\helpers\Html;
+use app\models\Language;
 
 AgencyAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -55,7 +56,7 @@ $this->beginBody();
                 <div class="dropdown-container">
                 <?php
                 //List of language options
-                $languages = \app\models\Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
+                $languages = Language::find()->orderBy(['name_ascii' => SORT_ASC])->all();
 
                 if (!empty($languages)) {
                     foreach ($languages as $language) {

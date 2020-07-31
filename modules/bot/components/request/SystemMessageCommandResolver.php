@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\request;
 
 use app\modules\bot\controllers\publics\SystemMessageController;
@@ -8,13 +9,14 @@ class SystemMessageCommandResolver implements ICommandResolver
 {
     public function resolveCommand(Update $update)
     {
-        if ($update->getMessage()
-            && ($update->getMessage()->getNewChatMember() || $update->getMessage()->getLeftChatMember())) {
-            $commandText = SystemMessageController::createRoute();
-        }
-
-        if ($update->getMessage() && $update->getMessage()->getMigrateToChatId()) {
-            $commandText = SystemMessageController::createRoute('group-to-supergroup');
+        if ($update->getMessage()) {
+            if ($update->getMessage()->getNewChatMembers()) {
+                $commandText = SystemMessageController::createRoute('new-chat-members');
+            } elseif ($update->getMessage()->getLeftChatMember()) {
+                $commandText = SystemMessageController::createRoute('left-chat-member');
+            } elseif ($update->getMessage()->getMigrateToChatId()) {
+                $commandText = SystemMessageController::createRoute('group-to-supergroup');
+            }
         }
 
         return $commandText ?? null;

@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\models;
 
-use \yii\db\ActiveRecord;
+use yii\db\ActiveRecord;
 use app\models\Language;
 use models\User as GlobalUser;
 
@@ -18,7 +18,6 @@ use models\User as GlobalUser;
  * @property string $location_lat
  * @property string $location_lon
  * @property int $location_at
- * @property int $last_message_at
  * @property string $language_code
  * @property string $currency_code
  */
@@ -39,8 +38,9 @@ class User extends ActiveRecord
         $language = Language::findOne([
             'code' => $updateUser->getLanguageCode(),
         ]);
+
         if (!isset($language)) {
-            $language = Language::findOne([ 'code' => 'en' ]);
+            $language = Language::findOne(['code' => 'en']);
         }
 
         $newUser = new User();
@@ -49,7 +49,6 @@ class User extends ActiveRecord
             'language_id' => $language->id,
             'is_authenticated' => true,
         ]);
-
         $newUser->save();
 
         return $newUser;
@@ -73,7 +72,6 @@ class User extends ActiveRecord
                     'provider_user_id',
                     'provider_user_blocked',
                     'location_at',
-                    'last_message_at',
                     'language_id',
                 ],
                 'integer',
@@ -103,7 +101,6 @@ class User extends ActiveRecord
             'provider_user_blocked' => 'Provider User Blocked',
             'provider_user_first_name' => 'First name',
             'provider_user_last_name' => 'Last name',
-            'last_message_at' => 'Last activity',
             'location_lat' => 'Location Lat',
             'location_lon' => 'Location Lon',
             'location_at' => 'Location',
@@ -145,7 +142,8 @@ class User extends ActiveRecord
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
-        });
+            })
+            ->orderBy(['title' => SORT_ASC]);
     }
 
     public function getLanguage()
@@ -165,7 +163,6 @@ class User extends ActiveRecord
             'provider_user_first_name' => $updateUser->getFirstName(),
             'provider_user_last_name' => $updateUser->getLastName(),
             'provider_bot_user_blocked' => 0,
-            'last_message_at' => time(),
         ]);
 
         $this->save();

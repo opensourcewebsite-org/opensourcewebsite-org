@@ -2,10 +2,10 @@
 
 namespace app\modules\bot;
 
+use Yii;
 use app\modules\bot\components\CommandRouteResolver;
 use app\modules\bot\components\request\CallbackQueryUpdateHandler;
 use app\modules\bot\components\request\MessageUpdateHandler;
-use Yii;
 use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\models\Bot;
@@ -17,6 +17,7 @@ use app\models\User;
 use app\models\Rating;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\ChatSetting;
 
 /**
  * OSW Bot module definition class
@@ -121,7 +122,9 @@ class Module extends \yii\base\Module
         }
         if (isset($updateUser) && isset($updateChat)) {
             $isNewUser = false;
-            $telegramUser = TelegramUser::findOne(['provider_user_id' => $updateUser->getId()]);
+            $telegramUser = TelegramUser::findOne([
+                'provider_user_id' => $updateUser->getId(),
+            ]);
             // Store telegram user if it doesn't exist yet
             if (!isset($telegramUser)) {
                 $isNewUser = true;
@@ -194,9 +197,14 @@ class Module extends \yii\base\Module
             $this->setupPaths($namespace);
 
             if (!$telegramChat->hasUser($telegramUser)) {
-                $telegramChatMember = $this->botApi->getChatMember($telegramChat->chat_id, $telegramUser->provider_user_id);
+                $telegramChatMember = $this->botApi->getChatMember(
+                    $telegramChat->chat_id,
+                    $telegramUser->provider_user_id
+                );
 
-                $telegramChat->link('users', $telegramUser, ['status' => $telegramChatMember->getStatus()]);
+                $telegramChat->link('users', $telegramUser, [
+                    'status' => $telegramChatMember->getStatus(),
+                ]);
             }
 
             // $telegramChatMember = $this->botApi->getChatMember(
@@ -243,6 +251,7 @@ class Module extends \yii\base\Module
             $this->userState = UserState::fromUser($telegramUser);
             $this->telegramChat = $telegramChat;
             if ($telegramChat->isPrivate()) {
+                $this->user->updateLastActivity();
                 $this->update->setPrivateMessageFromState($this->userState);
             }
 
@@ -323,8 +332,8 @@ class Module extends \yii\base\Module
                                 $privateMessageIds []= $messageId;
                             }
                         }
-                    } catch (\Exception $ex) {
-                        Yii::error("[$route] [" . get_class($command) . '] ' . $ex->getCode() . ' ' . $ex->getMessage(), 'bot');
+                    } catch (\Exception $e) {
+                        Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
                     }
                 }
                 $this->userState->setIntermediateField('private_message_ids', json_encode($privateMessageIds));

@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
@@ -12,6 +11,7 @@ use app\modules\bot\controllers\publics\TopController;
 use app\modules\bot\components\actions\privates\wordlist\WordlistAdminComponent;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class AdminStarTopController
@@ -104,7 +104,7 @@ class AdminStarTopController extends Controller
                                 'callback_data' => AdminChatController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => '🔙',
+                                'text' => Emoji::BACK,
                             ],
                         ]
                 ]

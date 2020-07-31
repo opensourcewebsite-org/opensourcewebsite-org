@@ -4,6 +4,7 @@ namespace app\modules\bot\components\actions\privates\wordlist;
 
 use app\modules\bot\components\actions\BaseAction;
 use app\modules\bot\models\Chat;
+use app\modules\bot\components\helpers\Emoji;
 
 class EnterAction extends BaseAction
 {
@@ -29,7 +30,7 @@ class EnterAction extends BaseAction
                             'callback_data' => $this->createRoute($this->listActionId, [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => '🔙',
+                            'text' => Emoji::BACK,
                         ],
                     ],
                 ]

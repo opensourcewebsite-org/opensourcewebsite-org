@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
@@ -21,6 +22,7 @@ use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\models\AdPhoto;
 use app\models\User;
 use yii\base\DynamicModel;
+use yii\base\ModelEvent;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\models\Currency;
@@ -48,11 +50,10 @@ class SAdOfferController extends CrudController
                         'sectionName' => AdSection::getAdOfferName($model->section),
                         'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
-                        'liveDays' => AdOffer::LIVE_DAYS,
                         'showDetailedInfo' => false,
                     ];
                 },
-                'view' => 'offer',
+                'view' => 'show',
                 'attributes' => [
                     'title' => [],
                     'description' => [
@@ -137,6 +138,17 @@ class SAdOfferController extends CrudController
                         ],
                     ],
                     'currency' => [
+                        'behaviors' => [
+                            'SetDefaultCurrencyBehavior' => [
+                                'class' => SetDefaultCurrencyBehavior::class,
+                                'telegramUser' => $this->getTelegramUser(),
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
+                                ],
+                            ],
+                        ],
+                        'hidden' => true,
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
@@ -149,12 +161,6 @@ class SAdOfferController extends CrudController
                             [
                                 'text' => Yii::t('bot', 'Edit currency'),
                                 'item' => 'currency',
-                            ],
-                        ],
-                        'systemButtons' => [
-                            'back' => [
-                                'item' => 'keywords',
-                                'editMode' => false,
                             ],
                         ],
                         'prepareViewParams' => function ($params) {
@@ -176,6 +182,7 @@ class SAdOfferController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
+                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (AdOffer $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -196,7 +203,7 @@ class SAdOfferController extends CrudController
                         'view' => 'edit-radius',
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No'),
+                                'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (AdOffer $model) {
                                     $model->delivery_radius = 0;
 
@@ -218,7 +225,9 @@ class SAdOfferController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        return $this->actionPost($model->id);
+        $model->markToUpdateMatches();
+
+        return $this->actionView($model->id);
     }
 
     public function actionIndex($adSection, $page = 1)
@@ -229,7 +238,7 @@ class SAdOfferController extends CrudController
 
         $adOfferQuery = AdOffer::find()
             ->where([
-                'user_id' => $this->getTelegramUser()->id,
+                'user_id' => $this->getTelegramUser()->user_id,
                 'section' => $adSection,
             ])
             ->orderBy(['status' => SORT_DESC, 'title' => SORT_ASC]);
@@ -251,8 +260,8 @@ class SAdOfferController extends CrudController
             ->limit($pagination->limit)
             ->all() as $adOffer) {
             $buttons[][] = [
-                'text' => ($adOffer->isActive() ? '' : '❌ ') . $adOffer->title,
-                'callback_data' => self::createRoute('post', ['adOfferId' => $adOffer->id]),
+                'text' => ($adOffer->isActive() ? '' : Emoji::INACTIVE . ' ') . $adOffer->title,
+                'callback_data' => self::createRoute('view', ['adOfferId' => $adOffer->id]),
             ];
         }
 
@@ -324,13 +333,12 @@ class SAdOfferController extends CrudController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('offer', [
+                $this->render('show', [
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
                     'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
-                    'liveDays' => AdOffer::LIVE_DAYS,
                     'showDetailedInfo' => false,
                 ]),
                 [
@@ -378,7 +386,7 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('post', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('view', ['adOfferId' => $adOfferId]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -392,10 +400,8 @@ class SAdOfferController extends CrudController
             ->build();
     }
 
-    public function actionPost($adOfferId)
+    public function actionView($adOfferId)
     {
-        $this->updatePost($adOfferId);
-
         $adOffer = AdOffer::findOne($adOfferId);
 
         $this->getState()->setName(null);
@@ -404,7 +410,7 @@ class SAdOfferController extends CrudController
 
         $buttons[][] = [
             'callback_data' => self::createRoute('status', ['adOfferId' => $adOfferId]),
-            'text' => 'Status: ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
+            'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
         ];
 
         $matchedAdSearchesCount = $adOffer->getMatches()->count();
@@ -412,7 +418,7 @@ class SAdOfferController extends CrudController
         if ($matchedAdSearchesCount > 0) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('matched-ad-searches', ['adOfferId' => $adOfferId]),
-                'text' => '🙋‍♂️ ' . $matchedAdSearchesCount,
+                'text' => Emoji::OFFERS . ' ' . $matchedAdSearchesCount,
             ];
         }
 
@@ -444,29 +450,18 @@ class SAdOfferController extends CrudController
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
-                $this->render('offer', [
+                $this->render('show', [
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
                     'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
-                    'liveDays' => AdOffer::LIVE_DAYS,
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
                 true
             )
             ->build();
-    }
-
-    public function updatePost($adOfferId)
-    {
-        $adOffer = AdOffer::findOne($adOfferId);
-
-        $adOffer->setAttributes([
-            'renewed_at' => time(),
-        ]);
-        $adOffer->save();
     }
 
     public function actionMatchedAdSearches($adOfferId, $page = 1)
@@ -476,7 +471,7 @@ class SAdOfferController extends CrudController
         $matchedAdSearchesQuery = $adOffer->getMatches();
 
         if ($matchedAdSearchesQuery->count() == 0) {
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
 
         $pagination = new Pagination([
@@ -491,6 +486,13 @@ class SAdOfferController extends CrudController
 
         $buttons = [];
 
+        $buttons[] = [
+            [
+                'text' => $adOffer->title,
+                'callback_data' => self::createRoute('view', ['adOfferId' => $adOffer->id]),
+            ]
+        ];
+
         $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adOfferId) {
             return self::createRoute('matched-ad-searches', [
                 'adOfferId' => $adOfferId,
@@ -500,7 +502,7 @@ class SAdOfferController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('post', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('view', ['adOfferId' => $adOfferId]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -516,10 +518,10 @@ class SAdOfferController extends CrudController
 
         return ResponseBuilder::fromUpdate($this->getUpdate())
             ->editMessageTextOrSendMessage(
-                $this->render('search-matches', [
+                $this->render('match', [
                     'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
                     'adSearch' => $matchedAdSearch,
-                    'user' => TelegramUser::findOne($matchedAdSearch->user_id),
+                    'user' => TelegramUser::findOne(['user_id' => $matchedAdSearch->user_id]),
                     'keywords' => self::getKeywordsAsString($matchedAdSearch->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_lat, $matchedAdSearch->location_lon),
                 ]),
@@ -570,7 +572,7 @@ class SAdOfferController extends CrudController
             ]);
             $adOffer->save();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -587,7 +589,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-description-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -620,7 +622,7 @@ class SAdOfferController extends CrudController
         ]);
         $adOffer->save();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewDescription($adOfferId)
@@ -634,7 +636,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->save();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -651,7 +653,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-photo-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -681,7 +683,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->unlinkAll('photos', true);
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewPhoto($adOfferId)
@@ -703,7 +705,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->link('photos', $adPhoto);
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         } else {
             return $this->actionEditPhoto($adOfferId);
         }
@@ -722,7 +724,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-keywords-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -754,7 +756,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->markToUpdateMatches();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewKeywords($adOfferId)
@@ -788,7 +790,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->markToUpdateMatches();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         } else {
             return $this->actionEditKeyword($adOfferId);
         }
@@ -901,7 +903,7 @@ class SAdOfferController extends CrudController
                             'callback_data' => self::createRoute('new-price-skip', [
                                 'adOfferId' => $adOfferId,
                             ]),
-                            'text' => Yii::t('bot', 'No'),
+                            'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
@@ -935,7 +937,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->save();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewPrice($adOfferId)
@@ -955,7 +957,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->save();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -1037,7 +1039,7 @@ class SAdOfferController extends CrudController
             $adOffer->markToUpdateMatches();
         }
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionEditRadius($adOfferId)
@@ -1086,7 +1088,7 @@ class SAdOfferController extends CrudController
         ]);
         $adOffer->save();
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     public function actionNewRadius($adOfferId)
@@ -1107,7 +1109,7 @@ class SAdOfferController extends CrudController
             $adOffer->save();
             $adOffer->markToUpdateMatches();
 
-            return $this->actionPost($adOfferId);
+            return $this->actionView($adOfferId);
         }
     }
 
@@ -1133,7 +1135,7 @@ class SAdOfferController extends CrudController
             $adOffer->save();
         }
 
-        return $this->actionPost($adOfferId);
+        return $this->actionView($adOfferId);
     }
 
     private static function getKeywordsAsString($adKeywords)
@@ -1169,7 +1171,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('description-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1245,7 +1247,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('photo-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1302,7 +1304,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('keywords-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1424,7 +1426,7 @@ class SAdOfferController extends CrudController
                     [
                         [
                             'callback_data' => self::createRoute('price-skip'),
-                            'text' => Yii::t('bot', 'Skip'),
+                            'text' => Yii::t('bot', 'SKIP'),
                         ],
                     ],
                     [
@@ -1643,8 +1645,6 @@ class SAdOfferController extends CrudController
             'section' => intval($state->getIntermediateField('adOfferSection')),
             'status' => AdOffer::STATUS_OFF,
             'created_at' => time(),
-            'renewed_at' => time(),
-            'edited_at' => null,
         ]);
 
         $adOffer->save();
@@ -1667,6 +1667,6 @@ class SAdOfferController extends CrudController
             $adOffer->link('photos', $adPhoto);
         }
 
-        return $this->actionPost($adOffer->id);
+        return $this->actionView($adOffer->id);
     }
 }

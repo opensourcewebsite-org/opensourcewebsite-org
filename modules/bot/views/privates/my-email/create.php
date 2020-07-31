@@ -1,7 +1,5 @@
-<?php if ($changeRequest) : ?>
-<?= Yii::t('bot', 'You email is almost set. Please, check your email for confirmation letter.') ?>
-<?php elseif ($mergeRequest) : ?>
-<?= Yii::t('bot', 'This email is already taken') ?>. <?= Yii::t('bot', 'Do you want to merge your accounts?') ?>
-<?php else : ?>
-<?= $error ?>
-<?php endif; ?>
+<b><?= Yii::t('bot', 'Confirm your Email') ?>:</b><br/>
+<br/>
+<?= Yii::t('bot', 'An email with a confirmation link was sent to your email address') ?>. <?= Yii::t('bot', 'In order to complete the process, please click the confirmation link') ?>.<br/>
+<br/>
+<?= Yii::t('bot', 'If you do not receive a confirmation email, please check your spam folder') ?>.

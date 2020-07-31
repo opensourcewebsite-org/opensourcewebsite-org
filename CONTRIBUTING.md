@@ -124,7 +124,8 @@ https://www.yiiframework.com/doc/api/2.0/yii-db-migration#safeUp()-detail
 
 - Name database tables in the singular to list any objects. For example, `user`, but not` users`.
 - Do not use variables like `$tableName` and `$tableOptions`.
-- Do not use database comments for the database and columns.
+- Do not use database comments.
+- Add primary key to each new table. [Why it so important?](https://federico-razzoli.com/primary-key-in-innodb)
 
 Columns:
 - Primary key with integer - use `$this->primaryKey()->unsigned()`.

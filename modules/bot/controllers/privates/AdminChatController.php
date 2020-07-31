@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
@@ -33,13 +32,13 @@ class AdminChatController extends Controller
 
             $chatTitle = $chat->title;
 
-            // TODO refactoring
-            $update = $this->getUpdate();
+            // TODO refactoring, для того чтобы ограничить доступ к настройкам группы
+            if ($this->getUpdate()->getCallbackQuery()) {
+                $admins = $chat->getAdministrators()->all();
 
-            if ($update->getCallbackQuery()) {
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
-                        $this->render('index', compact('chatTitle')),
+                        $this->render('index', compact('chatTitle', 'admins')),
                         [
                             [
                                 [
@@ -47,6 +46,22 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => Yii::t('bot', 'Join Hider'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => AdminJoinCaptchaController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Join Captcha'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => AdminGreetingController::createRoute('index', [
+                                        'chatId' => $chatId,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Greeting'),
                                 ],
                             ],
                             [
@@ -76,7 +91,7 @@ class AdminChatController extends Controller
                             [
                                 [
                                     'callback_data' => AdminController::createRoute(),
-                                    'text' => '🔙',
+                                    'text' => Emoji::BACK,
                                 ],
                                 [
                                     'callback_data' => MenuController::createRoute(),
@@ -86,7 +101,7 @@ class AdminChatController extends Controller
                                     'callback_data' => AdminChatRefreshController::createRoute('index', [
                                         'chatId' => $chatId,
                                     ]),
-                                    'text' => '🔄',
+                                    'text' => Emoji::REFRESH,
                                 ],
                             ],
                         ]
@@ -94,34 +109,7 @@ class AdminChatController extends Controller
                     ->build();
             }
 
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('index', compact('chatTitle')),
-                    [
-                        [
-                            [
-                                'callback_data' => AdminMessageFilterController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Message Filter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminJoinHiderController::createRoute('index', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Join Hider'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => AdminController::createRoute(),
-                                'text' => '🔙',
-                            ],
-                        ],
-                    ]
-                )->build();
+            return [];
         }
     }
 }

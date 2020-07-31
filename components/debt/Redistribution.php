@@ -30,7 +30,7 @@ class Redistribution extends Component
     public function run(): void
     {
         while ($debtBalance = $this->findDebtBalanceToRedistribute()) {
-            $this->log('--- Starting search Circled Chain ---');
+            $this->log('--- Starting search Circled Chain ---', [], true);
             $this->wasRedistributed = false;
 
             $chainMemberFirstContact = $debtBalance->factoryContact(true);
@@ -41,7 +41,7 @@ class Redistribution extends Component
             }
 
             if (!$this->wasRedistributed) {
-                $this->log('Cannot redistribute.');
+                $this->log('Cannot redistribute.', [Console::BG_GREY], true);
             }
         }
     }
@@ -226,7 +226,7 @@ class Redistribution extends Component
             $this->wasRedistributed = true;
 
             $count = count($debts);
-            $message = "Created chain. Amount=$amountPossible {$debt->currency->code}; Count of Debts=$count;";
+            $message = "Redistribution chain. Amount=$amountPossible {$debt->currency->code}; Count of Debts=$count;";
             $message .= ' Count of Users=' . ($count + 1);
             $this->log($message);
 

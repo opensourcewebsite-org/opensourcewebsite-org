@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\Emoji;
-
 use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class MyReferralsController
@@ -40,6 +39,10 @@ class MyReferralsController extends Controller
                 ]),
                 [
                     [
+                        [
+                            'callback_data' => MyAccountController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,

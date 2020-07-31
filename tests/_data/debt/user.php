@@ -1,5 +1,7 @@
 <?php
 
+use app\models\User;
+
 $users = [];
 for ($i = 1; $i <= 6; ++$i) {
     $id = 200 + $i;
@@ -11,9 +13,10 @@ for ($i = 1; $i <= 6; ++$i) {
         'password_hash' => Yii::$app->security->generatePasswordHash("debtRedistribution_$id"),
         'email' => "debtRedistribution_$id@example.com",
         'is_authenticated' => 1,
-        'status' => \app\models\User::STATUS_ACTIVE,
+        'status' => User::STATUS_ACTIVE,
         'created_at' => time(),
         'updated_at' => time(),
+        'last_activity_at' => time(),
     ];
 }
 

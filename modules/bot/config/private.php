@@ -11,6 +11,7 @@ return [
             'class' => CommandRouteResolver::class,
             'rules' => [
                 '/hello' => 'start/index',
+                '/sos' => 'start/index',
                 '/<controller:\w+>__<action:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],

@@ -30,36 +30,6 @@ class HelloController extends Controller
                         ],
                         [
                             [
-                                'url' => 'https://opensourcewebsite.org',
-                                'text' => Yii::t('bot', 'Website'),
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY',
-                                'text' => Yii::t('bot', 'Slack'),
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://discord.gg/94WpSPJ',
-                                'text' => Yii::t('bot', 'Discord'),
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://gitter.im/opensourcewebsite-org',
-                                'text' => Yii::t('bot', 'Gitter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
-                                'text' => Yii::t('bot', 'Source Code'),
-                            ],
-                        ],
-                        [
-                            [
                                 'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
                                 'text' => '👼 ' . Yii::t('bot', 'Donate'),
                             ],
@@ -69,7 +39,7 @@ class HelloController extends Controller
                             ],
                         ],
                 ],
-                false,
+                true,
                 [
                     'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]

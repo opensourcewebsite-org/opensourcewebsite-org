@@ -38,7 +38,8 @@ class CronController extends Controller
         'WikipediaParser',
         'WikinewsParser',
         'Debt',
-        'AdMatches',
+        'AdMatch',
+        'JobMatch',
         'Bot'
     ];
 
@@ -68,7 +69,6 @@ class CronController extends Controller
      */
     public function actionIndex()
     {
-        $this->outputLogState();
         $this->cronJobs = CronJobConsole::find()->all();
 
 //$this->cronJobs = [];

@@ -2,14 +2,21 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\behaviors\SetAttributeValueBehavior;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
 use app\models\Resume;
+use app\models\User;
 use app\modules\bot\components\crud\CrudController;
+use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
-use Yii;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\models\JobKeyword;
+use app\modules\bot\models\JobResumeKeyword;
+use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\components\helpers\Emoji;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
@@ -40,6 +47,7 @@ class ResumeController extends CrudController
                         'expectations' => $model->expectations,
                         'skills' => $model->skills,
                         'currencyCode' => $model->currencyCode,
+                        'keywords' => self::getKeywordsAsString($model->getKeywordsRelation()->all()),
                         'isActive' => $model->isActive(),
                         'remote_on' => $model->remote_on,
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
@@ -57,7 +65,36 @@ class ResumeController extends CrudController
                     'expectations' => [
                         'isRequired' => false,
                     ],
+                    'keywords' => [
+                        //'enableAddButton' = true,
+                        'isRequired' => false,
+                        'relation' => [
+                            'model' => JobResumeKeyword::class,
+                            'attributes' => [
+                                'resume_id' => [Resume::class, 'id'],
+                                'job_keyword_id' => [JobKeyword::class, 'id', 'keyword'],
+                            ],
+                            'removeOldRows' => true,
+                        ],
+                        'component' => [
+                            'class' => ExplodeStringFieldComponent::class,
+                            'attributes' => [
+                                'delimiters' => [',', '.', "\n"],
+                            ],
+                        ],
+                    ],
                     'currency' => [
+                        'behaviors' => [
+                            'SetDefaultCurrencyBehavior' => [
+                                'class' => SetDefaultCurrencyBehavior::class,
+                                'telegramUser' => $this->getTelegramUser(),
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
+                                ],
+                            ],
+                        ],
+                        'hidden' => true,
                         'relation' => [
                             'attributes' => [
                                 'currency_id' => [Currency::class, 'id', 'code'],
@@ -106,7 +143,7 @@ class ResumeController extends CrudController
                         'component' => LocationToArrayFieldComponent::class,
                         'buttons' => [
                             [
-                                'createMode' => false,
+                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                                 'text' => Yii::t('bot', 'My location'),
                                 'callback' => function (Resume $model) {
                                     $latitude = $this->getTelegramUser()->location_lat;
@@ -126,7 +163,7 @@ class ResumeController extends CrudController
                     'search_radius' => [
                         'buttons' => [
                             [
-                                'text' => Yii::t('bot', 'No'),
+                                'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (Resume $model) {
                                     $model->search_radius = 0;
 
@@ -162,6 +199,8 @@ class ResumeController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
+        $model->markToUpdateMatches();
+
         return $this->actionView($model->id);
     }
 
@@ -196,7 +235,7 @@ class ResumeController extends CrudController
         $keyboards = array_map(function ($resume) {
             return [
                 [
-                    'text' => ($resume->isActive() ? '' : '❌ ') . $resume->name,
+                    'text' => ($resume->isActive() ? '' : Emoji::INACTIVE . ' ') . $resume->name,
                     'callback_data' => self::createRoute('view', [
                         'resumeId' => $resume->id,
                     ]),
@@ -234,6 +273,22 @@ class ResumeController extends CrudController
             ->build();
     }
 
+    /**
+     * @param ActiveRecord[] $keywords
+     *
+     * @return string
+     */
+    private static function getKeywordsAsString($keywords)
+    {
+        $resultKeywords = [];
+
+        foreach ($keywords as $keyword) {
+            $resultKeywords[] = $keyword->keyword;
+        }
+
+        return implode(', ', $resultKeywords);
+    }
+
     /** @inheritDoc */
     public function actionView($resumeId)
     {
@@ -244,7 +299,53 @@ class ResumeController extends CrudController
                 ->build();
         }
 
-        $isEnabled = $resume->status == 1;
+        $isEnabled = $resume->status == Resume::STATUS_ON;
+
+        $buttons = [];
+        $buttons[] = [
+            [
+                'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', $isEnabled ? 'ON' : 'OFF'),
+                'callback_data' => self::createRoute('update-status', [
+                    'resumeId' => $resumeId,
+                    'isEnabled' => !$isEnabled,
+                ]),
+            ],
+        ];
+
+        $matchedVacancyCount = $resume->getMatches()->count();
+        if ($matchedVacancyCount > 0) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('vacancy-matches', ['resumeId' => $resumeId]),
+                'text' => Emoji::OFFERS . ' ' . $matchedVacancyCount,
+            ];
+        }
+
+        $buttons[] = [
+            [
+                'text' => Emoji::BACK,
+                'callback_data' => self::createRoute('index'),
+            ],
+            [
+                'text' => Emoji::MENU,
+                'callback_data' => MenuController::createRoute(),
+            ],
+            [
+                'text' => Emoji::EDIT,
+                'callback_data' => self::createRoute(
+                    'u',
+                    [
+                        'm' => $this->getModelName(Resume::class),
+                        'i' => $resumeId,
+                    ]
+                ),
+            ],
+            [
+                'text' => Emoji::DELETE,
+                'callback_data' => self::createRoute('delete', [
+                    'resumeId' => $resumeId,
+                ]),
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -256,47 +357,98 @@ class ResumeController extends CrudController
                     'expectations' => $resume->expectations,
                     'skills' => $resume->skills,
                     'currencyCode' => $resume->currencyCode,
+                    'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
                     'isActive' => $resume->isActive(),
                     'remote_on' => $resume->remote_on,
                     'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                 ]),
-                [
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', $isEnabled ? 'ON' : 'OFF'),
-                            'callback_data' => self::createRoute('update-status', [
-                                'resumeId' => $resumeId,
-                                'isEnabled' => !$isEnabled,
-                            ]),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute('index'),
-                        ],
-                        [
-                            'text' => Emoji::MENU,
-                            'callback_data' => MenuController::createRoute(),
-                        ],
-                        [
-                            'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(Resume::class),
-                                    'i' => $resumeId,
-                                ]
-                            ),
-                        ],
-                        [
-                            'text' => Emoji::DELETE,
-                            'callback_data' => self::createRoute('delete', [
-                                'resumeId' => $resumeId,
-                            ]),
-                        ],
-                    ],
+                $buttons,
+                true
+            )
+            ->build();
+    }
+
+    public function actionVacancyMatches($resumeId, $page = 1)
+    {
+        $resume = Resume::findOne($resumeId);
+        $vacanciesQuery = $resume->getMatches();
+
+        $pagination = new Pagination(
+            [
+                'totalCount' => $vacanciesQuery->count(),
+                'pageSize' => 1,
+                'params' => [
+                    'page' => $page,
                 ],
+                'pageSizeParam' => false,
+                'validatePage' => true,
+            ]
+        );
+
+        $paginationButtons = PaginationButtons::build(
+            $pagination,
+            function ($page) use ($resumeId) {
+                return self::createRoute(
+                    'vacancy-matches',
+                    [
+                        'resumeId' => $resumeId,
+                        'page' => $page,
+                    ]
+                );
+            }
+        );
+
+        $buttons = [];
+
+        $buttons[] = [
+            [
+                'text' => $resume->name,
+                'callback_data' => self::createRoute('view', ['resumeId' => $resume->id]),
+            ]
+        ];
+
+        $buttons[] = $paginationButtons;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', ['resumeId' => $resumeId]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $vacancy = $vacanciesQuery
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all()[0];
+
+        return ResponseBuilder::fromUpdate($this->getUpdate())
+            ->editMessageTextOrSendMessage(
+                $this->render(
+                    'match',
+                    [
+                        'model' => $vacancy,
+                        'name' => $vacancy->name,
+                        'hourlyRate' => $vacancy->max_hourly_rate,
+                        'requirements' => $vacancy->requirements,
+                        'conditions' => $vacancy->conditions,
+                        'responsibilities' => $vacancy->responsibilities,
+                        'currencyCode' => $vacancy->currencyCode,
+                        'company' => $vacancy->company,
+                        'isActive' => $vacancy->isActive(),
+                        'remote_on' => $vacancy->remote_on,
+                        'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
+                        'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
+                        'languages' => array_map(function ($vacancyLanguage) {
+                            return $vacancyLanguage->getDisplayName();
+                        }, $vacancy->vacancyLanguagesRelation),
+                        'user' => TelegramUser::findOne(['user_id' => $vacancy->user_id]),
+                    ]
+                ),
+                $buttons,
                 true
             )
             ->build();
@@ -338,7 +490,17 @@ class ResumeController extends CrudController
                 ->answerCallbackQuery()
                 ->build();
         }
+        $this->backRoute->make('view', compact('resumeId'));
+        $this->endRoute->make('view', compact('resumeId'));
 
+        if ($isEnabled && ($notFilledFields = $resume->notPossibleToChangeStatus())) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('status-error', compact('notFilledFields')),
+                    true
+                )
+                ->build();
+        }
         $resume->setAttribute('status', (int)$isEnabled);
         $resume->save();
 

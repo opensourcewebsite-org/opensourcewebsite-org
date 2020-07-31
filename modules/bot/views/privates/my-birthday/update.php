@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Please, send your birthday in format DD.MM.YYYY') ?>.
+<b><?= Yii::t('bot', 'Send your birthday in format «YYYY-MM-DD»') ?>:</b>
