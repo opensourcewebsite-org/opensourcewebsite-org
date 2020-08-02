@@ -6,6 +6,7 @@
 <br/>
 <?= $this->render('@bot/views/publics/greeting/show-greeting', [
     'user' => $telegramUser,
+    'chatGreetingMessage' => $chatGreetingMessage
 ]); ?>
 <br/>
 ————<br/>

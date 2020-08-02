@@ -2,6 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\models\BotChatGreeting;
+use app\modules\bot\models\BotChatGreetingMessage;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
@@ -43,10 +45,11 @@ class AdminGreetingController extends Controller
 
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
+        $chatGreetingMessage = $chat->getGreetingMessage()->one();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'telegramUser')),
+                $this->render('index', compact('chatTitle', 'telegramUser', 'chatGreetingMessage')),
                 [
                         [
                             [
@@ -59,7 +62,7 @@ class AdminGreetingController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('message', [
-                                'chatId' => $chatId,
+                                //'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Message'),
                         ],
@@ -74,7 +77,6 @@ class AdminGreetingController extends Controller
                             ],
                         ]
                     ],
-
             )
             ->build();
     }
@@ -100,7 +102,68 @@ class AdminGreetingController extends Controller
         return $this->actionIndex($chatId);
     }
 
-    public function actionMessage(int $chatId)
+    public function actionMessage()
     {
+        $this->getState()->setName(self::createRoute('save'));
+        $chat = $this->getTelegramChat();
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('enter-message'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    public function actionSave()
+    {
+        $text = $this->getUpdate()->getMessage()->getText();
+        $user = $this->getTelegramUser();
+        $chat = $this->getTelegramChat();
+
+        $botChatGreetingMessage = BotChatGreetingMessage::findOne([
+            'chat_id' => $chat->id,
+        ]);
+
+        if (!isset($botChatGreetingMessage)) {
+            $botChatGreetingMessage = new BotChatGreetingMessage();
+        }
+
+        $botChatGreetingMessage->setAttributes([
+          'chat_id' => $chat->id,
+          'updated_by' => $user->id,
+          'value' => self::prepareText($text),
+        ]);
+
+        if ($botChatGreetingMessage->save()) {
+            $botChatGreeting = BotChatGreeting::findOne([
+                'chat_id' => $chat->id
+            ]);
+            if (!isset($botChatGreeting)) {
+                $botChatGreeting = new BotChatGreeting();
+            }
+            $botChatGreeting->setAttributes([
+                'chat_id' =>  $chat->id,
+                'provider_user_id' => $user->provider_user_id,
+                'message_id' => $botChatGreetingMessage->id,
+            ]);
+            $botChatGreeting->save();
+        }
+
+        return $this->actionIndex($chat->id);
+    }
+
+    private static function prepareText(string $text)
+    {
+        return nl2br(strip_tags($text, '<b><i>'));
     }
 }
