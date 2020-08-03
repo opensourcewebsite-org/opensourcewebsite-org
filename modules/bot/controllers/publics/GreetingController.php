@@ -34,11 +34,15 @@ class GreetingController extends Controller
                 $telegramUser = $this->getTelegramUser();
             }
 
+            $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+
             $response =  $this->getResponseBuilder()
                 ->sendMessage(
                     $this->render('show-greeting', [
                         'user' => $telegramUser,
-                    ])
+                        'message' => $messageSetting->value,
+                    ]),
+                    true
                 )
                 ->send();
 

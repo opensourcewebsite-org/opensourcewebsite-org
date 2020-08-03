@@ -32,9 +32,11 @@ class AdminGreetingController extends Controller
         $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
         $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
 
+        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'telegramUser')),
+                $this->render('index', compact('chatTitle', 'telegramUser', 'messageSetting')),
                 [
                         [
                             [
@@ -46,13 +48,26 @@ class AdminGreetingController extends Controller
                         ],
                         [
                             [
+                                'callback_data' => self::createRoute('set-message', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => Yii::t('bot', 'Message'),
+                            ],
+                        ],
+                        [
+                            [
                                 'callback_data' => AdminChatController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Emoji::BACK,
                             ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
                         ]
-                    ]
+                    ],
+                    true
             )
             ->build();
     }
@@ -76,5 +91,64 @@ class AdminGreetingController extends Controller
         $statusSetting->save();
 
         return $this->actionIndex($chatId);
+    }
+
+    public function actionSetMessage($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $this->getState()->setName(self::createRoute('save-message', [
+                'chatId' => $chatId,
+            ]));
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-message'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ]
+                ]
+            )
+            ->build();
+    }
+
+    public function actionSaveMessage($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $text = $this->getUpdate()->getMessage()->getText();
+        $text = strip_tags($text);
+        // TODO Convert markdown to html tags
+        $textLenght = strlen($text);
+
+        if (!(($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX))) {
+            return $this->getResponseBuilder()
+                ->deleteMessage()
+                ->build();
+        }
+
+        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+        $messageSetting->value = $text;
+        $messageSetting->save();
+
+        $this->getState()->setName(null);
+
+        return $this->runAction('index', [
+            'chatId' => $chatId,
+        ]);
     }
 }

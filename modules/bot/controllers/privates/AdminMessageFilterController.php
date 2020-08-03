@@ -104,6 +104,10 @@ class AdminMessageFilterController extends Controller
                             ]),
                             'text' => Emoji::BACK,
                         ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
                     ]
                 ]
             )

@@ -327,8 +327,12 @@ class ResponseBuilder
      * @param bool $disablePreview
      * @return $this
      */
-    public function sendMessage(MessageText $messageText, array $replyMarkup = [], bool $disablePreview = false, array $optionalParams = [])
-    {
+    public function sendMessage(
+        MessageText $messageText,
+        array $replyMarkup = [],
+        bool $disablePreview = false,
+        array $optionalParams = []
+    ) {
         $chatId = null;
         if ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $chatId = $message->getChat()->getId();

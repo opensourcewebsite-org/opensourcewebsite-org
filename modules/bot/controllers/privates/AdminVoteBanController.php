@@ -78,7 +78,7 @@ class AdminVoteBanController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('enter-limit', [
+                            'callback_data' => self::createRoute('set-limit', [
                                 'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Limit') . ': ' . $limit,
@@ -98,6 +98,10 @@ class AdminVoteBanController extends Controller
                                 'chatId' => $chatId,
                             ]),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ]
 
@@ -127,15 +131,21 @@ class AdminVoteBanController extends Controller
         return $this->actionIndex($chatId);
     }
 
-    public function actionEnterLimit($chatId = null)
+    public function actionSetLimit($chatId = null)
     {
-        $this->getState()->setName(self::createRoute('update-limit', [
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $this->getState()->setName(self::createRoute('save-limit', [
                 'chatId' => $chatId,
             ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update-limit'),
+                $this->render('set-limit'),
                 [
                     [
                         [
@@ -150,23 +160,25 @@ class AdminVoteBanController extends Controller
             ->build();
     }
 
-    public function actionUpdateLimit($chatId = null)
+    public function actionSaveLimit($chatId = null)
     {
-        $update = $this->getUpdate();
-        $message = $update->getMessage();
-        $value =  (int) $message->getText();
-
         $chat = Chat::findOne($chatId);
-        $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
 
-        if (!(($value <= ChatSetting::VOTE_BAN_LIMIT_MAX) && ($value >= ChatSetting::VOTE_BAN_LIMIT_MIN))) {
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $text = (int) $this->getUpdate()->getMessage()->getText();
+
+        if (!(($text >= ChatSetting::VOTE_BAN_LIMIT_MIN) && ($text <= ChatSetting::VOTE_BAN_LIMIT_MAX))) {
             return $this->getResponseBuilder()
                 ->deleteMessage()
                 ->build();
         }
 
-        $statusSetting->value = (string) $value;
-        $statusSetting->save();
+        $limitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
+        $limitSetting->value = (string) $text;
+        $limitSetting->save();
 
         $this->getState()->setName(null);
 
