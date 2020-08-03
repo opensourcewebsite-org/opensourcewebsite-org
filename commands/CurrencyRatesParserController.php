@@ -1,4 +1,5 @@
 <?php
+
 namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
@@ -22,52 +23,59 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
     protected function parser()
     {
         $updatesCount = 0;
-
         $baseURL = 'https://api.exchangeratesapi.io/';
         $endpoint = 'latest';
         $currencyBase = Currency::find()->where('code=:code', [
             ':code' => 'USD'
         ])->one();
-        $client = new Client(['baseUrl' => $baseURL . $endpoint]);
-        $response = $client->createRequest()
-            ->addHeaders(['content-type' => 'application/json'])
-            ->setData([
-                'base' => 'USD',
-            ])->send();
-        try {
-            $data = $response->getData();
-            if (count($data['rates']) > 0) {
-                $exchangeRates = $data['rates'];
-                foreach (array_keys($exchangeRates) as $key) {
-                    $currency = Currency::find()->where('code=:code', [
-                        ':code' => $key
-                    ])->one();
-                    if (isset($currency)) {
-                        $currencyRate = CurrencyRate::find()->where([
-                            'or',
-                            ['updated_at' => null],
-                            ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
-                        ])->andWhere('from_currency_id=:from_currency_id && to_currency_id=:to_currency_id', [
-                            ':from_currency_id' => $currencyBase->id,
-                            ':to_currency_id' => $currency->id
+        $currencyRates = CurrencyRate::find()->where([
+            'or',
+            ['updated_at' => null],
+            ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
+        ])->all();
+        $flag = count(Currency::find()->all()) > 0 && count($currencyRates);
+        if ($flag) {
+            $client = new Client(['baseUrl' => $baseURL . $endpoint]);
+            $response = $client->createRequest()
+                ->addHeaders(['content-type' => 'application/json'])
+                ->setData([
+                    'base' => 'USD',
+                ])->send();
+            try {
+                $data = $response->getData();
+                if (count($data['rates']) > 0) {
+                    $exchangeRates = $data['rates'];
+                    foreach (array_keys($exchangeRates) as $key) {
+                        $currency = Currency::find()->where('code=:code', [
+                            ':code' => $key
                         ])->one();
-                        if (!isset($currencyRate)) {
-                            $currencyRate = new CurrencyRate();
-                            $currencyRate->from_currency_id = $currencyBase->id;
-                            $currencyRate->to_currency_id = $currency->id;
+                        if (isset($currency)) {
+                            $currencyRate = CurrencyRate::find()->where([
+                                'or',
+                                ['updated_at' => null],
+                                ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
+                            ])->andWhere([
+                                'from_currency_id' => $currencyBase->id,
+                                'to_currency_id' => $currency->id
+                            ])->one();
+                            if (!isset($currencyRate)) {
+                                $currencyRate = new CurrencyRate();
+                                $currencyRate->from_currency_id = $currencyBase->id;
+                                $currencyRate->to_currency_id = $currency->id;
+                            }
+                            $currencyRate->rate = $exchangeRates[$key];
+                            $currencyRate->updated_at = time();
+                            $currencyRate->save();
+                            $updatesCount++;
                         }
-                        $currencyRate->rate = $exchangeRates[$key];
-                        $currencyRate->updated_at = time();
-                        $currencyRate->save();
-                        $updatesCount++;
                     }
                 }
+                if ($updatesCount) {
+                    $this->output('Currencies parsed: ' . $updatesCount);
+                }
+            } catch (Exception $e) {
+                echo 'ERROR: parsing result from ' . $baseURL . ': ' . $e->getMessage() . "\n";
             }
-            if ($updatesCount) {
-                $this->output('Currencies parsed: ' . $updatesCount);
-            }
-        } catch (Exception $e) {
-            echo 'ERROR: parsing result from ' . $baseURL . ': ' . $e->getMessage() . "\n";
         }
     }
 }
