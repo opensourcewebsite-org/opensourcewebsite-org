@@ -35,10 +35,10 @@ class SystemMessageController extends Controller
             // Remove join message
             if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
                 try {
-                    /*$this->getBotApi()->deleteMessage(
+                    $this->getBotApi()->deleteMessage(
                         $telegramChat->chat_id,
                         $this->getUpdate()->getMessage()->getMessageId()
-                    );*/
+                    );
                 } catch (HttpException $e) {
                     Yii::warning($e);
                 }
