@@ -33,7 +33,7 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
             ['updated_at' => null],
             ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
         ])->all();
-        $flag = count(Currency::find()->all()) > 0 && count($currencyRates);
+        $flag = count(Currency::find()->all()) > 0 && count($currencyRates) > 0;
         if ($flag) {
             $client = new Client(['baseUrl' => $baseURL . $endpoint]);
             $response = $client->createRequest()
