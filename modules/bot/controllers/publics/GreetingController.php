@@ -42,6 +42,7 @@ class GreetingController extends Controller
                         'user' => $telegramUser,
                         'message' => $messageSetting->value,
                     ]),
+                    [],
                     true
                 )
                 ->send();
