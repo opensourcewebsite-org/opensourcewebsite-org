@@ -69,7 +69,6 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
             if ($updatesCount) {
                 $this->output('Currencies parsed: ' . $updatesCount);
             }
-
         } catch (Exception $e) {
             echo 'ERROR: parsing result ' . $accessKey . ': ' . $e->getMessage() . "\n";
         }
