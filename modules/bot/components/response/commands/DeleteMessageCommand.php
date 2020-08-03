@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
@@ -18,6 +19,7 @@ class DeleteMessageCommand extends Command
     public function send(BotApi $botApi)
     {
         $answer = false;
+
         try {
             $answer = $botApi->deleteMessage(
                 $this->chatId,

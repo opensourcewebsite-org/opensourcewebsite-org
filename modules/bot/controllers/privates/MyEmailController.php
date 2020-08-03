@@ -3,12 +3,12 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
 use app\models\User;
 use app\models\MergeAccountsRequest;
 use app\models\ChangeEmailRequest;
-use app\modules\bot\components\Controller;
 
 /**
  * Class MyEmailController

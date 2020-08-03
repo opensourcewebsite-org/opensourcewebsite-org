@@ -10,6 +10,7 @@ use app\modules\bot\models\UserState;
 use TelegramBot\Api\BotApi;
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\response\ResponseBuilder;
+use TelegramBot\Api\HttpException;
 
 /**
  * Class Controller
@@ -84,7 +85,10 @@ class Controller extends \yii\web\Controller
      */
     protected function getResponseBuilder()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate());
+         $responseBuilder = ResponseBuilder::fromUpdate($this->getUpdate());
+         $responseBuilder->setBotApi($this->botApi);
+
+         return $responseBuilder;
     }
 
     /**

@@ -3,16 +3,16 @@
 namespace app\modules\bot\controllers\publics;
 
 use Yii;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\components\Controller;
 
 /**
  * Class JoinCaptchaController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\publics
  */
 class JoinCaptchaController extends Controller
 {
@@ -42,7 +42,7 @@ class JoinCaptchaController extends Controller
             ]);
 
             if (($chatMember->role == self::ROLE_UNVERIFIED)) {
-                $choices = [
+                $buttons = [
                     [
                         'callback_data' => self::createRoute('pass-captcha', [
                             'provider_user_id' => $telegramUser->provider_user_id,
@@ -65,20 +65,18 @@ class JoinCaptchaController extends Controller
                         'text' => '👎',
                     ],
                 ];
-                shuffle($choices);
+                shuffle($buttons);
 
-                $command =  $this->getResponseBuilder()
+                $response =  $this->getResponseBuilder()
                     ->sendMessage(
                         $this->render('show-captcha', [
                             'user' => $telegramUser,
                         ]),
                         [
-                            $choices,
+                            $buttons,
                         ]
                     )
-                    ->build();
-
-                $response = $this->send($command);
+                    ->send();
 
                 if ($response) {
                     $botCaptcha = BotChatCaptcha::find()
@@ -97,11 +95,8 @@ class JoinCaptchaController extends Controller
                         $botCaptcha->save();
                     }
                 }
-                return [];
             }
         }
-
-        return [];
     }
 
     /**
@@ -139,6 +134,7 @@ class JoinCaptchaController extends Controller
 
                         if ($chatMember->role == self::ROLE_UNVERIFIED) {
                             // Remove captcha message
+
                             $botApi->deleteMessage($chat->chat_id, $captchaMessageId);
 
                             // Delete record about captcha
@@ -173,16 +169,5 @@ class JoinCaptchaController extends Controller
         }
 
         return true;
-    }
-
-    private function send(array $messageCommand)
-    {
-        if (isset($messageCommand)) {
-            $command = reset($messageCommand);
-            $response = $command->send($this->getBotApi());
-            return $response;
-        }
-
-        return false;
     }
 }

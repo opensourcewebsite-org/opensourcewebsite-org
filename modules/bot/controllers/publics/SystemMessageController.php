@@ -9,14 +9,13 @@ use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\ChatMember;
-use TelegramBot\Api\HttpException;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\controllers\publics\JoinCaptchaController;
 
 /**
 * Class SystemMessageController
 *
-* @package app\controllers\bot
+* @package app\modules\bot\controllers\publics
 */
 class SystemMessageController extends Controller
 {

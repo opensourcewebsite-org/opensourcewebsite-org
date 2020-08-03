@@ -3,9 +3,9 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
-use app\modules\bot\components\Controller as Controller;
 use app\components\helpers\TimeHelper;
 use app\modules\bot\components\helpers\Emoji;
 

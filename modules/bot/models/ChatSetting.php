@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 
 class ChatSetting extends ActiveRecord
@@ -49,9 +50,10 @@ class ChatSetting extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'setting', 'value'], 'required'],
-            [['chat_id'], 'integer'],
+            [['chat_id', 'updated_by', 'setting', 'value'], 'required'],
+            [['chat_id', 'updated_by'], 'integer'],
             [['setting', 'value'], 'string'],
+            [['value'], 'default', 'value' => null],
         ];
     }
 
@@ -60,5 +62,45 @@ class ChatSetting extends ActiveRecord
         return [
             // TimestampBehavior::className(),
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeSave($insert)
+    {
+        // TODO refactoring
+        $this->updated_by = Yii::$app->getModule('bot')->telegramUser->id;
+
+        return parent::beforeSave($insert);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeValidate()
+    {
+        // TODO refactoring
+        if (empty($this->updated_by)) {
+            $this->updated_by = Yii::$app->getModule('bot')->telegramUser->id;
+        }
+
+        return parent::beforeValidate();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBotUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChat()
+    {
+        return $this->hasOne(Chat::class, ['id' => 'chat_id']);
     }
 }

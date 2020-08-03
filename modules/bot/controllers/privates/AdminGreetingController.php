@@ -27,21 +27,9 @@ class AdminGreetingController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
-
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-
-            $statusSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::GREETING_STATUS,
-                'value' => ChatSetting::GREETING_STATUS_OFF,
-            ]);
-
-            $statusSetting->save();
-        }
-
         $chatTitle = $chat->title;
+
+        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
         $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
 
         return $this->getResponseBuilder()
@@ -50,7 +38,7 @@ class AdminGreetingController extends Controller
                 [
                         [
                             [
-                                'callback_data' => self::createRoute('update', [
+                                'callback_data' => self::createRoute('set-status', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
@@ -69,7 +57,7 @@ class AdminGreetingController extends Controller
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 

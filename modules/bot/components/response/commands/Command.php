@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use TelegramBot\Api\BotApi;

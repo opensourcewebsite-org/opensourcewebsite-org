@@ -3,11 +3,11 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\Controller;
 use app\models\Gender;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\models\User;
-use app\modules\bot\components\Controller;
 use yii\data\Pagination;
 
 /**

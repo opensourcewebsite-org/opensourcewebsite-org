@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
@@ -21,6 +22,7 @@ class SendMessageCommand extends MessageTextCommand
     public function send(BotApi $botApi)
     {
         $answer = false;
+
         try {
             $answer = $botApi->sendMessage(
                 $this->chatId,

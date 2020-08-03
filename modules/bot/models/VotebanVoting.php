@@ -13,6 +13,7 @@ use Yii;
  * @property int $chat_id
  * @property int $voting_message_id
  * @property int $candidate_message_id
+ * @property string $command
  */
 class VotebanVoting extends \yii\db\ActiveRecord
 {
@@ -33,6 +34,7 @@ class VotebanVoting extends \yii\db\ActiveRecord
             [['provider_starter_id', 'provider_candidate_id', 'chat_id', 'voting_message_id', 'candidate_message_id'], 'required'],
             [['provider_starter_id', 'provider_candidate_id', 'chat_id', 'voting_message_id', 'candidate_message_id'], 'integer'],
             [['provider_candidate_id', 'chat_id', 'voting_message_id'], 'unique', 'targetAttribute' => ['provider_candidate_id', 'chat_id', 'voting_message_id']],
+            [['command'], 'string', 'max' => 255],
         ];
     }
 

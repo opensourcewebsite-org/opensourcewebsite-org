@@ -61,8 +61,8 @@ class AdminVoteBanController extends Controller
         $chatTitle = $chat->title;
         $statusOn = ($statusSetting->value == ChatSetting::VOTE_BAN_STATUS_ON);
 
-        $voteLimitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
-        $voteLimit =  isset($voteLimitSetting) ? $voteLimitSetting->value : ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
+        $limitSetting = $chat->getSetting(ChatSetting::VOTE_BAN_LIMIT);
+        $limit = $limitSetting->value ?? ChatSetting::VOTE_BAN_LIMIT_DEFAULT;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -70,7 +70,7 @@ class AdminVoteBanController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('update', [
+                            'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
@@ -81,7 +81,7 @@ class AdminVoteBanController extends Controller
                             'callback_data' => self::createRoute('enter-limit', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Limit') . ': ' . $voteLimit,
+                            'text' => Yii::t('bot', 'Limit') . ': ' . $limit,
                         ],
                     ],
                     [
@@ -106,7 +106,7 @@ class AdminVoteBanController extends Controller
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -165,17 +165,11 @@ class AdminVoteBanController extends Controller
                 ->build();
         }
 
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-            $statusSetting->setAttributes([
-                        'chat_id' => $chatId,
-                        'setting' => ChatSetting::VOTE_BAN_LIMIT,
-                    ]);
-        }
-        $statusSetting->value= (string) $value;
+        $statusSetting->value = (string) $value;
         $statusSetting->save();
 
         $this->getState()->setName(null);
+
         return $this->runAction('index', [
             'chatId' => $chatId,
         ]);

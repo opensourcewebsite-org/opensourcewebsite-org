@@ -26,21 +26,9 @@ class AdminJoinHiderController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-
-            $statusSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::JOIN_HIDER_STATUS,
-                'value' => ChatSetting::JOIN_HIDER_STATUS_OFF,
-            ]);
-
-            $statusSetting->save();
-        }
-
         $chatTitle = $chat->title;
+
+        $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
         $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
 
         return $this->getResponseBuilder()
@@ -49,7 +37,7 @@ class AdminJoinHiderController extends Controller
                 [
                         [
                             [
-                                'callback_data' => self::createRoute('update', [
+                                'callback_data' => self::createRoute('set-status', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
@@ -68,7 +56,7 @@ class AdminJoinHiderController extends Controller
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
