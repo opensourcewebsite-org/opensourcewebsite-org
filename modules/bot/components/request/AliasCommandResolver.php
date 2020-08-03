@@ -7,6 +7,7 @@ use TelegramBot\Api\Types\Update;
 use app\modules\bot\models\BotRouteAlias;
 use app\modules\bot\controllers\publics\VotebanController;
 use app\modules\bot\controllers\publics\TopController;
+use app\modules\bot\components\helpers\Emoji;
 
 class AliasCommandResolver implements ICommandResolver
 {
@@ -35,7 +36,9 @@ class AliasCommandResolver implements ICommandResolver
         $aliases = [
             'voteban' => VotebanController::createRoute('index'),
             '+' => TopController::createRoute('start-like'),
+            Emoji::LIKE => TopController::createRoute('start-like'),
             '-' => TopController::createRoute('start-dislike'),
+            Emoji::DISLIKE => TopController::createRoute('start-dislike'),
         ];
 
         foreach ($aliases as $alias => $aliasRoute) {

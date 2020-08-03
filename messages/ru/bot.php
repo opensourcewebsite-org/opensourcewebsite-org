@@ -353,5 +353,6 @@ return [
     'sends a welcome message to newly joined members' => 'отправляет приветственное сообщение новым участникам',
     'Message' => 'Сообщение',
     'Send additional message for greeting' => 'Отправьте дополнительное сообщение для приветствия',
+    'Don\'t use html tags' => 'Не используйте html теги',
     'Karma' => 'Карма',
 ];
