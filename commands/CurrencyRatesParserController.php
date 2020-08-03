@@ -50,7 +50,11 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
                         ':code' => $key
                     ])->one();
                     if (isset($currency)) {
-                        $currencyRate = CurrencyRate::find()->where('from_currency_id=:from_currency_id && to_currency_id=:to_currency_id', [
+                        $currencyRate = CurrencyRate::find()->where([
+                            'or',
+                            ['updated_at' => null],
+                            ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
+                        ])->andWhere('from_currency_id=:from_currency_id && to_currency_id=:to_currency_id', [
                             ':from_currency_id' => $currencyBase->id,
                             ':to_currency_id' => $currency->id
                         ])->one();
@@ -60,7 +64,7 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
                             $currencyRate->to_currency_id = $currency->id;
                         }
                         $currencyRate->rate = $exchangeRates[$key];
-                        $currencyRate->updated_at = $data['time_last_update_unix'];
+                        $currencyRate->updated_at = time();
                         $currencyRate->save();
                         $updatesCount++;
                     }
