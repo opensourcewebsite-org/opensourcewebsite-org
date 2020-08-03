@@ -21,9 +21,6 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
 
     const UPDATE_INTERVAL = 1 * 60 * 60; // seconds
 
-    //call fixer api return data
-    //
-    //
     public function actionIndex()
     {
         $this->parser();
@@ -33,26 +30,30 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
     {
         $updatesCount = 0;
 
-        $baseURL = \Yii::$app->params['currencyRateAPI'];
+        $baseURL = 'https://api.exchangeratesapi.io/';
         $endpoint = 'latest';
-        $accessKey = \Yii::$app->params['currencyRateToken'];
-        $currencyBase = Currency::findOne(\Yii::$app->params['currencyRateBase']);
-
-        $client = new Client(['baseUrl' => $baseURL . '/' . $accessKey . '/' . $endpoint . '/' . $currencyBase->code]);
+        $currencyBase = Currency::find()->where('code=:code', [
+            ':code' => 'USD'
+        ])->one();
+        $client = new Client(['baseUrl' => $baseURL . $endpoint]);
         $response = $client->createRequest()
             ->addHeaders(['content-type' => 'application/json'])
-            ->send();
+            ->setData([
+                'base' => 'USD',
+            ])->send();
         try {
             $data = $response->getData();
-            if ('success' === $data['result']) {
-                $exchangeRates = $data['conversion_rates'];
+            if (count($data['rates']) > 0) {
+                $exchangeRates = $data['rates'];
                 foreach (array_keys($exchangeRates) as $key) {
-                    $currency = Currency::findOne($key);
+                    $currency = Currency::find()->where('code=:code', [
+                        ':code' => $key
+                    ])->one();
                     if (isset($currency)) {
                         $currencyRate = CurrencyRate::find()->where('from_currency_id=:from_currency_id && to_currency_id=:to_currency_id', [
                             ':from_currency_id' => $currencyBase->id,
                             ':to_currency_id' => $currency->id
-                        ]);
+                        ])->one();
                         if (!isset($currencyRate)) {
                             $currencyRate = new CurrencyRate();
                             $currencyRate->from_currency_id = $currencyBase->id;
@@ -65,12 +66,11 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
                     }
                 }
             }
-
             if ($updatesCount) {
                 $this->output('Currencies parsed: ' . $updatesCount);
             }
         } catch (Exception $e) {
-            echo 'ERROR: parsing result ' . $accessKey . ': ' . $e->getMessage() . "\n";
+            echo 'ERROR: parsing result from ' . $baseURL . ': ' . $e->getMessage() . "\n";
         }
     }
 }
