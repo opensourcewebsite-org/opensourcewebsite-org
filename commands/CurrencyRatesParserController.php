@@ -67,18 +67,5 @@ class CurrencyRatesParserController extends Controller implements CronChainedInt
         } catch (Exception $e) {
             echo 'ERROR: parsing result ' . $$access_key . ': ' . $e->getMessage() . "\n";
         }
-
-        try {
-            $response = json_decode($json);
-            if ('success' === $response->result) {
-                $exchangeRates = $response->conversion_rates;
-                foreach ($exchangeRates as $rate){
-
-                }
-            }
-
-        } catch (Exception $e) {
-            echo 'ERROR: parsing result ' . $$access_key . ': ' . $e->getMessage() . "\n";
-        }
     }
 }
