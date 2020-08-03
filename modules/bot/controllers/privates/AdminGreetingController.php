@@ -62,7 +62,7 @@ class AdminGreetingController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('message', [
-                                //'chatId' => $chatId,
+                                'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Message'),
                         ],
@@ -102,10 +102,9 @@ class AdminGreetingController extends Controller
         return $this->actionIndex($chatId);
     }
 
-    public function actionMessage()
+    public function actionMessage($chatId)
     {
-        $this->getState()->setName(self::createRoute('save'));
-        $chat = $this->getTelegramChat();
+        $this->getState()->setName(self::createRoute('save', ['chatId' => $chatId]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -114,7 +113,7 @@ class AdminGreetingController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'chatId' => $chatId,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -124,11 +123,16 @@ class AdminGreetingController extends Controller
             ->build();
     }
 
-    public function actionSave()
+    public function actionSave($chatId)
     {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
         $text = $this->getUpdate()->getMessage()->getText();
         $user = $this->getTelegramUser();
-        $chat = $this->getTelegramChat();
 
         $botChatGreetingMessage = BotChatGreetingMessage::findOne([
             'chat_id' => $chat->id,

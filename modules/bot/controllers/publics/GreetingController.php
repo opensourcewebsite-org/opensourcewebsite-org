@@ -2,10 +2,7 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use Yii;
-use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatGreeting;
-use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\User;
@@ -34,10 +31,13 @@ class GreetingController extends Controller
                 $telegramUser = $this->getTelegramUser();
             }
 
+            $chatGreetingMessage = $chat->getGreetingMessage()->one();
+
             $command =  $this->getResponseBuilder()
                 ->sendMessage(
                     $this->render('show-greeting', [
                         'user' => $telegramUser,
+                        'chatGreetingMessage' => $chatGreetingMessage
                     ])
                 )
                 ->build();
