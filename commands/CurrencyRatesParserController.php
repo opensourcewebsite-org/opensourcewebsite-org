@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: manhd
- * Date: 02/08/2020
- * Time: 22:00
- */
-
 namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
