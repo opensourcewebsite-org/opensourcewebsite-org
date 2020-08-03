@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Currency;
 use app\widgets\buttons\AddButton;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -49,19 +50,49 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             [
+                                'label' => Yii::t('app', 'Sell') . '/' . Yii::t('app', 'Buy'),
+                                'value' => function ($model) {
+                                    $sell_currency = Currency::findOne($model->selling_currency_id);
+                                    $buy_currency = Currency::findOne($model->buying_currency_id);
+
+                                    return $sell_currency->code . '/' . $buy_currency->code;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
                                 'attribute' => 'selling_rate',
+                                'value' => function ($model) {
+                                    return round($model->selling_rate, 2);
+                                },
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'buying_rate',
+                                'value' => function ($model) {
+                                    return round($model->buying_rate, 3);
+                                },
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'selling_currency_min_amount',
+                                'value' => function ($model) {
+                                    return round($model->selling_currency_min_amount, 2);
+                                },
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'selling_currency_max_amount',
+                                'value' => function ($model) {
+                                    return round($model->selling_currency_max_amount, 2);
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'label' => Yii::t('app', 'Offers'),
+                                'value' => function () {
+
+                                    return 2;
+                                },
                                 'enableSorting' => false,
                             ],
                             [

@@ -1,5 +1,4 @@
 <?php
-
 use app\models\CurrencyExchangeOrder;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
@@ -11,9 +10,7 @@ use dosamigos\leaflet\widgets\Map;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use \dosamigos\leaflet\LeafLet;
-use \app\components\helpers\ArrayHelper;
 use \kartik\select2\Select2;
-use \app\models\PaymentMethod;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
@@ -67,8 +64,12 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'selling_cash_on')->widget(Select2::class, [
-                                'data' => ArrayHelper::map(PaymentMethod::find()->asArray()->all(), 'id', 'name'),
+                            <label class="control-label"><?= Yii::t('app', 'Payment method for Sell'); ?></label>
+                            <?= Select2::widget([
+                                'name' => 'sell_payment',
+                                'hideSearch' => true,
+                                'data' => $payments_types,
+                                'value' => $sell_payment_id,
                                 'options' => ['placeholder' => 'Select a payment...'],
                                 'pluginOptions' => ['allowClear' => true],
                             ]); ?>
@@ -76,8 +77,12 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'buying_cash_on')->widget(Select2::class, [
-                                'data' => ArrayHelper::map(PaymentMethod::find()->asArray()->all(), 'id', 'name'),
+                            <label class="control-label"><?= Yii::t('app', 'Payment method for Buy'); ?></label>
+                            <?= Select2::widget([
+                                'name' => 'buy_payment',
+                                'hideSearch' => true,
+                                'data' => $payments_types,
+                                'value' => $buy_payment_id,
                                 'options' => ['placeholder' => 'Select a payment...'],
                                 'pluginOptions' => ['allowClear' => true],
                             ]); ?>

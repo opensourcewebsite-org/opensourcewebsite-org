@@ -86,7 +86,13 @@ return [
     'Max Amount' => 'Максимальная сумма',
     'Sell' => 'Продажа',
     'Buy' => 'Покупка',
+    'Cash' => 'Наличные',
+    'Offers' => 'Предложения',
     'Status' => 'Статус',
     'Delivery Radius' => 'Радиус доставки',
     'Location' => 'Местонахождение',
+    'Not selected' => 'Не выбрано',
+    'Field have to be filled: ' => 'Укажите следующую информацию: ',
+    'Payment method for Sell' => 'Способ оплаты за валюту продажи',
+    'Payment method for Buy' => 'Способ оплаты за валюту покупки',
 ];

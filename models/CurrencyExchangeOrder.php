@@ -82,6 +82,8 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
             'processed_at' => 'Processed At',
             'selling_cash_on' => 'Selling Cash On',
             'buying_cash_on' => 'Buying Cash On',
+            'selling_payment_method' => 'Selling payment method',
+            'buying_payment_method' => 'Buying payment method',
         ];
     }
 
@@ -125,6 +127,14 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyExchangeOrderPaymentMethod()
+    {
+        return $this->hasMany(CurrencyExchangeOrderPaymentMethod::class, ['order_id' => 'id']);
+    }
+
+    /**
      * @param string $location
      * @return $this
      */
@@ -137,5 +147,28 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function notPossibleToChangeStatus()
+    {
+        $location = ($this->location_lon && $this->location_lat);
+        $cash_methods = PaymentMethod::find()
+            ->select('id')
+            ->where(['type' => 2])
+            ->asArray()
+            ->all();
+        $cash_payment = $this->getCurrencyExchangeOrderPaymentMethod()
+            ->where(['payment_method_id' => $cash_methods[0]])
+            ->all();
+        $notFilledFields = [];
+
+        if (!$location && !empty($cash_payment)) {
+            $notFilledFields[] = Yii::t('app', 'Field have to be filled: ') . Yii::t('app', 'Location');
+        }
+
+        return $notFilledFields;
     }
 }

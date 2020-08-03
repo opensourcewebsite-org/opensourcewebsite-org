@@ -45,4 +45,12 @@ class CurrencyExchangeOrderPaymentMethod extends \yii\db\ActiveRecord
             'type' => 'Type',
         ];
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyExchangeOrder()
+    {
+        return $this->hasOne(CurrencyExchangeOrder::class, ['id' => 'order_id']);
+    }
 }

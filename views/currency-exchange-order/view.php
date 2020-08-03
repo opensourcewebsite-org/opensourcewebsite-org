@@ -9,7 +9,6 @@ use app\widgets\buttons\EditButton;
 $this->title = Yii::t('app', 'Currency Exchange Order') . ' ' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange Orders'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
 
 <div class="currency-exchange-order-view">
@@ -20,10 +19,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item align-self-center mr-3">
                             <div class="input-group-prepend">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                    <?= $model->getAttributeLabel('Status'); ?>
-                                </button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown">
+                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <?= $model->getAttributeLabel('Status'); ?>
+                                    </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item status-update <?= $model->status === CurrencyExchangeOrder::STATUS_ACTIVE ? 'active' : '' ?>" href="#" data-value="<?= CurrencyExchangeOrder::STATUS_ACTIVE ?>">Active</a>
                                     <a class="dropdown-item status-update <?= $model->status === CurrencyExchangeOrder::STATUS_INACTIVE ? 'active' : '' ?>" href="#" data-value="<?= CurrencyExchangeOrder::STATUS_INACTIVE ?>">Inactive</a>
                                 </div>
@@ -43,40 +43,51 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <div class="table-responsive">
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                                <caption>Currency exchange orders</caption>
                                 <tbody>
                                     <tr>
-                                        <th class="align-middle"><?= $model->getAttributeLabel('selling_currency_id').'/'.$model->getAttributeLabel('buying_currency_id'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('selling_currency_id').'/'.$model->getAttributeLabel('buying_currency_id'); ?></th>
                                         <td class="align-middle"><?= $model->getSellingCurrency()->code . '/' . $model->getBuyingCurrency()->code; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= $model->getAttributeLabel('selling_rate'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('selling_rate'); ?></th>
                                         <td class="align-middle"><?= $model->selling_rate; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= $model->getAttributeLabel('buying_rate'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('buying_rate'); ?></th>
                                         <td class="align-middle"><?= $model->buying_rate; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= $model->getAttributeLabel('selling_currency_min_amount'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('selling_currency_min_amount'); ?></th>
                                         <td class="align-middle"><?= $model->selling_currency_min_amount; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= $model->getAttributeLabel('selling_currency_max_amount'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('selling_currency_max_amount'); ?></th>
                                         <td class="align-middle"><?= $model->selling_currency_max_amount; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= $model->getAttributeLabel('delivery_radius'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('delivery_radius'); ?></th>
                                         <td class="align-middle"><?= $model->delivery_radius; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= Yii::t('app', 'Location'); ?></th>
+                                        <th class="align-middle" scope="col"><?= Yii::t('app', 'Location'); ?></th>
                                         <td class="align-middle"><?= $model->location_lat . ', ' . $model->location_lon; ?></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle" scope="col"><?= Yii::t('app', 'Payment method for Sell'); ?></th>
+                                        <td class="align-middle"><?= $sell_payment; ?></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle" scope="col"><?= Yii::t('app', 'Payment method for Buy'); ?></th>
+                                        <td class="align-middle"><?= $buy_payment; ?></td>
                                         <td></td>
                                     </tr>
                                 </tbody>
@@ -101,7 +112,15 @@ $('.status-update').on("click", function(event) {
                 location.reload();
             }
             else {
-                alert('Sorry, there was an error while trying to change status');
+                var response = $.parseJSON(result);
+                $('#main-modal-header').text('Warning!');
+                $('#main-modal-body').html(response);
+                $('#main-modal').show();
+                $('.close').on('click', function() {
+                  $("#main-modal-body").html("");
+                  $('#main-modal').hide();
+                });
+                // alert('Sorry, there was an error while trying to change status');
             }
         });
     }

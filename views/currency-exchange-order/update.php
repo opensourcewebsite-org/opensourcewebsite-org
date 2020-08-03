@@ -12,5 +12,8 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 <div class="currency-exchange-order-update">
     <?= $this->render('_form2', [
         'model' => $model,
+        'sell_payment_id' => isset($sell_payment_id)?$sell_payment_id:'',
+        'buy_payment_id' => isset($buy_payment_id)?$buy_payment_id:'',
+        'payments_types' => $payments_types,
     ]); ?>
 </div>
