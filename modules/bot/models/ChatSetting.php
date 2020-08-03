@@ -40,7 +40,7 @@ class ChatSetting extends ActiveRecord
     public const GREETING_STATUS_ON = 'on';
     public const GREETING_STATUS_OFF = 'off';
     public const GREETING_LIFETIME = 'greeting_lifetime';
-    public const GREETING_LIFETIME_DEFAULT = 600; // seconds
+    public const GREETING_LIFETIME_DEFAULT = 900; // seconds
     public const GREETING_MESSAGE = 'greeting_message';
     public const GREETING_MESSAGE_LENGHT_MIN = 1;
     public const GREETING_MESSAGE_LENGHT_MAX = 10000;

@@ -32,8 +32,8 @@ class SystemMessageController extends Controller
         $role = JoinCaptchaController::ROLE_VERIFIED;
 
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
-            // Remove join message
             if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
+                // Remove join message
                 try {
                     $this->getBotApi()->deleteMessage(
                         $telegramChat->chat_id,
@@ -102,6 +102,7 @@ class SystemMessageController extends Controller
             $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
 
             if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
+                // Remove left message
                 try {
                     $this->getBotApi()->deleteMessage(
                         $telegramChat->chat_id,
