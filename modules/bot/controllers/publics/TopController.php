@@ -195,16 +195,16 @@ class TopController extends Controller
     private function addOrChangeVote(int $messageId, int $estimate)
     {
         $chat = $this->getTelegramChat();
-        $chatId = $chat->id;
         $user = $this->getTelegramUser();
-        $voterId = $user->provider_user_id;
         $thisMessage = $this->getMessage();
+
+        $voterId = $user->provider_user_id;
 
         if ($this->getUpdate()->getCallbackQuery()) {
             $anyMessageVote = RatingVote::find()
                 ->where([
                     'message_id' => $messageId,
-                    'chat_id' => $chatId
+                    'chat_id' => $chat->id,
                 ])
                 ->one();
 
@@ -217,8 +217,8 @@ class TopController extends Controller
         $vote = RatingVote::find()
             ->where([
                 'message_id' => $messageId,
-                'chat_id' => $chatId,
-                'provider_voter_id' => $voterId
+                'chat_id' => $chat->id,
+                'provider_voter_id' => $voterId,
             ])
             ->one();
 
@@ -312,8 +312,6 @@ class TopController extends Controller
                 'rating'
         );
 
-        return [];
-
         $commands = $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
@@ -323,7 +321,7 @@ class TopController extends Controller
                         'providerCandidateId' => $candidateId,
                         'userRating' => $ratings[$voterId] ?? 0,
                         'candidateRating' => $ratings[$candidateId] ?? 0,
-                        'command' => $voting->command,
+                        'command' => $voting->command ?? $this->getMessage()->getText(),
                     ]
                 ),
                 $buttons
