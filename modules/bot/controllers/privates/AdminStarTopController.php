@@ -76,7 +76,7 @@ class AdminStarTopController extends Controller
                                 'callback_data' => self::createRoute('likewords-word-list', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => Yii::t('bot', 'Aliases for') . ' «+»',
+                                'text' => Yii::t('bot', 'Aliases for') . ' ' . Emoji::LIKE,
                             ],
                         ],
                         [
@@ -84,7 +84,7 @@ class AdminStarTopController extends Controller
                                 'callback_data' => self::createRoute('dislikewords-word-list', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => Yii::t('bot', 'Aliases for') . ' «-»',
+                                'text' => Yii::t('bot', 'Aliases for') . ' ' . Emoji::DISLIKE,
                             ],
                         ],
                         [
