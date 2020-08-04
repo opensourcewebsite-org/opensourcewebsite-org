@@ -54,7 +54,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                     </div>
                     <strong><?= Yii::t('app', 'Location') ?></strong>
                     <div class="input-group mb-3">
-                        <?= Html::textInput("location", $model->location_lat . ', ' . $model->location_lon, [
+                        <?= Html::textInput('location', $model->location_lat . ', ' . $model->location_lon, [
                             'class' => 'form-control rounded-0',
                             'id' => 'currency-exchange-order-location',
                         ]) ?>
@@ -68,8 +68,8 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <?= Select2::widget([
                                 'name' => 'sell_payment',
                                 'hideSearch' => true,
-                                'data' => $payments_types,
-                                'value' => $sell_payment_id,
+                                'data' => $paymentsTypes,
+                                'value' => $sellPaymentId,
                                 'options' => ['placeholder' => 'Select a payment...'],
                                 'pluginOptions' => ['allowClear' => true],
                             ]); ?>
@@ -81,8 +81,8 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <?= Select2::widget([
                                 'name' => 'buy_payment',
                                 'hideSearch' => true,
-                                'data' => $payments_types,
-                                'value' => $buy_payment_id,
+                                'data' => $paymentsTypes,
+                                'value' => $buyPaymentId,
                                 'options' => ['placeholder' => 'Select a payment...'],
                                 'pluginOptions' => ['allowClear' => true],
                             ]); ?>

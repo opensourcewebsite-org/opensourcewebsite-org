@@ -52,10 +52,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => Yii::t('app', 'Sell') . '/' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
-                                    $sell_currency = Currency::findOne($model->selling_currency_id);
-                                    $buy_currency = Currency::findOne($model->buying_currency_id);
+                                    $sellCurrency = Currency::findOne($model->selling_currency_id);
+                                    $buyCurrency = Currency::findOne($model->buying_currency_id);
 
-                                    return $sell_currency->code . '/' . $buy_currency->code;
+                                    return $sellCurrency->code . '/' . $buyCurrency->code;
                                 },
                                 'enableSorting' => false,
                             ],

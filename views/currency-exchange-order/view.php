@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 <caption>Currency exchange orders</caption>
                                 <tbody>
                                     <tr>
-                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('selling_currency_id').'/'.$model->getAttributeLabel('buying_currency_id'); ?></th>
+                                        <th class="align-middle" scope="col"><?= $model->getAttributeLabel('selling_currency_id') . '/' . $model->getAttributeLabel('buying_currency_id'); ?></th>
                                         <td class="align-middle"><?= $model->getSellingCurrency()->code . '/' . $model->getBuyingCurrency()->code; ?></td>
                                         <td></td>
                                     </tr>
@@ -82,12 +82,12 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     </tr>
                                     <tr>
                                         <th class="align-middle" scope="col"><?= Yii::t('app', 'Payment method for Sell'); ?></th>
-                                        <td class="align-middle"><?= $sell_payment; ?></td>
+                                        <td class="align-middle"><?= $sellPayment; ?></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <th class="align-middle" scope="col"><?= Yii::t('app', 'Payment method for Buy'); ?></th>
-                                        <td class="align-middle"><?= $buy_payment; ?></td>
+                                        <td class="align-middle"><?= $buyPayment; ?></td>
                                         <td></td>
                                     </tr>
                                 </tbody>
@@ -117,8 +117,8 @@ $('.status-update').on("click", function(event) {
                 $('#main-modal-body').html(response);
                 $('#main-modal').show();
                 $('.close').on('click', function() {
-                  $("#main-modal-body").html("");
-                  $('#main-modal').hide();
+                    $("#main-modal-body").html("");
+                    $('#main-modal').hide();
                 });
                 // alert('Sorry, there was an error while trying to change status');
             }
@@ -129,4 +129,3 @@ $('.status-update').on("click", function(event) {
 });
 JS;
 $this->registerJs($script);
-

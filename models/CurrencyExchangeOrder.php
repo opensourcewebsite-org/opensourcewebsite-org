@@ -104,7 +104,8 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     /**
      * {@inheritDoc}
      */
-    public function beforeValidate() {
+    public function beforeValidate()
+    {
         $this->buying_rate = ((float) 1) / $this->selling_rate;
 
         return parent::beforeValidate();
@@ -155,17 +156,17 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     public function notPossibleToChangeStatus()
     {
         $location = ($this->location_lon && $this->location_lat);
-        $cash_methods = PaymentMethod::find()
+        $cashMethods = PaymentMethod::find()
             ->select('id')
             ->where(['type' => 2])
             ->asArray()
             ->all();
-        $cash_payment = $this->getCurrencyExchangeOrderPaymentMethod()
-            ->where(['payment_method_id' => $cash_methods[0]])
+        $cashPayment = $this->getCurrencyExchangeOrderPaymentMethod()
+            ->where(['payment_method_id' => $cashMethods[0]])
             ->all();
         $notFilledFields = [];
 
-        if (!$location && !empty($cash_payment)) {
+        if (!$location && !empty($cashPayment)) {
             $notFilledFields[] = Yii::t('app', 'Field have to be filled: ') . Yii::t('app', 'Location');
         }
 
