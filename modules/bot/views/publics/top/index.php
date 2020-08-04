@@ -1,7 +1,11 @@
-<b><?= Yii::t('bot', 'Awesome members'); ?></b><br/>
+<?php
+
+use app\modules\bot\models\User;
+use app\modules\bot\components\helpers\Emoji;
+
+?>
+<b><?= Emoji::LIKE . ' ' . Yii::t('bot', 'Awesome members'); ?>:</b><br/>
 <br/>
 <?php foreach ($users as $user) : ?>
-<?= $user['username']; ?>: <?= $user['rating']; ?><br/>
+<?= User::getFullLinkByProviderUserId($user['provider_user_id']); ?> (<?= $user['rating']; ?>)<br/>
 <?php endforeach; ?>
-<br/>
-<?= Yii::t('bot', 'To start a vote, send a reply «<b>+</b>» or «<b>-</b>» to a message of any member of the group'); ?>.

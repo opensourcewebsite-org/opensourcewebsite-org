@@ -3,17 +3,17 @@
 namespace app\modules\bot\controllers\publics;
 
 use Yii;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\components\Controller;
 use app\modules\bot\models\User;
 
 /**
  * Class GreetingController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\publics
  */
 class GreetingController extends Controller
 {
@@ -34,15 +34,18 @@ class GreetingController extends Controller
                 $telegramUser = $this->getTelegramUser();
             }
 
-            $command =  $this->getResponseBuilder()
+            $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+
+            $response =  $this->getResponseBuilder()
                 ->sendMessage(
                     $this->render('show-greeting', [
                         'user' => $telegramUser,
-                    ])
+                        'message' => $messageSetting->value,
+                    ]),
+                    [],
+                    true
                 )
-                ->build();
-
-            $response = $this->send($command);
+                ->send();
 
             if ($response) {
                 $botGreeting = BotChatGreeting::find()
@@ -62,18 +65,5 @@ class GreetingController extends Controller
                 }
             }
         }
-
-        return [];
-    }
-
-    private function send(array $messageCommand)
-    {
-        if (isset($messageCommand)) {
-            $command = reset($messageCommand);
-            $response = $command->send($this->getBotApi());
-            return $response;
-        }
-
-        return false;
     }
 }

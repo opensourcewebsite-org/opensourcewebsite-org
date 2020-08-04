@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components\api;
 
+use Yii;
 use app\modules\bot\components\api\Types\ChatMember;
 
 /**
@@ -26,5 +27,16 @@ class BotApi extends \TelegramBot\Api\BotApi
             'chat_id' => $chatId,
             'user_id' => $userId
         ]));
+    }
+
+    public function deleteMessage($chatId, $messageId)
+    {
+        try {
+            return parent::deleteMessage($chatId, $messageId);
+        } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+
+        return false;
     }
 }

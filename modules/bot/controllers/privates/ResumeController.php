@@ -3,17 +3,16 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\User;
-use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\JobKeyword;
 use app\modules\bot\models\JobResumeKeyword;
 use app\modules\bot\models\User as TelegramUser;
@@ -425,7 +424,7 @@ class ResumeController extends CrudController
             ->limit($pagination->limit)
             ->all()[0];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
                     'match',

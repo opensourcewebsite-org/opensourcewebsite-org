@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\components\helpers\ReferrerHelper;
 use app\models\ChangeEmailRequest;
 use app\models\Country;
@@ -15,7 +16,6 @@ use app\models\Sexuality;
 use app\models\UserCitizenship;
 use app\models\UserLanguage;
 use app\models\UserStatistic;
-use Yii;
 use app\models\User;
 use app\models\UserMoqupFollow;
 use yii\data\Pagination;

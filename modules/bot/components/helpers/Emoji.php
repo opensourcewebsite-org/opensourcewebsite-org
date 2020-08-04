@@ -22,4 +22,10 @@ class Emoji
     public const JOB_RESUME = '💪';
     public const JOB_VACANCY = '🧰';
     public const JOB_COMPANY = '🏢';
+    public const STAR = '⭐️';
+    public const POO = '💩';
+    public const LIKE = '👍';
+    public const DISLIKE = '👎';
+    public const KICK_VOTE = '🔫';
+    public const SAVE_VOTE = '👼';
 }

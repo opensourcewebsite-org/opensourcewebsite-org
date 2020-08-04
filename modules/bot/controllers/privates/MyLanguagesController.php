@@ -2,17 +2,15 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\Controller;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\UserLanguage;
 use app\models\Vacancy;
-use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
-use TelegramBot\Api\BotApi;
 
 class MyLanguagesController extends Controller
 {

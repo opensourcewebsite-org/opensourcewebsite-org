@@ -17,10 +17,10 @@ class ChatMember extends ActiveRecord
 {
     public const STATUS_CREATOR = 'creator';
     public const STATUS_ADMINISTRATOR = 'administrator';
-    public const STATUS_MEMBER  =  'member';
-    public const STATUS_RESTRICTED  =  'restricted';
-    public const STATUS_LEFT  =  'left';
-    public const STATUS_KICKED  =  'kicked';
+    public const STATUS_MEMBER = 'member';
+    public const STATUS_RESTRICTED = 'restricted';
+    public const STATUS_LEFT = 'left';
+    public const STATUS_KICKED = 'kicked';
 
     public static function tableName()
     {
@@ -49,8 +49,19 @@ class ChatMember extends ActiveRecord
         return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getBotUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChat()
+    {
+        return $this->hasOne(Chat::class, ['id' => 'chat_id']);
     }
 }

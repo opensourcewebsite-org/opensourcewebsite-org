@@ -3,9 +3,9 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\crud\CrudController;
 use app\models\Company;
 use app\models\CompanyUser;
-use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\crud\rules\CurrentUserFieldComponent;

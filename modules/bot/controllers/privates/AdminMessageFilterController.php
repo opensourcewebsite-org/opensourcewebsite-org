@@ -27,7 +27,7 @@ class AdminMessageFilterController extends Controller
                 'class' => WordlistAdminComponent::className(),
                 'wordModelClass' => Phrase::className(),
                 'modelAttributes' => [
-                    'type' => Chat::FILTER_MODE_BLACKLIST
+                    'type' => ChatSetting::FILTER_MODE_BLACKLIST
                 ],
                 'actionGroupName' => 'blacklist',
             ])->actions(),
@@ -35,7 +35,7 @@ class AdminMessageFilterController extends Controller
                 'class' => WordlistAdminComponent::className(),
                 'wordModelClass' => Phrase::className(),
                 'modelAttributes' => [
-                    'type' => Chat::FILTER_MODE_WHITELIST
+                    'type' => ChatSetting::FILTER_MODE_WHITELIST
                 ],
                 'actionGroupName' => 'whitelist',
             ])->actions()
@@ -53,48 +53,24 @@ class AdminMessageFilterController extends Controller
             return [];
         }
 
+        $chatTitle = $chat->title;
+
         $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
-
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-
-            $statusSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::FILTER_STATUS,
-                'value' => ChatSetting::FILTER_STATUS_OFF,
-            ]);
-
-            $statusSetting->save();
-        }
+        $statusOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
 
         $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
-
-        if (!isset($modeSetting)) {
-            $modeSetting = new ChatSetting();
-
-            $modeSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::FILTER_MODE,
-                'value' => ChatSetting::FILTER_MODE_BLACKLIST,
-            ]);
-
-            $modeSetting->save();
-        }
-
-        $chatTitle = $chat->title;
-        $isFilterOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
-        $isFilterModeBlack = ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST);
+        $isModeWhitelist = ($modeSetting->value == ChatSetting::FILTER_MODE_WHITELIST);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'isFilterOn', 'isFilterModeBlack')),
+                $this->render('index', compact('chatTitle')),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('status', [
+                            'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Status') . ': ' . ($isFilterOn ? 'ON' : 'OFF'),
+                            'text' => Yii::t('bot', 'Status') . ': ' . ($statusOn ? 'ON' : 'OFF'),
                         ],
                     ],
                     [
@@ -102,7 +78,7 @@ class AdminMessageFilterController extends Controller
                             'callback_data' => self::createRoute('update', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Mode') . ': ' . ($isFilterModeBlack ? Yii::t('bot', 'Blacklist') : Yii::t('bot', 'Whitelist')),
+                            'text' => Yii::t('bot', 'Mode') . ': ' . ($isModeWhitelist ? Yii::t('bot', 'Whitelist') : Yii::t('bot', 'Blacklist')),
                         ],
                     ],
                     [
@@ -128,6 +104,10 @@ class AdminMessageFilterController extends Controller
                             ]),
                             'text' => Emoji::BACK,
                         ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
                     ]
                 ]
             )
@@ -144,10 +124,10 @@ class AdminMessageFilterController extends Controller
 
         $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
 
-        if ($modeSetting->value == ChatSetting::FILTER_MODE_BLACKLIST) {
-            $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
-        } else {
+        if ($modeSetting->value == ChatSetting::FILTER_MODE_WHITELIST) {
             $modeSetting->value = ChatSetting::FILTER_MODE_BLACKLIST;
+        } else {
+            $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
         }
 
         $modeSetting->save();
@@ -155,7 +135,7 @@ class AdminMessageFilterController extends Controller
         return $this->actionIndex($chatId);
     }
 
-    public function actionStatus($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 

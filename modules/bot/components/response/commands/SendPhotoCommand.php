@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
@@ -31,6 +32,7 @@ class SendPhotoCommand extends Command
     public function send(BotApi $botApi)
     {
         $answer = false;
+
         try {
             $answer = $botApi->sendPhoto(
                 $this->chatId,
@@ -44,6 +46,7 @@ class SendPhotoCommand extends Command
         } catch (HttpException $e) {
             Yii::warning($e);
         }
+
         return $answer;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
@@ -29,6 +30,7 @@ class AnswerCallbackQueryCommand extends MessageTextCommand
         } catch (HttpException $e) {
             Yii::warning($e);
         }
+
         return $answer;
     }
 }

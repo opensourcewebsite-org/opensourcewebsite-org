@@ -27,21 +27,9 @@ class AdminJoinCaptchaController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-
-            $statusSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::JOIN_CAPTCHA_STATUS,
-                'value' => ChatSetting::JOIN_CAPTCHA_STATUS_OFF,
-            ]);
-
-            $statusSetting->save();
-        }
-
         $chatTitle = $chat->title;
+
+        $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
         $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
 
         return $this->getResponseBuilder()
@@ -50,7 +38,7 @@ class AdminJoinCaptchaController extends Controller
                 [
                         [
                             [
-                                'callback_data' => self::createRoute('update', [
+                                'callback_data' => self::createRoute('set-status', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
@@ -63,13 +51,17 @@ class AdminJoinCaptchaController extends Controller
                                 ]),
                                 'text' => Emoji::BACK,
                             ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
                         ]
                     ]
             )
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 

@@ -7,12 +7,11 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotChatCaptcha;
-use TelegramBot\Api\HttpException;
 
 /**
  * Class MessageController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\publics
  */
 class MessageController extends Controller
 {
@@ -33,14 +32,10 @@ class MessageController extends Controller
             ]);
 
             if (($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdmin()) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
 
                 $botCaptcha = BotChatCaptcha::find()
                     ->where([
@@ -97,14 +92,10 @@ class MessageController extends Controller
             }
 
             if ($deleteMessage) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
             }
         }
 

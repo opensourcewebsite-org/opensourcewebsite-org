@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\MessageText;
 
 /**
  * Class RandomIntController

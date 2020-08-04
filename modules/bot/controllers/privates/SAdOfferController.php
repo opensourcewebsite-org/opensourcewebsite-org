@@ -3,8 +3,8 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use app\behaviors\SetDefaultCurrencyBehavior;
 use app\modules\bot\components\crud\CrudController;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
@@ -12,7 +12,6 @@ use app\modules\bot\components\crud\rules\PhotoFieldComponent;
 use app\modules\bot\models\AdOfferKeyword;
 use app\modules\bot\models\AdSection;
 use app\modules\bot\validators\RadiusValidator;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdKeyword;
@@ -295,7 +294,7 @@ class SAdOfferController extends CrudController
             ];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'sectionName' => AdSection::getAdOfferName($adSection),
@@ -312,7 +311,7 @@ class SAdOfferController extends CrudController
 
         $this->getState()->setIntermediateField('adOfferSection', $adSection);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-title'),
                 [
@@ -331,7 +330,7 @@ class SAdOfferController extends CrudController
     {
         $adOffer = AdOffer::findOne($adOfferId);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('show', [
                     'adOffer' => $adOffer,
@@ -447,7 +446,7 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
                 $this->render('show', [
@@ -516,7 +515,7 @@ class SAdOfferController extends CrudController
             ->limit($pagination->limit)
             ->all()[0];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
@@ -535,7 +534,7 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-title', ['adOfferId' => $adOfferId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-title'),
                 [
@@ -580,7 +579,7 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-description', ['adOfferId' => $adOfferId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-description'),
                 [
@@ -644,7 +643,7 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-photo', ['adOfferId' => $adOfferId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-photo'),
                 [
@@ -715,7 +714,7 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-keywords', ['adOfferId' => $adOfferId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-keywords'),
                 [
@@ -858,7 +857,7 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-currency'),
                 $buttons
@@ -886,7 +885,7 @@ class SAdOfferController extends CrudController
 
         $adOffer = AdOffer::findOne($adOfferId);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
                     'currencyCode' => Currency::findOne($adOffer->currency_id)->code,
@@ -991,7 +990,7 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-location'),
                 $buttons
@@ -1046,7 +1045,7 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-radius', ['adOfferId' => $adOfferId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-radius'),
                 [
@@ -1164,7 +1163,7 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(self::createRoute('description'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-description'),
                 [
@@ -1240,7 +1239,7 @@ class SAdOfferController extends CrudController
 
         $this->getState()->setName(self::createRoute('photo-send'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-photo'),
                 [
@@ -1297,7 +1296,7 @@ class SAdOfferController extends CrudController
 
         $this->getState()->setName(self::createRoute('keywords'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-keywords'),
                 [
@@ -1392,7 +1391,7 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-currency'),
                 $buttons
@@ -1408,7 +1407,7 @@ class SAdOfferController extends CrudController
 
         $this->getState()->setName(self::createRoute('price'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
                     'currencyCode' => Currency::findOne(
@@ -1485,7 +1484,7 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-currency'),
                 $buttons
@@ -1532,7 +1531,7 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-location'),
                 $buttons
@@ -1577,7 +1576,7 @@ class SAdOfferController extends CrudController
 
         $this->getState()->setName(self::createRoute('radius-send'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-radius'),
                 [

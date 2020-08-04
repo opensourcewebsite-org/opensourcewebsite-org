@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
@@ -20,6 +21,7 @@ class EditMessageReplyMarkupCommand extends Command
     public function send(BotApi $botApi)
     {
         $answer = false;
+
         try {
             $answer = $botApi->editMessageReplyMarkup(
                 $this->chatId,

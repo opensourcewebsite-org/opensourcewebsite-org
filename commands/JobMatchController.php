@@ -3,11 +3,11 @@
 namespace app\commands;
 
 use Yii;
-use app\commands\traits\ControllerLogTrait;
+use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
+use app\commands\traits\ControllerLogTrait;
 use app\models\Resume;
 use app\models\Vacancy;
-use yii\console\Controller;
 use yii\console\Exception;
 
 /**

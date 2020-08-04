@@ -4,12 +4,11 @@ namespace app\modules\bot\controllers\publics;
 
 use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 
 /**
  * Class HelloController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\publics
  */
 class HelloController extends Controller
 {
@@ -19,7 +18,7 @@ class HelloController extends Controller
     public function actionIndex()
     {
         return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
+            ->sendMessage(
                 $this->render('index'),
                 [
                         [

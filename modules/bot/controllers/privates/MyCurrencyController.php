@@ -2,13 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\models\Currency;
 use app\modules\bot\components\Controller;
+use app\models\Currency;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use yii\data\Pagination;
-use TelegramBot\Api\BotApi;
 
 /**
  * Class MyCurrencyController

@@ -2,17 +2,15 @@
 
 namespace app\modules\bot\controllers\publics;
 
-use app\modules\bot\components\response\commands\SendMessageCommand;
-use app\modules\bot\components\Controller as Controller;
-use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
 
 /**
- * Class FilterChatController
+ * Class RefreshController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\publics
  */
 class RefreshController extends Controller
 {
@@ -75,7 +73,7 @@ class RefreshController extends Controller
                 ->deleteMessage();
 
         if ($currentUserIsAdministrator) {
-            $response->editMessageTextOrSendMessage(
+            $response->sendMessage(
                 $this->render('index')
             );
         }

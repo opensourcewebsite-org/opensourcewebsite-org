@@ -3,14 +3,12 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
-use TelegramBot\Api\HttpException;
 
 /**
  * Class AdminChatController

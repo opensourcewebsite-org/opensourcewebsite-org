@@ -3,11 +3,11 @@
 namespace app\commands;
 
 use Yii;
-use app\commands\traits\ControllerLogTrait;
+use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
+use app\commands\traits\ControllerLogTrait;
 use app\models\CronJob;
 use app\models\CronJobConsole;
-use yii\console\Controller;
 use app\components\CustomConsole;
 use yii\console\Exception;
 
@@ -40,7 +40,8 @@ class CronController extends Controller
         'Debt',
         'AdMatch',
         'JobMatch',
-        'Bot'
+        'Bot',
+        'CurrencyRatesParser',
     ];
 
     /**

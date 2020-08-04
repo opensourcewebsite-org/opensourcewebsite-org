@@ -8,14 +8,14 @@ use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use TelegramBot\Api\HttpException;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\controllers\publics\JoinCaptchaController;
 
 /**
 * Class SystemMessageController
 *
-* @package app\controllers\bot
+* @package app\modules\bot\controllers\publics
 */
 class SystemMessageController extends Controller
 {
@@ -32,16 +32,12 @@ class SystemMessageController extends Controller
         $role = JoinCaptchaController::ROLE_VERIFIED;
 
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
-            // Remove join message
             if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                // Remove join message
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
             }
 
             foreach ($this->getUpdate()->getMessage()->getNewChatMembers() as $newChatMember) {
@@ -55,22 +51,27 @@ class SystemMessageController extends Controller
                     $telegramUser->save();
                 }
 
-                if (!$telegramChat->hasUser($telegramUser)) {
+                if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
+                    if (!$newChatMember->isBot()) {
+                        $role = JoinCaptchaController::ROLE_UNVERIFIED;
+                    }
+                }
+
+                if (!$chatMember = $telegramChat->getChatMemberByUser($telegramUser)) {
                     $telegramChatMember = $this->getBotApi()->getChatMember(
                         $telegramChat->chat_id,
                         $telegramUser->provider_user_id
                     );
 
-                    if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
-                        if (!$newChatMember->isBot()) {
-                            $role = JoinCaptchaController::ROLE_UNVERIFIED;
-                        }
-                    }
-
                     $telegramChat->link('users', $telegramUser, [
                         'status' => $telegramChatMember->getStatus(),
                         'role' => $role,
                     ]);
+                } else {
+                    $chatMember->setAttributes([
+                         'role' => $role,
+                    ]);
+                    $chatMember->save();
                 }
 
                 // Send greeting message
@@ -97,14 +98,11 @@ class SystemMessageController extends Controller
             $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
 
             if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                // Remove left message
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
             }
 
             // Remove captcha message if user left the group
@@ -117,14 +115,10 @@ class SystemMessageController extends Controller
                 ->one();
 
             if (isset($botCaptcha)) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $botCaptcha->captcha_message_id
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $botCaptcha->captcha_message_id
+                );
 
                 $botCaptcha->delete();
             }
@@ -139,14 +133,10 @@ class SystemMessageController extends Controller
                 ->one();
 
             if (isset($botGreeting)) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $botGreeting->message_id
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $botGreeting->message_id
+                );
 
                 $botGreeting->delete();
             }
