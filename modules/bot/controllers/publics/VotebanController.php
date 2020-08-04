@@ -107,11 +107,11 @@ class VotebanController extends Controller
         $chat = $this->getTelegramChat();
 
         $votingInitMessage = $this->getMessage();
-        try {
-            $this->getBotApi()->deleteMessage($chat->chat_id, $votingInitMessage->getMessageId());
-        } catch (HttpException $e) {
-            echo 'ERROR: Public ' . $this->id . '/' . $this->action->id . ' MessageId ' . $votingInitMessage->getMessageId() . ' (deleteMessage): ' . $e->getMessage() . "\n";
-        }
+
+        $this->getBotApi()->deleteMessage(
+            $chat->chat_id,
+            $votingInitMessage->getMessageId()
+        );
 
         if ($voter->getId() == $candidate->getId()) {
             $initVotingError = $this->sendMyselfVoteError();
@@ -346,11 +346,10 @@ class VotebanController extends Controller
 
             if ($sameVotingForms) {
                 foreach ($sameVotingForms as $sameVotingForm) {
-                    try {
-                        $this->getBotApi()->deleteMessage($chat->chat_id, $sameVotingForm->voting_message_id);
-                    } catch (HttpException $e) {
-                        echo 'ERROR: Public ' . $this->id . '/' . $this->action->id . ' MessageId ' . $sameVotingForm->voting_message_id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                    }
+                    $this->getBotApi()->deleteMessage(
+                        $chat->chat_id,
+                        $sameVotingForm->voting_message_id
+                    );
 
                     $sameVotingForm->delete();
                 }
@@ -399,11 +398,10 @@ class VotebanController extends Controller
             ->column();
 
         foreach ($spamMessages as $messageId) {
-            try {
-                $this->getBotApi()->deleteMessage($chat->chat_id, $messageId);
-            } catch (HttpException $e) {
-                echo 'ERROR: Public ' . $this->id . '/' . $this->action->id . ' MessageId ' . $messageId . ' (deleteMessage): ' . $e->getMessage() . "\n";
-            }
+            $this->getBotApi()->deleteMessage(
+                $chat->chat_id,
+                $messageId
+            );
         }
 
         $votersIds = VotebanVote::find()
@@ -477,11 +475,10 @@ class VotebanController extends Controller
             ->column();
 
         foreach ($votingMessagesIDs as $votingMessageID) {
-            try {
-                $this->getBotApi()->deleteMessage($chat->chat_id, $votingMessageID);
-            } catch (HttpException $e) {
-                echo 'ERROR: Public ' . $this->id . '/' . $this->action->id . ' MessageId ' . $votingMessageID . ' (deleteMessage): ' . $e->getMessage() . "\n";
-            }
+            $this->getBotApi()->deleteMessage(
+                $chat->chat_id,
+                $votingMessageID
+            );
         }
 
         VotebanVote::deleteAll([

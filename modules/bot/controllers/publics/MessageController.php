@@ -32,14 +32,10 @@ class MessageController extends Controller
             ]);
 
             if (($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdmin()) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
 
                 $botCaptcha = BotChatCaptcha::find()
                     ->where([
@@ -96,14 +92,10 @@ class MessageController extends Controller
             }
 
             if ($deleteMessage) {
-                try {
-                    $this->getBotApi()->deleteMessage(
-                        $telegramChat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-                }
+                $this->getBotApi()->deleteMessage(
+                    $telegramChat->chat_id,
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
             }
         }
 
