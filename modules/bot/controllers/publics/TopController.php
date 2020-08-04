@@ -312,6 +312,8 @@ class TopController extends Controller
                 'rating'
         );
 
+        return [];
+
         $commands = $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
