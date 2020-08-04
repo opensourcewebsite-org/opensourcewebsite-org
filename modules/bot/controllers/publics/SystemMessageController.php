@@ -39,7 +39,7 @@ class SystemMessageController extends Controller
                         $telegramChat->chat_id,
                         $this->getUpdate()->getMessage()->getMessageId()
                     );
-                } catch (HttpException $e) {
+                } catch (\Exception $e) {
                     Yii::warning($e);
                 }
             }
