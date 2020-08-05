@@ -105,8 +105,6 @@ $url = Yii::$app->urlManager->createUrl(['currency-exchange-order/status?id=' . 
 $script = <<<JS
 $('.status-update').on("click", function(event) {
     var status = $(this).data('value');
-
-    if (confirm('Are you sure you want to change this status?')) {
         $.post('{$url}', {'status': status}, function(result) {
             if (result === "1") {
                 location.reload();
@@ -123,7 +121,6 @@ $('.status-update').on("click", function(event) {
                 // alert('Sorry, there was an error while trying to change status');
             }
         });
-    }
 
     return false;
 });
