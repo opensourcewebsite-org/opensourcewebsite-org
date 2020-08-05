@@ -5,8 +5,6 @@ namespace app\models;
 use Yii;
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
-use app\modules\bot\models\JobKeyword;
-use app\modules\bot\models\JobMatch;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;

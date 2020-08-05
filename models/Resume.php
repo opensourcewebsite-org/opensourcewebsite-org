@@ -5,8 +5,6 @@ namespace app\models;
 use Yii;
 use app\models\queries\ResumeQuery;
 use app\models\User as GlobalUser;
-use app\modules\bot\models\JobKeyword;
-use app\modules\bot\models\JobMatch;
 use app\modules\bot\validators\RadiusValidator;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;

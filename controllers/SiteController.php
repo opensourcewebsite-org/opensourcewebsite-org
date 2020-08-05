@@ -232,9 +232,9 @@ class SiteController extends Controller
 
             \app\models\CompanyUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
-            \app\modules\bot\models\AdSearch::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\AdSearch::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
-            \app\modules\bot\models\AdOffer::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\AdOffer::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             \app\models\Resume::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 

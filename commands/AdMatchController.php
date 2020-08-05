@@ -6,8 +6,8 @@ use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
-use app\modules\bot\models\AdOffer;
-use app\modules\bot\models\AdSearch;
+use app\models\AdOffer;
+use app\models\AdSearch;
 use yii\console\Exception;
 
 /**

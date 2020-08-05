@@ -1,10 +1,9 @@
 <?php
 
-namespace app\modules\bot\models;
+namespace app\models;
 
 use yii\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
-use app\models\Currency;
 use app\modules\bot\validators\RadiusValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;

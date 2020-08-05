@@ -9,16 +9,16 @@ use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\rules\PhotoFieldComponent;
-use app\modules\bot\models\AdOfferKeyword;
-use app\modules\bot\models\AdSection;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
-use app\modules\bot\models\AdKeyword;
-use app\modules\bot\models\AdOffer;
-use app\modules\bot\models\AdSearch;
+use app\models\AdKeyword;
+use app\models\AdOfferKeyword;
+use app\models\AdSection;
+use app\models\AdOffer;
+use app\models\AdSearch;
+use app\models\AdPhoto;
 use app\modules\bot\models\User as TelegramUser;
-use app\modules\bot\models\AdPhoto;
 use app\models\User;
 use yii\base\DynamicModel;
 use yii\base\ModelEvent;
@@ -233,14 +233,15 @@ class SAdOfferController extends CrudController
     {
         $this->getState()->setName(null);
 
-        $buttons = [];
-
         $adOfferQuery = AdOffer::find()
             ->where([
                 'user_id' => $this->getTelegramUser()->user_id,
                 'section' => $adSection,
             ])
-            ->orderBy(['status' => SORT_DESC, 'title' => SORT_ASC]);
+            ->orderBy([
+                'status' => SORT_DESC,
+                'title' => SORT_ASC,
+            ]);
 
         $adOfferCount = $adOfferQuery->count();
 
@@ -254,15 +255,21 @@ class SAdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        foreach ($adOfferQuery
+        $adOffers = $adOfferQuery
             ->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all() as $adOffer) {
-            $buttons[][] = [
-                'text' => ($adOffer->isActive() ? '' : Emoji::INACTIVE . ' ') . $adOffer->title,
-                'callback_data' => self::createRoute('view', ['adOfferId' => $adOffer->id]),
+            ->all();
+
+        $buttons = array_map(function ($adOffer) {
+            return [
+                [
+                    'text' => ($adOffer->isActive() ? '' : Emoji::INACTIVE . ' ') . $adOffer->title,
+                    'callback_data' => self::createRoute('view', [
+                        'adOfferId' => $adOffer->id,
+                    ]),
+                ],
             ];
-        }
+        }, $adOffers);
 
         $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adSection) {
             return self::createRoute('index', [
@@ -336,8 +343,13 @@ class SAdOfferController extends CrudController
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
-                    'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
+                    'keywords' => self::getKeywordsAsString(
+                        $adOffer->getKeywords()->all()
+                    ),
+                    'locationLink' => ExternalLink::getOSMLink(
+                        $adOffer->location_lat,
+                        $adOffer->location_lon
+                    ),
                     'showDetailedInfo' => false,
                 ]),
                 [
@@ -401,23 +413,34 @@ class SAdOfferController extends CrudController
 
     public function actionView($adOfferId)
     {
-        $adOffer = AdOffer::findOne($adOfferId);
-
         $this->getState()->setName(null);
+        $user = $this->getUser();
 
-        $buttons = [];
+        $adOffer = $user->getAdOffers()
+            ->where([
+                'id' => $adOfferId,
+            ])
+            ->one();
 
-        $buttons[][] = [
-            'callback_data' => self::createRoute('status', ['adOfferId' => $adOfferId]),
-            'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
+        if (!isset($adOffer)) {
+            return [];
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('status', [
+                    'adOfferId' => $adOfferId,
+                ]),
+                'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
+            ]
         ];
 
-        $matchedAdSearchesCount = $adOffer->getMatches()->count();
+        $matchesCount = $adOffer->getMatches()->count();
 
-        if ($matchedAdSearchesCount > 0) {
+        if ($matchesCount) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('matched-ad-searches', ['adOfferId' => $adOfferId]),
-                'text' => Emoji::OFFERS . ' ' . $matchedAdSearchesCount,
+                'callback_data' => self::createRoute('matches', ['adOfferId' => $adOfferId]),
+                'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
         }
 
@@ -463,18 +486,18 @@ class SAdOfferController extends CrudController
             ->build();
     }
 
-    public function actionMatchedAdSearches($adOfferId, $page = 1)
+    public function actionMatches($adOfferId, $page = 1)
     {
         $adOffer = AdOffer::findOne($adOfferId);
+        $matchesQuery = $adOffer->getMatches();
+        $matchesCount = $matchesQuery->count();
 
-        $matchedAdSearchesQuery = $adOffer->getMatches();
-
-        if ($matchedAdSearchesQuery->count() == 0) {
+        if (!$matchesCount) {
             return $this->actionView($adOfferId);
         }
 
         $pagination = new Pagination([
-            'totalCount' => $matchedAdSearchesQuery->count(),
+            'totalCount' => $matchesCount,
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -482,8 +505,6 @@ class SAdOfferController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-
-        $buttons = [];
 
         $buttons[] = [
             [
@@ -493,7 +514,7 @@ class SAdOfferController extends CrudController
         ];
 
         $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adOfferId) {
-            return self::createRoute('matched-ad-searches', [
+            return self::createRoute('matches', [
                 'adOfferId' => $adOfferId,
                 'page' => $page,
             ]);
@@ -510,19 +531,21 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        $matchedAdSearch = $matchedAdSearchesQuery
-            ->offset($pagination->offset)
+        $adSearch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all()[0];
+            ->one();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
-                    'sectionName' => AdSection::getAdSearchName($matchedAdSearch->section),
-                    'adSearch' => $matchedAdSearch,
-                    'user' => TelegramUser::findOne(['user_id' => $matchedAdSearch->user_id]),
-                    'keywords' => self::getKeywordsAsString($matchedAdSearch->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($matchedAdSearch->location_lat, $matchedAdSearch->location_lon),
+                    'sectionName' => AdSection::getAdSearchName($adSearch->section),
+                    'adSearch' => $adSearch,
+                    'user' => TelegramUser::findOne(['user_id' => $adSearch->user_id]),
+                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink(
+                        $adSearch->location_lat,
+                        $adSearch->location_lon
+                    ),
                 ]),
                 $buttons,
                 true
@@ -1266,17 +1289,25 @@ class SAdOfferController extends CrudController
 
     public function actionDelete($adOfferId)
     {
-        $adOffer = AdOffer::findOne($adOfferId);
+        $user = $this->getUser();
 
-        if (isset($adOffer)) {
-            $adSection = $adOffer->section;
+        $adOffer = $user->getAdOffers()
+            ->where([
+                'id' => $adOfferId,
+            ])
+            ->one();
 
-            $adOffer->unlinkAll('photos', true);
-            $adOffer->unlinkAll('keywords', true);
-            $adOffer->delete();
-
-            return $this->actionIndex($adSection);
+        if (!isset($adOffer)) {
+            return [];
         }
+
+        $adSection = $adOffer->section;
+
+        $adOffer->unlinkAll('photos', true);
+        $adOffer->unlinkAll('keywords', true);
+        $adOffer->delete();
+
+        return $this->actionIndex($adSection);
     }
 
     public function actionDescriptionSkip()
