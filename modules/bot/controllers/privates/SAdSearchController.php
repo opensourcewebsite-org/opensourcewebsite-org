@@ -8,6 +8,7 @@ use app\behaviors\SetDefaultCurrencyBehavior;
 use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
@@ -42,17 +43,11 @@ class SAdSearchController extends CrudController
 
                     return [
                         'sectionName' => AdSection::getAdSearchName($model->section),
-                        'keywords' => self::getKeywordsAsString(
-                            $model->getKeywords()->all()
-                        ),
+                        'section' => $model->section,
+                        'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                         'adSearch' => $model,
-                        'currency' => isset($model->currency_id) ? Currency::findOne(
-                            $model->currency_id
-                        ) : null,
-                        'locationLink' => ExternalLink::getOSMLink(
-                            $model->location_lat,
-                            $model->location_lon
-                        ),
+                        'currency' => isset($model->currency_id) ? Currency::findOne($model->currency_id) : null,
+                        'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                         'showDetailedInfo' => true,
                     ];
                 },
@@ -66,6 +61,10 @@ class SAdSearchController extends CrudController
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
                                 'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['user_id'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
+                                ],
                                 'attribute' => 'user_id',
                                 'value' => $this->module->user->id,
                             ],
@@ -76,8 +75,13 @@ class SAdSearchController extends CrudController
                         'behaviors' => [
                             'SetAttributeValueBehavior' => [
                                 'class' => SetAttributeValueBehavior::class,
+                                'attributes' => [
+                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['section'],
+                                    ActiveRecord::EVENT_BEFORE_INSERT => ['section'],
+                                ],
                                 'attribute' => 'section',
-                                'value' => AdSection::BUY_SELL,
+                                'value' => $this->getState()
+                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
                             ],
                         ],
                         'hidden' => true,
@@ -210,30 +214,30 @@ class SAdSearchController extends CrudController
     public function actionIndex($adSection, $page = 1)
     {
         $this->getState()->setName(null);
+        $this->getState()->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
+        $user = $this->getUser();
 
         $adSearchQuery = AdSearch::find()
             ->where([
-                'user_id' => $this->getTelegramUser()->user_id,
+                'user_id' => $user->id,
                 'section' => $adSection,
             ])
             ->orderBy([
                 'status' => SORT_DESC,
-                'title' => SORT_ASC
+                'title' => SORT_ASC,
             ]);
 
         $adSearchCount = $adSearchQuery->count();
 
-        $pagination = new Pagination(
-            [
-                'totalCount' => $adSearchCount,
-                'pageSize' => 9,
-                'params' => [
-                    'page' => $page,
-                ],
-                'pageSizeParam' => false,
-                'validatePage' => true,
-            ]
-        );
+        $pagination = new Pagination([
+            'totalCount' => $adSearchCount,
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
         $adSearches = $adSearchQuery
             ->offset($pagination->offset)
@@ -267,30 +271,20 @@ class SAdSearchController extends CrudController
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
             ],
-        ];
-
-        if ($adSection == 1) {
-            $buttons[count($buttons) - 1][] = [
-                'callback_data' => self::createRoute(
-                    'create',
-                    [
-                        //                'adSection' => $adSection
-                        'm' => $this->getModelName(AdSearch::class),
-                    ]
-                ),
+            [
+                'callback_data' => self::createRoute('create', [
+                    'adSection' => $adSection,
+                    'm' => $this->getModelName(AdSearch::class),
+                ]),
                 'text' => Emoji::ADD,
-            ];
-        }
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render(
-                    'index',
-                    [
-                        'sectionName' => AdSection::getAdSearchName($adSection),
-                        'inDevelopment' => ($adSection != 1),
-                    ]
-                ),
+                $this->render('index', [
+                    'sectionName' => AdSection::getAdSearchName($adSection),
+                ]),
                 $buttons
             )
             ->build();
@@ -309,9 +303,8 @@ class SAdSearchController extends CrudController
 
     public function actionAdd($adSection)
     {
-        $this->getState()->setIntermediateField('adSearchSection', $adSection);
-
         $this->getState()->setName(self::createRoute('title-send'));
+        $this->getState()->setIntermediateField('adSearchSection', $adSection);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -319,14 +312,9 @@ class SAdSearchController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'index',
-                                [
-                                    'adSection' => $this->getState()->getIntermediateField(
-                                        'adSearchSection'
-                                    ),
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('index', [
+                                'adSection' => $this->getState()->getIntermediateField('adSearchSection'),
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                     ],
@@ -362,13 +350,9 @@ class SAdSearchController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'create',
-                                [
-                                    //                                'adSection' => $this->getState()->getIntermediateField('adSearchSection'),
-                                    'm' => $this->getModelName(AdSearch::class),
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('create', [
+                                'm' => $this->getModelName(AdSearch::class),
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -447,20 +431,18 @@ class SAdSearchController extends CrudController
             $adSearchKeywords = [];
 
             foreach ($keywords as $keyword) {
-                $adKeyword = AdKeyword::find()->where(
-                    [
+                $adKeyword = AdKeyword::find()
+                    ->where([
                         'keyword' => $keyword,
-                    ]
-                )->one();
+                    ])
+                    ->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
 
-                    $adKeyword->setAttributes(
-                        [
-                            'keyword' => $keyword,
-                        ]
-                    );
+                    $adKeyword->setAttributes([
+                        'keyword' => $keyword,
+                    ]);
                     $adKeyword->save();
                 }
 
@@ -482,30 +464,24 @@ class SAdSearchController extends CrudController
             }
         }
 
-        $pagination = new Pagination(
-            [
-                'totalCount' => $currencyQuery->count(),
-                'pageSize' => 9,
-                'params' => [
-                    'page' => $page,
-                ],
-                'pageSizeParam' => false,
-                'validatePage' => true,
-            ]
-        );
+        $pagination = new Pagination([
+            'totalCount' => $currencyQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
         $buttons = [];
-        foreach ($currencyQuery
-            ->offset($pagination->offset)
+        foreach ($currencyQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute(
-                    'currency-set',
-                    [
-                        'currencyId' => $currency->id,
-                    ]
-                ),
+                'callback_data' => self::createRoute('currency-set', [
+                    'currencyId' => $currency->id,
+                ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
@@ -513,7 +489,9 @@ class SAdSearchController extends CrudController
         $buttons[] = PaginationButtons::build(
             $pagination,
             function ($page) {
-                return self::createRoute('keywords', ['page' => $page]);
+                return self::createRoute('keywords', [
+                    'page' => $page,
+                ]);
             }
         );
 
@@ -554,14 +532,9 @@ class SAdSearchController extends CrudController
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render(
-                    'edit-max-price',
-                    [
-                        'currencyCode' => Currency::findOne(
-                            $this->getState()->getIntermediateField('adSearchCurrencyId')
-                        )->code,
-                    ]
-                ),
+                $this->render('edit-max-price', [
+                    'currencyCode' => Currency::findOne($this->getState()->getIntermediateField('adSearchCurrencyId'))->code,
+                ]),
                 [
                     [
                         [
@@ -594,30 +567,25 @@ class SAdSearchController extends CrudController
     {
         $currencyQuery = Currency::find();
 
-        $pagination = new Pagination(
-            [
-                'totalCount' => $currencyQuery->count(),
-                'pageSize' => 9,
-                'params' => [
-                    'page' => $page,
-                ],
-                'pageSizeParam' => false,
-                'validatePage' => true,
-            ]
-        );
+        $pagination = new Pagination([
+            'totalCount' => $currencyQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
         $buttons = [];
-        foreach ($currencyQuery
-            ->offset($pagination->offset)
+
+        foreach ($currencyQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute(
-                    'currency-set',
-                    [
-                        'currencyId' => $currency->id,
-                    ]
-                ),
+                'callback_data' => self::createRoute('currency-set', [
+                    'currencyId' => $currency->id,
+                ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
@@ -690,9 +658,8 @@ class SAdSearchController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => $this->getState()->getIntermediateField(
-                    'adSearchCurrencyId'
-                ) === null ? self::createRoute('keywords') : self::createRoute('currency'),
+                'callback_data' => $this->getState()
+                    ->getIntermediateField('adSearchCurrencyId') === null ? self::createRoute('keywords') : self::createRoute('currency'),
                 'text' => Emoji::BACK,
             ],
             [
@@ -806,25 +773,19 @@ class SAdSearchController extends CrudController
 
         $state = $this->getState();
 
-        $adSearch->setAttributes(
-            [
-                'user_id' => $this->getTelegramUser()->id,
-                'section' => intval($state->getIntermediateField('adSearchSection')),
-                'title' => $state->getIntermediateField('adSearchTitle'),
-                'description' => $state->getIntermediateField('adSearchDescription'),
-                'pickup_radius' => doubleval($state->getIntermediateField('adSearchRadius')),
-                'currency_id' => $state->getIntermediateField('adSearchCurrencyId') ? intval(
-                    $state->getIntermediateField('adSearchCurrencyId')
-                ) : null,
-                'max_price' => $state->getIntermediateField('adSearchMaxPrice') ? intval(
-                    $state->getIntermediateField('adSearchMaxPrice')
-                ) : null,
-                'location_lat' => $state->getIntermediateField('adSearchLocationLatitude'),
-                'location_lon' => $state->getIntermediateField('adSearchLocationLongitude'),
-                'created_at' => time(),
-                'status' => AdSearch::STATUS_OFF,
-            ]
-        );
+        $adSearch->setAttributes([
+            'user_id' => $this->getTelegramUser()->id,
+            'section' => intval($state->getIntermediateField('adSearchSection')),
+            'title' => $state->getIntermediateField('adSearchTitle'),
+            'description' => $state->getIntermediateField('adSearchDescription'),
+            'pickup_radius' => doubleval($state->getIntermediateField('adSearchRadius')),
+            'currency_id' => $state->getIntermediateField('adSearchCurrencyId') ? intval($state->getIntermediateField('adSearchCurrencyId')) : null,
+            'max_price' => $state->getIntermediateField('adSearchMaxPrice') ? intval($state->getIntermediateField('adSearchMaxPrice')) : null,
+            'location_lat' => $state->getIntermediateField('adSearchLocationLatitude'),
+            'location_lon' => $state->getIntermediateField('adSearchLocationLongitude'),
+            'created_at' => time(),
+            'status' => AdSearch::STATUS_OFF,
+        ]);
 
         $adSearch->save();
 
@@ -865,13 +826,17 @@ class SAdSearchController extends CrudController
 
         if ($matchesCount) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('matches', ['adSearchId' => $adSearchId]),
+                'callback_data' => self::createRoute('matches', [
+                    'adSearchId' => $adSearchId,
+                ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
         }
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('index', ['adSection' => $adSearch->section]),
+                'callback_data' => self::createRoute('index', [
+                    'adSection' => $adSearch->section,
+                ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -879,41 +844,30 @@ class SAdSearchController extends CrudController
                 'text' => Emoji::MENU,
             ],
             [
-                'callback_data' => self::createRoute(
-                    'u',
-                    [
-                        'm' => $this->getModelName(AdSearch::class),
-                        'i' => $adSearchId,
-                    ]
-                ),
+                'callback_data' => self::createRoute('u', [
+                    'm' => $this->getModelName(AdSearch::class),
+                    'i' => $adSearchId,
+                ]),
                 'text' => Emoji::EDIT,
             ],
             [
-                'callback_data' => self::createRoute('delete', ['adSearchId' => $adSearchId]),
+                'callback_data' => self::createRoute('delete', [
+                    'adSearchId' => $adSearchId,
+                ]),
                 'text' => Emoji::DELETE,
             ],
         ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render(
-                    'show',
-                    [
-                        'sectionName' => AdSection::getAdSearchName($adSearch->section),
-                        'keywords' => self::getKeywordsAsString(
-                            $adSearch->getKeywords()->all()
-                        ),
-                        'adSearch' => $adSearch,
-                        'currency' => isset($adSearch->currency_id) ? Currency::findOne(
-                            $adSearch->currency_id
-                        ) : null,
-                        'locationLink' => ExternalLink::getOSMLink(
-                            $adSearch->location_lat,
-                            $adSearch->location_lon
-                        ),
-                        'showDetailedInfo' => true,
-                    ]
-                ),
+                $this->render('show', [
+                    'sectionName' => AdSection::getAdSearchName($adSearch->section),
+                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'adSearch' => $adSearch,
+                    'currency' => isset($adSearch->currency_id) ? Currency::findOne($adSearch->currency_id) : null,
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat,$adSearch->location_lon),
+                    'showDetailedInfo' => true,
+                ]),
                 $buttons,
                 true
             )
@@ -923,8 +877,17 @@ class SAdSearchController extends CrudController
     public function actionEdit($adSearchId)
     {
         $this->getState()->setName(null);
+        $user = $this->getUser();
 
-        $adSearch = AdSearch::findOne($adSearchId);
+        $adSearch = $user->getAdSearches()
+            ->where([
+                'id' => $adSearchId,
+            ])
+            ->one();
+
+        if (!isset($adSearch)) {
+            return [];
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -932,76 +895,64 @@ class SAdSearchController extends CrudController
                     'adSearch' => $adSearch,
                     'currency' => Currency::findOne($adSearch->currency_id),
                     'sectionName' => AdSection::getAdSearchName($adSearch->section),
-                    'keywords' => self::getKeywordsAsString(
-                        $adSearch->getKeywords()->all()
-                    ),
-                    'locationLink' => ExternalLink::getOSMLink(
-                        $adSearch->location_lat,
-                        $adSearch->location_lon
-                    ),
+                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
                     'showDetailedInfo' => false,
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-title',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-title', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Title'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-description',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-description', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Description'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-keywords',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-keywords', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-max-price',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-max-price', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Max price'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-location',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-location', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-radius',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-radius', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Pickup radius'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'view',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('view', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1018,12 +969,9 @@ class SAdSearchController extends CrudController
     public function actionEditTitle($adSearchId)
     {
         $this->getState()->setName(
-            self::createRoute(
-                'new-title',
-                [
-                    'adSearchId' => $adSearchId,
-                ]
-            )
+            self::createRoute('new-title', [
+                'adSearchId' => $adSearchId,
+            ])
         );
 
         return $this->getResponseBuilder()
@@ -1032,13 +980,10 @@ class SAdSearchController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdSearch::class),
-                                    'i' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdSearch::class),
+                                'i' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1056,11 +1001,9 @@ class SAdSearchController extends CrudController
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $adSearch = AdSearch::findOne($adSearchId);
 
-            $adSearch->setAttributes(
-                [
-                    'title' => $message->getText(),
-                ]
-            );
+            $adSearch->setAttributes([
+                'title' => $message->getText(),
+            ]);
 
             $adSearch->save();
 
@@ -1073,12 +1016,9 @@ class SAdSearchController extends CrudController
     public function actionEditDescription($adSearchId)
     {
         $this->getState()->setName(
-            self::createRoute(
-                'new-description',
-                [
-                    'adSearchId' => $adSearchId,
-                ]
-            )
+            self::createRoute('new-description', [
+                'adSearchId' => $adSearchId,
+            ])
         );
 
         return $this->getResponseBuilder()
@@ -1087,24 +1027,18 @@ class SAdSearchController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'new-description-skip',
-                                [
-                                    'adSearchId' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('new-description-skip', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdSearch::class),
-                                    'i' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdSearch::class),
+                                'i' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1121,11 +1055,9 @@ class SAdSearchController extends CrudController
     {
         $adSearch = AdSearch::findOne($adSearchId);
 
-        $adSearch->setAttributes(
-            [
-                'description' => null,
-            ]
-        );
+        $adSearch->setAttributes([
+            'description' => null,
+        ]);
 
         $adSearch->save();
 
@@ -1137,11 +1069,9 @@ class SAdSearchController extends CrudController
         if (($message = $this->getUpdate()->getMessage()) && $this->getUpdate()->getMessage()->getText()) {
             $adSearch = AdSearch::findOne($adSearchId);
 
-            $adSearch->setAttributes(
-                [
-                    'description' => $message->getText(),
-                ]
-            );
+            $adSearch->setAttributes([
+                'description' => $message->getText(),
+            ]);
 
             $adSearch->save();
 
@@ -1157,17 +1087,15 @@ class SAdSearchController extends CrudController
 
         $currencyQuery = Currency::find();
 
-        $pagination = new Pagination(
-            [
-                'totalCount' => $currencyQuery->count(),
-                'pageSize' => 9,
-                'params' => [
-                    'page' => $page,
-                ],
-                'pageSizeParam' => false,
-                'validatePage' => true,
-            ]
-        );
+        $pagination = new Pagination([
+            'totalCount' => $currencyQuery->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
         $buttons = [];
 
@@ -1180,32 +1108,23 @@ class SAdSearchController extends CrudController
                 $userCurrencyId = $user->currency_id;
 
                 $buttons[][] = [
-                    'callback_data' => self::createRoute(
-                        'edit-currency-set',
-                        [
-                            'adSearchId' => $adSearchId,
-                            'currencyId' => $user->currency_id,
-                        ]
-                    ),
-                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne(
-                            $user->currency_id
-                        )->name . ' ·',
+                    'callback_data' => self::createRoute('edit-currency-set', [
+                        'adSearchId' => $adSearchId,
+                        'currencyId' => $user->currency_id,
+                    ]),
+                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name,
                 ];
             }
         }
 
-        foreach ($currencyQuery
-            ->offset($pagination->offset)
+        foreach ($currencyQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute(
-                    'edit-currency-set',
-                    [
-                        'adSearchId' => $adSearchId,
-                        'currencyId' => $currency->id,
-                    ]
-                ),
+                'callback_data' => self::createRoute('edit-currency-set', [
+                    'adSearchId' => $adSearchId,
+                    'currencyId' => $currency->id,
+                ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
@@ -1213,27 +1132,23 @@ class SAdSearchController extends CrudController
         $buttons[] = PaginationButtons::build(
             $pagination,
             function ($page) use ($adSearchId) {
-                return self::createRoute(
-                    'edit-currency',
-                    [
-                        'adSearchId' => $adSearchId,
-                        'page' => $page,
-                    ]
-                );
+                return self::createRoute('edit-currency', [
+                    'adSearchId' => $adSearchId,
+                    'page' => $page,
+                ]);
             }
         );
 
         $buttons[] = [
             [
                 'callback_data' => isset($adSearch->currency_id)
-                    ? self::createRoute('edit-max-price', ['adSearchId' => $adSearchId])
-                    : self::createRoute(
-                        'u',
-                        [
-                            'm' => $this->getModelName(AdSearch::class),
-                            'i' => $adSearchId,
-                        ]
-                    ),
+                    ? self::createRoute('edit-max-price', [
+                        'adSearchId' => $adSearchId,
+                    ])
+                    : self::createRoute('u', [
+                        'm' => $this->getModelName(AdSearch::class),
+                        'i' => $adSearchId,
+                    ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -1254,11 +1169,9 @@ class SAdSearchController extends CrudController
     {
         $adSearch = AdSearch::findOne($adSearchId);
 
-        $adSearch->setAttributes(
-            [
-                'currency_id' => $currencyId,
-            ]
-        );
+        $adSearch->setAttributes([
+            'currency_id' => $currencyId,
+        ]);
 
         $adSearch->save();
 
@@ -1273,35 +1186,30 @@ class SAdSearchController extends CrudController
             return $this->actionEditCurrency($adSearchId);
         }
 
-        $this->getState()->setName(self::createRoute('edit-max-price-set', ['adSearchId' => $adSearchId]));
+        $this->getState()->setName(self::createRoute('edit-max-price-set', [
+            'adSearchId' => $adSearchId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render(
-                    'edit-max-price',
-                    [
-                        'currencyCode' => Currency::findOne($adSearch->currency_id)->code,
-                    ]
-                ),
+                $this->render('edit-max-price', [
+                    'currencyCode' => Currency::findOne($adSearch->currency_id)->code,
+                ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'edit-currency',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('edit-currency', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'Edit currency'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdSearch::class),
-                                    'i' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdSearch::class),
+                                'i' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1325,11 +1233,10 @@ class SAdSearchController extends CrudController
 
             $adSearch = AdSearch::findOne($adSearchId);
 
-            $adSearch->setAttributes(
-                [
-                    'max_price' => $maxPrice,
-                ]
-            );
+            $adSearch->setAttributes([
+                'max_price' => $maxPrice,
+            ]);
+
             $adSearch->save();
 
             return $this->actionView($adSearchId);
@@ -1346,24 +1253,18 @@ class SAdSearchController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'new-keywords-skip',
-                                [
-                                    'adSearchId' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('new-keywords-skip', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'NO'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdSearch::class),
-                                    'i' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdSearch::class),
+                                'i' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1400,20 +1301,19 @@ class SAdSearchController extends CrudController
 
             $adSearch->unlinkAll('keywords', true);
             foreach ($keywords as $keyword) {
-                $adKeyword = AdKeyword::find()->where(
-                    [
+                $adKeyword = AdKeyword::find()
+                    ->where([
                         'keyword' => $keyword,
-                    ]
-                )->one();
+                    ])
+                    ->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
 
-                    $adKeyword->setAttributes(
-                        [
-                            'keyword' => $keyword,
-                        ]
-                    );
+                    $adKeyword->setAttributes([
+                        'keyword' => $keyword,
+                    ]);
+
                     $adKeyword->save();
                 }
 
@@ -1428,7 +1328,9 @@ class SAdSearchController extends CrudController
 
     public function actionEditLocation($adSearchId)
     {
-        $this->getState()->setName(self::createRoute('new-location-send', ['adSearchId' => $adSearchId]));
+        $this->getState()->setName(self::createRoute('new-location-send', [
+            'adSearchId' => $adSearchId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -1436,22 +1338,18 @@ class SAdSearchController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'new-location-my',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('new-location-my', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'My location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdSearch::class),
-                                    'i' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdSearch::class),
+                                'i' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1495,12 +1393,11 @@ class SAdSearchController extends CrudController
         if ($latitude && $longitude) {
             $adSearch = AdSearch::findOne($adSearchId);
 
-            $adSearch->setAttributes(
-                [
-                    'location_lat' => strval($latitude),
-                    'location_lon' => strval($longitude),
-                ]
-            );
+            $adSearch->setAttributes([
+                'location_lat' => strval($latitude),
+                'location_lon' => strval($longitude),
+            ]);
+
             $adSearch->save();
 
             return $this->actionView($adSearchId);
@@ -1511,7 +1408,9 @@ class SAdSearchController extends CrudController
 
     public function actionEditRadius($adSearchId)
     {
-        $this->getState()->setName(self::createRoute('new-radius', ['adSearchId' => $adSearchId]));
+        $this->getState()->setName(self::createRoute('new-radius', [
+            'adSearchId' => $adSearchId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -1519,22 +1418,18 @@ class SAdSearchController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'new-radius-skip',
-                                ['adSearchId' => $adSearchId]
-                            ),
+                            'callback_data' => self::createRoute('new-radius-skip', [
+                                'adSearchId' => $adSearchId,
+                            ]),
                             'text' => Yii::t('bot', 'No pickup'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdSearch::class),
-                                    'i' => $adSearchId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdSearch::class),
+                                'i' => $adSearchId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1552,11 +1447,9 @@ class SAdSearchController extends CrudController
         $adSearch = AdSearch::findOne($adSearchId);
 
         if (isset($adSearch)) {
-            $adSearch->setAttributes(
-                [
-                    'pickup_radius' => 0,
-                ]
-            );
+            $adSearch->setAttributes([
+                'pickup_radius' => 0,
+            ]);
 
             $adSearch->save();
         }
@@ -1575,12 +1468,12 @@ class SAdSearchController extends CrudController
 
             $adSearch = AdSearch::findOne($adSearchId);
 
-            $adSearch->setAttributes(
-                [
-                    'pickup_radius' => $radius,
-                ]
-            );
+            $adSearch->setAttributes([
+                'pickup_radius' => $radius,
+            ]);
+
             $adSearch->save();
+
             $adSearch->markToUpdateMatches();
 
             return $this->actionView($adSearchId);
@@ -1591,20 +1484,22 @@ class SAdSearchController extends CrudController
     {
         $adSearch = AdSearch::findOne($adSearchId);
 
-        $adSearch->setAttributes(
-            [
-                'status' => ($adSearch->isActive() ? AdSearch::STATUS_OFF : AdSearch::STATUS_ON),
-            ]
-        );
+        $adSearch->setAttributes([
+            'status' => ($adSearch->isActive() ? AdSearch::STATUS_OFF : AdSearch::STATUS_ON),
+        ]);
+
         $adSearch->save();
 
         if ($adSearch->isActive()) {
             $adSearch->markToUpdateMatches();
         } else {
             $adSearch->unlinkAll('matches', true);
+            $adSearch->unlinkAll('counterMatches', true);
+
             $adSearch->setAttributes([
                 'processed_at' => time(),
             ]);
+
             $adSearch->save();
         }
 
@@ -1621,17 +1516,15 @@ class SAdSearchController extends CrudController
             return $this->actionView($adSearchId);
         }
 
-        $pagination = new Pagination(
-            [
-                'totalCount' => $matchesCount,
-                'pageSize' => 1,
-                'params' => [
-                    'page' => $page,
-                ],
-                'pageSizeParam' => false,
-                'validatePage' => true,
-            ]
-        );
+        $pagination = new Pagination([
+            'totalCount' => $matchesCount,
+            'pageSize' => 1,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
 
         $buttons[] = [
             [
@@ -1649,7 +1542,9 @@ class SAdSearchController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('view', ['adSearchId' => $adSearchId]),
+                'callback_data' => self::createRoute('view', [
+                    'adSearchId' => $adSearchId,
+                ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -1665,20 +1560,14 @@ class SAdSearchController extends CrudController
         return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
-                $this->render(
-                    'match',
-                    [
-                        'adOffer' => $adOffer,
-                        'user' => TelegramUser::findOne(['user_id' => $adOffer->user_id]),
-                        'currency' => Currency::findOne($adOffer->currency_id),
-                        'sectionName' => AdSection::getAdOfferName($adOffer->section),
-                        'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
-                        'locationLink' => ExternalLink::getOSMLink(
-                            $adOffer->location_lat,
-                            $adOffer->location_lon
-                        ),
-                    ]
-                ),
+                $this->render('match', [
+                    'adOffer' => $adOffer,
+                    'user' => TelegramUser::findOne(['user_id' => $adOffer->user_id]),
+                    'currency' => Currency::findOne($adOffer->currency_id),
+                    'sectionName' => AdSection::getAdOfferName($adOffer->section),
+                    'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
+                ]),
                 $buttons,
                 true
             )

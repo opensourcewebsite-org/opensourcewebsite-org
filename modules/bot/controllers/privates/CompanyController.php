@@ -103,7 +103,8 @@ class CompanyController extends CrudController
             'validatePage' => true,
         ]);
 
-        $companies = $user->getCompanies()->offset($pagination->offset)
+        $companies = $user->getCompanies()
+            ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -135,12 +136,9 @@ class CompanyController extends CrudController
             ],
             [
                 'text' => Emoji::ADD,
-                'callback_data' => self::createRoute(
-                    'create',
-                    [
-                        'm' => $this->getModelName(Company::class),
-                    ]
-                ),
+                'callback_data' => self::createRoute('create', [
+                    'm' => $this->getModelName(Company::class),
+                ]),
             ],
         ];
 
@@ -195,13 +193,10 @@ class CompanyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(Company::class),
-                                    'i' => $companyId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(Company::class),
+                                'i' => $companyId,
+                            ]),
                         ],
                     ],
                 ],

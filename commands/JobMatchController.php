@@ -91,7 +91,11 @@ class JobMatchController extends Controller implements CronChainedInterface
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%job_match}}')
+            ->truncateTable('{{%job_resume_match}}')
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->truncateTable('{{%job_vacancy_match}}')
             ->execute();
 
         Yii::$app->db->createCommand()

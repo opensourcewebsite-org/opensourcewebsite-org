@@ -62,60 +62,69 @@ class AdOffer extends ActiveRecord
         return $this->status == self::STATUS_ON;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
     public function getMatches()
     {
         return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
-            ->viaTable('{{%ad_match}}', ['ad_offer_id' => 'id'], function ($query) {
-                $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
-            });
+            ->viaTable('{{%ad_offer_match}}', ['ad_offer_id' => 'id']);
     }
 
-    public function getAllMatches()
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getCounterMatches()
     {
         return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
-            ->viaTable('{{%ad_match}}', ['ad_offer_id' => 'id']);
+            ->viaTable('{{%ad_search_match}}', ['ad_offer_id' => 'id']);
     }
 
     public function updateMatches()
     {
-        $this->unlinkAll('allMatches', true);
+        $this->unlinkAll('matches', true);
+        $this->unlinkAll('counterMatches', true);
 
         $adSearchQuery = AdSearch::find()
-            ->where(['!=', 'ad_search.user_id', $this->user_id])
-            ->andWhere(['ad_search.status' => AdSearch::STATUS_ON])
+            ->where(['!=', AdSearch::tableName() .'.user_id', $this->user_id])
+            ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
             ->joinWith('globalUser')
             ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere(['ad_search.section' => $this->section])
+            ->andWhere([AdSearch::tableName() . '.section' => $this->section])
             ->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_search.location_lon, ad_search.location_lat)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
 
         $adSearchQueryNoKeywords = clone $adSearchQuery;
         $adSearchQueryNoKeywords = $adSearchQueryNoKeywords
-            ->andWhere(['not in', 'ad_search.id', AdSearchKeyword::find()->select('ad_search_id')]);
+            ->andWhere(['not in', AdSearch::tableName() . '.id', AdSearchKeyword::find()->select('ad_search_id')]);
 
         $adSearchQueryKeywords = clone $adSearchQuery;
         $adSearchQueryKeywords = $adSearchQuery
                 ->joinWith(['keywords' => function ($query) {
                     $query
                         ->joinWith('adOffers')
-                        ->andWhere(['ad_offer.id' => $this->id]);
+                        ->andWhere([AdOffer::tableName() . '.id' => $this->id]);
                 }])
-                ->groupBy('ad_search.id');
+                ->groupBy(AdSearch::tableName() . '.id');
 
         if ($this->getKeywords()->count() > 0) {
             foreach ($adSearchQueryKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 2]);
+                $this->link('matches', $adSearch);
+                $this->link('counterMatches', $adSearch);
             }
 
             foreach ($adSearchQueryNoKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 1]);
+                $this->link('counterMatches', $adSearch);
             }
         } else {
             foreach ($adSearchQueryKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 0]);
+                $this->link('matches', $adSearch);
             }
 
             foreach ($adSearchQueryNoKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch, ['type' => 2]);
+                $this->link('matches', $adSearch);
+                $this->link('counterMatches', $adSearch);
             }
         }
     }
@@ -190,8 +199,7 @@ class AdOffer extends ActiveRecord
 
     public function getGlobalUser()
     {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
-            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
     }
 
     /**

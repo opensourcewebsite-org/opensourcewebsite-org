@@ -17,10 +17,6 @@ use Yii;
  */
 class JobMatch extends \yii\db\ActiveRecord
 {
-    const TYPE_SELF = 0;
-    const TYPE_THEY = 1;
-    const TYPE_BOTH = 2;
-
     /** @inheritDoc */
     public static function tableName()
     {

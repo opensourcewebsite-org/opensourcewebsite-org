@@ -8,6 +8,7 @@ use app\behaviors\SetDefaultCurrencyBehavior;
 use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\crud\rules\PhotoFieldComponent;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\components\helpers\Emoji;
@@ -44,10 +45,11 @@ class SAdOfferController extends CrudController
                     $model = $params['model'] ?? null;
 
                     return [
-                        'adOffer' => $model,
-                        'currency' => Currency::findOne($model->currency_id),
                         'sectionName' => AdSection::getAdOfferName($model->section),
+                        'section' => $model->section,
                         'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
+                        'adOffer' => $model,
+                        'currency' =>  isset($model->currency_id) ? Currency::findOne($model->currency_id) : null,
                         'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                         'showDetailedInfo' => false,
                     ];
@@ -81,7 +83,8 @@ class SAdOfferController extends CrudController
                                     ActiveRecord::EVENT_BEFORE_INSERT => ['section'],
                                 ],
                                 'attribute' => 'section',
-                                'value' => AdSection::BUY_SELL,
+                                'value' => $this->getState()
+                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
                             ],
                         ],
                         'hidden' => true,
@@ -232,10 +235,12 @@ class SAdOfferController extends CrudController
     public function actionIndex($adSection, $page = 1)
     {
         $this->getState()->setName(null);
+        $this->getState()->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
+        $user = $this->getUser();
 
         $adOfferQuery = AdOffer::find()
             ->where([
-                'user_id' => $this->getTelegramUser()->user_id,
+                'user_id' => $user->id,
                 'section' => $adSection,
             ])
             ->orderBy([
@@ -255,8 +260,7 @@ class SAdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        $adOffers = $adOfferQuery
-            ->offset($pagination->offset)
+        $adOffers = $adOfferQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -287,25 +291,19 @@ class SAdOfferController extends CrudController
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
             ],
-        ];
-
-        if ($adSection == 1) {
-            $buttons[count($buttons) - 1][] = [
-                'callback_data' => self::createRoute(
-                    'create',
-                    [
-                        'm' => $this->getModelName(AdOffer::class),
-                    ]
-                ),
+            [
+                'callback_data' => self::createRoute('create', [
+                    'adSection' => $adSection,
+                    'm' => $this->getModelName(AdOffer::class),
+                ]),
                 'text' => Emoji::ADD,
-            ];
-        }
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'sectionName' => AdSection::getAdOfferName($adSection),
-                    'inDevelopment' => ($adSection != 1),
                 ]),
                 $buttons
             )
@@ -315,7 +313,6 @@ class SAdOfferController extends CrudController
     public function actionAdd($adSection)
     {
         $this->getState()->setName(self::createRoute('title-send'));
-
         $this->getState()->setIntermediateField('adOfferSection', $adSection);
 
         return $this->getResponseBuilder()
@@ -324,7 +321,9 @@ class SAdOfferController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('index', ['adSection' => $adSection]),
+                            'callback_data' => self::createRoute('index', [
+                                'adSection' => $adSection,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                     ],
@@ -335,7 +334,18 @@ class SAdOfferController extends CrudController
 
     public function actionEdit($adOfferId)
     {
-        $adOffer = AdOffer::findOne($adOfferId);
+        $this->getState()->setName(null);
+        $user = $this->getUser();
+
+        $adOffer = $user->getAdOffers()
+            ->where([
+                'id' => $adOfferId,
+            ])
+            ->one();
+
+        if (!isset($adOffer)) {
+            return [];
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -343,61 +353,72 @@ class SAdOfferController extends CrudController
                     'adOffer' => $adOffer,
                     'currency' => Currency::findOne($adOffer->currency_id),
                     'sectionName' => AdSection::getAdOfferName($adOffer->section),
-                    'keywords' => self::getKeywordsAsString(
-                        $adOffer->getKeywords()->all()
-                    ),
-                    'locationLink' => ExternalLink::getOSMLink(
-                        $adOffer->location_lat,
-                        $adOffer->location_lon
-                    ),
+                    'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
                     'showDetailedInfo' => false,
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit-title', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-title', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Title'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-description', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-description', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Description'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-keywords', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-keywords', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Keywords'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-photo', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-photo', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Photo'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-price', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-price', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Price'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-location', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-location', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('edit-radius', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-radius', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Delivery radius'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('view', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('view', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -439,14 +460,18 @@ class SAdOfferController extends CrudController
 
         if ($matchesCount) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('matches', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('matches', [
+                    'adOfferId' => $adOfferId,
+                ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
         }
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('index', ['adSection' => $adOffer->section]),
+                'callback_data' => self::createRoute('index', [
+                    'adSection' => $adOffer->section,
+                ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -454,17 +479,16 @@ class SAdOfferController extends CrudController
                 'text' => Emoji::MENU,
             ],
             [
-                'callback_data' => self::createRoute(
-                    'u',
-                    [
-                        'm' => $this->getModelName(AdOffer::class),
-                        'i' => $adOfferId,
-                    ]
-                ),
+                'callback_data' => self::createRoute('u', [
+                    'm' => $this->getModelName(AdOffer::class),
+                    'i' => $adOfferId,
+                ]),
                 'text' => Emoji::EDIT,
             ],
             [
-                'callback_data' => self::createRoute('delete', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('delete', [
+                    'adOfferId' => $adOfferId,
+                ]),
                 'text' => Emoji::DELETE,
             ],
         ];
@@ -509,7 +533,9 @@ class SAdOfferController extends CrudController
         $buttons[] = [
             [
                 'text' => $adOffer->title,
-                'callback_data' => self::createRoute('view', ['adOfferId' => $adOffer->id]),
+                'callback_data' => self::createRoute('view', [
+                    'adOfferId' => $adOffer->id,
+                ]),
             ]
         ];
 
@@ -522,7 +548,9 @@ class SAdOfferController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('view', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('view', [
+                    'adOfferId' => $adOfferId,
+                ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -542,10 +570,7 @@ class SAdOfferController extends CrudController
                     'adSearch' => $adSearch,
                     'user' => TelegramUser::findOne(['user_id' => $adSearch->user_id]),
                     'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink(
-                        $adSearch->location_lat,
-                        $adSearch->location_lon
-                    ),
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
                 ]),
                 $buttons,
                 true
@@ -555,7 +580,9 @@ class SAdOfferController extends CrudController
 
     public function actionEditTitle($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-title', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-title', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -563,13 +590,10 @@ class SAdOfferController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                    'i' => $adOfferId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdOffer::class),
+                                'i' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -600,7 +624,9 @@ class SAdOfferController extends CrudController
 
     public function actionEditDescription($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-description', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-description', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -616,13 +642,10 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                    'i' => $adOfferId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdOffer::class),
+                                'i' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -664,7 +687,9 @@ class SAdOfferController extends CrudController
 
     public function actionEditPhoto($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-photo', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-photo', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -680,13 +705,10 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                    'i' => $adOfferId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdOffer::class),
+                                'i' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -723,6 +745,7 @@ class SAdOfferController extends CrudController
                 'ad_offer_id' => $adOffer->id,
                 'file_id' => $photoFileId,
             ]);
+
             $adPhoto->save();
 
             $adOffer->link('photos', $adPhoto);
@@ -735,7 +758,9 @@ class SAdOfferController extends CrudController
 
     public function actionEditKeywords($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-keywords', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-keywords', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -751,13 +776,10 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                    'i' => $adOfferId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdOffer::class),
+                                'i' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -795,7 +817,11 @@ class SAdOfferController extends CrudController
             $adOffer->unlinkAll('keywords', true);
 
             foreach ($keywords as $keyword) {
-                $adKeyword = AdKeyword::find()->where(['keyword' => $keyword])->one();
+                $adKeyword = AdKeyword::find()
+                    ->where([
+                        'keyword' => $keyword,
+                    ])
+                    ->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
@@ -844,13 +870,12 @@ class SAdOfferController extends CrudController
                         'adOfferId' => $adOfferId,
                         'currencyId' => $user->currency_id,
                     ]),
-                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name . ' ·',
+                    'text' => '· ' . Currency::findOne($user->currency_id)->code . ' - ' . Currency::findOne($user->currency_id)->name,
                 ];
             }
         }
 
-        foreach ($currencyQuery
-            ->offset($pagination->offset)
+        foreach ($currencyQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
@@ -871,7 +896,9 @@ class SAdOfferController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('edit-price', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('edit-price', [
+                    'adOfferId' => $adOfferId,
+                ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -904,7 +931,9 @@ class SAdOfferController extends CrudController
 
     public function actionEditPrice($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-price', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-price', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         $adOffer = AdOffer::findOne($adOfferId);
 
@@ -916,7 +945,9 @@ class SAdOfferController extends CrudController
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('edit-currency', ['adOfferId' => $adOfferId]),
+                            'callback_data' => self::createRoute('edit-currency', [
+                                'adOfferId' => $adOfferId,
+                            ]),
                             'text' => Yii::t('bot', 'Edit currency'),
                         ],
                     ],
@@ -930,13 +961,10 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                    'i' => $adOfferId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdOffer::class),
+                                'i' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -985,26 +1013,27 @@ class SAdOfferController extends CrudController
 
     public function actionEditLocation($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-location-send', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-location-send', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         $buttons = [];
 
         if ($this->getTelegramUser()->location_lat !== null && $this->getTelegramUser()->location_lon != null) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('new-location-my', ['adOfferId' => $adOfferId]),
+                'callback_data' => self::createRoute('new-location-my', [
+                    'adOfferId' => $adOfferId,
+                ]),
                 'text' => Yii::t('bot', 'My location'),
             ];
         }
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute(
-                    'u',
-                    [
-                        'm' => $this->getModelName(AdOffer::class),
-                        'i' => $adOfferId,
-                    ]
-                ),
+                'callback_data' => self::createRoute('u', [
+                    'm' => $this->getModelName(AdOffer::class),
+                    'i' => $adOfferId,
+                ]),
                 'text' => Emoji::BACK,
             ],
             [
@@ -1058,6 +1087,7 @@ class SAdOfferController extends CrudController
             ]);
 
             $adOffer->save();
+
             $adOffer->markToUpdateMatches();
         }
 
@@ -1066,7 +1096,9 @@ class SAdOfferController extends CrudController
 
     public function actionEditRadius($adOfferId)
     {
-        $this->getState()->setName(self::createRoute('new-radius', ['adOfferId' => $adOfferId]));
+        $this->getState()->setName(self::createRoute('new-radius', [
+            'adOfferId' => $adOfferId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -1082,13 +1114,10 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                    'i' => $adOfferId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(AdOffer::class),
+                                'i' => $adOfferId,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1108,6 +1137,7 @@ class SAdOfferController extends CrudController
         $adOffer->setAttributes([
             'delivery_radius' => 0,
         ]);
+
         $adOffer->save();
 
         return $this->actionView($adOfferId);
@@ -1129,6 +1159,7 @@ class SAdOfferController extends CrudController
             ]);
 
             $adOffer->save();
+
             $adOffer->markToUpdateMatches();
 
             return $this->actionView($adOfferId);
@@ -1151,9 +1182,12 @@ class SAdOfferController extends CrudController
             $adOffer->markToUpdateMatches();
         } else {
             $adOffer->unlinkAll('matches', true);
+            $adOffer->unlinkAll('counterMatches', true);
+
             $adOffer->setAttributes([
                 'processed_at' => time(),
             ]);
+
             $adOffer->save();
         }
 
@@ -1198,12 +1232,9 @@ class SAdOfferController extends CrudController
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(
-                                'create',
-                                [
-                                    'm' => $this->getModelName(AdOffer::class),
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('create', [
+                                'm' => $this->getModelName(AdOffer::class),
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -1243,7 +1274,11 @@ class SAdOfferController extends CrudController
 
             $adOfferKeywords = [];
             foreach ($keywords as $keyword) {
-                $adKeyword = AdKeyword::find()->where(['keyword' => $keyword])->one();
+                $adKeyword = AdKeyword::find()
+                    ->where([
+                        'keyword' => $keyword,
+                    ])
+                    ->one();
 
                 if (!isset($adKeyword)) {
                     $adKeyword = new AdKeyword();
@@ -1251,6 +1286,7 @@ class SAdOfferController extends CrudController
                     $adKeyword->setAttributes([
                         'keyword' => $keyword,
                     ]);
+
                     $adKeyword->save();
                 }
 
@@ -1441,10 +1477,7 @@ class SAdOfferController extends CrudController
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-price', [
-                    'currencyCode' => Currency::findOne(
-                        $this->getState()->getIntermediateField('adOfferCurrencyId')
-                    )
-                        ->code,
+                    'currencyCode' => Currency::findOne($this->getState()->getIntermediateField('adOfferCurrencyId'))->code,
                 ]),
                 [
                     [
@@ -1490,18 +1523,21 @@ class SAdOfferController extends CrudController
 
         $buttons = [];
 
-        foreach ($currencyQuery
-            ->offset($pagination->offset)
+        foreach ($currencyQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all() as $currency) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('currency', ['currencyId' => $currency->id]),
+                'callback_data' => self::createRoute('currency', [
+                    'currencyId' => $currency->id,
+                ]),
                 'text' => $currency->code . ' - ' . $currency->name,
             ];
         }
 
         $buttons[] = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('change-currency', ['page' => $page]);
+            return self::createRoute('change-currency', [
+                'page' => $page,
+            ]);
         });
 
         $buttons[] = [

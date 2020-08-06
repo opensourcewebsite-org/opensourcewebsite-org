@@ -54,6 +54,7 @@ class m200622_121041_create_resume_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-resume-user_id', '{{%resume}}');
+
         $this->dropForeignKey(
             'fk-resume_currency_id-currency_id',
             '{{%resume}}'
