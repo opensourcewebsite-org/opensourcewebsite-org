@@ -88,9 +88,11 @@ class CompanyController extends CrudController
      */
     public function actionIndex($page = 1)
     {
+        $this->getState()->setName(null);
         $user = $this->getUser();
 
         $companiesCount = $user->getCompanies()->count();
+
         $pagination = new Pagination([
             'totalCount' => $companiesCount,
             'pageSize' => 9,
@@ -100,16 +102,13 @@ class CompanyController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
+
         $companies = $user->getCompanies()
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $keyboards = array_map(function ($company) {
+
+        $buttons = array_map(function ($company) {
             return [
                 [
                     'text' => $company->name,
@@ -119,32 +118,34 @@ class CompanyController extends CrudController
                 ],
             ];
         }, $companies);
-        $keyboards = array_merge($keyboards, [$paginationButtons], [
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
+
+        $buttons[] = [
             [
-                [
-                    'text' => Emoji::BACK,
-                    'callback_data' => SJobController::createRoute(),
-                ],
-                [
-                    'text' => Emoji::MENU,
-                    'callback_data' => MenuController::createRoute(),
-                ],
-                [
-                    'text' => Emoji::ADD,
-                    'callback_data' => self::createRoute(
-                        'create',
-                        [
-                            'm' => $this->getModelName(Company::class),
-                        ]
-                    ),
-                ],
+                'text' => Emoji::BACK,
+                'callback_data' => SJobController::createRoute(),
             ],
-        ]);
+            [
+                'text' => Emoji::MENU,
+                'callback_data' => MenuController::createRoute(),
+            ],
+            [
+                'text' => Emoji::ADD,
+                'callback_data' => self::createRoute('create', [
+                    'm' => $this->getModelName(Company::class),
+                ]),
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                $keyboards
+                $buttons
             )
             ->build();
     }
@@ -154,7 +155,12 @@ class CompanyController extends CrudController
     {
         $user = $this->getUser();
 
-        $company = $user->getCompanies()->where(['id' => $companyId])->one();
+        $company = $user->getCompanies()
+            ->where([
+                'id' => $companyId,
+            ])
+            ->one();
+
         if (!isset($company)) {
             return [];
         }
@@ -187,13 +193,10 @@ class CompanyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute(
-                                'u',
-                                [
-                                    'm' => $this->getModelName(Company::class),
-                                    'i' => $companyId,
-                                ]
-                            ),
+                            'callback_data' => self::createRoute('u', [
+                                'm' => $this->getModelName(Company::class),
+                                'i' => $companyId,
+                            ]),
                         ],
                     ],
                 ],

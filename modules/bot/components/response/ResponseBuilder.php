@@ -193,8 +193,8 @@ class ResponseBuilder
      * command
      *
      * @param  array $replyMarkup
-     * @param  bool              $disablePreview
-     * @param  array                $optionalParams
+     * @param  bool $disablePreview
+     * @param  array $optionalParams
      * @return array
      */
     private function collectEditMessageOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams = []):array
@@ -212,8 +212,8 @@ class ResponseBuilder
      * command
      *
      * @param  array $replyMarkup
-     * @param  bool              $disablePreview
-     * @param  array                $optionalParams
+     * @param  bool $disablePreview
+     * @param  array $optionalParams
      * @return array
      */
     private function collectSendMessageOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams = []):array
@@ -229,9 +229,9 @@ class ResponseBuilder
     /**
      *
      * @param  array $replyMarkup
-     * @param  bool              $disablePreview
-     * @param  array                $optionalParams
-     * @param  array                $optionalParamsFilter
+     * @param  bool $disablePreview
+     * @param  array $optionalParams
+     * @param  array $optionalParamsFilter
      * @return array
      */
     private function filterAndMergeOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams, array $optionalParamsFilter):array

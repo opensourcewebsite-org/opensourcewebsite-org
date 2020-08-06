@@ -6,8 +6,8 @@ use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
-use app\modules\bot\models\AdOffer;
-use app\modules\bot\models\AdSearch;
+use app\models\AdOffer;
+use app\models\AdSearch;
 use yii\console\Exception;
 
 /**
@@ -44,13 +44,13 @@ class AdMatchController extends Controller implements CronChainedInterface
 
         foreach ($adSearchQuery->all() as $adSearch) {
             try {
-                $updatesCount++;
                 $adSearch->updateMatches();
 
                 $adSearch->setAttributes([
                     'processed_at' => time(),
                 ]);
                 $adSearch->save();
+                $updatesCount++;
             } catch (Exception $e) {
                 echo 'ERROR: AdSearch #' . $adSearch->id . ': ' . $e->getMessage() . "\n";
             }
@@ -75,13 +75,13 @@ class AdMatchController extends Controller implements CronChainedInterface
 
         foreach ($adOfferQuery->all() as $adOffer) {
             try {
-                $updatesCount++;
                 $adOffer->updateMatches();
 
                 $adOffer->setAttributes([
                     'processed_at' => time(),
                 ]);
                 $adOffer->save();
+                $updatesCount++;
             } catch (Exception $e) {
                 echo 'ERROR: AdOffer #' . $adOffer->id . ': ' . $e->getMessage() . "\n";
             }
@@ -95,7 +95,11 @@ class AdMatchController extends Controller implements CronChainedInterface
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%ad_match}}')
+            ->truncateTable('{{%ad_offer_match}}')
+            ->execute();
+
+        Yii::$app->db->createCommand()
+            ->truncateTable('{{%ad_search_match}}')
             ->execute();
 
         Yii::$app->db->createCommand()

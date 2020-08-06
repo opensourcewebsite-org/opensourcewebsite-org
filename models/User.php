@@ -724,27 +724,25 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->contact->getContactName();
     }
 
-    public function getCompanies()
-    {
-        return $this->hasMany(Company::class, ['id' => 'company_id'])
-            ->viaTable('company_user', ['user_id' => 'id']);
-    }
-
-    public function getVacancies()
-    {
-        return $this->hasMany(Vacancy::class, ['user_id' => 'id']);
-    }
-
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getGender()
     {
         return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSexuality()
     {
         return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
@@ -753,24 +751,58 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getResumes()
-    {
-        return $this->hasMany(Resume::class, [ 'user_id' => 'id' ]);
-    }
-
-    public function getCurrencyExchangeOrders()
-    {
-        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ]);
-    }
-
     public function getLanguages()
     {
         return $this->hasMany(UserLanguage::class, [ 'user_id' => 'id' ]);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getCitizenships()
     {
-        return $this->hasMany(UserCitizenship::class, [ 'user_id' => 'id' ]);
+        return $this->hasMany(UserCitizenship::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCompanies()
+    {
+        return $this->hasMany(Company::class, ['id' => 'company_id'])
+            ->viaTable('company_user', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVacancies()
+    {
+        return $this->hasMany(Vacancy::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResumes()
+    {
+        return $this->hasMany(Resume::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdSearches()
+    {
+        return $this->hasMany(AdSearch::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdOffers()
+    {
+        return $this->hasMany(AdOffer::class, ['user_id' => 'id']);
     }
 
     /**
@@ -796,7 +828,12 @@ class User extends ActiveRecord implements IdentityInterface
         if (!empty($groups)) {
             foreach ($groups as $group) {
                 $groupId = $group->id;
-                $countGroupContacts = ContactHasGroup::find()->where(['contact_group_id' => $groupId])->count();
+                $countGroupContacts = ContactHasGroup::find()
+                    ->where([
+                        'contact_group_id' => $groupId,
+                    ])
+                    ->count();
+
                 if ($countGroupContacts == 0) {
                     $hasEmptyGroup = true;
                     break;
@@ -830,7 +867,11 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function getTotalRank()
     {
-        $result = static::find()->where(['>', 'rating', 0])->count();
+        $result = static::find()
+            ->where([
+                '>', 'rating', 0,
+                ])
+            ->count();
 
         return $result ?: 0;
     }
@@ -841,7 +882,40 @@ class User extends ActiveRecord implements IdentityInterface
     public function updateLastActivity()
     {
         Yii::$app->db->createCommand()
-            ->update('{{%user}}', ['last_activity_at' => time()], ['id' => $this->id])
+            ->update('{{%user}}', [
+                'last_activity_at' => time(),
+            ],
+            [
+                'id' => $this->id,
+            ])
             ->execute();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJobMatches()
+    {
+        return $this->hasMany(JobMatch::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJobResumeMatches()
+    {
+        return $this->hasMany(JobMatch::class, ['resume_id' => 'id'])
+            ->viaTable('{{%resume}}', ['user_id' => 'id'])
+            ->andWhere(['or', ['type' => 0], ['type' => 2]]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJobVacancyMatches()
+    {
+        return $this->hasMany(JobMatch::class, ['vacancy_id' => 'id'])
+            ->viaTable('{{%vacancy}}', ['user_id' => 'id'])
+            ->andWhere(['or', ['type' => 0], ['type' => 2]]);
     }
 }
