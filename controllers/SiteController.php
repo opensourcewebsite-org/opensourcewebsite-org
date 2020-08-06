@@ -284,6 +284,8 @@ class SiteController extends Controller
 
             \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
+            \app\models\CurrencyExchangeOrder::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+
             $userToMerge->delete();
 
             $transaction->commit();

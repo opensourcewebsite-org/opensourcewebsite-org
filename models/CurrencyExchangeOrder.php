@@ -170,6 +170,22 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
             $notFilledFields[] = Yii::t('app', 'Field have to be filled: ') . Yii::t('app', 'Location');
         }
 
+        if (count($this->currencyExchangeOrderPaymentMethod) < 2) {
+            $notFilledFields[] = Yii::t('app', 'Field have to be filled: ') . Yii::t('app', 'Payment methods');
+        }
+
         return $notFilledFields;
+    }
+
+    public function beforeDelete()
+    {
+        if (!parent::beforeDelete()) {
+            return false;
+        }
+        foreach ($this->currencyExchangeOrderPaymentMethod as $payment) {
+            $payment->delete();
+        }
+
+        return true;
     }
 }

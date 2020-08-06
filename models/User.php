@@ -758,6 +758,11 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Resume::class, [ 'user_id' => 'id' ]);
     }
 
+    public function getCurrencyExchangeOrders()
+    {
+        return $this->hasMany(CurrencyExchangeOrder::class, [ 'user_id' => 'id' ]);
+    }
+
     public function getLanguages()
     {
         return $this->hasMany(UserLanguage::class, [ 'user_id' => 'id' ]);

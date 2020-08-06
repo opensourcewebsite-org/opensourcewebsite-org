@@ -53,6 +53,7 @@ class CurrencyExchangeOrderController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => CurrencyExchangeOrder::find()
                 ->where(['status' => $status])
+                ->andWhere(['user_id' => Yii::$app->user->identity->id])
                 ->orderBy(['selling_currency_id' => SORT_ASC, 'created_at' => SORT_DESC]),
         ]);
 
@@ -70,6 +71,7 @@ class CurrencyExchangeOrderController extends Controller
     public function actionView($id)
     {
         $order = $this->findModel($id);
+
         if ($sellPayments = $order->getCurrencyExchangeOrderPaymentMethod()
             ->where(['type' => 1])
             ->one()) {
@@ -119,6 +121,7 @@ class CurrencyExchangeOrderController extends Controller
     public function actionUpdate($id)
     {
         $order = $this->findModel($id);
+
         if ($post = Yii::$app->request->post()) {
             if (!empty($post['sell_payment'])) {
                 if (!$sellPayment = $order->getCurrencyExchangeOrderPaymentMethod()->where(['type' => 1])->one()) {
@@ -179,13 +182,13 @@ class CurrencyExchangeOrderController extends Controller
     {
         if (Yii::$app->request->isAjax) {
             $postdata = Yii::$app->request->post();
-            $model = $this->findModel($id);
+            $order = $this->findModel($id);
 
-            if ($postdata['status'] && $notFilledFields = $model->notPossibleToChangeStatus()) {
+            if ($postdata['status'] && $notFilledFields = $order->notPossibleToChangeStatus()) {
                 return json_encode($notFilledFields);
             }
-            $model->status = $postdata['status'];
-            return $model->save();
+            $order->status = $postdata['status'];
+            return $order->save();
         }
         return false;
     }
@@ -213,7 +216,8 @@ class CurrencyExchangeOrderController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = CurrencyExchangeOrder::findOne($id)) !== null) {
+        $model = CurrencyExchangeOrder::findOne($id);
+        if ($model !== null && $model->user_id == Yii::$app->user->identity->id) {
             return $model;
         }
 

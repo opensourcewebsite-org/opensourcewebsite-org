@@ -95,4 +95,5 @@ return [
     'Field have to be filled: ' => 'Укажите следующую информацию: ',
     'Payment method for Sell' => 'Способ оплаты за валюту продажи',
     'Payment method for Buy' => 'Способ оплаты за валюту покупки',
+    'Payment methods' => 'Способы оплаты',
 ];
