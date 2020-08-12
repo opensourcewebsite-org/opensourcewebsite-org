@@ -55,6 +55,9 @@ class Currency extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDebtRedistributions()
     {
         return $this->hasMany(DebtRedistribution::className(), ['currency_id' => 'id']);
@@ -66,5 +69,10 @@ class Currency extends ActiveRecord
     public function getCurrencyLabel()
     {
         return $this->code . ' - ' . $this->name;
+    }
+
+    public function getCurrencyRates()
+    {
+        return $this->hasMany(CurrencyRate::className(), ['from_currency_id' => 'id']);
     }
 }

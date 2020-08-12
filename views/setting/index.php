@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use app\components\Converter;
 use yii\widgets\LinkPager;
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?php foreach ($models as $key => $model): ?>
                                         <tr>
                                             <td>
-                                            <?= Html::a($model->key, ['/setting/values', 'id' => $model->id]); 
+                                            <?= Html::a($model->key, ['/setting/values', 'id' => $model->id]);
                                             ?>
                                             </td>
                                             <td><?php echo $model->value ?? null; ?></td>

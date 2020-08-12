@@ -4,9 +4,10 @@ use yii\widgets\LinkPager;
 use yii\widgets\Breadcrumbs;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use app\components\Converter;
 
-$this->title = Yii::t('app', 'Payment Method');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Payment methods'), 'url' => ['payment-method']];
+$this->title = Yii::t('app', 'Currency');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currencies'), 'url' => ['currency']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
@@ -23,17 +24,21 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <td><?= $model->name; ?></td>
                 </tr>
                 <tr>
-                    <th scope="col">Type</th>
-                    <td><?= $model->getTypeName(); ?></td>
+                    <th scope="col">Code</th>
+                    <td><?= $model->code; ?></td>
+                </tr>
+                <tr>
+                    <th scope="col">Symbol</th>
+                    <td><?= $model->symbol; ?></td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
-<?php if ($currencies) : ?>
+<?php if ($currencyRates) : ?>
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Currencies</h3>
+        <h3 class="card-title">Currency Rates</h3>
         <div class="card-tools">
             <?= LinkPager::widget([
                 'pagination' => $pages,
@@ -55,19 +60,17 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Symbol</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Rate</th>
+                    <th scope="col">Updated At</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($currencies as $currency) : ?>
+                <?php foreach ($currencyRates as $currencyRate) : ?>
                     <tr>
-                        <td><?= $currency->id; ?></td>
-                        <td><?= Html::a($currency->name, ['data/currency/' . $currency->id]); ?></td>
-                        <td><?= $currency->code; ?></td>
-                        <td><?= $currency->symbol; ?></td>
+                        <td><?= Html::a("{$currencyRate->toCurrency->name} ({$currencyRate->toCurrency->code})", ['data/currency/' . $currencyRate->toCurrency->id]); ?></td>
+                        <td><?= $currencyRate->rate; ?></td>
+                        <td><?= Converter::formatDate($currencyRate->updated_at); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

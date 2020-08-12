@@ -4,7 +4,6 @@ use yii\widgets\LinkPager;
 use yii\helpers\Html;
 
 ?>
-
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Payment Methods</h3>
@@ -38,8 +37,8 @@ use yii\helpers\Html;
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?= $model->id ?></td>
-                        <td><?php echo Html::a($model->name, ['data/payment-method/' . $model->id]); ?></td>
-                        <td><?php echo $model->getTypeName(); ?></td>
+                        <td><?= Html::a($model->name, ['data/payment-method/' . $model->id]); ?></td>
+                        <td><?= $model->getTypeName(); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

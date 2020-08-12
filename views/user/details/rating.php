@@ -1,4 +1,5 @@
 <?php
+
 use app\components\Converter;
 use yii\widgets\LinkPager;
 
@@ -22,9 +23,9 @@ $this->title = Yii::t('app', 'Rating transactions');
                                 <tbody>
                                 <?php foreach ($models as $key => $model) : ?>
                                     <tr>
-                                        <td><?php echo Converter::formatDate($model->created_at); ?></td>
-                                        <td><?php echo $model->amount; ?></td>
-                                        <td><?php echo $model->getTypeName(); ?></td>
+                                        <td><?= Converter::formatDate($model->created_at); ?></td>
+                                        <td><?= $model->amount; ?></td>
+                                        <td><?= $model->getTypeName(); ?></td>
                                     </tr>
                                 <?php endforeach;?>
                                 </tbody>

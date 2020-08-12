@@ -3,7 +3,6 @@
 use yii\widgets\LinkPager;
 
 ?>
-
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Genders</h3>
@@ -36,7 +35,7 @@ use yii\widgets\LinkPager;
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?= $model->id ?></td>
-                        <td><?php echo $model->name ?? null; ?></td>
+                        <td><?= $model->name ?? null; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
