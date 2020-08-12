@@ -20,6 +20,6 @@ class m180826_031345_user_unsigned_id extends Migration
      */
     public function safeDown()
     {
-        
+        $this->alterColumn('user', 'id', $this->integer());
     }
 }
