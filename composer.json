@@ -32,7 +32,7 @@
         "ext-intl": "*",
         "ext-curl": "*",
         "ext-iconv": "*",
-        "yiisoft/yii2": "~2.0.35",
+        "yiisoft/yii2": "~2.0.37",
         "yiisoft/yii2-swiftmailer": "^2.0",
         "almasaeed2010/adminlte": "^3.0",
         "cebe/yii2-gravatar": "^1.1",
