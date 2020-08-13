@@ -8,7 +8,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class HelpController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class HelpController extends Controller
 {

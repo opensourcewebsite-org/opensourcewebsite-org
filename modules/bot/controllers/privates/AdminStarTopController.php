@@ -16,7 +16,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class AdminStarTopController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class AdminStarTopController extends Controller
 {

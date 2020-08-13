@@ -261,7 +261,18 @@ class SAdSearchController extends CrudController
                 'page' => $page,
             ]);
         });
+//
+        $matchesCount = $adSearch->getMatches()->count();
 
+        if ($matchesCount) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('matches', [
+                    'adSearchId' => $adSearchId,
+                ]),
+                'text' => Emoji::OFFERS . ' ' . $matchesCount,
+            ];
+        }
+//
         $buttons[] = [
             [
                 'callback_data' => SAdController::createRoute(),
@@ -805,6 +816,7 @@ class SAdSearchController extends CrudController
 
         $adSearch = $user->getAdSearches()
             ->where([
+                'user_id' => $user->id,
                 'id' => $adSearchId,
             ])
             ->one();
@@ -832,6 +844,7 @@ class SAdSearchController extends CrudController
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
         }
+
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('index', [
@@ -869,7 +882,9 @@ class SAdSearchController extends CrudController
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -961,7 +976,9 @@ class SAdSearchController extends CrudController
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -1569,7 +1586,9 @@ class SAdSearchController extends CrudController
                     'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
                 ]),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

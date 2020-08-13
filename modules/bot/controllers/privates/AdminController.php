@@ -10,7 +10,7 @@ use app\modules\bot\components\helpers\PaginationButtons;
 /**
  * Class AdminController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class AdminController extends Controller
 {

@@ -14,7 +14,7 @@ use function foo\func;
 /**
  * Class MyCitizenshipsController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyCitizenshipsController extends Controller
 {

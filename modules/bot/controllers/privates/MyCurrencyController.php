@@ -11,7 +11,7 @@ use yii\data\Pagination;
 /**
  * Class MyCurrencyController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyCurrencyController extends Controller
 {

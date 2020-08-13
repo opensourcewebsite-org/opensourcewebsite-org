@@ -51,17 +51,15 @@ class ResponseBuilder
     /**
      * @param MessageText $messageText
      * @param array $replyMarkup
-     * @param bool $disablePreview
+     * @param array $optionalParams
      * @return $this
      */
     public function editMessageTextOrSendMessage(
         MessageText $messageText,
         array $replyMarkup = [],
-        bool $disablePreview = false,
         array $optionalParams = []
     ) {
         $commands = $this->deleteOutdatedMessages();
-
         if (!$this->update->getCallbackQuery() || $this->update->getCallbackQuery()->getMessage()->getPhoto() === null) {
             if ($callbackQuery = $this->update->getCallbackQuery()) {
                 $this->answerCallbackQuery();
@@ -69,13 +67,13 @@ class ResponseBuilder
                     $callbackQuery->getMessage()->getChat()->getId(),
                     $callbackQuery->getMessage()->getMessageId(),
                     $messageText,
-                    $this->collectEditMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+                    $this->collectEditMessageOptionalParams($replyMarkup, $optionalParams)
                 );
             } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
                 $commands[] = new SendMessageCommand(
                     $message->getChat()->getId(),
                     $messageText,
-                    $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+                    $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
                 );
             }
         } else {
@@ -86,13 +84,13 @@ class ResponseBuilder
                 $commands[] = new SendMessageCommand(
                     $callbackQuery->getMessage()->getChat()->getId(),
                     $messageText,
-                    $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+                    $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
                 );
             } elseif ($message = $this->update->getMessage()) {
                 $commands[] = new SendMessageCommand(
                     $message->getChat()->getId(),
                     $messageText,
-                    $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+                    $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
                 );
             }
         }
@@ -100,6 +98,7 @@ class ResponseBuilder
         if (!empty($commands)) {
             $this->commands = array_merge($this->commands, $commands);
         }
+
         return $this;
     }
 
@@ -131,6 +130,7 @@ class ResponseBuilder
                 );
             }
         }
+
         return $commands;
     }
 
@@ -138,14 +138,14 @@ class ResponseBuilder
      * @param ?string $photoFileId
      * @param MessageText $messageText
      * @param array $replyMarkup
-     * @param bool $disablePreview
+     * @param array $optionalParams
      * @return $this
      */
     public function sendPhotoOrSendMessage(
         ?string $photoFileId,
         MessageText $messageText,
         array $replyMarkup = [],
-        bool $disablePreview = false
+        array $optionalParams = []
     ) {
         $photo = new Photo($photoFileId);
 
@@ -159,7 +159,7 @@ class ResponseBuilder
                 $callbackQuery->getMessage()->getChat()->getId(),
                 $photo,
                 $messageText,
-                $this->collectEditMessageOptionalParams($replyMarkup, $disablePreview)
+                $this->collectEditMessageOptionalParams($replyMarkup, $optionalParams)
             );
         } elseif (($messageIds = $this->update->getPrivateMessageIds())
             && ($chatId = $this->update->getPrivateMessageChatId())) {
@@ -172,19 +172,20 @@ class ResponseBuilder
             $commands[] = new SendMessageCommand(
                 $chatId,
                 $messageText,
-                $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview)
+                $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
         } elseif ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $commands[] = new SendMessageCommand(
                 $message->getChat()->getId(),
                 $messageText,
-                $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview)
+                $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
         }
 
         if (!empty($commands)) {
             $this->commands = array_merge($this->commands, $commands);
         }
+
         return $this;
     }
 
@@ -193,17 +194,20 @@ class ResponseBuilder
      * command
      *
      * @param  array $replyMarkup
-     * @param  bool $disablePreview
      * @param  array $optionalParams
      * @return array
      */
-    private function collectEditMessageOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams = []):array
-    {
+    private function collectEditMessageOptionalParams(
+        array $replyMarkup,
+        array $optionalParams = []
+    ) : array {
         return $this->filterAndMergeOptionalParams(
             $replyMarkup,
-            $disablePreview,
             $optionalParams,
-            ['inlineMessageId']
+            [
+                'disablePreview',
+                'inlineMessageId',
+            ]
         );
     }
 
@@ -212,37 +216,42 @@ class ResponseBuilder
      * command
      *
      * @param  array $replyMarkup
-     * @param  bool $disablePreview
      * @param  array $optionalParams
      * @return array
      */
-    private function collectSendMessageOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams = []):array
-    {
+    private function collectSendMessageOptionalParams(
+        array $replyMarkup,
+        array $optionalParams = []
+    ) : array {
         return $this->filterAndMergeOptionalParams(
             $replyMarkup,
-            $disablePreview,
             $optionalParams,
-            ['replyToMessageId','disableNotification','parseMode']
+            [
+                'disablePreview',
+                'replyToMessageId',
+                'disableNotification',
+                'parseMode',
+            ]
         );
     }
 
     /**
      *
      * @param  array $replyMarkup
-     * @param  bool $disablePreview
      * @param  array $optionalParams
      * @param  array $optionalParamsFilter
      * @return array
      */
-    private function filterAndMergeOptionalParams(array $replyMarkup, bool $disablePreview, array $optionalParams, array $optionalParamsFilter):array
-    {
-        $optionalParams = ArrayHelper::merge(
-            [
-                'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
-                'disablePreview' => $disablePreview,
-            ],
-            ArrayHelper::filter($optionalParams, $optionalParamsFilter)
-        );
+    private function filterAndMergeOptionalParams(
+        array $replyMarkup,
+        array $optionalParams,
+        array $optionalParamsFilter
+    ) : array {
+        $optionalParams = ArrayHelper::merge([
+            'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+        ],
+        ArrayHelper::filter($optionalParams, $optionalParamsFilter));
+
         return $optionalParams;
     }
 
@@ -250,23 +259,23 @@ class ResponseBuilder
      * @param ?string $photoFileId
      * @param MessageText $messageText
      * @param array $replyMarkup
-     * @param bool $disablePreview
+     * @param  array $optionalParams
      * @return $this
      */
     public function sendPhotoOrEditMessageTextOrSendMessage(
         ?string $photoFileId,
         MessageText $messageText,
         array $replyMarkup = [],
-        bool $disablePreview = false
+        array $optionalParams = []
     ) {
         $photo = new Photo($photoFileId);
 
         if ($photo->isNull()) {
-            return $this->editMessageTextOrSendMessage($messageText, $replyMarkup, $disablePreview);
+            return $this->editMessageTextOrSendMessage($messageText, $replyMarkup, $optionalParams);
         } else {
             $this->deleteMessage();
 
-            return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $disablePreview);
+            return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $optionalParams);
         }
     }
 
@@ -285,6 +294,7 @@ class ResponseBuilder
                 !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
             );
         }
+
         return $this;
     }
 
@@ -301,6 +311,7 @@ class ResponseBuilder
                 null
             );
         }
+
         return $this;
     }
 
@@ -318,19 +329,19 @@ class ResponseBuilder
                 $showAlert
             );
         }
+
         return $this;
     }
 
     /**
      * @param MessageText $messageText
      * @param array|null $replyMarkup
-     * @param bool $disablePreview
+     * @param  array $optionalParams
      * @return $this
      */
     public function sendMessage(
         MessageText $messageText,
         array $replyMarkup = [],
-        bool $disablePreview = false,
         array $optionalParams = []
     ) {
         $chatId = null;
@@ -343,9 +354,10 @@ class ResponseBuilder
             $this->commands[] = new SendMessageCommand(
                 $chatId,
                 $messageText,
-                $this->collectSendMessageOptionalParams($replyMarkup, $disablePreview, $optionalParams)
+                $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
         }
+
         return $this;
     }
 
@@ -365,6 +377,7 @@ class ResponseBuilder
                 $callbackQuery->getMessage()->getMessageId()
             );
         }
+
         return $this;
     }
 
@@ -388,6 +401,7 @@ class ResponseBuilder
                 $latitude
             );
         }
+
         return $this;
     }
 

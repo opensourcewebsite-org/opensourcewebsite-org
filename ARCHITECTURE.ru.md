@@ -94,7 +94,7 @@ LocationRequestHandler просто возвращает константу, е�
 * Наследуйте ваши контроллеры от данного контроллера.
 * Создавайте в ваших контроллерах методы `rules` и `afterSave`.
 
-Примеры подключения можно увидеть в сервисах ["Обьявления"](/modules/bot/controllers/privates/SAdOfferController.php) и ["Работа"](/modules/bot/controllers/privates/VacancyController.php).
+Примеры подключения можно увидеть в сервисах ["Обьявления"](/modules/bot/controllers/privates/SAdOfferController.php) и ["Работа"](/modules/bot/controllers/privates/SJobVacancyController.php).
 
 ## Core
 

@@ -27,11 +27,11 @@ use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
 /**
- * Class VacanciesController
+ * Class SJobVacanciesController
  *
  * @package app\modules\bot\controllers\privates
  */
-class VacancyController extends CrudController
+class SJobVacancyController extends CrudController
 {
     protected static $properties = [
         'name',
@@ -250,7 +250,9 @@ class VacancyController extends CrudController
      */
     public function actionIndex($companyId = null, $page = 1)
     {
+        $this->getState()->setName(null);
         $this->getState()->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
+        $user = $this->getUser();
 
         $company = Company::findOne($companyId);
 
@@ -259,8 +261,6 @@ class VacancyController extends CrudController
                 ->answerCallbackQuery()
                 ->build();
         }
-
-        $user = $this->getUser();
 
         if ($company) {
             $query = $company->getVacancies();
@@ -308,7 +308,7 @@ class VacancyController extends CrudController
         if ($company) {
             $backButton = [
                 'text' => Emoji::BACK,
-                'callback_data' => CompanyController::createRoute('view', [
+                'callback_data' => SJobCompanyController::createRoute('view', [
                     'companyId' => $companyId,
                 ]),
             ];
@@ -327,7 +327,7 @@ class VacancyController extends CrudController
             ],
             [
                 'text' => Emoji::ADD,
-                'callback_data' => VacancyController::createRoute('create', [
+                'callback_data' => SJobVacancyController::createRoute('create', [
                     'm' => $this->getModelName(Vacancy::class),
                 ]),
             ],
@@ -346,10 +346,12 @@ class VacancyController extends CrudController
     /** @inheritDoc */
     public function actionView($vacancyId)
     {
+        $this->getState()->setName(null);
         $user = $this->getUser();
 
         $vacancy = $user->getVacancies()
             ->where([
+                'user_id' => $user->id,
                 'id' => $vacancyId,
             ])
             ->one();
@@ -434,7 +436,9 @@ class VacancyController extends CrudController
                     }, $vacancy->vacancyLanguagesRelation),
                 ]),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -525,7 +529,9 @@ class VacancyController extends CrudController
                     'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                 ]),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

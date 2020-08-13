@@ -13,6 +13,7 @@ class SendPhotoCommand extends Command
     public function __construct(string $chatId, Photo $photo, MessageText $caption, array $optionalParams = [])
     {
         parent::__construct($optionalParams);
+
         $this->chatId = $chatId;
 
         if (!is_null($photo)) {

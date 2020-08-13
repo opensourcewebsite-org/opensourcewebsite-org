@@ -77,8 +77,8 @@ class TopController extends Controller
                     'users' => $users,
                 ]),
                 [],
-                false,
                 [
+                    'disableNotification' => true,
                     'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )

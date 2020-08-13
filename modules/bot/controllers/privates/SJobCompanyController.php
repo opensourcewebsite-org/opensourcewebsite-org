@@ -14,11 +14,11 @@ use yii\data\Pagination;
 use yii\db\ActiveRecord;
 
 /**
- * Class CompanyController
+ * Class SJobCompanyController
  *
  * @package app\modules\bot\controllers\privates
  */
-class CompanyController extends CrudController
+class SJobCompanyController extends CrudController
 {
     protected static $properties = [
         'name',
@@ -153,6 +153,7 @@ class CompanyController extends CrudController
     /** @inheritDoc */
     public function actionView($companyId)
     {
+        $this->getState()->setName(null);
         $user = $this->getUser();
 
         $company = $user->getCompanies()
@@ -177,7 +178,7 @@ class CompanyController extends CrudController
                     [
                         [
                             'text' => Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
-                            'callback_data' => VacancyController::createRoute('index', [
+                            'callback_data' => SJobVacancyController::createRoute('index', [
                                 'companyId' => $companyId,
                             ]),
                         ],
@@ -200,7 +201,9 @@ class CompanyController extends CrudController
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

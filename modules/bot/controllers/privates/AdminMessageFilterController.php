@@ -15,7 +15,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
 * Class AdminMessageFilterController
 *
-* @package app\controllers\bot
+* @package app\modules\bot\controllers\privates
 */
 class AdminMessageFilterController extends Controller
 {

@@ -9,7 +9,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class DefaultController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class DefaultController extends Controller
 {
@@ -47,11 +47,11 @@ class DefaultController extends Controller
                     [
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
+                            'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
+                            'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],
                     [

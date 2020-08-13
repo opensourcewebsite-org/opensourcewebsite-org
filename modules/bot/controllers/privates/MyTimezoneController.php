@@ -12,7 +12,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class MyTimezoneController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyTimezoneController extends Controller
 {

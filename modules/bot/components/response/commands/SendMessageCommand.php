@@ -12,6 +12,7 @@ class SendMessageCommand extends MessageTextCommand
     public function __construct(string $chatId, MessageText $messageText, array $optionalParams = [])
     {
         parent::__construct($messageText, $optionalParams);
+
         $this->chatId = $chatId;
     }
 

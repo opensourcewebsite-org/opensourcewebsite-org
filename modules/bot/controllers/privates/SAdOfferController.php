@@ -427,7 +427,9 @@ class SAdOfferController extends CrudController
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -439,6 +441,7 @@ class SAdOfferController extends CrudController
 
         $adOffer = $user->getAdOffers()
             ->where([
+                'user_id' => $user->id,
                 'id' => $adOfferId,
             ])
             ->one();
@@ -505,7 +508,9 @@ class SAdOfferController extends CrudController
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -573,7 +578,9 @@ class SAdOfferController extends CrudController
                     'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
                 ]),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

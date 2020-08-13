@@ -40,15 +40,19 @@ class User extends ActiveRecord
         ]);
 
         if (!isset($language)) {
-            $language = Language::findOne(['code' => 'en']);
+            $language = Language::findOne([
+                'code' => 'en',
+            ]);
         }
 
         $newUser = new User();
+
         $newUser->setAttributes([
             'provider_user_id' => $updateUser->getId(),
             'language_id' => $language->id,
             'is_authenticated' => true,
         ]);
+
         $newUser->save();
 
         return $newUser;

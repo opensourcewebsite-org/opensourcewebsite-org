@@ -22,19 +22,19 @@ class SJobController extends Controller
             [
                 [
                     'text' => Emoji::JOB_RESUME . ' ' . Yii::t('bot', 'Resumes'),
-                    'callback_data' => ResumeController::createRoute(),
+                    'callback_data' => SJobResumeController::createRoute(),
                 ],
             ],
             [
                 [
                     'text' => Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
-                    'callback_data' => VacancyController::createRoute(),
+                    'callback_data' => SJobVacancyController::createRoute(),
                 ],
             ],
             [
                 [
                     'text' => Emoji::JOB_COMPANY . ' ' . Yii::t('bot', 'Companies'),
-                    'callback_data' => CompanyController::createRoute(),
+                    'callback_data' => SJobCompanyController::createRoute(),
                 ],
             ],
             [

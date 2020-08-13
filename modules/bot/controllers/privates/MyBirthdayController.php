@@ -10,7 +10,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class MyBirthdayController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyBirthdayController extends Controller
 {

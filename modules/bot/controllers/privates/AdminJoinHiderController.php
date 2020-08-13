@@ -11,7 +11,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class AdminJoinHiderController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class AdminJoinHiderController extends Controller
 {

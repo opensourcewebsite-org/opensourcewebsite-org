@@ -23,11 +23,11 @@ use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
 /**
- * Class ResumeController
+ * Class SJobResumeController
  *
  * @package app\modules\bot\controllers\privates
  */
-class ResumeController extends CrudController
+class SJobResumeController extends CrudController
 {
     /** @inheritDoc */
     protected function rules()
@@ -259,7 +259,7 @@ class ResumeController extends CrudController
             ],
             [
                 'text' => Emoji::ADD,
-                'callback_data' => ResumeController::createRoute(
+                'callback_data' => SJobResumeController::createRoute(
                     'create',
                     [
                         'm' => $this->getModelName(Resume::class),
@@ -295,10 +295,12 @@ class ResumeController extends CrudController
     /** @inheritDoc */
     public function actionView($resumeId)
     {
+        $this->getState()->setName(null);
         $user = $this->getUser();
 
         $resume = $user->getResumes()
             ->where([
+                'user_id' => $user->id,
                 'id' => $resumeId,
             ])
             ->one();

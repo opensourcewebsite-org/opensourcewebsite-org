@@ -178,7 +178,7 @@ class VotebanController extends Controller
                 $message = $command->send($this->getBotApi());
             }
             if (!$voting->id) {
-                if ($message) {
+                if (isset($message)) {
                     $voting->voting_message_id = $message->getMessageId();
                     $voting->save();
                 }

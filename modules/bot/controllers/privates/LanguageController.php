@@ -12,7 +12,7 @@ use yii\data\Pagination;
 /**
  * Class MyLanguageController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class LanguageController extends Controller
 {

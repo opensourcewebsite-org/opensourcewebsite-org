@@ -74,6 +74,9 @@ class JoinCaptchaController extends Controller
                         ]),
                         [
                             $buttons,
+                        ],
+                        [
+                            'disableNotification' => true,
                         ]
                     )
                     ->send();

@@ -108,7 +108,7 @@ class AdSearch extends ActiveRecord
         $this->unlinkAll('counterMatches', true);
 
         $adOfferQuery = AdOffer::find()
-            ->where(['!=', AdOffer::tableName() . '.user_id', $this->user_id])
+            //->where(['!=', AdOffer::tableName() . '.user_id', $this->user_id])
             ->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
             ->joinWith('globalUser')
             ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
