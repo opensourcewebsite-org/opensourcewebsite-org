@@ -14,55 +14,6 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Account');
-
-function removeEmptyArrays(&$array) {
-    foreach ($array as $key => $item) {
-        is_array($item) && $array[$key] = removeEmptyArrays($item);
-
-        if (empty($array[$key])) {
-            unset($array[$key]);
-        }
-    }
-
-    return $array;
-}
-
-$buttons = [];
-
-$buttons = [
-[
-
-],
-[
-    [
-        [
-
-        ],
-    ],
-    [
-        'item' => 10,
-        'item2' => false,
-        'item3' => 0,
-    ],
-    [
-
-    ],
-],
-[
-    [
-
-    ],
-    [
-
-    ],
-],
-];
-
-var_dump($buttons);
-
-$buttons = array_filter($buttons, 'removeEmptyArrays');
-
-var_dump($buttons);
 ?>
 
 <div class="account-index">
