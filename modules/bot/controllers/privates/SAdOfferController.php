@@ -17,6 +17,7 @@ use app\models\AdKeyword;
 use app\models\AdOfferKeyword;
 use app\models\AdSection;
 use app\models\AdOffer;
+use app\models\AdOfferMatch;
 use app\models\AdSearch;
 use app\models\AdPhoto;
 use app\modules\bot\models\User as TelegramUser;
@@ -282,23 +283,42 @@ class SAdOfferController extends CrudController
             ]);
         });
 
-        $buttons[] = [
-            [
-                'callback_data' => SAdController::createRoute(),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-            [
-                'callback_data' => self::createRoute('create', [
-                    'adSection' => $adSection,
-                    'm' => $this->getModelName(AdOffer::class),
-                ]),
-                'text' => Emoji::ADD,
-            ],
+        $rowButtons[] = [
+            'callback_data' => SAdController::createRoute(),
+            'text' => Emoji::BACK,
         ];
+
+        $rowButtons[] = [
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
+        ];
+
+        $matchesCount = AdOfferMatch::find()
+            ->joinWith('adOffer')
+            ->andWhere([
+                AdOffer::tableName() . '.user_id' => $user->id,
+                AdOffer::tableName() . '.section' => $adSection,
+            ])
+            ->count();
+
+        if ($matchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('section-matches', [
+                    'adSection' => $adSection,
+                ]),
+                'text' => Emoji::OFFERS . ' ' . $matchesCount,
+            ];
+        }
+
+        $rowButtons[] = [
+            'callback_data' => self::createRoute('create', [
+                'adSection' => $adSection,
+                'm' => $this->getModelName(AdOffer::class),
+            ]),
+            'text' => Emoji::ADD,
+        ];
+
+        $buttons[] = $rowButtons;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -453,7 +473,7 @@ class SAdOfferController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('status', [
-                    'adOfferId' => $adOfferId,
+                    'adOfferId' => $adOffer->id,
                 ]),
                 'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
             ]
@@ -464,7 +484,7 @@ class SAdOfferController extends CrudController
         if ($matchesCount) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('matches', [
-                    'adOfferId' => $adOfferId,
+                    'adOfferId' => $adOffer->id,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
@@ -484,13 +504,13 @@ class SAdOfferController extends CrudController
             [
                 'callback_data' => self::createRoute('u', [
                     'm' => $this->getModelName(AdOffer::class),
-                    'i' => $adOfferId,
+                    'i' => $adOffer->id,
                 ]),
                 'text' => Emoji::EDIT,
             ],
             [
                 'callback_data' => self::createRoute('delete', [
-                    'adOfferId' => $adOfferId,
+                    'adOfferId' => $adOffer->id,
                 ]),
                 'text' => Emoji::DELETE,
             ],
@@ -517,7 +537,19 @@ class SAdOfferController extends CrudController
 
     public function actionMatches($adOfferId, $page = 1)
     {
-        $adOffer = AdOffer::findOne($adOfferId);
+        $user = $this->getUser();
+
+        $adOffer = $user->getAdOffers()
+            ->where([
+                'user_id' => $user->id,
+                'id' => $adOfferId,
+            ])
+            ->one();
+
+        if (!isset($adOffer)) {
+            return [];
+        }
+
         $matchesQuery = $adOffer->getMatches();
         $matchesCount = $matchesQuery->count();
 
@@ -534,6 +566,10 @@ class SAdOfferController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
+
+        $adSearch = $matchesQuery->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->one();
 
         $buttons[] = [
             [
@@ -554,7 +590,7 @@ class SAdOfferController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('view', [
-                    'adOfferId' => $adOfferId,
+                    'adOfferId' => $adOffer->id,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -564,9 +600,84 @@ class SAdOfferController extends CrudController
             ],
         ];
 
-        $adSearch = $matchesQuery->offset($pagination->offset)
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'sectionName' => AdSection::getAdSearchName($adSearch->section),
+                    'adSearch' => $adSearch,
+                    'user' => TelegramUser::findOne(['user_id' => $adSearch->user_id]),
+                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    public function actionSectionMatches($adSection, $page = 1)
+    {
+        $user = $this->getUser();
+
+        $matchesQuery = AdOfferMatch::find()
+            ->joinWith('adOffer')
+            ->andWhere([
+                AdOffer::tableName() . '.user_id' => $user->id,
+                AdOffer::tableName() . '.section' => $adSection,
+            ]);
+
+        $matchesCount = $matchesQuery->count();
+
+        if (!$matchesCount) {
+            return $this->actionIndex($adSection);
+        }
+
+        $pagination = new Pagination([
+            'totalCount' => $matchesCount,
+            'pageSize' => 1,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $adOfferMatch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+        $adOffer = $adOfferMatch->adOffer;
+        $adSearch = $adOfferMatch->adSearch;
+
+        $buttons[] = [
+            [
+                'text' => $adOffer->title,
+                'callback_data' => self::createRoute('view', [
+                    'adOfferId' => $adOffer->id,
+                ]),
+            ]
+        ];
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adSection) {
+            return self::createRoute('section-matches', [
+                'adSection' => $adSection,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', [
+                    'adSection' => $adSection,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

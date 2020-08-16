@@ -179,7 +179,7 @@ class SJobCompanyController extends CrudController
                         [
                             'text' => Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
                             'callback_data' => SJobVacancyController::createRoute('index', [
-                                'companyId' => $companyId,
+                                'companyId' => $company->id,
                             ]),
                         ],
                     ],
@@ -196,7 +196,7 @@ class SJobCompanyController extends CrudController
                             'text' => Emoji::EDIT,
                             'callback_data' => self::createRoute('u', [
                                 'm' => $this->getModelName(Company::class),
-                                'i' => $companyId,
+                                'i' => $company->id,
                             ]),
                         ],
                     ],

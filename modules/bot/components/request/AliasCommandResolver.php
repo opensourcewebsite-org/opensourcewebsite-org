@@ -42,7 +42,7 @@ class AliasCommandResolver implements ICommandResolver
         ];
 
         foreach ($aliases as $alias => $aliasRoute) {
-            if ($alias === $text) {
+            if (strcasecmp($alias, $text) == 0) {
                 $route = $aliasRoute;
             }
         }

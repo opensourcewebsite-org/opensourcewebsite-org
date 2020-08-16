@@ -17,6 +17,7 @@ use app\models\AdSearchKeyword;
 use app\models\AdKeyword;
 use app\models\AdOffer;
 use app\models\AdSearch;
+use app\models\AdSearchMatch;
 use yii\base\ModelEvent;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -261,35 +262,43 @@ class SAdSearchController extends CrudController
                 'page' => $page,
             ]);
         });
-//
-        $matchesCount = $adSearch->getMatches()->count();
+
+        $rowButtons[] = [
+            'callback_data' => SAdController::createRoute(),
+            'text' => Emoji::BACK,
+        ];
+
+        $rowButtons[] = [
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
+        ];
+
+        $matchesCount = AdSearchMatch::find()
+            ->joinWith('adSearch')
+            ->andWhere([
+                AdSearch::tableName() . '.user_id' => $user->id,
+                AdSearch::tableName() . '.section' => $adSection,
+            ])
+            ->count();
 
         if ($matchesCount) {
-            $buttons[][] = [
-                'callback_data' => self::createRoute('matches', [
-                    'adSearchId' => $adSearchId,
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('section-matches', [
+                    'adSection' => $adSection,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
         }
-//
-        $buttons[] = [
-            [
-                'callback_data' => SAdController::createRoute(),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-            [
-                'callback_data' => self::createRoute('create', [
-                    'adSection' => $adSection,
-                    'm' => $this->getModelName(AdSearch::class),
-                ]),
-                'text' => Emoji::ADD,
-            ],
+
+        $rowButtons[] = [
+            'callback_data' => self::createRoute('create', [
+                'adSection' => $adSection,
+                'm' => $this->getModelName(AdSearch::class),
+            ]),
+            'text' => Emoji::ADD,
         ];
+
+        $buttons[] = $rowButtons;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -828,7 +837,7 @@ class SAdSearchController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('status', [
-                    'adSearchId' => $adSearchId,
+                    'adSearchId' => $adSearch->id,
                 ]),
                 'text' => Yii::t('bot', 'Status') . ': ' . ($adSearch->isActive() ? 'ON' : 'OFF'),
             ]
@@ -839,7 +848,7 @@ class SAdSearchController extends CrudController
         if ($matchesCount) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('matches', [
-                    'adSearchId' => $adSearchId,
+                    'adSearchId' => $adSearch->id,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
@@ -859,13 +868,13 @@ class SAdSearchController extends CrudController
             [
                 'callback_data' => self::createRoute('u', [
                     'm' => $this->getModelName(AdSearch::class),
-                    'i' => $adSearchId,
+                    'i' => $adSearch->id,
                 ]),
                 'text' => Emoji::EDIT,
             ],
             [
                 'callback_data' => self::createRoute('delete', [
-                    'adSearchId' => $adSearchId,
+                    'adSearchId' => $adSearch->id,
                 ]),
                 'text' => Emoji::DELETE,
             ],
@@ -878,7 +887,7 @@ class SAdSearchController extends CrudController
                     'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
                     'adSearch' => $adSearch,
                     'currency' => isset($adSearch->currency_id) ? Currency::findOne($adSearch->currency_id) : null,
-                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat,$adSearch->location_lon),
+                    'locationLink' => ExternalLink::getOSMLink($adSearch->location_lat, $adSearch->location_lon),
                     'showDetailedInfo' => true,
                 ]),
                 $buttons,
@@ -1525,12 +1534,24 @@ class SAdSearchController extends CrudController
 
     public function actionMatches($adSearchId, $page = 1)
     {
-        $adSearch = AdSearch::findOne($adSearchId);
+        $user = $this->getUser();
+
+        $adSearch = $user->getAdSearches()
+            ->where([
+                'user_id' => $user->id,
+                'id' => $adSearchId,
+            ])
+            ->one();
+
+        if (!isset($adSearch)) {
+            return [];
+        }
+
         $matchesQuery = $adSearch->getMatches();
         $matchesCount = $matchesQuery->count();
 
         if (!$matchesCount) {
-            return $this->actionView($adSearchId);
+            return $this->actionView($adSearch->id);
         }
 
         $pagination = new Pagination([
@@ -1543,10 +1564,16 @@ class SAdSearchController extends CrudController
             'validatePage' => true,
         ]);
 
+        $adOffer = $matchesQuery->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->one();
+
         $buttons[] = [
             [
                 'text' => $adSearch->title,
-                'callback_data' => self::createRoute('view', ['adSearchId' => $adSearch->id]),
+                'callback_data' => self::createRoute('view', [
+                    'adSearchId' => $adSearch->id,
+                ]),
             ]
         ];
 
@@ -1560,7 +1587,7 @@ class SAdSearchController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('view', [
-                    'adSearchId' => $adSearchId,
+                    'adSearchId' => $adSearch->id,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -1570,9 +1597,86 @@ class SAdSearchController extends CrudController
             ],
         ];
 
-        $adOffer = $matchesQuery->offset($pagination->offset)
+        return $this->getResponseBuilder()
+            ->sendPhotoOrEditMessageTextOrSendMessage(
+                $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
+                $this->render('match', [
+                    'adOffer' => $adOffer,
+                    'user' => TelegramUser::findOne(['user_id' => $adOffer->user_id]),
+                    'currency' => Currency::findOne($adOffer->currency_id),
+                    'sectionName' => AdSection::getAdOfferName($adOffer->section),
+                    'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    public function actionSectionMatches($adSection, $page = 1)
+    {
+        $user = $this->getUser();
+
+        $matchesQuery = AdSearchMatch::find()
+            ->joinWith('adSearch')
+            ->andWhere([
+                AdSearch::tableName() . '.user_id' => $user->id,
+                AdSearch::tableName() . '.section' => $adSection,
+            ]);
+
+        $matchesCount = $matchesQuery->count();
+
+        if (!$matchesCount) {
+            return $this->actionIndex($adSection);
+        }
+
+        $pagination = new Pagination([
+            'totalCount' => $matchesCount,
+            'pageSize' => 1,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $adSearchMatch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+        $adSearch = $adSearchMatch->adSearch;
+        $adOffer = $adSearchMatch->adOffer;
+
+        $buttons[] = [
+            [
+                'text' => $adSearch->title,
+                'callback_data' => self::createRoute('view', [
+                    'adSearchId' => $adSearch->id,
+                ]),
+            ]
+        ];
+
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adSection) {
+            return self::createRoute('section-matches', [
+                'adSection' => $adSection,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', [
+                    'adSection' => $adSection,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
