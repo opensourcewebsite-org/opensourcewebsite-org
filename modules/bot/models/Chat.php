@@ -103,6 +103,14 @@ class Chat extends ActiveRecord
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
-        });
+            });
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGreetingMessage()
+    {
+        return $this->hasOne(BotChatGreetingMessage::class, ['chat_id' => 'id']);
     }
 }
