@@ -84,4 +84,12 @@ class BotChatGreeting extends ActiveRecord
     {
         return $this->hasOne(User::class, ['provider_user_id' => 'provider_user_id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGreetingMessage()
+    {
+        return $this->hasOne(BotChatGreetingMessage::class, ['id' => 'message_id']);
+    }
 }
