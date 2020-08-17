@@ -46,11 +46,11 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => call_user_func(
-                                        function () use($chat) {
+                                        function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
                                             if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE .' '.'Join Hider');
+                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Join Hider');
                                             }
                                             return Yii::t('bot', 'Join Hider');
                                         }
@@ -63,11 +63,11 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => call_user_func(
-                                        function () use($chat) {
+                                        function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
                                             if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE .' '.'Join Captcha');
+                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Join Captcha');
                                             }
                                             return Yii::t('bot', 'Join Captcha');
                                         }
@@ -80,11 +80,11 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => call_user_func(
-                                        function () use($chat) {
+                                        function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
                                             if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE .' '.'Greeting');
+                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Greeting');
                                             }
                                             return Yii::t('bot', 'Greeting');
                                         }
@@ -97,11 +97,11 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => call_user_func(
-                                        function () use($chat) {
+                                        function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
                                             if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE .' '.'Message Filter');
+                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Message Filter');
                                             }
                                             return Yii::t('bot', 'Message Filter');
                                         }
@@ -114,11 +114,11 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => call_user_func(
-                                        function () use($chat) {
+                                        function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::STAR_TOP_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
                                             if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE .' '.'Karma');
+                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Karma');
                                             }
                                             return Yii::t('bot', 'Karma');
                                         }
@@ -131,11 +131,11 @@ class AdminChatController extends Controller
                                         'chatId' => $chatId,
                                     ]),
                                     'text' => call_user_func(
-                                        function () use($chat) {
+                                        function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::VOTE_BAN_STATUS_ON);
                                             if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE .' '.'Vote Ban');
+                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Vote Ban');
                                             }
                                             return Yii::t('bot', 'Vote Ban');
                                         }
