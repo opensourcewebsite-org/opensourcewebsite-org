@@ -13,7 +13,7 @@ use yii\data\Pagination;
 /**
  * Class MySexualityController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MySexualityController extends Controller
 {

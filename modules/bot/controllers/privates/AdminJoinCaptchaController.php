@@ -11,7 +11,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class AdminJoinCaptchaController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class AdminJoinCaptchaController extends Controller
 {

@@ -23,6 +23,11 @@ return [
     'u/<id>' => 'user/profile',
     'user/change-<action>' => 'user/change-<action>',
     'examples/<action>/<id>' => 'examples/<action>',
-//              '<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
-    'data/payment-method/<id>' => 'data/payment-method-show'
+    //'<action:(design-list|design-add|design-edit|design-view)>' => 'moqup/<action>',
+    'data/payment-method/<id>' => 'data/payment-method-view',
+    'data/currency/<id>' => 'data/currency-view',
+
+    '<controller:[-\w]+>/<action:[-\w]+>/<id:\d+>' => '<controller>/<action>',
+    '<controller:[-\w]+>/<action:[-\w]+>/' => '<controller>/<action>',
+    '<controller:[-\w]+>/<action:[-\w]+>' => '<controller>/<action>',
 ];

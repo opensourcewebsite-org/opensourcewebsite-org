@@ -4,7 +4,6 @@ namespace app\modules\bot\components\response\commands;
 
 use Yii;
 use TelegramBot\Api\BotApi;
-use TelegramBot\Api\HttpException;
 
 class DeleteMessageCommand extends Command
 {
@@ -18,17 +17,9 @@ class DeleteMessageCommand extends Command
 
     public function send(BotApi $botApi)
     {
-        $answer = false;
-
-        try {
-            $answer = $botApi->deleteMessage(
-                $this->chatId,
-                $this->messageId
-            );
-        } catch (HttpException $e) {
-            Yii::warning($e);
-        }
-
-        return $answer;
+        return $botApi->deleteMessage(
+            $this->chatId,
+            $this->messageId
+        );
     }
 }

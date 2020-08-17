@@ -43,7 +43,10 @@ class GreetingController extends Controller
                         'message' => $messageSetting->value,
                     ]),
                     [],
-                    true
+                    [
+                        'disablePreview' => true,
+                        'disableNotification' => true,
+                    ]
                 )
                 ->send();
 

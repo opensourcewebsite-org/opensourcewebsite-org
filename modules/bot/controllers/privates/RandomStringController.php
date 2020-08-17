@@ -8,7 +8,7 @@ use app\modules\bot\components\helpers\MessageText;
 /**
  * Class RandomStringController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class RandomStringController extends Controller
 {

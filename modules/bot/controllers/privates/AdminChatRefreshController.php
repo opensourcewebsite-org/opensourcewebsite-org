@@ -13,7 +13,7 @@ use yii\helpers\ArrayHelper;
 /**
  * Class AdminChatController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class AdminChatRefreshController extends Controller
 {

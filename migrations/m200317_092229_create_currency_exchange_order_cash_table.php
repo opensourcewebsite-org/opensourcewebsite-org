@@ -15,8 +15,8 @@ class m200317_092229_create_currency_exchange_order_cash_table extends Migration
         $this->createTable('currency_exchange_order_cash', [
             'id' => $this->primaryKey()->unsigned(),
             'order_id' => $this->integer()->unsigned()->notNull(),
-            'location_lat' => $this->string(255),
-            'location_lon' => $this->string(255),
+            'location_lat' => $this->string(),
+            'location_lon' => $this->string(),
             'location_at' => $this->integer()->unsigned(),
             'delivery_status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
             'delivery_km' => $this->smallInteger()->defaultValue(null),

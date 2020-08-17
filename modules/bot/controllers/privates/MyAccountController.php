@@ -13,7 +13,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class MyAccountController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyAccountController extends Controller
 {
@@ -57,7 +57,9 @@ class MyAccountController extends Controller
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

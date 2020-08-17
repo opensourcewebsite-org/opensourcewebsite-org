@@ -13,7 +13,7 @@ use app\models\ChangeEmailRequest;
 /**
  * Class MyEmailController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyEmailController extends Controller
 {

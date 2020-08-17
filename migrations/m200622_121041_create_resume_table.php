@@ -24,8 +24,8 @@ class m200622_121041_create_resume_table extends Migration
             'currency_id' => $this->integer()->unsigned()->notNull(),
             'expectations' => $this->text(),
             'skills' => $this->text(),
-            'location_lat' => $this->string(255),
-            'location_lon' => $this->string(255),
+            'location_lat' => $this->string(),
+            'location_lon' => $this->string(),
             'created_at' => $this->integer()->unsigned()->notNull(),
             'renewed_at' => $this->integer()->unsigned()->notNull(),
             'processed_at' => $this->integer()->unsigned(),
@@ -54,6 +54,7 @@ class m200622_121041_create_resume_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-resume-user_id', '{{%resume}}');
+
         $this->dropForeignKey(
             'fk-resume_currency_id-currency_id',
             '{{%resume}}'

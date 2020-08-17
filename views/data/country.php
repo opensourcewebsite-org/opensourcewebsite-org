@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\widgets\LinkPager;
 
 ?>
-
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Countries</h3>
@@ -40,10 +39,10 @@ use yii\widgets\LinkPager;
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?= $model->id ?></td>
-                        <td><?php echo $model->name ?? null; ?></td>
-                        <td><?php echo $model->code ?? null; ?></td>
-                        <td><?php echo $model->slug ?? null; ?></td>
-                        <td><?php echo Html::a($model->wikipedia, $model->wikipedia); ?></td>
+                        <td><?= $model->name ?? null; ?></td>
+                        <td><?= $model->code ?? null; ?></td>
+                        <td><?= $model->slug ?? null; ?></td>
+                        <td><?= Html::a($model->wikipedia, $model->wikipedia); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

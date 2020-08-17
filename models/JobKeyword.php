@@ -1,10 +1,7 @@
 <?php
 
+namespace app\models;
 
-namespace app\modules\bot\models;
-
-use app\models\Resume;
-use app\models\Vacancy;
 use yii\db\ActiveRecord;
 
 /**

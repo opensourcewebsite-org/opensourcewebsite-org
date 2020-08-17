@@ -281,7 +281,7 @@ class Module extends \yii\base\Module
             ? $this->userState->getName()
             : null;
 
-        // в персональном чате все сообщения пользователя надо удалять
+        // delete all user messages in private chat
         if ($this->telegramChat->isPrivate() && $this->update->getMessage()) {
             $commands = ResponseBuilder::fromUpdate($this->update)->deleteMessage()->build();
             $deleteCommand = array_pop($commands);
@@ -291,6 +291,7 @@ class Module extends \yii\base\Module
         $defaultRoute = $this->telegramChat->isPrivate()
             ? 'default/delete-message'
             : 'message/index';
+
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
 
         if (array_key_exists('botname', $params) && !empty($params['botname']) && $params['botname'] !== $this->botInfo->name) {
@@ -318,7 +319,7 @@ class Module extends \yii\base\Module
                 foreach ($commands as $command) {
                     try {
                         $command->send($this->botApi);
-                        // В приватном чате запомним id сообщения для сохранения в userState чтобы в следующий раз можно было удалить их все
+                        // remember ids of all bot messages in private chat to delete them later
                         if ($this->telegramChat->isPrivate()) {
                             if ($messageId = $command->getMessageId()) {
                                 $privateMessageIds []= $messageId;

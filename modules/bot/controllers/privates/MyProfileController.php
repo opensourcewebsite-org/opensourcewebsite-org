@@ -13,7 +13,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class MyProfileController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyProfileController extends Controller
 {
@@ -108,7 +108,9 @@ class MyProfileController extends Controller
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

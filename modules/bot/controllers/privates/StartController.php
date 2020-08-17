@@ -33,11 +33,11 @@ class StartController extends Controller
                     [
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                            'text' => '👼 ' . Yii::t('bot', 'Donate'),
+                            'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
                         ],
                         [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => '👨‍🚀 ' . Yii::t('bot', 'Contribute'),
+                            'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],
                     [
@@ -51,7 +51,9 @@ class StartController extends Controller
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

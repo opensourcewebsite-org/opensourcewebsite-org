@@ -11,7 +11,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class AdminGreetingController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\privates
  */
 class AdminGreetingController extends Controller
 {
@@ -67,7 +67,9 @@ class AdminGreetingController extends Controller
                             ],
                         ]
                     ],
-                    true
+                    [
+                        'disablePreview' => true,
+                    ]
             )
             ->build();
     }

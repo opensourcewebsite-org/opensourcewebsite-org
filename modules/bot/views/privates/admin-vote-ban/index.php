@@ -4,4 +4,4 @@
 <br/>
 <b><?= Yii::t('bot', 'Available commands in the group') ?>:</b><br/>
 <br/>
-  ▪️ <?= Yii::t('bot', 'Send a reply <code>voteban</code> to a message of any member, excludes administrators, to vote to ban or kick a member'); ?>.<br/>
+  ▪️ <?= Yii::t('bot', 'Send a reply <code>{0}</code> to a message of any member, excludes administrators, to vote to ban or kick a member', 'voteban'); ?>.<br/>

@@ -135,13 +135,13 @@ class BotController extends Controller implements CronChainedInterface
 
                         try {
                             $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
                             echo 'ERROR: BotChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
 
                         try {
                             $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
                             echo 'ERROR: BotChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
                         }
                         $updatesCount++;
@@ -182,7 +182,7 @@ class BotController extends Controller implements CronChainedInterface
 
                         try {
                             $botApi->deleteMessage($record->chat->chat_id, $record->message_id);
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
                             echo 'ERROR: BotChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
                         $updatesCount++;

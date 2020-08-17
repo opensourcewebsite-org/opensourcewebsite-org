@@ -28,4 +28,6 @@ class Emoji
     public const DISLIKE = '👎';
     public const KICK_VOTE = '🔫';
     public const SAVE_VOTE = '👼';
+    public const DONATE = '👼';
+    public const CONTRIBUTE = '👨‍🚀';
 }

@@ -3,6 +3,7 @@
 use yii\widgets\LinkPager;
 use yii\widgets\Breadcrumbs;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'Payment Method');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Payment methods'), 'url' => ['payment-method']];
@@ -64,7 +65,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                 <?php foreach ($currencies as $currency) : ?>
                     <tr>
                         <td><?= $currency->id; ?></td>
-                        <td><?= $currency->name; ?></td>
+                        <td><?= Html::a($currency->name, ['data/currency/' . $currency->id]); ?></td>
                         <td><?= $currency->code; ?></td>
                         <td><?= $currency->symbol; ?></td>
                     </tr>

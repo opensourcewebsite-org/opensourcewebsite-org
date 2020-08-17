@@ -77,8 +77,8 @@ class TopController extends Controller
                     'users' => $users,
                 ]),
                 [],
-                false,
                 [
+                    'disableNotification' => true,
                     'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
@@ -131,11 +131,10 @@ class TopController extends Controller
 
         if ($votings) {
             foreach ($votings as $voting) {
-                try {
-                    $this->getBotApi()->deleteMessage($chat->chat_id, $voting->voting_message_id);
-                } catch (HttpException $e) {
-                    echo 'ERROR: Public ' . $this->id . '/' . $this->action->id . ' MessageId ' . $voting->voting_message_id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                }
+                $this->getBotApi()->deleteMessage(
+                    $chat->chat_id,
+                    $voting->voting_message_id
+                );
 
                 $voting->delete();
             }
@@ -151,11 +150,10 @@ class TopController extends Controller
             $voting->save();
         }
 
-        try {
-            $this->getBotApi()->deleteMessage($chat->chat_id, $messageId);
-        } catch (HttpException $e) {
-            echo 'ERROR: Public ' . $this->id . '/' . $this->action->id . ' MessageId ' . $messageId . ' (deleteMessage): ' . $e->getMessage() . "\n";
-        }
+        $this->getBotApi()->deleteMessage(
+            $chat->chat_id,
+            $messageId
+        );
 
         return [];
     }
@@ -195,16 +193,16 @@ class TopController extends Controller
     private function addOrChangeVote(int $messageId, int $estimate)
     {
         $chat = $this->getTelegramChat();
-        $chatId = $chat->id;
         $user = $this->getTelegramUser();
-        $voterId = $user->provider_user_id;
         $thisMessage = $this->getMessage();
+
+        $voterId = $user->provider_user_id;
 
         if ($this->getUpdate()->getCallbackQuery()) {
             $anyMessageVote = RatingVote::find()
                 ->where([
                     'message_id' => $messageId,
-                    'chat_id' => $chatId
+                    'chat_id' => $chat->id,
                 ])
                 ->one();
 
@@ -217,8 +215,8 @@ class TopController extends Controller
         $vote = RatingVote::find()
             ->where([
                 'message_id' => $messageId,
-                'chat_id' => $chatId,
-                'provider_voter_id' => $voterId
+                'chat_id' => $chat->id,
+                'provider_voter_id' => $voterId,
             ])
             ->one();
 
@@ -246,6 +244,13 @@ class TopController extends Controller
                 'candidate_message_id' => $messageId,
             ])
             ->one();
+
+        // TODO refactoring
+        if (isset($voting)) {
+            $command = $voting->command;
+        } else {
+            $command = $this->getMessage()->getText();
+        }
 
         $likeVotes = RatingVote::find()
             ->where([
@@ -321,7 +326,7 @@ class TopController extends Controller
                         'providerCandidateId' => $candidateId,
                         'userRating' => $ratings[$voterId] ?? 0,
                         'candidateRating' => $ratings[$candidateId] ?? 0,
-                        'command' => $voting->command,
+                        'command' => $command,
                     ]
                 ),
                 $buttons

@@ -75,6 +75,28 @@ class DataController extends Controller
         ]);
     }
 
+    public function actionCurrencyView($id)
+    {
+        $model = Currency::findOne($id);
+
+        if (!$model) {
+            return $this->redirect(['currency']);
+        }
+
+        $currencyRates = $model->getCurrencyRates();
+        $countQuery = clone $currencyRates;
+        $pages =  new Pagination(['totalCount' => $countQuery->count()]);
+        $currencyRatesModels = $currencyRates->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('currency-view', [
+            'currencyRates' => $currencyRatesModels,
+            'pages' => $pages,
+            'model' => $model,
+        ]);
+    }
+
     public function actionLanguage()
     {
         $language = Language::find();
@@ -105,9 +127,14 @@ class DataController extends Controller
         ]);
     }
 
-    public function actionPaymentMethodShow($id)
+    public function actionPaymentMethodView($id)
     {
         $model = PaymentMethod::findOne($id);
+
+        if (!$model) {
+            return $this->redirect(['payment-method']);
+        }
+
         $currencies = $model->getCurrencies();
         $countQuery = clone $currencies;
         $pages =  new Pagination(['totalCount' => $countQuery->count()]);

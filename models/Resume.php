@@ -5,8 +5,6 @@ namespace app\models;
 use Yii;
 use app\models\queries\ResumeQuery;
 use app\models\User as GlobalUser;
-use app\modules\bot\models\JobKeyword;
-use app\modules\bot\models\JobMatch;
 use app\modules\bot\validators\RadiusValidator;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -137,9 +135,7 @@ class Resume extends ActiveRecord
     public function getMatches()
     {
         return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
-            ->viaTable('{{%job_match}}', ['resume_id' => 'id'], function ($query) {
-                $query->andWhere(['or', ['type' => 0], ['type' => 2]]);
-            });
+            ->viaTable('{{%job_resume_match}}', ['resume_id' => 'id']);
     }
 
     /**
@@ -147,24 +143,32 @@ class Resume extends ActiveRecord
      */
     public function getMatchedVacancies()
     {
-        $query = Vacancy::find()->live()->matchLanguages($this)->matchRadius($this);
+        $query = Vacancy::find()
+            ->live()
+            ->matchLanguages($this)
+            ->matchRadius($this)
+            ->andWhere([
+                '!=', Vacancy::tableName() . '.user_id', $this->user_id,
+            ]);
 
-        return $query->andWhere(['!=', Vacancy::tableName() . '.user_id', $this->user_id]);
+        return $query;
     }
 
     /**
      * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getAllMatches()
+    public function getCounterMatches()
     {
         return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
-            ->viaTable('{{%job_match}}', ['resume_id' => 'id']);
+            ->viaTable('{{%job_vacancy_match}}', ['resume_id' => 'id']);
     }
 
     public function updateMatches()
     {
-        $this->unlinkAll('allMatches', true);
+        $this->unlinkAll('matches', true);
+        $this->unlinkAll('counterMatches', true);
+
         $vacanciesQuery = $this->getMatchedVacancies();
 
         $vacanciesQueryNoRateQuery = clone $vacanciesQuery;
@@ -184,15 +188,16 @@ class Resume extends ActiveRecord
             );
 
             foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
-                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_BOTH]);
+                $this->link('matches', $vacancy);
+                $this->link('counterMatches', $vacancy);
             }
 
             foreach ($vacanciesQueryNoRateQuery->all() as $vacancy) {
-                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_THEY]);
+                $this->link('counterMatches', $vacancy);
             }
         } else {
             foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
-                $this->link('matches', $vacancy, ['type' => JobMatch::TYPE_SELF]);
+                $this->link('matches', $vacancy);
             }
         }
     }
@@ -220,10 +225,12 @@ class Resume extends ActiveRecord
     {
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
+            $this->unlinkAll('counterMatches', true);
 
             $this->setAttributes([
                 'processed_at' => null,
             ]);
+
             $this->save();
         }
     }
@@ -257,8 +264,7 @@ class Resume extends ActiveRecord
      */
     public function getGlobalUser()
     {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
-            ->viaTable('{{%bot_user}}', ['id' => 'user_id']);
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
     }
 
     /**
@@ -277,6 +283,7 @@ class Resume extends ActiveRecord
         if (isset($changedAttributes['status'])) {
             if ($this->status == self::STATUS_OFF) {
                 $this->unlinkAll('matches', true);
+                $this->unlinkAll('counterMatches', true);
             } elseif ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
                 $this->status = self::STATUS_OFF;
                 $this->save();

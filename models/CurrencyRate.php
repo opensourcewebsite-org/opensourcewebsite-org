@@ -48,4 +48,20 @@ class CurrencyRate extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
         ];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFromCurrency()
+    {
+        return $this->hasOne(Currency::className(), ['id' => 'from_currency_id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getToCurrency()
+    {
+        return $this->hasOne(Currency::className(), ['id' => 'to_currency_id']);
+    }
 }

@@ -10,7 +10,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class MyLocationController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyLocationController extends Controller
 {

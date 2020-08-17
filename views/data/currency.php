@@ -1,9 +1,9 @@
 <?php
 
 use yii\widgets\LinkPager;
+use yii\helpers\Html;
 
 ?>
-
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Currencies</h3>
@@ -38,9 +38,9 @@ use yii\widgets\LinkPager;
                 <?php foreach ($models as $key => $model) : ?>
                     <tr>
                         <td><?= $model->id ?></td>
-                        <td><?php echo $model->name ?? null; ?></td>
-                        <td><?php echo $model->code ?? null; ?></td>
-                        <td><?php echo $model->symbol ?? null; ?></td>
+                        <td><?= Html::a($model->name, ['data/currency/' . $model->id]); ?></td>
+                        <td><?= $model->code ?? null; ?></td>
+                        <td><?= $model->symbol ?? null; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

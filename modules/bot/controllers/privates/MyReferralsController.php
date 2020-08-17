@@ -9,7 +9,7 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class MyReferralsController
  *
- * @package app\modules\bot\controllers
+ * @package app\modules\bot\controllers\privates
  */
 class MyReferralsController extends Controller
 {
@@ -49,7 +49,9 @@ class MyReferralsController extends Controller
                         ],
                     ],
                 ],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
