@@ -6,8 +6,6 @@ use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
-use TelegramBot\Api\BotApi;
 
 /**
  * Class MyBirthdayController

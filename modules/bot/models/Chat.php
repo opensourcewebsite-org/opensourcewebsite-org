@@ -1,6 +1,8 @@
 <?php
+
 namespace app\modules\bot\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -59,7 +61,22 @@ class Chat extends ActiveRecord
 
     public function getSetting($setting)
     {
-        return $this->getSettings()->where(['setting' => $setting])->one();
+        $chatSetting = $this->getSettings()
+            ->where([
+                'setting' => $setting,
+            ])
+            ->one();
+
+        if (!isset($chatSetting)) {
+            $chatSetting = new ChatSetting();
+
+            $chatSetting->setAttributes([
+                'chat_id' => $this->id,
+                'setting' => $setting,
+            ]);
+        }
+
+        return $chatSetting;
     }
 
     public function getUsers()

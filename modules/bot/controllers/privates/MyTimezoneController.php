@@ -3,9 +3,9 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
-use app\modules\bot\components\Controller as Controller;
 use app\components\helpers\TimeHelper;
 use app\modules\bot\components\helpers\Emoji;
 
@@ -39,6 +39,10 @@ class MyTimezoneController extends Controller
                         [
                             'callback_data' => MyProfileController::createRoute(),
                             'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                         [
                             'callback_data' => self::createRoute('list'),

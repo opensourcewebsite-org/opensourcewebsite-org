@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
@@ -23,6 +24,7 @@ class EditMessageTextCommand extends MessageTextCommand
     public function send(BotApi $botApi)
     {
         $answer = false;
+
         try {
             $answer = $botApi->editMessageText(
                 $this->chatId,
@@ -37,6 +39,7 @@ class EditMessageTextCommand extends MessageTextCommand
         } catch (HttpException $e) {
             Yii::warning($e);
         }
+
         return $answer;
     }
 }

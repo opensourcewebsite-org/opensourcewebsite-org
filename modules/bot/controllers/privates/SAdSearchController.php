@@ -3,14 +3,13 @@
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
-use app\behaviors\SetDefaultCurrencyBehavior;
 use app\modules\bot\components\crud\CrudController;
+use app\behaviors\SetDefaultCurrencyBehavior;
 use app\behaviors\SetAttributeValueBehavior;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\models\AdSearchKeyword;
 use app\modules\bot\validators\RadiusValidator;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\AdSection;
@@ -282,7 +281,7 @@ class SAdSearchController extends CrudController
             ];
         }
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
                     'index',
@@ -313,7 +312,7 @@ class SAdSearchController extends CrudController
 
         $this->getState()->setName(self::createRoute('title-send'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-title'),
                 [
@@ -350,7 +349,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('description-send'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-description'),
                 [
@@ -403,7 +402,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('keywords'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-keywords'),
                 [
@@ -533,7 +532,7 @@ class SAdSearchController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-currency'),
                 $buttons
@@ -552,7 +551,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('max-price-send'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
                     'edit-max-price',
@@ -640,7 +639,7 @@ class SAdSearchController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-currency'),
                 $buttons
@@ -703,7 +702,7 @@ class SAdSearchController extends CrudController
 
         $this->getState()->setName(self::createRoute('location-send'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-location'),
                 $buttons
@@ -753,7 +752,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('radius'));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-radius'),
                 [
@@ -880,7 +879,7 @@ class SAdSearchController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
                     'show',
@@ -912,7 +911,7 @@ class SAdSearchController extends CrudController
 
         $adSearch = AdSearch::findOne($adSearchId);
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
                     'show',
@@ -1017,7 +1016,7 @@ class SAdSearchController extends CrudController
             )
         );
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-title'),
                 [
@@ -1072,7 +1071,7 @@ class SAdSearchController extends CrudController
             )
         );
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-description'),
                 [
@@ -1233,7 +1232,7 @@ class SAdSearchController extends CrudController
             ],
         ];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-currency'),
                 $buttons
@@ -1266,7 +1265,7 @@ class SAdSearchController extends CrudController
 
         $this->getState()->setName(self::createRoute('edit-max-price-set', ['adSearchId' => $adSearchId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render(
                     'edit-max-price',
@@ -1331,7 +1330,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-keywords', ['adSearchId' => $adSearchId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-keywords'),
                 [
@@ -1421,7 +1420,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-location-send', ['adSearchId' => $adSearchId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-location'),
                 [
@@ -1504,7 +1503,7 @@ class SAdSearchController extends CrudController
     {
         $this->getState()->setName(self::createRoute('new-radius', ['adSearchId' => $adSearchId]));
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('edit-radius'),
                 [
@@ -1656,7 +1655,7 @@ class SAdSearchController extends CrudController
             ->limit($pagination->limit)
             ->all()[0];
 
-        return ResponseBuilder::fromUpdate($this->getUpdate())
+        return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
                 $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
                 $this->render(

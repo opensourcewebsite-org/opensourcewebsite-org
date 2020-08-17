@@ -2,8 +2,6 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\models\BotChatGreeting;
-use app\modules\bot\models\BotChatGreetingMessage;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
@@ -29,59 +27,52 @@ class AdminGreetingController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
-
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-
-            $statusSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::GREETING_STATUS,
-                'value' => ChatSetting::GREETING_STATUS_OFF,
-            ]);
-
-            $statusSetting->save();
-        }
-
         $chatTitle = $chat->title;
+
+        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
         $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
-        $chatGreetingMessage = $chat->getGreetingMessage()->one();
+
+        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'telegramUser', 'chatGreetingMessage')),
+                $this->render('index', compact('chatTitle', 'telegramUser', 'messageSetting')),
                 [
                         [
                             [
-                                'callback_data' => self::createRoute('update', [
+                                'callback_data' => self::createRoute('set-status', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
                             ],
                         ],
-                    [
                         [
-                            'callback_data' => self::createRoute('message', [
-                                'chatId' => $chatId,
-                            ]),
-                            'text' => Yii::t('bot', 'Message'),
+                            [
+                                'callback_data' => self::createRoute('set-message', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => Yii::t('bot', 'Message'),
+                            ],
                         ],
-                    ],
-
-                    [
+                        [
                             [
                                 'callback_data' => AdminChatController::createRoute('index', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Emoji::BACK,
                             ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
                         ]
                     ],
+                    true
             )
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -102,13 +93,21 @@ class AdminGreetingController extends Controller
         return $this->actionIndex($chatId);
     }
 
-    public function actionMessage($chatId)
+    public function actionSetMessage($chatId = null)
     {
-        $this->getState()->setName(self::createRoute('save', ['chatId' => $chatId]));
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $this->getState()->setName(self::createRoute('save-message', [
+                'chatId' => $chatId,
+            ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('enter-message'),
+                $this->render('set-message'),
                 [
                     [
                         [
@@ -117,13 +116,13 @@ class AdminGreetingController extends Controller
                             ]),
                             'text' => Emoji::BACK,
                         ],
-                    ],
+                    ]
                 ]
             )
             ->build();
     }
 
-    public function actionSave($chatId)
+    public function actionSaveMessage($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -132,42 +131,24 @@ class AdminGreetingController extends Controller
         }
 
         $text = $this->getUpdate()->getMessage()->getText();
-        $user = $this->getTelegramUser();
+        $text = strip_tags($text);
+        // TODO Convert markdown to html tags
+        $textLenght = strlen($text);
 
-        $botChatGreetingMessage = BotChatGreetingMessage::findOne([
-            'chat_id' => $chat->id,
-        ]);
-
-        if (!isset($botChatGreetingMessage)) {
-            $botChatGreetingMessage = new BotChatGreetingMessage();
+        if (!(($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX))) {
+            return $this->getResponseBuilder()
+                ->deleteMessage()
+                ->build();
         }
 
-        $botChatGreetingMessage->setAttributes([
-          'chat_id' => $chat->id,
-          'updated_by' => $user->id,
-          'value' => self::prepareText($text),
+        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+        $messageSetting->value = $text;
+        $messageSetting->save();
+
+        $this->getState()->setName(null);
+
+        return $this->runAction('index', [
+            'chatId' => $chatId,
         ]);
-
-        if ($botChatGreetingMessage->save()) {
-            $botChatGreeting = BotChatGreeting::findOne([
-                'chat_id' => $chat->id
-            ]);
-            if (!isset($botChatGreeting)) {
-                $botChatGreeting = new BotChatGreeting();
-            }
-            $botChatGreeting->setAttributes([
-                'chat_id' =>  $chat->id,
-                'provider_user_id' => $user->provider_user_id,
-                'message_id' => $botChatGreetingMessage->id,
-            ]);
-            $botChatGreeting->save();
-        }
-
-        return $this->actionIndex($chat->id);
-    }
-
-    private static function prepareText(string $text)
-    {
-        return nl2br(strip_tags($text, '<b><i>'));
     }
 }

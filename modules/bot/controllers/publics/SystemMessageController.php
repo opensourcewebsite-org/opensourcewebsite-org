@@ -9,14 +9,13 @@ use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\ChatMember;
-use TelegramBot\Api\HttpException;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\controllers\publics\JoinCaptchaController;
 
 /**
 * Class SystemMessageController
 *
-* @package app\controllers\bot
+* @package app\modules\bot\controllers\publics
 */
 class SystemMessageController extends Controller
 {
@@ -33,8 +32,8 @@ class SystemMessageController extends Controller
         $role = JoinCaptchaController::ROLE_VERIFIED;
 
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
-            // Remove join message
             if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
+                // Remove join message
                 try {
                     $this->getBotApi()->deleteMessage(
                         $telegramChat->chat_id,
@@ -103,6 +102,7 @@ class SystemMessageController extends Controller
             $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
 
             if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
+                // Remove left message
                 try {
                     $this->getBotApi()->deleteMessage(
                         $telegramChat->chat_id,

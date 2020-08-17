@@ -9,7 +9,6 @@ use app\modules\bot\models\ChatMember;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
-use TelegramBot\Api\HttpException;
 
 /**
  * Class AdminChatController
@@ -74,18 +73,18 @@ class AdminChatController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => AdminVoteBanController::createRoute('index', [
+                                    'callback_data' => AdminStarTopController::createRoute('index', [
                                         'chatId' => $chatId,
                                     ]),
-                                    'text' => Yii::t('bot', 'Vote Ban'),
+                                    'text' => Yii::t('bot', 'Karma'),
                                 ],
                             ],
                             [
                                 [
-                                    'callback_data' => AdminStarTopController::createRoute('index', [
+                                    'callback_data' => AdminVoteBanController::createRoute('index', [
                                         'chatId' => $chatId,
                                     ]),
-                                    'text' => Yii::t('bot', 'Star Top'),
+                                    'text' => Yii::t('bot', 'Vote Ban'),
                                 ],
                             ],
                             [

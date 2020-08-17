@@ -26,4 +26,6 @@ class Emoji
     public const POO = '💩';
     public const LIKE = '👍';
     public const DISLIKE = '👎';
+    public const KICK_VOTE = '🔫';
+    public const SAVE_VOTE = '👼';
 }

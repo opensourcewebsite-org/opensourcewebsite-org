@@ -107,9 +107,9 @@ php yii dataGenerator "*, -Contact" --interval=5
 - Используйте [Telegram BotFather](https://t.me/BotFather) для создания нового бота и получения его токена.
 - Установите `baseUrl` в `params.php` для вашего открытого URL с HTTPS.
 - Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `telegramProxy` в `params.php`.
-- Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду для добавления нового бота:
+- Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду:
 ```
-php yii bot/add ТОКЕН
+php yii bot/add [ТОКЕН БОТА]
 ```
 
 Включить Telegram webhooks для всех ботов с `status` = 0:

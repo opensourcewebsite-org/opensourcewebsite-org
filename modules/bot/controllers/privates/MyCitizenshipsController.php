@@ -2,15 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\Controller;
 use app\models\Country;
 use app\models\UserCitizenship;
-use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
-use TelegramBot\Api\BotApi;
 use function foo\func;
 
 /**

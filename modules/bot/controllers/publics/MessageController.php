@@ -7,12 +7,11 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotChatCaptcha;
-use TelegramBot\Api\HttpException;
 
 /**
  * Class MessageController
  *
- * @package app\controllers\bot
+ * @package app\modules\bot\controllers\publics
  */
 class MessageController extends Controller
 {

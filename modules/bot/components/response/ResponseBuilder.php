@@ -16,6 +16,7 @@ use app\modules\bot\components\response\commands\SendPhotoCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Update;
 use yii\helpers\ArrayHelper;
+use TelegramBot\Api\BotApi;
 
 /**
  * Class ResponseBuilder
@@ -27,6 +28,11 @@ class ResponseBuilder
      * @var Update
      */
     private $update;
+
+    /**
+     * @var BotApi
+     */
+    private $botApi;
 
     /**
      * @var array
@@ -321,8 +327,12 @@ class ResponseBuilder
      * @param bool $disablePreview
      * @return $this
      */
-    public function sendMessage(MessageText $messageText, array $replyMarkup = [], bool $disablePreview = false, array $optionalParams = [])
-    {
+    public function sendMessage(
+        MessageText $messageText,
+        array $replyMarkup = [],
+        bool $disablePreview = false,
+        array $optionalParams = []
+    ) {
         $chatId = null;
         if ($message = $this->update->getMessage() ?? $this->update->getEditedMessage()) {
             $chatId = $message->getChat()->getId();
@@ -403,5 +413,41 @@ class ResponseBuilder
     public static function fromUpdate(Update $update)
     {
         return new ResponseBuilder($update);
+    }
+
+    /**
+     * @param Update $update
+     * @return ResponseBuilder
+     */
+    public function setBotApi(BotApi &$botApi)
+    {
+        $this->botApi = $botApi;
+    }
+
+    /**
+     * @return BotApi
+     */
+    protected function getBotApi()
+    {
+        return $this->botApi;
+    }
+
+    public function send()
+    {
+        $answer = false;
+
+        foreach ($this->commands as $command) {
+            try {
+                $answer[] = $command->send($this->botApi);
+            } catch (\Exception $e) {
+                    Yii::error('[' . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
+                }
+            }
+
+        if ($answer && (count($answer) == 1)) {
+            $answer = current($answer);
+        }
+
+        return $answer;
     }
 }

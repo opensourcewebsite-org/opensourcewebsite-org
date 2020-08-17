@@ -54,21 +54,9 @@ class AdminStarTopController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::STAR_TOP_STATUS);
-
-        if (!isset($statusSetting)) {
-            $statusSetting = new ChatSetting();
-
-            $statusSetting->setAttributes([
-                'chat_id' => $chatId,
-                'setting' => ChatSetting::STAR_TOP_STATUS,
-                'value' => ChatSetting::STAR_TOP_STATUS_OFF,
-            ]);
-
-            $statusSetting->save();
-        }
-
         $chatTitle = $chat->title;
+
+        $statusSetting = $chat->getSetting(ChatSetting::STAR_TOP_STATUS);
         $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
 
         return $this->getResponseBuilder()
@@ -77,7 +65,7 @@ class AdminStarTopController extends Controller
                 [
                         [
                             [
-                                'callback_data' => self::createRoute('update', [
+                                'callback_data' => self::createRoute('set-status', [
                                     'chatId' => $chatId,
                                 ]),
                                 'text' => Yii::t('bot', 'Status') . ': ' . Yii::t('bot', ($statusOn ? 'ON' : 'OFF')),
@@ -106,13 +94,17 @@ class AdminStarTopController extends Controller
                                 ]),
                                 'text' => Emoji::BACK,
                             ],
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
+                            ],
                         ]
                 ]
             )
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
+    public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
