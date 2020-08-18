@@ -941,7 +941,9 @@ abstract class CrudController extends Controller
             ->editMessageTextOrSendMessage(
                 $messageText,
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -1017,7 +1019,9 @@ abstract class CrudController extends Controller
                     compact('rule')
                 ),
                 $keyboard ?: [],
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -1701,7 +1705,9 @@ abstract class CrudController extends Controller
                         compact('rule', 'attributeName')
                     ),
                     $buttons,
-                    true
+                    [
+                        'disablePreview' => true,
+                    ]
                 )
                 ->build();
         }
@@ -1868,7 +1874,9 @@ abstract class CrudController extends Controller
                     compact('rule', 'attributeName')
                 ),
                 $buttons,
-                true
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
