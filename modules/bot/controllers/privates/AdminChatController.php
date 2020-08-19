@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\models\ChatSetting;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
+use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
@@ -49,10 +49,8 @@ class AdminChatController extends Controller
                                         function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
-                                            if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Join Hider');
-                                            }
-                                            return Yii::t('bot', 'Join Hider');
+
+                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Join Hider');
                                         }
                                     ),
                                 ],
@@ -66,10 +64,8 @@ class AdminChatController extends Controller
                                         function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
-                                            if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Join Captcha');
-                                            }
-                                            return Yii::t('bot', 'Join Captcha');
+
+                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Join Captcha');
                                         }
                                     ),
                                 ],
@@ -83,10 +79,8 @@ class AdminChatController extends Controller
                                         function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
-                                            if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Greeting');
-                                            }
-                                            return Yii::t('bot', 'Greeting');
+
+                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Greeting');
                                         }
                                     ),
                                 ],
@@ -100,10 +94,8 @@ class AdminChatController extends Controller
                                         function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
-                                            if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Message Filter');
-                                            }
-                                            return Yii::t('bot', 'Message Filter');
+
+                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Message Filter');
                                         }
                                     ),
                                 ],
@@ -117,10 +109,8 @@ class AdminChatController extends Controller
                                         function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::STAR_TOP_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
-                                            if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Karma');
-                                            }
-                                            return Yii::t('bot', 'Karma');
+
+                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Karma');
                                         }
                                     ),
                                 ],
@@ -134,10 +124,8 @@ class AdminChatController extends Controller
                                         function () use ($chat) {
                                             $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::VOTE_BAN_STATUS_ON);
-                                            if (!$statusOn) {
-                                                return Yii::t('bot', Emoji::INACTIVE . ' ' . 'Vote Ban');
-                                            }
-                                            return Yii::t('bot', 'Vote Ban');
+
+                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Vote Ban');
                                         }
                                     ),
                                 ],

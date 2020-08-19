@@ -119,6 +119,9 @@ class AdminGreetingController extends Controller
                             'text' => Emoji::BACK,
                         ],
                     ]
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();

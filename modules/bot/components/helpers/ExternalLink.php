@@ -8,4 +8,9 @@ class ExternalLink
     {
         return "https://www.openstreetmap.org/#map=14/$latitude/$longitude";
     }
+
+    public static function getBotLink()
+    {
+        return 'https://t.me/opensourcewebsite_bot';
+    }
 }

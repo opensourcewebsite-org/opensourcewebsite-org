@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\publics;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 
 /**
  * Class HelloController
@@ -24,7 +25,7 @@ class HelloController extends Controller
                 [
                         [
                             [
-                                'url' => 'https://t.me/opensourcewebsite_bot',
+                                'url' => ExternalLink::getBotLink(),
                                 'text' => Yii::t('bot', 'Bot'),
                             ],
                         ],
