@@ -103,15 +103,15 @@ class AdMatchController extends Controller implements CronChainedInterface
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update(
-                '{{%ad_search}}',
-                ['processed_at' => null])
+            ->update('{{%ad_search}}', [
+                'processed_at' => null,
+            ])
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update(
-                '{{%ad_offer}}',
-                ['processed_at' => null])
+            ->update('{{%ad_offer}}', [
+                'processed_at' => null,
+            ])
             ->execute();
     }
 }

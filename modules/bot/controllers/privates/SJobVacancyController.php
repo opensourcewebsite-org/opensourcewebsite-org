@@ -43,7 +43,9 @@ class SJobVacancyController extends CrudController
         'responsibilities',
     ];
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     protected function rules()
     {
         return [

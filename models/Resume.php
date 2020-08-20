@@ -25,13 +25,17 @@ class Resume extends ActiveRecord
     const REMOTE_OFF = 0;
     const REMOTE_ON = 1;
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%resume}}';
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -45,7 +49,10 @@ class Resume extends ActiveRecord
                 ],
                 'integer',
             ],
-            ['search_radius', RadiusValidator::class],
+            [
+                'search_radius',
+                RadiusValidator::class,
+            ],
             [
                 [
                     'min_hourly_rate',
@@ -59,7 +66,7 @@ class Resume extends ActiveRecord
                     'name',
                 ],
                 'string',
-                'max' => 256,
+                'max' => 255,
             ],
             [
                 [
@@ -101,14 +108,6 @@ class Resume extends ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrency()
-    {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
-    }
-
     /** @inheritDoc */
     public function behaviors()
     {
@@ -118,6 +117,14 @@ class Resume extends ActiveRecord
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**

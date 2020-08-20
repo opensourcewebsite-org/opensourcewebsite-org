@@ -21,13 +21,16 @@ class AdSearch extends ActiveRecord
 
     public const LIVE_DAYS = 30;
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return 'ad_search';
     }
 
     /**
-     * @return array|array[]
+     * {@inheritdoc}
      */
     public function rules()
     {
@@ -42,8 +45,17 @@ class AdSearch extends ActiveRecord
                 ],
                 'required',
             ],
-            ['pickup_radius', RadiusValidator::class],
-            [['title', 'description', 'location_lat', 'location_lon'], 'string'],
+            [
+                'pickup_radius',
+                RadiusValidator::class,
+            ],
+            [
+                [
+                    'title',
+                    'description',
+                ],
+                'string',
+            ],
             [
                 [
                     'user_id',
@@ -56,11 +68,34 @@ class AdSearch extends ActiveRecord
                 ],
                 'integer',
             ],
-            [['max_price'], 'number'],
+            [
+                [
+                    'max_price',
+                    'location_lat',
+                    'location_lon',
+                ],
+                'double',
+            ],
         ];
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'pickup_radius' => 'Pickup radius',
+                'max_price' => 'Max price',
+            ]
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
@@ -159,27 +194,14 @@ class AdSearch extends ActiveRecord
     {
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
+            $this->unlinkAll('counterMatches', true);
 
-            $this->setAttributes(
-                [
-                    'processed_at' => null,
-                ]
-            );
+            $this->setAttributes([
+                'processed_at' => null,
+            ]);
 
             $this->save();
         }
-    }
-
-    /** @inheritDoc */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(
-            parent::attributeLabels(),
-            [
-                'pickup_radius' => 'Pickup radius',
-                'max_price' => 'Max price',
-            ]
-        );
     }
 
     public function getGlobalUser()
@@ -200,6 +222,7 @@ class AdSearch extends ActiveRecord
     {
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
             $this->unlinkAll('matches', true);
+            $this->unlinkAll('counterMatches', true);
         }
         parent::afterSave($insert, $changedAttributes);
     }

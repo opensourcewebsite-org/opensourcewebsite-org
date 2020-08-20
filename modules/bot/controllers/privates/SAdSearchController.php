@@ -33,7 +33,9 @@ use yii\db\ActiveRecord;
  */
 class SAdSearchController extends CrudController
 {
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     protected function rules()
     {
         return [

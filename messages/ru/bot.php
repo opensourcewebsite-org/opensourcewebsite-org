@@ -356,11 +356,11 @@ return [
     'Send additional message for greeting' => 'Отправьте дополнительное сообщение для приветствия',
     'Don\'t use html tags' => 'Не используйте html теги',
     'Karma' => 'Карма',
-    'Formatting styles' => 'Стили форматирования',
+    'Formatting options' => 'Опции форматирования',
     'bold' => 'жирный',
     'italic' => 'курсив',
     'strike' => 'зачеркнутый',
     'code' => 'код',
     'link title' => 'название ссылки',
-    'link' => 'ссылки',
+    'link' => 'ссылка',
 ];

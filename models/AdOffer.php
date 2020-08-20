@@ -20,22 +20,82 @@ class AdOffer extends ActiveRecord
 
     public const LIVE_DAYS = 30;
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return 'ad_offer';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
-            [['user_id', 'section', 'title', 'location_lat', 'location_lon', 'delivery_radius', 'status'], 'required'],
-            [['title', 'description', 'location_lat', 'location_lon'], 'string'],
-            ['delivery_radius', RadiusValidator::class],
-            [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'processed_at'], 'integer'],
-            [['price'], 'number'],
+            [
+                [
+                    'user_id',
+                    'section',
+                    'title',
+                    'location_lat',
+                    'location_lon',
+                    'delivery_radius',
+                    'status',
+                ],
+                'required',
+            ],
+            [
+                [
+                    'title',
+                    'description',
+                ],
+                'string',
+            ],
+            [
+                'delivery_radius',
+                RadiusValidator::class,
+            ],
+            [
+                [
+                    'user_id',
+                    'currency_id',
+                    'delivery_radius',
+                    'section',
+                    'status',
+                    'created_at',
+                    'processed_at',
+                ],
+                'integer',
+            ],
+            [
+                [
+                    'price',
+                    'location_lat',
+                    'location_lon',
+                ],
+                'double',
+            ],
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(
+            parent::attributeLabels(),
+            [
+                'delivery_radius' => 'Delivery radius',
+            ]
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
@@ -133,6 +193,7 @@ class AdOffer extends ActiveRecord
     {
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
+            $this->unlinkAll('counterMatches', true);
 
             $this->setAttributes([
                 'processed_at' => null,
@@ -211,21 +272,11 @@ class AdOffer extends ActiveRecord
     }
 
     /** @inheritDoc */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(
-            parent::attributeLabels(),
-            [
-                'delivery_radius' => 'Delivery radius',
-            ]
-        );
-    }
-
-    /** @inheritDoc */
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
             $this->unlinkAll('matches', true);
+            $this->unlinkAll('counterMatches', true);
         }
         parent::afterSave($insert, $changedAttributes);
     }

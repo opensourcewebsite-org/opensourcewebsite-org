@@ -30,7 +30,14 @@ class Company extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'address'], 'string', 'max' => 256],
+            [
+                [
+                    'name',
+                    'address',
+                ],
+                'string',
+                'max' => 255,
+            ],
             [
                 ['url'],
                 'filter',

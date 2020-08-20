@@ -25,11 +25,17 @@ class Vacancy extends ActiveRecord
     const REMOTE_OFF = 0;
     const REMOTE_ON = 1;
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%vacancy}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -47,9 +53,9 @@ class Vacancy extends ActiveRecord
             ],
             [
                 [
+                    'max_hourly_rate',
                     'location_lat',
                     'location_lon',
-                    'max_hourly_rate',
                 ],
                 'double',
             ],
@@ -58,7 +64,7 @@ class Vacancy extends ActiveRecord
                     'name',
                 ],
                 'string',
-                'max' => 256,
+                'max' => 255,
             ],
             [
                 [
@@ -102,7 +108,9 @@ class Vacancy extends ActiveRecord
         ];
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [

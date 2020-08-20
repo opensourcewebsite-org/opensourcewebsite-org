@@ -99,15 +99,15 @@ class JobMatchController extends Controller implements CronChainedInterface
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update(
-                '{{%resume}}',
-                ['processed_at' => null])
+            ->update('{{%resume}}', [
+                'processed_at' => null,
+            ])
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update(
-                '{{%vacancy}}',
-                ['processed_at' => null])
+            ->update('{{%vacancy}}', [
+                'processed_at' => null,
+            ])
             ->execute();
     }
 }
