@@ -150,7 +150,7 @@ class SAdSearchController extends CrudController
                         'prepareViewParams' => function ($params) {
                             /** @var AdSearch $model */
                             $model = $params['model'];
-                            $currency = $model->currencyRelation;
+                            $currency = $model->currency;
                             if ($currency) {
                                 $currencyCode = $currency->code;
                             } else {
@@ -209,11 +209,15 @@ class SAdSearchController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        $model->markToUpdateMatches();
-
         return $this->actionView($model->id);
     }
 
+    /**
+     * @param int $adSection
+     * @param int $page
+     *
+     * @return array
+     */
     public function actionIndex($adSection, $page = 1)
     {
         $this->getState()->setName(null);
@@ -230,10 +234,10 @@ class SAdSearchController extends CrudController
                 'title' => SORT_ASC,
             ]);
 
-        $adSearchCount = $adSearchQuery->count();
+        $adSearchesCount = $adSearchQuery->count();
 
         $pagination = new Pagination([
-            'totalCount' => $adSearchCount,
+            'totalCount' => $adSearchesCount,
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -242,8 +246,7 @@ class SAdSearchController extends CrudController
             'validatePage' => true,
         ]);
 
-        $adSearches = $adSearchQuery
-            ->offset($pagination->offset)
+        $adSearches = $adSearchQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -838,10 +841,10 @@ class SAdSearchController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('status', [
+                'text' => Yii::t('bot', 'Status') . ': ' . ($adSearch->isActive() ? 'ON' : 'OFF'),
+                'callback_data' => self::createRoute('set-status', [
                     'adSearchId' => $adSearch->id,
                 ]),
-                'text' => Yii::t('bot', 'Status') . ': ' . ($adSearch->isActive() ? 'ON' : 'OFF'),
             ]
         ];
 
@@ -1311,7 +1314,7 @@ class SAdSearchController extends CrudController
 
         $adSearch->unlinkAll('keywords', true);
 
-        $adSearch->markToUpdateMatches();
+        $adSearch->clearMatches();
 
         return $this->actionView($adSearchId);
     }
@@ -1348,7 +1351,7 @@ class SAdSearchController extends CrudController
                 $adSearch->link('keywords', $adKeyword);
             }
 
-            $adSearch->markToUpdateMatches();
+            $adSearch->clearMatches();
 
             return $this->actionView($adSearchId);
         }
@@ -1428,6 +1431,8 @@ class SAdSearchController extends CrudController
 
             $adSearch->save();
 
+            $adSearch->clearMatches();
+
             return $this->actionView($adSearchId);
         } else {
             return $this->actionEditLocation($adSearchId);
@@ -1502,15 +1507,32 @@ class SAdSearchController extends CrudController
 
             $adSearch->save();
 
-            $adSearch->markToUpdateMatches();
+            $adSearch->clearMatches();
 
             return $this->actionView($adSearchId);
         }
     }
 
-    public function actionStatus($adSearchId)
+    /**
+     * @param $adSearchId
+     *
+     * @return array
+     */
+    public function actionSetStatus($adSearchId)
     {
-        $adSearch = AdSearch::findOne($adSearchId);
+        $user = $this->getUser();
+
+        $adSearch = $user->getAdSearches()
+            ->where([
+                'id' => $adSearchId,
+            ])
+            ->one();
+
+        if (!isset($adSearch)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         $adSearch->setAttributes([
             'status' => ($adSearch->isActive() ? AdSearch::STATUS_OFF : AdSearch::STATUS_ON),
@@ -1518,22 +1540,12 @@ class SAdSearchController extends CrudController
 
         $adSearch->save();
 
-        if ($adSearch->isActive()) {
-            $adSearch->markToUpdateMatches();
-        } else {
-            $adSearch->unlinkAll('matches', true);
-            $adSearch->unlinkAll('counterMatches', true);
-
-            $adSearch->setAttributes([
-                'processed_at' => time(),
-            ]);
-
-            $adSearch->save();
-        }
-
         return $this->actionView($adSearchId);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionMatches($adSearchId, $page = 1)
     {
         $user = $this->getUser();
@@ -1618,6 +1630,9 @@ class SAdSearchController extends CrudController
             ->build();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionSectionMatches($adSection, $page = 1)
     {
         $user = $this->getUser();

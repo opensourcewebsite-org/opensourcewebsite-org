@@ -190,7 +190,7 @@ class AdSearch extends ActiveRecord
         }
     }
 
-    public function markToUpdateMatches()
+    public function clearMatches()
     {
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
@@ -212,18 +212,20 @@ class AdSearch extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCurrencyRelation()
+    public function getCurrency()
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
-            $this->unlinkAll('matches', true);
-            $this->unlinkAll('counterMatches', true);
+            $this->clearMatches();
         }
+
         parent::afterSave($insert, $changedAttributes);
     }
 }

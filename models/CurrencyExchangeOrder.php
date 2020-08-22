@@ -183,4 +183,33 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     {
         return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
     }
+
+    public function getTitle()
+    {
+        return $this->getSellingCurrency->code . '/' . $this->getBuyingCurrency->code;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSellingCurrency()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'selling_currency_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBuyingCurrency()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'buying_currency_id']);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->status == self::STATUS_ON;
+    }
 }

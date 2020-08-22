@@ -918,4 +918,12 @@ class User extends ActiveRecord implements IdentityInterface
             ->viaTable('{{%vacancy}}', ['user_id' => 'id'])
             ->andWhere(['or', ['type' => 0], ['type' => 2]]);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrencyExchangeOrders()
+    {
+        return $this->hasMany(CurrencyExchangeOrder::class, ['user_id' => 'id']);
+    }
 }

@@ -240,8 +240,6 @@ class SJobVacancyController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        $model->markToUpdateMatches();
-
         return $this->actionView($model->id);
     }
 
@@ -360,7 +358,9 @@ class SJobVacancyController extends CrudController
             ->build();
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public function actionView($vacancyId)
     {
         $this->getState()->setName(null);
@@ -394,9 +394,8 @@ class SJobVacancyController extends CrudController
         $buttons[] = [
             [
                 'text' => Yii::t('bot', 'Status') . ': ' . ($vacancy->isActive() ? 'ON' : 'OFF'),
-                'callback_data' => self::createRoute('update-status', [
+                'callback_data' => self::createRoute('set-status', [
                     'vacancyId' => $vacancy->id,
-                    'isEnabled' => !$vacancy->isActive(),
                 ]),
             ],
         ];
@@ -476,6 +475,9 @@ class SJobVacancyController extends CrudController
         return implode(', ', $resultKeywords);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionMatches($vacancyId, $page = 1)
     {
         $user = $this->getUser();
@@ -565,6 +567,9 @@ class SJobVacancyController extends CrudController
             ->build();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionAllMatches($page = 1)
     {
         $user = $this->getUser();
@@ -673,18 +678,31 @@ class SJobVacancyController extends CrudController
         return $this->actionIndex($companyId);
     }
 
-    public function actionUpdateStatus($vacancyId, $isEnabled = false)
+    /**
+     * @param $vacancyId
+     *
+     * @return array
+     */
+    public function actionSetStatus($vacancyId)
     {
-        $vacancy = Vacancy::findOne($vacancyId);
+        $user = $this->getUser();
+
+        $vacancy = $user->getVacancies()
+            ->where([
+                'id' => $vacancyId,
+            ])
+            ->one();
+
         if (!isset($vacancy)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+
         $this->backRoute->make('view', compact('vacancyId'));
         $this->endRoute->make('view', compact('vacancyId'));
 
-        if ($isEnabled && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
+        if (!$resume->isActive() && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('status-error', compact('notFilledFields')),
@@ -693,7 +711,10 @@ class SJobVacancyController extends CrudController
                 ->build();
         }
 
-        $vacancy->setAttribute('status', (int)$isEnabled);
+        $vacancy->setAttributes([
+            'status' => ($vacancy->isActive() ? Vacancy::STATUS_OFF : Vacancy::STATUS_ON),
+        ]);
+
         $vacancy->save();
 
         return $this->actionView($vacancyId);

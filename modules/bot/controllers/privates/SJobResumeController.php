@@ -30,7 +30,9 @@ use yii\db\StaleObjectException;
  */
 class SJobResumeController extends CrudController
 {
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     protected function rules()
     {
         return [
@@ -200,8 +202,6 @@ class SJobResumeController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        $model->markToUpdateMatches();
-
         return $this->actionView($model->id);
     }
 
@@ -306,7 +306,9 @@ class SJobResumeController extends CrudController
         return implode(', ', $resultKeywords);
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public function actionView($resumeId)
     {
         $this->getState()->setName(null);
@@ -326,9 +328,8 @@ class SJobResumeController extends CrudController
         $buttons[] = [
             [
                 'text' => Yii::t('bot', 'Status') . ': ' . ($resume->isActive() ? 'ON' : 'OFF'),
-                'callback_data' => self::createRoute('update-status', [
+                'callback_data' => self::createRoute('set-status', [
                     'resumeId' => $resume->id,
-                    'isEnabled' => !$resume->isActive(),
                 ]),
             ],
         ];
@@ -391,6 +392,9 @@ class SJobResumeController extends CrudController
             ->build();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionMatches($resumeId, $page = 1)
     {
         $user = $this->getUser();
@@ -484,6 +488,9 @@ class SJobResumeController extends CrudController
             ->build();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionAllMatches($page = 1)
     {
         $user = $this->getUser();
@@ -596,23 +603,29 @@ class SJobResumeController extends CrudController
 
     /**
      * @param $resumeId
-     * @param bool $isEnabled
      *
      * @return array
      */
-    public function actionUpdateStatus($resumeId, $isEnabled = false)
+    public function actionSetStatus($resumeId)
     {
-        $resume = Resume::findOne($resumeId);
+        $user = $this->getUser();
+
+        $resume = $user->getResumes()
+            ->where([
+                'id' => $resumeId,
+            ])
+            ->one();
 
         if (!isset($resume)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+
         $this->backRoute->make('view', compact('resumeId'));
         $this->endRoute->make('view', compact('resumeId'));
 
-        if ($isEnabled && ($notFilledFields = $resume->notPossibleToChangeStatus())) {
+        if (!$resume->isActive() && ($notFilledFields = $resume->notPossibleToChangeStatus())) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('status-error', compact('notFilledFields')),
@@ -621,7 +634,10 @@ class SJobResumeController extends CrudController
                 ->build();
         }
 
-        $resume->setAttribute('status', (int)$isEnabled);
+        $resume->setAttributes([
+            'status' => ($resume->isActive() ? Resume::STATUS_OFF : Resume::STATUS_ON),
+        ]);
+
         $resume->save();
 
         return $this->actionView($resumeId);

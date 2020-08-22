@@ -121,11 +121,17 @@ class Vacancy extends ActiveRecord
         ];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getCompany()
     {
         return $this->hasOne(Company::class, ['id' => 'company_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
@@ -213,7 +219,7 @@ class Vacancy extends ActiveRecord
         }
     }
 
-    public function markToUpdateMatches()
+    public function clearMatches()
     {
         if ($this->processed_at !== null) {
             $this->unlinkAll('matches', true);
@@ -225,14 +231,6 @@ class Vacancy extends ActiveRecord
 
             $this->save();
         }
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrencyRelation()
-    {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**
@@ -266,7 +264,7 @@ class Vacancy extends ActiveRecord
      */
     public function getCurrencyCode()
     {
-        $currency = $this->currencyRelation;
+        $currency = $this->currency;
         if ($currency) {
             $currencyCode = $currency->code;
         } else {
@@ -295,18 +293,17 @@ class Vacancy extends ActiveRecord
             ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id']);
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status'])) {
             if ($this->status == self::STATUS_OFF) {
-                 $this->unlinkAll('matches', true);
-                 $this->unlinkAll('counterMatches', true);
-            } elseif ($this->status == self::STATUS_ON && $this->notPossibleToChangeStatus()) {
-                $this->status = self::STATUS_OFF;
-                $this->save();
+                 $this->clearMatches();
             }
         }
+
         parent::afterSave($insert, $changedAttributes);
     }
 
@@ -315,18 +312,14 @@ class Vacancy extends ActiveRecord
      */
     public function notPossibleToChangeStatus()
     {
-        $location = ($this->location_lon && $this->location_lat);
-        $languagesCount = $this->getLanguagesRelation()->count();
-        $canChangeStatus = $languagesCount && ($this->remote_on == self::REMOTE_ON || $location);
         $notFilledFields = [];
-        if (!$canChangeStatus) {
-            if (!$languagesCount) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages'));
-            }
-            if ($this->remote_on == self::REMOTE_OFF) {
-                if (!$location) {
-                    $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
-                }
+
+        if (!$this->getLanguagesRelation()->count()) {
+            $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages'));
+        }
+        if ($this->remote_on == self::REMOTE_OFF) {
+            if (!($this->location_lon && $this->location_lat)) {
+                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
             }
         }
 

@@ -36,7 +36,9 @@ use yii\db\ActiveRecord;
  */
 class SAdOfferController extends CrudController
 {
-    /** @inheritDoc */
+    /**
+     * {@inheritdoc}
+     */
     protected function rules()
     {
         return [
@@ -169,7 +171,7 @@ class SAdOfferController extends CrudController
                         'prepareViewParams' => function ($params) {
                             /** @var AdSearch $model */
                             $model = $params['model'];
-                            $currency = $model->currencyRelation;
+                            $currency = $model->currency;
                             if ($currency) {
                                 $currencyCode = $currency->code;
                             } else {
@@ -228,11 +230,15 @@ class SAdOfferController extends CrudController
      */
     protected function afterSave(ActiveRecord $model, bool $isNew)
     {
-        $model->markToUpdateMatches();
-
         return $this->actionView($model->id);
     }
 
+    /**
+     * @param int $adSection
+     * @param int $page
+     *
+     * @return array
+     */
     public function actionIndex($adSection, $page = 1)
     {
         $this->getState()->setName(null);
@@ -249,10 +255,10 @@ class SAdOfferController extends CrudController
                 'title' => SORT_ASC,
             ]);
 
-        $adOfferCount = $adOfferQuery->count();
+        $adOffersCount = $adOfferQuery->count();
 
         $pagination = new Pagination([
-            'totalCount' => $adOfferCount,
+            'totalCount' => $adOffersCount,
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -472,10 +478,10 @@ class SAdOfferController extends CrudController
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('status', [
+                'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
+                'callback_data' => self::createRoute('set-status', [
                     'adOfferId' => $adOffer->id,
                 ]),
-                'text' => Yii::t('bot', 'Status') . ': ' . ($adOffer->isActive() ? 'ON' : 'OFF'),
             ]
         ];
 
@@ -535,6 +541,9 @@ class SAdOfferController extends CrudController
             ->build();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionMatches($adOfferId, $page = 1)
     {
         $user = $this->getUser();
@@ -617,6 +626,9 @@ class SAdOfferController extends CrudController
             ->build();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function actionSectionMatches($adSection, $page = 1)
     {
         $user = $this->getUser();
@@ -916,7 +928,7 @@ class SAdOfferController extends CrudController
 
         $adOffer->unlinkAll('keywords', true);
 
-        $adOffer->markToUpdateMatches();
+        $adOffer->clearMatches();
 
         return $this->actionView($adOfferId);
     }
@@ -954,7 +966,7 @@ class SAdOfferController extends CrudController
                 $adOffer->link('keywords', $adKeyword);
             }
 
-            $adOffer->markToUpdateMatches();
+            $adOffer->clearMatches();
 
             return $this->actionView($adOfferId);
         } else {
@@ -1206,7 +1218,7 @@ class SAdOfferController extends CrudController
 
             $adOffer->save();
 
-            $adOffer->markToUpdateMatches();
+            $adOffer->clearMatches();
         }
 
         return $this->actionView($adOfferId);
@@ -1278,36 +1290,38 @@ class SAdOfferController extends CrudController
 
             $adOffer->save();
 
-            $adOffer->markToUpdateMatches();
+            $adOffer->clearMatches();
 
             return $this->actionView($adOfferId);
         }
     }
 
-    public function actionStatus($adOfferId)
+    /**
+     * @param $adOfferId
+     *
+     * @return array
+     */
+    public function actionSetStatus($adOfferId)
     {
-        $adOffer = AdOffer::findOne($adOfferId);
+        $user = $this->getUser();
 
-        if ($adOffer->isActive()) {
-            $adOffer->status = AdOffer::STATUS_OFF;
-        } else {
-            $adOffer->status = AdOffer::STATUS_ON;
+        $adOffer = $user->getAdOffers()
+            ->where([
+                'id' => $adOfferId,
+            ])
+            ->one();
+
+        if (!isset($adOffer)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
+
+        $adOffer->setAttributes([
+            'status' => ($adOffer->isActive() ? AdOffer::STATUS_OFF : AdOffer::STATUS_ON),
+        ]);
 
         $adOffer->save();
-
-        if ($adOffer->isActive()) {
-            $adOffer->markToUpdateMatches();
-        } else {
-            $adOffer->unlinkAll('matches', true);
-            $adOffer->unlinkAll('counterMatches', true);
-
-            $adOffer->setAttributes([
-                'processed_at' => time(),
-            ]);
-
-            $adOffer->save();
-        }
 
         return $this->actionView($adOfferId);
     }
