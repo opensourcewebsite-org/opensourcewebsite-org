@@ -72,7 +72,7 @@ class AdminGreetingController extends Controller
                             ],
                         ]
                     ],
-                    [
+                [
                         'disablePreview' => true,
                     ]
             )
