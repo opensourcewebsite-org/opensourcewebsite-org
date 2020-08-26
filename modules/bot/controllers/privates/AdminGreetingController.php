@@ -2,11 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\EntityDecoder;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
+use cebe\markdown\GithubMarkdown;
 
 /**
  * Class AdminGreetingController
@@ -34,9 +36,12 @@ class AdminGreetingController extends Controller
 
         $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
 
+        $parser = new GithubMarkdown();
+        $message = $parser->parseParagraph($messageSetting->value);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'telegramUser', 'messageSetting')),
+                $this->render('index', compact('chatTitle', 'telegramUser', 'message')),
                 [
                         [
                             [
@@ -67,7 +72,7 @@ class AdminGreetingController extends Controller
                             ],
                         ]
                     ],
-                    [
+                [
                         'disablePreview' => true,
                     ]
             )
@@ -135,8 +140,10 @@ class AdminGreetingController extends Controller
             return [];
         }
 
-        $text = $this->getUpdate()->getMessage()->getText();
-        $text = strip_tags($text);
+        $update = $this->getUpdate()->getMessage();//->getText();
+        $entityDecoder = new EntityDecoder($update, 'markdown'); // or 'html'
+        $decodedText   = $entityDecoder->decode();
+        $text = strip_tags($decodedText);
         // TODO Convert markdown to html tags
         $textLenght = strlen($text);
 
