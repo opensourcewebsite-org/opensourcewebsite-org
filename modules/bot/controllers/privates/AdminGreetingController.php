@@ -141,9 +141,9 @@ class AdminGreetingController extends Controller
         }
 
         $update = $this->getUpdate()->getMessage();//->getText();
-        $entity_decoder = new EntityDecoder($update, 'markdown'); // or 'html'
-        $decoded_text   = $entity_decoder->decode();
-        $text = strip_tags($decoded_text);
+        $entityDecoder = new EntityDecoder($update, 'markdown'); // or 'html'
+        $decodedText   = $entityDecoder->decode();
+        $text = strip_tags($decodedText);
         // TODO Convert markdown to html tags
         $textLenght = strlen($text);
 
