@@ -32,7 +32,7 @@ class RadaVotesParserController extends Controller implements CronChainedInterfa
         $response = $client->createRequest()->send();
         if ($response->headers['http-code'] != 200) {
             echo 'Api source not found: ' . $this->sourceURL;
-            exit();
+            return;
         }
         $tempDir = \Yii::$app->runtimePath . '/tmp';
         if (!file_exists($tempDir)) {
@@ -67,7 +67,8 @@ class RadaVotesParserController extends Controller implements CronChainedInterfa
             $zip->close();
         } else {
             echo "Couldn't extract zip";
-            exit();
+            unlink($zipTempPath);
+            return;
         }
         unlink($zipTempPath);
     }
