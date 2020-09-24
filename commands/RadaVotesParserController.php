@@ -10,9 +10,9 @@ use yii\httpclient\Client;
 
 class RadaVotesParserController extends Controller implements CronChainedInterface
 {
-    private $_sourceURL = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/chron-json.zip';
-    private $_eventsStartFrom = '2020-09-01';
-    private $_delimiter = "\n";
+    private $sourceURL = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/chron-json.zip';
+    private $eventsStartFrom = '2020-09-01';
+    private $delimiter = "\n";
 
     public function actionIndex()
     {
@@ -22,53 +22,63 @@ class RadaVotesParserController extends Controller implements CronChainedInterfa
     protected function parser()
     {
         $maxDateEvent = $this->getLatestDateFromDB();
-        if (!$maxDateEvent) $maxDateEvent = $this->_eventsStartFrom;
+        if (!$maxDateEvent) {
+            $maxDateEvent = $this->eventsStartFrom;
+        }
         $maxDateEvent = strtotime($maxDateEvent);
         $client = new Client([
-            'baseUrl' => $this->_sourceURL,
+            'baseUrl' => $this->sourceURL,
         ]);
         $response = $client->createRequest()->send();
         if ($response->headers['http-code'] != 200) {
-            exit('Api source not found: '. $this->_sourceURL);
+            echo 'Api source not found: ' . $this->sourceURL;
+            exit();
         }
-        $tempDir = \Yii::$app->runtimePath. '/tmp';
-        if (!file_exists($tempDir)) mkdir($tempDir, 0777, true);
+        $tempDir = \Yii::$app->runtimePath . '/tmp';
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0777, true);
+        }
         $zipTempPath = tempnam($tempDir, 'temp');
-        if (file_exists($zipTempPath)) unlink($zipTempPath);
+        if (file_exists($zipTempPath)) {
+            unlink($zipTempPath);
+        }
         file_put_contents($zipTempPath, $response->content);
         $zip = new \ZipArchive;
         if ($zip->open($zipTempPath) === true) {
-            for($i = 0; $i < $zip->numFiles; $i++) {
+            for ($i = 0; $i < $zip->numFiles; $i++) {
                 $fileName = $zip->getNameIndex($i);
-                $eventsDate = substr($fileName, 4, 4). '-'. substr($fileName, 2, 2). '-'. substr($fileName, 0, 2);
+                $eventsDate = substr($fileName, 4, 4) . '-' . substr($fileName, 2, 2) . '-' . substr($fileName, 0, 2);
                 if (strtotime($eventsDate) >= $maxDateEvent) {
-                    echo 'Scraping file: '. $fileName. $this->_delimiter;
+                    echo 'Scraping file: ' . $fileName . $this->delimiter;
                     $zip->extractTo($tempDir, $fileName);
                     $dataFPath = $tempDir . '/' . $fileName;
                     if (file_exists($dataFPath)) {
                         try {
                             $this->processEventsFile($dataFPath);
-                        }catch (Exception $e) {
-                            echo 'ERROR: processing result from '. $fileName. ': '. $e->getMessage() . $this->_delimiter;
+                        } catch (Exception $e) {
+                            echo 'ERROR: processing result from ' . $fileName . ': ' . $e->getMessage() . $this->delimiter;
                         }
                         unlink($dataFPath);
-                    }else {
-                        echo "Couldn't fetch file: ". $dataFPath. $this->_delimiter;
+                    } else {
+                        echo "Couldn't fetch file: " . $dataFPath . $this->delimiter;
                     }
                 }
             }
             $zip->close();
         } else {
-            exit("Couldn't extract zip");
+            echo "Couldn't extract zip";
+            exit();
         }
         unlink($zipTempPath);
     }
 
-    function getLatestDateFromDb() {
+    private function getLatestDateFromDb()
+    {
         return RadaVote::find()->max('date_event');
     }
 
-    function processEventsFile($fPath) {
+    private function processEventsFile($fPath)
+    {
         $json = json_decode(iconv('windows-1251', 'utf-8', file_get_contents($fPath)), true);
         if (empty($json)) {
             throw new Exception("Couldn't convert to json");
@@ -88,7 +98,7 @@ class RadaVotesParserController extends Controller implements CronChainedInterfa
                             $radaVote->not_voting = (int)$result['not_voting'];
                             $radaVote->date_event = date('Y-m-d', strtotime($event['date_event']));
                             if (!$radaVote->save()) {
-                                echo "Couldn't save vote event: ". $radaVote->id_event. $this->_delimiter;
+                                echo "Couldn't save vote event: " . $radaVote->id_event . $this->delimiter;
                             }
                         }
                     }
@@ -97,7 +107,8 @@ class RadaVotesParserController extends Controller implements CronChainedInterfa
         }
     }
 
-    function isEventExists($eventId) {
+    private function isEventExists($eventId)
+    {
         $result = RadaVote::find()->where([RadaVote::tableName() . '.id_event' => $eventId])->one();
         return $result?true:false;
     }
