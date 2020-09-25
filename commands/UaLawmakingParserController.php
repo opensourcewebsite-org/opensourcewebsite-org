@@ -12,7 +12,6 @@ use yii\httpclient\Client;
 class UaLawmakingParserController extends Controller implements CronChainedInterface
 {
     private $sourceURL = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/chron-json.zip';
-    private $eventsStartFrom = '2020-09-01';
     private $delimiter = "\n";
     const UPDATE_INTERVAL = 60 * 60; // seconds
 
@@ -35,7 +34,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
 
         $maxDateEvent = $this->getLatestDateFromDB();
         if (!$maxDateEvent) {
-            $maxDateEvent = $this->eventsStartFrom;
+            $maxDateEvent = date('Y-m-d');
         }
         $maxDateEvent = strtotime($maxDateEvent);
         $client = new Client([
@@ -46,7 +45,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
             echo 'Api source not found: ' . $this->sourceURL;
             return;
         }
-        $tempDir = \Yii::$app->runtimePath . '/tmp';
+        $tempDir = \Yii::$app->runtimePath;
         if (!file_exists($tempDir)) {
             mkdir($tempDir, 0777, true);
         }
