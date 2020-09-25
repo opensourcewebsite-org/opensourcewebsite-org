@@ -25,12 +25,10 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
     {
         $cronJobs = CronJob::find()
             ->where([
-                'and',
-                ['=', 'name', 'UaLawmakingParser'],
-                ['<', 'updated_at', time() - self::UPDATE_INTERVAL],
-            ]);
+                CronJob::tableName() . '.name' => 'UaLawmakingParser'
+            ])->orderBy('updated_at DESC')->one();
 
-        $flag = (!CronJob::find()->count() || $cronJobs->count());
+        $flag = !$cronJobs || $cronJobs->updated_at < time() - self::UPDATE_INTERVAL;
         if (!$flag) {
             return;
         }
