@@ -46,9 +46,6 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
             return;
         }
         $tempDir = \Yii::$app->runtimePath;
-        if (!file_exists($tempDir)) {
-            mkdir($tempDir, 0777, true);
-        }
         $zipTempPath = tempnam($tempDir, 'temp');
         if (file_exists($zipTempPath)) {
             unlink($zipTempPath);
