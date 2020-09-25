@@ -5,26 +5,28 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "rada_vote".
+ * This is the model class for table "bot_ua_lawmaking_voting".
  *
  * @property int $id
- * @property int $id_event
- * @property string $date_event
+ * @property int $event_id
+ * @property string $date
  * @property string $name
  * @property int $for
  * @property int $against
  * @property int $abstain
  * @property int $not_voting
+ * @property int $total
+ * @property int $presence
  * @property int $absent
  */
-class RadaVote extends \yii\db\ActiveRecord
+class UaLawmakingVoting extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'rada_vote';
+        return 'bot_ua_lawmaking_voting';
     }
 
     /**
@@ -33,9 +35,9 @@ class RadaVote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_event', 'date_event', 'name', 'for', 'against', 'abstain', 'not_voting', 'absent'], 'required'],
-            [['id_event', 'for', 'against', 'abstain', 'not_voting', 'absent'], 'integer'],
-            [['date_event'], 'safe'],
+            [['event_id', 'date', 'name', 'for', 'against', 'abstain', 'not_voting', 'total', 'presence', 'absent'], 'required'],
+            [['event_id', 'for', 'against', 'abstain', 'not_voting', 'total', 'presence', 'absent'], 'integer'],
+            [['date'], 'safe'],
             [['name'], 'string'],
         ];
     }
@@ -47,13 +49,15 @@ class RadaVote extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'id_event' => 'Id Event',
-            'date_event' => 'Date Event',
+            'event_id' => 'Event ID',
+            'date' => 'Date',
             'name' => 'Name',
             'for' => 'For',
             'against' => 'Against',
             'abstain' => 'Abstain',
             'not_voting' => 'Not Voting',
+            'total' => 'Total',
+            'presence' => 'Presence',
             'absent' => 'Absent',
         ];
     }
