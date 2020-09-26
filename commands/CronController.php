@@ -23,7 +23,7 @@ class CronController extends Controller
 {
     use ControllerLogTrait;
 
-    const INTERVAL = 60; // seconds
+    const SLEEP_INTERVAL = 60; // seconds
     const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
 
@@ -42,6 +42,7 @@ class CronController extends Controller
         'JobMatch',
         'Bot',
         'CurrencyRatesParser',
+        //'UaLawmakingParser',
     ];
 
     /**
@@ -118,7 +119,7 @@ class CronController extends Controller
 
             $this->output();
 
-            sleep(static::INTERVAL);
+            sleep(static::SLEEP_INTERVAL);
         }
     }
 }
