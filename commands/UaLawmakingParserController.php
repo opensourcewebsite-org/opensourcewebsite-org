@@ -47,11 +47,6 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
             return;
         }
 
-        $maxDateEvent = $this->getLatestDateFromDB();
-        if (!$maxDateEvent) {
-            $maxDateEvent = date('Y-m-d');
-        }
-        $maxDateEvent = strtotime($maxDateEvent);
         $client = new Client([
             'baseUrl' => $this->sourceURL,
         ]);
@@ -60,6 +55,16 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
             echo 'Api source not found: ' . $this->sourceURL;
             return;
         }
+        if (isset($cronJob) && strtotime($response->headers['last-modified']) <= $cronJob->updated_at) {
+            return;
+        }
+
+        $maxDateEvent = $this->getLatestDateFromDB();
+        if (!$maxDateEvent) {
+            $maxDateEvent = date('Y-m-d');
+        }
+        $maxDateEvent = strtotime($maxDateEvent);
+
         $tempDir = Yii::$app->runtimePath;
         $zipTempPath = tempnam($tempDir, 'temp');
         if (file_exists($zipTempPath)) {
@@ -67,11 +72,12 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
         }
         file_put_contents($zipTempPath, $response->content);
         $zip = new \ZipArchive;
+
         if ($zip->open($zipTempPath) === true) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $fileName = $zip->getNameIndex($i);
                 $eventsDate = substr($fileName, 4, 4) . '-' . substr($fileName, 2, 2) . '-' . substr($fileName, 0, 2);
-                if (strtotime($eventsDate) >= $maxDateEvent) {
+                if (strtotime($eventsDate) > $maxDateEvent || $eventsDate == date('Y-m-d')) {
                     echo 'Scraping file: ' . $fileName . $this->delimiter;
                     $zip->extractTo($tempDir, $fileName);
                     $dataFPath = $tempDir . '/' . $fileName;
