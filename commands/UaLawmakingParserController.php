@@ -51,7 +51,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
 
         if (isset($cronJob)) {
             $startScrapeDate = $cronJob->updated_at;
-        }else {
+        } else {
             $startScrapeDate = $this->getLatestDateFromDB();
             if (!$startScrapeDate) {
                 $startScrapeDate = date('Y-m-d');
@@ -62,7 +62,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
         $today = strtotime(date('Y-m-d'));
 
         while ($currentScrapeDate <= $today) {
-            $remoteURL = $this->remoteSourceDirectory . '/' . date('dmY', $currentScrapeDate). '.json';
+            $remoteURL = $this->remoteSourceDirectory . '/' . date('dmY', $currentScrapeDate) . '.json';
             echo "Remote url: $remoteURL\n";
             $response = $client->createRequest()
                 ->setMethod('GET')
@@ -70,9 +70,9 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
                 ->send();
             if ($response->headers['http-code'] != 200) {
                 echo 'Api source not found: ' . $remoteURL . $this->delimiter;
-            }elseif ($response->headers['content-type'] != 'application/json') {
+            } elseif ($response->headers['content-type'] != 'application/json') {
                 echo 'Response is not json: ' . $remoteURL . $this->delimiter;
-            }elseif ($startScrapeDate < strtotime($response->headers['last-modified'])) {
+            } elseif ($startScrapeDate < strtotime($response->headers['last-modified'])) {
                 try {
                     $this->processEvents($response->content);
                 } catch (Exception $e) {
