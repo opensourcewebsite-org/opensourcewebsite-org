@@ -23,7 +23,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
     private $updatesCount;
     // Data source https://data.rada.gov.ua/open/data/plenary_vote_results-skl9
     // Data structure https://data.rada.gov.ua/ogd/zal/ppz/stru/chron-stru.xsd
-    private $sourceURL = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/chron-json.zip';
+    private $remoteSourceDirectory = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/json';
     private $eventType = 0; //
     private $delimiter = "\n";
     const UPDATE_INTERVAL = 60 * 60; // seconds
@@ -47,67 +47,41 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
             return;
         }
 
-        $maxDateEvent = $this->getLatestDateFromDB();
-        if (!$maxDateEvent) {
-            $maxDateEvent = date('Y-m-d');
-        }
-        $maxDateEvent = strtotime($maxDateEvent);
-        $client = new Client([
-            'baseUrl' => $this->sourceURL,
-        ]);
-        $response = $client->createRequest()->send();
-        if ($response->headers['http-code'] != 200) {
-            echo 'Api source not found: ' . $this->sourceURL;
-            return;
-        }
-        $tempDir = Yii::$app->runtimePath;
-        $zipTempPath = tempnam($tempDir, 'temp');
-        if (file_exists($zipTempPath)) {
-            unlink($zipTempPath);
-        }
-        file_put_contents($zipTempPath, $response->content);
-        $zip = new \ZipArchive;
-        if ($zip->open($zipTempPath) === true) {
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $fileName = $zip->getNameIndex($i);
-                $eventsDate = substr($fileName, 4, 4) . '-' . substr($fileName, 2, 2) . '-' . substr($fileName, 0, 2);
-                if (strtotime($eventsDate) >= $maxDateEvent) {
-                    echo 'Scraping file: ' . $fileName . $this->delimiter;
-                    $zip->extractTo($tempDir, $fileName);
-                    $dataFPath = $tempDir . '/' . $fileName;
-                    if (file_exists($dataFPath)) {
-                        try {
-                            $this->processEventsFile($dataFPath);
-                        } catch (Exception $e) {
-                            echo 'ERROR: processing result from ' . $fileName . ': ' . $e->getMessage() . $this->delimiter;
-                        }
-                        unlink($dataFPath);
-                    } else {
-                        echo "Couldn't fetch file: " . $dataFPath . $this->delimiter;
-                    }
+        $client = new Client();
+
+        $startScrapeDate = $cronJob->updated_at;
+        $currentScrapeDate = strtotime(date('Y-m-d', $startScrapeDate));
+        $today = strtotime(date('Y-m-d'));
+
+        while ($currentScrapeDate <= $today) {
+            $remoteURL = $this->remoteSourceDirectory . '/' . date('dmY', $currentScrapeDate) . '.json';
+            echo "Remote url: $remoteURL\n";
+            $response = $client->createRequest()
+                ->setMethod('GET')
+                ->setUrl($remoteURL)
+                ->send();
+            if ($response->headers['http-code'] != 200) {
+                echo 'Api source not found: ' . $remoteURL . $this->delimiter;
+            } elseif ($response->headers['content-type'] != 'application/json') {
+                echo 'Response is not json: ' . $remoteURL . $this->delimiter;
+            } elseif ($startScrapeDate < strtotime($response->headers['last-modified'])) {
+                try {
+                    $this->processEvents($response->content);
+                } catch (Exception $e) {
+                    echo 'ERROR: processing result from ' . $remoteURL . ': ' . $e->getMessage() . $this->delimiter;
                 }
             }
-            $zip->close();
-        } else {
-            echo "Couldn't extract zip";
-            unlink($zipTempPath);
-            return;
+            $currentScrapeDate += 24 * 3600;
         }
-        unlink($zipTempPath);
 
         if ($this->updatesCount) {
             $this->output('Votings parsed: ' . $this->updatesCount);
         }
     }
 
-    private function getLatestDateFromDb()
+    private function processEvents($content)
     {
-        return UaLawmakingVoting::find()->max('date');
-    }
-
-    private function processEventsFile($filePath)
-    {
-        $json = json_decode(iconv('windows-1251', 'utf-8', file_get_contents($filePath)), true);
+        $json = json_decode(iconv('windows-1251', 'utf-8', $content), true);
         if (empty($json)) {
             throw new Exception("Couldn't convert to json");
         }
