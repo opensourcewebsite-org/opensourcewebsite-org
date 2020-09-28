@@ -48,7 +48,9 @@ trait ControllerLogTrait
      */
     protected function output(string $message = '', $ansiFormat = [])
     {
-        $options = ['logs' => $this->log];
+        $options = [
+            'logs' => $this->log,
+        ];
 
         if ($this instanceof CronChainedInterface) {
             $options['jobName'] = CustomConsole::convertName(get_class($this));
