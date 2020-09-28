@@ -49,15 +49,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
 
         $client = new Client();
 
-        if (isset($cronJob)) {
-            $startScrapeDate = $cronJob->updated_at;
-        } else {
-            $startScrapeDate = $this->getLatestDateFromDB();
-            if (!$startScrapeDate) {
-                $startScrapeDate = date('Y-m-d');
-            }
-            $startScrapeDate = strtotime($startScrapeDate);
-        }
+        $startScrapeDate = $cronJob->updated_at;
         $currentScrapeDate = strtotime(date('Y-m-d', $startScrapeDate));
         $today = strtotime(date('Y-m-d'));
 
@@ -85,11 +77,6 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
         if ($this->updatesCount) {
             $this->output('Votings parsed: ' . $this->updatesCount);
         }
-    }
-
-    private function getLatestDateFromDb()
-    {
-        return UaLawmakingVoting::find()->max('date');
     }
 
     private function processEvents($content)
