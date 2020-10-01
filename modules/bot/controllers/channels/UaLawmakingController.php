@@ -303,10 +303,7 @@ class UaLawmakingController extends Controller
                 $this->render('show-voting', [
                     'voting' => $voting,
                 ]),
-                $buttons,
-                [
-                    'disablePreview' => true,
-                ]
+                $buttons
             );
     }
 }
