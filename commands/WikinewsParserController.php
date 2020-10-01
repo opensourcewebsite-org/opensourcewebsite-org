@@ -10,6 +10,11 @@ use app\models\WikinewsLanguage;
 use app\models\WikinewsPage;
 use yii\httpclient\Client;
 
+/**
+ * Class WikinewsParserController
+ *
+ * @package app\commands
+ */
 class WikinewsParserController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;

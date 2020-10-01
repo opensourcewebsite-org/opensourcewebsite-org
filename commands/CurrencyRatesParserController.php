@@ -11,6 +11,11 @@ use app\models\CurrencyRate;
 use yii\base\Exception;
 use yii\httpclient\Client;
 
+/**
+ * Class CurrencyRatesParserController
+ *
+ * @package app\commands
+ */
 class CurrencyRatesParserController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;

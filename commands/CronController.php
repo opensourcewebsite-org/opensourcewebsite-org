@@ -42,7 +42,7 @@ class CronController extends Controller
         'JobMatch',
         'Bot',
         'CurrencyRatesParser',
-        //'UaLawmakingParser',
+        'UaLawmakingParser',
     ];
 
     /**
@@ -73,8 +73,6 @@ class CronController extends Controller
     {
         $this->cronJobs = CronJobConsole::find()->all();
 
-//$this->cronJobs = [];
-
         if (empty($this->cronJobs)) {
             throw new Exception('Cron jobs not found');
         }
@@ -104,7 +102,14 @@ class CronController extends Controller
                 $controller->log = $this->log;
                 $controller->actionIndex();
 
-                CronJob::updateAll(['updated_at' => time()], ['name' => $script->name]);
+                CronJob::updateAll(
+                    [
+                        'updated_at' => time(),
+                    ],
+                    [
+                        'name' => $script->name,
+                    ]
+                );
 
                 $this->output(
                     "[FINISHED] $script->name",

@@ -5,6 +5,11 @@ namespace app\commands;
 use Yii;
 use yii\console\Controller;
 
+/**
+ * Class UpgradeController
+ *
+ * @package app\commands
+ */
 class UpgradeController extends Controller
 {
     /**

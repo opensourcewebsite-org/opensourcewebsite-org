@@ -16,9 +16,9 @@ use yii\httpclient\Client;
 use yii\web\ServerErrorHttpException;
 
 /**
+ * Class WikipediaParserController
  *
- * @property integer $groupId
- * @property bool $log
+ * @package app\commands
  */
 class WikipediaParserController extends Controller implements CronChainedInterface
 {

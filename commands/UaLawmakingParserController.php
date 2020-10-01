@@ -26,7 +26,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
     private $remoteSourceDirectory = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/json';
     private $eventType = 0; //
     private $delimiter = "\n";
-    const UPDATE_INTERVAL = 60 * 60; // seconds
+    const UPDATE_INTERVAL = 1 * 60 * 60; // seconds
 
     public function actionIndex()
     {
@@ -43,35 +43,47 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
             ])
             ->one();
 
-        if (!isset($cronJob) || ($cronJob->updated_at > (time() - self::UPDATE_INTERVAL))) {
+        if (!isset($cronJob)) {
+            return;
+        }
+
+        // set 3 last days period for the first launch
+        if ($cronJob->created_at == $cronJob->updated_at) {
+            $cronJob->updated_at = time() - 2* 24 * 60 * 60;
+        } elseif ($cronJob->updated_at > (time() - self::UPDATE_INTERVAL)) {
             return;
         }
 
         $client = new Client();
 
-        $startScrapeDate = $cronJob->updated_at;
-        $currentScrapeDate = strtotime(date('Y-m-d', $startScrapeDate));
+        $currentScrapeDate = strtotime(date('Y-m-d', $cronJob->updated_at));
         $today = strtotime(date('Y-m-d'));
 
         while ($currentScrapeDate <= $today) {
             $remoteURL = $this->remoteSourceDirectory . '/' . date('dmY', $currentScrapeDate) . '.json';
-            echo "Remote url: $remoteURL\n";
+
             $response = $client->createRequest()
                 ->setMethod('GET')
                 ->setUrl($remoteURL)
                 ->send();
-            if ($response->headers['http-code'] != 200) {
-                echo 'Api source not found: ' . $remoteURL . $this->delimiter;
-            } elseif ($response->headers['content-type'] != 'application/json') {
-                echo 'Response is not json: ' . $remoteURL . $this->delimiter;
-            } elseif ($startScrapeDate < strtotime($response->headers['last-modified'])) {
-                try {
-                    $this->processEvents($response->content);
-                } catch (Exception $e) {
-                    echo 'ERROR: processing result from ' . $remoteURL . ': ' . $e->getMessage() . $this->delimiter;
+
+            if ($response->headers['http-code'] == 200) {
+                $this->console('Parsing:' . $remoteURL);
+
+                if ($response->headers['content-type'] != 'application/json') {
+                    echo 'ERROR: response is not json: ' . $remoteURL . $this->delimiter;
+                } elseif ($cronJob->updated_at < strtotime($response->headers['last-modified'])) {
+                    try {
+                        $this->processEvents($response->content);
+                    } catch (Exception $e) {
+                        echo 'ERROR: processing result from ' . $remoteURL . ': ' . $e->getMessage() . $this->delimiter;
+                    }
                 }
+            } else {
+                $this->console('Data source not found:' . $remoteURL);
             }
-            $currentScrapeDate += 24 * 3600;
+
+            $currentScrapeDate += 1 * 24 * 60 * 60;
         }
 
         if ($this->updatesCount) {
@@ -82,9 +94,11 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
     private function processEvents($content)
     {
         $json = json_decode(iconv('windows-1251', 'utf-8', $content), true);
+
         if (empty($json)) {
             throw new Exception("Couldn't convert to json");
         }
+
         foreach ($json['question'] as $question) {
             foreach ($question['event_question'] as $event) {
                 if ($event['type_event'] == $this->eventType) {
