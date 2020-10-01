@@ -236,7 +236,7 @@ class BotCommandController extends Controller implements CronChainedInterface
                 $module->setBot($bot);
                 $module->setChatByChatId(Yii::$app->params['bot']['ua_lawmaking']['chat_id']);
                 if ($module->initFromConsole()) {
-                    Yii::$app->runAction('bot/ua-lawmaking/show-new-voting');
+                    $module->runAction('ua-lawmaking/show-new-voting');
 
                     return true;
                 }
