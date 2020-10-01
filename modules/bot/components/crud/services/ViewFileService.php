@@ -43,14 +43,6 @@ class ViewFileService
         if ($this->isViewFileExists($tmpUrl)) {
             return $tmpUrl;
         }
-        $viewPath = str_replace('edit-', 'set-', $viewPath);
-        if ($this->isViewFileExists($viewPath)) {
-            return $viewPath;
-        }
-        $tmpUrl = str_replace('_', '-', $viewPath);
-        if ($this->isViewFileExists($tmpUrl)) {
-            return $tmpUrl;
-        }
 
         return $viewPath;
     }

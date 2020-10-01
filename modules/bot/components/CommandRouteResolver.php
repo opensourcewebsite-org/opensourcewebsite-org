@@ -50,7 +50,9 @@ class CommandRouteResolver extends Component
             $isStateRoute = true;
         }
 
-        Yii::warning('Input: ' . ($commandText ?? '') . ', State: ' . ($state) . ', Resolved route: ' . ($route ?? ''));
+        $commandText ? Yii::warning('Input: ' . $commandText) : null;
+        $route ? Yii::warning('Route: ' . $route) : null;
+        $state ? Yii::warning('State: ' . $state) : null;
 
         return [$route, $params, $isStateRoute];
     }

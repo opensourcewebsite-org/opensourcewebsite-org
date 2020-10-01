@@ -231,16 +231,12 @@ class MoqupController extends Controller
      */
     public function beforeAction($action)
     {
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-
         if (Yii::$app->user->isGuest) {
             $this->layout = 'adminlte-guest';
         } else {
             $this->layout = 'adminlte-user';
         }
 
-        return true;
+        return parent::beforeAction($action);
     }
 }

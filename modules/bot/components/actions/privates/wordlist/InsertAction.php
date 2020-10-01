@@ -13,8 +13,7 @@ class InsertAction extends BaseAction
 
     public function run($chatId = null)
     {
-        $update = $this->getUpdate();
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
         $rows = explode(PHP_EOL, $text);
         foreach ($rows as $row) {
             if ($row) {

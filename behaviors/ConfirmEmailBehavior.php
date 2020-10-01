@@ -25,11 +25,9 @@ class ConfirmEmailBehavior extends Behavior
 
     public function beforeAction()
     {
-        if (Yii::$app->user->isGuest || $this->allowedUrlRequest()) {
-            return true;
-        }
-
-        if (Yii::$app->user->identity->is_authenticated) {
+        if (Yii::$app->user->isGuest
+            || $this->allowedUrlRequest()
+            || Yii::$app->user->identity->is_authenticated) {
             return true;
         }
 

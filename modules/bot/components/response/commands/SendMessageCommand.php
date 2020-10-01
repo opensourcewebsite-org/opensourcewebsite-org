@@ -17,8 +17,8 @@ class SendMessageCommand extends MessageTextCommand
     }
 
     /**
-     * On success, the sent \TelegramBot\Api\Types\Message is returned.
-     *
+     * @param BotApi $botApi
+     * @return \TelegramBot\Api\Types\Message
     */
     public function send(BotApi $botApi)
     {

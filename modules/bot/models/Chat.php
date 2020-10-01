@@ -39,6 +39,16 @@ class Chat extends ActiveRecord
         return $this->type == self::TYPE_PRIVATE;
     }
 
+    public function isGroup()
+    {
+        return $this->type == self::TYPE_GROUP || $this->type == self::TYPE_SUPERGROUP;
+    }
+
+    public function isChannel()
+    {
+        return $this->type == self::TYPE_CHANNEL;
+    }
+
     public function getPhrases()
     {
         return $this->hasMany(Phrase::className(), ['chat_id' => 'id']);
@@ -104,5 +114,20 @@ class Chat extends ActiveRecord
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
         });
+    }
+
+    public function getChatId()
+    {
+        return $this->chat_id;
+    }
+
+    /**
+     * @param int|string $chatId
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setChatId($chatId)
+    {
+        $this->chat_id = $chatId;
     }
 }

@@ -22,7 +22,9 @@ $config = [
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
         'log',
-        ['class' => 'app\components\LanguageSelector'],
+        [
+            'class' => 'app\components\LanguageSelector',
+        ],
         'maintenanceMode',
     ],
     'aliases' => [

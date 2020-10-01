@@ -22,6 +22,7 @@ class ExplodeStringFieldComponent extends BaseFieldComponent implements FieldInt
         if (!$text) {
             return [];
         }
+
         $text = str_replace($this->delimiters, self::MAIN_DELIMITER, $text);
         $text = str_replace(self::MAIN_DELIMITER . self::MAIN_DELIMITER, self::MAIN_DELIMITER, $text);
 

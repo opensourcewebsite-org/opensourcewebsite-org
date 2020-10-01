@@ -36,7 +36,7 @@ class MenuController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => AdminController::createRoute(),
+                            'callback_data' => GroupController::createRoute(),
                             'text' => Yii::t('bot', 'Telegram groups'),
                         ],
                     ],

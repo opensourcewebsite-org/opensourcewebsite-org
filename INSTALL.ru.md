@@ -109,15 +109,15 @@ php yii dataGenerator "*, -Contact" --interval=5
 - Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `telegramProxy` в `params.php`.
 - Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду:
 ```
-php yii bot/add [ТОКЕН БОТА]
+php yii bot-command/add [ТОКЕН БОТА]
 ```
 
 Включить Telegram webhooks для всех ботов с `status` = 0:
 ```
-php yii bot/enable-all
+php yii bot-command/enable-all
 ```
 
 Отключить Telegram webhooks для всех ботов с `status` = 1:
 ```
-php yii bot/disable-all
+php yii bot-command/disable-all
 ```

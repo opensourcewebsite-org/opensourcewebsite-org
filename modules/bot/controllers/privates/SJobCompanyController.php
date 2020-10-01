@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
  */
 class SJobCompanyController extends CrudController
 {
-    protected static $properties = [
+    protected $updateAttributes = [
         'name',
         'description',
         'address',
@@ -31,54 +31,37 @@ class SJobCompanyController extends CrudController
     protected function rules()
     {
         return [
-            [
-                'model' => Company::class,
-                'relation' => [
-                    'model' => CompanyUser::class,
-                    'attributes' => [
-                        'company_id' => [Company::class, 'id'],
-                        'user_id' => [DynamicModel::class, 'id'],
-                    ],
-                    'component' => [
-                        'class' => CurrentUserFieldComponent::class,
-                    ],
-                ],
-                'prepareViewParams' => function ($params) {
-                    $model = $params['model'] ?? null;
+            'model' => Company::class,
+            'prepareViewParams' => function ($params) {
+                $model = $params['model'] ?? null;
 
-                    return [
-                        'name' => $model->name,
-                        'url' => $model->url,
-                        'address' => $model->address,
-                        'description' => $model->description,
-                    ];
-                },
-                'view' => 'show',
+                return [
+                    'model' => $model,
+                ];
+            },
+            'relation' => [
+                'model' => CompanyUser::class,
                 'attributes' => [
-                    'name' => [],
-                    'description' => [
-                        'isRequired' => false,
-                    ],
-                    'address' => [
-                        'isRequired' => false,
-                    ],
-                    'url' => [
-                        'isRequired' => false,
-                    ],
+                    'company_id' => [Company::class, 'id'],
+                    'user_id' => [DynamicModel::class, 'id'],
+                ],
+                'component' => [
+                    'class' => CurrentUserFieldComponent::class,
+                ],
+            ],
+            'attributes' => [
+                'name' => [],
+                'description' => [
+                    'isRequired' => false,
+                ],
+                'address' => [
+                    'isRequired' => false,
+                ],
+                'url' => [
+                    'isRequired' => false,
                 ],
             ],
         ];
-    }
-
-    /**
-     * @param ActiveRecord $model
-     * @param bool $isNew
-     *
-     * @return array
-     */
-    protected function afterSave(ActiveRecord $model, bool $isNew)
-    {
-        return $this->actionView($model->id);
     }
 
     /**
@@ -113,7 +96,7 @@ class SJobCompanyController extends CrudController
                 [
                     'text' => $company->name,
                     'callback_data' => self::createRoute('view', [
-                        'companyId' => $company->id,
+                        'id' => $company->id,
                     ]),
                 ],
             ];
@@ -136,9 +119,7 @@ class SJobCompanyController extends CrudController
             ],
             [
                 'text' => Emoji::ADD,
-                'callback_data' => self::createRoute('create', [
-                    'm' => $this->getModelName(Company::class),
-                ]),
+                'callback_data' => self::createRoute('create'),
             ],
         ];
 
@@ -150,29 +131,32 @@ class SJobCompanyController extends CrudController
             ->build();
     }
 
-    /** @inheritDoc */
-    public function actionView($companyId)
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    public function actionView($id)
     {
         $this->getState()->setName(null);
         $user = $this->getUser();
 
         $company = $user->getCompanies()
             ->where([
-                'id' => $companyId,
+                'id' => $id,
             ])
             ->one();
 
         if (!isset($company)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('show', [
-                    'name' => $company->name,
-                    'url' => $company->getUrl(),
-                    'address' => $company->address,
-                    'description' => $company->description,
+                $this->render('view', [
+                    'model' => $company,
                 ]),
                 [
                     [
@@ -194,9 +178,8 @@ class SJobCompanyController extends CrudController
                         ],
                         [
                             'text' => Emoji::EDIT,
-                            'callback_data' => self::createRoute('u', [
-                                'm' => $this->getModelName(Company::class),
-                                'i' => $company->id,
+                            'callback_data' => self::createRoute('update', [
+                                'id' => $company->id,
                             ]),
                         ],
                     ],
@@ -206,6 +189,30 @@ class SJobCompanyController extends CrudController
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @param int $id
+     */
+    public function actionDelete($id)
+    {
+        $user = $this->getUser();
+
+        $company = $user->getCompanies()
+            ->where([
+                'id' => $id,
+            ])
+            ->one();
+
+        if (!isset($company)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $company->delete();
+
+        return $this->actionIndex();
     }
 
     /**

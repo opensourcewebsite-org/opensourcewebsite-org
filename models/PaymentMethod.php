@@ -63,4 +63,12 @@ class PaymentMethod extends \yii\db\ActiveRecord
     {
         return self::$types[$this->type];
     }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->name;
+    }
 }

@@ -23,7 +23,7 @@ class MyReferralsController extends Controller
         $referralsCount = $user->getReferrals()->count();
         $userId = $this->getUser()->id;
         $websiteRefUrl = Yii::$app->urlManager->createAbsoluteUrl(["invite/$userId"]);
-        $botName = $this->getBotName();
+        $botName = $this->getBot()->name;
         $botRefUrl = "https://t.me/$botName?start=$userId";
 
         return $this->getResponseBuilder()

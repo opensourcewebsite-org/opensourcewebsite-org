@@ -34,13 +34,16 @@ use yii\db\StaleObjectException;
  */
 class SJobVacancyController extends CrudController
 {
-    protected static $properties = [
+    protected $updateAttributes = [
         'name',
-        'min_hourly_rate',
-        'max_hourly_rate',
+        'responsibilities',
         'requirements',
         'conditions',
-        'responsibilities',
+        'keywords',
+        'languages',
+        'max_hourly_rate',
+        'remote_on',
+        'location',
     ];
 
     /**
@@ -49,202 +52,172 @@ class SJobVacancyController extends CrudController
     protected function rules()
     {
         return [
-            [
-                'model' => Vacancy::class,
-                'prepareViewParams' => function ($params) {
-                    /** @var Vacancy $model */
-                    $model = $params['model'] ?? null;
+            'model' => Vacancy::class,
+            'prepareViewParams' => function ($params) {
+                /** @var Vacancy $model */
+                $model = $params['model'] ?? null;
 
-                    return [
-                        'model' => $model,
-                        'name' => $model->name,
-                        'hourlyRate' => $model->max_hourly_rate,
-                        'requirements' => $model->requirements,
-                        'conditions' => $model->conditions,
-                        'responsibilities' => $model->responsibilities,
-                        'currencyCode' => $model->currencyCode,
-                        'company' => $model->company,
-                        'isActive' => $model->isActive(),
-                        'remote_on' => $model->remote_on,
-                        'keywords' => self::getKeywordsAsString($model->getKeywordsRelation()->all()),
-                        'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
-                        'languages' => array_map(function ($vacancyLanguage) {
-                            return $vacancyLanguage->getDisplayName();
-                        }, $model->vacancyLanguagesRelation),
-                    ];
-                },
-                'view' => 'show',
-                'attributes' => [
-                    'name' => [],
-                    'responsibilities' => [],
-                    'requirements' => [],
-                    'conditions' => [],
-                    'keywords' => [
-                        //'enableAddButton' = true,
-                        'isRequired' => false,
-                        'relation' => [
-                            'model' => JobVacancyKeyword::class,
-                            'attributes' => [
-                                'vacancy_id' => [Vacancy::class, 'id'],
-                                'job_keyword_id' => [JobKeyword::class, 'id', 'keyword'],
-                            ],
-                            'removeOldRows' => true,
+                return [
+                    'model' => $model,
+                    'company' => $model->company,
+                    'keywords' => self::getKeywordsAsString($model->getKeywordsRelation()->all()),
+                    'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
+                    'languages' => array_map(function ($vacancyLanguage) {
+                        return $vacancyLanguage->getLabel();
+                    }, $model->vacancyLanguagesRelation),
+                ];
+            },
+            'attributes' => [
+                'name' => [],
+                'responsibilities' => [],
+                'requirements' => [],
+                'conditions' => [],
+                'keywords' => [
+                    //'enableAddButton' = true,
+                    'isRequired' => false,
+                    'relation' => [
+                        'model' => JobVacancyKeyword::class,
+                        'attributes' => [
+                            'vacancy_id' => [Vacancy::class, 'id'],
+                            'job_keyword_id' => [JobKeyword::class, 'id', 'keyword'],
                         ],
-                        'component' => [
-                            'class' => ExplodeStringFieldComponent::class,
+                        'removeOldRows' => true,
+                    ],
+                    'component' => [
+                        'class' => ExplodeStringFieldComponent::class,
+                        'attributes' => [
+                            'delimiters' => [',', '.', "\n"],
+                        ],
+                    ],
+                ],
+                'languages' => [
+                    'samePageAfterAdd' => true,
+                    'enableAddButton' => true,
+                    'showRowsList' => true,
+                    'createRelationIfEmpty' => true,
+                    'relation' => [
+                        'model' => VacancyLanguage::class,
+                        'attributes' => [
+                            'vacancy_id' => [Vacancy::class, 'id'],
+                            'language_id' => [Language::class, 'id', 'code'],
+                            'language_level_id' => [LanguageLevel::class, 'id', 'code'],
+                        ],
+                        'removeOldRows' => true,
+                    ],
+                    'buttons' => [
+                        [
+                            'editMode' => false,
+                            'text' => Yii::t('bot', 'NEXT'),
+                            'callback' => function (Vacancy $model) {
+                                return $model;
+                            },
+                        ],
+                    ],
+                ],
+                'currency' => [
+                    'behaviors' => [
+                        'SetDefaultCurrencyBehavior' => [
+                            'class' => SetDefaultCurrencyBehavior::class,
+                            'telegramUser' => $this->getTelegramUser(),
                             'attributes' => [
-                                'delimiters' => [',', '.', "\n"],
+                                ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
+                                ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
                             ],
                         ],
                     ],
-                    'languages' => [
-                        'samePageAfterAdd' => true,
-                        'enableAddButton' => true,
-                        'showRowsList' => true,
-                        'createRelationIfEmpty' => true,
-                        'relation' => [
-                            'model' => VacancyLanguage::class,
-                            'attributes' => [
-                                'vacancy_id' => [Vacancy::class, 'id'],
-                                'language_id' => [Language::class, 'id', 'code'],
-                                'language_level_id' => [LanguageLevel::class, 'id', 'code'],
-                            ],
-                            'removeOldRows' => true,
+                    'hidden' => true,
+                    'relation' => [
+                        'attributes' => [
+                            'currency_id' => [Currency::class, 'id', 'code'],
                         ],
-                        'buttons' => [
-                            [
-                                'editMode' => false,
-                                'text' => Yii::t('bot', 'NEXT'),
-                                'callback' => function (Vacancy $model) {
+                    ],
+                ],
+                'max_hourly_rate' => [
+                    'isRequired' => false,
+                    'buttons' => [
+                        [
+                            'text' => Yii::t('bot', 'Edit currency'),
+                            'item' => 'currency',
+                        ],
+                    ],
+                ],
+                'remote_on' => [
+                    'buttons' => [
+                        [
+                            'text' => Yii::t('bot', 'YES'),
+                            'callback' => function (Vacancy $model) {
+                                $model->remote_on = Vacancy::REMOTE_ON;
+
+                                return $model;
+                            },
+                        ],
+                        [
+                            'text' => Yii::t('bot', 'NO'),
+                            'callback' => function (Vacancy $model) {
+                                $model->remote_on = Vacancy::REMOTE_OFF;
+
+                                return $model;
+                            },
+                        ],
+                    ],
+                ],
+                'location' => [
+                    'isRequired' => false,
+                    'component' => LocationToArrayFieldComponent::class,
+                    'buttons' => [
+                        [
+                            'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                            'text' => Yii::t('bot', 'MY LOCATION'),
+                            'callback' => function (Vacancy $model) {
+                                $latitude = $this->getTelegramUser()->location_lat;
+                                $longitude = $this->getTelegramUser()->location_lon;
+                                if ($latitude && $longitude) {
+                                    $model->location_lat = $latitude;
+                                    $model->location_lon = $longitude;
+
                                     return $model;
-                                },
-                            ],
+                                }
+
+                                return null;
+                            },
                         ],
                     ],
-                    'currency' => [
-                        'behaviors' => [
-                            'SetDefaultCurrencyBehavior' => [
-                                'class' => SetDefaultCurrencyBehavior::class,
-                                'telegramUser' => $this->getTelegramUser(),
-                                'attributes' => [
-                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['currency_id'],
-                                    ActiveRecord::EVENT_BEFORE_INSERT => ['currency_id'],
-                                ],
-                            ],
-                        ],
-                        'hidden' => true,
-                        'relation' => [
+                ],
+                'company_id' => [
+                    'behaviors' => [
+                        'SetAttributeValueBehavior' => [
+                            'class' => SetAttributeValueBehavior::class,
                             'attributes' => [
-                                'currency_id' => [Currency::class, 'id', 'code'],
+                                ActiveRecord::EVENT_BEFORE_VALIDATE => ['company_id'],
+                                ActiveRecord::EVENT_BEFORE_INSERT => ['company_id'],
                             ],
+                            'attribute' => 'company_id',
+                            'value' => $this->getState()
+                                ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
                         ],
                     ],
-                    'max_hourly_rate' => [
-                        'isRequired' => false,
-                        'buttons' => [
-                            [
-                                'text' => Yii::t('bot', 'Edit currency'),
-                                'item' => 'currency',
+                    'hidden' => true,
+                ],
+                'user_id' => [
+                    'behaviors' => [
+                        'SetAttributeValueBehavior' => [
+                            'class' => SetAttributeValueBehavior::class,
+                            'attributes' => [
+                                ActiveRecord::EVENT_BEFORE_VALIDATE => ['user_id'],
+                                ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
                             ],
-                        ],
-                        'prepareViewParams' => function ($params) {
-                            /** @var Vacancy $model */
-                            $model = $params['model'];
-
-                            return array_merge($params, [
-                                'currencyCode' => $model->currencyCode,
-                            ]);
-                        },
-                    ],
-                    'remote_on' => [
-                        'buttons' => [
-                            [
-                                'text' => Yii::t('bot', 'Yes'),
-                                'callback' => function (Vacancy $model) {
-                                    $model->remote_on = Vacancy::REMOTE_ON;
-
-                                    return $model;
-                                },
-                            ],
-                            [
-                                'text' => Yii::t('bot', 'No'),
-                                'callback' => function (Vacancy $model) {
-                                    $model->remote_on = Vacancy::REMOTE_OFF;
-
-                                    return $model;
-                                },
-                            ],
+                            'attribute' => 'user_id',
+                            'value' => $this->module->user->id,
                         ],
                     ],
-                    'location' => [
-                        'isRequired' => false,
-                        'component' => LocationToArrayFieldComponent::class,
-                        'buttons' => [
-                            [
-                                'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
-                                'text' => Yii::t('bot', 'My location'),
-                                'callback' => function (Vacancy $model) {
-                                    $latitude = $this->getTelegramUser()->location_lat;
-                                    $longitude = $this->getTelegramUser()->location_lon;
-                                    if ($latitude && $longitude) {
-                                        $model->location_lat = $latitude;
-                                        $model->location_lon = $longitude;
-
-                                        return $model;
-                                    }
-
-                                    return null;
-                                },
-                            ],
-                        ],
-                    ],
-                    'company_id' => [
-                        'behaviors' => [
-                            'SetAttributeValueBehavior' => [
-                                'class' => SetAttributeValueBehavior::class,
-                                'attributes' => [
-                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['company_id'],
-                                    ActiveRecord::EVENT_BEFORE_INSERT => ['company_id'],
-                                ],
-                                'attribute' => 'company_id',
-                                'value' => $this->getState()
-                                    ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
-                            ],
-                        ],
-                        'hidden' => true,
-                    ],
-                    'user_id' => [
-                        'behaviors' => [
-                            'SetAttributeValueBehavior' => [
-                                'class' => SetAttributeValueBehavior::class,
-                                'attributes' => [
-                                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['user_id'],
-                                    ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
-                                ],
-                                'attribute' => 'user_id',
-                                'value' => $this->module->user->id,
-                            ],
-                        ],
-                        'hidden' => true,
-                    ],
+                    'hidden' => true,
                 ],
             ],
         ];
     }
 
     /**
-     * @param ActiveRecord $model
-     * @param bool $isNew
-     *
-     * @return array
-     */
-    protected function afterSave(ActiveRecord $model, bool $isNew)
-    {
-        return $this->actionView($model->id);
-    }
-
-    /**
-     * @param $companyId
+     * @param int|null $companyId
      * @param int $page
      *
      * @return array
@@ -293,7 +266,7 @@ class SJobVacancyController extends CrudController
                 [
                     'text' => ($vacancy->isActive() ? '' : Emoji::INACTIVE . ' ') . $vacancy->name,
                     'callback_data' => self::createRoute('view', [
-                        'vacancyId' => $vacancy->id,
+                        'id' => $vacancy->id,
                     ]),
                 ],
             ];
@@ -309,7 +282,7 @@ class SJobVacancyController extends CrudController
         if ($company) {
             $rowButtons[] = [
                 'callback_data' => SJobCompanyController::createRoute('view', [
-                    'companyId' => $companyId,
+                    'id' => $companyId,
                 ]),
                 'text' => Emoji::BACK,
             ];
@@ -340,9 +313,7 @@ class SJobVacancyController extends CrudController
         }
 
         $rowButtons[] = [
-            'callback_data' => self::createRoute('create', [
-                'm' => $this->getModelName(Vacancy::class),
-            ]),
+            'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
         ];
 
@@ -359,9 +330,11 @@ class SJobVacancyController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $id
+     *
+     * @return array
      */
-    public function actionView($vacancyId)
+    public function actionView($id)
     {
         $this->getState()->setName(null);
         $user = $this->getUser();
@@ -369,12 +342,14 @@ class SJobVacancyController extends CrudController
         $vacancy = $user->getVacancies()
             ->where([
                 'user_id' => $user->id,
-                'id' => $vacancyId,
+                'id' => $id,
             ])
             ->one();
 
         if (!isset($vacancy)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         if ($company = $vacancy->company) {
@@ -393,9 +368,9 @@ class SJobVacancyController extends CrudController
 
         $buttons[] = [
             [
-                'text' => Yii::t('bot', 'Status') . ': ' . ($vacancy->isActive() ? 'ON' : 'OFF'),
+                'text' => $vacancy->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                 'callback_data' => self::createRoute('set-status', [
-                    'vacancyId' => $vacancy->id,
+                    'id' => $vacancy->id,
                 ]),
             ],
         ];
@@ -405,7 +380,7 @@ class SJobVacancyController extends CrudController
         if ($matchesCount) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('matches', [
-                    'vacancyId' => $vacancy->id,
+                    'id' => $vacancy->id,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
@@ -419,36 +394,21 @@ class SJobVacancyController extends CrudController
             ],
             [
                 'text' => Emoji::EDIT,
-                'callback_data' => self::createRoute('u', [
-                    'm' => $this->getModelName(Vacancy::class),
-                    'i' => $vacancy->id,
-                ]),
-            ],
-            [
-                'text' => Emoji::DELETE,
-                'callback_data' => self::createRoute('delete', [
-                    'vacancyId' => $vacancy->id,
+                'callback_data' => self::createRoute('update', [
+                    'id' => $vacancy->id,
                 ]),
             ],
         ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('show', [
+                $this->render('view', [
                     'model' => $vacancy,
-                    'name' => $vacancy->name,
-                    'hourlyRate' => $vacancy->max_hourly_rate,
-                    'requirements' => $vacancy->requirements,
-                    'conditions' => $vacancy->conditions,
-                    'responsibilities' => $vacancy->responsibilities,
-                    'currencyCode' => $vacancy->currencyCode,
                     'company' => $vacancy->company,
-                    'isActive' => $vacancy->isActive(),
-                    'remote_on' => $vacancy->remote_on,
                     'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
                     'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
-                        return $vacancyLanguage->getDisplayName();
+                        return $vacancyLanguage->getLabel();
                     }, $vacancy->vacancyLanguagesRelation),
                 ]),
                 $buttons,
@@ -478,19 +438,21 @@ class SJobVacancyController extends CrudController
     /**
      * {@inheritdoc}
      */
-    public function actionMatches($vacancyId, $page = 1)
+    public function actionMatches($id, $page = 1)
     {
         $user = $this->getUser();
 
         $vacancy = $user->getVacancies()
             ->where([
                 'user_id' => $user->id,
-                'id' => $vacancyId,
+                'id' => $id,
             ])
             ->one();
 
         if (!isset($vacancy)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $matchesQuery = $vacancy->getMatches();
@@ -518,14 +480,14 @@ class SJobVacancyController extends CrudController
             [
                 'text' => $vacancy->name,
                 'callback_data' => self::createRoute('view', [
-                    'vacancyId' => $vacancy->id,
+                    'id' => $vacancy->id,
                 ]),
             ]
         ];
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($vacancyId) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($id) {
             return self::createRoute('matches', [
-                'vacancyId' => $vacancyId,
+                'id' => $id,
                 'page' => $page,
             ]);
         });
@@ -533,7 +495,7 @@ class SJobVacancyController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('view', [
-                    'vacancyId' => $vacancy->id,
+                    'id' => $vacancy->id,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -547,16 +509,7 @@ class SJobVacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $resume,
-                    'name' => $resume->name,
-                    'hourlyRate' => $resume->min_hourly_rate,
-                    'experiences' => $resume->experiences,
-                    'expectations' => $resume->expectations,
-                    'skills' => $resume->skills,
-                    'currencyCode' => $resume->currencyCode,
-                    'isActive' => $resume->isActive(),
-                    'remote_on' => $resume->remote_on,
                     'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                     'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                 ]),
                 $buttons,
@@ -606,7 +559,7 @@ class SJobVacancyController extends CrudController
             [
                 'text' => $vacancy->name,
                 'callback_data' => self::createRoute('view', [
-                    'vacancyId' => $vacancy->id,
+                    'id' => $vacancy->id,
                 ]),
             ]
         ];
@@ -632,16 +585,7 @@ class SJobVacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $resume,
-                    'name' => $resume->name,
-                    'hourlyRate' => $resume->min_hourly_rate,
-                    'experiences' => $resume->experiences,
-                    'expectations' => $resume->expectations,
-                    'skills' => $resume->skills,
-                    'currencyCode' => $resume->currencyCode,
-                    'isActive' => $resume->isActive(),
-                    'remote_on' => $resume->remote_on,
                     'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                     'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                 ]),
                 $buttons,
@@ -653,43 +597,15 @@ class SJobVacancyController extends CrudController
     }
 
     /**
-     * @param $vacancyId
-     *
-     * @return array
+     * @param int $id
      */
-    public function actionDelete($vacancyId)
+    public function actionDelete($id)
     {
         $user = $this->getUser();
 
         $vacancy = $user->getVacancies()
             ->where([
-                'id' => $vacancyId,
-            ])
-            ->one();
-
-        if (!isset($vacancy)) {
-            return [];
-        }
-
-        $companyId = $vacancy->company->id;
-
-        $vacancy->delete();
-
-        return $this->actionIndex($companyId);
-    }
-
-    /**
-     * @param $vacancyId
-     *
-     * @return array
-     */
-    public function actionSetStatus($vacancyId)
-    {
-        $user = $this->getUser();
-
-        $vacancy = $user->getVacancies()
-            ->where([
-                'id' => $vacancyId,
+                'id' => $id,
             ])
             ->one();
 
@@ -699,10 +615,40 @@ class SJobVacancyController extends CrudController
                 ->build();
         }
 
-        $this->backRoute->make('view', compact('vacancyId'));
-        $this->endRoute->make('view', compact('vacancyId'));
+        if ($company = $vacancy->company) {
+            $companyId = $vacancy->company->id;
+        }
 
-        if (!$resume->isActive() && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
+        $vacancy->delete();
+
+        return $this->actionIndex($company ? $companyId : null);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    public function actionSetStatus($id)
+    {
+        $user = $this->getUser();
+
+        $vacancy = $user->getVacancies()
+            ->where([
+                'id' => $id,
+            ])
+            ->one();
+
+        if (!isset($vacancy)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->backRoute->make('view', compact('id'));
+        $this->endRoute->make('view', compact('id'));
+
+        if (!$vacancy->isActive() && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('status-error', compact('notFilledFields')),
@@ -717,7 +663,7 @@ class SJobVacancyController extends CrudController
 
         $vacancy->save();
 
-        return $this->actionView($vacancyId);
+        return $this->actionView($vacancy->id);
     }
 
     protected function getModel($id)

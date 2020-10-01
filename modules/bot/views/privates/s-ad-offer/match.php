@@ -3,10 +3,10 @@
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::AD_SEARCH . ' ' . Yii::t('bot', $sectionName) ?>: <?= $adSearch->title ?></b><br/>
+<b><?= Emoji::AD_SEARCH . ' ' . Yii::t('bot', $model->getSectionName()) ?>: <?= $model->title ?></b><br/>
 <br/>
-<?php if ($adSearch->description !== null) : ?>
-<?= nl2br($adSearch->description); ?><br/>
+<?php if ($model->description !== null) : ?>
+<?= nl2br($model->description); ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>

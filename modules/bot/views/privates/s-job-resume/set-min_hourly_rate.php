@@ -1,4 +1,4 @@
-<?= Yii::t('bot', 'Send a minimum hourly rate') ?> (<?= $currencyCode ?>).<br/>
+<b><?= Yii::t('bot', 'Send a minimum hourly rate') ?> (<?= $model->currency->code ?>).</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>

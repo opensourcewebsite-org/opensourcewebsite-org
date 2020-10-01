@@ -6,6 +6,9 @@ use app\behaviors\CreatedByBehavior;
 use yii\behaviors\TimestampBehavior;
 use app\components\helpers\ArrayHelper;
 use app\modules\bot\validators\RadiusValidator;
+use app\modules\bot\validators\LocationLatValidator;
+use app\modules\bot\validators\LocationLonValidator;
+use app\modules\bot\validators\AmountValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 
@@ -41,7 +44,6 @@ class AdSearch extends ActiveRecord
                     'pickup_radius',
                     'location_lat',
                     'location_lon',
-                    'status',
                 ],
                 'required',
             ],
@@ -50,11 +52,22 @@ class AdSearch extends ActiveRecord
                 RadiusValidator::class,
             ],
             [
-                [
-                    'title',
-                    'description',
-                ],
+                'location_lat',
+                LocationLatValidator::class,
+            ],
+            [
+                'location_lon',
+                LocationLonValidator::class,
+            ],
+            [
+                'title',
                 'string',
+                'max' => 255,
+            ],
+            [
+                'description',
+                'string',
+                'max' => 10000,
             ],
             [
                 [
@@ -69,12 +82,10 @@ class AdSearch extends ActiveRecord
                 'integer',
             ],
             [
-                [
-                    'max_price',
-                    'location_lat',
-                    'location_lon',
-                ],
+                'max_price',
                 'double',
+                'min' => 0,
+                'max' => 9999999999999.99,
             ],
         ];
     }
@@ -227,5 +238,13 @@ class AdSearch extends ActiveRecord
         }
 
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSectionName()
+    {
+        return AdSection::getAdSearchName($this->section);
     }
 }

@@ -91,6 +91,7 @@ class UserState
     public static function fromUser(User $user)
     {
         $state = new UserState();
+
         if (!empty($user->state)) {
             $state->fields = json_decode($user->state, true);
         }

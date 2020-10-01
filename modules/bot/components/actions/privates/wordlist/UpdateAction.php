@@ -12,11 +12,8 @@ class UpdateAction extends BaseAction
 
     public function run($phraseId = null)
     {
-        $update = $this->getUpdate();
-
         $phrase = $this->wordModelClass::findOne($phraseId);
-
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (!$this->wordModelClass::find()->where([
             'chat_id' => $phrase->chat_id,

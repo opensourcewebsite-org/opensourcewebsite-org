@@ -25,13 +25,6 @@ class AdKeyword extends ActiveRecord
         ];
     }
 
-    public function behaviors()
-    {
-        return [
-            // TimestampBehavior::className(),
-        ];
-    }
-
     public function getAdSearches()
     {
         return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
@@ -41,7 +34,7 @@ class AdKeyword extends ActiveRecord
     /**
      * @return string
      */
-    public function getAdKeywordLabel()
+    public function getLabel()
     {
         return $this->keyword;
     }

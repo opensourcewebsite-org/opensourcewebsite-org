@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send an expectations') ?>
+<b><?= Yii::t('bot', 'Send an expectations') ?>:</b>

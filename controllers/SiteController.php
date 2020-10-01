@@ -62,17 +62,13 @@ class SiteController extends Controller
             $this->enableCsrfValidation = false;
         }
 
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-
         if (Yii::$app->user->isGuest) {
             $this->layout = 'adminlte-guest';
         } else {
             $this->layout = 'adminlte-user';
         }
 
-        return true;
+        return parent::beforeAction($action);
     }
 
     /**

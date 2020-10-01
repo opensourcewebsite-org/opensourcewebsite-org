@@ -38,16 +38,8 @@ class VacancyLanguage extends ActiveRecord
     /**
      * @return string
      */
-    public function getDisplayName()
+    public function getLabel()
     {
         return $this->languageRelation->name . ' - ' . Yii::t('app', $this->levelRelation->description);
-    }
-
-    /**
-     * @return string
-     */
-    public function getVacancyLanguageLabel()
-    {
-        return $this->getDisplayName();
     }
 }

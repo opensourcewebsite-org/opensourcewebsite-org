@@ -19,9 +19,9 @@ use TelegramBot\Api\HttpException;
  */
 class Controller extends \yii\web\Controller
 {
-    // Postfix 's' must be present because of php-keywords (such as 'private')
-    public const TYPE_PUBLIC = 'publics';
-    public const TYPE_PRIVATE = 'privates';
+    const PRIVATE_NAMESPACE = 'privates';
+    const GROUP_NAMESPACE = 'groups';
+    const CHANNEL_NAMESPACE = 'channels';
 
     /**
      * @var bool
@@ -53,7 +53,7 @@ class Controller extends \yii\web\Controller
      */
     protected function getTelegramUser()
     {
-        return $this->module->telegramUser;
+        return $this->module->getBotUser();
     }
 
     /**
@@ -61,7 +61,7 @@ class Controller extends \yii\web\Controller
      */
     protected function getTelegramChat()
     {
-        return $this->module->telegramChat;
+        return $this->module->getChat();
     }
 
     /**
@@ -77,7 +77,7 @@ class Controller extends \yii\web\Controller
      */
     protected function getUpdate()
     {
-        return $this->module->update;
+        return $this->module->getUpdate();
     }
 
     /**
@@ -85,27 +85,16 @@ class Controller extends \yii\web\Controller
      */
     protected function getResponseBuilder()
     {
-         $responseBuilder = ResponseBuilder::fromUpdate($this->getUpdate());
-         $responseBuilder->setBotApi($this->botApi);
-
-         return $responseBuilder;
+         return new ResponseBuilder();
     }
 
+    // TODO refactoring, maybe remove
     /**
      * @return TelegramBot\Api\Types\Message
      */
     protected function getMessage()
     {
-        $update = $this->getUpdate();
-        $message = $update->getMessage();
-        $message = $message ?? $update->getEditedMessage();
-
-        $callbackQuery = $update->getCallbackQuery();
-        if (!isset($message)) {
-            $message = $callbackQuery->getMessage();
-        }
-
-        return $message;
+        return $this->update->requestMessage;
     }
 
     /**
@@ -113,15 +102,15 @@ class Controller extends \yii\web\Controller
      */
     protected function getState()
     {
-        return $this->module->userState;
+        return $this->module->getBotUserState();
     }
 
     /**
-     * @return string
+     * @return Bot
      */
-    protected function getBotName()
+    protected function getBot()
     {
-        return $this->module->getBotName();
+        return $this->module->getBot();
     }
 
     /**
@@ -137,19 +126,21 @@ class Controller extends \yii\web\Controller
      * @param array $params
      * @return string
      */
-    public static function createRoute(string $actionName = 'index', array $params = [])
+    public static function createRoute(string $actionName = null, array $params = [])
     {
         $controllerName = self::controllerName();
         $route = "/$controllerName";
-        if (empty($actionName)) {
-            $actionName = 'index';
+
+        if (!empty($actionName)) {
+            $actionName = str_replace('-', '_', $actionName);
+            $route .= "__$actionName";
         }
-        $actionName = str_replace('-', '_', $actionName);
-        $route .= "__$actionName";
+
         if (!empty($params)) {
             $paramsString = http_build_query($params);
             $route .= "?$paramsString";
         }
+
         return $route;
     }
 
@@ -164,6 +155,7 @@ class Controller extends \yii\web\Controller
         $parts = preg_split('/(?=[A-Z])/', $className, -1, PREG_SPLIT_NO_EMPTY);
         array_pop($parts);
         $controllerName = strtolower(implode('_', $parts));
+
         return $controllerName;
     }
 
@@ -177,6 +169,7 @@ class Controller extends \yii\web\Controller
             $text = str_replace(["\n", "\r\n"], '', $text);
             $text = preg_replace('/<br\W*?\/>/i', PHP_EOL, $text);
         }
+
         return new MessageText($text, $this->textFormat);
     }
 }

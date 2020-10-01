@@ -68,4 +68,12 @@ class CurrencyExchangeOrderSellingPaymentMethod extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PaymentMethod::className(), ['id' => 'payment_method_id']);
     }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->paymentMethod->name;
+    }
 }

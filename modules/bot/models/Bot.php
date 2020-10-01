@@ -41,6 +41,19 @@ class Bot extends \yii\db\ActiveRecord
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'title' => 'Title',
+            'token' => 'Token',
+            'status' => 'Status',
+        ];
+    }
+
+    /**
      * Validate bot token from telegram API
      *
      * @param $attribute
@@ -108,19 +121,6 @@ class Bot extends \yii\db\ActiveRecord
         }
 
         return $response;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'title' => 'Title',
-            'token' => 'Token',
-            'status' => 'Status',
-        ];
     }
 
     /**

@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Send a skills') ?>
+<b><?= Yii::t('bot', 'Send a skills') ?>:</b>

@@ -9,6 +9,8 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
 use yii\db\Expression;
+use app\modules\bot\validators\LocationLatValidator;
+use app\modules\bot\validators\LocationLonValidator;
 
 /**
  * Class Vacancy
@@ -22,8 +24,8 @@ class Vacancy extends ActiveRecord
 
     public const LIVE_DAYS = 30;
 
-    const REMOTE_OFF = 0;
-    const REMOTE_ON = 1;
+    public const REMOTE_OFF = 0;
+    public const REMOTE_ON = 1;
 
     /**
      * {@inheritdoc}
@@ -42,6 +44,17 @@ class Vacancy extends ActiveRecord
             [
                 [
                     'user_id',
+                    'currency_id',
+                    'name',
+                    'requirements',
+                    'conditions',
+                    'responsibilities',
+                ],
+                'required',
+            ],
+            [
+                [
+                    'user_id',
                     'company_id',
                     'currency_id',
                     'status',
@@ -52,12 +65,18 @@ class Vacancy extends ActiveRecord
                 'integer',
             ],
             [
-                [
-                    'max_hourly_rate',
-                    'location_lat',
-                    'location_lon',
-                ],
+                'location_lat',
+                LocationLatValidator::class,
+            ],
+            [
+                'location_lon',
+                LocationLonValidator::class,
+            ],
+            [
+                'max_hourly_rate',
                 'double',
+                'min' => 0,
+                'max' => 99999999.99,
             ],
             [
                 [
@@ -73,17 +92,7 @@ class Vacancy extends ActiveRecord
                     'responsibilities',
                 ],
                 'string',
-            ],
-            [
-                [
-                    'user_id',
-                    'currency_id',
-                    'name',
-                    'requirements',
-                    'conditions',
-                    'responsibilities',
-                ],
-                'required',
+                'max' => 10000,
             ],
         ];
     }
@@ -235,14 +244,6 @@ class Vacancy extends ActiveRecord
 
     /**
      * @return \yii\db\ActiveQuery
-     */
-    public function getCompanyRelation()
-    {
-        return $this->hasOne(Company::class, ['id' => 'company_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
     public function getLanguagesRelation()
@@ -257,21 +258,6 @@ class Vacancy extends ActiveRecord
     public function getVacancyLanguagesRelation()
     {
         return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrencyCode()
-    {
-        $currency = $this->currency;
-        if ($currency) {
-            $currencyCode = $currency->code;
-        } else {
-            $currencyCode = '';
-        }
-
-        return $currencyCode;
     }
 
     /**

@@ -11,8 +11,8 @@ use Yii;
  * @property int $order_id
  * @property int $match_order_id
  *
- * @property CurrencyExchangeOrder $matchOrder
  * @property CurrencyExchangeOrder $order
+ * @property CurrencyExchangeOrder $matchOrder
  */
 class CurrencyExchangeOrderMatch extends \yii\db\ActiveRecord
 {

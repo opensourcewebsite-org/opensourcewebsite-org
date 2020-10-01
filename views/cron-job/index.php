@@ -46,13 +46,18 @@ $this->title = Yii::t('app', 'Cron Job Log');
                 [
                     'attribute' => 'created_at',
                     'format'    => [
-                        'datetime', 'php:d.m.Y H:i:s',
+                        'relativeTime',
                     ],
+                    'enableSorting' => false,
                 ],
-                'message',
+                [
+                    'attribute' => 'message',
+                    'enableSorting' => false,
+                ],
                 [
                     'attribute' => 'cronJob.name',
                     'visible'   => ($jobId) ? false : true,
+                    'label' => Yii::t('bot', 'Cron Job'),
                 ],
             ],
         ]) ?>

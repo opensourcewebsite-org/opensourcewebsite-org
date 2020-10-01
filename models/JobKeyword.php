@@ -27,7 +27,7 @@ class JobKeyword extends ActiveRecord
         ];
     }
 
-    public function getVacanciesRelation()
+    public function getVacancies()
     {
         return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
             ->viaTable('{{%job_vacancy_keyword}}', ['job_keyword_id' => 'id']);
@@ -36,12 +36,12 @@ class JobKeyword extends ActiveRecord
     /**
      * @return string
      */
-    public function getJobKeywordLabel()
+    public function getLabel()
     {
         return $this->keyword;
     }
 
-    public function getResumesRelation()
+    public function getResumes()
     {
         return $this->hasMany(Resume::className(), ['id' => 'resume_id'])
             ->viaTable('{{%job_resume_keyword}}', ['job_keyword_id' => 'id']);

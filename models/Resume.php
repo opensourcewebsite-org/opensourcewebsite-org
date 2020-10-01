@@ -6,6 +6,8 @@ use Yii;
 use app\models\queries\ResumeQuery;
 use app\models\User as GlobalUser;
 use app\modules\bot\validators\RadiusValidator;
+use app\modules\bot\validators\LocationLatValidator;
+use app\modules\bot\validators\LocationLonValidator;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
@@ -22,8 +24,8 @@ class Resume extends ActiveRecord
 
     public const LIVE_DAYS = 30;
 
-    const REMOTE_OFF = 0;
-    const REMOTE_ON = 1;
+    public const REMOTE_OFF = 0;
+    public const REMOTE_ON = 1;
 
     /**
      * {@inheritdoc}
@@ -43,6 +45,14 @@ class Resume extends ActiveRecord
                 [
                     'user_id',
                     'currency_id',
+                    'name',
+                ],
+                'required',
+            ],
+            [
+                [
+                    'user_id',
+                    'currency_id',
                     'status',
                     'created_at',
                     'processed_at',
@@ -54,12 +64,25 @@ class Resume extends ActiveRecord
                 RadiusValidator::class,
             ],
             [
+                'location_lat',
+                LocationLatValidator::class,
+            ],
+            [
+                'location_lon',
+                LocationLonValidator::class,
+            ],
+            [
                 [
-                    'min_hourly_rate',
                     'location_lat',
                     'location_lon',
                 ],
                 'double',
+            ],
+            [
+                'min_hourly_rate',
+                'double',
+                'min' => 0,
+                'max' => 99999999.99,
             ],
             [
                 [
@@ -75,14 +98,7 @@ class Resume extends ActiveRecord
                     'skills',
                 ],
                 'string',
-            ],
-            [
-                [
-                    'user_id',
-                    'currency_id',
-                    'name',
-                ],
-                'required',
+                'max' => 10000,
             ],
         ];
     }
@@ -240,21 +256,6 @@ class Resume extends ActiveRecord
 
             $this->save();
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrencyCode()
-    {
-        $currency = $this->currency;
-        if ($currency) {
-            $currencyCode = $currency->code;
-        } else {
-            $currencyCode = '';
-        }
-
-        return $currencyCode;
     }
 
     /**

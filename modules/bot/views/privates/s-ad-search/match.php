@@ -3,18 +3,18 @@
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::AD_OFFER . ' ' . Yii::t('bot', $sectionName) ?>: <?= $adOffer->title ?></b><br/>
+<b><?= Emoji::AD_OFFER . ' ' . Yii::t('bot', $model->getSectionName()) ?>: <?= $model->title ?></b><br/>
 <br/>
-<?php if ($adOffer->description !== null) : ?>
-<?= nl2br($adOffer->description); ?><br/>
+<?php if ($model->description !== null) : ?>
+<?= nl2br($model->description); ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>
 # <i><?= $keywords ?></i><br/>
 <br/>
 <?php endif; ?>
-<?php if (isset($adOffer->price) && isset($currency)) : ?>
-<b><?= Yii::t('bot', 'Price') ?>:</b> <?= $adOffer->price ?> <?= $currency->code ?><br/>
+<?php if ($model->price) : ?>
+<b><?= Yii::t('bot', 'Price') ?>:</b> <?= $model->price ?> <?= $model->currency->code ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($user) : ?>

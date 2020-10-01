@@ -39,7 +39,7 @@ class MyLanguagesController extends Controller
         $rows = array_map(function ($language) {
             return [
                 [
-                    'text' => $language->getDisplayName(),
+                    'text' => $language->getLabel(),
                     'callback_data' => self::createRoute('create-level', [
                         'languageId' => $language->language->id,
                     ]),
@@ -152,7 +152,7 @@ class MyLanguagesController extends Controller
         $levelRows = array_map(function ($level) use ($languageId) {
             return [
                 [
-                    'text' => $level->getDisplayName(),
+                    'text' => $level->getLabel(),
                     'callback_data' => self::createRoute('create', [
                         'languageId' => $languageId,
                         'levelId' => $level->id,

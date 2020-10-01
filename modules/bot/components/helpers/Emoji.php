@@ -15,6 +15,8 @@ class Emoji
     public const GREETING = '🆘';
     public const REFRESH = '🔄';
     public const INACTIVE = '❌';
+    public const STATUS_ON = '🟢';
+    public const STATUS_OFF = '🔴';
     public const OFFERS = '🙋‍♂️';
     public const INFO = 'ℹ️';
     public const AD_SEARCH = '🔍';
@@ -22,6 +24,7 @@ class Emoji
     public const JOB_RESUME = '💪';
     public const JOB_VACANCY = '🧰';
     public const JOB_COMPANY = '🏢';
+    public const CURRENCY_EXCHANGE_ORDER = '💱';
     public const STAR = '⭐️';
     public const POO = '💩';
     public const LIKE = '👍';
@@ -30,4 +33,5 @@ class Emoji
     public const SAVE_VOTE = '👼';
     public const DONATE = '👼';
     public const CONTRIBUTE = '👨‍🚀';
+    public const DEVELOPMENT = '🏗';
 }

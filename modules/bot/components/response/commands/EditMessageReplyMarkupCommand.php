@@ -18,6 +18,10 @@ class EditMessageReplyMarkupCommand extends Command
         $this->replyMarkup = $replyMarkup;
     }
 
+    /**
+     * @param BotApi $botApi
+     * @return \TelegramBot\Api\Types\Message
+    */
     public function send(BotApi $botApi)
     {
         $answer = false;

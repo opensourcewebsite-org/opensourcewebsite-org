@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\modules\bot\components\crud\rules;
 
 use app\modules\bot\components\api\Types\Update;
@@ -19,14 +18,6 @@ abstract class BaseFieldComponent
     public $controller;
     /** @var array */
     public $config;
-    /** @var UserState */
-    public $state;
-    /** @var Update */
-    public $update;
-    /** @var  User */
-    public $telegramUser;
-    /** @var  User */
-    public $user;
 
     /**
      * BaseFieldComponent constructor.
@@ -38,15 +29,47 @@ abstract class BaseFieldComponent
     {
         $this->controller = $controller;
         $this->config = $config;
-        if (method_exists($controller, 'getState')
-            && is_callable($controller, 'getState')) {
-            $this->state = $this->controller->getState();
+    }
+
+    /**
+     * @return Update
+     */
+    protected function getUpdate()
+    {
+        return $this->controller->getUpdate();
+    }
+
+    /**
+     * @return UserState|null
+     */
+    protected function getState()
+    {
+        if (method_exists($this->controller, 'getState')
+            && is_callable($$this->controller, 'getState')) {
+            return $this->controller->getState();
         }
-        $this->update = $this->controller->module->update;
-        if (method_exists($controller, 'getTelegramUser')
-            && is_callable($controller, 'getTelegramUser')) {
-            $this->telegramUser = $this->controller->getTelegramUser();
+
+        return null;
+    }
+
+    /**
+     * @return \app\modules\bot\models\User|null
+     */
+    protected function getTelegramUser()
+    {
+        if (method_exists($this->controller, 'getTelegramUser')
+            && is_callable($this->controller, 'getTelegramUser')) {
+            return $this->controller->getTelegramUser();
         }
-        $this->user = $controller->module->user;
+
+        return null;
+    }
+
+    /**
+     * @return User
+     */
+    protected function getUser()
+    {
+        return $this->controller->getUser();
     }
 }

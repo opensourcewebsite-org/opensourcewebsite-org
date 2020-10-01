@@ -28,8 +28,18 @@ class Chat extends \TelegramBot\Api\Types\Chat
         'can_set_sticker_set' => true
     ];
 
-    public function isPublic()
+    public function isPrivate()
     {
-        return in_array($this->getType(), [ActiveRecordChat::TYPE_GROUP, ActiveRecordChat::TYPE_SUPERGROUP]);
+        return $this->getType() == ActiveRecordChat::TYPE_PRIVATE;
+    }
+
+    public function isGroup()
+    {
+        return $this->getType() == ActiveRecordChat::TYPE_GROUP || $this->getType() == ActiveRecordChat::TYPE_SUPERGROUP;
+    }
+
+    public function isChannel()
+    {
+        return $this->getType() == ActiveRecordChat::TYPE_CHANNEL;
     }
 }

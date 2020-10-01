@@ -4,28 +4,28 @@ use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $name ?></b><br/>
+<b><?= Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $model->name ?></b><br/>
 <br/>
 <?php if ($keywords != '') : ?>
 # <i><?= $keywords ?></i><br/>
 <br/>
 <?php endif; ?>
-<?php if ($responsibilities) : ?>
+<?php if ($model->responsibilities) : ?>
 <b><?= Yii::t('bot', 'Responsibilities') ?>:</b><br/>
 <br/>
-<?= nl2br($responsibilities) ?><br/>
+<?= nl2br($model->responsibilities) ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($requirements) : ?>
+<?php if ($model->requirements) : ?>
 <b><?= Yii::t('bot', 'Requirements') ?>:</b><br/>
 <br/>
-<?= nl2br($requirements) ?><br/>
+<?= nl2br($model->requirements) ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($conditions) : ?>
+<?php if ($model->conditions) : ?>
 <b><?= Yii::t('bot', 'Conditions') ?>:</b><br/>
 <br/>
-<?= nl2br($conditions) ?><br/>
+<?= nl2br($model->conditions) ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($languages) : ?>
@@ -36,11 +36,11 @@ use app\modules\bot\components\helpers\Emoji;
 <?php endforeach; ?>
 <br/>
 <?php endif; ?>
-<?php if ($hourlyRate) : ?>
-<b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
+<?php if ($model->max_hourly_rate) : ?>
+<b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $model->max_hourly_rate ?> <?= $model->currency->code ?><br/>
 <br/>
 <?php endif; ?>
-<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
+<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $model->remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
 <?php if ($model->location_lat && $model->location_lon) : ?>
 <b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>

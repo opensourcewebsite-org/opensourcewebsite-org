@@ -66,7 +66,7 @@ class Currency extends ActiveRecord
     /**
      * @return string
      */
-    public function getCurrencyLabel()
+    public function getLabel()
     {
         return $this->code . ' - ' . $this->name;
     }

@@ -52,8 +52,6 @@ class ContactGroup extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        parent::beforeSave($insert);
-
         if (!parent::beforeSave($insert)) {
             return false;
         }

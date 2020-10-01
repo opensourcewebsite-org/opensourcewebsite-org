@@ -18,11 +18,4 @@ class AdOfferKeyword extends ActiveRecord
             [['ad_offer_id', 'ad_keyword_id'], 'integer'],
         ];
     }
-
-    public function behaviors()
-    {
-        return [
-            // TimestampBehavior::className(),
-        ];
-    }
 }

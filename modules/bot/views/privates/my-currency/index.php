@@ -2,4 +2,4 @@
 <br/>
 <?= $currencyName ?> (<?= strtoupper($currencyCode) ?>)<br/>
 <br/>
-<i><?= Yii::t('bot', 'This information is used for all bot services') ?>.</i>
+<i><?= Yii::t('bot', 'This information is used for all services') ?>.</i>

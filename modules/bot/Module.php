@@ -4,14 +4,12 @@ namespace app\modules\bot;
 
 use Yii;
 use app\modules\bot\components\CommandRouteResolver;
-use app\modules\bot\components\request\CallbackQueryUpdateHandler;
-use app\modules\bot\components\request\MessageUpdateHandler;
 use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
-use app\modules\bot\models\User as TelegramUser;
+use app\modules\bot\models\User as BotUser;
 use yii\base\InvalidRouteException;
 use app\models\User;
 use app\models\Rating;
@@ -27,34 +25,9 @@ use app\modules\bot\models\ChatSetting;
 class Module extends \yii\base\Module
 {
     /**
-     * @var BotApi
+     * {@inheritdoc}
      */
-    private $botApi;
-
-    /**
-     * @var models\Bot
-     */
-    private $botInfo;
-
-    /**
-     * @var array
-     */
-    private $updateHandlers = [];
-
-    /**
-     * @var models\User
-     */
-    public $telegramUser;
-
-    /**
-     * @var models\Chat
-     */
-    public $telegramChat;
-
-    /**
-     * @var Update
-     */
-    public $update;
+    public $controllerNamespace = 'app\modules\bot\controllers';
 
     /**
      * @var User
@@ -62,191 +35,182 @@ class Module extends \yii\base\Module
     public $user;
 
     /**
-     * @var models\UserState
+     * @param string $input
+     * @param string $token Bot token
+     *
+     * @return bool
      */
-    public $userState;
-
-    public function init()
-    {
-        parent::init();
-
-        $this->updateHandlers = [
-            new MessageUpdateHandler(),
-            new CallbackQueryUpdateHandler(),
-        ];
-    }
-
-    public function getBotApi()
-    {
-        return $this->botApi;
-    }
-
-    public function getBotName()
-    {
-        return $this->botInfo->name;
-    }
-
     public function handleInput($input, $token)
     {
-        $result = false;
         $updateArray = json_decode($input, true);
-        $this->update = Update::fromResponse($updateArray);
-        $this->botInfo = Bot::findOne(['token' => $token]);
-        if ($this->botInfo) {
-            $this->botApi = new BotApi($this->botInfo->token);
 
-            if (isset(Yii::$app->params['telegramProxy'])) {
-                $this->botApi->setProxy(Yii::$app->params['telegramProxy']);
-            }
+        if (empty($updateArray)) {
+            return false;
+        }
 
-            if ($this->initialize($this->update, $this->botInfo->id)) {
-                Yii::$app->language = $this->telegramUser->language->code;
+        $this->setUpdate(Update::fromResponse($updateArray));
+        // TODO refactoring
+        $this->getUpdate()->__construct();
+        $bot = Bot::findOne([
+            'token' => $token,
+        ]);
 
-                $result = $this->dispatchRoute($this->update);
+        if ($bot) {
+            $this->setBot($bot);
 
-                $this->save();
+            if ($this->initFromUpdate()) {
+                $this->dispatchRoute();
             }
         }
-        return $result;
+
+        return true;
     }
 
     /**
-     * @param $update
-     * @param $botId
      * @return bool
      */
-    private function initialize($update, $botId)
+    private function initFromUpdate()
     {
-        foreach ($this->updateHandlers as $updateHandler) {
-            $updateUser = $updateHandler->getFrom($update);
-            $updateChat = $updateHandler->getChat($update);
-            if (isset($updateUser) && isset($updateChat)) {
-                break;
-            }
-        }
-        if (isset($updateUser) && isset($updateChat)) {
-            $isNewUser = false;
-            $telegramUser = TelegramUser::findOne([
-                'provider_user_id' => $updateUser->getId(),
-            ]);
-            // Store telegram user if it doesn't exist yet
-            if (!isset($telegramUser)) {
-                $isNewUser = true;
+        if (isset($this->getUpdate()->chat)) {
+            if (isset($this->getUpdate()->from)) {
+                $isNewUser = false;
 
-                $telegramUser = TelegramUser::createUser($updateUser);
-            }
-            // Update telegram user information
-            $telegramUser->updateInfo($updateUser);
-
-            if (!$telegramUser->save()) {
-                return false;
-            }
-
-            $telegramChat = Chat::findOne([
-                'chat_id' => $updateChat->getId(),
-                'bot_id' => $botId,
-            ]);
-            // Store telegram chat if it doesn't exist yet
-            $newChat = false;
-            if (!isset($telegramChat)) {
-                $telegramChat = new Chat();
-                $telegramChat->setAttributes([
-                    'chat_id' => $updateChat->getId(),
-                    'bot_id' => $botId,
+                $botUser = BotUser::findOne([
+                    'provider_user_id' => $this->getUpdate()->from->getId(),
                 ]);
 
-                $newChat = true;
-            }
+                if (!isset($botUser)) {
+                    $botUser = BotUser::createUser($this->getUpdate()->from);
 
-            // Update telegram chat information
-            $telegramChat->setAttributes([
-                'type' => $updateChat->getType(),
-                'title' => $updateChat->getTitle(),
-                'username' => $updateChat->getUsername(),
-                'first_name' => $updateChat->getFirstName(),
-                'last_name' => $updateChat->getLastName(),
-            ]);
-
-            if (!$telegramChat->save()) {
-                return false;
-            }
-
-            // Add chat administrators to db
-            if ($newChat && $updateChat->getType() != Chat::TYPE_PRIVATE) {
-                $administrators = $this->botApi->getChatAdministrators($updateChat->getId());
-
-                foreach ($administrators as $administrator) {
-                    $user = TelegramUser::findOne(['provider_user_id' => $administrator->getUser()->getId()]);
-
-                    if (!isset($user)) {
-                        $administratorUpdateUser = $administrator->getUser();
-
-                        $user = TelegramUser::createUser($administratorUpdateUser);
-
-                        // Update telegram user information
-                        $user->updateInfo($administratorUpdateUser);
-                    }
-
-                    $user->link('chats', $telegramChat, ['status' => $administrator->getStatus()]);
+                    $isNewUser = true;
                 }
-            }
+                // Update telegram user information
+                $botUser->updateInfo($this->getUpdate()->from);
+                // Set user language for bot answers
+                Yii::$app->language = $botUser->language->code;
 
-            $type = $telegramChat->isPrivate() ? 'private' : 'public';
-            Yii::configure($this, require __DIR__ . "/config/$type.php");
-
-            // To separate commands for each type of chat
-            $namespace = $telegramChat->isPrivate()
-                ? Controller::TYPE_PRIVATE
-                : Controller::TYPE_PUBLIC;
-            $this->setupPaths($namespace);
-
-            if (!$chatMember = $telegramChat->getChatMemberByUser($telegramUser)) {
-                $telegramChatMember = $this->botApi->getChatMember(
-                    $telegramChat->chat_id,
-                    $telegramUser->provider_user_id
-                );
-
-                $telegramChat->link('users', $telegramUser, [
-                    'status' => $telegramChatMember->getStatus(),
-                ]);
-            }
-
-            if (!isset($telegramUser->user_id)) {
-                $user = User::createWithRandomPassword();
-                $user->name = $telegramUser->getFullName();
-
-                if ($isNewUser) {
-                    if ($message = $update->getMessage()) {
-                        $matches = [];
-                        if (preg_match('/\/start (\d+)/', $message->getText(), $matches)) {
-                            $user->referrer_id = $matches[1];
-                        }
-                    }
-                }
-
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    $user->save();
-                    $telegramUser->user_id = $user->id;
-                    $telegramUser->save();
-                    $user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
-
-                    $transaction->commit();
-                } catch (\Exception $e) {
-                    $transaction->rollBack();
+                if (!$botUser->save()) {
                     return false;
                 }
-            } else {
-                $user = User::findOne($telegramUser->user_id);
             }
 
-            $this->user = $user;
-            $this->telegramUser = $telegramUser;
-            $this->userState = UserState::fromUser($telegramUser);
-            $this->telegramChat = $telegramChat;
-            if ($telegramChat->isPrivate()) {
-                $this->user->updateLastActivity();
-                $this->update->setPrivateMessageFromState($this->userState);
+            $chat = Chat::findOne([
+                'chat_id' => $this->getUpdate()->chat->getId(),
+                'bot_id' => $this->getBot()->id,
+            ]);
+
+            $isNewChat = false;
+
+            if (!isset($chat)) {
+                $chat = new Chat();
+                $chat->setAttributes([
+                    'chat_id' => $this->getUpdate()->chat->getId(),
+                    'bot_id' => $this->getBot()->id,
+                ]);
+
+                $isNewChat = true;
+            }
+            // Update chat information
+            $chat->setAttributes([
+                'type' => $this->getUpdate()->chat->getType(),
+                'title' => $this->getUpdate()->chat->getTitle(),
+                'username' => $this->getUpdate()->chat->getUsername(),
+                'first_name' => $this->getUpdate()->chat->getFirstName(),
+                'last_name' => $this->getUpdate()->chat->getLastName(),
+            ]);
+
+            if (!$chat->save()) {
+                return false;
+            }
+
+            $this->setChat($chat);
+
+            // Save chat administrators for new group or channel
+            if ($isNewChat && !$chat->isPrivate()) {
+                $administrators = $this->getBotApi()->getChatAdministrators($this->getUpdate()->chat->getId());
+
+                foreach ($administrators as $administrator) {
+                    $administratorBotUser = BotUser::findOne([
+                        'provider_user_id' => $administrator->getUser()->getId(),
+                    ]);
+
+                    if (!isset($administratorBotmUser)) {
+                        $administratorUpdateUser = $administrator->getUser();
+
+                        $administratorBotUser = BotUser::createUser($administratorUpdateUser);
+
+                        // Update bot user information
+                        $administratorBotUser->updateInfo($administratorUpdateUser);
+                    }
+
+                    $administratorBotUser->link('chats', $chat, [
+                        'status' => $administrator->getStatus(),
+                    ]);
+                }
+            }
+
+            // Choose namespace
+            if ($chat->isPrivate()) {
+                $namespace = 'privates';
+            } elseif ($chat->isGroup()) {
+                $namespace = 'groups';
+            } elseif ($chat->isChannel()) {
+                $namespace = 'channels';
+            }
+            // Set namespace
+            Yii::configure(Yii::$app, require __DIR__ . "/config/$namespace.php");
+            $this->controllerNamespace .= '\\' . $namespace;
+            $this->setViewPath($this->getViewPath() . '/' . $namespace);
+
+            if (isset($botUser)) {
+                if (!$chatMember = $chat->getChatMemberByUser($botUser)) {
+                    $chatMember = $this->getBotApi()->getChatMember(
+                        $chat->getChatId(),
+                        $botUser->provider_user_id
+                    );
+
+                    $chat->link('users', $botUser, [
+                        'status' => $chatMember->getStatus(),
+                    ]);
+                }
+
+                if (!($user = $botUser->globalUser)) {
+                    $user = User::createWithRandomPassword();
+                    $user->name = $botUser->getFullName();
+
+                    if ($isNewUser) {
+                        if ($chat->isPrivate() && (isset($this->getUpdate()->requestMessage))) {
+                            $matches = [];
+                            if (preg_match('/\/start (\d+)/', $this->getUpdate()->requestMessage->getText(), $matches)) {
+                                $user->referrer_id = $matches[1];
+                            }
+                        }
+                    }
+
+                    $transaction = Yii::$app->db->beginTransaction();
+
+                    try {
+                        $user->save();
+                        $botUser->user_id = $user->id;
+                        $botUser->save();
+                        // Add 1 rating for new user
+                        $user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
+
+                        $transaction->commit();
+                    } catch (\Exception $e) {
+                        $transaction->rollBack();
+                        return false;
+                    }
+                }
+
+                $this->user = $user;
+                $this->setBotUser($botUser);
+                $this->setBotUserState(UserState::fromUser($botUser));
+
+                if ($chat->isPrivate()) {
+                    $this->user->updateLastActivity();
+                    $this->getUpdate()->setPrivateMessageFromState($this->getBotUserState());
+                }
             }
 
             return true;
@@ -255,87 +219,257 @@ class Module extends \yii\base\Module
         return false;
     }
 
-    private function save()
+    /**
+     * @return bool
+     * @throws InvalidRouteException
+     */
+    private function dispatchRoute()
     {
-        $this->user->save();
-        $this->telegramChat->save();
-        $this->userState->save($this->telegramUser);
+        if ($this->getChat()->isPrivate()) {
+            $state = $this->getBotUserState()->getName();
+            // Delete all user messages in private chat
+            if ($this->getUpdate()->getMessage()) {
+                $this->getBotApi()->deleteMessage(
+                    $this->getChat()->getChatId(),
+                    $this->getUpdate()->getMessage()->getMessageId()
+                );
+            }
+        } else {
+            $state = null;
+        }
+
+        list($route, $params, $isStateRoute) = Yii::$app->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
+
+        if (!$isStateRoute && $this->getChat()->isPrivate()) {
+            $this->getBotUserState()->setName($state);
+        }
+
+        try {
+            $commands = $this->runAction($route, $params);
+        } catch (InvalidRouteException $e) {
+            $commands = $this->runAction(Yii::$app->commandRouteResolver->defaultRoute);
+        }
+
+        if (isset($commands) && is_array($commands)) {
+            $privateMessageIds = [];
+            foreach ($commands as $command) {
+                try {
+                    $command->send($this->getBotApi());
+                    // Remember ids of all bot messages in private chat to delete them later
+                    if ($this->getChat()->isPrivate()) {
+                        if ($messageId = $command->getMessageId()) {
+                            $privateMessageIds []= $messageId;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
+                }
+            }
+
+            if ($this->getChat()->isPrivate()) {
+                $this->getBotUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
+                $this->getBotUserState()->save($this->getBotUser());
+            }
+        }
+
+        return true;
     }
 
-    private function setupPaths($namespace)
+    /**
+     * @return bool
+     */
+    public function initFromConsole()
     {
-        $this->controllerNamespace .= '\\' . $namespace;
-        $this->setViewPath($this->getViewPath() . '/' . $namespace);
+        if ($this->getChat()) {
+            // Choose namespace
+            if ($this->getChat()->isPrivate()) {
+                $namespace = 'privates';
+            } elseif ($this->getChat()->isGroup()) {
+                $namespace = 'groups';
+            } elseif ($this->getChat()->isChannel()) {
+                $namespace = 'channels';
+            }
+            // Set namespace
+            Yii::configure(Yii::$app, require __DIR__ . "/config/$namespace.php");
+            $this->controllerNamespace .= '\\' . $namespace;
+            $this->setViewPath($this->getViewPath() . '/' . $namespace);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $chatId
+     *
+     * @return Chat|null
+     */
+    public function setChatByChatId($chatId)
+    {
+        $chat = Chat::findOne([
+            'chat_id' => $chatId,
+            'bot_id' => $this->getBot()->id,
+        ]);
+
+        if ($chat) {
+            return $this->setChat($chat);
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Chat|null
+     */
+    public function getChat()
+    {
+        if (Yii::$container->hasSingleton('chat')) {
+            return Yii::$container->get('chat');
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Chat $chat
+     *
+     * @return Chat
+     */
+    public function setChat(Chat $chat)
+    {
+        Yii::$container->setSingleton('chat', $chat);
+
+        return $chat;
+    }
+
+    /**
+     * @return Bot|null
+     */
+    public function getBot()
+    {
+        if (Yii::$container->hasSingleton('bot')) {
+            return Yii::$container->get('bot');
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Bot $bot
+     *
+     * @return Bot
+     */
+    public function setBot(Bot $bot)
+    {
+        Yii::$container->setSingleton('bot', $bot);
+
+        return $bot;
+    }
+
+    /**
+     * @return BotApi
+     */
+    public function getBotApi()
+    {
+        if (Yii::$container->hasSingleton('botApi')) {
+            return Yii::$container->get('botApi');
+        } elseif ($this->getBot()) {
+            $botApi = new BotApi($this->getBot()->token);
+
+            if ($botApi) {
+                if (isset(Yii::$app->params['telegramProxy'])) {
+                    $botApi->setProxy(Yii::$app->params['telegramProxy']);
+                }
+
+                return $this->setBotApi($botApi);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param BotApi $botApi
+     *
+     * @return BotApi
+     */
+    public function setBotApi(BotApi $botApi)
+    {
+        Yii::$container->setSingleton('botApi', $botApi);
+
+        return $botApi;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getBotUser()
+    {
+        if (Yii::$container->hasSingleton('botUser')) {
+            return Yii::$container->get('botUser');
+        }
+
+        return null;
+    }
+
+    /**
+     * @param BotUser $botUser
+     *
+     * @return BotUser
+     */
+    public function setBotUser(BotUser $botUser)
+    {
+        Yii::$container->setSingleton('botUser', $botUser);
+
+        return $botUser;
+    }
+
+    /**
+     * @return UserState|null
+     */
+    public function getBotUserState()
+    {
+        if (Yii::$container->hasSingleton('botUserState')) {
+            return Yii::$container->get('botUserState');
+        }
+
+        return null;
+    }
+
+    /**
+     * @param UserState $botUserState
+     *
+     * @return UserState
+     */
+    public function setBotUserState(UserState $botUserState)
+    {
+        Yii::$container->setSingleton('botUserState', $botUserState);
+
+        return $botUserState;
+    }
+
+    /**
+     * @return Update|null
+     */
+    public function getUpdate()
+    {
+        if (Yii::$container->hasSingleton('update')) {
+            return Yii::$container->get('update');
+        }
+
+        return null;
     }
 
     /**
      * @param Update $update
-     * @return bool
-     * @throws InvalidRouteException
+     *
+     * @return Update
      */
-    private function dispatchRoute(Update $update)
+    public function setUpdate(Update $update)
     {
-        $result = false;
+        Yii::$container->setSingleton('update', $update);
 
-        $state = $this->telegramChat->isPrivate()
-            ? $this->userState->getName()
-            : null;
-
-        // delete all user messages in private chat
-        if ($this->telegramChat->isPrivate() && $this->update->getMessage()) {
-            $commands = ResponseBuilder::fromUpdate($this->update)->deleteMessage()->build();
-            $deleteCommand = array_pop($commands);
-            $deleteCommand->send($this->botApi);
-        }
-
-        $defaultRoute = $this->telegramChat->isPrivate()
-            ? 'default/delete-message'
-            : 'message/index';
-
-        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($update, $state, $defaultRoute);
-
-        if (array_key_exists('botname', $params) && !empty($params['botname']) && $params['botname'] !== $this->botInfo->name) {
-            return $result;
-        }
-
-        if (!$isStateRoute) {
-            $this->userState->setName($state);
-        }
-
-        /* Temporary solution for filter in groups */
-        if (!isset($route) && !$this->telegramChat->isPrivate()) {
-            $route = $defaultRoute;
-        }
-
-        if ($route) {
-            try {
-                $commands = $this->runAction($route, $params);
-            } catch (InvalidRouteException $e) {
-                $commands = $this->runAction($defaultRoute);
-            }
-
-            if (isset($commands) && is_array($commands)) {
-                $privateMessageIds = [];
-                foreach ($commands as $command) {
-                    try {
-                        $command->send($this->botApi);
-                        // remember ids of all bot messages in private chat to delete them later
-                        if ($this->telegramChat->isPrivate()) {
-                            if ($messageId = $command->getMessageId()) {
-                                $privateMessageIds []= $messageId;
-                            }
-                        }
-                    } catch (\Exception $e) {
-                        Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
-                    }
-                }
-                $this->userState->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
-                $this->userState->setIntermediateField('private_message_chat_id', $this->telegramChat->chat_id);
-
-                $result = true;
-            }
-        }
-
-        return $result;
+        return $update;
     }
 }

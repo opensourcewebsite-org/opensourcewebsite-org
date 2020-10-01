@@ -10,12 +10,24 @@ $common = require __DIR__ . '/common.php';
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log', 'maintenanceMode'],
+    'bootstrap' => [
+        'log',
+        'maintenanceMode',
+    ],
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
         '@tests' => '@app/tests',
+        '@bot' => '@app/modules/bot',
+    ],
+    'modules' => [
+        'dataGenerator' => [
+            'class' => 'app\modules\dataGenerator\Module',
+        ],
+        'bot' => [
+            'class' => 'app\modules\bot\Module',
+        ],
     ],
     'components' => [
         'cache' => [
@@ -58,12 +70,8 @@ $config = [
             ],
         ],
     ],
+    'timeZone' => 'UTC',
     'params' => $params,
-    'modules' => [
-        'dataGenerator' => [
-            'class' => 'app\modules\dataGenerator\Module',
-        ],
-    ],
     'controllerMap' => [
         'fixture' => [
             'class' => FixtureController::class,
@@ -78,11 +86,14 @@ $config = [
 $config = ArrayHelper::merge($common, $config);
 
 if (YII_ENV_DEV) {
-    // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
+        // uncomment the following to add your IP if you are not connecting from localhost.
+        //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
+
+    $config['components']['log']['targets']['file']['levels'] = ['error', 'warning'];
 }
 
 return $config;

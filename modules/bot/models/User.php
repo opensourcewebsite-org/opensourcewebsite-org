@@ -4,7 +4,7 @@ namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 use app\models\Language;
-use models\User as GlobalUser;
+use app\models\User as GlobalUser;
 
 /**
  * This is the model class for table "bot_user".
@@ -138,9 +138,30 @@ class User extends ActiveRecord
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
     }
 
-    public function getAdministratedChats()
+    public function getAdministratedGroups()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'or',
+                ['type' => Chat::TYPE_GROUP],
+                ['type' => Chat::TYPE_SUPERGROUP],
+            ])
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                ]);
+            })
+            ->orderBy(['title' => SORT_ASC]);
+    }
+
+    public function getAdministratedChannels()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'type' => Chat::TYPE_CHANNEL,
+            ])
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -158,7 +179,7 @@ class User extends ActiveRecord
 
     public function getGlobalUser()
     {
-        return $this->hasOne(GlobalsUser::class, ['id' => 'user_id']);
+        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
     public function updateInfo($updateUser)
@@ -173,11 +194,13 @@ class User extends ActiveRecord
         $this->save();
     }
 
-    public function getFullLink() {
+    public function getFullLink()
+    {
         return '<a href="tg://user?id=' . $this->provider_user_id . '">' . $this->getFullName() . '</a>' . ($this->provider_user_name ? ' @' . $this->provider_user_name : '');
     }
 
-    public static function getFullLinkByProviderUserId(int $providerUserId) {
+    public static function getFullLinkByProviderUserId(int $providerUserId)
+    {
         $telegramUser = self::findOne(['provider_user_id' => $providerUserId]);
 
         if ($telegramUser) {

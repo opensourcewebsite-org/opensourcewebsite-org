@@ -39,10 +39,6 @@ class RedistributionMaxAmountCest
         $this->common->_after();
     }
 
-
-
-
-
     /**
      * @throws Throwable
      * @throws \yii\db\Exception

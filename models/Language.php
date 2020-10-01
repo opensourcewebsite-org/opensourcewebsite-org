@@ -50,7 +50,7 @@ class Language extends \yii\db\ActiveRecord
     /**
      * @return string
      */
-    public function getLanguageLabel()
+    public function getLabel()
     {
         return strtoupper($this->code) . ' - ' . $this->name;
     }

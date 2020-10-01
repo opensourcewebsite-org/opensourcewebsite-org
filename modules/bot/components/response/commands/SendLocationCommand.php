@@ -17,6 +17,10 @@ class SendLocationCommand extends Command
         $this->longitude = $longitude;
     }
 
+    /**
+     * @param BotApi $botApi
+     * @return \TelegramBot\Api\Types\Message
+    */
     public function send(BotApi $botApi)
     {
         $answer = false;

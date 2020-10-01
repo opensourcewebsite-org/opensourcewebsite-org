@@ -16,6 +16,9 @@ use Yii;
  */
 class RatingVote extends \yii\db\ActiveRecord
 {
+    public const VOTE_LIKE = 1;
+    public const VOTE_DISLIKE = -1;
+
     /**
      * {@inheritdoc}
      */

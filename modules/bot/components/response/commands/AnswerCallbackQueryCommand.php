@@ -17,6 +17,10 @@ class AnswerCallbackQueryCommand extends MessageTextCommand
         $this->showAlert = $showAlert;
     }
 
+    /**
+     * @param BotApi $botApi
+     * @return \TelegramBot\Api\Types\Message
+    */
     public function send(BotApi $botApi)
     {
         $answer = false;

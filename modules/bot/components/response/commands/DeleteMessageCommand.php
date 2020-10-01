@@ -15,6 +15,10 @@ class DeleteMessageCommand extends Command
         $this->messageId = $messageId;
     }
 
+    /**
+     * @param BotApi $botApi
+     * @return \TelegramBot\Api\Types\Message
+    */
     public function send(BotApi $botApi)
     {
         return $botApi->deleteMessage(

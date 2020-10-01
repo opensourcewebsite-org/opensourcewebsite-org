@@ -13,7 +13,7 @@ abstract class BaseAction extends Action
      */
     protected function getState()
     {
-        return $this->controller->module->userState;
+        return $this->controller->module->getBotUserState();
     }
 
     /**
@@ -21,7 +21,7 @@ abstract class BaseAction extends Action
      */
     protected function getUpdate()
     {
-        return $this->controller->module->update;
+        return $this->controller->module->getUpdate();
     }
 
     /**
@@ -29,7 +29,7 @@ abstract class BaseAction extends Action
      */
     protected function getResponseBuilder()
     {
-        return ResponseBuilder::fromUpdate($this->getUpdate());
+        return new ResponseBuilder();
     }
 
     /**
@@ -48,12 +48,13 @@ abstract class BaseAction extends Action
      */
     protected function getTelegramUser()
     {
-        return $this->controller->module->telegramUser;
+        return $this->controller->module->getBotUser();
     }
 
     public function createRoute(string $actionName = 'index', array $params = [])
     {
         $controllerClass = $this->controller->className();
+
         return $controllerClass::createRoute($actionName, $params);
     }
 }

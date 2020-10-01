@@ -36,7 +36,7 @@ if (!empty($languages)) {
     }
 }
 
-$currentUrl = Yii::$app->controller->id.'/' . Yii::$app->controller->action->id;
+$currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

@@ -149,13 +149,10 @@ class MyEmailController extends Controller
 
     public function actionMergeAccounts()
     {
-        $update = $this->getUpdate();
         $user = $this->getUser();
-        $state = $this->getState();
-        $stateName = $state->getName();
 
-        if ($stateName == 'waiting_for_merge') {
-            $userToMerge = User::findOne(['email' => $state->getIntermediateField('email', null)]);
+        if ($this->getState()->getName() == 'waiting_for_merge') {
+            $userToMerge = User::findOne(['email' => $this->getState()->getIntermediateField('email', null)]);
             if ($userToMerge) {
                 $mergeAccountsRequest = new MergeAccountsRequest();
                 $mergeAccountsRequest->setAttributes([
@@ -202,8 +199,6 @@ class MyEmailController extends Controller
 
     public function actionDiscardMergeRequest($mergeAccountsRequestId)
     {
-        $update = $this->getUpdate();
-
         $mergeAccountsRequest = MergeAccountsRequest::findOne($mergeAccountsRequestId);
         if (isset($mergeAccountsRequest)) {
             $mergeAccountsRequest->delete();

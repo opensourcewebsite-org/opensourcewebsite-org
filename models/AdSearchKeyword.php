@@ -23,27 +23,4 @@ class AdSearchKeyword extends ActiveRecord
             [['ad_search_id', 'ad_keyword_id'], 'integer'],
         ];
     }
-
-    public function behaviors()
-    {
-        return [
-            // TimestampBehavior::className(),
-        ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAdKeywordRelation()
-    {
-        return $this->hasOne(AdKeyword::class, ['id' => 'ad_keyword_id']);
-    }
-
-    /**
-     * @return string
-     */
-    public function getAdSearchKeywordLabel()
-    {
-        return $this->adKeywordRelation->keyword;
-    }
 }

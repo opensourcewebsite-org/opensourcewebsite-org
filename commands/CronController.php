@@ -40,7 +40,7 @@ class CronController extends Controller
         'Debt',
         'AdMatch',
         'JobMatch',
-        'Bot',
+        'BotCommand',
         'CurrencyRatesParser',
         'UaLawmakingParser',
     ];

@@ -25,4 +25,20 @@ class JobResumeKeyword extends ActiveRecord
             [['resume_id', 'job_keyword_id'], 'integer'],
         ];
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKeyword()
+    {
+        return $this->hasOne(JobKeyword::class, ['id' => 'job_keyword_id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->keyword->keyword;
+    }
 }

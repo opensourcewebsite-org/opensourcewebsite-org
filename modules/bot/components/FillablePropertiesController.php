@@ -22,52 +22,50 @@ abstract class FillablePropertiesController extends Controller
     public function actionSetProperty($property, $id = null)
     {
         $currentPropertyIndex = array_search($property, static::$properties);
+
         if ($currentPropertyIndex === false) {
             throw new InvalidRouteException("Invalid property '$property'");
         }
 
         $isCreateAction = is_null($id);
-        $update = $this->getUpdate();
-        $state = $this->getState();
 
-        if (is_null($update->getMessage())) {
-            $state->setName(self::createRoute("set-property", [
+        if (is_null($this->getUpdate()->getMessage())) {
+            $this->getState()->setName(self::createRoute('set-property', [
                 'id' => $id,
                 'property' => $property,
             ]));
-            return ResponseBuilder::fromUpdate($update)
+            return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->editMessageTextOrSendMessage(
-                    $this->render("set-$property")
+                    $this->render('set-' . $property)
                 )
                 ->build();
         }
 
-        $propertyValue = $update->getMessage()->getText();
-        $state->setIntermediateField($property, $propertyValue);
-
+        $propertyValue = $this->getUpdate()->getMessage()->getText();
+        $this->getState()->setIntermediateField($property, $propertyValue);
         $isEndOfProperties = count(static::$properties) == $currentPropertyIndex + 1;
 
         if (!$isCreateAction || $isEndOfProperties) {
             $result = $this->savePropertiesToModel($id);
-            $state->reset();
+            $this->getState()->reset();
             return $result;
         }
 
         $nextProperty = static::$properties[$currentPropertyIndex + 1];
-        $state->setName(self::createRoute("set-property", [
+        $this->getState()->setName(self::createRoute('set-property', [
             'property' => $nextProperty,
         ]));
 
-        return ResponseBuilder::fromUpdate($update)
+        return $this->getResponseBuilder()
             ->answerCallbackQuery()
             ->editMessageTextOrSendMessage(
-                $this->render("set-$nextProperty"),
+                $this->render('set-' . $nextProperty),
                 [
                     [
                         [
                             'text' => Yii::t('bot', 'SKIP'),
-                            'callback_data' => self::createRoute("set-property", [
+                            'callback_data' => self::createRoute('set-property', [
                                 'property' => $nextProperty,
                             ]),
                         ],
@@ -79,13 +77,10 @@ abstract class FillablePropertiesController extends Controller
 
     protected function savePropertiesToModel($id = null)
     {
-        $update = $this->getUpdate();
-        $state = $this->getState();
-
         $model = $this->getModel($id);
 
         foreach (static::$properties as $property) {
-            $propertyValue = $state->getIntermediateField($property, null);
+            $propertyValue = $this->getState()->getIntermediateField($property, null);
             if (!is_null($propertyValue)) {
                 $model->{$property} = $propertyValue;
             }
@@ -95,7 +90,7 @@ abstract class FillablePropertiesController extends Controller
             return $this->afterSave($model, is_null($id));
         }
 
-        return ResponseBuilder::fromUpdate($update)
+        return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 new MessageText(json_encode($model->getErrors()))
             )

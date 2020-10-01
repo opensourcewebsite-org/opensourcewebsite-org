@@ -1,4 +1,4 @@
-<?= Yii::t('bot', 'Send a keywords separated by comma, dot or new line') ?>.<br/>
+<b><?= Yii::t('bot', 'Send a keywords separated by comma, dot or new line') ?>:</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>

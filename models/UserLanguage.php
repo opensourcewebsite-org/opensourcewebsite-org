@@ -30,7 +30,7 @@ class UserLanguage extends ActiveRecord
         return $this->hasOne(Language::class, [ 'id' => 'language_id' ]);
     }
 
-    public function getDisplayName()
+    public function getLabel()
     {
         return $this->language->name . ' - ' . Yii::t('app', $this->level->description);
     }

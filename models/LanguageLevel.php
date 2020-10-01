@@ -21,16 +21,11 @@ class LanguageLevel extends ActiveRecord
         ];
     }
 
-    public function getDisplayName()
-    {
-        return (isset($this->code) ? $this->code . ' - ' : '') . Yii::t('app', $this->description);
-    }
-
     /**
      * @return string
      */
-    public function getLanguageLevelLabel()
+    public function getLabel()
     {
-        return $this->getDisplayName();
+        return (isset($this->code) ? $this->code . ' - ' : '') . Yii::t('app', $this->description);
     }
 }

@@ -35,7 +35,7 @@ class MyProfileController extends Controller
             'currency' => isset($user->currency) ? "{$user->currency->name} ({$user->currency->code})" : null,
             'timezone' => TimeHelper::getNameByOffset($user->timezone),
             'languages' => array_map(function ($userLanguage) {
-                return $userLanguage->getDisplayName();
+                return $userLanguage->getLabel();
             }, $user->languages),
             'citizenships' => array_map(function ($citizenship) {
                 return $citizenship->country->name;

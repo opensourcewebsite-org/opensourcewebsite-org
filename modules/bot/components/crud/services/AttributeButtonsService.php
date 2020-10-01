@@ -185,13 +185,12 @@ class AttributeButtonsService
      *
      * @return string
      */
-    public function createAttributeRoute($modelName, $attribute, $id)
+    public function createAttributeRoute($modelName, $attribute, $id = null)
     {
         if ($id) {
             $routeParams = [
-                'm' => $modelName,
+                'id' => $id,
                 'a' => $attribute,
-                'i' => $id,
             ];
         } else {
             $routeParams = [

@@ -58,6 +58,7 @@ class ChatMember extends \TelegramBot\Api\Types\ChatMember
         if (($this->getStatus() == ChatMemberModel::STATUS_LEFT) || ($this->getStatus() == ChatMemberModel::STATUS_KICKED) || (($this->getStatus() == ChatMemberModel::STATUS_RESTRICTED) && !$this->isMember())) {
             return false;
         }
+
         return true;
     }
 }

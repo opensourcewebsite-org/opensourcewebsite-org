@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\modules\bot\components\crud\rules;
 
 /**
@@ -14,7 +13,7 @@ class PhotoFieldComponent extends BaseFieldComponent implements FieldInterface
     public function prepare($text)
     {
         $text = '';
-        if (($message = $this->update->getMessage()) && $message->getPhoto()) {
+        if (($message = $this->getUpdate()->getMessage()) && $message->getPhoto()) {
             $photoFileId = $message->getPhoto()[0]->getFileId();
             $text = $photoFileId;
         }

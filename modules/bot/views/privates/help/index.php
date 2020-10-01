@@ -2,7 +2,8 @@
 <br/>
 /s_ad - <?= Yii::t('bot', 'Ads') ?><br/>
 /s_job - <?= Yii::t('bot', 'Jobs') ?><br/>
-/admin - <?= Yii::t('bot', 'Telegram groups') ?><br/>
+/group - <?= Yii::t('bot', 'Telegram groups') ?><br/>
+/channel - <?= Yii::t('bot', 'Telegram channels') ?><br/>
 <br/>
 /my_account - <?= Yii::t('bot', 'Account') ?><br/>
 /my_rating - <?= Yii::t('bot', 'Rating') ?><br/>

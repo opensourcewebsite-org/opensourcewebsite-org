@@ -60,8 +60,7 @@ class StartController extends Controller
 
     public function actionSearch()
     {
-        $update = $this->getUpdate();
-        $text = $update->getMessage()->getText();
+        $text = $this->getUpdate()->getMessage()->getText();
 
         if (strlen($text) <= 3) {
             $language = Language::find()

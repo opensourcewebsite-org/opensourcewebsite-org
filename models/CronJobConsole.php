@@ -1,9 +1,11 @@
 <?php
+
 namespace app\models;
 
 use Yii;
 use yii\helpers\FileHelper;
 use yii\web\ServerErrorHttpException;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "cron_job".
@@ -19,8 +21,8 @@ class CronJobConsole extends CronJob
     public const EXCLUDE = 'Cron';
     public const STATUS_ON = 1;
 
-    private $_cronJobs = [];
-    private $_cronJobsDb = [];
+    private $jobs = [];
+    private $jobsDb = [];
 
     /**
      * {@inheritdoc}
@@ -28,12 +30,16 @@ class CronJobConsole extends CronJob
     public function init()
     {
         parent::init();
-        $this->checkDatabase();
+
+        $this->loadJobsFromDb();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setCronJobs($jobs)
     {
-        $this->_cronJobs = $jobs;
+        $this->jobs = $jobs;
     }
 
     /**
@@ -41,9 +47,9 @@ class CronJobConsole extends CronJob
      *
      * @return void
      */
-    protected function checkDatabase()
+    protected function loadJobsFromDb()
     {
-        $this->_cronJobsDb = $this->find()->select('name')->column();
+        $this->jobsDb = $this->find()->select('name')->column();
     }
 
     /**
@@ -52,7 +58,7 @@ class CronJobConsole extends CronJob
      */
     public function add()
     {
-        foreach ($this->_cronJobs as $name) {
+        foreach ($this->jobs as $name) {
             if (static::EXCLUDE == $name) {
                 continue;
             }
@@ -79,7 +85,7 @@ class CronJobConsole extends CronJob
      */
     public function clear()
     {
-        $toDrop = array_diff($this->_cronJobsDb, $this->_cronJobs);
+        $toDrop = array_diff($this->jobsDb, $this->jobs);
 
         return $this->deleteAll(['IN', 'name', $toDrop]);
     }
