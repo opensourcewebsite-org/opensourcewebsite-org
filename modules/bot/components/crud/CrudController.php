@@ -68,12 +68,12 @@ abstract class CrudController extends Controller
     {
         $this->backRoute = Yii::createObject([
             'class' => BackRouteService::class,
-            'state' => $module->userState,
+            'state' => $module->getBotUserState(),
             'controller' => $this,
         ]);
         $this->endRoute = Yii::createObject([
             'class' => EndRouteService::class,
-            'state' => $module->userState,
+            'state' => $module->getBotUserState(),
             'controller' => $this,
         ]);
         $this->attributeButtons = Yii::createObject([
@@ -90,7 +90,7 @@ abstract class CrudController extends Controller
         ]);
         $this->field = Yii::createObject([
             'class' => IntermediateFieldService::class,
-            'state' => $module->userState,
+            'state' => $module->getBotUserState(),
             'controller' => $this,
         ]);
 

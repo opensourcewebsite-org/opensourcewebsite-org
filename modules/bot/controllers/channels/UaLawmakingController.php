@@ -15,6 +15,7 @@ use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class UaLawmakingController
+ * @link https://t.me/ua_lawmaking
  *
  * @package app\modules\bot\controllers\channels
  */

@@ -29,10 +29,20 @@ class Module extends \yii\base\Module
      */
     public $controllerNamespace = 'app\modules\bot\controllers';
 
+    public $defaultControllerNamespace = null;
+
+    public $defaultViewPath = null;
+
     /**
      * @var User
      */
     public $user;
+
+    public function init()
+    {
+        $this->defaultControllerNamespace = $this->controllerNamespace;
+        $this->defaultViewPath = $this->getViewPath();
+    }
 
     /**
      * @param string $input
@@ -125,6 +135,8 @@ class Module extends \yii\base\Module
 
             $this->setChat($chat);
 
+            $this->updateNamespaceByChat($this->getChat());
+
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
                 $administrators = $this->getBotApi()->getChatAdministrators($this->getUpdate()->chat->getId());
@@ -148,19 +160,6 @@ class Module extends \yii\base\Module
                     ]);
                 }
             }
-
-            // Choose namespace
-            if ($chat->isPrivate()) {
-                $namespace = 'privates';
-            } elseif ($chat->isGroup()) {
-                $namespace = 'groups';
-            } elseif ($chat->isChannel()) {
-                $namespace = 'channels';
-            }
-            // Set namespace
-            Yii::configure(Yii::$app, require __DIR__ . "/config/$namespace.php");
-            $this->controllerNamespace .= '\\' . $namespace;
-            $this->setViewPath($this->getViewPath() . '/' . $namespace);
 
             if (isset($botUser)) {
                 if (!$chatMember = $chat->getChatMemberByUser($botUser)) {
@@ -238,7 +237,7 @@ class Module extends \yii\base\Module
             $state = null;
         }
 
-        list($route, $params, $isStateRoute) = Yii::$app->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
+        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
 
         if (!$isStateRoute && $this->getChat()->isPrivate()) {
             $this->getBotUserState()->setName($state);
@@ -247,7 +246,7 @@ class Module extends \yii\base\Module
         try {
             $commands = $this->runAction($route, $params);
         } catch (InvalidRouteException $e) {
-            $commands = $this->runAction(Yii::$app->commandRouteResolver->defaultRoute);
+            $commands = $this->runAction($this->commandRouteResolver->defaultRoute);
         }
 
         if (isset($commands) && is_array($commands)) {
@@ -280,24 +279,7 @@ class Module extends \yii\base\Module
      */
     public function initFromConsole()
     {
-        if ($this->getChat()) {
-            // Choose namespace
-            if ($this->getChat()->isPrivate()) {
-                $namespace = 'privates';
-            } elseif ($this->getChat()->isGroup()) {
-                $namespace = 'groups';
-            } elseif ($this->getChat()->isChannel()) {
-                $namespace = 'channels';
-            }
-            // Set namespace
-            Yii::configure(Yii::$app, require __DIR__ . "/config/$namespace.php");
-            $this->controllerNamespace .= '\\' . $namespace;
-            $this->setViewPath($this->getViewPath() . '/' . $namespace);
-
-            return true;
-        }
-
-        return false;
+        return $this->updateNamespaceByChat($this->getChat());
     }
 
     /**
@@ -471,5 +453,32 @@ class Module extends \yii\base\Module
         Yii::$container->setSingleton('update', $update);
 
         return $update;
+    }
+
+    /**
+     * @param Chat $chat
+     *
+     * @return boolean
+     */
+    public function updateNamespaceByChat(Chat $chat)
+    {
+        if ($chat) {
+            // Choose namespace
+            if ($chat->isPrivate()) {
+                $namespace = 'privates';
+            } elseif ($chat->isGroup()) {
+                $namespace = 'groups';
+            } elseif ($chat->isChannel()) {
+                $namespace = 'channels';
+            }
+            // Set namespace
+            Yii::configure($this, require __DIR__ . "/config/$namespace.php");
+            $this->controllerNamespace = $this->defaultControllerNamespace . '\\' . $namespace;
+            $this->setViewPath($this->defaultViewPath . '/' . $namespace);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -10,4 +10,6 @@
 Не голосували: <b><?= $voting->not_voting ?></b><br/>
 Всього: <b><?= $voting->presence ?></b><br/>
 <br/>
+Дата: <b><?= $voting->date ?></b><br/>
+<br/>
 <?= $voting->getVotingFullLink() ?>, <?= $voting->getLawFullLink() ?>

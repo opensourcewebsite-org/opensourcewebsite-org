@@ -65,6 +65,7 @@ class UaLawmakingController extends Controller
         $voting->abstain = 20;
         $voting->not_voting = 10;
         $voting->presence = 360;
+        $voting->date = '2020-10-01';
 
         $likeVotes = 4221;
         $dislikeVotes = 42;
@@ -113,6 +114,7 @@ class UaLawmakingController extends Controller
         $voting->abstain = 20;
         $voting->not_voting = 10;
         $voting->presence = 160;
+        $voting->date = '2020-10-01';
 
         $likeVotes = 4221;
         $dislikeVotes = 42;
@@ -164,6 +166,7 @@ class UaLawmakingController extends Controller
             $voting->abstain = 20;
             $voting->not_voting = 10;
             $voting->presence = 360;
+            $voting->date = '2020-10-01';
 
             $likeVotes = 4221;
             $dislikeVotes = 42;
@@ -214,6 +217,7 @@ class UaLawmakingController extends Controller
             $voting->abstain = 20;
             $voting->not_voting = 10;
             $voting->presence = 160;
+            $voting->date = '2020-10-01';
 
             $likeVotes = 4221;
             $dislikeVotes = 42;
