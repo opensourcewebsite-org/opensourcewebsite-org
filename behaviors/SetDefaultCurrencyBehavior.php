@@ -2,9 +2,9 @@
 
 namespace app\behaviors;
 
+use Yii;
 use app\models\Currency;
 use app\models\User;
-use Yii;
 use yii\base\Event;
 use yii\behaviors\AttributeBehavior;
 use yii\db\ActiveRecord;

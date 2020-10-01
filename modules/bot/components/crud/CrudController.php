@@ -2075,10 +2075,9 @@ abstract class CrudController extends Controller
     private function getRule(string $modelName)
     {
         $requestedRule = null;
-        foreach ($this->rules() as $rule) {
-            if ($this->getModelName($this->getModelClassByRule($rule)) == $modelName) {
-                $requestedRule = $rule;
-            }
+
+        if ($this->getModelName($this->getModelClassByRule($this->rule)) == $modelName) {
+            $requestedRule = $this->rule;
         }
 
         if ($this->modelName != $modelName) {

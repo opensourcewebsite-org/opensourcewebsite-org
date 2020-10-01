@@ -73,7 +73,7 @@ class ChatSetting extends ActiveRecord
     public function beforeSave($insert)
     {
         // TODO refactoring
-        $this->updated_by = Yii::$app->getModule('bot')->telegramUser->id;
+        $this->updated_by = Yii::$app->getModule('bot')->getBotUser()->id;
 
         return parent::beforeSave($insert);
     }
@@ -85,7 +85,7 @@ class ChatSetting extends ActiveRecord
     {
         // TODO refactoring
         if (empty($this->updated_by)) {
-            $this->updated_by = Yii::$app->getModule('bot')->telegramUser->id;
+            $this->updated_by = Yii::$app->getModule('bot')->getBotUser()->id;
         }
 
         return parent::beforeValidate();
