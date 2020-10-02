@@ -6,7 +6,6 @@ use Yii;
 use TelegramBot\Api\Types\Update;
 use yii\base\Component;
 use app\modules\bot\controllers\groups\SystemMessageController;
-use app\modules\bot\models\BotRouteAlias;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
@@ -48,11 +47,7 @@ class GroupRouteResolver extends Component
         }
 
         if (isset($requestMessage) && !isset($commandText)) {
-            if ($replyMessage = $requestMessage->getReplyToMessage()) {
-                $commandText = $this->getRouteAlias($requestMessage->getText());
-            } else {
-                $commandText = $requestMessage->getText();
-            }
+            $commandText = $requestMessage->getText();
         }
 
         if (isset($commandText)) {
@@ -186,22 +181,5 @@ class GroupRouteResolver extends Component
         }
 
         return $params;
-    }
-
-    private function getRouteAlias($text)
-    {
-        if ($text) {
-            $routeAlias = BotRouteAlias::find()
-                ->where([
-                    'text' => $text,
-                ])
-                ->one();
-
-            if ($routeAlias) {
-                $route = $routeAlias->route;
-            }
-        }
-
-        return $route ?? null;
     }
 }

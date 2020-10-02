@@ -12,8 +12,6 @@ class m201002_060206_remove_bot_voteban_tables extends Migration
      */
     public function safeUp()
     {
-        $this->truncateTable('{{%bot_route_alias}}');
-
         $this->dropForeignKey('fk-bot_voteban_voting-chat_id', '{{%bot_voteban_voting}}');
         $this->dropTable('{{%bot_voteban_voting}}');
 

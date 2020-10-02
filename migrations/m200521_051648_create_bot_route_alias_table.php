@@ -34,7 +34,7 @@ class m200521_051648_create_bot_route_alias_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey(
-            'fk-bot_route_alias-group_id',
+            'fk-bot_route_alias-chat_id',
             '{{%bot_route_alias}}'
         );
 
