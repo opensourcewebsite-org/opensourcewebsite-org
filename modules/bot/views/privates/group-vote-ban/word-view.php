@@ -1,1 +1,0 @@
-<?= $phrase->text; ?><br/>

@@ -163,36 +163,6 @@ class GroupController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => GroupStarTopController::createRoute('index', [
-                                        'chatId' => $chat->id,
-                                    ]),
-                                    'text' => call_user_func(
-                                        function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::STAR_TOP_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::STAR_TOP_STATUS_ON);
-
-                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Karma');
-                                        }
-                                    ),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => GroupVoteBanController::createRoute('index', [
-                                        'chatId' => $chat->id,
-                                    ]),
-                                    'text' => call_user_func(
-                                        function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::VOTE_BAN_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::VOTE_BAN_STATUS_ON);
-
-                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Vote Ban');
-                                        }
-                                    ),
-                                ],
-                            ],
-                            [
-                                [
                                     'callback_data' => GroupController::createRoute(),
                                     'text' => Emoji::BACK,
                                 ],

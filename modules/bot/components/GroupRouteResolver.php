@@ -7,8 +7,6 @@ use TelegramBot\Api\Types\Update;
 use yii\base\Component;
 use app\modules\bot\controllers\groups\SystemMessageController;
 use app\modules\bot\models\BotRouteAlias;
-use app\modules\bot\controllers\groups\VotebanController;
-use app\modules\bot\controllers\groups\TopController;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
@@ -51,7 +49,7 @@ class GroupRouteResolver extends Component
 
         if (isset($requestMessage) && !isset($commandText)) {
             if ($replyMessage = $requestMessage->getReplyToMessage()) {
-                $commandText = $this->getStaticAlias($requestMessage->getText()) ?? $this->getGroupAlias($requestMessage->getText());
+                $commandText = $this->getRouteAlias($requestMessage->getText());
             } else {
                 $commandText = $requestMessage->getText();
             }
@@ -190,26 +188,7 @@ class GroupRouteResolver extends Component
         return $params;
     }
 
-    private function getStaticAlias($text)
-    {
-        $aliases = [
-            'voteban' => VotebanController::createRoute('index'),
-            '+' => TopController::createRoute('start-like'),
-            Emoji::LIKE => TopController::createRoute('start-like'),
-            '-' => TopController::createRoute('start-dislike'),
-            Emoji::DISLIKE => TopController::createRoute('start-dislike'),
-        ];
-
-        foreach ($aliases as $alias => $aliasRoute) {
-            if (strcasecmp($alias, $text) == 0) {
-                $route = $aliasRoute;
-            }
-        }
-
-        return $route ?? null;
-    }
-
-    private function getGroupAlias($text)
+    private function getRouteAlias($text)
     {
         if ($text) {
             $routeAlias = BotRouteAlias::find()
