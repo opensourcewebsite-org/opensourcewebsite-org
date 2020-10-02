@@ -35,14 +35,14 @@ class CronController extends Controller
      * @var array
      */
     static protected $map = [
-        'WikipediaParser',
-        'WikinewsParser',
-        'Debt',
-        'AdMatch',
-        'JobMatch',
-        'BotCommand',
+        //'AdMatch',
+        //'JobMatch',
+        //'BotCommand',
+        //'Debt',
         'CurrencyRatesParser',
-        'UaLawmakingParser',
+        //'UaLawmakingParser',
+        //'WikipediaParser',
+        //'WikinewsParser',
     ];
 
     /**

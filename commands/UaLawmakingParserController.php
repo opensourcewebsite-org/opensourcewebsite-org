@@ -20,7 +20,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
 {
     use ControllerLogTrait;
 
-    private $updatesCount;
+    private $updatesCount = 0;
     // Data source https://data.rada.gov.ua/open/data/plenary_vote_results-skl9
     // Data structure https://data.rada.gov.ua/ogd/zal/ppz/stru/chron-stru.xsd
     private $remoteSourceDirectory = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/json';
@@ -35,8 +35,6 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
 
     protected function parser()
     {
-        $this->updatesCount = 0;
-
         $cronJob = CronJob::find()
             ->where([
                 CronJob::tableName() . '.name' => 'UaLawmakingParser'
