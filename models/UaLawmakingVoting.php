@@ -25,6 +25,9 @@ class UaLawmakingVoting extends \yii\db\ActiveRecord
 {
     const MIN_ACCEPTED_VOTES = 226;
 
+    /** @var array|null */
+    public $laws;
+
     /**
      * {@inheritdoc}
      */
@@ -71,16 +74,45 @@ class UaLawmakingVoting extends \yii\db\ActiveRecord
      */
     public function getVotingFullLink()
     {
-        return '<a href="http://w1.c1.rada.gov.ua/pls/radan_gs09/ns_golos?g_id=' . $this->event_id . '">' . 'Поіменне голосування' . '</a>';
+        return '<a href="http://w1.c1.rada.gov.ua/pls/radan_gs09/ns_golos?g_id=' . $this->event_id . '">' . $this->name . '</a>';
     }
 
     /**
+     * @param int $lawId
+     *
      * @return string
      */
-    public function getLawFullLink()
+    public function getLawFullLink($lawId)
     {
-        // TODO add correct link
-        return '<a href="http://w1.c1.rada.gov.ua/pls/radan_gs09/ns_golos?g_id=' . $this->event_id . '">' . 'Картка законопроекту' . '</a>';
+        return '<a href="http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_2?pf3516=' . $lawId . '&skl=10">' . $lawId . '</a>';
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getLaws()
+    {
+        if (!is_array($this->laws)) {
+            $pattern = '/[(|\s]№([а-яё\d-]+)[,|)]/u';
+            preg_match_all($pattern, $this->name, $matches);
+            $this->laws = $matches[1];
+        }
+
+        return $this->laws;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLawsFullLinks()
+    {
+        $lawsFullLinks = [];
+
+        foreach ($this->laws as $lawId) {
+            $lawsFullLinks[] = $this->getLawFullLink($lawId);
+        }
+
+        return $lawsFullLinks;
     }
 
     /**
