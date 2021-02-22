@@ -50,7 +50,7 @@ $this->beginBody();
 
             <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <div class="search-container">
-                <input type="text" id="search-lang" onkeyup="getLanguage()" placeholder="Search..">
+                <input type="text" id="search-lang" placeholder="Search..">
                 <button type="button"><i class="fa fa-search"></i></button>
               </div>
                 <div class="dropdown-container">
