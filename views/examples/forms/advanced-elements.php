@@ -2,7 +2,7 @@
 
 use app\assets\widgets\forms\AdvancedElementsAsset;
 
-$this->registerAssetBundle(AdvancedElementsAsset::class);
+AdvancedElementsAsset::register($this);
 
 $this->title = Yii::t('app', 'Advanced Elements');
 $this->params['breadcrumbs'][] = $this->title;
