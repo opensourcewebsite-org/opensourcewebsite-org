@@ -135,7 +135,7 @@ if (!empty($languages)) {
 
             <div id="myDropdown" class="dropdown-menu dropdown-menu-inner" aria-labelledby="dropdownMenuLink">
                 <div class="search-container">
-                <input type="text" id="search-lang" onkeyup="getLanguage()" placeholder="Search..">
+                <input type="text" id="search-lang" placeholder="Search..">
                 <button type="button"><i class="fa fa-search"></i></button>
                 </div>
 
