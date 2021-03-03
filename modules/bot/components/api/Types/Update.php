@@ -9,6 +9,8 @@ use TelegramBot\Api\Types\Inline\InlineQuery;
 use TelegramBot\Api\Types\Payments\Query\PreCheckoutQuery;
 use TelegramBot\Api\Types\Payments\Query\ShippingQuery;
 use TelegramBot\Api\Types\CallbackQuery;
+use TelegramBot\Api\Types\Poll;
+use TelegramBot\Api\Types\PollAnswer;
 
 class Update extends \TelegramBot\Api\Types\Update
 {
@@ -78,5 +80,15 @@ class Update extends \TelegramBot\Api\Types\Update
     public function getPrivateMessageIds()
     {
         return $this->privateMessageIds;
+    }
+
+    public function getChat()
+    {
+        return $this->chat;
+    }
+
+    public function getFrom()
+    {
+        return $this->from;
     }
 }
