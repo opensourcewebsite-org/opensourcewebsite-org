@@ -19,13 +19,17 @@ class Chat extends \TelegramBot\Api\Types\Chat
         'username' => true,
         'first_name' => true,
         'last_name' => true,
-        'all_members_are_administrators' => true,
         'photo' => ChatPhoto::class,
+        'bio' => true,
         'description' => true,
         'invite_link' => true,
         'pinned_message' => Message::class,
+        'permissions' => ChatPermissions::class,
+        'slow_mode_delay' => true,
         'sticker_set_name' => true,
-        'can_set_sticker_set' => true
+        'can_set_sticker_set' => true,
+        'linked_chat_id' => true,
+        'location' => ChatLocation::class
     ];
 
     public function isPrivate()
