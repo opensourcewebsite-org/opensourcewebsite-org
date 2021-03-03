@@ -93,7 +93,6 @@ Recommended IDE:
         - Go to "File > Settings > Packages > atom-beautify > Settings > PHP". To automatically beautify PHP code on file save toggle `Beautify On Save` option and select `PHP-CS-Fixer` as Default Beautifier.
         - Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add Binary/Script Path like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
     - [EditorConfig](https://atom.io/packages/editorconfig)
-    - [IDE-PHP](https://atom.io/packages/ide-php)
     - [PHP Linter](https://atom.io/packages/linter-php)
     - [Yii Framework 2](https://atom.io/packages/atom-yii2)
   - [VS Code](https://code.visualstudio.com)

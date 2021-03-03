@@ -92,7 +92,6 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
         - Перейдите в "File > Settings > Packages > atom-beautify > Settings > PHP". Для автоматического запуска beautify для PHP-кода при сохранении файла, включите `Beautify On Save`-опцию и выберите `PHP-CS-Fixer` как Default Beautifier.
         - Перейдите в "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Добавьте Binary/Script Path, например, `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
     - [EditorConfig](https://atom.io/packages/editorconfig)
-    - [IDE-PHP](https://atom.io/packages/ide-php)
     - [PHP Linter](https://atom.io/packages/linter-php)
     - [Yii Framework 2](https://atom.io/packages/atom-yii2)
   - [VS Code](https://code.visualstudio.com)
