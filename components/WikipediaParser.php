@@ -54,7 +54,6 @@ class WikipediaParser extends BaseObject
      */
     public function run($justValidateUser = false)
     {
-
         if ($this->firstIteration) {
             $this->userPagesId = [];
         }
