@@ -193,44 +193,13 @@ class ContactController extends Controller
      * Creates a new Contact model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
-     *
-     * TODO [ref] methods actionCreate and actionUpdate has a lot of duplicated code. Merge logic in common functions
-     *        [ref] validation logic should not be implemented in controller. Move it into Model::rules()
      */
     public function actionCreate()
     {
         $model = new Contact();
-        $model->loadDefaultValues();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
-            if (!empty($model->userIdOrName)) {
-                if ($model->user_id == $model->userIdOrName) {
-                    Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
-
-                    return $this->render('create', [
-                        'model' => $model,
-                    ]);
-                }
-                $user = User::find()
-                    ->andWhere([
-                        'OR',
-                        ['id' => $model->userIdOrName],
-                        ['username' => $model->userIdOrName]
-                    ])
-                    ->one();
-                if (!empty($user->contact)) {
-                    $contact = $user->contact;
-                    $contact->link_user_id = null;
-                    $contact->save(false);
-                }
-                $model->link_user_id = $user->id;
-
-                $model->save(false);
-
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-
             $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -254,30 +223,6 @@ class ContactController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->user_id = Yii::$app->user->id;
-            if (!empty($model->userIdOrName)) {
-                if ($model->user_id == $model->userIdOrName) {
-                    Yii::$app->session->setFlash('error', 'User ID / You are trying to enter your ID.');
-
-                    return $this->render('update', [
-                        'model' => $model,
-                    ]);
-                }
-                $user = User::find()
-                    ->andWhere([
-                        'OR',
-                        ['id' => $model->userIdOrName],
-                        ['username' => $model->userIdOrName]
-                    ])
-                    ->one();
-                if (!empty($user->contact) && ((int) $user->contact->id !== (int) $id)) {
-                    $contact = $user->contact;
-                    $contact->link_user_id = null;
-                    $contact->save(false);
-                }
-                $model->link_user_id = $user->id;
-            } else {
-                $model->link_user_id = null;
-            }
             $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
         }
