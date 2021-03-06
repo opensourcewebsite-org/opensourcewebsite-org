@@ -15,6 +15,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 
 <div class="contact-form">
     <?php $form = ActiveForm::begin(); ?>
+    <?= $form->field($model, 'user_id')->hiddenInput(['value' => Yii::$app->user->id]); ?>
     <div class="row">
         <div class="col-12">
             <div class="card">
