@@ -31,7 +31,7 @@ trait RandomTrait
 
         $where = $modelClass::getDb()->getQueryBuilder()->buildWhere($this->where, $this->params);
 
-        return $this->andWhere("RAND() < (SELECT (($limit/COUNT(*))*10) FROM `$table` $where)")
+        return $this->andWhere("RAND() < (SELECT (($limit/COUNT(*))*10) FROM $table $where)")
             ->orderBy('RAND()')
             ->limit($limit);
     }

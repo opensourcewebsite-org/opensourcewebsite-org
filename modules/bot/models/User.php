@@ -12,14 +12,17 @@ use app\models\User as GlobalUser;
  * @property int $id
  * @property int $provider_user_id
  * @property string $provider_user_name
+ * @property bool $provider_user_blocked
  * @property string $provider_user_first_name
  * @property string $provider_user_last_name
- * @property int $provider_user_blocked
  * @property string $location_lat
  * @property string $location_lon
  * @property int $location_at
  * @property string $language_code
+ * @property int $user_id
  * @property string $currency_code
+ * @property string $state
+ * @property int $language_id
  */
 class User extends ActiveRecord
 {
