@@ -18,8 +18,7 @@ use Yii;
  * @property int $total
  * @property int $presence
  * @property int $absent
- * @property int $parsed_at
- * @property int|null $sent_at
+ * @property int|null $sent
  * @property int|null $message_id
  */
 class UaLawmakingVoting extends \yii\db\ActiveRecord
@@ -44,7 +43,7 @@ class UaLawmakingVoting extends \yii\db\ActiveRecord
     {
         return [
             [['event_id', 'date', 'name', 'for', 'against', 'abstain', 'not_voting', 'total', 'presence', 'absent'], 'required'],
-            [['event_id', 'for', 'against', 'abstain', 'not_voting', 'total', 'presence', 'absent', 'parsed_at', 'sent_at', 'message_id'], 'integer'],
+            [['event_id', 'for', 'against', 'abstain', 'not_voting', 'total', 'presence', 'absent', 'sent_at', 'message_id'], 'integer'],
             [['date'], 'safe'],
             [['name'], 'string'],
         ];
