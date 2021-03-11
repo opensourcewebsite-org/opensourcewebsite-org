@@ -2,6 +2,7 @@
 
 namespace app\models\queries;
 
+use app\models\queries\traits\RandomTrait;
 use app\models\User;
 use yii\db\ActiveQuery;
 
@@ -14,6 +15,7 @@ use yii\db\ActiveQuery;
  */
 class UserQuery extends ActiveQuery
 {
+    use RandomTrait;
     /**
      * @return UserQuery
      */
