@@ -8,6 +8,10 @@ use app\models\User as GlobalUser;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
+use yii\web\JsExpression;
 
 /**
  * This is the model class for table "currency_exchange_order".
@@ -30,12 +34,13 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property int $buying_cash_on
  * @property int $cross_rate_on
  *
+ * @property User $user
  * @property CurrencyExchangeOrderBuyingPaymentMethod[] $currencyExchangeOrderBuyingPaymentMethods
  * @property CurrencyExchangeOrderMatch[] $currencyExchangeOrderMatches
  * @property CurrencyExchangeOrderMatch[] $currencyExchangeOrderMatches0
  * @property CurrencyExchangeOrderSellingPaymentMethod[] $currencyExchangeOrderSellingPaymentMethods
  */
-class CurrencyExchangeOrder extends \yii\db\ActiveRecord
+class CurrencyExchangeOrder extends ActiveRecord
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -59,7 +64,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [
@@ -69,6 +74,13 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
                     'buying_currency_id',
                 ],
                 'required',
+            ],
+            ['selling_rate', 'required', 'when' => function ($model) {
+                return !$model->cross_rate_on;
+            }, 'whenClient' => new JsExpression(" function (attribute, value) {
+                    return !$('#crossRateCheckbox').prop('checked');
+                }
+            ")
             ],
             [
                 [
@@ -97,6 +109,18 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
                 'location_lon',
                 LocationLonValidator::class,
             ],
+            ['location', 'required', 'when' => function ($model) {
+                if (($model->selling_cash_on || $model->buying_cash_on) && !$model->location) {
+                    return true;
+                }
+                return false;
+            }, 'whenClient' => new JsExpression("function(attribute, value) {
+                return $('#cashBuyCheckbox').prop('checked') || $('#cashSellCheckbox').prop('checked');
+            }")
+            ],
+            [
+                'location', 'string',
+            ],
             [
                 [
                     'selling_rate',
@@ -104,7 +128,17 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
                 ],
                 'double',
                 'min' => 0,
-                'max' => 9999999999999.99,
+                'max' => 9999999999999.99999999,
+            ],
+            [
+                [
+                    'selling_currency_min_amount',
+                    'selling_currency_max_amount',
+                ],
+                'filter', 'filter' => function ($value) {
+                     return  ($value != 0 ? $value : null);
+
+                },
             ],
             [
                 [
@@ -115,6 +149,21 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
                 'min' => 0,
                 'max' => 9999999999.99999999,
             ],
+            [
+                [
+                    'selling_currency_max_amount',
+                ],
+                'compare',
+                'when' => function ($model) {
+                    return $model->selling_currency_min_amount != null;
+                },
+                'whenClient' => new JsExpression("
+                    function (attribute, value) {
+                        return $('#currencyexchangeorder-selling_currency_min_amount').val() != ''
+                    }"
+                ),
+                'compareAttribute' => 'selling_currency_min_amount', 'operator' => '>=', 'type' => 'number'
+            ]
         ];
     }
 
@@ -151,20 +200,46 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
         ];
     }
 
     /**
+     * @param string $location
+     * @return $this
+     */
+    public function setLocation(string $location): self
+    {
+        $latLon = explode(',', $location);
+        if (count($latLon) === 2) {
+            $this->location_lat = $latLon[0] ?? '';
+            $this->location_lon = $latLon[1] ?? '';
+        }
+
+        return $this;
+    }
+
+    public function getLocation(): string
+    {
+        return ($this->location_lat && $this->location_lon) ? implode(',', [$this->location_lat, $this->location_lon]) : '';
+    }
+
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
      * Gets query for [[CurrencyExchangeOrderSellingPaymentMethods]].
      *
      * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
      */
-    public function getSellingPaymentMethods()
+    public function getSellingPaymentMethods(): ActiveQuery
     {
-        return $this->hasMany(PaymentMethod::className(), ['id' => 'payment_method_id'])
+        return $this->hasMany(PaymentMethod::class, ['id' => 'payment_method_id'])
             ->viaTable('{{%currency_exchange_order_selling_payment_method}}', ['order_id' => 'id']);
     }
 
@@ -172,10 +247,11 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
      * Gets query for [[CurrencyExchangeOrderBuyingPaymentMethods]].
      *
      * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
      */
-    public function getBuyingPaymentMethods()
+    public function getBuyingPaymentMethods(): ActiveQuery
     {
-        return $this->hasMany(PaymentMethod::className(), ['id' => 'payment_method_id'])
+        return $this->hasMany(PaymentMethod::class, ['id' => 'payment_method_id'])
             ->viaTable('{{%currency_exchange_order_buying_payment_method}}', ['order_id' => 'id']);
     }
 
@@ -183,19 +259,32 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getMatches()
+    public function getMatches(): ActiveQuery
     {
-        return $this->hasMany(self::className(), ['id' => 'match_order_id'])
+        return $this->hasMany(self::class, ['id' => 'match_order_id'])
             ->viaTable('{{%currency_exchange_order_match}}', ['order_id' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getMatchesOrderedByUserRating(): ActiveQuery
+    {
+        return $this
+            ->getMatches()
+            ->joinWith('user u')
+            ->orderBy(['u.rating' => SORT_DESC])
+            ->addOrderBy(['u.created_at' => SORT_ASC]);;
     }
 
     /**
      * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getCounterMatches()
+    public function getCounterMatches(): ActiveQuery
     {
-        return $this->hasMany(self::className(), ['id' => 'order_id'])
+        return $this->hasMany(self::class, ['id' => 'order_id'])
             ->viaTable('{{%currency_exchange_order_match}}', ['match_order_id' => 'id']);
     }
 
@@ -204,12 +293,60 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         $this->unlinkAll('matches', true);
         $this->unlinkAll('counterMatches', true);
 
-        return true;
+        $tblName = static::tableName();
+
+        $matchesQuery = static::find()
+            ->where(['!=', "$tblName.user_id", $this->user_id])
+            ->andWhere(["$tblName.status" => static::STATUS_ON])
+            ->andWhere(["$tblName.buying_currency_id" => $this->selling_currency_id])
+            ->andWhere(["$tblName.selling_currency_id" => $this->buying_currency_id]);
+
+        $matchesQuery->andWhere(["$tblName.buying_cash_on" => $this->selling_cash_on]);
+
+        $matchesQuery->andWhere(["$tblName.selling_cash_on" => $this->buying_cash_on]);
+
+        if (!$this->cross_rate_on) {
+            $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
+                ->andWhere(['<=', "$tblName.selling_rate", $this->buying_rate]);
+        } else {
+            $matchesQuery->andWhere(["$tblName.cross_rate_on" => true]);
+        }
+
+        if ($this->selling_cash_on) {
+            $matchesQuery->andWhere(['buying_cash_on' => true]);
+        }
+
+        if ($this->buying_cash_on)
+        {
+            $matchesQuery->andWhere(['selling_cash_on' => true]);
+        }
+
+        if (($this->selling_cash_on || $this->buying_cash_on) && $this->delivery_radius && $this->location_lat && $this->location_lon) {
+            $matchesQuery->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat),
+                POINT($tblName.location_lon, $tblName.location_lat)) <= 1000 * ($tblName.delivery_radius + $this->delivery_radius)");
+        }
+
+        $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(),'id');
+        $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(),'id');
+
+        $matchesQuery
+            ->joinWith('sellingPaymentMethods sm')
+            ->andWhere(['in', 'sm.id', $buyingMethodsIds]);
+
+        $matchesQuery
+            ->joinWith('buyingPaymentMethods bm')
+            ->andWhere(['in', 'bm.id', $sellingMethodsIds]);
+
+        foreach ($matchesQuery->all() as $matchedOrder) {
+            $this->link('matches', $matchedOrder);
+            $this->link('counterMatches', $matchedOrder);
+        }
+
     }
 
     public function getGlobalUser()
     {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
+        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
     /**
@@ -274,6 +411,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
      */
     public function afterSave($insert, $changedAttributes)
     {
+
         $clearMatches = false;
 
         if (isset($changedAttributes['status'])) {
@@ -282,7 +420,13 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
             }
         }
 
-        if (isset($changedAttributes['cross_rate_on'])) {
+        if ((isset($changedAttributes['selling_cash_on']) && ((bool)$this->selling_cash_on !== (bool)$changedAttributes['selling_cash_on'])) ||
+            (isset($changedAttributes['buying_cash_on']) && ((bool)$this->buying_cash_on !== (bool)$changedAttributes['buying_cash_on'])) )
+        {
+            $clearMatches = true;
+        }
+
+        if (isset($changedAttributes['cross_rate_on']) && ((bool)$this->cross_rate_on !== (bool)$changedAttributes['cross_rate_on'])) {
             if ($this->cross_rate_on == self::CROSS_RATE_ON) {
                 $clearMatches = true;
                 Yii::warning('cross_rate_on');
@@ -290,7 +434,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
             Yii::warning('cross_rate_on2');
         }
 
-        if (isset($changedAttributes['selling_rate'])) {
+        if (!$this->cross_rate_on && ( (isset($changedAttributes['selling_rate']) && $this->selling_rate != $changedAttributes['selling_rate']) || $insert)) {
             $this->buying_rate = 1 / $this->selling_rate;
             $this->cross_rate_on = self::CROSS_RATE_OFF;
             $this->save();
@@ -299,7 +443,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
             Yii::warning('selling_rate');
         }
 
-        if (isset($changedAttributes['buying_rate'])) {
+        if (!$this->cross_rate_on && ( (isset($changedAttributes['buying_rate']) && $this->buying_rate != $changedAttributes['buying_rate']) || $insert)) {
             $this->selling_rate = 1 / $this->buying_rate;
             $this->cross_rate_on = self::CROSS_RATE_OFF;
             $this->save();
@@ -321,10 +465,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         parent::afterSave($insert, $changedAttributes);
     }
 
-    /**
-     * @return array
-     */
-    public function notPossibleToChangeStatus()
+    public function notPossibleToChangeStatus(): array
     {
         $notFilledFields = [];
 
@@ -337,10 +478,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         return $notFilledFields;
     }
 
-    /**
-     * @return string
-     */
-    public function getSellingCurrencyMinAmount()
+    public function getSellingCurrencyMinAmount(): string
     {
         if ($this->selling_currency_min_amount) {
             return number_format($this->selling_currency_min_amount, 2);
@@ -349,10 +487,7 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getSellingCurrencyMaxAmount()
+    public function getSellingCurrencyMaxAmount(): string
     {
         if ($this->selling_currency_max_amount) {
             return number_format($this->selling_currency_max_amount, 2);
@@ -361,12 +496,38 @@ class CurrencyExchangeOrder extends \yii\db\ActiveRecord
         }
     }
 
-    public function hasAmount()
+    public function getSellingCrossRate()
+    {
+        return CurrencyRate::find()->where(['from_currency_id' => $this->selling_currency_id, 'to_currency_id' => $this->buying_currency_id])->one();
+    }
+
+    public function getBuyingCrossRate()
+    {
+        return CurrencyRate::find()->where(['from_currency_id' => $this->buying_currency_id, 'to_currency_id' => $this->selling_currency_id])->one();
+    }
+
+    public function hasAmount(): bool
     {
         if ($this->selling_currency_min_amount || $this->selling_currency_max_amount) {
             return true;
         }
 
         return false;
+    }
+
+    public function getCurrentSellingPaymentMethodsIds(): array
+    {
+        return array_map(
+            'intval',
+            ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id')
+        );
+    }
+
+    public function getCurrentBuyingPaymentMethodsIds(): array
+    {
+        return  array_map(
+            'intval',
+            ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id')
+        );
     }
 }
