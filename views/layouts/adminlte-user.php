@@ -208,6 +208,12 @@ $leftMenuItems = [
         'route' => '/wikinews-pages/index',
     ],
     [
+        'title' => 'Currency Exchange',
+        'icon' => 'far fa-circle',
+        'url' => 'currency-exchange-order',
+        'route' => '/currency-exchange-order',
+    ],
+    [
         'title' => 'COMMUNITY',
         'icon' => 'fas fa-users',
     ],
@@ -658,7 +664,19 @@ $leftMenuItems = [
                 }
             })
             .keyup();
-    })
+    });
+
+    $(document).on('click', '.modal-btn-ajax', function(e){
+        e.preventDefault();
+        $('#main-modal')
+            .find('.modal-content')
+            .empty()
+            .load($(this).attr('href'), function(){
+                $('#main-modal').modal('show')
+            });
+
+        return false;
+    });
 </script>
 </body>
 </html>

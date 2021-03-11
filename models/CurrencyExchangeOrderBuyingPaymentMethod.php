@@ -24,6 +24,7 @@ class CurrencyExchangeOrderBuyingPaymentMethod extends \yii\db\ActiveRecord
         return 'currency_exchange_order_buying_payment_method';
     }
 
+
     /**
      * {@inheritdoc}
      */

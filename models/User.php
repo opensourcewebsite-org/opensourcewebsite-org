@@ -8,6 +8,7 @@ use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\db\Query;
@@ -36,6 +37,7 @@ use yii\db\Query;
  * @property bool $is_authenticated
  * @property bool $gender
  *
+ * @property null|\app\modules\bot\models\User $botUser
  * @property Contact $contact
  * @property Contact[] $contactsFromMe
  * @property Contact[] $contactsToMe
@@ -813,6 +815,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function getContactGroups()
     {
         return $this->hasMany(ContactGroup::className(), ['user_id' => 'id']);
+    }
+
+    public function getBotUser(): ActiveQuery
+    {
+        return $this->hasOne(\app\modules\bot\models\User::class, ['user_id' => 'id']);
     }
 
     /**
