@@ -13,8 +13,8 @@ $this->title = Yii::t('app', 'Offer');
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency exchange Orders'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
-$this->params['breadcrumbs'][] = ['label' => $matchOrderModel->id, 'url' => ['view-offer', 'order_id' => $orderModel->id, 'match_order_id' => $matchOrderModel->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['view-offers', 'id' => $orderModel->id] ];
+$this->params['breadcrumbs'][] = $matchOrderModel->id;
 
 ?>
 <div class="row">
