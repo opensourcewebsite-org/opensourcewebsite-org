@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "currency_exchange_order_match".
@@ -14,7 +15,7 @@ use Yii;
  * @property CurrencyExchangeOrder $order
  * @property CurrencyExchangeOrder $matchOrder
  */
-class CurrencyExchangeOrderMatch extends \yii\db\ActiveRecord
+class CurrencyExchangeOrderMatch extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -32,15 +33,15 @@ class CurrencyExchangeOrderMatch extends \yii\db\ActiveRecord
         return [
             [['order_id', 'match_order_id'], 'required'],
             [['order_id', 'match_order_id'], 'integer'],
-            [['match_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => CurrencyExchangeOrder::className(), 'targetAttribute' => ['match_order_id' => 'id']],
-            [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => CurrencyExchangeOrder::className(), 'targetAttribute' => ['order_id' => 'id']],
+            [['match_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => CurrencyExchangeOrder::class, 'targetAttribute' => ['match_order_id' => 'id']],
+            [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => CurrencyExchangeOrder::class, 'targetAttribute' => ['order_id' => 'id']],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -49,23 +50,13 @@ class CurrencyExchangeOrderMatch extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Order]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrder()
+    public function getOrder(): ActiveQuery
     {
-        return $this->hasOne(CurrencyExchangeOrder::className(), ['id' => 'order_id']);
+        return $this->hasOne(CurrencyExchangeOrder::class, ['id' => 'order_id']);
     }
 
-    /**
-     * Gets query for [[MatchOrder]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMatchOrder()
+    public function getMatchOrder(): ActiveQuery
     {
-        return $this->hasOne(CurrencyExchangeOrder::className(), ['id' => 'match_order_id']);
+        return $this->hasOne(CurrencyExchangeOrder::class, ['id' => 'match_order_id']);
     }
 }

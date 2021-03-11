@@ -43,6 +43,7 @@ class CronController extends Controller
         'UaLawmakingParser',
         'WikipediaParser',
         'WikinewsParser',
+        'CeMatch'
     ];
 
     /**
