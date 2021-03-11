@@ -74,7 +74,3 @@ $this->title = Yii::t('app', 'Location of order: ' . $model->id);
         ?>
 
     </div>
-
-<?php
-
-

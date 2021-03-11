@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url,$offer_order) use ($model) {
+                                    'view' => function ($url, $offer_order) use ($model) {
 
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a(

@@ -39,7 +39,7 @@ abstract class ARGenerator extends Fixture
         $model = $this->factoryModel();
 
         if ($model && !$model->save()) {
-            throw new ARGeneratorException("Can't save ".static::classNameModel()."!\r\n");
+            throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
         }
 
         return $model;

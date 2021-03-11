@@ -29,8 +29,8 @@ class m210222_205855_create_currency_exchange_order_payment_method extends Migra
             'fk_order_ex_payment_method_order_id',
             '{{%currency_exchange_order_payment_method}}',
             'order_id',
-             '{{%currency_exchange_order}}',
-             'id'
+            '{{%currency_exchange_order}}',
+            'id'
         );
 
         $this->createIndex(
@@ -54,9 +54,9 @@ class m210222_205855_create_currency_exchange_order_payment_method extends Migra
     public function safeDown()
     {
         $this->dropForeignKey('fk_cur_exchange_order_payment_method_payment_method_id','{{%currency_exchange_order_payment_method}}');
-        $this->dropIndex('idx_cur_exchange_payment_method_payment_method_id', '{{%currency_exchange_order_payment_method}}');
-        $this->dropForeignKey('fk_order_ex_payment_method_order_id', '{{%currency_exchange_order_payment_method}}');
-        $this->dropIndex('idx_cur_exchange_payment_method_order_id', '{{%currency_exchange_order_payment_method}}');
+        $this->dropIndex('idx_cur_exchange_payment_method_payment_method_id','{{%currency_exchange_order_payment_method}}');
+        $this->dropForeignKey('fk_order_ex_payment_method_order_id','{{%currency_exchange_order_payment_method}}');
+        $this->dropIndex('idx_cur_exchange_payment_method_order_id','{{%currency_exchange_order_payment_method}}');
         $this->dropTable('{{%currency_exchange_order_payment_method}}');
     }
 

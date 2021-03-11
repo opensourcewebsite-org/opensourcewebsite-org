@@ -136,9 +136,8 @@ class CurrencyExchangeOrder extends ActiveRecord
                     'selling_currency_max_amount',
                 ],
                 'filter', 'filter' => function ($value) {
-                     return  ($value != 0 ? $value : null);
-
-                },
+                return ($value != 0 ? $value : null);
+            },
             ],
             [
                 [
@@ -316,8 +315,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             $matchesQuery->andWhere(['buying_cash_on' => true]);
         }
 
-        if ($this->buying_cash_on)
-        {
+        if ($this->buying_cash_on) {
             $matchesQuery->andWhere(['selling_cash_on' => true]);
         }
 
@@ -326,8 +324,8 @@ class CurrencyExchangeOrder extends ActiveRecord
                 POINT($tblName.location_lon, $tblName.location_lat)) <= 1000 * ($tblName.delivery_radius + $this->delivery_radius)");
         }
 
-        $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(),'id');
-        $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(),'id');
+        $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
+        $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
 
         $matchesQuery
             ->joinWith('sellingPaymentMethods sm')
@@ -421,8 +419,7 @@ class CurrencyExchangeOrder extends ActiveRecord
         }
 
         if ((isset($changedAttributes['selling_cash_on']) && ((bool)$this->selling_cash_on !== (bool)$changedAttributes['selling_cash_on'])) ||
-            (isset($changedAttributes['buying_cash_on']) && ((bool)$this->buying_cash_on !== (bool)$changedAttributes['buying_cash_on'])) )
-        {
+            (isset($changedAttributes['buying_cash_on']) && ((bool)$this->buying_cash_on !== (bool)$changedAttributes['buying_cash_on']))) {
             $clearMatches = true;
         }
 
@@ -434,7 +431,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             Yii::warning('cross_rate_on2');
         }
 
-        if (!$this->cross_rate_on && ( (isset($changedAttributes['selling_rate']) && $this->selling_rate != $changedAttributes['selling_rate']) || $insert)) {
+        if (!$this->cross_rate_on && ((isset($changedAttributes['selling_rate']) && $this->selling_rate != $changedAttributes['selling_rate']) || $insert)) {
             $this->buying_rate = 1 / $this->selling_rate;
             $this->cross_rate_on = self::CROSS_RATE_OFF;
             $this->save();
@@ -443,7 +440,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             Yii::warning('selling_rate');
         }
 
-        if (!$this->cross_rate_on && ( (isset($changedAttributes['buying_rate']) && $this->buying_rate != $changedAttributes['buying_rate']) || $insert)) {
+        if (!$this->cross_rate_on && ((isset($changedAttributes['buying_rate']) && $this->buying_rate != $changedAttributes['buying_rate']) || $insert)) {
             $this->selling_rate = 1 / $this->buying_rate;
             $this->cross_rate_on = self::CROSS_RATE_OFF;
             $this->save();
@@ -525,7 +522,7 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function getCurrentBuyingPaymentMethodsIds(): array
     {
-        return  array_map(
+        return array_map(
             'intval',
             ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id')
         );

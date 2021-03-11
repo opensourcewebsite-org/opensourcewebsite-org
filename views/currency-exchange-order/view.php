@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             <?= $model->getAttributeLabel('id') ?>
                                         </th>
                                         <td class="align-middle">
-                                            <?=$model->id?>
+                                            <?= $model->id ?>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -148,7 +148,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         </div>
     </div>
 
-<?php if ($offersCount = $model->getMatchesOrderedByUserRating()->count()): ?>
+<?php if ($offersCount = $model->getMatchesOrderedByUserRating()->count()) : ?>
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -158,7 +158,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
                                 <tr>
-                                    <th class="align-middle" scope="col"><?=Yii::t('app','Offers')?></th>
+                                    <th class="align-middle" scope="col"><?= Yii::t('app', 'Offers') ?></th>
                                     <td class="align-middle">
                                         <?= Html::a($offersCount, Url::to(['view-offers', 'id' => $model->id])) ?>
                                     </td>
@@ -191,12 +191,12 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                <?php if ($model->selling_cash_on): ?>
+                                <?php if ($model->selling_cash_on) : ?>
                                     <tr>
-                                        <td><?=Yii::t('app','Cash')?></td>
+                                        <td><?= Yii::t('app', 'Cash') ?></td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php foreach ($model->getSellingPaymentMethods()->all() as $method): ?>
+                                <?php foreach ($model->getSellingPaymentMethods()->all() as $method) : ?>
                                     <tr>
                                         <td>
                                             <?= $method->name ?>
@@ -229,12 +229,12 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                <?php if ($model->buying_cash_on): ?>
+                                <?php if ($model->buying_cash_on) : ?>
                                     <tr>
-                                        <td><?=Yii::t('app','Cash')?></td>
+                                        <td><?= Yii::t('app', 'Cash') ?></td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php foreach ($model->getBuyingPaymentMethods()->all() as $method): ?>
+                                <?php foreach ($model->getBuyingPaymentMethods()->all() as $method) : ?>
                                     <tr>
                                         <td>
                                             <?= $method->name ?>

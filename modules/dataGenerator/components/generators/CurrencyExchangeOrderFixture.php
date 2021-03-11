@@ -127,7 +127,8 @@ class CurrencyExchangeOrderFixture extends ARGenerator
                     ->limit(8)
                     ->asArray()
                     ->all(),
-                'id')
+                'id'
+            )
         );
     }
 
@@ -168,7 +169,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         return $user;
     }
 
-    private function generateRandomPoint($centre, $radius)
+    private function generateRandomPoint($centre, $radius): array
     {
         $radius_earth = 3959; //miles
 
@@ -210,7 +211,6 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         $lng_rads = atan2($x3, $y3);
         $lat_rads = asin($z3);
 
-        return array_map('rad2deg', array($lat_rads, $lng_rads));
+        return array_map('rad2deg', [$lat_rads, $lng_rads]);
     }
-
 }

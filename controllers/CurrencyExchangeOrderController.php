@@ -214,11 +214,11 @@ class CurrencyExchangeOrderController extends Controller
     public function actionViewOffers(int $id): string
     {
         $model = $this->findModel($id);
-        if ( $model->getMatchesOrderedByUserRating()->exists() ) {
+        if ($model->getMatchesOrderedByUserRating()->exists()){
             $dataProvider = new ActiveDataProvider([
-               'query' => $model->getMatchesOrderedByUserRating(),
+                'query' => $model->getMatchesOrderedByUserRating(),
             ]);
-            $dataProvider->pagination->pageSize=15;
+            $dataProvider->pagination->pageSize = 15;
 
             return $this->render('view_offers', ['dataProvider' => $dataProvider, 'model' => $model]);
         }
@@ -256,5 +256,4 @@ class CurrencyExchangeOrderController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-
 }

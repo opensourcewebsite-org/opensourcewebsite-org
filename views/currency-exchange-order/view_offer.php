@@ -13,7 +13,7 @@ $this->title = Yii::t('app', 'Offer');
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency exchange Orders'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['view-offers', 'id' => $orderModel->id] ];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['view-offers', 'id' => $orderModel->id]];
 $this->params['breadcrumbs'][] = $matchOrderModel->id;
 
 ?>
@@ -92,11 +92,12 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 </td>
                                 <td></td>
                             </tr>
-                            <?php if ($matchOrderModel->user->botUser): ?>
+                            <?php if ($matchOrderModel->user->botUser) : ?>
                                 <tr>
                                     <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?>:</th>
                                     <td class="align-middle">
-                                        <?= Html::a($matchOrderModel->user->botUser->getFullName(),
+                                        <?= Html::a(
+                                            $matchOrderModel->user->botUser->getFullName(),
                                             'https://t.me/user?id=' . $matchOrderModel->user->botUser->provider_user_id,
                                             ['target' => '_blank']
                                         ) ?>
@@ -122,12 +123,12 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                 <div class="table-responsive">
                     <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                         <tbody>
-                        <?php if ($matchOrderModel->selling_cash_on): ?>
+                        <?php if ($matchOrderModel->selling_cash_on) : ?>
                             <tr>
                                 <td><?= Yii::t('app', 'Cash') ?></td>
                             </tr>
                         <?php endif; ?>
-                        <?php foreach ($matchOrderModel->getSellingPaymentMethods()->asArray()->all() as $method): ?>
+                        <?php foreach ($matchOrderModel->getSellingPaymentMethods()->asArray()->all() as $method) : ?>
                             <tr>
                                 <td><?= $method['name'] ?></td>
                             </tr>
@@ -154,7 +155,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 <td><?= Yii::t('app', 'Cash') ?></td>
                             </tr>
                         <?php endif; ?>
-                        <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method): ?>
+                        <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method) : ?>
                             <tr>
                                 <td><?= $method['name'] ?></td>
                             </tr>
@@ -166,6 +167,4 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
         </div>
     </div>
 </div>
-</div>
-
 

@@ -47,7 +47,6 @@ class CurrencyExchangeService
             $order->link('sellingPaymentMethods', PaymentMethod::findOne($id));
         }
         return (!!$toDelete || !!$toLink);
-
     }
 
     /**
@@ -81,5 +80,4 @@ class CurrencyExchangeService
 
         return [$toDelete, $toLink];
     }
-
 }

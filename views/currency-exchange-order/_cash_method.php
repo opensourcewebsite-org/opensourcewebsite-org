@@ -16,25 +16,25 @@ use yii\widgets\ActiveForm;
     <div class="row">
         <div class="col">
             <div class="custom-control custom-switch">
-                <input type="hidden" name="CurrencyExchangeOrder[selling_cash_on]" value="0" />
+                <input type="hidden" name="CurrencyExchangeOrder[selling_cash_on]" value="0"/>
                 <input type="checkbox"
                        name="CurrencyExchangeOrder[selling_cash_on]"
-                       <?=$model->selling_cash_on?'checked':''?>
+                    <?= $model->selling_cash_on ? 'checked' : '' ?>
                        value="1"
                        class="custom-control-input allowCacheCheckbox"
-                       id="cashSellCheckbox"
-                >
+                       id="cashSellCheckbox">
+
                 <label class="custom-control-label" for="cashSellCheckbox">Cash Sell</label>
             </div>
             <div class="custom-control custom-switch">
-                <input type="hidden" name="CurrencyExchangeOrder[buying_cash_on]" value="0" />
+                <input type="hidden" name="CurrencyExchangeOrder[buying_cash_on]" value="0"/>
                 <input type="checkbox"
                        name="CurrencyExchangeOrder[buying_cash_on]"
-                       <?=$model->buying_cash_on?'checked':''?>
+                    <?= $model->buying_cash_on ? 'checked' : '' ?>
                        value="1"
                        class="custom-control-input allowCacheCheckbox"
-                       id="cashBuyCheckbox"
-                >
+                       id="cashBuyCheckbox">
+
                 <label class="custom-control-label" for="cashBuyCheckbox">Cash Buy</label>
             </div>
         </div>
@@ -46,8 +46,8 @@ $this->registerJs(<<<JS
 
     function updateVisibility() {
         ($('#cashSellCheckbox').prop('checked') || $('#cashBuyCheckbox').prop('checked')) ?
-         locationRadiusDiv.show() :
-         locationRadiusDiv.hide();
+            locationRadiusDiv.show() :
+            locationRadiusDiv.hide();
     }
 
     $('.allowCacheCheckbox').on('click', function(){
