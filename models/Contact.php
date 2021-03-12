@@ -125,6 +125,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return [
             ['userIdOrName', 'string'],
             ['userIdOrName', 'validateUserExistence'],
+            ['userIdOrName', 'validateLinkUserAndOwnerNotSame'],
             [['contact_group_ids'], 'each', 'rule' => ['integer']],
             [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -204,6 +205,20 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             ->exists();
         if (!$user) {
             $this->addError($attribute, "User ID / Username doesn't exists.");
+        }
+    }
+
+    /**
+     * Validates that user which will be linked and user-owner is not same.
+     *
+     * @param string $attribute the attribute currently being validated
+     */
+    public function validateLinkUserAndOwnerNotSame($attribute)
+    {
+        if ((!empty($this->userIdOrName)) && (!empty($this->user_id))
+            && ($this->user_id == $this->userIdOrName)
+        ) {
+            $this->addError($attribute, "Contact owner and user which will be linked can't be same.");
         }
     }
 
@@ -327,6 +342,25 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         if (!parent::beforeSave($insert)) {
             return false;
+        }
+
+        if (!empty($this->userIdOrName)) {
+            $user = User::find()
+                ->andWhere([
+                    'OR',
+                    ['id' => $this->userIdOrName],
+                    ['username' => $this->userIdOrName]
+                ])
+                ->one();
+            if ((!empty($user->contact)) && ($insert || ((int) $user->contact->id !== (int) $this->id))) {
+                $contact = $user->contact;
+                $contact->link_user_id = null;
+                $contact->save(false);
+            }
+
+            $this->link_user_id = $user->id;
+        } else {
+            $this->link_user_id = null;
         }
 
         $this->deleteOldUserSettings();
