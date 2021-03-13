@@ -50,3 +50,11 @@ body.sidebar-collapse .main-sidebar:hover .brand-abbr{
 .wrapper {
   overflow-x: visible;
 }
+
+.select2-selection__choice {
+    background-color: #007bff !important;
+    border: 1px solid #007bff !important;
+}
+.select2-selection__choice__remove {
+    color: white !important;
+}
