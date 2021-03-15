@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         <td class="align-middle">
                                             <?=
                                             !$model->cross_rate_on ?
-                                                round($model->selling_rate, 8) :
+                                                (round($model->selling_rate, 8) ?: '∞') :
                                                 Yii::t('app', 'Cross Rate')
                                             ?>
                                         </td>
@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         <td class="align-middle">
                                             <?=
                                             !$model->cross_rate_on ?
-                                                round($model->buying_rate, 8) :
+                                                (round($model->buying_rate, 8) ?: '∞') :
                                                 Yii::t('app', 'Cross Rate')
                                             ?>
                                         </td>

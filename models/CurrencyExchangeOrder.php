@@ -75,13 +75,6 @@ class CurrencyExchangeOrder extends ActiveRecord
                 ],
                 'required',
             ],
-            ['selling_rate', 'required', 'when' => function ($model) {
-                return !$model->cross_rate_on;
-            }, 'whenClient' => new JsExpression(" function (attribute, value) {
-                    return !$('#crossRateCheckbox').prop('checked');
-                }
-            ")
-            ],
             [
                 [
                     'user_id',
@@ -181,7 +174,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
             'selling_currency_max_amount' => Yii::t('bot', 'Max. amount'),
             'status' => Yii::t('bot', 'Status'),
-            'delivery_radius' => Yii::t('bot', 'Delivery radius'),
+            'delivery_radius' => Yii::t('bot', 'Delivery radius, km'),
             'location_lat' => 'Location Lat',
             'location_lon' => 'Location Lon',
             'created_at' => 'Created At',
@@ -305,8 +298,10 @@ class CurrencyExchangeOrder extends ActiveRecord
         $matchesQuery->andWhere(["$tblName.selling_cash_on" => $this->buying_cash_on]);
 
         if (!$this->cross_rate_on) {
-            $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
-                ->andWhere(['<=', "$tblName.selling_rate", $this->buying_rate]);
+            if ($this->buying_rate) {
+                $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
+                    ->andWhere(['<=', "$tblName.selling_rate", $this->buying_rate]);
+            }
         } else {
             $matchesQuery->andWhere(["$tblName.cross_rate_on" => true]);
         }
@@ -423,7 +418,9 @@ class CurrencyExchangeOrder extends ActiveRecord
             $clearMatches = true;
         }
 
-        if (isset($changedAttributes['cross_rate_on']) && ((bool)$this->cross_rate_on !== (bool)$changedAttributes['cross_rate_on'])) {
+        if (isset($changedAttributes['cross_rate_on']) &&
+            ((bool)$this->cross_rate_on !== (bool)$changedAttributes['cross_rate_on'])
+        ) {
             if ($this->cross_rate_on == self::CROSS_RATE_ON) {
                 $clearMatches = true;
                 Yii::warning('cross_rate_on');
@@ -431,16 +428,35 @@ class CurrencyExchangeOrder extends ActiveRecord
             Yii::warning('cross_rate_on2');
         }
 
-        if (!$this->cross_rate_on && ((isset($changedAttributes['selling_rate']) && $this->selling_rate != $changedAttributes['selling_rate']) || $insert)) {
+        $crossUpdated = false;
+        if (
+            !$this->cross_rate_on &&
+            (
+                (
+                    isset($changedAttributes['selling_rate']) &&
+                    ($this->selling_rate = intval($this->selling_rate)) &&
+                    $this->selling_rate != $changedAttributes['selling_rate']
+                ) || $insert
+            )
+        ) {
             $this->buying_rate = 1 / $this->selling_rate;
             $this->cross_rate_on = self::CROSS_RATE_OFF;
             $this->save();
+            $crossUpdated = $clearMatches = true;
 
-            $clearMatches = true;
             Yii::warning('selling_rate');
         }
 
-        if (!$this->cross_rate_on && ((isset($changedAttributes['buying_rate']) && $this->buying_rate != $changedAttributes['buying_rate']) || $insert)) {
+        if (
+            !$this->cross_rate_on && !$crossUpdated &&
+            (
+                (
+                    isset($changedAttributes['buying_rate']) &&
+                    ($this->buying_rate = intval($this->buying_rate)) &&
+                    $this->buying_rate != $changedAttributes['buying_rate']
+                ) || $insert
+            )
+        ) {
             $this->selling_rate = 1 / $this->buying_rate;
             $this->cross_rate_on = self::CROSS_RATE_OFF;
             $this->save();

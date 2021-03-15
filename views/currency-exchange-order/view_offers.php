@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
                                 'attribute' => 'selling_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        round($model->selling_rate, 8) :
+                                        (round($model->selling_rate, 8) ?: '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,
@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
                                 'attribute' => 'buying_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        round($model->buying_rate, 8) :
+                                        (round($model->buying_rate, 8) ?: '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,

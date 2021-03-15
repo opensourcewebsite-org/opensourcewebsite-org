@@ -10,19 +10,18 @@ use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
 use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\widgets\Map;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use dosamigos\leaflet\LeafLet;
-
-use kartik\select2\Select2;
+use app\assets\LeafletLocateControlAsset;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $currencies Currency[] */
 /* @var $cashPaymentMethod PaymentMethod */
+
+LeafletLocateControlAsset::register($this);
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
@@ -75,11 +74,9 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-group field-buying_rate">
-                                        <label class="control-label" for="buying_rate"><?=$model->getAttributeLabel('buying_rate')?></label>
-                                        <input type="text" id="buying_rate" class="form-control" name="buying_rate" value="<?=$model->buying_rate?>">
-                                        <div class="help-block"></div>
-                                    </div>
+                                    <?= $form->field($model, 'buying_rate')
+                                        ->textInput(['maxlength' => true, 'id' => 'buying_rate'])
+                                        ->label($model->getAttributeLabel('buying_rate')); ?>
                                 </div>
                             </div>
                         </div>
@@ -194,6 +191,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             'clientEvents' => [
                                 'load' => new JsExpression("
                                     function (e) {
+                                        L.control.locate().addTo(e.sourceTarget);
                                         $(document).on('shown.bs.modal','#modal-xl',  function(){
                                             setTimeout(function() {
                                                 e.sourceTarget.invalidateSize();
@@ -248,7 +246,7 @@ $('#crossRateCheckbox').on('change', function(){
 
 const calculateCrossRate = (rate) => {
     const curVal = parseFloat(rate);
-    if (!isNaN(curVal)) {
+    if (!isNaN(curVal) && curVal != 0) {
         return (1/curVal).toFixed(8);
     }
     return '';
