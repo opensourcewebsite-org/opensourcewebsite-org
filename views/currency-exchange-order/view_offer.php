@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 <td class="align-middle">
                                     <?=
                                     !$matchOrderModel->cross_rate_on ?
-                                        round($matchOrderModel->selling_rate, 8) :
+                                        (round($matchOrderModel->selling_rate, 8) ?: '∞') :
                                         Yii::t('app', 'Cross Rate')
                                     ?>
                                 </td>
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 <td class="align-middle">
                                     <?=
                                     !$matchOrderModel->cross_rate_on ?
-                                        round($matchOrderModel->buying_rate, 8) :
+                                        (round($matchOrderModel->buying_rate, 8) ?: '∞') :
                                         Yii::t('app', 'Cross Rate')
                                     ?>
                                 </td>
