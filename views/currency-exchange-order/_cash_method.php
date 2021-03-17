@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
                        class="custom-control-input allowCacheCheckbox"
                        id="cashSellCheckbox">
 
-                <label class="custom-control-label" for="cashSellCheckbox">Cash Sell</label>
+                <label class="custom-control-label" for="cashSellCheckbox"><?= Yii::t('app', 'Selling cash') ?></label>
             </div>
             <div class="custom-control custom-switch">
                 <input type="hidden" name="CurrencyExchangeOrder[buying_cash_on]" value="0"/>
@@ -35,7 +35,7 @@ use yii\widgets\ActiveForm;
                        class="custom-control-input allowCacheCheckbox"
                        id="cashBuyCheckbox">
 
-                <label class="custom-control-label" for="cashBuyCheckbox">Cash Buy</label>
+                <label class="custom-control-label" for="cashBuyCheckbox"><?= Yii::t('app', 'Buying cash') ?></label>
             </div>
         </div>
     </div>

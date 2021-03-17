@@ -76,9 +76,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     <tr>
                                         <th class="align-middle"
                                             scope="col">
-                                            <?= $model->getAttributeLabel('selling_currency_id') .
-                                            '/' .
-                                            $model->getAttributeLabel('buying_currency_id'); ?>
+                                            <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
                                         </th>
                                         <td class="align-middle">
                                             <?= $model->sellingCurrency->code . '/' . $model->buyingCurrency->code; ?>
@@ -177,7 +175,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Payment methods to Sell') ?></h3>
+                    <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
                     <div class="card-tools">
                         <a class="edit-btn modal-btn-ajax"
                            href="/currency-exchange-order/update-sell-methods/<?= $model->id ?>"
@@ -215,7 +213,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Payment methods to Buy') ?></h3>
+                    <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
                     <div class="card-tools">
                         <a class="edit-btn modal-btn-ajax"
                            href="/currency-exchange-order/update-buy-methods/<?= $model->id ?>"

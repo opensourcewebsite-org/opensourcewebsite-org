@@ -167,8 +167,8 @@ class CurrencyExchangeOrder extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'selling_currency_id' => 'Selling Currency ID',
-            'buying_currency_id' => 'Buying Currency ID',
+            'selling_currency_id' => 'Selling Currency',
+            'buying_currency_id' => 'Buying Currency',
             'selling_rate' => Yii::t('bot', 'Exchange rate'),
             'buying_rate' => Yii::t('bot', 'Reverse exchange rate'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),

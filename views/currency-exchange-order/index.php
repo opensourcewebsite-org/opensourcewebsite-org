@@ -72,7 +72,7 @@ $offersCol = $displayActiveOrders  ?
                         'columns' => [
                             'id',
                             [
-                                'label' => Yii::t('app', 'Sell') . '/' . Yii::t('app', 'Buy'),
+                                'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
                                     $sellCurrency = Currency::findOne($model->selling_currency_id);
                                     $buyCurrency = Currency::findOne($model->buying_currency_id);
