@@ -181,7 +181,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             'processed_at' => 'Processed At',
             'selling_cash_on' => Yii::t('bot', 'Cash'),
             'buying_cash_on' => Yii::t('bot', 'Cash'),
-            'cross_rate_on' => 'Cross Rate On',
+            'cross_rate_on' => Yii::t('bot', 'Cross Rate'),
         ];
     }
 

@@ -72,7 +72,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                             'maxlength' => true,
                                             'placeholder' => '∞',
                                         ])
-                                        ->label($model->getAttributeLabel('selling_rate')); ?>
+                                        ->label($model->getAttributeLabel('selling_rate') . $labelOptional); ?>
                                 </div>
                             </div>
                             <div class="row">
@@ -83,7 +83,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                             'maxlength' => true,
                                             'placeholder' => '∞',
                                         ])
-                                        ->label($model->getAttributeLabel('buying_rate')); ?>
+                                        ->label($model->getAttributeLabel('buying_rate') . $labelOptional); ?>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                 <div class="col">
                                     <?= $form->field($model, 'delivery_radius')
                                         ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional); ?>
+                                        ->label($model->getAttributeLabel('delivery_radius') . $labelOptional); ?>
                                 </div>
                             </div>
                             <strong><?= Yii::t('app', 'Location') ?></strong>
