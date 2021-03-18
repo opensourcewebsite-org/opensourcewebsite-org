@@ -42,29 +42,34 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <?php else: ?>
                             <div class="row">
                                 <div class="col d-flex">
-                                    <p><?= $model->getAttributeLabel('selling_currency_id')?>:</p>&nbsp;<strong><?= $model->sellingCurrency->name ?> (<?= $model->sellingCurrency->code ?>)</strong>
+                                    <p><?= $model->getAttributeLabel('selling_currency_id') ?>:</p>&nbsp
+                                    <strong><?= $model->sellingCurrency->name ?> (<?= $model->sellingCurrency->code ?>
+                                        )</strong>
                                 </div>
                                 <div class="col d-flex">
-                                    <p><?= $model->getAttributeLabel('buying_currency_id')?>:</p>&nbsp;<strong><?= $model->buyingCurrency->name ?> (<?= $model->buyingCurrency->code ?>)</strong>
+                                    <p><?= $model->getAttributeLabel('buying_currency_id') ?>
+                                        :</p>&nbsp;<strong><?= $model->buyingCurrency->name ?>
+                                        (<?= $model->buyingCurrency->code ?>)</strong>
                                 </div>
                             </div>
                         <?php endif; ?>
                         <div class="row">
                             <div class="col">
                                 <div class="custom-control custom-switch">
-                                    <input type="hidden" name="CurrencyExchangeOrder[cross_rate_on]" value="0" />
+                                    <input type="hidden" name="CurrencyExchangeOrder[cross_rate_on]" value="0"/>
                                     <input type="checkbox"
                                            name="CurrencyExchangeOrder[cross_rate_on]"
-                                        <?=$model->cross_rate_on?'checked':''?>
+                                        <?= $model->cross_rate_on ? 'checked' : '' ?>
                                            value="1"
                                            class="custom-control-input"
                                            id="crossRateCheckbox"
                                     >
-                                    <label class="custom-control-label" for="crossRateCheckbox"><?=$model->getAttributeLabel('cross_rate_on')?></label>
+                                    <label class="custom-control-label"
+                                           for="crossRateCheckbox"><?= $model->getAttributeLabel('cross_rate_on') ?></label>
                                 </div>
                             </div>
                         </div>
-                        <div class="sell-buy-rates-div" <?=!$model->cross_rate_on?:'style="display: none;"'?>>
+                        <div class="sell-buy-rates-div" <?= !$model->cross_rate_on ?: 'style="display: none;"' ?>>
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'selling_rate')
@@ -174,7 +179,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                 <div class="modal-body">
                     <p>
                         <?php
-                        $center = new LatLng(['lat' => $model->location_lat ?:51.508, 'lng' => $model->location_lon?:-0.11]);
+                        $center = new LatLng(['lat' => $model->location_lat ?: 51.508, 'lng' => $model->location_lon ?: -0.11]);
 
                         $marker = new Marker([
                             'latLng' => $center,
