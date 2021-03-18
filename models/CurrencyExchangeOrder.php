@@ -431,37 +431,27 @@ class CurrencyExchangeOrder extends ActiveRecord
         $crossUpdated = false;
         if (
             !$this->cross_rate_on &&
-            (
-                (
-                    isset($changedAttributes['selling_rate']) &&
-                    $this->selling_rate != '' &&
-                    ($this->selling_rate = intval($this->selling_rate)) &&
-                    $this->selling_rate != $changedAttributes['selling_rate']
-                ) || $insert
-            )
+            ( isset($changedAttributes['selling_rate']) &&
+                $this->selling_rate != $changedAttributes['selling_rate'])
         ) {
-            $this->buying_rate = 1 / $this->selling_rate;
-            $this->cross_rate_on = self::CROSS_RATE_OFF;
-            $this->save();
-            $crossUpdated = $clearMatches = true;
-
+            if (floatval($this->selling_rate) !== 0 ) {
+                $this->buying_rate = 1 / $this->selling_rate;
+                $crossUpdated = true;
+                $this->save();
+            }
+            $clearMatches = true;
             Yii::warning('selling_rate');
         }
 
         if (
             !$this->cross_rate_on && !$crossUpdated &&
-            (
-                (
-                    isset($changedAttributes['buying_rate']) &&
-                    $this->selling_rate != '' &&
-                    ($this->buying_rate = intval($this->buying_rate)) &&
-                    $this->buying_rate != $changedAttributes['buying_rate']
-                ) || $insert
-            )
+            (isset($changedAttributes['buying_rate']) &&
+                $this->buying_rate != $changedAttributes['buying_rate'])
         ) {
-            $this->selling_rate = 1 / $this->buying_rate;
-            $this->cross_rate_on = self::CROSS_RATE_OFF;
-            $this->save();
+            if (floatval($this->selling_rate) !== 0 ) {
+                $this->selling_rate = 1 / $this->buying_rate;
+                $this->save();
+            }
 
             $clearMatches = true;
             Yii::warning('buying_rate');
