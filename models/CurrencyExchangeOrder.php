@@ -434,6 +434,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             (
                 (
                     isset($changedAttributes['selling_rate']) &&
+                    $this->selling_rate != '' &&
                     ($this->selling_rate = intval($this->selling_rate)) &&
                     $this->selling_rate != $changedAttributes['selling_rate']
                 ) || $insert
@@ -452,6 +453,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             (
                 (
                     isset($changedAttributes['buying_rate']) &&
+                    $this->selling_rate != '' &&
                     ($this->buying_rate = intval($this->buying_rate)) &&
                     $this->buying_rate != $changedAttributes['buying_rate']
                 ) || $insert
