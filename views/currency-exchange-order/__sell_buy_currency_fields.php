@@ -1,5 +1,6 @@
 <?php
-use app\components\helpers\ArrayHelper ;
+
+use app\components\helpers\ArrayHelper;
 use kartik\select2\Select2;
 
 /* @var $form \yii\widgets\ActiveForm */

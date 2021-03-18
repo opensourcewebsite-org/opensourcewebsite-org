@@ -42,10 +42,10 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <?php else: ?>
                             <div class="row">
                                 <div class="col d-flex">
-                                    <p>Sell Currency:</p>&nbsp;<strong><?= $model->sellingCurrency->name ?></strong>
+                                    <p><?= $model->getAttributeLabel('selling_currency_id')?>:</p>&nbsp;<strong><?= $model->sellingCurrency->name ?> (<?= $model->sellingCurrency->code ?>)</strong>
                                 </div>
                                 <div class="col d-flex">
-                                    <p>Buying currency: </p>&nbsp;<strong><?= $model->buyingCurrency->name ?></strong>
+                                    <p><?= $model->getAttributeLabel('buying_currency_id')?>:</p>&nbsp;<strong><?= $model->buyingCurrency->name ?> (<?= $model->buyingCurrency->code ?>)</strong>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -68,15 +68,22 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'selling_rate')
-                                        ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('selling_rate')); ?>
+                                        ->textInput([
+                                            'maxlength' => true,
+                                            'placeholder' => '∞',
+                                        ])
+                                        ->label($model->getAttributeLabel('selling_rate') . $labelOptional); ?>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'buying_rate')
-                                        ->textInput(['maxlength' => true, 'id' => 'buying_rate'])
-                                        ->label($model->getAttributeLabel('buying_rate')); ?>
+                                        ->textInput([
+                                            'id' => 'buying_rate',
+                                            'maxlength' => true,
+                                            'placeholder' => '∞',
+                                        ])
+                                        ->label($model->getAttributeLabel('buying_rate') . $labelOptional); ?>
                                 </div>
                             </div>
                         </div>
@@ -84,14 +91,20 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'selling_currency_min_amount')
-                                    ->textInput(['maxlength' => true])
+                                    ->textInput([
+                                        'maxlength' => true,
+                                        'placeholder' => '∞',
+                                    ])
                                     ->label($model->getAttributeLabel('selling_currency_min_amount') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'selling_currency_max_amount')
-                                    ->textInput(['maxlength' => true])
+                                    ->textInput([
+                                        'maxlength' => true,
+                                        'placeholder' => '∞',
+                                    ])
                                     ->label($model->getAttributeLabel('selling_currency_max_amount') . $labelOptional); ?>
                             </div>
                         </div>
@@ -108,7 +121,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                 <div class="col">
                                     <?= $form->field($model, 'delivery_radius')
                                         ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional); ?>
+                                        ->label($model->getAttributeLabel('delivery_radius') . $labelOptional); ?>
                                 </div>
                             </div>
                             <strong><?= Yii::t('app', 'Location') ?></strong>

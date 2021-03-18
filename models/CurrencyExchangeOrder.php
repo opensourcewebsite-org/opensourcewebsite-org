@@ -167,8 +167,8 @@ class CurrencyExchangeOrder extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'selling_currency_id' => 'Selling Currency ID',
-            'buying_currency_id' => 'Buying Currency ID',
+            'selling_currency_id' => 'Selling Currency',
+            'buying_currency_id' => 'Buying Currency',
             'selling_rate' => Yii::t('bot', 'Exchange rate'),
             'buying_rate' => Yii::t('bot', 'Reverse exchange rate'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
@@ -181,7 +181,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             'processed_at' => 'Processed At',
             'selling_cash_on' => Yii::t('bot', 'Cash'),
             'buying_cash_on' => Yii::t('bot', 'Cash'),
-            'cross_rate_on' => 'Cross Rate On',
+            'cross_rate_on' => Yii::t('bot', 'Cross Rate'),
         ];
     }
 

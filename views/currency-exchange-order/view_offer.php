@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                             </tr>
                             <tr>
                                 <th class="align-middle" scope="col" style="width: 50%">
-                                    <?= $matchOrderModel->getAttributeLabel('selling_currency_id') . '/' . $matchOrderModel->getAttributeLabel('buying_currency_id'); ?>
+                                    <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
                                 </th>
                                 <td class="align-middle"><?= $matchOrderModel->sellingCurrency->code . '/' . $matchOrderModel->buyingCurrency->code; ?></td>
                                 <td></td>
@@ -117,7 +117,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Payment methods to Sell</h3>
+                <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -144,7 +144,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Payment methods to Buy</h3>
+                <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -167,4 +167,3 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
         </div>
     </div>
 </div>
-

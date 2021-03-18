@@ -59,7 +59,7 @@ Please read through our [API Documentation](https://github.com/opensourcewebsite
 
 ## Feedback
 
-Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org).
+Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org), [Telegram](https://t.me/opensourcewebsite).
 
 To request a new feature, submit a bug report, give us feedback, start a design discussion or have an idea to make this code better feel free to [open an issue](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues), or [create a pull request](https://github.com/opensourcewebsite-org/opensourcewebsite-org/pulls).
 
