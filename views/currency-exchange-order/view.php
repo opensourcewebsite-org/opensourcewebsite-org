@@ -9,8 +9,8 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model app\models\CurrencyExchangeOrder */
 
-$this->title = Yii::t('app', 'Currency Exchange Order') . ' ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange Orders'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Order') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>

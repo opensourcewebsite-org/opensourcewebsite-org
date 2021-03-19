@@ -12,8 +12,8 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $model CurrencyExchangeOrder */
 
-$this->title = Yii::t('app', 'Currency Exchange Order Offers');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency exchange Orders'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Offers');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
 

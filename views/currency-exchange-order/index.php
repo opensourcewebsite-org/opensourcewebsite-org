@@ -12,9 +12,8 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $view int */
 
-$this->title = Yii::t('app', 'Currency Exchange Orders');
+$this->title = Yii::t('app', 'Currency Exchange');
 $this->params['breadcrumbs'][] = $this->title;
-
 
 $displayActiveOrders = (int)Yii::$app->request->get('status', CurrencyExchangeOrder::STATUS_ON) === CurrencyExchangeOrder::STATUS_ON;
 

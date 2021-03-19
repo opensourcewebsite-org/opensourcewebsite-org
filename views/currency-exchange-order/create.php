@@ -8,8 +8,8 @@ use app\models\PaymentMethod;
 /* @var $model CurrencyExchangeOrder */
 /* @var $currencies Currency */
 
-$this->title = Yii::t('app', 'Create Currency Exchange Order');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange Orders'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Create Order');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
