@@ -1,5 +1,6 @@
 <?php
 
+use app\assets\LeafletLocateControlAsset;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
@@ -23,6 +24,8 @@ use kartik\select2\Select2;
 /* @var $form yii\widgets\ActiveForm */
 /* @var $currencies Currency[] */
 /* @var $cashPaymentMethod PaymentMethod */
+
+LeafletLocateControlAsset::register($this);
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
@@ -223,6 +226,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             'clientEvents' => [
                                 'load' => new JsExpression("
                                     function (e) {
+                                        L.control.locate().addTo(e.sourceTarget);
                                         $(document).on('shown.bs.modal','#modal-xl',  function(){
                                             setTimeout(function() {
                                                 e.sourceTarget.invalidateSize();
