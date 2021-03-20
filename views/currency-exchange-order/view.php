@@ -262,8 +262,10 @@ $('.status-update').on("click", function(event) {
             }
             else {
                 var response = $.parseJSON(result);
+                console.log(response);
                 $('#main-modal-header').text('Warning!');
-                $('#main-modal-body').html(response);
+                response.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
+
                 $('#main-modal').show();
                 $('.close').on('click', function() {
                     $("#main-modal-body").html("");
