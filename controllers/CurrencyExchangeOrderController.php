@@ -206,9 +206,13 @@ class CurrencyExchangeOrderController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionViewOrderLocation(int $id): string
+    public function actionViewOrderSellingLocation(int $id): string
     {
-        return $this->renderAjax('map_modal', ['model' => $this->findModel($id)]);
+        return $this->renderAjax('map_modal', ['model' => $this->findModel($id),'type' => 'sell']);
+    }
+    public function actionViewOrderBuyingLocation(int $id): string
+    {
+        return $this->renderAjax('map_modal', ['model' => $this->findModel($id),'type' => 'buy']);
     }
 
     public function actionViewOffers(int $id): string

@@ -119,7 +119,7 @@ class CurrencyExchangeOrder extends ActiveRecord
                     }
                     return false;
                 }, 'whenClient' => new JsExpression("function(attribute, value) {
-                    return $('#cashBuyCheckbox').prop('checked');
+                    return $('#cashSellCheckbox').prop('checked');
                 }")
             ],
 
@@ -129,7 +129,7 @@ class CurrencyExchangeOrder extends ActiveRecord
                     }
                     return false;
                 }, 'whenClient' => new JsExpression("function(attribute, value) {
-                    return $('#cashSellCheckbox').prop('checked');
+                    return $('#cashBuyCheckbox').prop('checked');
                 }")
             ],
             [
@@ -342,23 +342,41 @@ class CurrencyExchangeOrder extends ActiveRecord
         $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
         $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
 
-        if ($this->selling_cash_on) {
-            $matchesQuery->andWhere(['and',
-                ['buying_cash_on' => true],
-                ["ST_Distance_Sphere(POINT($this->selling_location_lon, $this->selling_location_lat),
-                POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + $this->selling_delivery_radius)"]
-                ])
-                ->orWhere(['in', 'sm.id', $buyingMethodsIds]);
+        $matchesQuery
+            ->joinWith('sellingPaymentMethods sm')
+            ->joinWith('buyingPaymentMethods bm');
+
+        /*if (($this->selling_cash_on || $this->buying_cash_on) && $this->delivery_radius && $this->location_lat && $this->location_lon) {
+            $matchesQuery->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat),
+                POINT($tblName.location_lon, $tblName.location_lat)) <= 1000 * ($tblName.delivery_radius + $this->delivery_radius)");
+        }*/
+
+
+        if ($this->selling_cash_on && $this->selling_delivery_radius && $this->selling_location_lat && $this->selling_location_lon ) {
+            $matchesQuery->andWhere(
+                ['or',
+                    ['and',
+                        ['buying_cash_on' => true],
+                        "ST_Distance_Sphere(POINT($this->selling_location_lon, $this->selling_location_lat),"
+                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + $this->selling_delivery_radius)"
+                    ],
+                    ['in', 'sm.id', $buyingMethodsIds]
+                ]);
         } else {
             $matchesQuery->andWhere(['in', 'sm.id', $buyingMethodsIds]);
         }
 
         if ($this->buying_cash_on) {
-            $matchesQuery->andWhere(['and', ['selling_cash_on' => true],
-                ["ST_Distance_Sphere(POINT($this->buying_location_lon, $this->buying_location_lat),
-                POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + $this->buying_delivery_radius)"]
-                ])
-                ->orWhere(['in', 'bm.id', $sellingMethodsIds]);
+            $matchesQuery->andWhere(
+                ['or',
+                    ['and',
+                        ['selling_cash_on' => true],
+                        "ST_Distance_Sphere(POINT($this->buying_location_lon, $this->buying_location_lat),"
+                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + $this->buying_delivery_radius)"
+                    ],
+                    ['in', 'bm.id', $sellingMethodsIds]
+                ]
+            );
         } else {
             $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
         }
