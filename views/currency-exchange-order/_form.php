@@ -120,16 +120,8 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             'model' => $model,
                         ]) ?>
 
-
                         <div class="selling-location-radius-div">
-                            <div class="row">
-                                <div class="col">
-                                    <?= $form->field($model, 'selling_delivery_radius')
-                                        ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('selling_delivery_radius') . ', km' . $labelOptional); ?>
-                                </div>
-                            </div>
-                            <strong><?= Yii::t('app', 'Location') ?></strong>
+                            <strong><?= Yii::t('app', 'Selling location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group mb-3 align-items-start">
@@ -143,21 +135,21 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                         <span class="input-group-append">
                                         <button type="button" class="btn btn-info btn-flat map-btn" data-toggle="modal"
                                                 data-form-field-id = "currency-exchange-order-selling-location"
-                                                data-target="#modal-xl">Map</button>
+                                                data-target="#modal-xl"><?= Yii::t('app', 'Map') ?></button>
                                     </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="buying-location-radius-div">
                             <div class="row">
                                 <div class="col">
-                                    <?= $form->field($model, 'buying_delivery_radius')
+                                    <?= $form->field($model, 'selling_delivery_radius')
                                         ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('buying_delivery_radius') . ', km' . $labelOptional); ?>
+                                        ->label($model->getAttributeLabel('selling_delivery_radius') . ', km' . $labelOptional); ?>
                                 </div>
                             </div>
-                            <strong><?= Yii::t('app', 'Location') ?></strong>
+                        </div>
+                        <div class="buying-location-radius-div">
+                            <strong><?= Yii::t('app', 'Buying location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group mb-3 align-items-start">
@@ -171,9 +163,16 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                         <span class="input-group-append">
                                         <button type="button" class="btn btn-info btn-flat map-btn" data-toggle="modal"
                                                 data-form-field-id = "currency-exchange-order-buying-location"
-                                                data-target="#modal-xl">Map</button>
+                                                data-target="#modal-xl"><?= Yii::t('app', 'Map') ?></button>
                                     </span>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <?= $form->field($model, 'buying_delivery_radius')
+                                        ->textInput(['maxlength' => true])
+                                        ->label($model->getAttributeLabel('buying_delivery_radius') . ', km' . $labelOptional); ?>
                                 </div>
                             </div>
                         </div>
