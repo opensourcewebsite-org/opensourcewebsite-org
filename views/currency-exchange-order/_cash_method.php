@@ -42,12 +42,13 @@ use yii\widgets\ActiveForm;
 
 <?php
 $this->registerJs(<<<JS
-    const locationRadiusDiv = $('.location-radius-div');
 
     function updateVisibility() {
-        ($('#cashSellCheckbox').prop('checked') || $('#cashBuyCheckbox').prop('checked')) ?
-            locationRadiusDiv.show() :
-            locationRadiusDiv.hide();
+        ($('#cashSellCheckbox').prop('checked') ) ?
+            $('.selling-location-radius-div').show() : $('.selling-location-radius-div').hide();
+        ($('#cashBuyCheckbox').prop('checked') ) ?
+            $('.buying-location-radius-div').show() : $('.buying-location-radius-div').hide();
+
     }
 
     $('.allowCacheCheckbox').on('click', function(){
