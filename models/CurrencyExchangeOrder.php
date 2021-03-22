@@ -78,13 +78,6 @@ class CurrencyExchangeOrder extends ActiveRecord
                 ],
                 'required',
             ],
-            ['selling_rate', 'required', 'when' => function ($model) {
-                return !$model->cross_rate_on;
-            }, 'whenClient' => new JsExpression(" function (attribute, value) {
-                    return !$('#crossRateCheckbox').prop('checked');
-                }
-            ")
-            ],
             [
                 [
                     'user_id',

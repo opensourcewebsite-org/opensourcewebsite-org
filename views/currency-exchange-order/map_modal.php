@@ -11,6 +11,7 @@ use dosamigos\leaflet\widgets\Map;
 
 /**
  * @var $this View
+ * @var $type string
  * @var $model CurrencyExchangeOrder
  */
 $this->title = Yii::t('app', 'Location of order: ' . $model->id);
