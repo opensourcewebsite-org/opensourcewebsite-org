@@ -119,19 +119,33 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         <td class="align-middle"><?= $model->getSellingCurrencyMaxAmount() ?></td>
                                         <td></td>
                                     </tr>
-                                    <?php if ($model->buying_cash_on || $model->selling_cash_on): ?>
+                                    <?php if ($model->buying_cash_on): ?>
                                         <tr>
                                             <th class="align-middle"
-                                                scope="col"><?= $model->getAttributeLabel('delivery_radius'); ?></th>
-                                            <td class="align-middle"><?= $model->delivery_radius; ?></td>
+                                                scope="col"><?= $model->getAttributeLabel('buying_delivery_radius'); ?></th>
+                                            <td class="align-middle"><?= $model->buying_delivery_radius; ?></td>
                                             <td></td>
                                         </tr>
                                         <tr>
                                             <th class="align-middle" scope="col"><?= Yii::t('app', 'Location'); ?></th>
                                             <td class="align-middle">
-                                                <?= ($model->selling_cash_on || $model->buying_cash_on) ?
-                                                    Html::a('view', Url::to(['view-order-location', 'id' => $model->id]), ['class' => 'modal-btn-ajax']) : ''
-                                                ?>
+                                                <?= Html::a('view', Url::to(['view-order-buying-location', 'id' => $model->id]), ['class' => 'modal-btn-ajax']) ?>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    <?php endif; ?>
+
+                                    <?php if ($model->selling_cash_on): ?>
+                                        <tr>
+                                            <th class="align-middle"
+                                                scope="col"><?= $model->getAttributeLabel('selling_delivery_radius'); ?></th>
+                                            <td class="align-middle"><?= $model->selling_delivery_radius; ?></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="align-middle" scope="col"><?= Yii::t('app', 'Location'); ?></th>
+                                            <td class="align-middle">
+                                                <?= Html::a('view', Url::to(['view-order-selling-location', 'id' => $model->id]), ['class' => 'modal-btn-ajax']) ?>
                                             </td>
                                             <td></td>
                                         </tr>
@@ -260,8 +274,10 @@ $('.status-update').on("click", function(event) {
             }
             else {
                 var response = $.parseJSON(result);
+                console.log(response);
                 $('#main-modal-header').text('Warning!');
-                $('#main-modal-body').html(response);
+                response.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
+
                 $('#main-modal').show();
                 $('.close').on('click', function() {
                     $("#main-modal-body").html("");

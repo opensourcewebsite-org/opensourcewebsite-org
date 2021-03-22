@@ -121,27 +121,56 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         ]) ?>
 
 
-                        <div class="location-radius-div">
+                        <div class="selling-location-radius-div">
                             <div class="row">
                                 <div class="col">
-                                    <?= $form->field($model, 'delivery_radius')
+                                    <?= $form->field($model, 'selling_delivery_radius')
                                         ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('delivery_radius') . $labelOptional); ?>
+                                        ->label($model->getAttributeLabel('selling_delivery_radius') . ', km' . $labelOptional); ?>
                                 </div>
                             </div>
                             <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group mb-3 align-items-start">
-                                        <?= $form->field($model, 'location', ['options' => ['class' => 'form-group flex-grow-1']])
+                                        <?= $form->field($model, 'selling_location', ['options' => ['class' => 'form-group flex-grow-1']])
                                             ->textInput([
                                                 'maxlength' => true,
-                                                'id' => 'currency-exchange-order-location',
+                                                'id' => 'currency-exchange-order-selling-location',
                                                 'class' => 'form-control flex-grow-1'
                                             ])->label(false)
                                         ?>
                                         <span class="input-group-append">
-                                        <button type="button" class="btn btn-info btn-flat" data-toggle="modal"
+                                        <button type="button" class="btn btn-info btn-flat map-btn" data-toggle="modal"
+                                                data-form-field-id = "currency-exchange-order-selling-location"
+                                                data-target="#modal-xl">Map</button>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buying-location-radius-div">
+                            <div class="row">
+                                <div class="col">
+                                    <?= $form->field($model, 'buying_delivery_radius')
+                                        ->textInput(['maxlength' => true])
+                                        ->label($model->getAttributeLabel('buying_delivery_radius') . ', km' . $labelOptional); ?>
+                                </div>
+                            </div>
+                            <strong><?= Yii::t('app', 'Location') ?></strong>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group mb-3 align-items-start">
+                                        <?= $form->field($model, 'buying_location', ['options' => ['class' => 'form-group flex-grow-1']])
+                                            ->textInput([
+                                                'maxlength' => true,
+                                                'id' => 'currency-exchange-order-buying-location',
+                                                'class' => 'form-control flex-grow-1'
+                                            ])->label(false)
+                                        ?>
+                                        <span class="input-group-append">
+                                        <button type="button" class="btn btn-info btn-flat map-btn" data-toggle="modal"
+                                                data-form-field-id = "currency-exchange-order-buying-location"
                                                 data-target="#modal-xl">Map</button>
                                     </span>
                                     </div>
@@ -179,7 +208,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                 <div class="modal-body">
                     <p>
                         <?php
-                        $center = new LatLng(['lat' => $model->location_lat ?: 51.508, 'lng' => $model->location_lon ?: -0.11]);
+                        $center = new LatLng(['lat' => $model->selling_location_lat ?:51.508, 'lng' => $model->selling_location_lon?:-0.11]);
 
                         $marker = new Marker([
                             'latLng' => $center,
@@ -254,6 +283,11 @@ $jsMessages = [
 
 $this->registerJs(<<<JS
 
+var location_field_id = 'currency-exchange-order-selling-location';
+$('.map-btn').on('click', function() {
+    location_field_id = $(this).data('form-field-id');
+})
+
 $('#crossRateCheckbox').on('change', function(){
     if (!$(this).prop('checked')) {
         $('.sell-buy-rates-div').show();
@@ -284,7 +318,7 @@ var position = {
 }
 
 $('#location-save-changes').on('click', function(e) {
-    $('#currency-exchange-order-location').val(position.lat + ", " + position.lng).trigger('change');
+    $('#' + location_field_id).val(position.lat + ", " + position.lng).trigger('change');
 })
 
 $("#delete-currency-exchange-order").on("click", function(event) {
