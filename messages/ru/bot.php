@@ -14,6 +14,8 @@
  */
 return [
     'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
+    'Welcome developers, activists, volunteers, sponsors' => 'Приветствуем разработчиков, активистов, волонтеров, спонсоров',
+    'Join and build the digital future' => 'Присоединяйтесь и создавайте цифровое будущее',
     'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
     'Hello' => 'Здравствуйте',
     'Welcome' => 'Добро пожаловать',

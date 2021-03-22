@@ -12,9 +12,8 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $view int */
 
-$this->title = Yii::t('app', 'Currency Exchange Orders');
+$this->title = Yii::t('app', 'Currency Exchange');
 $this->params['breadcrumbs'][] = $this->title;
-
 
 $displayActiveOrders = (int)Yii::$app->request->get('status', CurrencyExchangeOrder::STATUS_ON) === CurrencyExchangeOrder::STATUS_ON;
 
@@ -72,7 +71,7 @@ $offersCol = $displayActiveOrders  ?
                         'columns' => [
                             'id',
                             [
-                                'label' => Yii::t('app', 'Sell') . '/' . Yii::t('app', 'Buy'),
+                                'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
                                     $sellCurrency = Currency::findOne($model->selling_currency_id);
                                     $buyCurrency = Currency::findOne($model->buying_currency_id);
@@ -85,7 +84,7 @@ $offersCol = $displayActiveOrders  ?
                                 'attribute' => 'selling_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        round($model->selling_rate, 8) :
+                                        (round($model->selling_rate, 8) ?: '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,
@@ -94,7 +93,7 @@ $offersCol = $displayActiveOrders  ?
                                 'attribute' => 'buying_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        round($model->buying_rate, 8) :
+                                        (round($model->buying_rate, 8) ?: '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,

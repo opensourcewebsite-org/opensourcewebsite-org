@@ -1,6 +1,5 @@
 <?php
 
-use app\assets\LeafletLocateControlAsset;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
@@ -11,13 +10,10 @@ use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
 use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\widgets\Map;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use dosamigos\leaflet\LeafLet;
-
-use kartik\select2\Select2;
+use app\assets\LeafletLocateControlAsset;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
@@ -46,43 +42,53 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <?php else: ?>
                             <div class="row">
                                 <div class="col d-flex">
-                                    <p>Sell Currency:</p>&nbsp;<strong><?= $model->sellingCurrency->name ?></strong>
+                                    <p><?= $model->getAttributeLabel('selling_currency_id') ?>:</p>&nbsp
+                                    <strong><?= $model->sellingCurrency->name ?> (<?= $model->sellingCurrency->code ?>
+                                        )</strong>
                                 </div>
                                 <div class="col d-flex">
-                                    <p>Buying currency: </p>&nbsp;<strong><?= $model->buyingCurrency->name ?></strong>
+                                    <p><?= $model->getAttributeLabel('buying_currency_id') ?>
+                                        :</p>&nbsp;<strong><?= $model->buyingCurrency->name ?>
+                                        (<?= $model->buyingCurrency->code ?>)</strong>
                                 </div>
                             </div>
                         <?php endif; ?>
                         <div class="row">
                             <div class="col">
                                 <div class="custom-control custom-switch">
-                                    <input type="hidden" name="CurrencyExchangeOrder[cross_rate_on]" value="0" />
+                                    <input type="hidden" name="CurrencyExchangeOrder[cross_rate_on]" value="0"/>
                                     <input type="checkbox"
                                            name="CurrencyExchangeOrder[cross_rate_on]"
-                                        <?=$model->cross_rate_on?'checked':''?>
+                                        <?= $model->cross_rate_on ? 'checked' : '' ?>
                                            value="1"
                                            class="custom-control-input"
                                            id="crossRateCheckbox"
                                     >
-                                    <label class="custom-control-label" for="crossRateCheckbox"><?=$model->getAttributeLabel('cross_rate_on')?></label>
+                                    <label class="custom-control-label"
+                                           for="crossRateCheckbox"><?= $model->getAttributeLabel('cross_rate_on') ?></label>
                                 </div>
                             </div>
                         </div>
-                        <div class="sell-buy-rates-div" <?=!$model->cross_rate_on?:'style="display: none;"'?>>
+                        <div class="sell-buy-rates-div" <?= !$model->cross_rate_on ?: 'style="display: none;"' ?>>
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'selling_rate')
-                                        ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('selling_rate')); ?>
+                                        ->textInput([
+                                            'maxlength' => true,
+                                            'placeholder' => '∞',
+                                        ])
+                                        ->label($model->getAttributeLabel('selling_rate') . $labelOptional); ?>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-group field-buying_rate">
-                                        <label class="control-label" for="buying_rate"><?=$model->getAttributeLabel('buying_rate')?></label>
-                                        <input type="text" id="buying_rate" class="form-control" name="buying_rate" value="<?=$model->buying_rate?>">
-                                        <div class="help-block"></div>
-                                    </div>
+                                    <?= $form->field($model, 'buying_rate')
+                                        ->textInput([
+                                            'id' => 'buying_rate',
+                                            'maxlength' => true,
+                                            'placeholder' => '∞',
+                                        ])
+                                        ->label($model->getAttributeLabel('buying_rate') . $labelOptional); ?>
                                 </div>
                             </div>
                         </div>
@@ -90,14 +96,20 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'selling_currency_min_amount')
-                                    ->textInput(['maxlength' => true])
+                                    ->textInput([
+                                        'maxlength' => true,
+                                        'placeholder' => '∞',
+                                    ])
                                     ->label($model->getAttributeLabel('selling_currency_min_amount') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'selling_currency_max_amount')
-                                    ->textInput(['maxlength' => true])
+                                    ->textInput([
+                                        'maxlength' => true,
+                                        'placeholder' => '∞',
+                                    ])
                                     ->label($model->getAttributeLabel('selling_currency_max_amount') . $labelOptional); ?>
                             </div>
                         </div>
@@ -286,7 +298,7 @@ $('#crossRateCheckbox').on('change', function(){
 
 const calculateCrossRate = (rate) => {
     const curVal = parseFloat(rate);
-    if (!isNaN(curVal)) {
+    if (!isNaN(curVal) && curVal != 0) {
         return (1/curVal).toFixed(8);
     }
     return '';

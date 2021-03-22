@@ -188,8 +188,8 @@ class CurrencyExchangeOrder extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'selling_currency_id' => 'Selling Currency ID',
-            'buying_currency_id' => 'Buying Currency ID',
+            'selling_currency_id' => 'Selling Currency',
+            'buying_currency_id' => 'Buying Currency',
             'selling_rate' => Yii::t('bot', 'Exchange rate'),
             'buying_rate' => Yii::t('bot', 'Reverse exchange rate'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
@@ -205,7 +205,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             'processed_at' => 'Processed At',
             'selling_cash_on' => Yii::t('bot', 'Cash'),
             'buying_cash_on' => Yii::t('bot', 'Cash'),
-            'cross_rate_on' => 'Cross Rate On',
+            'cross_rate_on' => Yii::t('bot', 'Cross Rate'),
         ];
     }
 
@@ -333,8 +333,10 @@ class CurrencyExchangeOrder extends ActiveRecord
             ->andWhere(["$tblName.selling_currency_id" => $this->buying_currency_id]);
 
         if (!$this->cross_rate_on) {
-            $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
-                ->andWhere(['<=', "$tblName.selling_rate", $this->buying_rate]);
+            if ($this->buying_rate) {
+                $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
+                    ->andWhere(['<=', "$tblName.selling_rate", $this->buying_rate]);
+            }
         } else {
             $matchesQuery->andWhere(["$tblName.cross_rate_on" => true]);
         }
@@ -345,12 +347,6 @@ class CurrencyExchangeOrder extends ActiveRecord
         $matchesQuery
             ->joinWith('sellingPaymentMethods sm')
             ->joinWith('buyingPaymentMethods bm');
-
-        /*if (($this->selling_cash_on || $this->buying_cash_on) && $this->delivery_radius && $this->location_lat && $this->location_lon) {
-            $matchesQuery->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat),
-                POINT($tblName.location_lon, $tblName.location_lat)) <= 1000 * ($tblName.delivery_radius + $this->delivery_radius)");
-        }*/
-
 
         if ($this->selling_cash_on && $this->selling_delivery_radius && $this->selling_location_lat && $this->selling_location_lon ) {
             $matchesQuery->andWhere(
@@ -469,7 +465,9 @@ class CurrencyExchangeOrder extends ActiveRecord
             $clearMatches = true;
         }
 
-        if (isset($changedAttributes['cross_rate_on']) && ((bool)$this->cross_rate_on !== (bool)$changedAttributes['cross_rate_on'])) {
+        if (isset($changedAttributes['cross_rate_on']) &&
+            ((bool)$this->cross_rate_on !== (bool)$changedAttributes['cross_rate_on'])
+        ) {
             if ($this->cross_rate_on == self::CROSS_RATE_ON) {
                 $clearMatches = true;
                 Yii::warning('cross_rate_on');
@@ -477,19 +475,30 @@ class CurrencyExchangeOrder extends ActiveRecord
             Yii::warning('cross_rate_on2');
         }
 
-        if (!$this->cross_rate_on && ((isset($changedAttributes['selling_rate']) && $this->selling_rate != $changedAttributes['selling_rate']) || $insert)) {
-            $this->buying_rate = 1 / $this->selling_rate;
-            $this->cross_rate_on = self::CROSS_RATE_OFF;
-            $this->save();
-
+        $crossUpdated = false;
+        if (
+            !$this->cross_rate_on &&
+            ( isset($changedAttributes['selling_rate']) &&
+                $this->selling_rate != $changedAttributes['selling_rate'])
+        ) {
+            if (floatval($this->selling_rate) !== 0 ) {
+                $this->buying_rate = 1 / $this->selling_rate;
+                $crossUpdated = true;
+                $this->save();
+            }
             $clearMatches = true;
             Yii::warning('selling_rate');
         }
 
-        if (!$this->cross_rate_on && ((isset($changedAttributes['buying_rate']) && $this->buying_rate != $changedAttributes['buying_rate']) || $insert)) {
-            $this->selling_rate = 1 / $this->buying_rate;
-            $this->cross_rate_on = self::CROSS_RATE_OFF;
-            $this->save();
+        if (
+            !$this->cross_rate_on && !$crossUpdated &&
+            (isset($changedAttributes['buying_rate']) &&
+                $this->buying_rate != $changedAttributes['buying_rate'])
+        ) {
+            if (floatval($this->selling_rate) !== 0 ) {
+                $this->selling_rate = 1 / $this->buying_rate;
+                $this->save();
+            }
 
             $clearMatches = true;
             Yii::warning('buying_rate');
