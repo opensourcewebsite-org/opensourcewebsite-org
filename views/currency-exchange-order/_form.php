@@ -114,14 +114,21 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             </div>
                         </div>
                         <hr/>
+                        <div class="row">
+                            <div class="custom-control custom-switch">
+                                <input type="hidden" name="CurrencyExchangeOrder[selling_cash_on]" value="0"/>
+                                <input type="checkbox"
+                                       name="CurrencyExchangeOrder[selling_cash_on]"
+                                    <?= $model->selling_cash_on ? 'checked' : '' ?>
+                                       value="1"
+                                       class="custom-control-input allowCacheCheckbox"
+                                       id="cashSellCheckbox">
 
-                        <?= $this->render('_cash_method', [
-                            'form' => $form,
-                            'model' => $model,
-                        ]) ?>
-
+                                <label class="custom-control-label" for="cashSellCheckbox"><?= Yii::t('app', 'Selling cash') ?></label>
+                            </div>
+                        </div>
                         <div class="selling-location-radius-div">
-                            <strong><?= Yii::t('app', 'Selling location') ?></strong>
+                            <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group mb-3 align-items-start">
@@ -143,13 +150,31 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'selling_delivery_radius')
-                                        ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('selling_delivery_radius') . ', km' . $labelOptional); ?>
+                                        ->textInput([
+                                            'maxlength' => true,
+                                            'placeholder' => 0,
+                                        ])
+                                        ->label(Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                    ?>
                                 </div>
                             </div>
                         </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="custom-control custom-switch">
+                                <input type="hidden" name="CurrencyExchangeOrder[buying_cash_on]" value="0"/>
+                                <input type="checkbox"
+                                       name="CurrencyExchangeOrder[buying_cash_on]"
+                                    <?= $model->buying_cash_on ? 'checked' : '' ?>
+                                       value="1"
+                                       class="custom-control-input allowCacheCheckbox"
+                                       id="cashBuyCheckbox">
+
+                                <label class="custom-control-label" for="cashBuyCheckbox"><?= Yii::t('app', 'Buying cash') ?></label>
+                            </div>
+                        </div>
                         <div class="buying-location-radius-div">
-                            <strong><?= Yii::t('app', 'Buying location') ?></strong>
+                            <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group mb-3 align-items-start">
@@ -171,11 +196,36 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'buying_delivery_radius')
-                                        ->textInput(['maxlength' => true])
-                                        ->label($model->getAttributeLabel('buying_delivery_radius') . ', km' . $labelOptional); ?>
+                                        ->textInput([
+                                            'maxlength' => true,
+                                            'placeholder' => 0,
+                                        ])
+                                        ->label(Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                    ?>
                                 </div>
                             </div>
                         </div>
+
+                        <?php
+                        $this->registerJs(<<<JS
+
+                        function updateVisibility() {
+                            ($('#cashSellCheckbox').prop('checked') ) ?
+                                $('.selling-location-radius-div').show() : $('.selling-location-radius-div').hide();
+                            ($('#cashBuyCheckbox').prop('checked') ) ?
+                                $('.buying-location-radius-div').show() : $('.buying-location-radius-div').hide();
+
+                        }
+
+                        $('.allowCacheCheckbox').on('click', function(){
+                            updateVisibility();
+                        })
+
+                        updateVisibility();
+                        JS
+                        );
+                        ?>
+
                     </div>
                     <div class="card-footer">
                         <?= SaveButton::widget(); ?>

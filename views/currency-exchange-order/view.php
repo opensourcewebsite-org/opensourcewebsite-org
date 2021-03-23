@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
                                         </th>
                                         <td class="align-middle">
-                                            <?= $model->sellingCurrency->code . '/' . $model->buyingCurrency->code; ?>
+                                            <?= $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code; ?>
                                         </td>
                                         <td></td>
                                     </tr>

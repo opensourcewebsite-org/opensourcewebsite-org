@@ -76,7 +76,7 @@ $offersCol = $displayActiveOrders  ?
                                     $sellCurrency = Currency::findOne($model->selling_currency_id);
                                     $buyCurrency = Currency::findOne($model->buying_currency_id);
 
-                                    return $sellCurrency->code . '/' . $buyCurrency->code;
+                                    return $sellCurrency->code . ' / ' . $buyCurrency->code;
                                 },
                                 'enableSorting' => false,
                             ],

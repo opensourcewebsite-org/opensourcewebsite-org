@@ -65,7 +65,7 @@ class CurrencyExchangeOrderController extends Controller
             'query' => CurrencyExchangeOrder::find()
                 ->where(['status' => $status])
                 ->andWhere(['user_id' => Yii::$app->user->identity->id])
-                ->orderBy(['selling_currency_id' => SORT_ASC, 'created_at' => SORT_DESC]),
+                ->orderBy(['id' => SORT_ASC]),
         ]);
 
         return $this->render('index', [

@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 <th class="align-middle" scope="col" style="width: 50%">
                                     <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
                                 </th>
-                                <td class="align-middle"><?= $matchOrderModel->sellingCurrency->code . '/' . $matchOrderModel->buyingCurrency->code; ?></td>
+                                <td class="align-middle"><?= $matchOrderModel->sellingCurrency->code . ' / ' . $matchOrderModel->buyingCurrency->code; ?></td>
                                 <td></td>
                             </tr>
                             <tr>

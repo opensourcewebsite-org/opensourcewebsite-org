@@ -6,9 +6,11 @@ use kartik\select2\Select2;
 /* @var $form \yii\widgets\ActiveForm */
 /* @var $model \app\models\CurrencyExchangeOrder */
 /* @var $currencies \app\models\Currency[] */
+
 $data = [];
-foreach($currencies as $cur) {
-    $data[$cur->id] = $cur->code. ' - '.$cur->name;
+
+foreach($currencies as $currency) {
+    $data[$currency->id] = $currency->code . ' - ' . $currency->name;
 }
 ?>
 
