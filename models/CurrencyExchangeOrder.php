@@ -125,6 +125,16 @@ class CurrencyExchangeOrder extends ActiveRecord
                     return $('#cashBuyCheckbox').prop('checked');
                 }")
             ],
+
+            [['selling_location', 'buying_location'], function($attribute) {
+                [$lat, $lon] = explode(',', $this->$attribute);
+                if (!(new LocationLatValidator())->validateLat($lat) ||
+                    !(new LocationLonValidator())->validateLon($lon)
+                ) {
+                    $this->addError($attribute, Yii::t('app', 'Incorrect Location!'));
+                }
+            }],
+
             [
                 ['selling_location', 'buying_location'], 'string',
             ],
