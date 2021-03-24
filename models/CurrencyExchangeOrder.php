@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
+use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use app\models\User as GlobalUser;
@@ -128,7 +128,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             ],
 
             [['selling_location', 'buying_location'], function($attribute) {
-                [$lat, $lon] = explode(',', $this->$attribute);
+                [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
                 if (!(new LocationLatValidator())->validateLat($lat) ||
                     !(new LocationLonValidator())->validateLon($lon)
                 ) {
@@ -229,7 +229,7 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function setSelling_location(string $location): self
     {
-        [$lat, $lon] = array_values((new LocationToArrayFieldComponent())->prepare($location));
+        [$lat, $lon] = (new LocationParser($location))->parse();
         $this->selling_location_lat = $lat;
         $this->selling_location_lon = $lon;
         return $this;
@@ -244,7 +244,7 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function setBuying_location(string $location): self
     {
-        [$lat, $lon] = array_values((new LocationToArrayFieldComponent())->prepare($location));
+        [$lat, $lon] = (new LocationParser($location))->parse();
         $this->buying_location_lat = $lat;
         $this->buying_location_lon = $lon;
         return $this;
