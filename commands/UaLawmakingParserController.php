@@ -52,7 +52,8 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
         }
 
         $client = new Client();
-        $currentScrapeDate = strtotime(date('Y-m-d', $cronJob->updated_at));
+        // temporarily parse 1 day more, because the api updates with some delay
+        $currentScrapeDate = strtotime(date('Y-m-d', $cronJob->updated_at - 1 * 24 * 60 * 60));
         $today = strtotime(date('Y-m-d'));
 
         while ($currentScrapeDate <= $today) {

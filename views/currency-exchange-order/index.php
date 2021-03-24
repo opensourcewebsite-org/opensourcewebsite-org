@@ -12,9 +12,8 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $view int */
 
-$this->title = Yii::t('app', 'Currency Exchange Orders');
+$this->title = Yii::t('app', 'Currency Exchange');
 $this->params['breadcrumbs'][] = $this->title;
-
 
 $displayActiveOrders = (int)Yii::$app->request->get('status', CurrencyExchangeOrder::STATUS_ON) === CurrencyExchangeOrder::STATUS_ON;
 
@@ -77,7 +76,7 @@ $offersCol = $displayActiveOrders  ?
                                     $sellCurrency = Currency::findOne($model->selling_currency_id);
                                     $buyCurrency = Currency::findOne($model->buying_currency_id);
 
-                                    return $sellCurrency->code . '/' . $buyCurrency->code;
+                                    return $sellCurrency->code . ' / ' . $buyCurrency->code;
                                 },
                                 'enableSorting' => false,
                             ],

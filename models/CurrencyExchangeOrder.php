@@ -25,9 +25,12 @@ use yii\web\JsExpression;
  * @property float|null $selling_currency_min_amount
  * @property float|null $selling_currency_max_amount
  * @property int $status
- * @property int $delivery_radius
- * @property string|null $location_lat
- * @property string|null $location_lon
+ * @property int $selling_delivery_radius
+ * @property string|null $selling_location_lat
+ * @property string|null $selling_location_lon
+ * @property int $buying_delivery_radius
+ * @property string|null $buying_location_lat
+ * @property string|null $buying_location_lon
  * @property int $created_at
  * @property int|null $processed_at
  * @property int $selling_cash_on
@@ -81,7 +84,8 @@ class CurrencyExchangeOrder extends ActiveRecord
                     'selling_currency_id',
                     'buying_currency_id',
                     'status',
-                    'delivery_radius',
+                    'selling_delivery_radius',
+                    'buying_delivery_radius',
                     'created_at',
                     'processed_at',
                     'selling_cash_on',
@@ -91,28 +95,48 @@ class CurrencyExchangeOrder extends ActiveRecord
                 'integer',
             ],
             [
-                'delivery_radius',
+                ['selling_delivery_radius','buying_delivery_radius'],
                 RadiusValidator::class,
             ],
             [
-                'location_lat',
+                ['selling_location_lat','buying_location_lat'],
                 LocationLatValidator::class,
             ],
             [
-                'location_lon',
+                ['selling_location_lon', 'buying_location_lat'],
                 LocationLonValidator::class,
             ],
-            ['location', 'required', 'when' => function ($model) {
-                if (($model->selling_cash_on || $model->buying_cash_on) && !$model->location) {
-                    return true;
-                }
-                return false;
-            }, 'whenClient' => new JsExpression("function(attribute, value) {
-                return $('#cashBuyCheckbox').prop('checked') || $('#cashSellCheckbox').prop('checked');
-            }")
+            ['selling_location', 'required', 'when' => function ($model) {
+                    if ($model->selling_cash_on && !$model->selling_location) {
+                        return true;
+                    }
+                    return false;
+                }, 'whenClient' => new JsExpression("function(attribute, value) {
+                    return $('#cashSellCheckbox').prop('checked');
+                }")
             ],
+
+            ['buying_location', 'required', 'when' => function ($model) {
+                    if ($model->buying_cash_on && !$model->buying_location) {
+                        return true;
+                    }
+                    return false;
+                }, 'whenClient' => new JsExpression("function(attribute, value) {
+                    return $('#cashBuyCheckbox').prop('checked');
+                }")
+            ],
+
+            [['selling_location', 'buying_location'], function($attribute) {
+                [$lat, $lon] = explode(',', $this->$attribute);
+                if (!(new LocationLatValidator())->validateLat($lat) ||
+                    !(new LocationLonValidator())->validateLon($lon)
+                ) {
+                    $this->addError($attribute, Yii::t('app', 'Incorrect Location!'));
+                }
+            }],
+
             [
-                'location', 'string',
+                ['selling_location', 'buying_location'], 'string',
             ],
             [
                 [
@@ -174,9 +198,12 @@ class CurrencyExchangeOrder extends ActiveRecord
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
             'selling_currency_max_amount' => Yii::t('bot', 'Max. amount'),
             'status' => Yii::t('bot', 'Status'),
-            'delivery_radius' => Yii::t('bot', 'Delivery radius, km'),
-            'location_lat' => 'Location Lat',
-            'location_lon' => 'Location Lon',
+            'selling_delivery_radius' => Yii::t('bot', 'Selling delivery radius'),
+            'buying_delivery_radius' => Yii::t('bot', 'Buying delivery radius'),
+            'selling_location_lat' => 'Location Lat',
+            'selling_location_lon' => 'Location Lon',
+            'buying_location_lat' => 'Location Lat',
+            'buying_location_lon' => 'Location Lon',
             'created_at' => 'Created At',
             'processed_at' => 'Processed At',
             'selling_cash_on' => Yii::t('bot', 'Cash'),
@@ -198,24 +225,39 @@ class CurrencyExchangeOrder extends ActiveRecord
         ];
     }
 
-    /**
-     * @param string $location
-     * @return $this
-     */
-    public function setLocation(string $location): self
+
+    public function setSelling_location(string $location): self
     {
         $latLon = explode(',', $location);
         if (count($latLon) === 2) {
-            $this->location_lat = $latLon[0] ?? '';
-            $this->location_lon = $latLon[1] ?? '';
+            $this->selling_location_lat = $latLon[0] ?? '';
+            $this->selling_location_lon = $latLon[1] ?? '';
         }
-
         return $this;
     }
 
-    public function getLocation(): string
+    public function getSelling_location(): string
     {
-        return ($this->location_lat && $this->location_lon) ? implode(',', [$this->location_lat, $this->location_lon]) : '';
+        return ($this->selling_location_lat && $this->selling_location_lon) ?
+            implode(',', [$this->selling_location_lat, $this->selling_location_lon]) :
+            '';
+    }
+
+    public function setBuying_location(string $location): self
+    {
+        $latLon = explode(',', $location);
+        if (count($latLon) === 2) {
+            $this->buying_location_lat = $latLon[0] ?? '';
+            $this->buying_location_lon = $latLon[1] ?? '';
+        }
+        return $this;
+    }
+
+    public function getBuying_location(): string
+    {
+        return ($this->buying_location_lat && $this->buying_location_lon) ?
+            implode(',', [$this->buying_location_lat, $this->buying_location_lon]) :
+            '';
     }
 
     public function getUser(): ActiveQuery
@@ -293,10 +335,6 @@ class CurrencyExchangeOrder extends ActiveRecord
             ->andWhere(["$tblName.buying_currency_id" => $this->selling_currency_id])
             ->andWhere(["$tblName.selling_currency_id" => $this->buying_currency_id]);
 
-        $matchesQuery->andWhere(["$tblName.buying_cash_on" => $this->selling_cash_on]);
-
-        $matchesQuery->andWhere(["$tblName.selling_cash_on" => $this->buying_cash_on]);
-
         if (!$this->cross_rate_on) {
             if ($this->buying_rate) {
                 $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
@@ -306,29 +344,41 @@ class CurrencyExchangeOrder extends ActiveRecord
             $matchesQuery->andWhere(["$tblName.cross_rate_on" => true]);
         }
 
-        if ($this->selling_cash_on) {
-            $matchesQuery->andWhere(['buying_cash_on' => true]);
-        }
-
-        if ($this->buying_cash_on) {
-            $matchesQuery->andWhere(['selling_cash_on' => true]);
-        }
-
-        if (($this->selling_cash_on || $this->buying_cash_on) && $this->delivery_radius && $this->location_lat && $this->location_lon) {
-            $matchesQuery->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat),
-                POINT($tblName.location_lon, $tblName.location_lat)) <= 1000 * ($tblName.delivery_radius + $this->delivery_radius)");
-        }
-
         $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
         $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
 
         $matchesQuery
             ->joinWith('sellingPaymentMethods sm')
-            ->andWhere(['in', 'sm.id', $buyingMethodsIds]);
+            ->joinWith('buyingPaymentMethods bm');
 
-        $matchesQuery
-            ->joinWith('buyingPaymentMethods bm')
-            ->andWhere(['in', 'bm.id', $sellingMethodsIds]);
+        if ($this->selling_cash_on && $this->selling_location_lat && $this->selling_location_lon ) {
+            $matchesQuery->andWhere(
+                ['or',
+                    ['and',
+                        ['buying_cash_on' => true],
+                        "ST_Distance_Sphere(POINT($this->selling_location_lon, $this->selling_location_lat),"
+                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + " . ($this->selling_delivery_radius ?: 0) . ')'
+                    ],
+                    ['in', 'sm.id', $buyingMethodsIds]
+                ]);
+        } else {
+            $matchesQuery->andWhere(['in', 'sm.id', $buyingMethodsIds]);
+        }
+
+        if ($this->buying_cash_on && $this->buying_location_lat && $this->buying_location_lon) {
+            $matchesQuery->andWhere(
+                ['or',
+                    ['and',
+                        ['selling_cash_on' => true],
+                        "ST_Distance_Sphere(POINT($this->buying_location_lon, $this->buying_location_lat),"
+                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + " . ($this->buying_delivery_radius ?: 0) . ')'
+                    ],
+                    ['in', 'bm.id', $sellingMethodsIds]
+                ]
+            );
+        } else {
+            $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
+        }
 
         foreach ($matchesQuery->all() as $matchedOrder) {
             $this->link('matches', $matchedOrder);
@@ -474,10 +524,12 @@ class CurrencyExchangeOrder extends ActiveRecord
     {
         $notFilledFields = [];
 
-        if (($this->selling_cash_on == self::CASH_ON) || ($this->buying_cash_on == self::CASH_ON)) {
-            if (!($this->location_lon && $this->location_lat)) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
-            }
+        if (!$this->selling_cash_on && !$this->sellingPaymentMethods) {
+            $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Sell');
+        }
+
+        if (!$this->buying_cash_on && !$this->buyingPaymentMethods) {
+            $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Buy');
         }
 
         return $notFilledFields;

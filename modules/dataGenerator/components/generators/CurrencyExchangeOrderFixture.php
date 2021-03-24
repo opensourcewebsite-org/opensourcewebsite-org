@@ -49,7 +49,8 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 
         $londonCenter = [51.509865, -0.118092];
 
-        [$orderLat, $orderLon] = $this->generateRandomPoint($londonCenter, 100);
+        [$orderSellingLat, $orderSellingLon] = $this->generateRandomPoint($londonCenter, 100);
+        [$orderBuyingLat, $orderBuyingLon] = $this->generateRandomPoint($londonCenter, 200);
 
         $crossRateOn = (int)static::getFaker()->boolean();
 
@@ -87,9 +88,12 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             'selling_currency_min_amount' => $min_amount = static::getFaker()->randomNumber(2),
             'selling_currency_max_amount' => $min_amount + static::getFaker()->randomNumber(2),
             'status' => CurrencyExchangeOrder::STATUS_ON,
-            'delivery_radius' => static::getFaker()->numberBetween(1, 50),
-            'location_lat' => $orderLat,
-            'location_lon' => $orderLon,
+            'selling_delivery_radius' => static::getFaker()->numberBetween(1, 50),
+            'buying_delivery_radius' => static::getFaker()->numberBetween(1, 50),
+            'selling_location_lat' => $orderSellingLat,
+            'selling_location_lon' => $orderSellingLon,
+            'buying_location_lat' => $orderBuyingLat,
+            'buying_location_lon' => $orderBuyingLon,
             'selling_cash_on' => $sellingCashOn,
             'buying_cash_on' => $buyingCashOn,
             'cross_rate_on' => $crossRateOn,

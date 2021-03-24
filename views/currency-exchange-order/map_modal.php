@@ -11,6 +11,7 @@ use dosamigos\leaflet\widgets\Map;
 
 /**
  * @var $this View
+ * @var $type string
  * @var $model CurrencyExchangeOrder
  */
 $this->title = Yii::t('app', 'Location of order: ' . $model->id);
@@ -23,9 +24,11 @@ $this->title = Yii::t('app', 'Location of order: ' . $model->id);
     <div class="modal-body">
 
         <?php
-
-        $center = new LatLng(['lat' => $model->location_lat ?: 51.508, 'lng' => $model->location_lon ?: -0.11]);
-
+        if ($type === 'sell') {
+            $center = new LatLng(['lat' => $model->selling_location_lat ?: 51.508, 'lng' => $model->selling_location_lon ?: -0.11]);
+        } else {
+            $center = new LatLng(['lat' => $model->buying_location_lat ?: 51.508, 'lng' => $model->buying_location_lon ?: -0.11]);
+        }
         $marker = new Marker([
             'latLng' => $center,
             'clientOptions' => [
@@ -42,9 +45,9 @@ $this->title = Yii::t('app', 'Location of order: ' . $model->id);
         $tileLayer = new TileLayer([
             'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
             'clientOptions' => [
-                'attribution' => 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> ' .
-                    '<img src="http://developer.mapquest.com/content/osm/mq_logo.png">, ' .
-                    'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                'attribution' => 'Tiles Courtesy of <a href="//www.mapquest.com/" target="_blank">MapQuest</a> ' .
+                    '<img src="//developer.mapquest.com/content/osm/mq_logo.png">, ' .
+                    'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                 'subdomains' => ['1', '2', '3', '4'],
             ],
         ]);

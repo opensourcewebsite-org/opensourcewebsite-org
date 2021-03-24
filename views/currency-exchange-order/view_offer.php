@@ -10,8 +10,7 @@ use yii\helpers\Url;
  * @var $matchOrderModel \app\models\CurrencyExchangeOrder
  */
 $this->title = Yii::t('app', 'Offer');
-
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency exchange Orders'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['view-offers', 'id' => $orderModel->id]];
 $this->params['breadcrumbs'][] = $matchOrderModel->id;
@@ -38,7 +37,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 <th class="align-middle" scope="col" style="width: 50%">
                                     <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
                                 </th>
-                                <td class="align-middle"><?= $matchOrderModel->sellingCurrency->code . '/' . $matchOrderModel->buyingCurrency->code; ?></td>
+                                <td class="align-middle"><?= $matchOrderModel->sellingCurrency->code . ' / ' . $matchOrderModel->buyingCurrency->code; ?></td>
                                 <td></td>
                             </tr>
                             <tr>
