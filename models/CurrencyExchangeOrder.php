@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use app\models\User as GlobalUser;
@@ -127,7 +128,7 @@ class CurrencyExchangeOrder extends ActiveRecord
             ],
 
             [['selling_location', 'buying_location'], function($attribute) {
-                [$lat, $lon] = explode(',', $this->$attribute);
+                [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
                 if (!(new LocationLatValidator())->validateLat($lat) ||
                     !(new LocationLonValidator())->validateLon($lon)
                 ) {
@@ -228,11 +229,9 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function setSelling_location(string $location): self
     {
-        $latLon = explode(',', $location);
-        if (count($latLon) === 2) {
-            $this->selling_location_lat = $latLon[0] ?? '';
-            $this->selling_location_lon = $latLon[1] ?? '';
-        }
+        [$lat, $lon] = (new LocationParser($location))->parse();
+        $this->selling_location_lat = $lat;
+        $this->selling_location_lon = $lon;
         return $this;
     }
 
@@ -245,11 +244,9 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function setBuying_location(string $location): self
     {
-        $latLon = explode(',', $location);
-        if (count($latLon) === 2) {
-            $this->buying_location_lat = $latLon[0] ?? '';
-            $this->buying_location_lon = $latLon[1] ?? '';
-        }
+        [$lat, $lon] = (new LocationParser($location))->parse();
+        $this->buying_location_lat = $lat;
+        $this->buying_location_lon = $lon;
         return $this;
     }
 
