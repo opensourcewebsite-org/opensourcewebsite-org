@@ -341,13 +341,13 @@ class CurrencyExchangeOrder extends ActiveRecord
             ->joinWith('sellingPaymentMethods sm')
             ->joinWith('buyingPaymentMethods bm');
 
-        if ($this->selling_cash_on && $this->selling_delivery_radius && $this->selling_location_lat && $this->selling_location_lon ) {
+        if ($this->selling_cash_on && $this->selling_location_lat && $this->selling_location_lon ) {
             $matchesQuery->andWhere(
                 ['or',
                     ['and',
                         ['buying_cash_on' => true],
                         "ST_Distance_Sphere(POINT($this->selling_location_lon, $this->selling_location_lat),"
-                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + $this->selling_delivery_radius)"
+                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + " . ($this->selling_delivery_radius ?: 0) . ')'
                     ],
                     ['in', 'sm.id', $buyingMethodsIds]
                 ]);
@@ -355,13 +355,13 @@ class CurrencyExchangeOrder extends ActiveRecord
             $matchesQuery->andWhere(['in', 'sm.id', $buyingMethodsIds]);
         }
 
-        if ($this->buying_cash_on) {
+        if ($this->buying_cash_on && $this->buying_location_lat && $this->buying_location_lon) {
             $matchesQuery->andWhere(
                 ['or',
                     ['and',
                         ['selling_cash_on' => true],
                         "ST_Distance_Sphere(POINT($this->buying_location_lon, $this->buying_location_lat),"
-                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + $this->buying_delivery_radius)"
+                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + " . ($this->buying_delivery_radius ?: 0) . ')'
                     ],
                     ['in', 'bm.id', $sellingMethodsIds]
                 ]
