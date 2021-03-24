@@ -9,8 +9,8 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model app\models\CurrencyExchangeOrder */
 
-$this->title = Yii::t('app', 'Currency Exchange Order') . ' ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange Orders'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Order') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
@@ -76,12 +76,10 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     <tr>
                                         <th class="align-middle"
                                             scope="col">
-                                            <?= $model->getAttributeLabel('selling_currency_id') .
-                                            '/' .
-                                            $model->getAttributeLabel('buying_currency_id'); ?>
+                                            <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
                                         </th>
                                         <td class="align-middle">
-                                            <?= $model->sellingCurrency->code . '/' . $model->buyingCurrency->code; ?>
+                                            <?= $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code; ?>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -121,23 +119,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         <td class="align-middle"><?= $model->getSellingCurrencyMaxAmount() ?></td>
                                         <td></td>
                                     </tr>
-                                    <?php if ($model->buying_cash_on || $model->selling_cash_on): ?>
-                                        <tr>
-                                            <th class="align-middle"
-                                                scope="col"><?= $model->getAttributeLabel('delivery_radius'); ?></th>
-                                            <td class="align-middle"><?= $model->delivery_radius; ?></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="align-middle" scope="col"><?= Yii::t('app', 'Location'); ?></th>
-                                            <td class="align-middle">
-                                                <?= ($model->selling_cash_on || $model->buying_cash_on) ?
-                                                    Html::a('view', Url::to(['view-order-location', 'id' => $model->id]), ['class' => 'modal-btn-ajax']) : ''
-                                                ?>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                    <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -177,7 +158,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Payment methods to Sell') ?></h3>
+                    <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
                     <div class="card-tools">
                         <a class="edit-btn modal-btn-ajax"
                            href="/currency-exchange-order/update-sell-methods/<?= $model->id ?>"
@@ -193,7 +174,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 <tbody>
                                 <?php if ($model->selling_cash_on) : ?>
                                     <tr>
-                                        <td><?= Yii::t('app', 'Cash') ?></td>
+                                        <td><?= Yii::t('app', 'Cash') ?> (
+                                            <?= Yii::t('app', 'Location'); ?>: <?= Html::a($model->selling_location, Url::to(['view-order-selling-location', 'id' => $model->id]), ['class' => 'modal-btn-ajax']) ?>
+                                            <?php if ($model->selling_delivery_radius): ?>
+                                                | <?= Yii::t('app', 'Delivery radius'); ?>: <?= $model->selling_delivery_radius; ?> <?= Yii::t('app', 'km'); ?>
+                                            <?php endif; ?>
+                                            )
+                                        </td>
                                     </tr>
                                 <?php endif; ?>
                                 <?php foreach ($model->getSellingPaymentMethods()->all() as $method) : ?>
@@ -215,7 +202,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Payment methods to Buy') ?></h3>
+                    <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
                     <div class="card-tools">
                         <a class="edit-btn modal-btn-ajax"
                            href="/currency-exchange-order/update-buy-methods/<?= $model->id ?>"
@@ -231,7 +218,14 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 <tbody>
                                 <?php if ($model->buying_cash_on) : ?>
                                     <tr>
-                                        <td><?= Yii::t('app', 'Cash') ?></td>
+                                        <td><?= Yii::t('app', 'Cash') ?> (
+                                            <?= Yii::t('app', 'Location'); ?>: <?= Html::a($model->buying_location, Url::to(['view-order-buying-location', 'id' => $model->id]), ['class' => 'modal-btn-ajax']) ?>
+                                            <?php if ($model->buying_delivery_radius): ?>
+                                                | <?= Yii::t('app', 'Delivery radius'); ?>: <?= $model->buying_delivery_radius; ?> <?= Yii::t('app', 'km'); ?>
+                                            <?php endif; ?>
+                                            )
+                                        </td>
+                                </tr>
                                     </tr>
                                 <?php endif; ?>
                                 <?php foreach ($model->getBuyingPaymentMethods()->all() as $method) : ?>
@@ -262,8 +256,10 @@ $('.status-update').on("click", function(event) {
             }
             else {
                 var response = $.parseJSON(result);
+                console.log(response);
                 $('#main-modal-header').text('Warning!');
-                $('#main-modal-body').html(response);
+                response.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
+
                 $('#main-modal').show();
                 $('.close').on('click', function() {
                     $("#main-modal-body").html("");

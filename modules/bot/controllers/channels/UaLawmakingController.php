@@ -93,6 +93,7 @@ class UaLawmakingController extends Controller
     }
 
     /**
+     * Show only accepted votings
      * https://core.telegram.org/bots/faq#broadcasting-to-users
      *
      * @return array
@@ -103,6 +104,7 @@ class UaLawmakingController extends Controller
             ->where([
                 'sent_at' => null,
             ])
+            ->andWhere(['>=', 'for', UaLawmakingVoting::MIN_ACCEPTED_VOTES])
             ->orderBy([
                 'event_id' => SORT_ASC,
             ])
@@ -124,6 +126,7 @@ class UaLawmakingController extends Controller
     }
 
     /**
+     * Show only accepted votings
      * https://core.telegram.org/bots/faq#broadcasting-to-users
      *
      * @return array
@@ -134,6 +137,7 @@ class UaLawmakingController extends Controller
             ->where([
                 'sent_at' => null,
             ])
+            ->andWhere(['>=', 'for', UaLawmakingVoting::MIN_ACCEPTED_VOTES])
             ->orderBy([
                 'event_id' => SORT_ASC,
             ])
