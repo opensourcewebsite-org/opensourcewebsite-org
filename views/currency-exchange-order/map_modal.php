@@ -45,9 +45,9 @@ $this->title = Yii::t('app', 'Location of order: ' . $model->id);
         $tileLayer = new TileLayer([
             'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
             'clientOptions' => [
-                'attribution' => 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> ' .
-                    '<img src="http://developer.mapquest.com/content/osm/mq_logo.png">, ' .
-                    'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                'attribution' => 'Tiles Courtesy of <a href="//www.mapquest.com/" target="_blank">MapQuest</a> ' .
+                    '<img src="//developer.mapquest.com/content/osm/mq_logo.png">, ' .
+                    'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                 'subdomains' => ['1', '2', '3', '4'],
             ],
         ]);

@@ -84,11 +84,12 @@ if (!empty($languages)) {
         $menuItemsRight[] = [
             'label' => Gravatar::widget([
                 'email' => Yii::$app->user->identity->email,
+                'secure' => true,
                 'options' => [
                     'alt' => 'Profile Gravatar',
                     'class' => 'img-circle',
                 ],
-                'size' => 20
+                'size' => 20,
             ]),
             'items' => [
                 [
