@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use app\models\User as GlobalUser;
@@ -228,11 +229,9 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function setSelling_location(string $location): self
     {
-        $latLon = explode(',', $location);
-        if (count($latLon) === 2) {
-            $this->selling_location_lat = $latLon[0] ?? '';
-            $this->selling_location_lon = $latLon[1] ?? '';
-        }
+        [$lat, $lon] = array_values((new LocationToArrayFieldComponent())->prepare($location));
+        $this->selling_location_lat = $lat;
+        $this->selling_location_lon = $lon;
         return $this;
     }
 
@@ -245,11 +244,9 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public function setBuying_location(string $location): self
     {
-        $latLon = explode(',', $location);
-        if (count($latLon) === 2) {
-            $this->buying_location_lat = $latLon[0] ?? '';
-            $this->buying_location_lon = $latLon[1] ?? '';
-        }
+        [$lat, $lon] = array_values((new LocationToArrayFieldComponent())->prepare($location));
+        $this->buying_location_lat = $lat;
+        $this->buying_location_lon = $lon;
         return $this;
     }
 
