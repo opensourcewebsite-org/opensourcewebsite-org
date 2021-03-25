@@ -215,6 +215,30 @@ $leftMenuItems = [
         'route' => '/currency-exchange-order',
     ],
     [
+        'title' => 'Ads',
+        'icon' => 'far fa-circle',
+        'url' => 'ads',
+        'route' => '/ads',
+    ],
+    [
+        'title' => 'Jobs',
+        'icon' => 'far fa-circle',
+        'url' => 'jobs',
+        'route' => '/jobs',
+    ],
+    [
+        'title' => 'Dating',
+        'icon' => 'far fa-circle',
+        'url' => 'dating',
+        'route' => '/dating',
+    ],
+    [
+        'title' => 'Ua Lawmaking',
+        'icon' => 'far fa-circle',
+        'url' => 'ua-lawmaking',
+        'route' => '/ua-lawmaking',
+    ],
+    [
         'title' => 'COMMUNITY',
         'icon' => 'fas fa-users',
     ],
