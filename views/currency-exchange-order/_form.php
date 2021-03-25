@@ -259,19 +259,6 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <?php
                         $center = new LatLng(['lat' => doubleval($model->selling_location_lat) ?:51.508, 'lng' => doubleval($model->selling_location_lon) ?: -0.11]);
 
-                        $marker = new Marker([
-                            'latLng' => $center,
-                            'clientOptions' => [
-                                'draggable' => true,
-                            ],
-                            'clientEvents' => [
-                                'dragend' => 'function(e) {
-                                    var marker = e.target;
-                                    position = marker.getLatLng();
-                                }'
-                            ],
-                        ]);
-
                         $tileLayer = new TileLayer([
                             'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
                             'clientOptions' => [
@@ -287,6 +274,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             'clientEvents' => [
                                 'load' => new JsExpression("
                                     function (e) {
+                                        window.positionMarker = new L.Marker([e.sourceTarget.getCenter().lat, e.sourceTarget.getCenter().lng]).addTo(map);
                                         L.control.locate().addTo(e.sourceTarget);
                                         $(document).on('shown.bs.modal','#modal-xl',  function(){
                                             setTimeout(function() {
@@ -294,13 +282,20 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                             }, 1);
                                         });
                                     }
+                                "),
+                                'click' => new JsExpression("
+                                function(e) {
+                                    if (window.positionMarker) {
+                                        window.positionMarker.setLatLng(e.latlng);
+                                        position = e.latlng;
+                                        $('#current-position-span').text(e.latlng.lat+','+e.latlng.lng);
+                                    }
+                                }
                                 ")
                             ]
                         ]);
 
-                        $leaflet
-                            ->addLayer($marker)
-                            ->addLayer($tileLayer);
+                        $leaflet->addLayer($tileLayer);
 
                         echo Map::widget([
                             'leafLet' => $leaflet,
@@ -311,6 +306,9 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         ]);
                         ?>
                     </p>
+                    <div class="current-position-div">
+                        <p>Position: <span id="current-position-span"><?=$center->lat?>,<?=$center->lng?></span></p>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
