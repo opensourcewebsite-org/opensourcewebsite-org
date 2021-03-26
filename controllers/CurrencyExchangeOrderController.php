@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrderMatch;

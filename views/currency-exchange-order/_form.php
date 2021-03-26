@@ -10,6 +10,7 @@ use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
 use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\widgets\Map;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use dosamigos\leaflet\LeafLet;
@@ -140,9 +141,11 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                             ])->label(false)
                                         ?>
                                         <span class="input-group-append">
-                                        <button type="button" class="btn btn-info btn-flat map-btn" data-toggle="modal"
-                                                data-form-field-id = "currency-exchange-order-selling-location"
-                                                data-target="#modal-xl"><?= Yii::t('app', 'Map') ?></button>
+                                        <button type="button" class="btn btn-info btn-flat map-btn"
+                                                data-toggle="modal" data-target="map-modal"
+                                                data-target-field-id="currency-exchange-order-selling-location">
+                                            <?= Yii::t('app', 'Map') ?>
+                                        </button>
                                     </span>
                                     </div>
                                 </div>
@@ -186,9 +189,11 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                             ])->label(false)
                                         ?>
                                         <span class="input-group-append">
-                                        <button type="button" class="btn btn-info btn-flat map-btn" data-toggle="modal"
-                                                data-form-field-id = "currency-exchange-order-buying-location"
-                                                data-target="#modal-xl"><?= Yii::t('app', 'Map') ?></button>
+                                        <button type="button" class="btn btn-info btn-flat map-btn"
+                                                data-toggle="modal" data-target="map-modal"
+                                                data-target-field-id = "currency-exchange-order-buying-location">
+                                            <?= Yii::t('app', 'Map') ?>
+                                        </button>
                                     </span>
                                     </div>
                                 </div>
@@ -210,10 +215,13 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         $this->registerJs(<<<JS
 
                         function updateVisibility() {
-                            ($('#cashSellCheckbox').prop('checked') ) ?
-                                $('.selling-location-radius-div').show() : $('.selling-location-radius-div').hide();
-                            ($('#cashBuyCheckbox').prop('checked') ) ?
-                                $('.buying-location-radius-div').show() : $('.buying-location-radius-div').hide();
+                            const sellingLocationDiv = $('.selling-location-radius-div');
+                            const buyingLocationDiv = $('.buying-location-radius-div');
+
+                            ($('#cashSellCheckbox').prop('checked')) ?
+                                sellingLocationDiv.show() : sellingLocationDiv.hide();
+                            ($('#cashBuyCheckbox').prop('checked')) ?
+                                buyingLocationDiv.show() : buyingLocationDiv.hide();
 
                         }
 
@@ -244,85 +252,13 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
         </div>
         <?php ActiveForm::end(); ?>
     </div>
-
-    <div class="modal fade" id="modal-xl">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title"><?= Yii::t('app', 'Location') ?></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <?php
-                        $center = new LatLng(['lat' => doubleval($model->selling_location_lat) ?:51.508, 'lng' => doubleval($model->selling_location_lon) ?: -0.11]);
-
-                        $tileLayer = new TileLayer([
-                            'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            'clientOptions' => [
-                                'attribution' => 'Tiles Courtesy of <a href="//www.mapquest.com/" target="_blank">MapQuest</a> ' .
-                                    '<img src="//developer.mapquest.com/content/osm/mq_logo.png">, ' .
-                                    'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-                                'subdomains' => ['1', '2', '3', '4'],
-                            ],
-                        ]);
-
-                        $leaflet = new LeafLet([
-                            'center' => $center,
-                            'clientEvents' => [
-                                'load' => new JsExpression("
-                                    function (e) {
-                                        window.positionMarker = new L.Marker([e.sourceTarget.getCenter().lat, e.sourceTarget.getCenter().lng]).addTo(map);
-                                        L.control.locate().addTo(e.sourceTarget);
-                                        $(document).on('shown.bs.modal','#modal-xl',  function(){
-                                            setTimeout(function() {
-                                                e.sourceTarget.invalidateSize();
-                                            }, 1);
-                                        });
-                                    }
-                                "),
-                                'click' => new JsExpression("
-                                function(e) {
-                                    if (window.positionMarker) {
-                                        window.positionMarker.setLatLng(e.latlng);
-                                        position = e.latlng;
-                                        $('#current-position-span').text(e.latlng.lat+','+e.latlng.lng);
-                                    }
-                                }
-                                ")
-                            ]
-                        ]);
-
-                        $leaflet->addLayer($tileLayer);
-
-                        echo Map::widget([
-                            'leafLet' => $leaflet,
-                            'options' => [
-                                'id' => 'leaflet',
-                                'style' => 'height:500px',
-                            ],
-                        ]);
-                        ?>
-                    </p>
-                    <div class="current-position-div">
-                        <p>Position: <span id="current-position-span"><?=$center->lat?>,<?=$center->lng?></span></p>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="location-save-changes" type="button" class="btn btn-primary" data-dismiss="modal">Save
-                        changes
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+   <?=$this->render('_select_location_modal', ['center' => false])?>
 <?php
 
 $urlRedirect = Yii::$app->urlManager->createUrl(['/currency-exchange-order']);
+
+$locationMapActionUrl = Url::to(['/currency-exchange-order/location-map-modal']);
+
 $jsMessages = [
     'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this order') . '?',
     'delete-error' => Yii::t('app', 'Sorry, there was an error while trying to delete the order') . '.',
@@ -330,10 +266,6 @@ $jsMessages = [
 
 $this->registerJs(<<<JS
 
-var location_field_id = 'currency-exchange-order-selling-location';
-$('.map-btn').on('click', function() {
-    location_field_id = $(this).data('form-field-id');
-})
 
 $('#crossRateCheckbox').on('change', function(){
     if (!$(this).prop('checked')) {
@@ -345,7 +277,7 @@ $('#crossRateCheckbox').on('change', function(){
 
 const calculateCrossRate = (rate) => {
     const curVal = parseFloat(rate);
-    if (!isNaN(curVal) && curVal != 0) {
+    if (!isNaN(curVal) && curVal !== 0) {
         return (1/curVal).toFixed(8);
     }
     return '';
@@ -359,13 +291,14 @@ $('#buying_rate').on('change', function(){
     $('#currencyexchangeorder-selling_rate').val(calculateCrossRate($(this).val()));
 });
 
-var position = {
-    'lat': {$center->lat},
-    'lng': {$center->lng}
-}
+$('.map-btn').on('click', function (){
+    const targetField = $('#'+$(this).data('target-field-id'));
+    console.log(targetField);
 
-$('#location-save-changes').on('click', function(e) {
-    $('#' + location_field_id).val(position.lat + ", " + position.lng).trigger('change');
+    window.currencyExchangeLocationTargetField = targetField;
+
+    $("#map-modal").modal('show');
+
 })
 
 $("#delete-currency-exchange-order").on("click", function(event) {

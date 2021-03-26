@@ -1,6 +1,13 @@
 <?php
 namespace app\modules\bot\components\helpers;
 
+/**
+ * Class LocationParser
+ *
+ * Trying to parse location lat and lng from string.
+ *
+ * @package app\modules\bot\components\helpers
+ */
 class LocationParser
 {
     private const MAIN_DELIMITER = '|';
