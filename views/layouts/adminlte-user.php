@@ -70,6 +70,13 @@ if (!empty($languages)) {
         'bodyOptions' => ['id' => 'main-modal-body'],
     ]);
     Modal::end(); ?>
+
+    <?php Modal::begin([
+        'id' => 'main-modal-xl',
+        'size' => Modal::SIZE_EXTRA_LARGE,
+        'options' => ['class' => 'card-primary', 'tabindex' => false],
+    ]);
+    Modal::end(); ?>
     <div class="wrapper">
         <?php
         NavBar::begin([
