@@ -5,6 +5,10 @@ namespace app\modules\bot\components\helpers;
  * Class LocationParser
  *
  * Trying to parse location lat and lng from string.
+ * call [[parse]] method to parse location from string.
+ *
+ * ToDo: need to throw exception if not possible to parse
+ * and add 'throwOnError' option.
  *
  * @package app\modules\bot\components\helpers
  */
