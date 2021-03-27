@@ -66,7 +66,19 @@ class GreetingController extends Controller
                     ]);
                     $botGreeting->save();
                 }
+                $this->deletePreviousGreetings($botGreeting);
             }
+        }
+    }
+
+    private function deletePreviousGreetings(BotChatGreeting $currentGreeting)
+    {
+        $prevGreetings = BotChatGreeting::find()->where(['chat_id' => $currentGreeting->chat_id])->all();
+
+        /** @var BotChatGreeting $message */
+        foreach ($prevGreetings as $message) {
+            $this->getBotApi()->deleteMessage($message->chat_id, $message->message_id);
+            $message->delete();
         }
     }
 }
