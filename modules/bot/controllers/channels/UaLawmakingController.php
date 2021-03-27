@@ -184,6 +184,10 @@ class UaLawmakingController extends Controller
                 return [];
             }
 
+            return $this->prepareResponseBuilder($voting)
+                    ->build();
+
+            // old code for like/dislike
             if ($this->addOrChangeVote($voting, UaLawmakingVote::VOTE_LIKE)) {
                 return $this->prepareResponseBuilder($voting)
                         ->build();
@@ -219,6 +223,10 @@ class UaLawmakingController extends Controller
                 return [];
             }
 
+            return $this->prepareResponseBuilder($voting)
+                    ->build();
+
+            // old code for like/dislike
             if ($this->addOrChangeVote($voting, UaLawmakingVote::VOTE_DISLIKE)) {
                 return $this->prepareResponseBuilder($voting)
                         ->build();
@@ -274,6 +282,14 @@ class UaLawmakingController extends Controller
      */
     private function prepareResponseBuilder(UaLawmakingVoting &$voting)
     {
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('show-voting', [
+                    'voting' => $voting,
+                ])
+            );
+
+        // old code for like/dislike
         $likeVotes = UaLawmakingVote::find()
             ->where([
                 'message_id' => $voting->message_id,
