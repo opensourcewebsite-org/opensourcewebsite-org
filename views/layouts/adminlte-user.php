@@ -209,12 +209,12 @@ $leftMenuItems = [
         'url' => 'wikipedia-pages',
         'route' => '/wikipedia-pages/index',
     ],
-    [
-        'title' => 'Wikinews pages',
-        'icon' => 'far fa-circle',
-        'url' => 'wikinews-pages',
-        'route' => '/wikinews-pages/index',
-    ],
+    //[
+    //    'title' => 'Wikinews pages',
+    //    'icon' => 'far fa-circle',
+    //    'url' => 'wikinews-pages',
+    //    'route' => '/wikinews-pages/index',
+    //],
     [
         'title' => 'Currency Exchange',
         'icon' => 'far fa-circle',

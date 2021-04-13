@@ -39,11 +39,11 @@ class CronController extends Controller
         'JobMatch',
         'BotCommand',
         'Debt',
-        'CurrencyRatesParser',
+        //'CurrencyRatesParser',
         'UaLawmakingParser',
         'WikipediaParser',
-        'WikinewsParser',
-        'CeMatch'
+        //'WikinewsParser',
+        'CeMatch',
     ];
 
     /**
