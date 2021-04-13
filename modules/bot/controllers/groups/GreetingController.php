@@ -67,7 +67,7 @@ class GreetingController extends Controller
                     $botGreeting->save();
                 }
                 // remove all active previous greetings
-                $this->deletePreviousGreetings($botGreeting);
+                //$this->deletePreviousGreetings($botGreeting);
             }
         }
     }
