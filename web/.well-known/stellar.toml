@@ -1,4 +1,5 @@
-# ----- OpenSourceWebsite Stellar Anchor <https://opensourcewebsite.org> -----
+# OpenSourceWebsite Stellar Anchor <https://opensourcewebsite.org>
+# https://github.com/stellar/stellar-protocol/tree/master/ecosystem
 
 ACCOUNTS=[
 "GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH",
@@ -9,9 +10,20 @@ ACCOUNTS=[
 ORG_NAME="OpenSourceWebsite"
 ORG_DBA="OpenSourceWebsite"
 ORG_URL="https://opensourcewebsite.org"
+ORG_GITHUB="opensourcewebsite-org"
 ORG_LOGO="https://opensourcewebsite.org/images/logo/logo.png"
-ORG_DESCRIPTION="OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on https://opensourcewebsite.org"
+ORG_DESCRIPTION="OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code"
 ORG_OFFICIAL_EMAIL="hello@opensourcewebsite.org"
+
+[[CURRENCIES]]
+code="OSW"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=7
+anchor_asset_type="other"
+name="OSW Mutual Fund"
+desc="Cryptocurrency backed 1:1 to the share of OSW Mutual Fund."
+image="https://opensourcewebsite.org/images/logo/logo.png"
 
 [[CURRENCIES]]
 code="USD"
