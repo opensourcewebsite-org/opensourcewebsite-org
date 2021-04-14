@@ -67,7 +67,7 @@ class GreetingController extends Controller
                     $botGreeting->save();
                 }
                 // remove all active previous greetings
-                //$this->deletePreviousGreetings($botGreeting);
+                $this->deletePreviousGreetings($botGreeting);
             }
         }
     }
@@ -83,11 +83,7 @@ class GreetingController extends Controller
 
         /** @var BotChatGreeting $message */
         foreach ($prevGreetings as $message) {
-            try {
-                $this->getBotApi()->deleteMessage($message->chat_id, $message->message_id);
-            } catch (\Exception $e) {
-                echo 'ERROR: BotChatGreeting #' . $message->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-            }
+            $this->getBotApi()->deleteMessage($message->chat->chat_id, $message->message_id);
 
             $message->delete();
         }
