@@ -230,8 +230,24 @@ $leftMenuItems = [
     [
         'title' => 'Jobs',
         'icon' => 'far fa-circle',
-        'url' => 'jobs',
-        'route' => '/jobs',
+        'urls' => [
+            'resume',
+            'vacancy',
+        ],
+        'items' => [
+            [
+                'title' => 'Resumes',
+                'icon' => 'far fa-circle',
+                'url' => 'resume',
+                'route' => '/resume'
+            ],
+            [
+                'title' => 'Vacancies',
+                'icon' => 'far fa-circle',
+                'url' => 'vacancy',
+                'route' => '/vacancy'
+            ]
+        ]
     ],
     [
         'title' => 'Dating',

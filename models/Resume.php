@@ -36,8 +36,8 @@ use app\modules\bot\validators\LocationLonValidator;
  *
  * @property Currency $currency
  * @property User $user
- * @property Vacancy $matches
- * @property UserLanguage $userLanguagesRelation
+ * @property Vacancy[] $matches
+ * @property UserLanguage[] $userLanguagesRelation
  */
 class Resume extends ActiveRecord
 {

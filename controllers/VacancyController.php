@@ -1,21 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace app\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\filters\AccessControl;
 
-class JobsController extends Controller
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
+class VacancyController extends Controller {
+    public function behaviors(): array
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
@@ -26,9 +22,9 @@ class JobsController extends Controller
         ];
     }
 
-    public function actionIndex()
+    public function actionIndex(): string
     {
+
         return $this->render('index');
     }
-
 }
