@@ -3,19 +3,41 @@
 namespace app\models;
 
 use Yii;
-use app\models\queries\ResumeQuery;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
+use app\models\queries\ResumeQuery;
+use yii\db\conditions\AndCondition;
+use app\models\queries\VacancyQuery;
+use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
-use yii\db\conditions\AndCondition;
 
 /**
  * Class Resume
  *
  * @package app\models
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $status
+ * @property int $remote_on
+ * @property string $name
+ * @property string $experiences
+ * @property double $min_hourly_rate
+ * @property int $search_radius
+ * @property string $expectations
+ * @property string $skills
+ * @property string $location_lat
+ * @property string $location_lon
+ * @property int $created_at
+ * @property int $processed_at
+ *
+ * @property Currency $currency
+ * @property User $user
+ * @property Vacancy $matches
+ * @property UserLanguage $userLanguagesRelation
  */
 class Resume extends ActiveRecord
 {
@@ -27,18 +49,12 @@ class Resume extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%resume}}';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             [
@@ -103,18 +119,12 @@ class Resume extends ActiveRecord
         ];
     }
 
-    /**
-     * @return ResumeQuery
-     */
-    public static function find()
+    public static function find(): ResumeQuery
     {
         return new ResumeQuery(get_called_class());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -124,8 +134,7 @@ class Resume extends ActiveRecord
         ];
     }
 
-    /** @inheritDoc */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'timestamp' => [
@@ -135,36 +144,23 @@ class Resume extends ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrency()
+    public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
-    /**
-     * @return bool
-     */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->status == self::STATUS_ON;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMatches()
+    public function getMatches(): ActiveQuery
     {
-        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+        return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_resume_match}}', ['resume_id' => 'id']);
     }
 
-    /**
-     * @return queries\VacancyQuery
-     */
-    public function getMatchedVacancies()
+    public function getMatchedVacancies(): VacancyQuery
     {
         $query = Vacancy::find()
             ->live()
@@ -177,13 +173,9 @@ class Resume extends ActiveRecord
         return $query;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getCounterMatches()
+    public function getCounterMatches(): ActiveQuery
     {
-        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+        return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_vacancy_match}}', ['resume_id' => 'id']);
     }
 
@@ -225,21 +217,13 @@ class Resume extends ActiveRecord
         }
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getLanguagesRelation()
+    public function getLanguagesRelation(): ActiveQuery
     {
-        return $this->hasMany(Language::className(), ['id' => 'language_id'])
+        return $this->hasMany(Language::class, ['id' => 'language_id'])
             ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getUserLanguagesRelation()
+    public function getUserLanguagesRelation(): ActiveQuery
     {
         return $this->hasMany(UserLanguage::class, ['user_id' => 'user_id']);
     }
@@ -258,28 +242,17 @@ class Resume extends ActiveRecord
         }
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getGlobalUser()
+    public function getGlobalUser(): ActiveQuery
     {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
+        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getKeywordsRelation()
+    public function getKeywordsRelation(): ActiveQuery
     {
-        return $this->hasMany(JobKeyword::className(), ['id' => 'job_keyword_id'])
+        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
             ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status'])) {
@@ -291,15 +264,13 @@ class Resume extends ActiveRecord
         parent::afterSave($insert, $changedAttributes);
     }
 
-    /**
-     * @return array
-     */
-    public function notPossibleToChangeStatus()
+    public function notPossibleToChangeStatus(): array
     {
         $notFilledFields = [];
 
         if (!$this->getLanguagesRelation()->count()) {
-            $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages')) . ' (' . Yii::t('bot', 'in your profile') . ')';
+            $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages'))
+                . ' (' . Yii::t('bot', 'in your profile') . ')';
         }
         if ($this->remote_on == self::REMOTE_OFF) {
             if (!($this->location_lon && $this->location_lat)) {
