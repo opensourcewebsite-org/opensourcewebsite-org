@@ -1,6 +1,6 @@
 <b><?= $chatTitle ?></b><br/>
 <br/>
-<?= Yii::t('bot', 'Greeting') ?> - <?= Yii::t('bot', 'sends a welcome message to newly joined members') ?>. <?= Yii::t('bot', 'Ignores telegram bots') ?>.<br/>
+<?= Yii::t('bot', 'Greeting') ?> - <?= Yii::t('bot', 'sends a welcome message to newly joined members, which is automatically deleted after {0,number} mins', 30) ?>. <?= Yii::t('bot', 'Ignores telegram bots') ?>.<br/>
 <br/>
 ————<br/>
 <br/>

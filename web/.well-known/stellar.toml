@@ -1,4 +1,5 @@
-# ----- OpenSourceWebsite Stellar Anchor <https://opensourcewebsite.org> -----
+# OpenSourceWebsite Stellar Anchor <https://opensourcewebsite.org>
+# https://github.com/stellar/stellar-protocol/tree/master/ecosystem
 
 ACCOUNTS=[
 "GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH",
@@ -9,9 +10,20 @@ ACCOUNTS=[
 ORG_NAME="OpenSourceWebsite"
 ORG_DBA="OpenSourceWebsite"
 ORG_URL="https://opensourcewebsite.org"
-ORG_LOGO="https://opensourcewebsite.org/images/logo/logo.png"
-ORG_DESCRIPTION="OpenSourceWebsite (OSW) is open source website for global online social community, community-driven and available for free on https://opensourcewebsite.org"
+ORG_GITHUB="opensourcewebsite-org"
+ORG_LOGO="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+ORG_DESCRIPTION="OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code"
 ORG_OFFICIAL_EMAIL="hello@opensourcewebsite.org"
+
+[[CURRENCIES]]
+code="OSW"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=7
+anchor_asset_type="other"
+name="OSW Mutual Fund"
+desc="Cryptocurrency backed 1:1 to the share of OSW Mutual Fund."
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="USD"
@@ -22,7 +34,7 @@ anchor_asset_type="fiat"
 anchor_asset="USD"
 name="OSW US Dollar"
 desc="Cryptocurrency backed 1:1 to the US dollar."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="THB"
@@ -33,7 +45,7 @@ anchor_asset_type="fiat"
 anchor_asset="THB"
 name="OSW Thai Baht"
 desc="Cryptocurrency backed 1:1 to the Thai Baht."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="UAH"
@@ -44,7 +56,7 @@ anchor_asset_type="fiat"
 anchor_asset="UAH"
 name="OSW Ukrainian Hryvna"
 desc="Cryptocurrency backed 1:1 to the Ukrainian Hryvna."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="RUB"
@@ -55,7 +67,7 @@ anchor_asset_type="fiat"
 anchor_asset="RUB"
 name="OSW Russian Ruble"
 desc="Cryptocurrency backed 1:1 to the Russian Ruble."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="EUR"
@@ -66,7 +78,7 @@ anchor_asset_type="fiat"
 anchor_asset="EUR"
 name="OSW Euro"
 desc="Cryptocurrency backed 1:1 to the Euro."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="SGD"
@@ -77,7 +89,7 @@ anchor_asset_type="fiat"
 anchor_asset="SGD"
 name="OSW Singapore Dollar"
 desc="Cryptocurrency backed 1:1 to the Singapore Dollar."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="KRW"
@@ -88,7 +100,7 @@ anchor_asset_type="fiat"
 anchor_asset="KRW"
 name="OSW South Korean Won"
 desc="Cryptocurrency backed 1:1 to the South Korean Won."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="BYN"
@@ -99,7 +111,7 @@ anchor_asset_type="fiat"
 anchor_asset="BYN"
 name="OSW Belarusian Ruble"
 desc="Cryptocurrency backed 1:1 to the Belarusian Ruble."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="CNY"
@@ -110,7 +122,7 @@ anchor_asset_type="fiat"
 anchor_asset="CNY"
 name="OSW Chinese Yuan"
 desc="Cryptocurrency backed 1:1 to the Chinese Yuan."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="PHP"
@@ -121,7 +133,7 @@ anchor_asset_type="fiat"
 anchor_asset="PHP"
 name="OSW Philippine Peso"
 desc="Cryptocurrency backed 1:1 to the Philippine Peso."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="GBP"
@@ -132,7 +144,7 @@ anchor_asset_type="fiat"
 anchor_asset="GBP"
 name="OSW British Pound"
 desc="Cryptocurrency backed 1:1 to the British Pound."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="MYR"
@@ -143,7 +155,7 @@ anchor_asset_type="fiat"
 anchor_asset="MYR"
 name="OSW Malaysian Ringgit"
 desc="Cryptocurrency backed 1:1 to the Malaysian Ringgit."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
 code="IDR"
@@ -154,4 +166,4 @@ anchor_asset_type="fiat"
 anchor_asset="IDR"
 name="OSW Indonesian Rupiah"
 desc="Cryptocurrency backed 1:1 to the Indonesian Rupiah."
-image="https://opensourcewebsite.org/images/logo/logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
