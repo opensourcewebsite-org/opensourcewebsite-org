@@ -5,6 +5,7 @@ use app\models\Currency;
 use app\models\Resume;
 use app\models\search\ResumeSearch;
 use yii\data\ActiveDataProvider;
+use yii\grid\ActionColumn;
 use yii\helpers\Html;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
@@ -76,7 +77,17 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             ],
                             [
                                 'label' => 'offers'
-                            ]
+                            ],
+                            [
+                                'class' => ActionColumn::class,
+                                'template' => '{view}',
+                                'buttons' => [
+                                    'view' => function ($url) {
+                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
+                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary',]);
+                                    },
+                                ],
+                            ],
                         ],
 
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
