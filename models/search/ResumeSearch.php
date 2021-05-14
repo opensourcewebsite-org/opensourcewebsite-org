@@ -15,6 +15,7 @@ class ResumeSearch extends Resume {
     {
         return [
             ['status', 'in', 'range' => [Resume::STATUS_ON, Resume::STATUS_OFF]],
+            [['name', 'min_hourly_rate', 'currency_id'], 'safe'],
         ];
     }
 
@@ -34,8 +35,9 @@ class ResumeSearch extends Resume {
         }
 
         $query->andFilterWhere(['status' => $this->status]);
-
-        $query->orderBy(['processed_at' => SORT_DESC, 'created_at'=>SORT_DESC]);
+        $query->andFilterWhere(['like','name',$this->name]);
+        $query->andFilterWhere(['min_hourly_rate' => $this->min_hourly_rate]);
+        $query->andFilterWhere(['currency_id' => $this->currency_id]);
 
         return $dataProvider;
     }

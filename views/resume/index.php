@@ -1,5 +1,7 @@
 <?php
 
+use app\components\helpers\ArrayHelper;
+use app\models\Currency;
 use app\models\Resume;
 use app\models\search\ResumeSearch;
 use yii\data\ActiveDataProvider;
@@ -26,7 +28,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item">
+                        <li class="nav-item mx-1">
                             <?= Html::a(Yii::t('app', 'Active'),
                                 ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_ON],
                                 [
@@ -35,7 +37,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                 ]);
                             ?>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item  mx-1">
                             <?= Html::a(Yii::t('app', 'Inactive'),
                                 ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
                                 [
@@ -44,7 +46,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                 ]);
                             ?>
                         </li>
-                        <li class="nav-item align-self-center mr-4">
+                        <li class="nav-item align-self-center mr-4  mx-1">
                             <?= AddButton::widget([
                                 'url' => ['resume/create'],
                                 'options' => [
@@ -69,7 +71,8 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                 'value' => function($model) {
                                     /* @var $model Resume */
                                     return $model->currency->name;
-                                }
+                                },
+                                'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name')
                             ],
                             [
                                 'label' => 'offers'
