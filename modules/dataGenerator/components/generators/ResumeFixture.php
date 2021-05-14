@@ -1,21 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace app\modules\dataGenerator\components\generators;
 
-use app\components\helpers\ArrayHelper;
 use app\models\Currency;
-use app\models\CurrencyExchangeOrder;
-use app\models\PaymentMethod;
 use app\models\Resume;
 use app\models\User;
 use app\modules\dataGenerator\helpers\LatLonHelper;
-use app\services\CurrencyExchangeService;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Yii;
-use yii\base\Event;
 use yii\db\ActiveRecord;
-use yii\db\Exception;
 use yii\helpers\Console;
 
 class ResumeFixture extends ARGenerator
