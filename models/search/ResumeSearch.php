@@ -35,7 +35,7 @@ class ResumeSearch extends Resume {
 
         $query->andFilterWhere(['status' => $this->status]);
 
-        $query->orderBy(['updated_at' => SORT_DESC, 'created_at'=>SORT_DESC]);
+        $query->orderBy(['processed_at' => SORT_DESC, 'created_at'=>SORT_DESC]);
 
         return $dataProvider;
     }

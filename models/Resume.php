@@ -27,6 +27,7 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property string $experiences
  * @property double $min_hourly_rate
  * @property int $search_radius
+ * @property int $currency_id
  * @property string $expectations
  * @property string $skills
  * @property string $location_lat
@@ -128,9 +129,20 @@ class Resume extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
+            'user_id' => Yii::t('app', 'User'),
             'remote_on' => Yii::t('bot', 'Remote work'),
+            'name' => Yii::t('app', 'Name'),
+            'experiences' => Yii::t('app','Experiences'),
+            'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'search_radius' => Yii::t('bot', 'Search radius'),
+            'currency_id' => Yii::t('app', 'Currency'),
+            'expectations' => Yii::t('app', 'Expectations'),
+            'skills' => Yii::t('app',' skills'),
+            'location_lat' => Yii::t('app', 'location_lat'),
+            'location_lon' => Yii::t('app', 'location_lon'),
+            'location' => Yii::t('app', 'Location'),
+            'created_at' => Yii::t('app', 'created_at'),
+            'processed_at' => Yii::t('app', 'processed_at'),
         ];
     }
 
