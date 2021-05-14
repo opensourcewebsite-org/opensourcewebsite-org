@@ -6,6 +6,7 @@ use app\models\PaymentMethod;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
+use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
 use dosamigos\leaflet\types\LatLng;
@@ -132,22 +133,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
-                                    <div class="input-group mb-3 align-items-start">
-                                        <?= $form->field($model, 'selling_location', ['options' => ['class' => 'form-group flex-grow-1']])
-                                            ->textInput([
-                                                'maxlength' => true,
-                                                'id' => 'currency-exchange-order-selling-location',
-                                                'class' => 'form-control flex-grow-1'
-                                            ])->label(false)
-                                        ?>
-                                        <span class="input-group-append">
-                                        <button type="button" class="btn btn-info btn-flat map-btn"
-                                                data-toggle="modal" data-target="map-modal"
-                                                data-target-field-id="currency-exchange-order-selling-location">
-                                            <?= Yii::t('app', 'Map') ?>
-                                        </button>
-                                    </span>
-                                    </div>
+                                    <?= $form->field($model, 'selling_location')->widget(LocationPickerWidget::class) ?>
                                 </div>
                             </div>
                             <div class="row">
@@ -180,22 +166,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
-                                    <div class="input-group mb-3 align-items-start">
-                                        <?= $form->field($model, 'buying_location', ['options' => ['class' => 'form-group flex-grow-1']])
-                                            ->textInput([
-                                                'maxlength' => true,
-                                                'id' => 'currency-exchange-order-buying-location',
-                                                'class' => 'form-control flex-grow-1'
-                                            ])->label(false)
-                                        ?>
-                                        <span class="input-group-append">
-                                        <button type="button" class="btn btn-info btn-flat map-btn"
-                                                data-toggle="modal" data-target="map-modal"
-                                                data-target-field-id = "currency-exchange-order-buying-location">
-                                            <?= Yii::t('app', 'Map') ?>
-                                        </button>
-                                    </span>
-                                    </div>
+                                    <?= $form->field($model, 'buying_location')->widget(LocationPickerWidget::class) ?>
                                 </div>
                             </div>
                             <div class="row">
@@ -252,7 +223,6 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
         </div>
         <?php ActiveForm::end(); ?>
     </div>
-   <?=$this->render('_select_location_modal', ['center' => false])?>
 <?php
 
 $urlRedirect = Yii::$app->urlManager->createUrl(['/currency-exchange-order']);
@@ -290,11 +260,6 @@ $('#currencyexchangeorder-selling_rate').on('change', function(){
 $('#buying_rate').on('change', function(){
     $('#currencyexchangeorder-selling_rate').val(calculateCrossRate($(this).val()));
 });
-
-$('.map-btn').on('click', function (){
-    window.currencyExchangeLocationTargetField = $('#'+$(this).data('target-field-id'));
-    $("#map-modal").modal('show');
-})
 
 $("#delete-currency-exchange-order").on("click", function(event) {
     event.preventDefault();

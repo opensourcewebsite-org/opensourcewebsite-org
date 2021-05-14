@@ -35,13 +35,13 @@ use yii\helpers\Html;
 
                     <div class="current-position-div">
                         <p>
-                            Position: <span id="current-position-span"></span>
+                            Position: <span id="<?=$id?>-current-position-span"></span>
                         </p>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="location-save-changes" type="button" class="btn btn-primary" data-dismiss="modal">Save
+                    <button id="<?=$id?>-location-save-changes" type="button" class="btn btn-primary" data-dismiss="modal">Save
                         changes
                     </button>
                 </div>
@@ -74,7 +74,7 @@ $(document).ready(function() {
 
     const updatePosition = (latlng) => {
         marker.setLatLng(latlng);
-        $('#current-position-span').text(latlng.lat+','+latlng.lng);
+        $('#'+controlId+'-current-position-span').text(latlng.lat+','+latlng.lng);
     }
 
     map.on('click', function(e) {
@@ -87,7 +87,7 @@ $(document).ready(function() {
         lc.stop();
     });
 
-    $(document).on('click', '#location-save-changes', function() {
+    $(document).on('click', '#'+controlId+'-location-save-changes', function() {
         if ( controlId ) {
             const latlng = marker.getLatLng();
             $('#'+controlId).val(latlng.lat+','+latlng.lng);

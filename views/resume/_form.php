@@ -3,6 +3,9 @@
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\models\Resume;
+use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SaveButton;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -49,6 +52,10 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                 <?= $form->field($model, 'search_radius')->textInput(['maxlength' => true, 'placeholder' => 0]) ?>
                             </div>
                         </div>
+                    </div>
+                    <div class="card-footer">
+                        <?= SaveButton::widget(); ?>
+                        <?= CancelButton::widget(['url' => '/resume']); ?>
                     </div>
                 </div>
             </div>
