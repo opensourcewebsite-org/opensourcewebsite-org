@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace app\models\search;
 
 use app\models\Resume;
-use phpDocumentor\Reflection\Types\Static_;
 use yii\data\ActiveDataProvider;
+use Yii;
 
 class ResumeSearch extends Resume {
 
@@ -21,7 +21,7 @@ class ResumeSearch extends Resume {
 
     public function search(array $params): ActiveDataProvider
     {
-        $query = Resume::find();
+        $query = Resume::find()->where(['user_id' => Yii::$app->user->identity->id]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query

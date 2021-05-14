@@ -2,9 +2,10 @@
 
 use app\assets\LeafletLocateControlAsset;
 use dosamigos\leaflet\LeafLetAsset;
+use yii\web\View;
 
 /**
- * @var \yii\web\View $this
+ * @var View $this
  * @var array|false $center
  */
 

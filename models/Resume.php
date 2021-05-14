@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -95,6 +96,7 @@ class Resume extends ActiveRecord
                 ],
                 'double',
             ],
+            ['location', 'string'],
             [
                 'min_hourly_rate',
                 'double',
@@ -154,6 +156,21 @@ class Resume extends ActiveRecord
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    public function setLocation(string $location): self
+    {
+        [$lat, $lon] = (new LocationParser($location))->parse();
+        $this->location_lat = $lat;
+        $this->location_lon = $lon;
+        return $this;
+    }
+
+    public function getLocation(): string
+    {
+        return ($this->location_lat && $this->location_lon) ?
+            implode(',', [$this->location_lat, $this->location_lon]) :
+            '';
     }
 
     public function getCurrency(): ActiveQuery

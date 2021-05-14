@@ -292,13 +292,8 @@ $('#buying_rate').on('change', function(){
 });
 
 $('.map-btn').on('click', function (){
-    const targetField = $('#'+$(this).data('target-field-id'));
-    console.log(targetField);
-
-    window.currencyExchangeLocationTargetField = targetField;
-
+    window.currencyExchangeLocationTargetField = $('#'+$(this).data('target-field-id'));
     $("#map-modal").modal('show');
-
 })
 
 $("#delete-currency-exchange-order").on("click", function(event) {
