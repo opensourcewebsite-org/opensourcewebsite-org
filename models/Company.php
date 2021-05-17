@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\validators\UrlTrimmer;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -50,23 +51,11 @@ class Company extends ActiveRecord
                 'max' => 255,
             ],
             [
-                ['url'],
-                'filter',
-                'skipOnEmpty' => true,
-                'filter' => function ($value) {
-                    $parsedUrl = parse_url($value);
-                    if (!isset($parsedUrl['scheme'])) {
-                        $parsedUrl['scheme'] = Yii::$app->params['defaultScheme'];
-                    }
-                    if ($parsedUrl['host'] ?? false) {
-                        $parsedUrl['host'] = trim($parsedUrl['host'], " \t\n\r\0\x0B.");
-                    }
-
-                    return $parsedUrl['scheme'].'://'.$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
-                },
+                ['url'], 'filter', 'skipOnEmpty' => true, 'filter' => [new UrlTrimmer(), 'trim']
             ],
             [
                 ['url'], 'url',
+                'defaultScheme' => Yii::$app->params['defaultScheme'],
                 'pattern' => '/^(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
             ],
             [['description'], 'string'],
