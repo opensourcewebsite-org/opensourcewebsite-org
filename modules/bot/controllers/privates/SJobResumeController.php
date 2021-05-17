@@ -350,7 +350,7 @@ class SJobResumeController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'model' => $resume,
-                    'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
+                    'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                 ]),
                 $buttons,
