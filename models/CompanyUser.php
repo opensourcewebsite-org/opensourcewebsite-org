@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -21,6 +22,17 @@ use yii\db\ActiveRecord;
 class CompanyUser extends ActiveRecord
 {
 
+    public const ROLE_OWNER = 1;
+    public const ROLE_HR = 2;
+
+    public static function getRoles(): array
+    {
+        return [
+            self::ROLE_OWNER => Yii::t('app', 'Owner'),
+            self::ROLE_HR => Yii::t('app', 'Hr')
+        ];
+    }
+
     public static function tableName(): string
     {
         return '{{%company_user}}';
@@ -31,6 +43,9 @@ class CompanyUser extends ActiveRecord
         return [
             [['user_id', 'company_id'], 'integer'],
             [['user_id', 'company_id'], 'required'],
+            ['user_role', 'integer'],
+            ['user_role', 'in', 'range' => array_keys(static::getRoles())],
+            ['user_role', 'default', 'value' => static::ROLE_HR],
         ];
     }
 
