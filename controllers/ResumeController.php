@@ -74,6 +74,11 @@ class ResumeController extends Controller
         return $this->render('view', ['model' => $model]);
     }
 
+    public function actionViewLocation(int $id): string
+    {
+        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+    }
+
     private function findModelByIdAndCurrentUser(int $id): Resume
     {
         /** @var Resume $model */

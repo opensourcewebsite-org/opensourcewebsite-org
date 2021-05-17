@@ -82,7 +82,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionView(int $id)
     {
-        $order = $this->findModelByIdAndUser($id);
+        $order = $this->findModelByIdAndCurrentUser($id);
 
         return $this->render('view', [
             'model' => $order,
@@ -118,7 +118,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionUpdate(int $id)
     {
-        $model = $this->findModelByIdAndUser($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -133,7 +133,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionUpdateSellMethods($id)
     {
-        $model = $this->findModelByIdAndUser($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
 
         $formModel = new OrderPaymentMethods(['order' => $model]);
 
@@ -150,7 +150,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionUpdateBuyMethods($id)
     {
-        $model = $this->findModelByIdAndUser($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
 
         $formModel = new OrderPaymentMethods(['order' => $model]);
 
@@ -182,7 +182,7 @@ class CurrencyExchangeOrderController extends Controller
     {
         if (Yii::$app->request->isAjax) {
             $postdata = Yii::$app->request->post();
-            $order = $this->findModelByIdAndUser($id);
+            $order = $this->findModelByIdAndCurrentUser($id);
 
             if ($postdata['status'] && $notFilledFields = $order->notPossibleToChangeStatus()) {
                 return json_encode($notFilledFields);
@@ -196,23 +196,24 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionDelete(int $id): Response
     {
-        $this->findModelByIdAndUser($id)->delete();
+        $this->findModelByIdAndCurrentUser($id)->delete();
 
         return $this->redirect(['index']);
     }
 
     public function actionViewOrderSellingLocation(int $id): string
     {
-        return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndUser($id),'type' => 'sell']);
+        return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'sell']);
     }
+
     public function actionViewOrderBuyingLocation(int $id): string
     {
-        return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndUser($id),'type' => 'buy']);
+        return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'buy']);
     }
 
     public function actionViewOffers(int $id): string
     {
-        $model = $this->findModelByIdAndUser($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
         if ($model->getMatchesOrderedByUserRating()->exists()){
             $dataProvider = new ActiveDataProvider([
                 'query' => $model->getMatchesOrderedByUserRating(),
@@ -239,7 +240,7 @@ class CurrencyExchangeOrderController extends Controller
         throw new NotFoundHttpException('No offer found with current orders combination!');
     }
 
-    protected function findModelByIdAndUser(int $id): CurrencyExchangeOrder
+    protected function findModelByIdAndCurrentUser(int $id): CurrencyExchangeOrder
     {
         /** @var CurrencyExchangeOrder $model */
         if ($model = CurrencyExchangeOrder::find()

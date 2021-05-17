@@ -1,15 +1,14 @@
 <?php
 declare(strict_types=1);
 
-use \app\models\CurrencyExchangeOrder;
 use app\models\Resume;
-use app\widgets\buttons\EditButton;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\DetailView;
+use app\widgets\buttons\EditButton;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\CurrencyExchangeOrder */
+/* @var $model app\models\Resume */
 
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resume'), 'url' => ['index']];
@@ -63,22 +62,37 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <div id="w0" class="grid-view">
-                                <table class="table table-condensed table-hover" style="margin-bottom: 0;">
-                                    <tbody>
-                                    <tr>
-                                        <th class="align-middle" scope="col" style="width: 50%;">
-                                            <?= $model->getAttributeLabel('id') ?>
-                                        </th>
-                                        <td class="align-middle">
-                                            <?= $model->id ?>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
+                            <?= DetailView::widget([
+                                'model' => $model,
+                                'attributes' => [
+                                    'id',
+                                    'name',
+                                    'min_hourly_rate:decimal',
+                                    [
+                                        'attribute' => 'currency_id',
+                                        'value' => $model->currency->name
+                                    ],
+                                    'remote_on:boolean',
+                                    [
+                                        'attribute' => 'location',
+                                        'value' => function () use ($model) {
+                                            return Html::a(
+                                                $model->location,
+                                                Url::to(['view-location', 'id' => $model->id]),
+                                                ['class' => 'modal-btn-ajax']
+                                                ) . (
+                                                    $model->search_radius ?
+                                                        ", Radius: $model->search_radius " . Yii::t('app', 'km')
+                                                        : ''
+                                                );
+                                        },
+                                        'format' => 'raw'
+                                    ],
+                                    'experiences:ntext',
+                                    'expectations:ntext',
+                                    'skills:ntext',
+                                ]
+                            ]) ?>
                         </div>
                     </div>
                 </div>
