@@ -1,6 +1,7 @@
 <?php
 
 use \app\models\CurrencyExchangeOrder;
+use app\models\PaymentMethod;
 use app\widgets\buttons\EditButton;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -183,7 +184,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         </td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php foreach ($model->getSellingPaymentMethods()->all() as $method) : ?>
+                                <?php foreach ($model->sellingPaymentMethods as $method) : ?>
+                                    <?php /** @var PaymentMethod $method */ ?>
                                     <tr>
                                         <td>
                                             <?= $method->name ?>
@@ -226,9 +228,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             )
                                         </td>
                                 </tr>
-                                    </tr>
                                 <?php endif; ?>
-                                <?php foreach ($model->getBuyingPaymentMethods()->all() as $method) : ?>
+                                <?php foreach ($model->buyingPaymentMethods as $method) : ?>
+                                    <?php /** @var PaymentMethod $method */ ?>
                                     <tr>
                                         <td>
                                             <?= $method->name ?>
