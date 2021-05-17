@@ -28,7 +28,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
-
+                        <li class="nav-item align-self-center mr-4">
+                            <?= AddButton::widget([
+                                'url' => ['company-user/create'],
+                                'options' => [
+                                    'title' => 'New Company',
+                                    'class' => [ 'btn', 'btn-outline-success', 'modal-btn-ajax']
+                                ]
+                            ]); ?>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body p-0">
@@ -39,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'company.name',
+                            'company.url:url',
                             'company.address',
                             'role',
 

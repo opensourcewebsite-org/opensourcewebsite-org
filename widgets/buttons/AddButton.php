@@ -15,7 +15,7 @@ class AddButton extends LinkButton
         if ($this->text == null) {
             $this->text = Icon::ADD;
         }
-        $this->defaultOptions['class'] = 'btn btn-outline-success';
+        $this->defaultOptions['class'] = ['btn', 'btn-outline-success'];
         $this->defaultOptions['title'] = Yii::t('app', 'Add');
     }
 

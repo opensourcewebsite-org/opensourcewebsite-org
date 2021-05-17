@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 use app\models\Currency;
 use app\widgets\buttons\AddButton;

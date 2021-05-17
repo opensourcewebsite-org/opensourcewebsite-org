@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace app\models;
 
-use app\models\validators\UrlTrimmer;
+use app\helpers\UrlTrimmer;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -22,7 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $updated_at
  * @property int $created_at
  *
- * @property User[] $members
+ * @property User[] $users
  * @property Vacancy[] $vacancies
  *
  */
@@ -75,7 +75,7 @@ class Company extends ActiveRecord
         ];
     }
 
-    public function getMembers(): ActiveQuery
+    public function getUsers(): ActiveQuery
     {
         return $this->hasMany(User::class, ['id', 'user_id'])
             ->viaTable(CompanyUser::tableName(), ['company_id' => 'id']);
