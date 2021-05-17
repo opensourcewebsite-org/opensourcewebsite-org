@@ -4,7 +4,6 @@ use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\models\Resume;
 use app\widgets\buttons\CancelButton;
-use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -13,8 +12,6 @@ use yii\widgets\ActiveForm;
 /* @var $model Resume */
 /* @var $currencies Currency[] */
 
-
-$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
     <div class="currency-exchange-order-form">
         <?php $form = ActiveForm::begin(); ?>
@@ -29,11 +26,6 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'remote_on')->checkbox() ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
                                 <?= $form->field($model, 'min_hourly_rate')->textInput() ?>
                             </div>
                         </div>
@@ -44,12 +36,35 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         </div>
                         <div class="row">
                             <div class="col">
+                                <?= $form->field($model, 'remote_on')->checkbox() ?>
+                            </div>
+                        </div>
+                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>">
+                            <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
+                            </div>
+                        </div>
+                        <div class="row location-row" <?=$model->remote_on ? 'd-none' : ''?>>
+                            <div class="col">
+                                <?= $form->field($model, 'search_radius')
+                                    ->textInput(['maxlength' => true, 'placeholder' => 0])
+                                    ->label($model->getAttributeLabel('search_radius').', km')
+                                ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'search_radius')->textInput(['maxlength' => true, 'placeholder' => 0]) ?>
+                                <?= $form->field($model, 'experiences')->textarea() ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'expectations')->textarea() ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'skills')->textarea() ?>
                             </div>
                         </div>
                     </div>
@@ -62,6 +77,14 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
         </div>
         <?php ActiveForm::end(); ?>
     </div>
+<?php
+$js = <<<JS
+$('#resume-remote_on').on('change', function () {
+    $('.location-row').toggleClass('d-none');
+});
+JS;
+
+$this->registerJs($js);
 
 
 

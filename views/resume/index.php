@@ -81,12 +81,17 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             ],
                             [
                                 'class' => ActionColumn::class,
-                                'template' => '{view}',
+                                'template' => '{view}{update}{delete}',
                                 'buttons' => [
                                     'view' => function ($url) {
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary',]);
+                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
                                     },
+                                    'update' => function ($url) {
+                                        $icon = Html::tag('span', '', ['class' => 'fa fa-pen', 'data-toggle' => 'tooltip', 'title' => 'Update']);
+                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                    },
+                                    'delete'
                                 ],
                             ],
                         ],
