@@ -49,6 +49,11 @@ class CompanyUser extends ActiveRecord
         ];
     }
 
+    public function getRoleName(): string
+    {
+        return static::getRoles()[$this->user_role];
+    }
+
     public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);

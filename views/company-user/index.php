@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
+use app\models\CompanyUser;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\search\ResumeSearch;
@@ -49,7 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             'company.name',
                             'company.url:url',
                             'company.address',
-                            'role',
+                            [
+                                'attribute' => 'user_role',
+                                'value' => function (CompanyUser $model){
+                                    return $model->getRoleName();
+                                }
+                            ],
 
                         ],
 
