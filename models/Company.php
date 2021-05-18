@@ -56,7 +56,7 @@ class Company extends ActiveRecord
             ],
             [
                 ['url'], 'url',
-                'defaultScheme' => Yii::$app->params['defaultScheme'],
+                'defaultScheme' => Yii::$app->params['defaultScheme'] ?? 'https',
                 'pattern' => '/^(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
             ],
             [['description'], 'string'],
@@ -77,7 +77,7 @@ class Company extends ActiveRecord
 
     public function getUsers(): ActiveQuery
     {
-        return $this->hasMany(User::class, ['id', 'user_id'])
+        return $this->hasMany(User::class, ['id' => 'user_id'])
             ->viaTable(CompanyUser::tableName(), ['company_id' => 'id']);
     }
 
