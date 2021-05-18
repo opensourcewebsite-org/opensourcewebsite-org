@@ -102,27 +102,34 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
 
 
 <?php
-$url = Yii::$app->urlManager->createUrl(['resume/status?id=' . $model->id]);
+$statusActiveUrl = Yii::$app->urlManager->createUrl(['resume/set-active?id=' . $model->id]);
+$statusInactiveUrl = Yii::$app->urlManager->createUrl(['resume/set-inactive?id=' . $model->id]);
+
 $script = <<<JS
 
 $('.status-update').on("click", function(event) {
-    var status = $(this).data('value');
-        $.post('{$url}', {'status': status}, function(result) {
-            if (result === "1") {
+    const status = $(this).data('value');
+    const active_url = '{$statusActiveUrl}';
+    const inactive_url = '{$statusInactiveUrl}';
+    const url = (parseInt(status) === 1) ? active_url : inactive_url;
+
+        $.post(url, {}, function(result) {
+            if (result === true) {
                 location.reload();
             }
             else {
-                var response = $.parseJSON(result);
-                console.log(response);
+
                 $('#main-modal-header').text('Warning!');
-                response.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
+
+                for (const [, errorMsg] of Object.entries(result)) {
+                    $('#main-modal-body').append('<p>' + errorMsg + '</p>');
+                }
 
                 $('#main-modal').show();
                 $('.close').on('click', function() {
                     $("#main-modal-body").html("");
                     $('#main-modal').hide();
                 });
-                // alert('Sorry, there was an error while trying to change status');
             }
         });
 

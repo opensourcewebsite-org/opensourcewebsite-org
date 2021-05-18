@@ -5,6 +5,7 @@ namespace app\controllers;
 
 use app\models\Currency;
 use app\models\Resume;
+use app\models\scenarios\Resume\SetActiveScenario;
 use app\models\search\ResumeSearch;
 use app\models\WebModels\WebResume;
 use Yii;
@@ -78,6 +79,31 @@ class ResumeController extends Controller
     public function actionViewLocation(int $id): string
     {
         return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+    }
+
+    public function actionSetActive(int $id)
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $this->response->format = Response::FORMAT_JSON;
+
+        $scenario = new SetActiveScenario($model);
+        if ($scenario->run()) {
+            $model->save();
+            return true;
+        }
+        return $scenario->getErrors();
+    }
+
+    public function actionSetInactive(int $id)
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $this->response->format = Response::FORMAT_JSON;
+
+        $model->setInactive()->save();
+
+        return true;
     }
 
     private function findModelByIdAndCurrentUser(int $id): Resume

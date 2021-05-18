@@ -7,7 +7,6 @@ use app\models\Resume;
 use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
-use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use yii\web\JsExpression;
 

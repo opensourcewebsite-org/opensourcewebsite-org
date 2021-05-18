@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\scenarios\Resume\SetActiveScenario;
 use Yii;
 use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
@@ -565,6 +566,7 @@ class SJobResumeController extends CrudController
     {
         $user = $this->getUser();
 
+        /** @var Resume $resume */
         $resume = $user->getResumes()
             ->where([
                 'id' => $id,
@@ -580,18 +582,21 @@ class SJobResumeController extends CrudController
         $this->backRoute->make('view', compact('id'));
         $this->endRoute->make('view', compact('id'));
 
-        if (!$resume->isActive() && ($notFilledFields = $resume->notPossibleToChangeStatus())) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('status-error', compact('notFilledFields')),
-                    true
-                )
-                ->build();
-        }
+        $scenario = new SetActiveScenario($resume);
 
-        $resume->setAttributes([
-            'status' => ($resume->isActive() ? Resume::STATUS_OFF : Resume::STATUS_ON),
-        ]);
+        if (!$resume->isActive()) {
+            if (!$scenario->run() ) {
+                $notFilledFields = array_values($scenario->getErrors());
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('status-error', compact('notFilledFields')),
+                        true
+                    )
+                    ->build();
+            }
+        } else {
+            $resume->setInactive();
+        }
 
         $resume->save();
 

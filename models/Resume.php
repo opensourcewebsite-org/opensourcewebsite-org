@@ -158,7 +158,7 @@ class Resume extends ActiveRecord
     {
         return [
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
         ];
@@ -179,9 +179,26 @@ class Resume extends ActiveRecord
             '';
     }
 
+    public function setActive()
+    {
+        $this->status = static::STATUS_ON;
+        return $this;
+    }
+
+    public function setInactive()
+    {
+        $this->status = static::STATUS_OFF;
+        return $this;
+    }
+
     public function isActive(): bool
     {
         return $this->status == self::STATUS_ON;
+    }
+
+    public function isRemote(): bool
+    {
+        return (bool)$this->remote_on;
     }
 
     public function getCurrency(): ActiveQuery
@@ -201,6 +218,11 @@ class Resume extends ActiveRecord
             ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
     }
 
+    public function getGlobalUser(): ActiveQuery
+    {
+        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
+    }
+
     public function getMatches(): ActiveQuery
     {
         return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
@@ -209,15 +231,13 @@ class Resume extends ActiveRecord
 
     public function getMatchedVacancies(): VacancyQuery
     {
-        $query = Vacancy::find()
+        return Vacancy::find()
             ->live()
             ->matchLanguages($this)
             ->matchRadius($this)
             ->andWhere([
                 '!=', Vacancy::tableName() . '.user_id', $this->user_id,
             ]);
-
-        return $query;
     }
 
     public function getCounterMatches(): ActiveQuery
@@ -278,11 +298,6 @@ class Resume extends ActiveRecord
         }
     }
 
-    public function getGlobalUser(): ActiveQuery
-    {
-        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
-    }
-
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status'])) {
@@ -294,23 +309,4 @@ class Resume extends ActiveRecord
         parent::afterSave($insert, $changedAttributes);
     }
 
-    public function notPossibleToChangeStatus(): array
-    {
-        $notFilledFields = [];
-
-        if (!$this->getLanguages()->count()) {
-            $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages'))
-                . ' (' . Yii::t('bot', 'in your profile') . ')';
-        }
-        if ($this->remote_on == self::REMOTE_OFF) {
-            if (!($this->location_lon && $this->location_lat)) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
-            }
-            if (!$this->search_radius) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('search_radius'));
-            }
-        }
-
-        return $notFilledFields;
-    }
 }
