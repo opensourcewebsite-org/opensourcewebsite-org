@@ -25,10 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
 
 ?>
-<div class="currency-exchange-order-index">
-    <div class="row">
-        <?php Alert::widget()?>
-    </div>
+<div class="resumne-index">
     <div class="row">
         <div class="col-12">
             <div class="card">

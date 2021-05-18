@@ -33,6 +33,7 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property string $skills
  * @property string $location_lat
  * @property string $location_lon
+ * @property string $location
  * @property int $created_at
  * @property int $processed_at
  *
@@ -96,7 +97,12 @@ class Resume extends ActiveRecord
                 ],
                 'double',
             ],
-            ['location', 'string'],
+            [
+                'location', 'string'
+            ],
+            [
+                'remote_on', 'boolean'
+            ],
             [
                 'min_hourly_rate',
                 'double',
@@ -173,14 +179,26 @@ class Resume extends ActiveRecord
             '';
     }
 
+    public function isActive(): bool
+    {
+        return $this->status == self::STATUS_ON;
+    }
+
     public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
-    public function isActive(): bool
+    public function getLanguages(): ActiveQuery
     {
-        return $this->status == self::STATUS_ON;
+        return $this->hasMany(Language::class, ['id' => 'language_id'])
+            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
+    }
+
+    public function getKeywords(): ActiveQuery
+    {
+        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
+            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
     }
 
     public function getMatches(): ActiveQuery
@@ -246,17 +264,6 @@ class Resume extends ActiveRecord
         }
     }
 
-    public function getLanguagesRelation(): ActiveQuery
-    {
-        return $this->hasMany(Language::class, ['id' => 'language_id'])
-            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
-    }
-
-    public function getUserLanguagesRelation(): ActiveQuery
-    {
-        return $this->hasMany(UserLanguage::class, ['user_id' => 'user_id']);
-    }
-
     public function clearMatches()
     {
         if ($this->processed_at !== null) {
@@ -276,12 +283,6 @@ class Resume extends ActiveRecord
         return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
-    public function getKeywordsRelation(): ActiveQuery
-    {
-        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
-    }
-
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status'])) {
@@ -297,7 +298,7 @@ class Resume extends ActiveRecord
     {
         $notFilledFields = [];
 
-        if (!$this->getLanguagesRelation()->count()) {
+        if (!$this->getLanguages()->count()) {
             $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages'))
                 . ' (' . Yii::t('bot', 'in your profile') . ')';
         }

@@ -15,6 +15,7 @@ class DeleteButton extends PjaxButton
         $this->confirm = true;
         $this->defaultOptions['title'] = Yii::t('app', 'Delete');
         $this->defaultOptions['class'] = 'btn btn-danger float-right';
+        $this->defaultOptions['confirmMessage'] = 'Are you sure you want to delete this item?';
 
         if ($this->text == null) {
             $this->text = 'Delete';

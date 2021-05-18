@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace app\models\search;
 
-use app\models\Vacancy;
-use app\modules\bot\validators\LocationLatValidator;
-use app\modules\bot\validators\LocationLonValidator;
 use Yii;
+use app\models\Vacancy;
 use yii\data\ActiveDataProvider;
 
 class VacancySearch extends Vacancy {
@@ -62,6 +60,16 @@ class VacancySearch extends Vacancy {
             return $dataProvider;
         }
 
-        $query->andFilterWhere([]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['status' => $this->status])
+            ->andFilterWhere(['remote_on' => $this->remote_on])
+            ->andFilterWhere(['like','requirements', $this->requirements])
+            ->andFilterWhere(['max_hourly_rate' => $this->max_hourly_rate])
+            ->andFilterWhere(['currency_id' => $this->currency_id])
+            ->andFilterWhere(['like', 'conditions', $this->conditions])
+            ->andFilterWhere(['like', 'responsibilities', $this->responsibilities])
+            ->andFilterWhere(['gender_id' => $this->gender_id]);
+
+        return $dataProvider;
     }
 }

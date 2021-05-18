@@ -6,6 +6,7 @@ namespace app\controllers;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\search\ResumeSearch;
+use app\models\WebModels\WebResume;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -42,7 +43,7 @@ class ResumeController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Resume();
+        $model = new WebResume();
         $model->user_id = Yii::$app->user->identity->id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -81,8 +82,8 @@ class ResumeController extends Controller
 
     private function findModelByIdAndCurrentUser(int $id): Resume
     {
-        /** @var Resume $model */
-        if ($model = Resume::find()
+        /** @var WebResume $model */
+        if ($model = WebResume::find()
             ->where(['id' => $id])
             ->andWhere(['user_id' => Yii::$app->user->identity->id])
             ->one()) {

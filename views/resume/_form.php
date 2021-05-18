@@ -5,7 +5,9 @@ use app\models\Currency;
 use app\models\Resume;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;use yii\web\View;
+use app\widgets\LocationPickerWidget\LocationPickerWidget;
+use app\widgets\buttons\SubmitButton;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
@@ -69,7 +71,7 @@ use yii\widgets\ActiveForm;
                         </div>
                     </div>
                     <div class="card-footer">
-                        <?= SaveButton::widget(); ?>
+                        <?= SubmitButton::widget() ?>
                         <?= CancelButton::widget(['url' => '/resume']); ?>
                     </div>
                 </div>

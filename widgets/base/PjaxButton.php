@@ -22,7 +22,6 @@ class PjaxButton extends Linkable
             'data-pjax'     => '1',
             'data-method'   => 'post',
             'class'         => 'btn-action',
-            'confirmMessage' => 'Are you sure you want to delete this item?',
         ];
     }
 
