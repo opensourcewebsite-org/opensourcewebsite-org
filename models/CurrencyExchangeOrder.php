@@ -429,6 +429,18 @@ class CurrencyExchangeOrder extends ActiveRecord
         return $this->status == self::STATUS_ON;
     }
 
+    public function setActive(): self
+    {
+        $this->status = static::STATUS_ON;
+        return $this;
+    }
+
+    public function setInactive(): self
+    {
+        $this->status = static::STATUS_OFF;
+        return $this;
+    }
+
     /**
      * {@inheritdoc}
      */

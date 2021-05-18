@@ -43,6 +43,8 @@ class CurrencyExchangeOrderController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'set-active' => ['POST'],
+                    'set-inactive' => ['POST']
                 ],
             ],
         ];
@@ -173,26 +175,33 @@ class CurrencyExchangeOrderController extends Controller
     }
 
     /**
-     * Change status.
-     * @param $id
-     * @return mixed
+     * @param int $id
+     * @return array|bool
      * @throws NotFoundHttpException
      */
-    public function actionStatus($id)
+    public function actionSetActive(int $id)
     {
-        if (Yii::$app->request->isAjax) {
-            $postdata = Yii::$app->request->post();
-            $order = $this->findModelByIdAndCurrentUser($id);
+        $order = $this->findModelByIdAndCurrentUser($id);
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
-            if ($postdata['status'] && $notFilledFields = $order->notPossibleToChangeStatus()) {
-                return json_encode($notFilledFields);
+        if (!$order->isActive()) {
+            if ($notFilledFields = $order->notPossibleToChangeStatus()) {
+                return $notFilledFields;
             }
-            $order->status = $postdata['status'];
-            return $order->save();
+            $order->setActive()->save();
         }
-        return false;
+        return true;
     }
 
+    public function actionSetInactive(int $id): bool
+    {
+        $order = $this->findModelByIdAndCurrentUser($id);
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $order->setInactive()->save();
+
+        return true;
+    }
 
     public function actionDelete(int $id): Response
     {
