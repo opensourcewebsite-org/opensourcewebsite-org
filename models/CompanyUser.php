@@ -54,6 +54,11 @@ class CompanyUser extends ActiveRecord
         return static::getRoles()[$this->user_role];
     }
 
+    public function isOwner(): bool
+    {
+        return $this->user_role === static::ROLE_OWNER;
+    }
+
     public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);

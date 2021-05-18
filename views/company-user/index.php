@@ -56,7 +56,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $model->getRoleName();
                                 }
                             ],
-
+                            [
+                                'class' => ActionColumn::class,
+                                'template' => '{view}{update}{delete}',
+                                'buttons' => [
+                                    'update' => function ($url, $model) {
+                                        $icon = Html::tag('span', '', ['class' => 'fa fa-pen', 'data-toggle' => 'tooltip', 'title' => 'Update']);
+                                        return $model->isOwner() ? Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1 modal-btn-ajax']) : '';
+                                    },
+                                    'delete'
+                                ],
+                            ],
                         ],
 
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",

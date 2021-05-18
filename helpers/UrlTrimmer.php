@@ -15,7 +15,7 @@ class UrlTrimmer {
 
         return (isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '')
             . ( $parsedUrl['host'] ?? '')
-            . $parsedUrl['path']
+            . ( $parsedUrl['path'] ?? '')
             . (isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '');
     }
 }

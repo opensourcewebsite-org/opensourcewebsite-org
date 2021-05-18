@@ -9,11 +9,13 @@ use app\models\search\CompanyUserSearch;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-class CompanyUserController extends Controller {
+class CompanyUserController extends Controller
+{
 
     public function behaviors(): array
     {
@@ -42,6 +44,7 @@ class CompanyUserController extends Controller {
         $companyModel = new Company();
 
         $companyUserModel = new CompanyUser();
+        $companyUserModel->user_id = $user->id;
 
         if (Yii::$app->request->isPost
             && $companyModel->load(Yii::$app->request->post())
@@ -50,7 +53,6 @@ class CompanyUserController extends Controller {
             $transaction = Company::getDb()->beginTransaction();
             try {
                 $companyModel->save();
-                $companyUserModel->user_id = $user->id;
                 $companyUserModel->link('company', $companyModel);
 
             } catch (\Exception | \Throwable $e) {
@@ -58,30 +60,68 @@ class CompanyUserController extends Controller {
                 throw $e;
             }
             $transaction->commit();
-            Yii::$app->session->setFlash('Saved Successfully');
-            return $this->redirect('index');
+
+            Yii::$app->session->setFlash('success', 'Saved Successfully');
+            return $this->goBack();
         }
-        return $this->renderAjax(
-            'create',
-            [
+
+        return $this->renderAjax('createAjax', [
                 'companyModel' => $companyModel,
                 'companyUserModel' => $companyUserModel
-            ]
-        );
+            ]);
     }
 
-    public function actionUpdate(): string
+    /**
+     * @param int $id
+     * @return string|Response
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     */
+    public function actionUpdate(int $id)
     {
+        /** @var User $user */
+        $user = Yii::$app->user->getIdentity();
+        $companyUserModel = $this->findCompanyUserModelById($id);
+        $companyModel = $companyUserModel->company;
 
+        if (Yii::$app->request->isPost
+            && $companyModel->load(Yii::$app->request->post())
+            && $companyUserModel->load(Yii::$app->request->post())
+            && $companyModel->save()
+            && $companyUserModel->save()) {
+
+            Yii::$app->session->setFlash('success', 'Saved Successfully');
+            return $this->goBack();
+        }
+
+        return $this->renderAjax('updateAjax', [
+                'companyModel' => $companyModel,
+                'companyUserModel' => $companyUserModel
+            ]);
     }
 
     public function actionIndex(): string
     {
-        $companies = Company::findAll([1=>1]);
+
         $searchModel = new CompanyUserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        Url::remember();
 
         return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
     }
 
+
+    private function findCompanyUserModelById(int $id): CompanyUser
+    {
+        /** @var CompanyUser $companyUser */
+        if ($companyUser = CompanyUser::find()
+            ->where(['id' => $id])
+            ->andWhere(['user_id' => Yii::$app->user->getIdentity()->getId()])
+            ->andWhere(['user_role' => CompanyUser::ROLE_OWNER])
+            ->one()) {
+            return $companyUser;
+        }
+        throw new NotFoundHttpException('Requested Page Not Found');
+    }
 }

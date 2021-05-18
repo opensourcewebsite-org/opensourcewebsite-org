@@ -5,6 +5,7 @@ use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\search\ResumeSearch;
+use app\widgets\Alert;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\helpers\Html;
@@ -25,6 +26,9 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
 
 ?>
 <div class="currency-exchange-order-index">
+    <div class="row">
+        <?php Alert::widget()?>
+    </div>
     <div class="row">
         <div class="col-12">
             <div class="card">

@@ -1,23 +1,22 @@
 <?php
 
 use app\models\Company;
-use app\models\CompanyUser;
 use yii\web\View;
 use yii\widgets\ActiveForm;
+use app\models\CompanyUser;
 use app\widgets\buttons\SaveButton;
 use app\widgets\buttons\CancelButton;
+
 /**
  * @var View $this
  * @var Company $companyModel
  * @var CompanyUser $companyUserModel
  */
 
-$this->title = Yii::t('app', 'Create Company');
-
 ?>
 <div class="modal-header">
     <h4 class="modal-title"><?= $this->title ?></h4>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 </div>
 <?php $form = ActiveForm::begin() ?>
 <div class="modal-body">
