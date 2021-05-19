@@ -179,13 +179,13 @@ class Resume extends ActiveRecord
             '';
     }
 
-    public function setActive()
+    public function setActive(): self
     {
         $this->status = static::STATUS_ON;
         return $this;
     }
 
-    public function setInactive()
+    public function setInactive(): self
     {
         $this->status = static::STATUS_OFF;
         return $this;

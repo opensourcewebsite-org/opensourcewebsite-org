@@ -5,6 +5,7 @@ use app\models\Currency;
 use app\models\Resume;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
+use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
 use yii\web\View;
@@ -52,6 +53,11 @@ use yii\widgets\ActiveForm;
                                     ->textInput(['maxlength' => true, 'placeholder' => 0])
                                     ->label($model->getAttributeLabel('search_radius').', km')
                                 ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'keywords')->widget(KeywordsSelect::class) ?>
                             </div>
                         </div>
                         <div class="row">
