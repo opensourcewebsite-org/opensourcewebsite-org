@@ -39,14 +39,6 @@ AdminLteUserAsset::register($this);
     <?php Modal::begin([
         'id' => 'main-modal',
         'size' => Modal::SIZE_LARGE,
-        'clientEvents' => [
-            'show.bs.modal' => 'function (e) {
-                    $("#main-modal").addClass("show");
-            }',
-            'hide.bs.modal' => 'function (e) {
-                    $("#main-modal").removeClass("show");
-            }',
-        ],
         'options' => ['class' => 'card-primary', 'tabindex' => false],
         'title' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
         'titleOptions' => ['class' => 'card-header'],
