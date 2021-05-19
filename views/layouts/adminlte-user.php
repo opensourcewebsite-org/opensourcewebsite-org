@@ -221,6 +221,12 @@ $leftMenuItems = [
         ],
         'items' => [
             [
+                'title' => Yii::t('app','Companies'),
+                'icon' => 'far fa-circle',
+                'url' => 'company-user',
+                'route' => '/company-user'
+            ],
+            [
                 'title' => 'Resumes',
                 'icon' => 'far fa-circle',
                 'url' => 'resume',
