@@ -8,6 +8,8 @@ use Yii;
 class DeleteButton extends PjaxButton
 {
 
+    public bool $confirm = true;
+
     public function init()
     {
         parent::init();
@@ -24,6 +26,10 @@ class DeleteButton extends PjaxButton
 
     public function run()
     {
+        if ($this->confirm == true) {
+            $this->options['data-confirm'] = Yii::t('yii', $this->defaultOptions['confirmMessage']);
+        }
+
         return parent::run();
     }
 }

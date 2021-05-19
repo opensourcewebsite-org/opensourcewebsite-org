@@ -6,11 +6,6 @@ use Yii;
 
 class PjaxButton extends Linkable
 {
-    /**
-     * @var bool
-     * enable confirm window
-     */
-    public $confirm;
 
     public function init()
     {
@@ -27,10 +22,6 @@ class PjaxButton extends Linkable
 
     public function run()
     {
-        if ($this->confirm == true) {
-            $this->options['data-confirm'] = Yii::t('yii', $this->defaultOptions['confirmMessage']);
-        }
-
         return parent::run();
     }
 }
