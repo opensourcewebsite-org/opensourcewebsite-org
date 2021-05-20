@@ -10,6 +10,7 @@ use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\base\Widget;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\widgets\ActiveField;
 use kartik\select2\Select2Asset;
 
@@ -28,7 +29,6 @@ class KeywordsSelect extends Widget {
     public array $options = [];
 
     private array $defaultOptions = ['class' => 'form-control', 'multiple' => true, 'placeholder' => 'Select Keywords...'];
-
 
     public function init(){
         if ($this->name === null && !$this->hasModel()) {
@@ -49,7 +49,22 @@ class KeywordsSelect extends Widget {
                 'data' => $this->getKeywords(),
                 'options' => array_merge($this->defaultOptions, $this->options),
                 'pluginOptions' => [
-                    'tags' => true
+                    'tags' => true,
+                    'createTag' => new JsExpression("
+                        function(tag) {
+                            console.log(tag);
+                            return {
+                                id: tag.term,
+                                text: tag.term,
+                                newKeyword: true
+                            };
+                        }
+                    "),
+                    'select' => new JsExpression("
+                        function(e) {
+                            console.log(e);
+                        }
+                    ")
                 ]
 
             ]);
