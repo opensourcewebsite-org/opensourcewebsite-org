@@ -8,6 +8,7 @@ use app\widgets\buttons\SaveButton;
 use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
+use kartik\select2\Select2;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -29,12 +30,38 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="row">
                             <div class="col">
+                                <?= $form->field($model, 'skills')->textarea() ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'experiences')->textarea() ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'expectations')->textarea() ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
+                                <?= $form->field($model, 'keywordsFromForm')->widget(KeywordsSelect::class) ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
                                 <?= $form->field($model, 'min_hourly_rate')->textInput() ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'currency_id')->dropDownList(ArrayHelper::map($currencies, 'id', 'name')) ?>
+                                <?= $form->field($model, 'currency_id')->widget(Select2::class, [
+                                    'data' => ArrayHelper::map($currencies, 'id', 'name'),
+                                    'options' => [
+                                        'prompt' => '',
+                                    ],
+                                ]); ?>
                             </div>
                         </div>
                         <div class="row">
@@ -53,27 +80,6 @@ use yii\widgets\ActiveForm;
                                     ->textInput(['maxlength' => true, 'placeholder' => 0])
                                     ->label($model->getAttributeLabel('search_radius').', km')
                                 ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
-                                <?= $form->field($model, 'keywordsFromForm')->widget(KeywordsSelect::class) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'experiences')->textarea() ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'expectations')->textarea() ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'skills')->textarea() ?>
                             </div>
                         </div>
                     </div>

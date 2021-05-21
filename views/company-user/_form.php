@@ -40,11 +40,6 @@ use app\widgets\buttons\CancelButton;
             <?= $form->field($companyModel, 'description')->textarea() ?>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <?= $form->field($companyUserModel, 'user_role')->dropDownList(CompanyUser::getRoles()) ?>
-        </div>
-    </div>
 </div>
 <div class="modal-footer">
     <?= SaveButton::widget(); ?>

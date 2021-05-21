@@ -8,6 +8,7 @@ use app\models\Resume;
 use app\models\scenarios\JobKeywords\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Resume\SetActiveScenario;
 use app\models\search\ResumeSearch;
+use app\models\User;
 use app\models\WebModels\WebResume;
 use Yii;
 use yii\filters\AccessControl;
@@ -54,8 +55,12 @@ class ResumeController extends Controller
      */
     public function actionCreate()
     {
+        /** @var User $user */
+        $user = Yii::$app->user->identity;
+
         $model = new WebResume();
-        $model->user_id = Yii::$app->user->identity->id;
+        $model->user_id = $user->id;
+        $model->currency_id = $user->currency_id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();

@@ -62,13 +62,12 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                 <div class="card-body p-0">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
+                        //'filterModel' => $searchModel,
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'name',
                             'min_hourly_rate',
-                            'search_radius',
                             [
                                 'attribute' => 'currency_id',
                                 'value' => function($model) {
@@ -82,7 +81,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             ],
                             [
                                 'class' => ActionColumn::class,
-                                'template' => '{view}{update}{delete}',
+                                'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url) {
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);

@@ -50,12 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             'company.name',
                             'company.url:url',
                             'company.address',
-                            [
+                            /*[
                                 'attribute' => 'user_role',
                                 'value' => function (CompanyUser $model){
                                     return $model->getRoleName();
                                 }
-                            ],
+                            ],*/
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}{update}{delete}',

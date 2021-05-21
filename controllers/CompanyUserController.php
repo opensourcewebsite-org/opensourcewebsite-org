@@ -45,10 +45,10 @@ class CompanyUserController extends Controller
 
         $companyUserModel = new CompanyUser();
         $companyUserModel->user_id = $user->id;
+        $companyUserModel->user_role = CompanyUser::ROLE_OWNER;
 
         if (Yii::$app->request->isPost
-            && $companyModel->load(Yii::$app->request->post())
-            && $companyUserModel->load(Yii::$app->request->post())) {
+            && $companyModel->load(Yii::$app->request->post())) {
 
             $transaction = Company::getDb()->beginTransaction();
             try {
@@ -86,9 +86,7 @@ class CompanyUserController extends Controller
 
         if (Yii::$app->request->isPost
             && $companyModel->load(Yii::$app->request->post())
-            && $companyUserModel->load(Yii::$app->request->post())
-            && $companyModel->save()
-            && $companyUserModel->save()) {
+            && $companyModel->save()) {
 
             Yii::$app->session->setFlash('success', 'Saved Successfully');
             return $this->goBack();
