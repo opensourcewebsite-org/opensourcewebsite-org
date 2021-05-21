@@ -10,6 +10,7 @@ use app\models\search\ResumeSearch;
 use app\models\WebModels\WebResume;
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -26,6 +27,14 @@ class ResumeController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                    'set-active' => ['POST'],
+                    'set-inactive' => ['POST'],
                 ],
             ],
         ];

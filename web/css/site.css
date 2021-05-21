@@ -198,6 +198,9 @@ a.desc:after {
     border: none;
     cursor: pointer;
 }
+.select2-selection__choice {
+    color: white !important;
+}
 
 /* Language menu */
 

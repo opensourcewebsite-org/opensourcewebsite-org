@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\filters\AccessControl;
 
 class VacancyController extends Controller {
+
     public function behaviors(): array
     {
         return [

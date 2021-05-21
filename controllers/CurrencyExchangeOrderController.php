@@ -44,7 +44,7 @@ class CurrencyExchangeOrderController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'set-active' => ['POST'],
-                    'set-inactive' => ['POST']
+                    'set-inactive' => ['POST'],
                 ],
             ],
         ];
