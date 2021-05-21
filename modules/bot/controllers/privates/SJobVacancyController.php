@@ -60,7 +60,7 @@ class SJobVacancyController extends CrudController
                 return [
                     'model' => $model,
                     'company' => $model->company,
-                    'keywords' => self::getKeywordsAsString($model->getKeywordsRelation()->all()),
+                    'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
                         return $vacancyLanguage->getLabel();
@@ -405,7 +405,7 @@ class SJobVacancyController extends CrudController
                 $this->render('view', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
-                    'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
+                    'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
                         return $vacancyLanguage->getLabel();

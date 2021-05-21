@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace app\models;
 
+use app\helpers\UrlTrimmer;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -10,24 +13,34 @@ use yii\behaviors\TimestampBehavior;
  * Class Company
  *
  * @package app\models
+ *
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $url
+ * @property string|null $address
+ * @property string|null $description
+ * @property int $updated_at
+ * @property int $created_at
+ *
+ * @property User[] $users
+ * @property Vacancy[] $vacancies
+ *
  */
 class Company extends ActiveRecord
 {
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%company}}';
     }
 
-    /** @inheritDoc */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
-    /** @inheritDoc */
-    public function rules()
+    public function rules(): array
     {
         return [
             [
@@ -39,27 +52,11 @@ class Company extends ActiveRecord
                 'max' => 255,
             ],
             [
-                ['url'],
-                'filter',
-                'skipOnEmpty' => true,
-                'filter' => function ($value) {
-                    $parsedUrl = parse_url($value);
-                    if ($parsedUrl['host'] ?? false) {
-                        $url = trim($parsedUrl['host'], " \t\n\r\0\x0B.");
-                        if ($path = ($parsedUrl['path'] ?? '')) {
-                            $url .= $path;
-                        }
-                        if ($query = ($parsedUrl['query'] ?? '')) {
-                            $url .= '?' . $query;
-                        }
-                        $value = $url;
-                    }
-
-                    return $value;
-                },
+                ['url'], 'filter', 'skipOnEmpty' => true, 'filter' => [new UrlTrimmer(), 'trim']
             ],
             [
                 ['url'], 'url',
+                'defaultScheme' => Yii::$app->params['defaultScheme'] ?? 'https',
                 'pattern' => '/^(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
             ],
             [['description'], 'string'],
@@ -67,45 +64,25 @@ class Company extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Name'),
             'url' => Yii::t('app', 'Website'),
+            'address' => Yii::t('app', 'Address'),
+            'description' => Yii::t('app', 'Description'),
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMembers()
+    public function getUsers(): ActiveQuery
     {
-        return $this->hasMany(User::className(), ['id', 'user_id'])
+        return $this->hasMany(User::class, ['id' => 'user_id'])
             ->viaTable(CompanyUser::tableName(), ['company_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getVacancies()
+    public function getVacancies(): ActiveQuery
     {
-        return $this->hasMany(Vacancy::className(), ['company_id' => 'id']);
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        $url = $this->url;
-        if ($url && !preg_match('|^https?:\/\/|', $url)) {
-            $url = Yii::$app->params['defaultScheme'] . '://' . $url;
-        }
-
-        return $url;
+        return $this->hasMany(Vacancy::class, ['company_id' => 'id']);
     }
 }

@@ -14,6 +14,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \app\models\PaymentMethod;
+use yii\web\Response;
 
 /**
  * CurrencyExchangeOrderController implements the CRUD actions for CurrencyExchangeOrder model.
@@ -42,6 +43,8 @@ class CurrencyExchangeOrderController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'set-active' => ['POST'],
+                    'set-inactive' => ['POST'],
                 ],
             ],
         ];
@@ -81,7 +84,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionView(int $id)
     {
-        $order = $this->findModel($id);
+        $order = $this->findModelByIdAndCurrentUser($id);
 
         return $this->render('view', [
             'model' => $order,
@@ -117,7 +120,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionUpdate(int $id)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -132,7 +135,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionUpdateSellMethods($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
 
         $formModel = new OrderPaymentMethods(['order' => $model]);
 
@@ -149,7 +152,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionUpdateBuyMethods($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
 
         $formModel = new OrderPaymentMethods(['order' => $model]);
 
@@ -172,52 +175,54 @@ class CurrencyExchangeOrderController extends Controller
     }
 
     /**
-     * Change status.
-     * @param $id
-     * @return mixed
+     * @param int $id
+     * @return array|bool
      * @throws NotFoundHttpException
      */
-    public function actionStatus($id)
+    public function actionSetActive(int $id)
     {
-        if (Yii::$app->request->isAjax) {
-            $postdata = Yii::$app->request->post();
-            $order = $this->findModel($id);
+        $order = $this->findModelByIdAndCurrentUser($id);
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
-            if ($postdata['status'] && $notFilledFields = $order->notPossibleToChangeStatus()) {
-                return json_encode($notFilledFields);
+        if (!$order->isActive()) {
+            if ($notFilledFields = $order->notPossibleToChangeStatus()) {
+                return $notFilledFields;
             }
-            $order->status = $postdata['status'];
-            return $order->save();
+            $order->setActive()->save();
         }
-        return false;
+        return true;
     }
 
-    /**
-     * Deletes an existing CurrencyExchangeOrder model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
+    public function actionSetInactive(int $id): bool
     {
-        $this->findModel($id)->delete();
+        $order = $this->findModelByIdAndCurrentUser($id);
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $order->setInactive()->save();
+
+        return true;
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $this->findModelByIdAndCurrentUser($id)->delete();
 
         return $this->redirect(['index']);
     }
 
     public function actionViewOrderSellingLocation(int $id): string
     {
-        return $this->renderAjax('map_modal', ['model' => $this->findModel($id),'type' => 'sell']);
+        return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'sell']);
     }
+
     public function actionViewOrderBuyingLocation(int $id): string
     {
-        return $this->renderAjax('map_modal', ['model' => $this->findModel($id),'type' => 'buy']);
+        return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'buy']);
     }
 
     public function actionViewOffers(int $id): string
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByIdAndCurrentUser($id);
         if ($model->getMatchesOrderedByUserRating()->exists()){
             $dataProvider = new ActiveDataProvider([
                 'query' => $model->getMatchesOrderedByUserRating(),
@@ -244,17 +249,13 @@ class CurrencyExchangeOrderController extends Controller
         throw new NotFoundHttpException('No offer found with current orders combination!');
     }
 
-    /**
-     * Finds the CurrencyExchangeOrder model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return CurrencyExchangeOrder the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel(int $id): CurrencyExchangeOrder
+    protected function findModelByIdAndCurrentUser(int $id): CurrencyExchangeOrder
     {
-        $model = CurrencyExchangeOrder::findOne($id);
-        if ($model !== null && $model->user_id == Yii::$app->user->identity->id) {
+        /** @var CurrencyExchangeOrder $model */
+        if ($model = CurrencyExchangeOrder::find()
+            ->where(['id' => $id])
+            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->one()) {
             return $model;
         }
 
