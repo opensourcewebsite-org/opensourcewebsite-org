@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\modules\bot\components\helpers\LocationParser;
+use app\components\helpers\ArrayHelper;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -14,6 +14,8 @@ use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use app\modules\bot\components\helpers\LocationParser;
+
 
 /**
  * Class Resume
@@ -51,6 +53,8 @@ class Resume extends ActiveRecord
 
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
+
+    public array $keywordsFromForm = [];
 
     public static function tableName(): string
     {
@@ -117,6 +121,9 @@ class Resume extends ActiveRecord
                 'max' => 255,
             ],
             [
+                'keywordsFromForm', 'each', 'rule' => ['integer']
+            ],
+            [
                 [
                     'experiences',
                     'expectations',
@@ -140,10 +147,11 @@ class Resume extends ActiveRecord
             'user_id' => Yii::t('app', 'User'),
             'remote_on' => Yii::t('bot', 'Remote work'),
             'name' => Yii::t('app', 'Name'),
-            'experiences' => Yii::t('app','Experiences'),
             'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'search_radius' => Yii::t('bot', 'Search radius'),
             'currency_id' => Yii::t('app', 'Currency'),
+            'keywords' => Yii::t('app', 'Keywords'),
+            'experiences' => Yii::t('app','Experiences'),
             'expectations' => Yii::t('app', 'Expectations'),
             'skills' => Yii::t('app',' skills'),
             'location_lat' => Yii::t('app', 'location_lat'),
@@ -201,6 +209,17 @@ class Resume extends ActiveRecord
         return (bool)$this->remote_on;
     }
 
+    public function getKeywordsFromForm(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'id');
+    }
+
+    public function getKeywords(): ActiveQuery
+    {
+        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
+            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
+    }
+
     public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
@@ -210,12 +229,6 @@ class Resume extends ActiveRecord
     {
         return $this->hasMany(Language::class, ['id' => 'language_id'])
             ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
-    }
-
-    public function getKeywords(): ActiveQuery
-    {
-        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
     }
 
     public function getGlobalUser(): ActiveQuery

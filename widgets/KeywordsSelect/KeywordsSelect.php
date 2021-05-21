@@ -50,7 +50,6 @@ class KeywordsSelect extends Widget {
     {
 
         $this->registerJs();
-
         if ($this->hasModel()) {
             return Select2::widget([
                 'model' => $this->model,

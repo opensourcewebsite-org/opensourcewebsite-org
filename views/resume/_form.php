@@ -39,7 +39,7 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'remote_on')->checkbox() ?>
+                                <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
                             </div>
                         </div>
                         <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>">
@@ -57,7 +57,8 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'keywords')->widget(KeywordsSelect::class) ?>
+                                <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
+                                <?= $form->field($model, 'keywordsFromForm')->widget(KeywordsSelect::class) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -87,7 +88,7 @@ use yii\widgets\ActiveForm;
     </div>
 <?php
 $js = <<<JS
-$('#resume-remote_on').on('change', function () {
+$('#webresume-remote_on').on('change', function () {
     $('.location-row').toggleClass('d-none');
 });
 JS;

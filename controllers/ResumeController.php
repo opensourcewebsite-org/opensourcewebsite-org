@@ -5,6 +5,7 @@ namespace app\controllers;
 
 use app\models\Currency;
 use app\models\Resume;
+use app\models\scenarios\JobKeywords\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Resume\SetActiveScenario;
 use app\models\search\ResumeSearch;
 use app\models\WebModels\WebResume;
@@ -73,6 +74,7 @@ class ResumeController extends Controller
         $model = $this->findModelByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model, $model->keywordsFromForm))->run();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
