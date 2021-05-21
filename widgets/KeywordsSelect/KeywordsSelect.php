@@ -84,7 +84,7 @@ class KeywordsSelect extends Widget {
                     const keyword = e.params.data.text;
                     $.post('{$keywordCreateUrl}', {'JobKeyword[keyword]': keyword}, function(res) {
                        const currentData = $(e.target).val();
-                       console.log(currentData);
+
                        let newData = currentData.filter( (el) => el !== keyword );
                        newData.push(res.id);
 
