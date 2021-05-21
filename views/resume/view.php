@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use app\components\helpers\ArrayHelper;
 use app\models\Resume;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -87,6 +88,12 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                 );
                                         },
                                         'format' => 'raw'
+                                    ],
+                                    [
+                                        'label' => 'keywords',
+                                        'value' => function() use ($model) {
+                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
+                                        }
                                     ],
                                     'experiences:ntext',
                                     'expectations:ntext',

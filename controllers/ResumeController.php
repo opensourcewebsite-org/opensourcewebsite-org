@@ -58,6 +58,7 @@ class ResumeController extends Controller
         $model->user_id = Yii::$app->user->identity->id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model))->run();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -74,7 +75,7 @@ class ResumeController extends Controller
         $model = $this->findModelByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            (new UpdateKeywordsByIdsScenario($model, $model->keywordsFromForm))->run();
+            (new UpdateKeywordsByIdsScenario($model))->run();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
