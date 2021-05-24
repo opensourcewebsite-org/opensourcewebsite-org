@@ -2,23 +2,26 @@
 
 namespace app\models;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
  * Class JobKeyword
  *
  * @package app\modules\bot\models
+ *
+ * @property int $id
+ * @property string $keyword
  */
 class JobKeyword extends ActiveRecord
 {
-    /** @inheritDoc */
-    public static function tableName()
+
+    public static function tableName(): string
     {
         return '{{%job_keyword}}';
     }
 
-    /** @inheritDoc */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['keyword'], 'required'],
@@ -27,32 +30,20 @@ class JobKeyword extends ActiveRecord
         ];
     }
 
-    public function getVacancies()
+    public function getVacancies(): ActiveQuery
     {
-        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+        return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_vacancy_keyword}}', ['job_keyword_id' => 'id']);
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->keyword;
     }
 
-    public function getResumes()
+    public function getResumes(): ActiveQuery
     {
-        return $this->hasMany(Resume::className(), ['id' => 'resume_id'])
+        return $this->hasMany(Resume::class, ['id' => 'resume_id'])
             ->viaTable('{{%job_resume_keyword}}', ['job_keyword_id' => 'id']);
-    }
-
-    /** @inheritDoc */
-    public static function find()
-    {
-        $query = parent::find();
-        $query->orderBy(['keyword' => SORT_ASC]);
-
-        return $query;
     }
 }

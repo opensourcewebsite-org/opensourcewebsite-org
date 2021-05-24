@@ -2,20 +2,47 @@
 
 namespace app\models;
 
+use app\components\helpers\ArrayHelper;
 use Yii;
-use app\models\queries\ResumeQuery;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
+use app\models\queries\ResumeQuery;
+use yii\db\conditions\AndCondition;
+use app\models\queries\VacancyQuery;
+use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
-use yii\db\conditions\AndCondition;
+use app\modules\bot\components\helpers\LocationParser;
+
 
 /**
  * Class Resume
  *
  * @package app\models
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $status
+ * @property int $remote_on
+ * @property string $name
+ * @property string $experiences
+ * @property double $min_hourly_rate
+ * @property int $search_radius
+ * @property int $currency_id
+ * @property string $expectations
+ * @property string $skills
+ * @property string $location_lat
+ * @property string $location_lon
+ * @property string $location
+ * @property int $created_at
+ * @property int $processed_at
+ *
+ * @property Currency $currency
+ * @property User $user
+ * @property Vacancy[] $matches
+ * @property UserLanguage[] $userLanguagesRelation
  */
 class Resume extends ActiveRecord
 {
@@ -27,18 +54,14 @@ class Resume extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public array $keywordsFromForm = [];
+
+    public static function tableName(): string
     {
         return '{{%resume}}';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             [
@@ -79,6 +102,12 @@ class Resume extends ActiveRecord
                 'double',
             ],
             [
+                'location', 'string'
+            ],
+            [
+                'remote_on', 'boolean'
+            ],
+            [
                 'min_hourly_rate',
                 'double',
                 'min' => 0,
@@ -92,6 +121,9 @@ class Resume extends ActiveRecord
                 'max' => 255,
             ],
             [
+                'keywordsFromForm', 'each', 'rule' => ['integer']
+            ],
+            [
                 [
                     'experiences',
                     'expectations',
@@ -103,87 +135,127 @@ class Resume extends ActiveRecord
         ];
     }
 
-    /**
-     * @return ResumeQuery
-     */
-    public static function find()
+    public static function find(): ResumeQuery
     {
         return new ResumeQuery(get_called_class());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
+            'user_id' => Yii::t('app', 'User'),
             'remote_on' => Yii::t('bot', 'Remote work'),
+            'name' => Yii::t('app', 'Name'),
+            'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'search_radius' => Yii::t('bot', 'Search radius'),
+            'currency_id' => Yii::t('app', 'Currency'),
+            'keywordsFromForm' => Yii::t('app', 'Keywords'),
+            'experiences' => Yii::t('app','Experiences'),
+            'expectations' => Yii::t('app', 'Expectations'),
+            'skills' => Yii::t('app','Skills'),
+            'location_lat' => Yii::t('app', 'location_lat'),
+            'location_lon' => Yii::t('app', 'location_lon'),
+            'location' => Yii::t('app', 'Location'),
+            'created_at' => Yii::t('app', 'created_at'),
+            'processed_at' => Yii::t('app', 'processed_at'),
         ];
     }
 
-    /** @inheritDoc */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrency()
+    public function setLocation(string $location): self
     {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+        [$lat, $lon] = (new LocationParser($location))->parse();
+        $this->location_lat = $lat;
+        $this->location_lon = $lon;
+        return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isActive()
+    public function getLocation(): string
+    {
+        return ($this->location_lat && $this->location_lon) ?
+            implode(',', [$this->location_lat, $this->location_lon]) :
+            '';
+    }
+
+    public function setActive(): self
+    {
+        $this->status = static::STATUS_ON;
+        return $this;
+    }
+
+    public function setInactive(): self
+    {
+        $this->status = static::STATUS_OFF;
+        return $this;
+    }
+
+    public function isActive(): bool
     {
         return $this->status == self::STATUS_ON;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMatches()
+    public function isRemote(): bool
     {
-        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+        return (bool)$this->remote_on;
+    }
+
+    public function getKeywordsFromForm(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'id');
+    }
+
+    public function getKeywords(): ActiveQuery
+    {
+        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
+            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
+    }
+
+    public function getCurrency(): ActiveQuery
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    public function getLanguages(): ActiveQuery
+    {
+        return $this->hasMany(Language::class, ['id' => 'language_id'])
+            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
+    }
+
+    public function getGlobalUser(): ActiveQuery
+    {
+        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
+    }
+
+    public function getMatches(): ActiveQuery
+    {
+        return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_resume_match}}', ['resume_id' => 'id']);
     }
 
-    /**
-     * @return queries\VacancyQuery
-     */
-    public function getMatchedVacancies()
+    public function getMatchedVacancies(): VacancyQuery
     {
-        $query = Vacancy::find()
+        return Vacancy::find()
             ->live()
             ->matchLanguages($this)
             ->matchRadius($this)
             ->andWhere([
                 '!=', Vacancy::tableName() . '.user_id', $this->user_id,
             ]);
-
-        return $query;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getCounterMatches()
+    public function getCounterMatches(): ActiveQuery
     {
-        return $this->hasMany(Vacancy::className(), ['id' => 'vacancy_id'])
+        return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_vacancy_match}}', ['resume_id' => 'id']);
     }
 
@@ -225,25 +297,6 @@ class Resume extends ActiveRecord
         }
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getLanguagesRelation()
-    {
-        return $this->hasMany(Language::className(), ['id' => 'language_id'])
-            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getUserLanguagesRelation()
-    {
-        return $this->hasMany(UserLanguage::class, ['user_id' => 'user_id']);
-    }
-
     public function clearMatches()
     {
         if ($this->processed_at !== null) {
@@ -258,28 +311,6 @@ class Resume extends ActiveRecord
         }
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getGlobalUser()
-    {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getKeywordsRelation()
-    {
-        return $this->hasMany(JobKeyword::className(), ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status'])) {
@@ -291,25 +322,4 @@ class Resume extends ActiveRecord
         parent::afterSave($insert, $changedAttributes);
     }
 
-    /**
-     * @return array
-     */
-    public function notPossibleToChangeStatus()
-    {
-        $notFilledFields = [];
-
-        if (!$this->getLanguagesRelation()->count()) {
-            $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('languages')) . ' (' . Yii::t('bot', 'in your profile') . ')';
-        }
-        if ($this->remote_on == self::REMOTE_OFF) {
-            if (!($this->location_lon && $this->location_lat)) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
-            }
-            if (!$this->search_radius) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('search_radius'));
-            }
-        }
-
-        return $notFilledFields;
-    }
 }
