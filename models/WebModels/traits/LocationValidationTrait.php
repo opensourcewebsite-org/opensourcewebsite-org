@@ -1,13 +1,14 @@
 <?php
 namespace app\models\WebModels\traits;
 
-use app\models\WebModels\WebVacancy;
 use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use Yii;
 use yii\web\JsExpression;
 
 trait LocationValidationTrait {
+
 
     public function rules(): array
     {

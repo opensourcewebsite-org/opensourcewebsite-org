@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
@@ -162,6 +163,21 @@ class Vacancy extends ActiveRecord
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    public function setLocation(string $location): self
+    {
+        [$lat, $lon] = (new LocationParser($location))->parse();
+        $this->location_lat = $lat;
+        $this->location_lon = $lon;
+        return $this;
+    }
+
+    public function getLocation(): string
+    {
+        return ($this->location_lat && $this->location_lon) ?
+            implode(',', [$this->location_lat, $this->location_lon]) :
+            '';
     }
 
     public function getCompany(): ActiveQuery

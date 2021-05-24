@@ -49,9 +49,9 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         </li>
                         <li class="nav-item align-self-center mr-4  mx-1">
                             <?= AddButton::widget([
-                                'url' => ['resume/create'],
+                                'url' => ['vacancy/create'],
                                 'options' => [
-                                    'title' => 'New Resume',
+                                    'title' => 'New Vacancy',
                                 ]
                             ]); ?>
                         </li>

@@ -29,17 +29,17 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'skills')->textarea() ?>
+                                <?= $form->field($model, 'requirements')->textarea() ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'experiences')->textarea() ?>
+                                <?= $form->field($model, 'conditions')->textarea() ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'expectations')->textarea() ?>
+                                <?= $form->field($model, 'responsibilities')->textarea() ?>
                             </div>
                         </div>
                         <div class="row">

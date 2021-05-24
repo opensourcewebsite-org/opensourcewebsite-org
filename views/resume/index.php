@@ -51,7 +51,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                         </li>
                         <li class="nav-item align-self-center mr-4  mx-1">
                             <?= AddButton::widget([
-                                'url' => ['resume/create'],
+                                'url' => ['create'],
                                 'options' => [
                                     'title' => 'New Resume',
                                 ]
