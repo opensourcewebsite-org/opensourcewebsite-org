@@ -98,6 +98,11 @@ class ResumeController extends Controller
         return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
     }
 
+    /**
+     * @param int $id
+     * @return array|bool
+     * @throws NotFoundHttpException
+     */
     public function actionSetActive(int $id)
     {
         $model = $this->findModelByIdAndCurrentUser($id);
@@ -112,7 +117,7 @@ class ResumeController extends Controller
         return $scenario->getErrors();
     }
 
-    public function actionSetInactive(int $id)
+    public function actionSetInactive(int $id): bool
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 

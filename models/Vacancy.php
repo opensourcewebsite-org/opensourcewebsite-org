@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\models;
 
+use app\components\helpers\ArrayHelper;
 use Yii;
 use app\models\queries\VacancyQuery;
 use app\models\User as GlobalUser;
@@ -36,6 +37,7 @@ use app\modules\bot\validators\LocationLonValidator;
  *
  * @property Company $company
  * @property Currency $currency
+ * @property Gender $gender
  * @property Resume[] $matches
  * @property Resume[] $matchedResumes
  * @property Resume[] $counterMatches
@@ -53,6 +55,8 @@ class Vacancy extends ActiveRecord
 
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
+
+    public array $keywordsFromForm = [];
 
     public static function tableName(): string
     {
@@ -100,6 +104,9 @@ class Vacancy extends ActiveRecord
                 'max' => 99999999.99,
             ],
             [
+                'keywordsFromForm', 'each', 'rule' => ['integer']
+            ],
+            [
                 [
                     'name',
                 ],
@@ -129,6 +136,21 @@ class Vacancy extends ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'max_hourly_rate' => Yii::t('bot', 'Max. hourly rate'),
             'remote_on' => Yii::t('bot', 'Remote work'),
+            'company_id' => Yii::t('app', 'Company'),
+            'status' => Yii::t('app', 'Status'),
+            'name' => Yii::t('app', 'Name'),
+            'requirements' => Yii::t('app','Requirements'),
+            'currency_id' => Yii::t('app', 'Currency'),
+            'conditions' => Yii::t('app','Conditions'),
+            'responsibilities' => Yii::t('app','Responsibilities'),
+            'keywordsFromForm' => Yii::t('app', 'Keywords'),
+            'gender_id' => Yii::t('app','Gender'),
+            'location_lat' => Yii::t('app', 'location_lat'),
+            'location_lon' => Yii::t('app', 'location_lon'),
+            'location' => Yii::t('app', 'Location'),
+            'created_at' => Yii::t('app', 'created_at'),
+            'processed_at' => Yii::t('app', 'processed_at'),
+
         ];
     }
 
@@ -152,9 +174,38 @@ class Vacancy extends ActiveRecord
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
+    public function getGender(): ActiveQuery
+    {
+        return $this->hasOne(Gender::class, ['id' => 'gender_id']);
+    }
+
     public function isActive(): bool
     {
-        return (int)$this->status === self::STATUS_ON;
+        return (int)$this->status === static::STATUS_ON;
+    }
+
+    public function setActive(): self
+    {
+        $this->status = static::STATUS_ON;
+
+        return $this;
+    }
+
+    public function setInactive(): self
+    {
+        $this->status = static::STATUS_OFF;
+
+        return $this;
+    }
+
+    public function isRemote(): bool
+    {
+        return $this->remote_on == static::REMOTE_ON;
+    }
+
+    public function getKeywordsFromForm(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'id');
     }
 
     public function getMatches(): ActiveQuery
@@ -162,6 +213,7 @@ class Vacancy extends ActiveRecord
         return $this->hasMany(Resume::class, ['id' => 'resume_id'])
             ->viaTable('{{%job_vacancy_match}}', ['vacancy_id' => 'id']);
     }
+
 
     public function getMatchedResumes(): ActiveQuery
     {
@@ -181,7 +233,7 @@ class Vacancy extends ActiveRecord
             ->viaTable('{{%job_resume_match}}', ['vacancy_id' => 'id']);
     }
 
-    public function getVacancyLanguagesWithLevels(): ActiveQuery
+    public function getLanguagesWithLevels(): ActiveQuery
     {
         return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
     }
@@ -261,15 +313,6 @@ class Vacancy extends ActiveRecord
 
     public function notPossibleToChangeStatus(): array
     {
-        $notFilledFields = [];
-
-
-        if ($this->remote_on == self::REMOTE_OFF) {
-            if (!($this->location_lon && $this->location_lat)) {
-                $notFilledFields[] = Yii::t('bot', $this->getAttributeLabel('location'));
-            }
-        }
-
-        return $notFilledFields;
+       return [];
     }
 }

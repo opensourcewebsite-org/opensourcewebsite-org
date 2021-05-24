@@ -2,9 +2,8 @@
 
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
-use app\models\Resume;
+use app\models\Vacancy;
 use app\widgets\buttons\CancelButton;
-use app\widgets\buttons\SaveButton;
 use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
@@ -13,11 +12,11 @@ use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
-/* @var $model Resume */
+/* @var $model Vacancy */
 /* @var $currencies Currency[] */
 
 ?>
-    <div class="resume-form">
+    <div class="vacancy-form">
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
             <div class="col-12">
@@ -51,7 +50,7 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'min_hourly_rate')->textInput() ?>
+                                <?= $form->field($model, 'max_hourly_rate')->textInput() ?>
                             </div>
                         </div>
                         <div class="row">
@@ -74,18 +73,10 @@ use yii\widgets\ActiveForm;
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
                             </div>
                         </div>
-                        <div class="row location-row" <?=$model->remote_on ? 'd-none' : ''?>>
-                            <div class="col">
-                                <?= $form->field($model, 'search_radius')
-                                    ->textInput(['maxlength' => true, 'placeholder' => 0])
-                                    ->label($model->getAttributeLabel('search_radius').', km')
-                                ?>
-                            </div>
-                        </div>
                     </div>
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
-                        <?= CancelButton::widget(['url' => '/resume']); ?>
+                        <?= CancelButton::widget(['url' => '/vacancy']); ?>
                     </div>
                 </div>
             </div>

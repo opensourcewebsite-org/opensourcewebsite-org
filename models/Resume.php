@@ -201,7 +201,7 @@ class Resume extends ActiveRecord
 
     public function isActive(): bool
     {
-        return $this->status == self::STATUS_ON;
+        return $this->status == static::STATUS_ON;
     }
 
     public function isRemote(): bool
@@ -321,5 +321,4 @@ class Resume extends ActiveRecord
 
         parent::afterSave($insert, $changedAttributes);
     }
-
 }

@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
 
 ?>
-<div class="resumne-index">
+<div class="resume-index">
     <div class="row">
         <div class="col-12">
             <div class="card">
