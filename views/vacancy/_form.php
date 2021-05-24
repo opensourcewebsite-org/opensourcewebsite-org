@@ -1,9 +1,11 @@
 <?php
 
 use app\components\helpers\ArrayHelper;
+use app\models\Company;
 use app\models\Currency;
 use app\models\Vacancy;
 use app\widgets\buttons\CancelButton;
+use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
 use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
@@ -11,9 +13,12 @@ use kartik\select2\Select2;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
-/* @var $this View */
-/* @var $model Vacancy */
-/* @var $currencies Currency[] */
+/**
+ * @var View $this
+ * @var Vacancy $model
+ * @var Currency[] $currencies
+ * @var Company[] $companies
+ */
 
 ?>
     <div class="vacancy-form">
@@ -68,9 +73,19 @@ use yii\widgets\ActiveForm;
                                 <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
                             </div>
                         </div>
-                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>">
+                        <div class="row location-row <?= $model->remote_on ? 'd-none' : '' ?>">
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'company_id')->widget(
+                                    CompanySelectCreatable::class,
+                                    [
+                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
+                                    ]
+                                ) ?>
                             </div>
                         </div>
                     </div>
@@ -85,7 +100,7 @@ use yii\widgets\ActiveForm;
     </div>
 <?php
 $js = <<<JS
-$('#webresume-remote_on').on('change', function () {
+$('#webvacancy-remote_on').on('change', function () {
     $('.location-row').toggleClass('d-none');
 });
 JS;

@@ -6,6 +6,7 @@ use app\assets\AdminLteUserAsset;
 use app\widgets\Alert;
 use app\widgets\Nav;
 use app\widgets\NavBar;
+use yii\bootstrap4\BootstrapAsset;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Breadcrumbs;
@@ -17,6 +18,7 @@ use app\models\Language;
  * @var View $this
  * @var string $content
  */
+
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);

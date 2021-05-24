@@ -47,7 +47,11 @@ class VacancyController extends Controller {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', ['model' => $model, 'currencies' => Currency::find()->all()]);
+        return $this->render('create', [
+            'model' => $model,
+            'currencies' => Currency::find()->all(),
+            'companies' => $model->globalUser->getCompanies()->all()
+        ]);
     }
 
     public function actionUpdate()
@@ -100,6 +104,7 @@ class VacancyController extends Controller {
 
         return true;
     }
+
 
     private function findModelByIdAndCurrentUser(int $id): Vacancy
     {
