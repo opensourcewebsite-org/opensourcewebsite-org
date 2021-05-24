@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 
-$this->title = Yii::t('app', 'Jobs');
+$this->title = Yii::t('app', 'Vacancies');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

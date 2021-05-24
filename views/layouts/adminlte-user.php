@@ -1,9 +1,5 @@
 <?php
 
-/* @var $this \yii\web\View */
-
-/* @var $content string */
-
 use app\assets\AdminLteAsset;
 use app\assets\FontAwesomeAsset;
 use app\assets\AdminLteUserAsset;
@@ -11,34 +7,21 @@ use app\widgets\Alert;
 use app\widgets\Nav;
 use app\widgets\NavBar;
 use yii\helpers\Html;
+use yii\web\View;
 use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 use yii\bootstrap4\Modal;
 use app\models\Language;
 
+/**
+ * @var View $this
+ * @var string $content
+ */
+
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
 AdminLteUserAsset::register($this);
 
-//List of language options
-$languages = Language::find()
-    ->orderBy(['name_ascii' => SORT_ASC])
-    ->all();
-$langOpt = [];
-
-if (!empty($languages)) {
-    foreach ($languages as $lang) {
-        //Check if the language is the active
-        $active = ($lang->code == Yii::$app->language) ? 'active' : '';
-        $langOpt[] = [
-            'label' => $lang->name_ascii,
-            'url' => Yii::$app->urlManager->createUrl(['site/change-language', 'lang'=>$lang->code]),
-            'linkOptions' => [
-                'class' => 'dropdown-item ' . $active,
-            ]
-        ];
-    }
-}
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -56,14 +39,6 @@ if (!empty($languages)) {
     <?php Modal::begin([
         'id' => 'main-modal',
         'size' => Modal::SIZE_LARGE,
-        'clientEvents' => [
-            'show.bs.modal' => 'function (e) {
-                    $("#main-modal").addClass("show");
-            }',
-            'hide.bs.modal' => 'function (e) {
-                    $("#main-modal").removeClass("show");
-            }',
-        ],
         'options' => ['class' => 'card-primary', 'tabindex' => false],
         'title' => Html::tag('h4', '', ['id' => 'main-modal-header', 'class' => 'modal-title']),
         'titleOptions' => ['class' => 'card-header'],
@@ -88,48 +63,6 @@ if (!empty($languages)) {
 
         $menuItemsLeft[] = ['label' => '<i class="fa fa-bars"></i>', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link'], 'encode' => false];
 
-        $menuItemsRight[] = [
-            'label' => Gravatar::widget([
-                'email' => Yii::$app->user->identity->email,
-                'secure' => true,
-                'options' => [
-                    'alt' => 'Profile Gravatar',
-                    'class' => 'img-circle',
-                ],
-                'size' => 20,
-            ]),
-            'items' => [
-                [
-                    'label' => Yii::t('app', 'Account'),
-                    'url' => ['site/account'],
-                    'linkOptions' => [
-                        'tabindex' => -1,
-                        'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'site/account') ? 'active' : ''),
-                    ]
-                ],
-                [
-                    'label' => Yii::t('app', 'Loyalty program'),
-                    'url' => ['/referrals'],
-                    'linkOptions' => [
-                        'tabindex' => -1,
-                        'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'referrals/index') ? 'active' : ''),
-                    ]
-                ],
-                [
-                    'label' => Yii::t('app', 'Logout'),
-                    'url' => ['site/logout'],
-                    'linkOptions' => [
-                        'data-method' => 'post',
-                        'tabindex' => -1,
-                        'class' => 'dropdown-item'
-                    ]
-                ],
-            ],
-            'encode' => FALSE,
-            'options' => ['class' => 'nav-item'],
-            'linkOptions' => ['class' => 'nav-link'],
-        ];
-
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => $menuItemsLeft,
@@ -149,17 +82,19 @@ if (!empty($languages)) {
 
                 <div class="dropdown-container">
                 <?php
-
-                //List of language options
                 $languages = Language::find()
                     ->orderBy(['name_ascii' => SORT_ASC])
                     ->all();
 
                 if (!empty($languages)) {
+                    /** @var Language $language */
                     foreach ($languages as $language) {
-                        //Check if the language is the active
                         $active = ($language->code == Yii::$app->language) ? 'active' : null;
-                        echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
+                        echo Html::a(
+                            $language->name_ascii,
+                            Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]),
+                            ['class' => ['dropdown-item', $active]]
+                        );
                     }
                 } ?>
                 </div>
@@ -168,7 +103,57 @@ if (!empty($languages)) {
 
         <?php echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
-            'items' => $menuItemsRight,
+            'items' => [
+                [
+                    'label' => Gravatar::widget([
+                        'email' => Yii::$app->user->identity->email,
+                        'secure' => true,
+                        'options' => [
+                            'alt' => 'Profile Gravatar',
+                            'class' => 'img-circle',
+                        ],
+                        'size' => 20,
+                    ]),
+                    'items' => [
+                        [
+                            'label' => Yii::t('app', 'Account'),
+                            'url' => ['site/account'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'site/account') ? 'active' : ''),
+                            ]
+                        ],
+                        [
+                            'label' => Yii::t('app','Companies'),
+                            'url' => ['company-user/index'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'company-user/index') ? 'active' : ''),
+                            ]
+                        ],
+                        [
+                            'label' => Yii::t('app', 'Loyalty program'),
+                            'url' => ['/referrals'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'referrals/index') ? 'active' : ''),
+                            ]
+                        ],
+                        [
+                            'label' => Yii::t('app', 'Logout'),
+                            'url' => ['site/logout'],
+                            'linkOptions' => [
+                                'data-method' => 'post',
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item'
+                            ]
+                        ],
+                    ],
+                    'encode' => FALSE,
+                    'options' => ['class' => 'nav-item'],
+                    'linkOptions' => ['class' => 'nav-link'],
+                ]
+            ]
         ]);
         NavBar::end();
         ?>
@@ -230,8 +215,30 @@ $leftMenuItems = [
     [
         'title' => 'Jobs',
         'icon' => 'far fa-circle',
-        'url' => 'jobs',
-        'route' => '/jobs',
+        'urls' => [
+            'resume',
+            'vacancy',
+        ],
+        'items' => [
+            [
+                'title' => Yii::t('app','Companies'),
+                'icon' => 'far fa-circle',
+                'url' => 'company-user',
+                'route' => '/company-user'
+            ],
+            [
+                'title' => 'Resumes',
+                'icon' => 'far fa-circle',
+                'url' => 'resume',
+                'route' => '/resume'
+            ],
+            [
+                'title' => 'Vacancies',
+                'icon' => 'far fa-circle',
+                'url' => 'vacancy',
+                'route' => '/vacancy'
+            ]
+        ]
     ],
     [
         'title' => 'Dating',

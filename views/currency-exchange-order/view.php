@@ -1,6 +1,7 @@
 <?php
 
 use \app\models\CurrencyExchangeOrder;
+use app\models\PaymentMethod;
 use app\widgets\buttons\EditButton;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -183,7 +184,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         </td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php foreach ($model->getSellingPaymentMethods()->all() as $method) : ?>
+                                <?php foreach ($model->sellingPaymentMethods as $method) : ?>
+                                    <?php /** @var PaymentMethod $method */ ?>
                                     <tr>
                                         <td>
                                             <?= $method->name ?>
@@ -226,9 +228,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             )
                                         </td>
                                 </tr>
-                                    </tr>
                                 <?php endif; ?>
-                                <?php foreach ($model->getBuyingPaymentMethods()->all() as $method) : ?>
+                                <?php foreach ($model->buyingPaymentMethods as $method) : ?>
+                                    <?php /** @var PaymentMethod $method */ ?>
                                     <tr>
                                         <td>
                                             <?= $method->name ?>
@@ -245,20 +247,25 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
     </div>
 
 <?php
-$url = Yii::$app->urlManager->createUrl(['currency-exchange-order/status?id=' . $model->id]);
+$statusActiveUrl = Yii::$app->urlManager->createUrl(['currency-exchange-order/set-active?id=' . $model->id]);
+$statusInactiveUrl = Yii::$app->urlManager->createUrl(['currency-exchange-order/set-inactive?id=' . $model->id]);
+
 $script = <<<JS
 
 $('.status-update').on("click", function(event) {
-    var status = $(this).data('value');
-        $.post('{$url}', {'status': status}, function(result) {
-            if (result === "1") {
+    const status = $(this).data('value');
+    const statusActiveUrl = '{$statusActiveUrl}';
+    const statusInactiveUrl = '{$statusInactiveUrl}';
+    const url = (parseInt(status) === 1) ? statusActiveUrl : statusInactiveUrl;
+
+        $.post(url, {'status': status}, function(result) {
+            if (result === true) {
                 location.reload();
             }
             else {
-                var response = $.parseJSON(result);
-                console.log(response);
                 $('#main-modal-header').text('Warning!');
-                response.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
+
+                result.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
 
                 $('#main-modal').show();
                 $('.close').on('click', function() {
