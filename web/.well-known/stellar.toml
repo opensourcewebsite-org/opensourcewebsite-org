@@ -10,10 +10,11 @@ ACCOUNTS=[
 ORG_NAME="OpenSourceWebsite"
 ORG_DBA="OpenSourceWebsite"
 ORG_URL="https://opensourcewebsite.org"
-ORG_GITHUB="opensourcewebsite-org"
 ORG_LOGO="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 ORG_DESCRIPTION="OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code"
+ORG_GITHUB="opensourcewebsite-org"
 ORG_OFFICIAL_EMAIL="hello@opensourcewebsite.org"
+ORG_SUPPORT_EMAIL="hello@opensourcewebsite.org"
 
 [[CURRENCIES]]
 code="OSW"
