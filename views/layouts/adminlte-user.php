@@ -124,14 +124,6 @@ AdminLteUserAsset::register($this);
                             ]
                         ],
                         [
-                            'label' => Yii::t('app','Companies'),
-                            'url' => ['company-user/index'],
-                            'linkOptions' => [
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'company-user/index') ? 'active' : ''),
-                            ]
-                        ],
-                        [
                             'label' => Yii::t('app', 'Loyalty program'),
                             'url' => ['/referrals'],
                             'linkOptions' => [
