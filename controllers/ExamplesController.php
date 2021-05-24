@@ -9,7 +9,7 @@ use yii\helpers\ArrayHelper;
 
 class ExamplesController extends Controller
 {
-    public function behaviors()
+    public function behaviors():array
     {
         return [
             'access' => [
@@ -24,61 +24,62 @@ class ExamplesController extends Controller
         ];
     }
 
-    public function actionDashboard($id)
+    public function actionDashboard($id): string
     {
         return $this->render('dashboard/' . $id);
     }
 
-    public function actionWidgets()
+    public function actionWidgets(): string
     {
         return $this->render('widgets');
     }
 
-    public function actionCharts($id)
+    public function actionCharts($id): string
     {
         return $this->render('charts/' . $id);
     }
 
-    public function actionUiElements($id)
+    public function actionUiElements($id): string
     {
         return $this->render('ui-elements/' . $id);
     }
 
-    public function actionForms($id)
+    public function actionForms($id): string
     {
         return $this->render('forms/' . $id);
     }
 
-    public function actionTables($id)
+    public function actionTables($id): string
     {
         return $this->render('tables/' . $id);
     }
 
-    public function actionCalendar()
+    public function actionCalendar(): string
     {
         return $this->render('calendar');
     }
 
-    public function actionGallery()
+    public function actionGallery(): string
     {
         return $this->render('gallery');
     }
 
     // https://www.php.net/manual/en/function.phpinfo.php
-    public function actionPhpInfo()
+    public function actionPhpInfo(): string
     {
         return $this->render('php-info');
     }
 
     // https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html
     // https://dev.mysql.com/doc/refman/8.0/en/server-status-variables.html
-    public function actionMysqlInfo()
+    public function actionMysqlInfo(): string
     {
-        $mysqlvars = Yii::$app->db->createCommand('SHOW GLOBAL VARIABLES')->queryAll();
-        $mysqlvars = ArrayHelper::map($mysqlvars, 'Variable_name', 'Value');
+
+        $mysqlVars = Yii::$app->db->createCommand('SHOW GLOBAL VARIABLES')->queryAll();
+        $mysqlVars = ArrayHelper::map($mysqlVars, 'variable_name', 'value');
 
         return $this->render('mysql-info', [
-            'mysqlvars' => $mysqlvars
+            'mysqlVars' => $mysqlVars
         ]);
     }
 }

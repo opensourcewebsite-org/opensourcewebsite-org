@@ -1,8 +1,14 @@
 <?php
 
+use yii\web\View;
+
 $this->title = Yii::t('app', 'MySQL Info');
 $this->params['breadcrumbs'][] = $this->title;
 
+/**
+ * @var array $mysqlVars
+ * @var $this View
+ */
 $JS = <<<JS
     "use strict"
     $(document).ready(function(){
@@ -24,7 +30,7 @@ $this->registerJs($JS);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($mysqlvars as $mysqlVar => $mysqlValue) : ?>
+                        <?php foreach ($mysqlVars as $mysqlVar => $mysqlValue) : ?>
                             <tr>
                                 <td><?= $mysqlVar; ?></td>
                                 <td><?= $mysqlValue; ?></td>
