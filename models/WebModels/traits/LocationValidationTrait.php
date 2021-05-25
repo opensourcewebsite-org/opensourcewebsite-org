@@ -13,19 +13,20 @@ trait LocationValidationTrait {
     public function rules(): array
     {
         $mainValidators = parent::rules();
+        $formName = strtolower($this->formName());
         $webSpecificValidators = [
             [
                 'location',
                 'required',
                 'when' => function ($model) {
                     /** @var self $model */
-                    if (!$model->remote_on ) {
+                    if ( !$model->remote_on ) {
                         return true;
                     }
                     return false;
                 },
                 'whenClient' => new JsExpression("function(attribute, value) {
-                    return !$('#webresume-remote_on').prop('checked');
+                    return !$('#{$formName}-remote_on').prop('checked');
                 }")
             ],
             [

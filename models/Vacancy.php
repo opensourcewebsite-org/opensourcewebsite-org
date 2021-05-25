@@ -57,7 +57,7 @@ class Vacancy extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
-    public array $keywordsFromForm = [];
+    public $keywordsFromForm = [];
 
     public static function tableName(): string
     {
@@ -91,6 +91,9 @@ class Vacancy extends ActiveRecord
                 'integer',
             ],
             [
+                'remote_on', 'boolean'
+            ],
+            [
                 'location_lat',
                 LocationLatValidator::class,
             ],
@@ -103,6 +106,13 @@ class Vacancy extends ActiveRecord
                 'double',
                 'min' => 0,
                 'max' => 99999999.99,
+            ],
+            ['keywordsFromForm', 'filter', 'filter' => function($val) {
+                if ($val === '')  {
+                    return [];
+                }
+                return $val;
+            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']

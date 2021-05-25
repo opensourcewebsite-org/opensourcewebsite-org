@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Currency;
-use app\models\scenarios\JobKeywords\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Vacancy\SetActiveScenario;
 use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
-use Yii;
 use app\models\search\VacancySearch;
 use yii\web\Controller;
 use yii\filters\AccessControl;
