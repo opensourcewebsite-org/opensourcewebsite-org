@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\widgets\CompanySelectCreatable;
 
+use app\models\Company;
 use yii\base\Widget;
 use kartik\select2\Select2Asset;
 use yii\base\InvalidConfigException;
@@ -53,7 +54,8 @@ class CompanySelectCreatable extends Widget {
             'companies' => $this->companies,
             'options' => array_merge($this->defaultOptions, $this->options),
             'value' => $this->value,
-            'controlId' => $this->id
+            'controlId' => $this->id,
+            'companyModel' => new Company()
         ] );
     }
 

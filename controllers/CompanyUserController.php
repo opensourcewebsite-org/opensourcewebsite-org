@@ -9,6 +9,7 @@ use app\models\search\CompanyUserSearch;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -69,6 +70,28 @@ class CompanyUserController extends Controller
                 'companyModel' => $companyModel,
                 'companyUserModel' => $companyUserModel
             ]);
+    }
+
+    public function actionCreateAjax() {
+        /** @var User $user */
+        $user = Yii::$app->user->getIdentity();
+
+        $companyModel = new Company();
+
+        $companyUserModel = new CompanyUser();
+        $companyUserModel->user_id = $user->id;
+        $companyUserModel->user_role = CompanyUser::ROLE_OWNER;
+
+        if (Yii::$app->request->isPost) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($companyModel->load(Yii::$app->request->post()) && $companyModel->save()) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $companyUserModel->link('company', $companyModel);
+                return $companyModel;
+            }
+            return ['errors' => $companyModel->errors];
+        }
+        return $this->renderAjax('_form', ['companyModel' => $companyModel]);
     }
 
     /**

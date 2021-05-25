@@ -18,7 +18,7 @@ use app\widgets\buttons\CancelButton;
     <h4 class="modal-title"><?= $this->title ?></h4>
 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 </div>
-<?php $form = ActiveForm::begin() ?>
+<?php $form = ActiveForm::begin(['id' => 'create-company-form']) ?>
 <div class="modal-body">
     <div class="row">
         <div class="col">
