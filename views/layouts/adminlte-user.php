@@ -210,6 +210,7 @@ $leftMenuItems = [
         'title' => 'Jobs',
         'icon' => 'far fa-circle',
         'urls' => [
+            'company-user',
             'resume',
             'vacancy',
         ],
