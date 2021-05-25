@@ -16,6 +16,6 @@ use yii\bootstrap4\Html;
     <?= Html::dropDownList($languageLevelFieldName, $selected, $languageLevels,
         [
             'prompt' => Yii::t('app', 'Select Language Level...'),
-            'class' => ['form-control']
+            'class' => ['form-control', 'languages-levels-dropdown']
         ]
     ) ?>

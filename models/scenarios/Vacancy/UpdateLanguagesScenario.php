@@ -24,7 +24,7 @@ class UpdateLanguagesScenario {
     {
         $currentLanguages = $this->model->getLanguagesWithLevels()->asArray()->all();
         $currentLanguagesMapped = ArrayHelper::map($currentLanguages, 'language_id', 'language_level_id');
-        $newLanguagesMapped = array_combine($this->form->language_id, $this->form->language_level_id);
+        $newLanguagesMapped = $this->prepareLangAndLevel();
         $toDelete = array_diff($currentLanguagesMapped, $newLanguagesMapped);
         $toAdd = array_diff($newLanguagesMapped, $currentLanguagesMapped);
         $sameIds = array_intersect_key($currentLanguagesMapped, $newLanguagesMapped);
@@ -54,5 +54,17 @@ class UpdateLanguagesScenario {
             $vacancyLanguage->language_level_id = $langLevelId;
             $vacancyLanguage->save();
         }
+    }
+
+    public function prepareLangAndLevel(): array
+    {
+        $ret = [];
+        foreach ($this->form->language_id as $key => $langId) {
+            if (is_numeric($langId) && isset($this->form->language_level_id[$key])) {
+                $ret[$langId] = $this->form->language_level_id[$key];
+            }
+        }
+
+        return $ret;
     }
 }

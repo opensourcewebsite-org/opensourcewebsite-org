@@ -106,6 +106,7 @@ use yii\widgets\ActiveForm;
                             <div class="col">
                                 <?= LanguagesWithLevelSelect::widget([
                                     'model' => $languageWithLevelsForm,
+                                    'form' => $form,
                                     'languages' => ArrayHelper::map(Language::find()->asArray()->all(),'id','name_ascii'),
                                     'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
                                 ]) ?>

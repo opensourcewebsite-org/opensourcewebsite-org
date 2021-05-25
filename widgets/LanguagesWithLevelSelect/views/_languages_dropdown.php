@@ -17,6 +17,6 @@ use yii\bootstrap4\Html;
         $languageFieldName, $selected, $languages,
         [
             'prompt' => Yii::t('app', 'Select Language...'),
-            'class' => ['form-control']
+            'class' => ['form-control', 'languages-dropdown']
         ]
     )?>

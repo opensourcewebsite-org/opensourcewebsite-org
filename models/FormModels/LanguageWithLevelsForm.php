@@ -18,7 +18,7 @@ class LanguageWithLevelsForm extends Model {
     {
         $rules =  [
             [
-                ['language_id','language_level_id'], 'each', 'rule' => ['integer']
+                ['language_id','language_level_id'], 'each', 'rule' => ['integer'],
             ]
         ];
         if ($this->required) {

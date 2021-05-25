@@ -1,5 +1,6 @@
 <?php
 
+use yii\bootstrap4\ActiveForm;
 use yii\web\View;
 use app\models\FormModels\LanguageWithLevelsForm;
 
@@ -13,6 +14,7 @@ use app\models\FormModels\LanguageWithLevelsForm;
  * @var array $languageLevels
  * @var array $_params_
  * @var LanguageWithLevelsForm $model
+ * @var ActiveForm|null $form
  */
 $templateId = "{$id}-row-template";
 ?>
@@ -48,9 +50,36 @@ $templateId = "{$id}-row-template";
     </div>
 </div>
 <?php
+$formId = json_encode($form ? '#' . $form->getId() : null);
+$selectLangLevelMessage = Yii::t('app', 'Please select Language Level');
+$selectLangMessage = Yii::t('app', 'Please select Language');
+
 $js = <<<JS
+const selectLangMessage = '{$selectLangMessage}';
+const selectLangLevelMessage = '{$selectLangLevelMessage}';
 const template = $('#{$templateId}');
 const mainNode = $('#{$id} .card-body');
+const mainFormId = {$formId};
+
+const validateOurWidget = function (e) {
+    e.preventDefault();
+    let error = false;
+    mainNode.find('.language-row').each(function(){
+        let langsDropdown = $(this).find('.languages-dropdown');
+        let langsLevelsDropdown = $(this).find('.languages-levels-dropdown');
+
+        if (langsDropdown.val() && !langsLevelsDropdown.val()) {
+            error = true;
+            langsLevelsDropdown.siblings('.help-block').html(selectLangLevelMessage);
+        }
+    });
+    return !error;
+
+}
+
+if (mainFormId) {
+    $(mainFormId).on('beforeSubmit', validateOurWidget);
+}
 
 $(document).on('click', '.add-row-btn', function () {
     mainNode.append(template.contents().clone());
