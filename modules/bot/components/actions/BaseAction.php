@@ -8,6 +8,17 @@ use app\modules\bot\components\api\Types\Update;
 
 abstract class BaseAction extends Action
 {
+    public $wordModelClass;
+    public $modelAttributes = [];
+    public $listActionId = 'w-l';
+    public $viewActionId = 'w-v';
+    public $enterActionId = 'w-e';
+    public $insertActionId = 'w-i';
+    public $changeActionId = 'w-c';
+    public $updateActionId = 'w-u';
+    public $deleteActionId = 'w-d';
+    public $buttons = [];
+
     /**
      * @return \app\modules\bot\models\UserState
      */

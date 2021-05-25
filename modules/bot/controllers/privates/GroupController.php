@@ -111,7 +111,7 @@ class GroupController extends Controller
                                             $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
 
-                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Join Hider');
+                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Join Hider');
                                         }
                                     ),
                                 ],
@@ -126,7 +126,7 @@ class GroupController extends Controller
                                             $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
 
-                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Join Captcha');
+                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Join Captcha');
                                         }
                                     ),
                                 ],
@@ -141,7 +141,7 @@ class GroupController extends Controller
                                             $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
 
-                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Greeting');
+                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Greeting');
                                         }
                                     ),
                                 ],
@@ -156,7 +156,22 @@ class GroupController extends Controller
                                             $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
                                             $statusOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
 
-                                            return ($statusOn ? '' : Emoji::INACTIVE . ' ') . Yii::t('bot', 'Message Filter');
+                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter');
+                                        }
+                                    ),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => GroupFaqController::createRoute('index', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => call_user_func(
+                                        function () use ($chat) {
+                                            $statusSetting = $chat->getSetting(ChatSetting::FAQ_STATUS);
+                                            $statusOn = ($statusSetting->value == ChatSetting::FAQ_STATUS_ON);
+
+                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'FAQ');
                                         }
                                     ),
                                 ],

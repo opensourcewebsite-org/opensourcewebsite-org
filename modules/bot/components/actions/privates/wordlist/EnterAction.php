@@ -8,10 +8,6 @@ use app\modules\bot\components\helpers\Emoji;
 
 class EnterAction extends BaseAction
 {
-    public $wordModelClass;
-    public $insertActionId = 'w-i';
-    public $listActionId = 'w-l';
-
     /**
     * @return array
     */

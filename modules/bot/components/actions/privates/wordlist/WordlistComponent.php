@@ -23,7 +23,7 @@ use yii\base\InvalidConfigException;
  *     return array_merge(
  *         parent::actions(),
  *         Yii::createObject([
- *             'class' => WordlistAdminComponent::className(),
+ *             'class' => WordlistComponent::className(),
  *             'wordModelClass' => BotRouteAlias::className(),
  *             'modelAttributes' => [
  *                 'command' => VotebanController::createRoute('index')
@@ -54,79 +54,81 @@ use yii\base\InvalidConfigException;
  * кнопок в InlineKeyboard). Если же данный параметр равен whitelist, то создается
  * экшен whitelist-word-list или whitelist-w-l при $short равном true
  * @property boolean $short - указывает применять ли сокращения для создаваемых
- * экшенов (подробнее в описнии $actionGroupName)
+ * экшенов (подробнее в описании $actionGroupName)
  */
-class WordlistAdminComponent extends \yii\base\Component
+class WordlistComponent extends \yii\base\Component
 {
     public $wordModelClass;
-    public $modelAttributes;
+    public $modelAttributes = [];
     public $actionGroupName;
     public $short = false;
+    public $viewButtons = [];
 
     public function actions()
     {
         if (!isset($this->wordModelClass)) {
-            throw new InvalidConfigException('Class ' . self::className() . ' require `wordModelClass` property to be set');
+            throw new InvalidConfigException('Class ' . self::class . ' require `wordModelClass` property to be set');
         }
         $prefix = isset($this->actionGroupName) ? $this->actionGroupName . '-' : '';
 
         $listActionId = $prefix . ($this->short ? 'w-l' : 'word-list');
         $viewActionId = $prefix . ($this->short ? 'w-v' : 'word-view');
         $enterActionId = $prefix . ($this->short ? 'w-e' : 'word-enter');
-        $deleteActionId = $prefix . ($this->short ? 'w-d' : 'word-delete');
         $insertActionId = $prefix . ($this->short ? 'w-i' : 'word-insert');
         $updateActionId = $prefix . ($this->short ? 'w-u' : 'word-update');
         $changeActionId = $prefix . ($this->short ? 'w-c' : 'word-change');
+        $deleteActionId = $prefix . ($this->short ? 'w-d' : 'word-delete');
 
         return [
             //список фраз
             $listActionId => [
-                'class' => ListAction::className(),
+                'class' => ListAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
                 'enterActionId' => $enterActionId,
-                'modelAttributes' => $this->modelAttributes
+                'modelAttributes' => $this->modelAttributes,
             ],
-            //форма отдельно взятой фразы с кнопками редактирования и удаления
+            //просмотр фразы с кнопками редактирования и удаления
             $viewActionId => [
-                'class' => ViewAction::className(),
+                'class' => ViewAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
                 'changeActionId' => $changeActionId,
                 'deleteActionId' => $deleteActionId,
+                'buttons' => $this->viewButtons,
             ],
             //форма запроса ввода новой фразы
             $enterActionId => [
-                'class' => EnterAction::className(),
+                'class' => EnterAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
                 'insertActionId' => $insertActionId,
             ],
-            //обработка введенной фразы
+            //сохранение новой фразы
             $insertActionId => [
-                'class' => InsertAction::className(),
+                'class' => InsertAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
-                'modelAttributes' => $this->modelAttributes
+                'modelAttributes' => $this->modelAttributes,
             ],
             //удаление фразы
             $deleteActionId => [
-                'class' => DeleteAction::className(),
+                'class' => DeleteAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
             ],
-            //окна запроса ввода фразы для изменения
+            //форма запроса ввода фразы для изменения
             $changeActionId => [
-                'class' => ChangeAction::className(),
+                'class' => ChangeAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'updateActionId' => $updateActionId,
                 'viewActionId' => $viewActionId,
             ],
             //сохранение фразы после изменения
             $updateActionId => [
-                'class' => UpdateAction::className(),
+                'class' => UpdateAction::class,
                 'wordModelClass' => $this->wordModelClass,
-                'viewActionId' => $viewActionId
+                'viewActionId' => $viewActionId,
             ]
         ];
     }

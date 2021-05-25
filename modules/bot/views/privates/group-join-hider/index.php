@@ -1,3 +1,3 @@
 <b><?= $chatTitle ?></b><br/>
 <br/>
-<?= Yii::t('bot', 'Join Hider') ?> - <?= Yii::t('bot', 'to automatic delete joining and leaving system messages in the group') ?>.
+<?= Yii::t('bot', 'Join Hider') ?> - <?= Yii::t('bot', 'deletes joining and leaving system messages in the group') ?>.
