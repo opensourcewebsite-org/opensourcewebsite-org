@@ -65,7 +65,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'name',
-                            'min_hourly_rate',
+                            'max_hourly_rate',
                             [
                                 'attribute' => 'currency_id',
                                 'value' => function($model) {
@@ -81,7 +81,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                                 'attribute' => 'gender_id',
                                 'value' => function($model) {
                                     /** @var Vacancy $model */
-                                    $model->gender->name;
+                                    return $model-> gender_id ? $model->gender->name : '';
                                 }
                             ],
                             [

@@ -4,10 +4,13 @@ use app\components\helpers\ArrayHelper;
 use app\models\Company;
 use app\models\Currency;
 use app\models\Gender;
+use app\models\Language;
+use app\models\LanguageLevel;
 use app\models\Vacancy;
 use app\widgets\buttons\CancelButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
 use app\widgets\KeywordsSelect\KeywordsSelect;
+use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
 use kartik\select2\Select2;
@@ -95,6 +98,15 @@ use yii\widgets\ActiveForm;
                                     ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
                                     ['prompt' => 'Select Gender..']
                                 ) ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= LanguagesWithLevelSelect::widget([
+                                    'formName' => 'LanguagesWithLevelsForm',
+                                    'languages' => ArrayHelper::map(Language::find()->asArray()->all(),'id','name_ascii'),
+                                    'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
+                                ]) ?>
                             </div>
                         </div>
                     </div>
