@@ -36,6 +36,8 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property int $created_at
  * @property int $processed_at
  *
+ * @property string $location
+ *
  * @property Company $company
  * @property Currency $currency
  * @property Gender $gender

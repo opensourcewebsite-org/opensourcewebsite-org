@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
 use app\models\Resume;
+use app\models\Vacancy;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
@@ -10,15 +11,15 @@ use yii\widgets\DetailView;
 use app\widgets\buttons\EditButton;
 
 /* @var $this View */
-/* @var $model Resume */
+/* @var $model Vacancy */
 
-$this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resume'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Vacancy') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancy'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
 
-    <div class="resume-view">
+    <div class="vacancy-view">
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -40,13 +41,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
 
                                             <a class="dropdown-item status-update <?= $model->isActive() ? 'active' : '' ?>"
                                                href="#"
-                                               data-value="<?= Resume::STATUS_ON ?>">
+                                               data-value="<?= Vacancy::STATUS_ON ?>">
                                                 <?= Yii::t('app', 'Active') ?>
                                             </a>
 
                                             <a class="dropdown-item status-update <?= $model->isActive() ? '' : 'active' ?>"
                                                href="#"
-                                               data-value="<?= Resume::STATUS_OFF ?>">
+                                               data-value="<?= Vacancy::STATUS_OFF ?>">
                                                 <?= Yii::t('app', 'Inactive') ?>
                                             </a>
                                         </div>
@@ -54,9 +55,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             </li>
                             <li class="nav-item align-self-center mr-3">
                                 <?= EditButton::widget([
-                                    'url' => ['resume/update', 'id' => $model->id],
+                                    'url' => ['vacancy/update', 'id' => $model->id],
                                     'options' => [
-                                        'title' => 'Edit Resume',
+                                        'title' => 'Edit Vacancy',
                                     ]
                                 ]); ?>
                             </li>
@@ -69,7 +70,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'attributes' => [
                                     'id',
                                     'name',
-                                    'min_hourly_rate:decimal',
+                                    'max_hourly_rate:decimal',
                                     [
                                         'attribute' => 'currency_id',
                                         'value' => $model->currency->name
@@ -79,14 +80,10 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'attribute' => 'location',
                                         'value' => function () use ($model) {
                                             return Html::a(
-                                                $model->location,
-                                                Url::to(['view-location', 'id' => $model->id]),
-                                                ['class' => 'modal-btn-ajax']
-                                                ) . (
-                                                    $model->search_radius ?
-                                                        ", Radius: $model->search_radius " . Yii::t('app', 'km')
-                                                        : ''
-                                                );
+                                                    $model->location,
+                                                    Url::to(['view-location', 'id' => $model->id]),
+                                                    ['class' => 'modal-btn-ajax']
+                                                ) ;
                                         },
                                         'format' => 'raw'
                                     ],
@@ -96,9 +93,21 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
                                         }
                                     ],
-                                    'experiences:ntext',
-                                    'expectations:ntext',
-                                    'skills:ntext',
+                                    'requirements:ntext',
+                                    'responsibilities:ntext',
+                                    'conditions:ntext',
+                                    [
+                                        'attribute' => 'company_id',
+                                        'value' => function() use ($model) {
+                                            return $model->company ? $model->company->name : '';
+                                        }
+                                    ],
+                                    [
+                                        'attribute' => 'gender_id',
+                                        'value' => function() use ($model) {
+                                            return $model->gender ? $model->gender->name : '';
+                                        }
+                                    ]
                                 ]
                             ]) ?>
                         </div>

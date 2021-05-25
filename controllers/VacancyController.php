@@ -58,9 +58,11 @@ class VacancyController extends Controller {
 
     }
 
-    public function actionView()
+    public function actionView(int $id)
     {
+        $model = $this->findModelByIdAndCurrentUser($id);
 
+        return $this->render('view', ['model' => $model]);
     }
 
     public function actionIndex(): string
@@ -104,6 +106,10 @@ class VacancyController extends Controller {
         return true;
     }
 
+    public function actionViewLocation(int $id): string
+    {
+        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+    }
 
     private function findModelByIdAndCurrentUser(int $id): Vacancy
     {

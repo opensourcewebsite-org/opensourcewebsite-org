@@ -3,6 +3,7 @@
 use app\components\helpers\ArrayHelper;
 use app\models\Company;
 use app\models\Currency;
+use app\models\Gender;
 use app\models\Vacancy;
 use app\widgets\buttons\CancelButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
@@ -85,6 +86,14 @@ use yii\widgets\ActiveForm;
                                     [
                                         'companies' => ArrayHelper::map($companies, 'id', 'name'),
                                     ]
+                                ) ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'gender_id')->dropDownList(
+                                    ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
+                                    ['prompt' => 'Select Gender..']
                                 ) ?>
                             </div>
                         </div>
