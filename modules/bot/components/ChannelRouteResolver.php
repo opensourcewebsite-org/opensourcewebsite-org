@@ -39,7 +39,7 @@ class ChannelRouteResolver extends Component
                 $commandText = SystemMessageController::createRoute('left-chat-member');
             }
         } else {
-            $requestMessage = $update->getChannelPost() ?? $this->getEditedChannelPost() ?? $update->getEditedMessage();
+            $requestMessage = $update->getChannelPost() ?? $update->getEditedChannelPost() ?? $update->getEditedMessage();
         }
 
         if (isset($requestMessage) && !isset($commandText)) {

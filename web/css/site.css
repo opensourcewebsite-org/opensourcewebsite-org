@@ -198,6 +198,17 @@ a.desc:after {
     border: none;
     cursor: pointer;
 }
+.select2-selection__choice {
+    color: white !important;
+}
+
+.table-striped tbody tr:nth-of-type(2n+1) {
+    background-color: white ;
+}
+
+.table-striped tbody tr:hover, .table-striped tbody tr:focus {
+    background-color: rgba(0,0,0,.05) !important;
+}
 
 /* Language menu */
 
