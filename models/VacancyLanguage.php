@@ -10,6 +10,11 @@ use yii\db\ActiveRecord;
  * Class VacancyLanguage
  *
  * @package app\models
+ *
+ * @property int $id
+ * @property int $vacancy_id
+ * @property int $language_id
+ * @property int $language_level_id
  */
 class VacancyLanguage extends ActiveRecord
 {

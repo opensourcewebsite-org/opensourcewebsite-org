@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\JobVacancyKeyword;
 use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
+use app\models\scenarios\Vacancy\UpdateLanguagesScenario;
 use Yii;
 use app\models\Currency;
 use app\models\scenarios\Vacancy\SetActiveScenario;
@@ -42,16 +44,23 @@ class VacancyController extends Controller {
 
         $model->user_id = $user->id;
         $model->currency_id = $user->currency_id;
+        $languageWithLevelsForm = new LanguageWithLevelsForm(['required' => true]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
+
+            if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
+                var_dump($languageWithLevelsForm); die();
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
             'currencies' => Currency::find()->all(),
-            'companies' => $model->globalUser->getCompanies()->all()
+            'companies' => $model->globalUser->getCompanies()->all(),
+            'languageWithLevelsForm' => $languageWithLevelsForm
         ]);
     }
 
@@ -59,15 +68,25 @@ class VacancyController extends Controller {
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
+        $languageWithLevelsForm = new LanguageWithLevelsForm();
+        $languageWithLevelsForm->setSelectedLanguages($model->languagesWithLevels);
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
+            if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
+
+                (new UpdateLanguagesScenario($model, $languageWithLevelsForm))->run();
+
+            }
+
             return $this->redirect(['view', 'id' => $id]);
         }
 
         return $this->render('update', [
             'model' => $model,
             'currencies' => Currency::find()->all(),
-            'companies' => $model->globalUser->getCompanies()->all()
+            'companies' => $model->globalUser->getCompanies()->all(),
+            'languageWithLevelsForm' => $languageWithLevelsForm
         ]);
     }
 

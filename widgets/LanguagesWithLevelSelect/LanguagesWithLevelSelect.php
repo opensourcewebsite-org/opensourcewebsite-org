@@ -1,6 +1,7 @@
 <?php
 namespace app\widgets\LanguagesWithLevelSelect;
 
+use yii\base\Model;
 use yii\bootstrap4\Widget;
 
 class LanguagesWithLevelSelect extends Widget {
@@ -10,6 +11,8 @@ class LanguagesWithLevelSelect extends Widget {
     public string $languageLevelFieldName = 'language_level_id';
 
     public string $formName = '';
+
+    public ?Model $model = null;
 
     public string $label = 'Language';
 
@@ -22,9 +25,12 @@ class LanguagesWithLevelSelect extends Widget {
     public function init()
     {
         $this->id = $this->getId();
+        if ($this->model) {
+            $this->formName = $this->model->formName();
+        }
         if ($this->formName) {
             $this->languageFieldName = "{$this->formName}[{$this->languageFieldName}]";
-            $this->languageLevelFieldName = "{$this->formName}[$this->languageLevelFieldName}]";
+            $this->languageLevelFieldName = "{$this->formName}[{$this->languageLevelFieldName}]";
         }
         $this->languageFieldName .= "[]";
         $this->languageLevelFieldName .= "[]";
@@ -36,6 +42,7 @@ class LanguagesWithLevelSelect extends Widget {
         return $this->render('view', [
             'languageFieldName' => $this->languageFieldName,
             'languageLevelFieldName' => $this->languageLevelFieldName,
+            'model' => $this->model,
             'label' => $this->label,
             'id' => $this->id,
             'languages' => $this->languages,

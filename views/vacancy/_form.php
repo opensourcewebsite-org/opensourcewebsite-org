@@ -3,6 +3,7 @@
 use app\components\helpers\ArrayHelper;
 use app\models\Company;
 use app\models\Currency;
+use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\Gender;
 use app\models\Language;
 use app\models\LanguageLevel;
@@ -20,6 +21,7 @@ use yii\widgets\ActiveForm;
 /**
  * @var View $this
  * @var Vacancy $model
+ * @var LanguageWithLevelsForm $languageWithLevelsForm
  * @var Currency[] $currencies
  * @var Company[] $companies
  */
@@ -103,7 +105,7 @@ use yii\widgets\ActiveForm;
                         <div class="row">
                             <div class="col">
                                 <?= LanguagesWithLevelSelect::widget([
-                                    'formName' => 'LanguagesWithLevelsForm',
+                                    'model' => $languageWithLevelsForm,
                                     'languages' => ArrayHelper::map(Language::find()->asArray()->all(),'id','name_ascii'),
                                     'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
                                 ]) ?>

@@ -44,7 +44,7 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property Resume[] $matches
  * @property Resume[] $matchedResumes
  * @property Resume[] $counterMatches
- * @property VacancyLanguage[] $vacancyLanguagesWithLevels
+ * @property VacancyLanguage[] $languagesWithLevels
  * @property User $globalUser
  * @property JobKeyword[] $keywords
  *

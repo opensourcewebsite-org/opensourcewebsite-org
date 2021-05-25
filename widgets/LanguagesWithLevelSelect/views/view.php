@@ -1,8 +1,7 @@
 <?php
 
-use yii\bootstrap4\Html;
 use yii\web\View;
-
+use app\models\FormModels\LanguageWithLevelsForm;
 
 /**
  * @var View $this
@@ -12,34 +11,16 @@ use yii\web\View;
  * @var string $id
  * @var array $languages
  * @var array $languageLevels
+ * @var array $_params_
+ * @var LanguageWithLevelsForm $model
  */
 $templateId = "{$id}-row-template";
 ?>
 <template id="<?=$templateId?>">
-    <div class="row mb-2">
-        <div class="col d-flex">
-            <div class="col">
-                <?= Html::dropDownList(
-                    $languageFieldName, '', $languages,
-                    [
-                        'prompt' => Yii::t('app', 'Select Language...'),
-                        'class' => ['form-control']
-                    ]
-                )?>
-            </div>
-            <div class="col">
-                <?= Html::dropDownList($languageLevelFieldName, '', $languageLevels,
-                    [
-                        'prompt' => Yii::t('app', 'Select Language Level...'),
-                        'class' => ['form-control']
-                    ]
-                ) ?>
-            </div>
-        </div>
-        <div class="col flex-grow-0">
-            <button type="button" class="btn btn-outline-danger remove-row-btn"><i class="fa fa-minus"></i></button>
-        </div>
-    </div>
+    <?= $this->render('_row', array_merge($_params_, [
+        'selectedLanguage' => '',
+        'selectedLanguageLevel' => '',
+    ])) ?>
 </template>
 <label><?= $label ?></label>
 <div class="card" id="<?= $id ?>">
@@ -51,21 +32,36 @@ $templateId = "{$id}-row-template";
         </div>
     </div>
     <div class="card-body">
-
+        <?php if ($model && $model->language_id): ?>
+            <?php foreach($model->language_id as $key => $langId): ?>
+                <?= $this->render('_row', array_merge($_params_, [
+                    'selectedLanguage' => $langId,
+                    'selectedLanguageLevel' => $model->language_level_id[$key],
+                ])) ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <?= $this->render('_row', array_merge($_params_, [
+                'selectedLanguage' => '',
+                'selectedLanguageLevel' => '',
+            ])) ?>
+        <?php endif; ?>
     </div>
 </div>
 <?php
 $js = <<<JS
+const template = $('#{$templateId}');
+const mainNode = $('#{$id} .card-body');
+
 $(document).on('click', '.add-row-btn', function () {
-    const template = $('#{$templateId}');
-    const mainNode = $('#{$id} .card-body');
-    console.log(mainNode);
     mainNode.append(template.contents().clone());
 })
 
 $(document).on('click', '.remove-row-btn', function() {
-    $(this).parent().parent().remove();
+    if (mainNode.find('.language-row').length > 1) {
+        $(this).parent().parent().remove();
+    }
 })
+
 JS;
 $this->registerJs($js);
 
