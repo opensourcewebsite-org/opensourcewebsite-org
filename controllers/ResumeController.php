@@ -5,7 +5,7 @@ namespace app\controllers;
 
 use app\models\Currency;
 use app\models\Resume;
-use app\models\scenarios\JobKeywords\UpdateKeywordsByIdsScenario;
+use app\models\scenarios\Resume\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Resume\SetActiveScenario;
 use app\models\search\ResumeSearch;
 use app\models\User;

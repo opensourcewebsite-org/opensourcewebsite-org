@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\JobVacancyKeyword;
+use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
 use Yii;
 use app\models\Currency;
 use app\models\scenarios\Vacancy\SetActiveScenario;
@@ -42,7 +44,7 @@ class VacancyController extends Controller {
         $model->currency_id = $user->currency_id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
+            (new UpdateKeywordsByIdsScenario($model))->run();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -53,9 +55,20 @@ class VacancyController extends Controller {
         ]);
     }
 
-    public function actionUpdate()
+    public function actionUpdate(int $id)
     {
+        $model = $this->findModelByIdAndCurrentUser($id);
 
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model))->run();
+            return $this->redirect(['view', 'id' => $id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+            'currencies' => Currency::find()->all(),
+            'companies' => $model->globalUser->getCompanies()->all()
+        ]);
     }
 
     public function actionView(int $id)
