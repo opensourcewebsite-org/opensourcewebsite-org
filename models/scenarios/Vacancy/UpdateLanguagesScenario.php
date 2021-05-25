@@ -25,8 +25,8 @@ class UpdateLanguagesScenario {
         $currentLanguages = $this->model->getLanguagesWithLevels()->asArray()->all();
         $currentLanguagesMapped = ArrayHelper::map($currentLanguages, 'language_id', 'language_level_id');
         $newLanguagesMapped = $this->prepareLangAndLevel();
-        $toDelete = array_diff($currentLanguagesMapped, $newLanguagesMapped);
-        $toAdd = array_diff($newLanguagesMapped, $currentLanguagesMapped);
+        $toDelete = array_diff_key($currentLanguagesMapped, $newLanguagesMapped);
+        $toAdd = array_diff_key($newLanguagesMapped, $currentLanguagesMapped);
         $sameIds = array_intersect_key($currentLanguagesMapped, $newLanguagesMapped);
         $toChange = [];
         foreach ($sameIds as $id => $langLevel) {
@@ -34,8 +34,9 @@ class UpdateLanguagesScenario {
                 $toChange[$id] = $newLanguagesMapped[$id];
             }
         }
+        var_dump($toDelete);
         if ($toDelete) {
-            VacancyLanguage::deleteAll(['vacancy_id' => $this->model->id, ['in', 'language_id', array_keys($toDelete)]]);
+            VacancyLanguage::deleteAll(['vacancy_id' => $this->model->id, 'language_id' => array_keys($toDelete)]);
         }
         foreach ($toAdd as $langId => $langLevelId) {
             (new VacancyLanguage([
