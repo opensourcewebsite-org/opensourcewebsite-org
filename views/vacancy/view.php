@@ -107,6 +107,16 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'value' => function() use ($model) {
                                             return $model->gender ? $model->gender->name : '';
                                         }
+                                    ],
+                                    [
+                                        'label' => 'Language',
+                                        'value' => function() use ($model) {
+                                            $ret = [];
+                                            foreach($model->languagesWithLevels as $languagesWithLevel) {
+                                                $ret[] = $languagesWithLevel->label;
+                                            }
+                                            return implode(', ', $ret);
+                                        }
                                     ]
                                 ]
                             ]) ?>
