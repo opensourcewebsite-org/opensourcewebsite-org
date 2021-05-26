@@ -137,12 +137,14 @@ class WordlistComponent extends \yii\base\Component
                 'class' => ChangeFieldAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
+                'buttons' => $this->buttons,
             ],
             //сохранение фразы после изменения поля
             $updateFieldActionId => [
                 'class' => UpdateFieldAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
+                'buttons' => $this->buttons,
             ],
         ];
     }

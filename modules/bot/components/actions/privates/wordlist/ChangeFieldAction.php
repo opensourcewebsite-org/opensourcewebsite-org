@@ -10,6 +10,11 @@ class ChangeFieldAction extends BaseAction
 {
     public function run($phraseId = null, $field = null)
     {
+        // check allowed fields
+        if (($key = array_search($field, array_column($this->buttons, 'field'))) === false) {
+            return [];
+        }
+
         $this->getState()->setName($this->createRoute($this->updateFieldActionId, [
             'phraseId' => $phraseId,
             'field' => $field,
