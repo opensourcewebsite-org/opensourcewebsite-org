@@ -17,6 +17,8 @@ abstract class BaseAction extends Action
     public $changeActionId = 'w-c';
     public $updateActionId = 'w-u';
     public $deleteActionId = 'w-d';
+    public $changeFieldActionId = 'w-c-f';
+    public $updateFieldActionId = 'w-u-f';
     public $buttons = [];
 
     /**

@@ -29,6 +29,9 @@ class EnterAction extends BaseAction
                             'text' => Emoji::BACK,
                         ],
                     ],
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();

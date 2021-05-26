@@ -26,6 +26,12 @@ class GroupFaqController extends Controller
             Yii::createObject([
                 'class' => WordlistComponent::class,
                 'wordModelClass' => BotChatFaqQuestion::class,
+                'buttons' => [
+                    [
+                        'field' => 'answer',
+                        'text' => Yii::t('bot', 'Answer'),
+                    ],
+                ]
             ])->actions()
         );
     }
@@ -102,67 +108,5 @@ class GroupFaqController extends Controller
         $statusSetting->save();
 
         return $this->actionIndex($chatId);
-    }
-
-    public function actionSetAnswer($chatId = null)
-    {
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat)) {
-            return [];
-        }
-
-        $this->getState()->setName(self::createRoute('save-message', [
-                'chatId' => $chatId,
-            ]));
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('set-answer-message'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
-                            ]),
-                            'text' => Emoji::BACK,
-                        ],
-                    ]
-                ],
-                [
-                    'disablePreview' => true,
-                ]
-            )
-            ->build();
-    }
-
-    public function actionSaveAnswer($chatId = null)
-    {
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat)) {
-            return [];
-        }
-
-        $text = $this->getUpdate()->getMessage()->getText();
-        $text = strip_tags($text);
-        // TODO Convert markdown to html tags
-        $textLenght = strlen($text);
-
-        if (!(($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX))) {
-            return $this->getResponseBuilder()
-                ->deleteMessage()
-                ->build();
-        }
-
-        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
-        $messageSetting->value = $text;
-        $messageSetting->save();
-
-        $this->getState()->setName(null);
-
-        return $this->runAction('index', [
-            'chatId' => $chatId,
-        ]);
     }
 }

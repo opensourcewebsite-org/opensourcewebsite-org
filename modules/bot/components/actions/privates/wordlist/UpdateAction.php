@@ -21,7 +21,9 @@ class UpdateAction extends BaseAction
 
             $phrase->save();
 
-            return $this->controller->run($this->viewActionId, ['phraseId' => $phraseId]);
+            return $this->controller->run($this->viewActionId, [
+                'phraseId' => $phraseId,
+            ]);
         }
     }
 }

@@ -6,17 +6,18 @@ use app\modules\bot\components\actions\BaseAction;
 use app\modules\bot\models\Chat;
 use app\modules\bot\components\helpers\Emoji;
 
-class ChangeAction extends BaseAction
+class ChangeFieldAction extends BaseAction
 {
-    public function run($phraseId = null)
+    public function run($phraseId = null, $field = null)
     {
-        $this->getState()->setName($this->createRoute($this->updateActionId, [
+        $this->getState()->setName($this->createRoute($this->updateFieldActionId, [
             'phraseId' => $phraseId,
+            'field' => $field,
         ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render($this->id),
+                $this->render('set-' . $field),
                 [
                     [
                         [

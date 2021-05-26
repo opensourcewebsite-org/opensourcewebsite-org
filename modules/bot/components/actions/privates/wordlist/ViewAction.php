@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components\actions\privates\wordlist;
 
+use Yii;
 use app\modules\bot\components\actions\BaseAction;
 use app\modules\bot\models\Chat;
 use app\modules\bot\components\helpers\Emoji;
@@ -17,7 +18,21 @@ class ViewAction extends BaseAction
 
         $phrase = $this->wordModelClass::findOne($phraseId);
 
-        $buttons = $this->buttons;
+        $buttons = [];
+
+        if ($this->buttons) {
+            foreach ($this->buttons as $button) {
+                $buttons[] = [
+                    [
+                        'callback_data' => self::createRoute($this->changeFieldActionId, [
+                            'phraseId' => $phraseId,
+                            'field' => $button['field'],
+                        ]),
+                        'text' => $button['text'],
+                    ],
+                ];
+            }
+        }
 
         $buttons[] = [
             [
