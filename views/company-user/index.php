@@ -9,6 +9,7 @@ use app\models\search\ResumeSearch;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
 use yii\grid\GridView;
@@ -46,15 +47,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
+                            'company.id',
                             'company.name',
                             'company.url:url',
                             'company.address',
-                            /*[
-                                'attribute' => 'user_role',
-                                'value' => function (CompanyUser $model){
-                                    return $model->getRoleName();
+                            [
+                                'label' => Yii::t('app','Vacancies'),
+                                'content' => function (CompanyUser $model) {
+                                    if ( ($vacanciesNum = $model->company->getVacancies()->count()) > 0) {
+                                        return Html::a(
+                                            (string)$vacanciesNum,
+                                            Url::to([
+                                                '/vacancy/index',
+                                                'VacancySearch[company_id]' => (string)$model->company_id
+                                            ])
+                                        );
+                                    }
                                 }
-                            ],*/
+                            ],
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',

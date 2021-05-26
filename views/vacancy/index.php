@@ -64,6 +64,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
+                            'id',
                             'name',
                             'max_hourly_rate',
                             [

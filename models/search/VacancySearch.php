@@ -68,7 +68,8 @@ class VacancySearch extends Vacancy {
             ->andFilterWhere(['currency_id' => $this->currency_id])
             ->andFilterWhere(['like', 'conditions', $this->conditions])
             ->andFilterWhere(['like', 'responsibilities', $this->responsibilities])
-            ->andFilterWhere(['gender_id' => $this->gender_id]);
+            ->andFilterWhere(['gender_id' => $this->gender_id])
+            ->andFilterWhere(['company_id' => $this->company_id]);
 
         return $dataProvider;
     }

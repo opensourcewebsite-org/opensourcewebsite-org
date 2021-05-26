@@ -69,7 +69,6 @@ class CompanyUserController extends Controller
             }
             $transaction->commit();
 
-            Yii::$app->session->setFlash('success', 'Saved Successfully');
             return $this->redirect(['view', 'id' => $companyUserModel->id]);
         }
 
@@ -118,7 +117,6 @@ class CompanyUserController extends Controller
             && $companyModel->load(Yii::$app->request->post())
             && $companyModel->save()) {
 
-            Yii::$app->session->setFlash('success', 'Saved Successfully');
             return $this->redirect(['view', 'id' => $companyUserModel->id]);
         }
 
