@@ -5,6 +5,7 @@ namespace app\controllers;
 
 use app\models\Company;
 use app\models\CompanyUser;
+use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
 use app\models\search\CompanyUserSearch;
 use app\models\User;
 use Yii;
@@ -30,6 +31,12 @@ class CompanyUserController extends Controller
                     ],
                 ],
             ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ]
         ];
     }
 
@@ -63,10 +70,10 @@ class CompanyUserController extends Controller
             $transaction->commit();
 
             Yii::$app->session->setFlash('success', 'Saved Successfully');
-            return $this->goBack();
+            return $this->redirect(['view', 'id' => $companyUserModel->id]);
         }
 
-        return $this->renderAjax('createAjax', [
+        return $this->render('create', [
                 'companyModel' => $companyModel,
                 'companyUserModel' => $companyUserModel
             ]);
@@ -112,10 +119,10 @@ class CompanyUserController extends Controller
             && $companyModel->save()) {
 
             Yii::$app->session->setFlash('success', 'Saved Successfully');
-            return $this->goBack();
+            return $this->redirect(['view', 'id' => $companyUserModel->id]);
         }
 
-        return $this->renderAjax('updateAjax', [
+        return $this->render('update', [
                 'companyModel' => $companyModel,
                 'companyUserModel' => $companyUserModel
             ]);
@@ -132,6 +139,27 @@ class CompanyUserController extends Controller
         return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
     }
 
+    public function actionView(int $id): string
+    {
+        return $this->render('view', [
+            'model' => $this->findCompanyUserModelById($id),
+        ]);
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $companyUserModel = $this->findCompanyUserModelById($id);
+
+        $scenario = new DeleteCompanyScenario($companyUserModel);
+
+        if ($scenario->run()) {
+            Yii::$app->session->setFlash('success', Yii::t('app','Company Deleted'));
+            return $this->redirect('/company-user/index');
+        }
+
+        Yii::$app->session->setFlash('danger', Yii::t('app', $scenario->getFirstError()));
+        return $this->redirect(['/company-user/update', 'id' => $companyUserModel->id]);
+    }
 
     private function findCompanyUserModelById(int $id): CompanyUser
     {

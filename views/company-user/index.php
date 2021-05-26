@@ -34,7 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'url' => ['company-user/create'],
                                 'options' => [
                                     'title' => 'New Company',
-                                    'class' => [ 'btn', 'btn-outline-success', 'modal-btn-ajax']
                                 ]
                             ]); ?>
                         </li>
@@ -58,14 +57,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],*/
                             [
                                 'class' => ActionColumn::class,
-                                'template' => '{view}{update}{delete}',
+                                'template' => '{view}',
                                 'buttons' => [
-                                    'update' => function ($url, $model) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-pen', 'data-toggle' => 'tooltip', 'title' => 'Update']);
-                                        return $model->isOwner() ? Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1 modal-btn-ajax']) : '';
+                                    'view' => function ($url) {
+                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
+                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
                                     },
-                                    'delete'
-                                ],
+                                ]
                             ],
                         ],
 
