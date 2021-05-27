@@ -73,7 +73,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                 'attribute' => 'currency_id',
                                 'value' => function($model) {
                                     /* @var $model Resume */
-                                    return $model->currency->name;
+                                    return $model->currency->code . ' - ' . $model->currency->name;
                                 },
                                 'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name')
                             ],

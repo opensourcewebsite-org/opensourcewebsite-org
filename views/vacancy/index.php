@@ -71,7 +71,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                                 'attribute' => 'currency_id',
                                 'value' => function($model) {
                                     /* @var $model Vacancy */
-                                    return $model->currency->name;
+                                    return $model->currency->code . ' - ' . $model->currency->name;
                                 },
                                 'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name')
                             ],

@@ -81,7 +81,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'min_hourly_rate:decimal',
                                     [
                                         'attribute' => 'currency_id',
-                                        'value' => $model->currency->name
+                                        'value' => $model->currency->code . ' - ' . $model->currency->name
                                     ],
                                     'remote_on:boolean',
                                     [

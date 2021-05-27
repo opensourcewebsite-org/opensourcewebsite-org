@@ -189,7 +189,7 @@ $this->title = Yii::t('app', 'Account');
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
-                                        <?= Yii::t('app', $model->currency->name ?? ''); ?>
+                                        <?= $model->currency ? ( $model->currency->code . ' - ' . $model->currency->name ) : ''?>
                                     </td>
                                     <td>
                                         <?= EditButton::widget([
