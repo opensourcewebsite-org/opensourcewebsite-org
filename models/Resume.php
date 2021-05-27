@@ -54,7 +54,7 @@ class Resume extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
-    public array $keywordsFromForm = [];
+    public $keywordsFromForm = [];
 
     public static function tableName(): string
     {
@@ -119,6 +119,14 @@ class Resume extends ActiveRecord
                 ],
                 'string',
                 'max' => 255,
+            ],
+            [
+                'keywordsFromForm', 'filter', 'filter' => function($val) {
+                if ($val === '')  {
+                    return [];
+                }
+                return $val;
+            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']
