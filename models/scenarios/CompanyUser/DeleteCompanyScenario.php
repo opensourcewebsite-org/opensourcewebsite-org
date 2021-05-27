@@ -9,24 +9,25 @@ use app\models\Vacancy;
 
 class DeleteCompanyScenario {
 
-    private CompanyUser $companyUserModel;
+    private Company $companyModel;
     private array $errors = [];
 
-    public function __construct(CompanyUser $companyUserModel) {
-        $this->companyUserModel = $companyUserModel;
+    public function __construct(Company $companyModel) {
+        $this->companyModel = $companyModel;
     }
 
     public function run(): bool
     {
-        $numOfVacanciesOfCompany = Vacancy::find()->where(['company_id' => $this->companyUserModel->company_id])->count();
+        $numOfVacanciesOfCompany = Vacancy::find()->where(['company_id' => $this->companyModel->id])->count();
 
         if ($numOfVacanciesOfCompany > 0) {
-            $this->errors[] = "Can't delete company, because company have open Vacancies. Delete Vacancies first!";
+            $this->errors[] = "Can't delete company, because Company have open Vacancies. Delete Vacancies first!";
             return false;
         }
 
-        $this->companyUserModel->delete();
-        $this->companyUserModel->company->delete();
+        CompanyUser::deleteAll(['company_id' => $this->companyModel->id]);
+
+        $this->companyModel->delete();
 
         return true;
     }

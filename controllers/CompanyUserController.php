@@ -148,7 +148,7 @@ class CompanyUserController extends Controller
     {
         $companyUserModel = $this->findCompanyUserModelById($id);
 
-        $scenario = new DeleteCompanyScenario($companyUserModel);
+        $scenario = new DeleteCompanyScenario($companyUserModel->company);
 
         if ($scenario->run()) {
             Yii::$app->session->setFlash('success', Yii::t('app','Company Deleted'));
