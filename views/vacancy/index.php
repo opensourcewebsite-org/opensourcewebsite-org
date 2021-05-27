@@ -31,7 +31,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item mx-1">
                             <?= Html::a(Yii::t('app', 'Active'),
-                                ['/resume/index', 'ResumeSearch[status]' => VacancySearch::STATUS_ON],
+                                ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_ON],
                                 [
                                     'class' => 'nav-link show ' .
                                         ($displayActiveOrders ? 'active' : '')
@@ -40,7 +40,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         </li>
                         <li class="nav-item  mx-1">
                             <?= Html::a(Yii::t('app', 'Inactive'),
-                                ['/resume/index', 'ResumeSearch[status]' => VacancySearch::STATUS_OFF],
+                                ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_OFF],
                                 [
                                     'class' => 'nav-link show ' .
                                         ($displayActiveOrders ? '' : 'active')
@@ -49,7 +49,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         </li>
                         <li class="nav-item align-self-center mr-4  mx-1">
                             <?= AddButton::widget([
-                                'url' => ['vacancy/create'],
+                                'url' => ['create'],
                                 'options' => [
                                     'title' => 'New Vacancy',
                                 ]
@@ -79,13 +79,6 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                                 'label' => 'offers'
                             ],
                             [
-                                'attribute' => 'gender_id',
-                                'value' => function($model) {
-                                    /** @var Vacancy $model */
-                                    return $model-> gender_id ? $model->gender->name : '';
-                                }
-                            ],
-                            [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
@@ -93,11 +86,6 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
                                     },
-                                    'update' => function ($url) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-pen', 'data-toggle' => 'tooltip', 'title' => 'Update']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
-                                    },
-                                    'delete'
                                 ],
                             ],
                         ],

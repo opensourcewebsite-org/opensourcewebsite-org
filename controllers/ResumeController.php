@@ -44,7 +44,7 @@ class ResumeController extends Controller
 
     public function actionIndex(): string
     {
-        $searchModel = new ResumeSearch();
+        $searchModel = new ResumeSearch(['status' => Resume::STATUS_ON]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider]);

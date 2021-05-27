@@ -119,7 +119,7 @@ class VacancyController extends Controller {
     public function actionIndex(): string
     {
 
-        $searchModel = new VacancySearch();
+        $searchModel = new VacancySearch(['status' => Vacancy::STATUS_ON]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
