@@ -16,6 +16,7 @@ use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -111,7 +112,7 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
-                        <?= CancelButton::widget(['url' => '/vacancy']); ?>
+                        <?= CancelButton::widget(['url' => Url::to(['/vacancy/view', 'id' => $model->id])]); ?>
                         <?php if (!$model->isNewRecord): ?>
                             <?= DeleteButton::widget([
                                 'url' => ['delete', 'id' => $model->id],

@@ -151,11 +151,11 @@ class CompanyUserController extends Controller
         $scenario = new DeleteCompanyScenario($companyUserModel->company);
 
         if ($scenario->run()) {
-            Yii::$app->session->setFlash('success', Yii::t('app','Company Deleted'));
             return $this->redirect('/company-user/index');
         }
 
         Yii::$app->session->setFlash('danger', Yii::t('app', $scenario->getFirstError()));
+
         return $this->redirect(['/company-user/update', 'id' => $companyUserModel->id]);
     }
 

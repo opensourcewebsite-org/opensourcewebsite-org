@@ -86,6 +86,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'remote_on:boolean',
                                     [
                                         'attribute' => 'location',
+                                        'visible' => !$model->isRemote(),
                                         'value' => function () use ($model) {
                                             return Html::a(
                                                 $model->location,

@@ -10,9 +10,9 @@ use app\widgets\buttons\EditButton;
 /* @var View $this */
 /* @var CompanyUser $model */
 
-$this->title = Yii::t('app', 'Company') . ' #' . $model->id;
+$this->title = Yii::t('app', 'Company') . ' #' . $model->company->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Companies'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = '#' . $model->id;
+$this->params['breadcrumbs'][] = '#' . $model->company->id;
 
 ?>
 

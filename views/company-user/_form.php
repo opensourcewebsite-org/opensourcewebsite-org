@@ -2,6 +2,7 @@
 
 use app\models\Company;
 use app\widgets\buttons\DeleteButton;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 use app\models\CompanyUser;
@@ -44,7 +45,7 @@ use app\widgets\buttons\CancelButton;
                 </div>
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
-                    <?= CancelButton::widget(['url' => '/company-user']); ?>
+                    <?= CancelButton::widget(['url' => Url::to(['/company-user/view', 'id' =>$companyUserModel->id])]); ?>
                     <?php if (!$companyUserModel->isNewRecord): ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $companyUserModel->id],

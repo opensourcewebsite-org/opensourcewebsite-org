@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-body p-0">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
+                        //'filterModel' => $searchModel,
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
