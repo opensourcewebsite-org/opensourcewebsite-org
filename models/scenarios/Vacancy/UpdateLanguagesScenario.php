@@ -34,10 +34,11 @@ class UpdateLanguagesScenario {
                 $toChange[$id] = $newLanguagesMapped[$id];
             }
         }
-        var_dump($toDelete);
+
         if ($toDelete) {
             VacancyLanguage::deleteAll(['vacancy_id' => $this->model->id, 'language_id' => array_keys($toDelete)]);
         }
+
         foreach ($toAdd as $langId => $langLevelId) {
             (new VacancyLanguage([
                 'vacancy_id' => $this->model->id,
@@ -45,6 +46,7 @@ class UpdateLanguagesScenario {
                 'language_level_id' => $langLevelId
             ]))->save();
         }
+
         foreach ($toChange as $langId => $langLevelId) {
 
             /** @var VacancyLanguage $vacancyLanguage */
