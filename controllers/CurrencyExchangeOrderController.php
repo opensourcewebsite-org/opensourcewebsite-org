@@ -107,7 +107,6 @@ class CurrencyExchangeOrderController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'currencies' => Currency::find()->all(),
         ]);
     }
 
@@ -128,7 +127,6 @@ class CurrencyExchangeOrderController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'currencies' => Currency::find()->all(),
         ]);
     }
 

@@ -2,6 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
+use app\modules\bot\components\helpers\MessageText;
 use Yii;
 use app\modules\bot\components\crud\CrudController;
 use app\models\Company;
@@ -198,6 +200,7 @@ class SJobCompanyController extends CrudController
     {
         $user = $this->getUser();
 
+        /** @var Company $company */
         $company = $user->getCompanies()
             ->where([
                 'id' => $id,
@@ -210,7 +213,13 @@ class SJobCompanyController extends CrudController
                 ->build();
         }
 
-        $company->delete();
+        $deleteScenario = new DeleteCompanyScenario($company);
+
+        if (!$deleteScenario->run()) {
+            return $this->getResponseBuilder()->sendMessage(
+                new MessageText($deleteScenario->getFirstError())
+            );
+        }
 
         return $this->actionIndex();
     }

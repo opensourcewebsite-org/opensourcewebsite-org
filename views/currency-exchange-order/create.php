@@ -6,7 +6,6 @@ use app\models\PaymentMethod;
 
 /* @var yii\web\View $this */
 /* @var CurrencyExchangeOrder $model  */
-/* @var Currency[] $currencies */
 /* @var array $_params_ */
 
 $this->title = Yii::t('app', 'Create Order');

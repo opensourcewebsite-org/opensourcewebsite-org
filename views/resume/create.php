@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resume'), 'url' => [
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="currency-exchange-order-create">
+<div class="resume-create">
 
     <?= $this->render('_form', [
         'model' => $model,

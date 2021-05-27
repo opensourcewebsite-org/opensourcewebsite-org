@@ -14,6 +14,6 @@ use app\modules\bot\components\helpers\Emoji;
 <br/>
 <?php endif; ?>
 <?php if ($model->url) : ?>
-<b><?= Yii::t('bot', 'Website') ?>:</b> <?= $model->getUrl() ?><br/>
+<b><?= Yii::t('bot', 'Website') ?>:</b> <?= $model->url ?><br/>
 <br/>
 <?php endif; ?>

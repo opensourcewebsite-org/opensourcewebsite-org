@@ -20,7 +20,6 @@ use app\assets\LeafletLocateControlAsset;
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $currencies Currency[] */
 /* @var $cashPaymentMethod PaymentMethod */
 
 LeafletLocateControlAsset::register($this);
@@ -38,7 +37,6 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                 [
                                     'form' => $form,
                                     'model' => $model,
-                                    'currencies' => $currencies
                                 ]
                             ) ?>
                         <?php else: ?>
