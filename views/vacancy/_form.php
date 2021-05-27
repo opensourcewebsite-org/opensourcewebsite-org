@@ -10,11 +10,11 @@ use app\models\LanguageLevel;
 use app\models\Vacancy;
 use app\widgets\buttons\CancelButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
+use app\widgets\CurrencySelect\CurrencySelect;
 use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
-use kartik\select2\Select2;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -66,12 +66,7 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'currency_id')->widget(Select2::class, [
-                                    'data' => ArrayHelper::map($currencies, 'id', 'name'),
-                                    'options' => [
-                                        'prompt' => '',
-                                    ],
-                                ]); ?>
+                                <?= $form->field($model, 'currency_id')->widget(CurrencySelect::class); ?>
                             </div>
                         </div>
                         <div class="row">

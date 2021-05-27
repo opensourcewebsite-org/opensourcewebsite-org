@@ -2,7 +2,6 @@
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CurrencyExchangeOrder */
-/* @var $currencies Currency[] */
 /* @var array $_params_ */
 
 use app\models\Currency;
