@@ -66,6 +66,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
+                            'id',
                             'name',
                             'min_hourly_rate',
                             [
