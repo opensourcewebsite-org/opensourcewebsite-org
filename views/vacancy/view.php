@@ -126,11 +126,46 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
-
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('app', 'Languages') ?></h3>
+                    <div class="card-tools">
+                        <?= EditButton::widget([
+                            'url' => ['vacancy/update-languages', 'id' => $model->id],
+                            'ajax' => true,
+                            'options' => [
+                                'title' => 'Update Languages',
+                            ]
+                        ]); ?>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered detail-view mb-0">
+                            <tbody>
+                                <?php foreach($model->languagesWithLevels as $languagesWithLevel): ?>
+                                    <tr>
+                                        <td>
+                                            <strong><?= $languagesWithLevel->language->name ?></strong>
+                                        </td>
+                                        <td>
+                                            <?= $languagesWithLevel->level->description ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <?php
-$statusActiveUrl = Yii::$app->urlManager->createUrl(['resume/set-active?id=' . $model->id]);
-$statusInactiveUrl = Yii::$app->urlManager->createUrl(['resume/set-inactive?id=' . $model->id]);
+$statusActiveUrl = Yii::$app->urlManager->createUrl(['vacancy/set-active?id=' . $model->id]);
+$statusInactiveUrl = Yii::$app->urlManager->createUrl(['vacancy/set-inactive?id=' . $model->id]);
 
 $script = <<<JS
 

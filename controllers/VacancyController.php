@@ -162,6 +162,24 @@ class VacancyController extends Controller {
         return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
     }
 
+    public function actionUpdateLanguages(int $id)
+    {
+        $vacancy = $this->findModelByIdAndCurrentUser($id);
+
+        $languageWithLevelsForm = new LanguageWithLevelsForm();
+        $languageWithLevelsForm->setSelectedLanguages($vacancy->languagesWithLevels);
+
+        if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
+            (new UpdateLanguagesScenario($vacancy, $languageWithLevelsForm))->run();
+
+            return $this->redirect(['view', 'id' => $id]);
+        }
+
+        return $this->renderAjax('update_languages', [
+            'model' => $languageWithLevelsForm
+        ]);
+    }
+
     private function findModelByIdAndCurrentUser(int $id): Vacancy
     {
         /** @var WebVacancy $model */

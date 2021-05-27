@@ -24,9 +24,11 @@ $templateId = "{$id}-row-template";
         'selectedLanguageLevel' => '',
     ])) ?>
 </template>
-<label><?= $label ?></label>
 <div class="card" id="<?= $id ?>">
     <div class="card-header d-flex p-0">
+        <div class="card-title">
+            <strong class="mx-3 mt-4"><?= $label ?></strong>
+        </div>
         <div class="actions-col ml-auto p-2">
             <button type="button" class="btn btn-outline-success add-row-btn">
                 <i class="fa fa-plus"></i>
