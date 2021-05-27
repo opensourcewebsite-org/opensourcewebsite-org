@@ -93,6 +93,15 @@ class ResumeController extends Controller
         return $this->render('view', ['model' => $model]);
     }
 
+    public function actionDelete(int $id): Response
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $model->delete();
+
+        return $this->redirect('/resume/index');
+    }
+
     public function actionViewLocation(int $id): string
     {
         return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);

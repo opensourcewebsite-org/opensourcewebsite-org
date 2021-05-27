@@ -79,6 +79,15 @@ use yii\widgets\ActiveForm;
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
                         <?= CancelButton::widget(['url' => '/resume']); ?>
+                        <?= \app\widgets\buttons\DeleteButton::widget([
+                            'url' => ['delete', 'id' => $model->id],
+                            'options' => [
+                                'data' => [
+                                    'confirm' => Yii::t('app', 'Are you sure you want to delete this Resume?'),
+                                    'method' => 'post'
+                                ]
+                            ]
+                        ]); ?>
                     </div>
                 </div>
             </div>
