@@ -15,6 +15,8 @@ use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
 use app\modules\bot\components\helpers\LocationParser;
+use yii\helpers\Html;
+use yii\web\JsExpression;
 
 
 /**
@@ -67,7 +69,6 @@ class Resume extends ActiveRecord
             [
                 [
                     'user_id',
-                    'currency_id',
                     'name',
                 ],
                 'required',
@@ -112,6 +113,14 @@ class Resume extends ActiveRecord
                 'double',
                 'min' => 0,
                 'max' => 99999999.99,
+            ],
+            [
+                'currency_id', 'required', 'when' => function (self $model) {
+                return $model->min_hourly_rate != '';
+            },
+                'whenClient' => new JsExpression("function () {
+                       return $('#".Html::getInputId($this, 'min_hourly_rate')."').val() != '';
+                }"),
             ],
             [
                 [
