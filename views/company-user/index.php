@@ -9,6 +9,7 @@ use app\models\search\ResumeSearch;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
 use yii\grid\GridView;
@@ -34,7 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'url' => ['company-user/create'],
                                 'options' => [
                                     'title' => 'New Company',
-                                    'class' => [ 'btn', 'btn-outline-success', 'modal-btn-ajax']
                                 ]
                             ]); ?>
                         </li>
@@ -43,29 +43,37 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-body p-0">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
+                        //'filterModel' => $searchModel,
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
+                            'company.id',
                             'company.name',
                             'company.url:url',
                             'company.address',
-                            /*[
-                                'attribute' => 'user_role',
-                                'value' => function (CompanyUser $model){
-                                    return $model->getRoleName();
+                            [
+                                'label' => Yii::t('app','Vacancies'),
+                                'content' => function (CompanyUser $model) {
+                                    if ( ($vacanciesNum = $model->company->getVacancies()->count()) > 0) {
+                                        return Html::a(
+                                            (string)$vacanciesNum,
+                                            Url::to([
+                                                '/vacancy/index',
+                                                'VacancySearch[company_id]' => (string)$model->company_id
+                                            ])
+                                        );
+                                    }
                                 }
-                            ],*/
+                            ],
                             [
                                 'class' => ActionColumn::class,
-                                'template' => '{view}{update}{delete}',
+                                'template' => '{view}',
                                 'buttons' => [
-                                    'update' => function ($url, $model) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-pen', 'data-toggle' => 'tooltip', 'title' => 'Update']);
-                                        return $model->isOwner() ? Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1 modal-btn-ajax']) : '';
+                                    'view' => function ($url) {
+                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
+                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
                                     },
-                                    'delete'
-                                ],
+                                ]
                             ],
                         ],
 

@@ -5,11 +5,12 @@ use app\components\helpers\ArrayHelper;
 use app\models\Resume;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\View;
 use yii\widgets\DetailView;
 use app\widgets\buttons\EditButton;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Resume */
+/* @var $this View */
+/* @var $model Resume */
 
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resume'), 'url' => ['index']];
@@ -17,7 +18,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
 
-    <div class="currency-exchange-order-view">
+    <div class="resume-view">
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -68,14 +69,24 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'attributes' => [
                                     'id',
                                     'name',
+                                    'skills:ntext',
+                                    'experiences:ntext',
+                                    'expectations:ntext',
+                                    [
+                                        'label' => Yii::t('app', 'Keywords'),
+                                        'value' => function() use ($model) {
+                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
+                                        }
+                                    ],
                                     'min_hourly_rate:decimal',
                                     [
                                         'attribute' => 'currency_id',
-                                        'value' => $model->currency->name
+                                        'value' => $model->currency->code . ' - ' . $model->currency->name
                                     ],
                                     'remote_on:boolean',
                                     [
                                         'attribute' => 'location',
+                                        'visible' => !$model->isRemote(),
                                         'value' => function () use ($model) {
                                             return Html::a(
                                                 $model->location,
@@ -89,15 +100,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         },
                                         'format' => 'raw'
                                     ],
-                                    [
-                                        'label' => 'keywords',
-                                        'value' => function() use ($model) {
-                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                        }
-                                    ],
-                                    'experiences:ntext',
-                                    'expectations:ntext',
-                                    'skills:ntext',
                                 ]
                             ]) ?>
                         </div>

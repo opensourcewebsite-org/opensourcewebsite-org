@@ -37,6 +37,7 @@ use yii\db\Query;
  * @property bool $is_authenticated
  * @property bool $gender
  *
+ * @property Company[] $companies
  * @property null|\app\modules\bot\models\User $botUser
  * @property Contact $contact
  * @property Contact[] $contactsFromMe

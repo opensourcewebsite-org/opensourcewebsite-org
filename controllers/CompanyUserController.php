@@ -5,10 +5,12 @@ namespace app\controllers;
 
 use app\models\Company;
 use app\models\CompanyUser;
+use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
 use app\models\search\CompanyUserSearch;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -29,6 +31,12 @@ class CompanyUserController extends Controller
                     ],
                 ],
             ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ]
         ];
     }
 
@@ -61,14 +69,35 @@ class CompanyUserController extends Controller
             }
             $transaction->commit();
 
-            Yii::$app->session->setFlash('success', 'Saved Successfully');
-            return $this->goBack();
+            return $this->redirect(['view', 'id' => $companyUserModel->id]);
         }
 
-        return $this->renderAjax('createAjax', [
+        return $this->render('create', [
                 'companyModel' => $companyModel,
                 'companyUserModel' => $companyUserModel
             ]);
+    }
+
+    public function actionCreateAjax() {
+        /** @var User $user */
+        $user = Yii::$app->user->getIdentity();
+
+        $companyModel = new Company();
+
+        $companyUserModel = new CompanyUser();
+        $companyUserModel->user_id = $user->id;
+        $companyUserModel->user_role = CompanyUser::ROLE_OWNER;
+
+        if (Yii::$app->request->isPost) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($companyModel->load(Yii::$app->request->post()) && $companyModel->save()) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $companyUserModel->link('company', $companyModel);
+                return $companyModel;
+            }
+            return ['errors' => $companyModel->errors];
+        }
+        return $this->renderAjax('_form', ['companyModel' => $companyModel]);
     }
 
     /**
@@ -88,11 +117,10 @@ class CompanyUserController extends Controller
             && $companyModel->load(Yii::$app->request->post())
             && $companyModel->save()) {
 
-            Yii::$app->session->setFlash('success', 'Saved Successfully');
-            return $this->goBack();
+            return $this->redirect(['view', 'id' => $companyUserModel->id]);
         }
 
-        return $this->renderAjax('updateAjax', [
+        return $this->render('update', [
                 'companyModel' => $companyModel,
                 'companyUserModel' => $companyUserModel
             ]);
@@ -109,6 +137,27 @@ class CompanyUserController extends Controller
         return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
     }
 
+    public function actionView(int $id): string
+    {
+        return $this->render('view', [
+            'model' => $this->findCompanyUserModelById($id),
+        ]);
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $companyUserModel = $this->findCompanyUserModelById($id);
+
+        $scenario = new DeleteCompanyScenario($companyUserModel->company);
+
+        if ($scenario->run()) {
+            return $this->redirect('/company-user/index');
+        }
+
+        Yii::$app->session->setFlash('danger', Yii::t('app', $scenario->getFirstError()));
+
+        return $this->redirect(['/company-user/update', 'id' => $companyUserModel->id]);
+    }
 
     private function findCompanyUserModelById(int $id): CompanyUser
     {

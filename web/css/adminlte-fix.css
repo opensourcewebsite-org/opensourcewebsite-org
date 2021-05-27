@@ -58,3 +58,10 @@ body.sidebar-collapse .main-sidebar:hover .brand-abbr{
 .select2-selection__choice__remove {
     color: white !important;
 }
+
+.btn-outline-success {
+    color: #28a745 !important;
+}
+.btn-outline-success:hover, .btn-outline-success:focus {
+    color: white !important;
+}

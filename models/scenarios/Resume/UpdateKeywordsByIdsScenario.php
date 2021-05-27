@@ -1,11 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace app\models\scenarios\JobKeywords;
+namespace app\models\scenarios\Resume;
 
-use app\components\helpers\ArrayHelper;
-use app\models\JobResumeKeyword;
 use app\models\Resume;
-use yii\base\Model;
+use app\models\JobResumeKeyword;
+use app\components\helpers\ArrayHelper;
 
 class UpdateKeywordsByIdsScenario {
 

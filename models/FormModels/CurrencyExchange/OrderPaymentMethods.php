@@ -2,13 +2,9 @@
 
 namespace app\models\FormModels\CurrencyExchange;
 
-use app\models\CurrencyExchangeOrder;
-use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
-use app\models\CurrencyExchangeOrderSellingPaymentMethod;
-use app\models\PaymentMethod;
 use Yii;
 use yii\base\Model;
-use yii\helpers\ArrayHelper;
+use app\models\CurrencyExchangeOrder;
 
 class OrderPaymentMethods extends Model {
 

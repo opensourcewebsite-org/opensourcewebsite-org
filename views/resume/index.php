@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
 
 ?>
-<div class="resumne-index">
+<div class="resume-index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -51,7 +51,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                         </li>
                         <li class="nav-item align-self-center mr-4  mx-1">
                             <?= AddButton::widget([
-                                'url' => ['resume/create'],
+                                'url' => ['create'],
                                 'options' => [
                                     'title' => 'New Resume',
                                 ]
@@ -66,13 +66,14 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
+                            'id',
                             'name',
                             'min_hourly_rate',
                             [
                                 'attribute' => 'currency_id',
                                 'value' => function($model) {
                                     /* @var $model Resume */
-                                    return $model->currency->name;
+                                    return $model->currency->code . ' - ' . $model->currency->name;
                                 },
                                 'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name')
                             ],

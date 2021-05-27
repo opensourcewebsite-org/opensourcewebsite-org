@@ -8,6 +8,9 @@ use Yii;
 
 class EditButton extends LinkButton
 {
+
+    public bool $ajax = false;
+
     public function init()
     {
         parent::init();
@@ -17,6 +20,10 @@ class EditButton extends LinkButton
         }
         $this->defaultOptions['title'] = Yii::t('app', 'Edit');
         $this->defaultOptions['class'] = 'edit-btn';
+
+        if ($this->ajax) {
+            $this->defaultOptions['class'] .= ' modal-btn-ajax';
+        }
     }
 
     public function run()

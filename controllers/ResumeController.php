@@ -5,7 +5,7 @@ namespace app\controllers;
 
 use app\models\Currency;
 use app\models\Resume;
-use app\models\scenarios\JobKeywords\UpdateKeywordsByIdsScenario;
+use app\models\scenarios\Resume\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Resume\SetActiveScenario;
 use app\models\search\ResumeSearch;
 use app\models\User;
@@ -44,7 +44,7 @@ class ResumeController extends Controller
 
     public function actionIndex(): string
     {
-        $searchModel = new ResumeSearch();
+        $searchModel = new ResumeSearch(['status' => Resume::STATUS_ON]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
@@ -93,11 +93,25 @@ class ResumeController extends Controller
         return $this->render('view', ['model' => $model]);
     }
 
+    public function actionDelete(int $id): Response
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $model->delete();
+
+        return $this->redirect('/resume/index');
+    }
+
     public function actionViewLocation(int $id): string
     {
         return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
     }
 
+    /**
+     * @param int $id
+     * @return array|bool
+     * @throws NotFoundHttpException
+     */
     public function actionSetActive(int $id)
     {
         $model = $this->findModelByIdAndCurrentUser($id);
@@ -112,7 +126,7 @@ class ResumeController extends Controller
         return $scenario->getErrors();
     }
 
-    public function actionSetInactive(int $id)
+    public function actionSetInactive(int $id): bool
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
