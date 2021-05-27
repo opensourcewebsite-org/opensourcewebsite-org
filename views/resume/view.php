@@ -69,6 +69,15 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'attributes' => [
                                     'id',
                                     'name',
+                                    'skills:ntext',
+                                    'experiences:ntext',
+                                    'expectations:ntext',
+                                    [
+                                        'label' => Yii::t('app', 'Keywords'),
+                                        'value' => function() use ($model) {
+                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
+                                        }
+                                    ],
                                     'min_hourly_rate:decimal',
                                     [
                                         'attribute' => 'currency_id',
@@ -90,15 +99,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         },
                                         'format' => 'raw'
                                     ],
-                                    [
-                                        'label' => 'keywords',
-                                        'value' => function() use ($model) {
-                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                        }
-                                    ],
-                                    'experiences:ntext',
-                                    'expectations:ntext',
-                                    'skills:ntext',
                                 ]
                             ]) ?>
                         </div>
