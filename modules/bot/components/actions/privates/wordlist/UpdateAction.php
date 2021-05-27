@@ -7,9 +7,6 @@ use app\modules\bot\models\Chat;
 
 class UpdateAction extends BaseAction
 {
-    public $wordModelClass;
-    public $viewActionId = 'w-v';
-
     public function run($phraseId = null)
     {
         $phrase = $this->wordModelClass::findOne($phraseId);
@@ -20,9 +17,13 @@ class UpdateAction extends BaseAction
             'text' => $text,
         ])->exists()) {
             $phrase->text = $text;
+            $phrase->updated_by = $this->getTelegramUser()->id;
+
             $phrase->save();
 
-            return $this->controller->run($this->viewActionId, ['phraseId' => $phraseId]);
+            return $this->controller->run($this->viewActionId, [
+                'phraseId' => $phraseId,
+            ]);
         }
     }
 }

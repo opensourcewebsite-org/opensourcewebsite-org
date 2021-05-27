@@ -3,7 +3,7 @@
 use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
-<b><?= Yii::t('bot', 'Send a message for the greeting') ?>:</b><br/>
+<b><?= Yii::t('bot', 'Send a message for the answer') ?>:</b><br/>
 <br/>
 <?= Yii::t('bot', 'Formatting options') ?> (<?= Yii::t('bot', 'coming soon') ?>):<br/>
   <b><?= Yii::t('bot', 'bold') ?></b> => <code>**<?= Yii::t('bot', 'bold') ?>**</code><br/>

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
@@ -16,15 +17,29 @@ class Phrase extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'type', 'text', 'created_by'], 'required'],
-            [['id', 'chat_id', 'created_by'], 'integer'],
-            [['type', 'text'], 'string'],
-            [['created_at'], 'default', 'value' => time()],
+            [['chat_id', 'type', 'text', 'updated_by'], 'required'],
+            [['id', 'chat_id', 'updated_by'], 'integer'],
+            [['type', 'text'], 'string', 'max' => 255],
         ];
     }
 
-    public function isTypeBlack()
+    /**
+     * Gets query for [[Chat]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChat()
     {
-        return $this->type == self::TYPE_BLACKLIST;
+        return $this->hasOne(Chat::className(), ['id' => 'chat_id']);
+    }
+
+    /**
+     * Gets query for [[UpdatedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
 }

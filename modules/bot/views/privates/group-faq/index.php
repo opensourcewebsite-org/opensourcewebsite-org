@@ -1,0 +1,3 @@
+🏗 <b><?= $chatTitle ?> (<?= Yii::t('bot', 'in development') ?>)</b><br/>
+<br/>
+<?= Yii::t('bot', 'FAQ') ?> - <?= Yii::t('bot', 'answers questions and other messages from members in the group') ?>. <?= Yii::t('bot', 'Ignores bots') ?>.<br/>

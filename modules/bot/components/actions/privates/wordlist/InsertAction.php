@@ -7,10 +7,6 @@ use app\modules\bot\models\Chat;
 
 class InsertAction extends BaseAction
 {
-    public $wordModelClass;
-    public $listActionId = 'w-l';
-    public $modelAttributes = [];
-
     public function run($chatId = null)
     {
         $text = $this->getUpdate()->getMessage()->getText();
@@ -22,7 +18,7 @@ class InsertAction extends BaseAction
                     $phrase->setAttributes(array_merge($this->modelAttributes, [
                                         'chat_id' => $chatId,
                                         'text' => $row,
-                                        'created_by' => $this->getTelegramUser()->id,
+                                        'updated_by' => $this->getTelegramUser()->id,
                                     ]));
 
                     $phrase->save();

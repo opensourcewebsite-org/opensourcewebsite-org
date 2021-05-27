@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\actions\privates\wordlist\WordlistAdminComponent;
+use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Phrase;
@@ -24,20 +24,20 @@ class GroupMessageFilterController extends Controller
         return array_merge(
             parent::actions(),
             Yii::createObject([
-                'class' => WordlistAdminComponent::className(),
-                'wordModelClass' => Phrase::className(),
+                'class' => WordlistComponent::class,
+                'wordModelClass' => Phrase::class,
                 'modelAttributes' => [
-                    'type' => ChatSetting::FILTER_MODE_BLACKLIST
+                    'type' => Phrase::TYPE_BLACKLIST,
                 ],
-                'actionGroupName' => 'blacklist',
+                'actionGroupName' => Phrase::TYPE_BLACKLIST,
             ])->actions(),
             Yii::createObject([
-                'class' => WordlistAdminComponent::className(),
-                'wordModelClass' => Phrase::className(),
+                'class' => WordlistComponent::class,
+                'wordModelClass' => Phrase::class,
                 'modelAttributes' => [
-                    'type' => ChatSetting::FILTER_MODE_WHITELIST
+                    'type' => Phrase::TYPE_WHITELIST,
                 ],
-                'actionGroupName' => 'whitelist',
+                'actionGroupName' => Phrase::TYPE_WHITELIST,
             ])->actions()
         );
     }

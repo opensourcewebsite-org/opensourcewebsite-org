@@ -7,24 +7,16 @@ use yii\db\ActiveRecord;
 
 class ChatSetting extends ActiveRecord
 {
-    public const FILTER_STATUS = 'filter_status';
     public const JOIN_HIDER_STATUS = 'join_hider_status';
-    public const JOIN_CAPTCHA_STATUS = 'join_captcha_status';
-    public const GREETING_STATUS = 'greeting_status';
-
-    public const FILTER_STATUS_ON = 'on';
-    public const FILTER_STATUS_OFF = 'off';
-    public const FILTER_MODE = 'filter_mode';
-    public const FILTER_MODE_BLACKLIST = 'blacklist';
-    public const FILTER_MODE_WHITELIST = 'whitelist';
-
     public const JOIN_HIDER_STATUS_ON = 'on';
     public const JOIN_HIDER_STATUS_OFF = 'off';
 
+    public const JOIN_CAPTCHA_STATUS = 'join_captcha_status';
     public const JOIN_CAPTCHA_STATUS_ON = 'on';
     public const JOIN_CAPTCHA_STATUS_OFF = 'off';
     public const JOIN_CAPTCHA_LIFETIME_DEFAULT = 300; // seconds
 
+    public const GREETING_STATUS = 'greeting_status';
     public const GREETING_STATUS_ON = 'on';
     public const GREETING_STATUS_OFF = 'off';
     public const GREETING_LIFETIME = 'greeting_lifetime';
@@ -32,6 +24,19 @@ class ChatSetting extends ActiveRecord
     public const GREETING_MESSAGE = 'greeting_message';
     public const GREETING_MESSAGE_LENGHT_MIN = 1;
     public const GREETING_MESSAGE_LENGHT_MAX = 10000;
+
+    public const FILTER_STATUS = 'filter_status';
+    public const FILTER_STATUS_ON = 'on';
+    public const FILTER_STATUS_OFF = 'off';
+    public const FILTER_MODE = 'filter_mode';
+    public const FILTER_MODE_BLACKLIST = 'blacklist';
+    public const FILTER_MODE_WHITELIST = 'whitelist';
+
+    public const FAQ_STATUS = 'faq_status';
+    public const FAQ_STATUS_ON = 'on';
+    public const FAQ_STATUS_OFF = 'off';
+    public const FAQ_ANSWER_LENGHT_MIN = 1;
+    public const FAQ_ANSWER_LENGHT_MAX = 10000;
 
     public static function tableName()
     {

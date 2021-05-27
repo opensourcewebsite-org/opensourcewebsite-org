@@ -30,7 +30,7 @@ class Chat extends ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
@@ -51,22 +51,33 @@ class Chat extends ActiveRecord
 
     public function getPhrases()
     {
-        return $this->hasMany(Phrase::className(), ['chat_id' => 'id']);
+        return $this->hasMany(Phrase::class, ['chat_id' => 'id']);
     }
 
     public function getBlacklistPhrases()
     {
-        return $this->getPhrases()->where(['type' => ChatSetting::FILTER_MODE_BLACKLIST]);
+        return $this->getPhrases()
+            ->where([
+                'type' => Phrase::TYPE_BLACKLIST,
+            ]);
     }
 
     public function getWhitelistPhrases()
     {
-        return $this->getPhrases()->where(['type' => ChatSetting::FILTER_MODE_WHITELIST]);
+        return $this->getPhrases()
+            ->where([
+                'type' => Phrase::TYPE_WHITELIST,
+            ]);
+    }
+
+    public function getQuestionPhrases()
+    {
+        return $this->hasMany(BotChatFaqQuestion::class, ['chat_id' => 'id']);
     }
 
     public function getSettings()
     {
-        return $this->hasMany(ChatSetting::className(), ['chat_id' => 'id']);
+        return $this->hasMany(ChatSetting::class, ['chat_id' => 'id']);
     }
 
     public function getSetting($setting)
@@ -91,13 +102,13 @@ class Chat extends ActiveRecord
 
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])
+        return $this->hasMany(User::class, ['id' => 'user_id'])
             ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
     }
 
     public function getChatMemberByUser($user)
     {
-        return $this->hasOne(ChatMember::className(), ['chat_id' => 'id'])
+        return $this->hasOne(ChatMember::class, ['chat_id' => 'id'])
             ->where([
                 'user_id' => $user->id,
             ])
@@ -106,7 +117,7 @@ class Chat extends ActiveRecord
 
     public function getAdministrators()
     {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])
+        return $this->hasMany(User::class, ['id' => 'user_id'])
             ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',

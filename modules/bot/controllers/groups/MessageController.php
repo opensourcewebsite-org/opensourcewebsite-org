@@ -7,6 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\BotChatFaqAnswer;
 
 /**
  * Class MessageController
@@ -96,6 +97,29 @@ class MessageController extends Controller
                     $telegramChat->chat_id,
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
+            }
+        }
+
+        if (!$deleteMessage) {
+            $faqStatus = $telegramChat->getSetting(ChatSetting::FAQ_STATUS);
+
+            if (isset($faqStatus) && ($faqStatus->value == ChatSetting::FAQ_STATUS_ON)) {
+                if ($this->getMessage()->getText() !== null) {
+                    $question = $telegramChat->getQuestionPhrases()
+                        ->where([
+                            'text' => $this->getMessage()->getText(),
+                        ])
+                        ->andWhere([
+                            'not', ['answer' => null],
+                        ])
+                        ->one();
+
+                        if (isset($question)) {
+                            $this->run('faq/show-answer', [
+                                'questionId' => $question->id,
+                            ]);
+                        }
+                }
             }
         }
 

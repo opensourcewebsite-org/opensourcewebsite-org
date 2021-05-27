@@ -2,19 +2,13 @@
 
 namespace app\modules\bot\components\actions\privates\wordlist;
 
+use Yii;
 use app\modules\bot\components\actions\BaseAction;
 use app\modules\bot\models\Chat;
-use app\modules\bot\components\helpers\PaginationButtons;
-use yii\data\Pagination;
 use app\modules\bot\components\helpers\Emoji;
 
 class ViewAction extends BaseAction
 {
-    public $wordModelClass;
-    public $listActionId = 'w-l';
-    public $changeActionId = 'w-c';
-    public $deleteActionId = 'w-d';
-
     /**
     * @return array
     */
@@ -24,31 +18,47 @@ class ViewAction extends BaseAction
 
         $phrase = $this->wordModelClass::findOne($phraseId);
 
+        $buttons = [];
+
+        if ($this->buttons) {
+            foreach ($this->buttons as $button) {
+                $buttons[] = [
+                    [
+                        'callback_data' => self::createRoute($this->changeFieldActionId, [
+                            'phraseId' => $phraseId,
+                            'field' => $button['field'],
+                        ]),
+                        'text' => $button['text'],
+                    ],
+                ];
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => $this->createRoute($this->listActionId, [
+                    'chatId' => $phrase->chat_id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => $this->createRoute($this->changeActionId, [
+                    'phraseId' => $phraseId,
+                ]),
+                'text' => Emoji::EDIT,
+            ],
+            [
+                'callback_data' => $this->createRoute($this->deleteActionId, [
+                    'phraseId' => $phraseId,
+                ]),
+                'text' => Emoji::DELETE,
+            ],
+        ];
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render($this->id, compact('phrase')),
-                [
-                    [
-                        [
-                            'callback_data' => $this->createRoute($this->listActionId, [
-                                'chatId' => $phrase->chat_id,
-                            ]),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => $this->createRoute($this->changeActionId, [
-                                'phraseId' => $phraseId,
-                            ]),
-                            'text' => Emoji::EDIT,
-                        ],
-                        [
-                            'callback_data' => $this->createRoute($this->deleteActionId, [
-                                'phraseId' => $phraseId,
-                            ]),
-                            'text' => Emoji::DELETE,
-                        ],
-                    ],
-                ]
+                $buttons
             )
             ->build();
     }

@@ -10,11 +10,7 @@ use app\modules\bot\components\helpers\Emoji;
 
 class ListAction extends BaseAction
 {
-    public $wordModelClass;
-    public $modelAttributes = [];
     public $pageWordsCount = 9;
-    public $viewActionId = 'w-v';
-    public $enterActionId = 'w-e';
 
     /**
     * @return array

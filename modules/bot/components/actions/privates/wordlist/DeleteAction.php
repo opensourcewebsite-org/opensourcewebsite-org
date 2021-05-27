@@ -7,9 +7,6 @@ use app\modules\bot\models\Chat;
 
 class DeleteAction extends BaseAction
 {
-    public $wordModelClass;
-    public $listActionId = 'w-l';
-
     public function run($phraseId = null)
     {
         $phrase = $this->wordModelClass::findOne($phraseId);
