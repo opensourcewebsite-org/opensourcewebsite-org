@@ -44,6 +44,7 @@ use app\widgets\buttons\CancelButton;
                 </div>
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
+                    <?= CancelButton::widget(['url' => '/company']); ?>
                     <?php if (!$companyUserModel->isNewRecord): ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $companyUserModel->id],
