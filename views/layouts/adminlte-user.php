@@ -6,6 +6,7 @@ use app\assets\AdminLteUserAsset;
 use app\widgets\Alert;
 use app\widgets\Nav;
 use app\widgets\NavBar;
+use yii\bootstrap4\BootstrapAsset;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Breadcrumbs;
@@ -17,6 +18,7 @@ use app\models\Language;
  * @var View $this
  * @var string $content
  */
+
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -124,14 +126,6 @@ AdminLteUserAsset::register($this);
                             ]
                         ],
                         [
-                            'label' => Yii::t('app','Companies'),
-                            'url' => ['company-user/index'],
-                            'linkOptions' => [
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'company-user/index') ? 'active' : ''),
-                            ]
-                        ],
-                        [
                             'label' => Yii::t('app', 'Loyalty program'),
                             'url' => ['/referrals'],
                             'linkOptions' => [
@@ -216,6 +210,7 @@ $leftMenuItems = [
         'title' => 'Jobs',
         'icon' => 'far fa-circle',
         'urls' => [
+            'company-user',
             'resume',
             'vacancy',
         ],

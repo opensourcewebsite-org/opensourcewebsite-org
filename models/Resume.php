@@ -15,6 +15,8 @@ use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
 use app\modules\bot\components\helpers\LocationParser;
+use yii\helpers\Html;
+use yii\web\JsExpression;
 
 
 /**
@@ -54,7 +56,7 @@ class Resume extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
-    public array $keywordsFromForm = [];
+    public $keywordsFromForm = [];
 
     public static function tableName(): string
     {
@@ -67,7 +69,6 @@ class Resume extends ActiveRecord
             [
                 [
                     'user_id',
-                    'currency_id',
                     'name',
                 ],
                 'required',
@@ -114,11 +115,27 @@ class Resume extends ActiveRecord
                 'max' => 99999999.99,
             ],
             [
+                'currency_id', 'required', 'when' => function (self $model) {
+                return $model->min_hourly_rate != '';
+            },
+                'whenClient' => new JsExpression("function () {
+                       return $('#".Html::getInputId($this, 'min_hourly_rate')."').val() != '';
+                }"),
+            ],
+            [
                 [
                     'name',
                 ],
                 'string',
                 'max' => 255,
+            ],
+            [
+                'keywordsFromForm', 'filter', 'filter' => function($val) {
+                if ($val === '')  {
+                    return [];
+                }
+                return $val;
+            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']
@@ -201,7 +218,7 @@ class Resume extends ActiveRecord
 
     public function isActive(): bool
     {
-        return $this->status == self::STATUS_ON;
+        return $this->status == static::STATUS_ON;
     }
 
     public function isRemote(): bool
@@ -321,5 +338,4 @@ class Resume extends ActiveRecord
 
         parent::afterSave($insert, $changedAttributes);
     }
-
 }

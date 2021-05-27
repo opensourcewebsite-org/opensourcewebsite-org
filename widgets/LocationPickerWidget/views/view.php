@@ -102,7 +102,7 @@ $(document).ready(function() {
         return false;
     }
 
-    $(document).on('shown.bs.modal', function () {
+    $(document).on('shown.bs.modal', '#'+controlId+'-modal', function () {
         map.invalidateSize();
 
         let currentLoc = false;

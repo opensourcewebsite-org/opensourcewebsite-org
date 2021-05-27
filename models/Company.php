@@ -57,7 +57,6 @@ class Company extends ActiveRecord
             [
                 ['url'], 'url',
                 'defaultScheme' => Yii::$app->params['defaultScheme'] ?? 'https',
-                'pattern' => '/^(?:(?:https?|ftp):\/\/|www\.)?[-a-z0-9+&@#\/%?=~_|!:,.;]+[.][a-zA-Z]{2,4}/i',
             ],
             [['description'], 'string'],
             [['name'], 'required'],
