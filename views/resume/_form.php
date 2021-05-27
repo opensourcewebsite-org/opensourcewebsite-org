@@ -3,6 +3,7 @@
 use app\models\Currency;
 use app\models\Resume;
 use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
 use app\widgets\CurrencySelect\CurrencySelect;
 use app\widgets\KeywordsSelect\KeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
@@ -62,12 +63,12 @@ use yii\widgets\ActiveForm;
                                 <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
                             </div>
                         </div>
-                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>">
+                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>" >
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
                             </div>
                         </div>
-                        <div class="row location-row" <?=$model->remote_on ? 'd-none' : ''?>>
+                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>" >
                             <div class="col">
                                 <?= $form->field($model, 'search_radius')
                                     ->textInput(['maxlength' => true, 'placeholder' => 0])
@@ -79,15 +80,17 @@ use yii\widgets\ActiveForm;
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
                         <?= CancelButton::widget(['url' => '/resume']); ?>
-                        <?= \app\widgets\buttons\DeleteButton::widget([
-                            'url' => ['delete', 'id' => $model->id],
-                            'options' => [
-                                'data' => [
-                                    'confirm' => Yii::t('app', 'Are you sure you want to delete this Resume?'),
-                                    'method' => 'post'
+                        <?php if (!$model->isNewRecord): ?>
+                            <?= DeleteButton::widget([
+                                'url' => ['delete', 'id' => $model->id],
+                                'options' => [
+                                    'data' => [
+                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this Resume?'),
+                                        'method' => 'post'
+                                    ]
                                 ]
-                            ]
-                        ]); ?>
+                            ]); ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

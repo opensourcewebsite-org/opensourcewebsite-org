@@ -9,6 +9,7 @@ use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\Vacancy;
 use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
 use app\widgets\CurrencySelect\CurrencySelect;
 use app\widgets\KeywordsSelect\KeywordsSelect;
@@ -111,6 +112,17 @@ use yii\widgets\ActiveForm;
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
                         <?= CancelButton::widget(['url' => '/vacancy']); ?>
+                        <?php if (!$model->isNewRecord): ?>
+                            <?= DeleteButton::widget([
+                                'url' => ['delete', 'id' => $model->id],
+                                'options' => [
+                                    'data' => [
+                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this Vacancy?'),
+                                        'method' => 'post'
+                                    ]
+                                ]
+                            ]); ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

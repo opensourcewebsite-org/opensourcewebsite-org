@@ -14,6 +14,7 @@ use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
 use app\models\search\VacancySearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
@@ -33,6 +34,14 @@ class VacancyController extends Controller {
                     ],
                 ],
             ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                    'set-active' => ['POST'],
+                    'set-inactive' => ['POST'],
+                ],
+            ],
         ];
     }
 
@@ -47,10 +56,11 @@ class VacancyController extends Controller {
         $languageWithLevelsForm = new LanguageWithLevelsForm(['required' => true]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
             (new UpdateKeywordsByIdsScenario($model))->run();
 
             if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
-                var_dump($languageWithLevelsForm); die();
+                (new UpdateLanguagesScenario($model, $languageWithLevelsForm))->run();
             }
 
             return $this->redirect(['view', 'id' => $model->id]);
@@ -72,11 +82,11 @@ class VacancyController extends Controller {
         $languageWithLevelsForm->setSelectedLanguages($model->languagesWithLevels);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
             (new UpdateKeywordsByIdsScenario($model))->run();
+
             if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
-
                 (new UpdateLanguagesScenario($model, $languageWithLevelsForm))->run();
-
             }
 
             return $this->redirect(['view', 'id' => $id]);
@@ -90,11 +100,20 @@ class VacancyController extends Controller {
         ]);
     }
 
-    public function actionView(int $id)
+    public function actionView(int $id): string
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
         return $this->render('view', ['model' => $model]);
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $model->delete();
+
+        return $this->redirect('/vacancy/index');
     }
 
     public function actionIndex(): string
