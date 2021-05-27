@@ -19,6 +19,7 @@ use yii\web\View;
  * @var string|null $attribute
  * @var array $companies
  * @var array $options
+ * @var array $pluginOptions
  * @var string|int $value
  * @var string|null $name
  * @var string $controlId
@@ -33,6 +34,7 @@ use yii\web\View;
             'attribute' => $attribute,
             'data' => $companies,
             'options' => $options,
+            'pluginOptions' => $pluginOptions,
         ]) ?>
     <?php else: ?>
         <?= Select2::widget([
@@ -40,6 +42,7 @@ use yii\web\View;
             'data' => $companies,
             'value' => $value,
             'options' => $options,
+            'pluginOptions' => $pluginOptions,
         ]); ?>
     <?php endif; ?>
     <div class="input-group-append">

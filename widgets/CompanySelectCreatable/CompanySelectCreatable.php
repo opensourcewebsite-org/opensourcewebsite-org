@@ -13,7 +13,9 @@ class CompanySelectCreatable extends Widget {
 
     public array $companies = [];
 
-    private array $defaultOptions = ['class' => 'form-control flex-grow-1', 'placeholder' => 'Select Company...'];
+    public array $pluginOptions = ['allowClear' => true];
+
+    private array $defaultOptions = ['class' => 'form-control flex-grow-1', 'prompt' => ''];
 
     public function run(): string
     {
@@ -26,7 +28,8 @@ class CompanySelectCreatable extends Widget {
             'options' => array_merge($this->defaultOptions, $this->options),
             'value' => $this->value,
             'controlId' => $this->id,
-            'companyModel' => new Company()
+            'companyModel' => new Company(),
+            'pluginOptions' => $this->pluginOptions,
         ] );
     }
 
