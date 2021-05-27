@@ -14,6 +14,8 @@ use yii\db\ActiveRecord;
 use yii\db\conditions\AndCondition;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use yii\helpers\Html;
+use yii\web\JsExpression;
 
 /**
  * Class Vacancy
@@ -22,7 +24,7 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property int $id
  * @property int $user_id
  * @property int $company_id
- * @property int $currency_id
+ * @property ?int $currency_id
  * @property int $gender_id
  * @property int $status
  * @property bool $remote_on
@@ -72,7 +74,6 @@ class Vacancy extends ActiveRecord
             [
                 [
                     'user_id',
-                    'currency_id',
                     'name',
                     'requirements',
                     'conditions',
@@ -109,12 +110,21 @@ class Vacancy extends ActiveRecord
                 'min' => 0,
                 'max' => 99999999.99,
             ],
-            ['keywordsFromForm', 'filter', 'filter' => function($val) {
-                if ($val === '')  {
-                    return [];
+            [
+                'currency_id', 'required', 'when' => function (self $model) {
+                        return $model->max_hourly_rate != '';
+                },
+                'whenClient' => new JsExpression("function () {
+                       return $('#".Html::getInputId($this, 'max_hourly_rate')."').val() != '';
+                }"),
+            ],
+            [
+                'keywordsFromForm', 'filter', 'filter' => function($val) {
+                    if ($val === '')  {
+                        return [];
+                    }
+                    return $val;
                 }
-                return $val;
-            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']
