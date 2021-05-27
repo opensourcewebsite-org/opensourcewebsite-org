@@ -12,8 +12,9 @@ class m210527_124658_alter_vacancy_change_currency_id_to_nullable extends Migrat
      */
     public function safeUp()
     {
-        $this->dropForeignKey('fk-vacancy_currency_id-currency_id', '{{%vacancy}}');
-        $this->alterColumn('{{%vacancy}}', 'currency_id', $this->integer()->null());
+
+        $this->alterColumn('{{%vacancy}}', 'currency_id', $this->integer()->unsigned()->null());
+
     }
 
     /**
@@ -21,7 +22,7 @@ class m210527_124658_alter_vacancy_change_currency_id_to_nullable extends Migrat
      */
     public function safeDown()
     {
-        $this->alterColumn('{{%vacancy}}', 'currency_id', $this->integer()->notNull());
+        $this->alterColumn('{{%vacancy}}', 'currency_id', $this->integer()->unsigned()->notNull());
     }
 
     /*
