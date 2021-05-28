@@ -2,17 +2,17 @@
 declare(strict_types=1);
 
 
-use app\models\CompanyUser;
+use app\models\Company;
 use yii\web\View;
 use yii\widgets\DetailView;
 use app\widgets\buttons\EditButton;
 
 /* @var View $this */
-/* @var CompanyUser $model */
+/* @var Company $model */
 
-$this->title = Yii::t('app', 'Company') . ' #' . $model->company->id;
+$this->title = Yii::t('app', 'Company') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Companies'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = '#' . $model->company->id;
+$this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
 
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = '#' . $model->company->id;
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <?= DetailView::widget([
-                                'model' => $model->company,
+                                'model' => $model,
                                 'attributes' => [
                                     'id',
                                     'name',

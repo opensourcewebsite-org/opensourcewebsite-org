@@ -1,10 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use app\components\helpers\ArrayHelper;
-use app\models\CompanyUser;
-use app\models\Currency;
-use app\models\Resume;
+use app\models\Company;
 use app\models\search\ResumeSearch;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
@@ -47,19 +44,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'company.id',
-                            'company.name',
-                            'company.url:url',
-                            'company.address',
+                            'id',
+                            [
+                                'attribute' => 'name',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'label' => Yii::t('app','Vacancies'),
-                                'content' => function (CompanyUser $model) {
-                                    if ( ($vacanciesCount = $model->company->getVacancies()->count()) > 0) {
+                                'content' => function (Company $model) {
+                                    if ( ($vacanciesCount = $model->getVacancies()->count()) > 0) {
                                         return Html::a(
                                             (string)$vacanciesCount,
                                             Url::to([
                                                 '/vacancy/index',
-                                                'VacancySearch[company_id]' => (string)$model->company_id
+                                                'VacancySearch[company_id]' => (string)$model->id
                                             ])
                                         );
                                     }

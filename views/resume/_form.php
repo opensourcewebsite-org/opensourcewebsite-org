@@ -80,7 +80,10 @@ use yii\widgets\ActiveForm;
                     </div>
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
-                        <?= CancelButton::widget(['url' => Url::to(['/resume/view', 'id' => $model->id])]); ?>
+
+                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/resume/index') : Url::to(['/resume/view', 'id' => $model->id])?>
+                        <?= CancelButton::widget(['url' => $cancelUrl]); ?>
+
                         <?php if (!$model->isNewRecord): ?>
                             <?= DeleteButton::widget([
                                 'url' => ['delete', 'id' => $model->id],
