@@ -84,4 +84,9 @@ class Company extends ActiveRecord
     {
         return $this->hasMany(Vacancy::class, ['company_id' => 'id']);
     }
+
+    public function getCompanyUser(): ActiveQuery
+    {
+        return $this->hasMany(CompanyUser::class, ['company_id' => 'id']);
+    }
 }
