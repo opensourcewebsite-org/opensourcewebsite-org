@@ -45,9 +45,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'id',
-                            'name',
-                            'url:url',
-                            'address',
+                            [
+                                'attribute' => 'name',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'label' => Yii::t('app','Vacancies'),
                                 'content' => function (Company $model) {
