@@ -5,14 +5,12 @@ use app\widgets\buttons\DeleteButton;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
-use app\models\CompanyUser;
 use app\widgets\buttons\SaveButton;
 use app\widgets\buttons\CancelButton;
 
 /**
  * @var View $this
- * @var Company $companyModel
- * @var CompanyUser $companyUserModel
+ * @var Company $model
  */
 
 ?>
@@ -24,31 +22,34 @@ use app\widgets\buttons\CancelButton;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($companyModel, 'name')->textInput() ?>
+                            <?= $form->field($model, 'name')->textInput() ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($companyModel, 'url')->textInput() ?>
+                            <?= $form->field($model, 'url')->textInput() ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($companyModel, 'address')->textInput() ?>
+                            <?= $form->field($model, 'address')->textInput() ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($companyModel, 'description')->textarea() ?>
+                            <?= $form->field($model, 'description')->textarea() ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
-                    <?= CancelButton::widget(['url' => Url::to(['/company-user/view', 'id' =>$companyUserModel->id])]); ?>
-                    <?php if (!$companyUserModel->isNewRecord): ?>
+
+                    <?php $cancelUrl = $model->isNewRecord ? Url::to('/company-user/index') : Url::to(['/company-user/view', 'id' => $model->id]) ?>
+                    <?= CancelButton::widget(['url' => $cancelUrl]); ?>
+
+                    <?php if (!$model->isNewRecord): ?>
                         <?= DeleteButton::widget([
-                            'url' => ['delete', 'id' => $companyUserModel->id],
+                            'url' => ['delete', 'id' => $model->id],
                             'options' => [
                                 'data' => [
                                     'confirm' => Yii::t('app', 'Are you sure you want to delete this Company?'),
