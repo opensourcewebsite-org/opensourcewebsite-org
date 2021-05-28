@@ -20,7 +20,7 @@ use yii\grid\GridView;
  * @var ResumeSearch $searchModel
  */
 
-$this->title = Yii::t('app', 'Your Companies');
+$this->title = Yii::t('app', 'Companies');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -54,9 +54,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => Yii::t('app','Vacancies'),
                                 'content' => function (CompanyUser $model) {
-                                    if ( ($vacanciesNum = $model->company->getVacancies()->count()) > 0) {
+                                    if ( ($vacanciesCount = $model->company->getVacancies()->count()) > 0) {
                                         return Html::a(
-                                            (string)$vacanciesNum,
+                                            (string)$vacanciesCount,
                                             Url::to([
                                                 '/vacancy/index',
                                                 'VacancySearch[company_id]' => (string)$model->company_id
@@ -100,4 +100,3 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-

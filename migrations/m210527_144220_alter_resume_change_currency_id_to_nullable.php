@@ -12,7 +12,7 @@ class m210527_144220_alter_resume_change_currency_id_to_nullable extends Migrati
      */
     public function safeUp()
     {
-        $this->alterColumn('{{%resume}}', 'currency_id', $this->integer()->unsigned()->null());
+        $this->alterColumn('{{%resume}}', 'currency_id', $this->integer()->unsigned());
     }
 
     /**

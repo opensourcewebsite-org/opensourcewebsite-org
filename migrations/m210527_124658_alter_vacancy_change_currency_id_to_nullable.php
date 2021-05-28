@@ -12,9 +12,7 @@ class m210527_124658_alter_vacancy_change_currency_id_to_nullable extends Migrat
      */
     public function safeUp()
     {
-
-        $this->alterColumn('{{%vacancy}}', 'currency_id', $this->integer()->unsigned()->null());
-
+        $this->alterColumn('{{%vacancy}}', 'currency_id', $this->integer()->unsigned());
     }
 
     /**

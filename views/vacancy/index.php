@@ -65,18 +65,26 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'id',
-                            'name',
-                            'max_hourly_rate',
+                            [
+                                'attribute' => 'name',
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'max_hourly_rate',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'currency_id',
                                 'value' => function($model) {
                                     /* @var $model Vacancy */
                                     return $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '';
                                 },
-                                'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name')
+                                'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name'),
+                                'enableSorting' => false,
                             ],
                             [
-                                'label' => 'offers'
+                                'label' => Yii::t('app', 'Offers'),
+                                'enableSorting' => false,
                             ],
                             [
                                 'class' => ActionColumn::class,
