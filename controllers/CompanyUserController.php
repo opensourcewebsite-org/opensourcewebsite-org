@@ -69,12 +69,11 @@ class CompanyUserController extends Controller
             }
             $transaction->commit();
 
-            return $this->redirect(['view', 'id' => $companyUserModel->id]);
+            return $this->redirect(['view', 'id' => $companyModel->id]);
         }
 
         return $this->render('create', [
-                'companyModel' => $companyModel,
-                'companyUserModel' => $companyUserModel
+                'model' => $companyModel,
             ]);
     }
 
@@ -97,7 +96,7 @@ class CompanyUserController extends Controller
             }
             return ['errors' => $companyModel->errors];
         }
-        return $this->renderAjax('_form', ['companyModel' => $companyModel]);
+        return $this->renderAjax('_form', ['model' => $companyModel]);
     }
 
     /**
@@ -110,19 +109,18 @@ class CompanyUserController extends Controller
     {
         /** @var User $user */
         $user = Yii::$app->user->getIdentity();
-        $companyUserModel = $this->findCompanyUserModelById($id);
-        $companyModel = $companyUserModel->company;
+
+        $companyModel = $this->findCompanyModelByIdAndCurrentUser($id);
 
         if (Yii::$app->request->isPost
             && $companyModel->load(Yii::$app->request->post())
             && $companyModel->save()) {
 
-            return $this->redirect(['view', 'id' => $companyUserModel->id]);
+            return $this->redirect(['view', 'id' => $companyModel->id]);
         }
 
         return $this->render('update', [
-                'companyModel' => $companyModel,
-                'companyUserModel' => $companyUserModel
+                'model' => $companyModel,
             ]);
     }
 
@@ -140,15 +138,15 @@ class CompanyUserController extends Controller
     public function actionView(int $id): string
     {
         return $this->render('view', [
-            'model' => $this->findCompanyUserModelById($id),
+            'model' => $this->findCompanyModelByIdAndCurrentUser($id),
         ]);
     }
 
     public function actionDelete(int $id): Response
     {
-        $companyUserModel = $this->findCompanyUserModelById($id);
+        $company = $this->findCompanyModelByIdAndCurrentUser($id);
 
-        $scenario = new DeleteCompanyScenario($companyUserModel->company);
+        $scenario = new DeleteCompanyScenario($company);
 
         if ($scenario->run()) {
             return $this->redirect('/company-user/index');
@@ -156,18 +154,21 @@ class CompanyUserController extends Controller
 
         Yii::$app->session->setFlash('danger', Yii::t('app', $scenario->getFirstError()));
 
-        return $this->redirect(['/company-user/update', 'id' => $companyUserModel->id]);
+        return $this->redirect(['/company-user/update', 'id' => $company->id]);
     }
 
-    private function findCompanyUserModelById(int $id): CompanyUser
+    private function findCompanyModelByIdAndCurrentUser(int $id): Company
     {
-        /** @var CompanyUser $companyUser */
-        if ($companyUser = CompanyUser::find()
-            ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->getIdentity()->getId()])
-            ->andWhere(['user_role' => CompanyUser::ROLE_OWNER])
+        $user = Yii::$app->user->identity;
+
+        /** @var Company $company */
+        if ($company = Company::find()
+            ->joinWith('companyUser cu')
+            ->where(['company.id' => $id])
+            ->andWhere(['cu.user_id' => $user->id])
+            ->andWhere(['cu.user_role' => CompanyUser::ROLE_OWNER])
             ->one()) {
-            return $companyUser;
+            return $company;
         }
         throw new NotFoundHttpException('Requested Page Not Found');
     }
