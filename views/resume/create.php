@@ -10,7 +10,7 @@ use app\models\Currency;
 /* @var $currencies Currency[] */
 
 $this->title = Yii::t('app', 'Create Resume');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resume'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

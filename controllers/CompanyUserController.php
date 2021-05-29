@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Company;
 use app\models\CompanyUser;
 use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
 use app\models\search\CompanyUserSearch;
 use app\models\User;
-use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
@@ -18,7 +18,6 @@ use yii\web\Response;
 
 class CompanyUserController extends Controller
 {
-
     public function behaviors(): array
     {
         return [
@@ -77,7 +76,8 @@ class CompanyUserController extends Controller
             ]);
     }
 
-    public function actionCreateAjax() {
+    public function actionCreateAjax()
+    {
         /** @var User $user */
         $user = Yii::$app->user->getIdentity();
 
@@ -94,8 +94,10 @@ class CompanyUserController extends Controller
                 $companyUserModel->link('company', $companyModel);
                 return $companyModel;
             }
+
             return ['errors' => $companyModel->errors];
         }
+
         return $this->renderAjax('_form', ['model' => $companyModel]);
     }
 
@@ -126,7 +128,6 @@ class CompanyUserController extends Controller
 
     public function actionIndex(): string
     {
-
         $searchModel = new CompanyUserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -170,6 +171,7 @@ class CompanyUserController extends Controller
             ->one()) {
             return $company;
         }
+
         throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

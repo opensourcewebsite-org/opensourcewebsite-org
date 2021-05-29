@@ -13,7 +13,7 @@ use app\widgets\buttons\EditButton;
 /* @var $model Resume */
 
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resume'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
