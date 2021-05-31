@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\JobVacancyKeyword;
 use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Vacancy\UpdateLanguagesScenario;
-use Yii;
 use app\models\Currency;
 use app\models\scenarios\Vacancy\SetActiveScenario;
 use app\models\User;
@@ -127,6 +127,7 @@ class VacancyController extends Controller {
             'dataProvider' => $dataProvider
         ]);
     }
+
     /**
      * @param int $id
      * @return array|bool
@@ -143,6 +144,7 @@ class VacancyController extends Controller {
             $model->save();
             return true;
         }
+
         return $scenario->getErrors();
     }
 
@@ -189,6 +191,7 @@ class VacancyController extends Controller {
             ->one()) {
             return $model;
         }
+
         throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

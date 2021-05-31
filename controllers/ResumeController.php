@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\scenarios\Resume\UpdateKeywordsByIdsScenario;
@@ -10,7 +11,6 @@ use app\models\scenarios\Resume\SetActiveScenario;
 use app\models\search\ResumeSearch;
 use app\models\User;
 use app\models\WebModels\WebResume;
-use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -64,6 +64,7 @@ class ResumeController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -81,6 +82,7 @@ class ResumeController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -90,6 +92,7 @@ class ResumeController extends Controller
     public function actionView(int $id): string
     {
         $model = $this->findModelByIdAndCurrentUser($id);
+
         return $this->render('view', ['model' => $model]);
     }
 
@@ -123,6 +126,7 @@ class ResumeController extends Controller
             $model->save();
             return true;
         }
+
         return $scenario->getErrors();
     }
 
@@ -146,7 +150,7 @@ class ResumeController extends Controller
             ->one()) {
             return $model;
         }
+
         throw new NotFoundHttpException('Requested Page Not Found');
     }
-
 }
