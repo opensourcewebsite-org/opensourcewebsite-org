@@ -4,21 +4,19 @@ declare(strict_types=1);
 namespace app\models\matchers;
 
 use app\components\helpers\ArrayHelper;
-use app\models\JobResumeKeyword;
 use app\models\queries\builders\UserLanguagesMatchExpressionBuilder;
 use app\models\queries\builders\RadiusExpressionBuilder;
 use app\models\queries\ResumeQuery;
 use app\models\Resume;
 use app\models\Vacancy;
-use yii\db\ActiveQuery;
 use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 
 
-class VacancyMatcher
+final class VacancyMatcher extends BaseMatcher
 {
 
-    private Vacancy $model;
+    protected Vacancy $model;
 
     private string $comparingTable;
 
@@ -60,33 +58,6 @@ class VacancyMatcher
         }
     }
 
-    public function clearMatches()
-    {
-        $this->unlinkMatches();
-
-        $this->model->processed_at = null;
-        $this->model->save();
-    }
-
-    /**
-     * @param array<Resume> $matches
-     */
-    private function linkMatches(array $matches)
-    {
-        foreach ($matches as $resume) {
-            $this->model->link('matches', $resume);
-        }
-    }
-
-    /**
-     * @param array<Resume> $matches
-     */
-    private function linkCounterMatches(array $matches)
-    {
-        foreach ($matches as $resume) {
-            $this->model->link('counterMatches', $resume);
-        }
-    }
 
     public function prepareInitialMatchResumesQuery(): ResumeQuery
     {
@@ -97,12 +68,6 @@ class VacancyMatcher
                 '!=', "{$this->comparingTable}.user_id", $this->model->user_id,
             ])
             ->groupBy("{$this->comparingTable}.id");
-    }
-
-    private function unlinkMatches()
-    {
-        $this->model->unlinkAll('matches');
-        $this->model->unlinkAll('counterMatches');
     }
 
     private function buildLocationAndRadiusCondition(ResumeQuery $query): ResumeQuery

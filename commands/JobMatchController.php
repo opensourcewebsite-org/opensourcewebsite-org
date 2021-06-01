@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use app\models\matchers\ResumeMatcher;
 use app\models\matchers\VacancyMatcher;
 use Yii;
 use yii\console\Controller;
@@ -27,8 +28,8 @@ class JobMatchController extends Controller implements CronChainedInterface
 
     protected function update()
     {
-        $this->updateVacancies();
         $this->updateResumes();
+        $this->updateVacancies();
     }
 
     protected function updateResumes()
@@ -37,7 +38,7 @@ class JobMatchController extends Controller implements CronChainedInterface
 
         foreach ($this->getResumes() as $resume) {
             try {
-                $resume->updateMatches();
+                (new ResumeMatcher($resume))->match();
 
                 $resume->setAttributes([
                     'processed_at' => time(),

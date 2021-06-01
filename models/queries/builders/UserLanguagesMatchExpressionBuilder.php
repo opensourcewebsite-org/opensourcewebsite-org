@@ -11,7 +11,6 @@ use yii\db\Expression;
 
 class UserLanguagesMatchExpressionBuilder implements ConditionExpressionBuilderInterface {
 
-
     /**
      * @var array<array<VacancyLanguage>>
      */
