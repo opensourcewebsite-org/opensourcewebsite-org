@@ -28,8 +28,8 @@ class JobMatchController extends Controller implements CronChainedInterface
 
     protected function update()
     {
-        $this->updateResumes();
         $this->updateVacancies();
+        $this->updateResumes();
     }
 
     protected function updateResumes()

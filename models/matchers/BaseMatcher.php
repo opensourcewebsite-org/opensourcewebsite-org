@@ -19,8 +19,8 @@ abstract class BaseMatcher {
 
     protected function unlinkMatches()
     {
-        $this->model->unlinkAll('matches');
-        $this->model->unlinkAll('counterMatches');
+        $this->model->unlinkAll('matches', true);
+        $this->model->unlinkAll('counterMatches', true);
     }
 
     /**
