@@ -27,14 +27,7 @@ class CronController extends Controller
     const PREFIX = 'app\commands\\';
     const POSTFIX = 'Controller';
 
-    private $cronJobs;
-
-    /**
-     * Map of input data with cron jobs
-     *
-     * @var array
-     */
-    static protected $map = [
+    protected static array $map = [
         'AdMatch',
         'JobMatch',
         'BotCommand',
@@ -45,6 +38,8 @@ class CronController extends Controller
         //'WikinewsParser',
         'CeMatch',
     ];
+
+    private $cronJobs;
 
     /**
      * {@inheritdoc}

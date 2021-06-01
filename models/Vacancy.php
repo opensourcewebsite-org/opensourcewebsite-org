@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\interfaces\ModelWithLocationInterface;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use app\models\queries\VacancyQuery;
@@ -51,7 +52,7 @@ use yii\web\JsExpression;
  * @property JobKeyword[] $keywords
  *
  */
-class Vacancy extends ActiveRecord
+class Vacancy extends ActiveRecord implements ModelWithLocationInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -66,6 +67,11 @@ class Vacancy extends ActiveRecord
     public static function tableName(): string
     {
         return '{{%vacancy}}';
+    }
+
+    public function getTableName(): string
+    {
+        return static::tableName();
     }
 
     public function rules(): array
@@ -252,19 +258,6 @@ class Vacancy extends ActiveRecord
             ->viaTable('{{%job_vacancy_match}}', ['vacancy_id' => 'id']);
     }
 
-
-    public function getMatchedResumes(): ActiveQuery
-    {
-        return Resume::find()
-            ->live()
-            ->matchLanguages($this)
-            ->matchRadius($this)
-            ->andWhere([
-                '!=', Resume::tableName() . '.user_id', $this->user_id,
-            ])
-            ->groupBy(Resume::tableName() . '.id');
-    }
-
     public function getCounterMatches(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['id' => 'resume_id'])
@@ -285,43 +278,6 @@ class Vacancy extends ActiveRecord
     {
         return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
             ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id']);
-    }
-
-    public function updateMatches()
-    {
-        $this->unlinkAll('matches', true);
-        $this->unlinkAll('counterMatches', true);
-
-        $resumesQuery = $this->getMatchedResumes();
-        $resumesQueryNoRateQuery = clone $resumesQuery;
-        $resumesQueryRateQuery = clone $resumesQuery;
-
-        if ($this->max_hourly_rate) {
-            $resumesQueryRateQuery->andWhere(new AndCondition([
-                ['IS NOT', Resume::tableName() . '.min_hourly_rate', null],
-                ['<=', Resume::tableName() . '.min_hourly_rate', $this->max_hourly_rate],
-                [Resume::tableName() . '.currency_id' => $this->currency_id],
-            ]));
-            $resumesQueryNoRateQuery->andWhere(
-                new AndCondition([
-                    ['>', Resume::tableName() . '.min_hourly_rate', $this->max_hourly_rate],
-                    ['<>', Resume::tableName() . '.currency_id', $this->currency_id],
-                ])
-            );
-
-            foreach ($resumesQueryRateQuery->all() as $resume) {
-                $this->link('matches', $resume);
-                $this->link('counterMatches', $resume);
-            }
-
-            foreach ($resumesQueryNoRateQuery->all() as $resume) {
-                $this->link('counterMatches', $resume);
-            }
-        } else {
-            foreach ($resumesQueryRateQuery->all() as $resume) {
-                $this->link('matches', $resume);
-            }
-        }
     }
 
     public function clearMatches()

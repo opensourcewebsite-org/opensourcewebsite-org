@@ -3,6 +3,7 @@
 namespace app\models\queries;
 
 use app\models\LanguageLevel;
+use app\models\queries\builders\ConditionExpressionBuilderInterface;
 use app\models\Resume;
 use app\models\UserLanguage;
 use app\models\Vacancy;
@@ -36,20 +37,22 @@ class VacancyQuery extends ActiveQuery
      */
     public function matchLanguages(Resume $model)
     {
-        /** @var UserLanguage[] $userLanguages */
-        $userLanguages = $model->userLanguagesRelation;
-        $sql = '(SELECT COUNT(*) FROM ' . VacancyLanguage::tableName() . ' `lang` '
-            . 'INNER JOIN ' . LanguageLevel::tableName() . ' ON lang.language_level_id = ' . LanguageLevel::tableName() . '.id '
-            . 'WHERE ' . Vacancy::tableName() . '.`id` = `lang`.`vacancy_id` AND (';
-        foreach ($userLanguages as $key => $userLanguage) {
-            $languageLevel = $userLanguage->level;
-            if ($key) {
-                $sql .= ' OR ';
+
+        $userLanguages = $model->languages;
+        if ($userLanguages) {
+            $sql = '(SELECT COUNT(*) FROM ' . VacancyLanguage::tableName() . ' `lang` '
+                . 'INNER JOIN ' . LanguageLevel::tableName() . ' ON lang.language_level_id = ' . LanguageLevel::tableName() . '.id '
+                . 'WHERE ' . Vacancy::tableName() . '.`id` = `lang`.`vacancy_id` AND (';
+            foreach ($userLanguages as $key => $userLanguage) {
+                $languageLevel = $userLanguage->level;
+                if ($key) {
+                    $sql .= ' OR ';
+                }
+                $sql .= 'lang.language_id = ' . $userLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value <= ' . $languageLevel->value;
             }
-            $sql .= 'lang.language_id = ' . $userLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value <= ' . $languageLevel->value;
+            $sql .= ')) = (SELECT COUNT(*) FROM `vacancy_language` WHERE `vacancy`.`id` = `vacancy_language`.`vacancy_id`)';
+            $this->andWhere(new Expression($sql));
         }
-        $sql .= ')) = (SELECT COUNT(*) FROM `vacancy_language` WHERE `vacancy`.`id` = `vacancy_language`.`vacancy_id`)';
-        $this->andWhere(new Expression($sql));
 
         return $this;
     }
@@ -88,4 +91,12 @@ class VacancyQuery extends ActiveQuery
 
         return $this;
     }
+
+    public function applyBuilder(ConditionExpressionBuilderInterface $builder): self
+    {
+        $ret = $builder->build();
+        $new = clone $this;
+        return $new->andWhere($ret);
+    }
+
 }
