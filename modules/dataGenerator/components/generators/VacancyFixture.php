@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace app\modules\dataGenerator\components\generators;
 
 use app\models\Currency;
+use app\models\Gender;
 use app\models\JobKeyword;
-use app\models\Resume;
 use app\models\User;
 use app\models\Vacancy;
 use app\modules\dataGenerator\helpers\LatLonHelper;
@@ -15,7 +15,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
-class ResumeFixture extends ARGenerator
+class VacancyFixture extends ARGenerator
 {
 
     private Generator $faker;
@@ -43,25 +43,30 @@ class ResumeFixture extends ARGenerator
             return null;
         }
 
+        $gender = $this->getRandomGender();
+
         $londonCenter = [51.509865, -0.118092];
         $location = LatLonHelper::generateRandomPoint($londonCenter, 200);
-        $model = new Resume();
+        $model = new Vacancy();
 
         $model->user_id = $user->id;
+        $model->status = Vacancy::STATUS_ON;
         $model->remote_on = $this->faker->boolean();
         $model->name = $this->faker->title();
-        $model->experiences = $this->faker->realText();
-        $model->min_hourly_rate = $this->faker->randomNumber(2);
-        $model->search_radius = $this->faker->randomNumber(3);
+        $model->requirements = $this->faker->realText();
+        $model->max_hourly_rate = $this->faker->randomNumber(2);
         $model->currency_id = $currency->id;
-        $model->expectations = $this->faker->realText();
-        $model->skills = $this->faker->realText();
+        $model->conditions = $this->faker->realText();
+        $model->responsibilities = $this->faker->realText();
+        $model->gender_id =  ($this->faker->boolean() ? ($gender ? $gender->id : null) : null );
         $model->location_lat = $location[0];
         $model->location_lon = $location[1];
 
         if (!$model->save()) {
             throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
         }
+
+        $this->linkKeywords($model);
 
         return $model;
     }
@@ -72,6 +77,17 @@ class ResumeFixture extends ARGenerator
     public function load(): ActiveRecord
     {
         return $this->factoryModel();
+    }
+
+    private function linkKeywords(Vacancy $model)
+    {
+        $keywords = JobKeyword::find()->orderByRandAlt(4)->all();
+
+        if ($keywords) {
+            foreach ($keywords as $keyword) {
+                $model->link('keywords', $keyword);
+            }
+        }
     }
 
     private function findUser(): ?User
@@ -99,6 +115,16 @@ class ResumeFixture extends ARGenerator
             ->orderByRandAlt(1)
             ->one();
         return $currency;
+    }
+
+    private function getRandomGender(): ?Gender
+    {
+        /** @var Gender|null $gender */
+        $gender = Gender::find()
+            ->select('id')
+            ->orderByRandAlt(1)
+            ->one();
+        return $gender;
     }
 
     private function printNoCurrencyError()
