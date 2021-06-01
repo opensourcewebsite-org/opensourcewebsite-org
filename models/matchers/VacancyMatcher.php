@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace app\models\matchers;
 
 use app\components\helpers\ArrayHelper;
+use app\models\LanguageLevel;
 use app\models\queries\builders\UserLanguagesMatchExpressionBuilder;
 use app\models\queries\builders\RadiusExpressionBuilder;
 use app\models\queries\ResumeQuery;
 use app\models\Resume;
+use app\models\UserLanguage;
 use app\models\Vacancy;
 use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
+use yii\db\Expression;
 
 
 final class VacancyMatcher
@@ -61,21 +64,43 @@ final class VacancyMatcher
         }
     }
 
-
     public function prepareInitialMatchResumesQuery(): ResumeQuery
     {
         return Resume::find()
             ->live()
-            ->applyBuilder(new UserLanguagesMatchExpressionBuilder($this->model->languagesWithLevels))
+            ->andWhere($this->buildUserLanguagesMatchExpression($this->model->languagesWithLevels))
             ->andWhere([
                 '!=', "{$this->comparingTable}.user_id", $this->model->user_id,
             ])
             ->groupBy("{$this->comparingTable}.id");
     }
 
+    private function buildUserLanguagesMatchExpression(array $languages): Expression
+    {
+        $userLanguageTableName = UserLanguage::tableName();
+        $languageLevelTable = LanguageLevel::tableName();
+
+        if ($languages) {
+            $sql = "(SELECT COUNT(*) FROM $userLanguageTableName `lang`
+                INNER JOIN $languageLevelTable ON lang.language_level_id = $languageLevelTable.id WHERE (";
+
+            foreach ($languages as $key => $vacancyLanguage) {
+                $languageLevel = $vacancyLanguage->level;
+                if ($key !== 0) {
+                    $sql .= ' OR ';
+                }
+                $sql .= "lang.language_id = {$vacancyLanguage->language_id} AND $languageLevelTable.value >= $languageLevel->value";
+            }
+            $sql .= ")) = " . count($languages);
+
+            return new Expression($sql);
+        }
+
+        return new Expression('');
+    }
+
     private function buildLocationAndRadiusCondition(ResumeQuery $query): ResumeQuery
     {
-
         $newQuery = clone $query;
 
         $radiusExpressionBuilder = (new RadiusExpressionBuilder($this->model, $this->comparingTable));

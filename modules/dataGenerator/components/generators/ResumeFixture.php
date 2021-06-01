@@ -48,6 +48,7 @@ class ResumeFixture extends ARGenerator
         $model = new Resume();
 
         $model->user_id = $user->id;
+        $model->status = Resume::STATUS_ON;
         $model->remote_on = $this->faker->boolean();
         $model->name = $this->faker->title();
         $model->experiences = $this->faker->realText();
