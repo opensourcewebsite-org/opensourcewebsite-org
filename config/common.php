@@ -1,8 +1,15 @@
 <?php
 
+use app\models\matchers\ModelLinker;
+
 return [
     'name' => 'OpenSourceWebsite',
     'language' => 'en',
+    'container' => [
+        'definitions' => [
+            ModelLinker::class => ModelLinker::class
+        ]
+    ],
     'components' => [
         'log' => [
             'targets' => [
