@@ -2,6 +2,8 @@
 
 namespace app\commands;
 
+use app\models\matchers\ResumeMatcher;
+use app\models\matchers\VacancyMatcher;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
@@ -34,15 +36,9 @@ class JobMatchController extends Controller implements CronChainedInterface
     {
         $updatesCount = 0;
 
-        $resumeQuery = Resume::find()
-            ->where([Resume::tableName() . '.processed_at' => null])
-            ->live()
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
-
-        foreach ($resumeQuery->all() as $resume) {
+        foreach ($this->getResumes() as $resume) {
             try {
-                $resume->updateMatches();
+                (new ResumeMatcher($resume))->match();
 
                 $resume->setAttributes([
                     'processed_at' => time(),
@@ -57,27 +53,25 @@ class JobMatchController extends Controller implements CronChainedInterface
         if ($updatesCount) {
             $this->output('Resumes updated: ' . $updatesCount);
         }
+
     }
 
     protected function updateVacancies()
     {
         $updatesCount = 0;
 
-        $vacancyQuery = Vacancy::find()
-            ->where([Vacancy::tableName() . '.processed_at' => null])
-            ->live()
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
-
-        foreach ($vacancyQuery->all() as $vacancy) {
+        foreach ($this->getVacancies() as $vacancy) {
             try {
-                $vacancy->updateMatches();
+                (new VacancyMatcher($vacancy))->match();
 
                 $vacancy->setAttributes([
                     'processed_at' => time(),
                 ]);
+
                 $vacancy->save();
+
                 $updatesCount++;
+
             } catch (Exception $e) {
                 echo 'ERROR: Vacancy #' . $vacancy->id . ': ' . $e->getMessage() . "\n";
             }
@@ -109,5 +103,31 @@ class JobMatchController extends Controller implements CronChainedInterface
                 'processed_at' => null,
             ])
             ->execute();
+    }
+
+    /**
+     * @return array<Resume>
+     */
+    private function getResumes(): array
+    {
+        return Resume::find()
+            ->where([Resume::tableName() . '.processed_at' => null])
+            ->live()
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC])
+            ->all();
+    }
+
+    /**
+     * @return array<Vacancy>
+     */
+    private function getVacancies(): array
+    {
+        return Vacancy::find()
+            ->where([Vacancy::tableName() . '.processed_at' => null])
+            ->live()
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC])
+            ->all();
     }
 }

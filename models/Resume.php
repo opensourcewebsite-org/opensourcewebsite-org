@@ -44,7 +44,7 @@ use yii\web\JsExpression;
  * @property Currency $currency
  * @property User $user
  * @property Vacancy[] $matches
- * @property UserLanguage[] $userLanguagesRelation
+ * @property UserLanguage[] $languages
  */
 class Resume extends ActiveRecord
 {
