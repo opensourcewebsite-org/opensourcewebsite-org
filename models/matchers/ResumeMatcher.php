@@ -7,21 +7,24 @@ use app\models\Resume;
 use app\models\Vacancy;
 use yii\db\conditions\AndCondition;
 
-final class ResumeMatcher extends BaseMatcher {
+final class ResumeMatcher {
 
-    protected Resume $model;
+    private Resume $model;
+
+    private ModelLinker $linker;
 
     private string $comparingTable;
 
     public function __construct(Resume $model)
     {
         $this->model = $model;
+        $this->linker = new ModelLinker($this->model);
         $this->comparingTable = Vacancy::tableName();
     }
 
     public function match()
     {
-        $this->unlinkMatches();
+        $this->linker->unlinkMatches();
 
         $vacanciesQuery = $this->prepareInitialMatchedVacanciesQuery();
 
@@ -33,13 +36,13 @@ final class ResumeMatcher extends BaseMatcher {
             $rateMatches = $vacanciesQueryRateQuery->all();
             $noRateMatches = $vacanciesQueryNoRateQuery->all();
 
-            $this->linkMatches($rateMatches);
-            $this->linkCounterMatches($rateMatches);
+            $this->linker->linkMatches($rateMatches);
+            $this->linker->linkCounterMatches($rateMatches);
 
-            $this->linkCounterMatches($noRateMatches);
+            $this->linker->linkCounterMatches($noRateMatches);
 
         } else {
-            $this->linkMatches($vacanciesQuery->all());
+            $this->linker->linkMatches($vacanciesQuery->all());
         }
     }
 

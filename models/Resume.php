@@ -244,8 +244,12 @@ class Resume extends ActiveRecord
 
     public function getLanguages(): ActiveQuery
     {
-        return $this->hasMany(Language::class, ['id' => 'language_id'])
-            ->viaTable('{{%user_language}}', ['user_id' => 'user_id']);
+        return $this->hasMany(UserLanguage::class, ['user_id' => 'user_id']);
+    }
+
+    public function getLanguagesWithLevels(): ActiveQuery
+    {
+        return $this->user->getLanguages();
     }
 
     public function getGlobalUser(): ActiveQuery
@@ -274,44 +278,6 @@ class Resume extends ActiveRecord
     {
         return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_vacancy_match}}', ['resume_id' => 'id']);
-    }
-
-    public function updateMatches()
-    {
-        $this->unlinkAll('matches', true);
-        $this->unlinkAll('counterMatches', true);
-
-        $vacanciesQuery = $this->getMatchedVacancies();
-
-        $vacanciesQueryNoRateQuery = clone $vacanciesQuery;
-        $vacanciesQueryRateQuery = clone $vacanciesQuery;
-
-        if ($this->min_hourly_rate) {
-            $vacanciesQueryRateQuery->andWhere(new AndCondition([
-                ['IS NOT', Vacancy::tableName() . '.max_hourly_rate', null],
-                ['>=', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate],
-                [Vacancy::tableName() . '.currency_id' => $this->currency_id],
-            ]));
-            $vacanciesQueryNoRateQuery->andWhere(
-                new AndCondition([
-                    ['<', Vacancy::tableName() . '.max_hourly_rate', $this->min_hourly_rate],
-                    ['<>', Vacancy::tableName() . '.currency_id', $this->currency_id],
-                ])
-            );
-
-            foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
-                $this->link('matches', $vacancy);
-                $this->link('counterMatches', $vacancy);
-            }
-
-            foreach ($vacanciesQueryNoRateQuery->all() as $vacancy) {
-                $this->link('counterMatches', $vacancy);
-            }
-        } else {
-            foreach ($vacanciesQueryRateQuery->all() as $vacancy) {
-                $this->link('matches', $vacancy);
-            }
-        }
     }
 
     public function clearMatches()

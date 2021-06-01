@@ -13,22 +13,25 @@ use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 
 
-final class VacancyMatcher extends BaseMatcher
+final class VacancyMatcher
 {
 
-    protected Vacancy $model;
+    private Vacancy $model;
+
+    private ModelLinker $linker;
 
     private string $comparingTable;
 
     public function __construct(Vacancy $model)
     {
         $this->model = $model;
+        $this->linker = new ModelLinker($this->model);
         $this->comparingTable = Resume::tableName();
     }
 
     public function match()
     {
-        $this->unlinkMatches();
+        $this->linker->unlinkMatches();
 
         $resumesQuery = $this->applyKeywordsCondition(
             $this->buildLocationAndRadiusCondition(
@@ -48,13 +51,13 @@ final class VacancyMatcher extends BaseMatcher
             $rateMatches = $resumesQueryRateQuery->all();
             $rateNotMachResumes = $resumesQueryNoRateQuery->all();
 
-            $this->linkMatches($rateMatches);
-            $this->linkCounterMatches($rateMatches);
+            $this->linker->linkMatches($rateMatches);
+            $this->linker->linkCounterMatches($rateMatches);
 
-            $this->linkCounterMatches($rateNotMachResumes);
+            $this->linker->linkCounterMatches($rateNotMachResumes);
 
         } else {
-            $this->linkMatches($resumesQuery->all());
+            $this->linker->linkMatches($resumesQuery->all());
         }
     }
 

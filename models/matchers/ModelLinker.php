@@ -5,9 +5,14 @@ namespace app\models\matchers;
 
 use yii\db\ActiveRecord;
 
-abstract class BaseMatcher {
+class ModelLinker {
 
-    abstract function match();
+    private ActiveRecord $model;
+
+    public function __construct(ActiveRecord $model)
+    {
+        $this->model = $model;
+    }
 
     public function clearMatches()
     {
@@ -17,7 +22,7 @@ abstract class BaseMatcher {
         $this->model->save();
     }
 
-    protected function unlinkMatches()
+    public function unlinkMatches()
     {
         $this->model->unlinkAll('matches', true);
         $this->model->unlinkAll('counterMatches', true);
@@ -27,7 +32,7 @@ abstract class BaseMatcher {
      * @template T
      * @param array<T> $matches
      */
-    protected function linkMatches(array $matches)
+    public function linkMatches(array $matches)
     {
         foreach ($matches as $model) {
             $this->model->link('matches', $model);
@@ -38,7 +43,7 @@ abstract class BaseMatcher {
      * @template T
      * @param array<T> $matches
      */
-    protected function linkCounterMatches(array $matches)
+    public function linkCounterMatches(array $matches)
     {
         foreach ($matches as $model) {
             $this->model->link('counterMatches', $model);
