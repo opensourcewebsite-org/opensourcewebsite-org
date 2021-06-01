@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace app\models\matchers;
 
+use app\components\helpers\ArrayHelper;
+use app\models\JobResumeKeyword;
 use app\models\queries\builders\UserLanguagesMatchExpressionBuilder;
 use app\models\queries\builders\RadiusExpressionBuilder;
 use app\models\queries\ResumeQuery;
 use app\models\Resume;
 use app\models\Vacancy;
+use yii\db\ActiveQuery;
 use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 
@@ -29,13 +32,17 @@ class VacancyMatcher
     {
         $this->unlinkMatches();
 
-        $resumesQuery = $this->getInitialMatchResumesQuery();
-        $resumesQuery = $this->buildLocationAndRadiusCondition($resumesQuery);
-
-        $resumesQueryNoRateQuery = clone $resumesQuery;
+        $resumesQuery = $this->applyKeywordsCondition(
+            $this->buildLocationAndRadiusCondition(
+                $this->applyGenderCondition(
+                    $this->prepareInitialMatchResumesQuery()
+                )
+            )
+        );
 
         if ($this->model->max_hourly_rate) {
             $resumesQueryRateQuery = clone $resumesQuery;
+            $resumesQueryNoRateQuery = clone $resumesQuery;
 
             $resumesQueryRateQuery->andWhere($this->buildRateAndCurrencyDirectMatchCondition());
             $resumesQueryNoRateQuery->andWhere($this->buildRateAndCurrencyNotMatchCondition());
@@ -49,27 +56,7 @@ class VacancyMatcher
             $this->linkCounterMatches($rateNotMachResumes);
 
         } else {
-            $this->linkMatches($resumesQueryNoRateQuery->all());
-        }
-    }
-
-    /**
-     * @param array<Resume> $matches
-     */
-    public function linkMatches(array $matches)
-    {
-        foreach ($matches as $resume) {
-            $this->model->link('matches', $resume);
-        }
-    }
-
-    /**
-     * @param array<Resume> $matches
-     */
-    public function linkCounterMatches(array $matches)
-    {
-        foreach ($matches as $resume) {
-            $this->model->link('counterMatches', $resume);
+            $this->linkMatches($resumesQuery->all());
         }
     }
 
@@ -81,15 +68,35 @@ class VacancyMatcher
         $this->model->save();
     }
 
-    public function getInitialMatchResumesQuery(): ResumeQuery
+    /**
+     * @param array<Resume> $matches
+     */
+    private function linkMatches(array $matches)
+    {
+        foreach ($matches as $resume) {
+            $this->model->link('matches', $resume);
+        }
+    }
+
+    /**
+     * @param array<Resume> $matches
+     */
+    private function linkCounterMatches(array $matches)
+    {
+        foreach ($matches as $resume) {
+            $this->model->link('counterMatches', $resume);
+        }
+    }
+
+    public function prepareInitialMatchResumesQuery(): ResumeQuery
     {
         return Resume::find()
             ->live()
             ->applyBuilder(new UserLanguagesMatchExpressionBuilder($this->model->languagesWithLevels))
             ->andWhere([
-                '!=', Resume::tableName() . '.user_id', $this->model->user_id,
+                '!=', "{$this->comparingTable}.user_id", $this->model->user_id,
             ])
-            ->groupBy(Resume::tableName() . '.id');
+            ->groupBy("{$this->comparingTable}.id");
     }
 
     private function unlinkMatches()
@@ -117,7 +124,27 @@ class VacancyMatcher
         return $newQuery;
     }
 
-    public function buildRateAndCurrencyDirectMatchCondition(): AndCondition
+    private function applyKeywordsCondition(ResumeQuery $query): ResumeQuery
+    {
+        $newQuery = clone $query;
+        if ($keywords = $this->model->keywords) {
+            $keywordIds = ArrayHelper::getColumn($keywords, 'id');
+            $newQuery->joinWith('keywords kw');
+            $newQuery = $newQuery->andWhere(['in', 'kw.id', $keywordIds]);
+        }
+        return $newQuery;
+    }
+
+    public function applyGenderCondition(ResumeQuery $query): ResumeQuery
+    {
+        $newQuery = clone $query;
+        if ($this->model->gender_id) {
+            $newQuery->andWhere(['user.gender_id' => $this->model->gender_id]);
+        }
+        return $newQuery;
+    }
+
+    private function buildRateAndCurrencyDirectMatchCondition(): AndCondition
     {
         return new AndCondition([
             ['IS NOT', "{$this->comparingTable}.min_hourly_rate", null],
@@ -126,7 +153,7 @@ class VacancyMatcher
         ]);
     }
 
-    public function buildRateAndCurrencyNotMatchCondition(): AndCondition
+    private function buildRateAndCurrencyNotMatchCondition(): AndCondition
     {
         return new AndCondition([
             ['>', "{$this->comparingTable}.min_hourly_rate", $this->model->max_hourly_rate],
