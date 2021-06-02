@@ -23,7 +23,7 @@ class UpdateKeywordsByIdsScenario {
         $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
 
         if ($toDeleteIds || $toAddIds) {
-            $this->model->keywordsChanged = true;
+            $this->model->trigger(Resume::EVENT_KEYWORDS_UPDATED);
         }
 
         foreach($toAddIds as $id) {

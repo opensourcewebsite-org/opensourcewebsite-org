@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\matchers\ModelLinker;
 use app\models\scenarios\Resume\UpdateScenario;
 use Yii;
 use yii\db\ActiveQuery;
@@ -57,6 +58,8 @@ class Resume extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
+    public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
+
     public $keywordsFromForm = [];
 
     public bool $keywordsChanged = false;
@@ -64,6 +67,12 @@ class Resume extends ActiveRecord
     public static function tableName(): string
     {
         return '{{%resume}}';
+    }
+
+    public function init()
+    {
+        $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+        parent::init();
     }
 
     public function rules(): array
@@ -272,6 +281,10 @@ class Resume extends ActiveRecord
             ->viaTable('{{%job_vacancy_match}}', ['resume_id' => 'id']);
     }
 
+    public function clearMatches()
+    {
+        (new ModelLinker($this))->clearMatches();
+    }
 
     public function afterSave($insert, $changedAttributes)
     {
