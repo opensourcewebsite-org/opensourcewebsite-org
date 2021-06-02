@@ -49,4 +49,16 @@ class ModelLinker
             $this->model->link('counterMatches', $model);
         }
     }
+
+    /**
+     * @template T
+     * @param string $linkName
+     * @param array<T> $models
+     */
+    public function linkAll(string $linkName, array $models)
+    {
+        foreach($models as $model) {
+            $this->model->link($linkName, $model);
+        }
+    }
 }
