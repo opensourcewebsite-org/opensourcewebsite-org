@@ -107,7 +107,7 @@ final class ResumeMatcher
         } elseif ($radiusExpression) {
             return $radiusExpression;
         }
-
+        return new Expression($radiusExpression);
     }
 
     /**
