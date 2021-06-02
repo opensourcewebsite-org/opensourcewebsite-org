@@ -55,8 +55,12 @@ class VacancyFixture extends ARGenerator
         $model->remote_on = $this->faker->boolean();
         $model->name = $this->faker->title();
         $model->requirements = $this->faker->realText();
-        $model->max_hourly_rate = $this->faker->randomNumber(2);
-        $model->currency_id = $currency->id;
+
+        if ($this->faker->boolean()) {
+            $model->max_hourly_rate = $this->faker->randomNumber(2);
+            $model->currency_id = $currency->id;
+        }
+
         $model->conditions = $this->faker->realText();
         $model->responsibilities = $this->faker->realText();
         $model->gender_id =  ($this->faker->boolean() ? ($gender ? $gender->id : null) : null );

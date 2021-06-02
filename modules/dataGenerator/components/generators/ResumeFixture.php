@@ -53,9 +53,13 @@ class ResumeFixture extends ARGenerator
         $model->remote_on = $this->faker->boolean();
         $model->name = $this->faker->title();
         $model->experiences = $this->faker->realText();
-        $model->min_hourly_rate = $this->faker->randomNumber(2);
+
+        if ($this->faker->boolean()) {
+            $model->min_hourly_rate = $this->faker->randomNumber(2);
+            $model->currency_id = $currency->id;
+        }
+
         $model->search_radius = $this->faker->randomNumber(3);
-        $model->currency_id = $currency->id;
         $model->expectations = $this->faker->realText();
         $model->skills = $this->faker->realText();
         $model->location_lat = $location[0];
