@@ -2,6 +2,7 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
+use Yii;
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
@@ -9,7 +10,6 @@ use app\models\PaymentMethod;
 use app\models\User;
 use app\modules\dataGenerator\helpers\LatLonHelper;
 use app\services\CurrencyExchangeService;
-use Yii;
 use yii\base\Event;
 use yii\db\ActiveRecord;
 use yii\db\Exception;
@@ -17,7 +17,6 @@ use yii\helpers\Console;
 
 class CurrencyExchangeOrderFixture extends ARGenerator
 {
-
     private CurrencyExchangeService $service;
 
     public function __construct($config = [])
@@ -43,40 +42,40 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 
         [$sellCurrencyId, $buyCurrencyId] = $this->getRandCurrenciesPair();
 
-
         if (!$user || !$sellCurrencyId || !$buyCurrencyId) {
             return null;
         }
 
         $londonCenter = [51.509865, -0.118092];
-
         [$orderSellingLat, $orderSellingLon] = LatLonHelper::generateRandomPoint($londonCenter, 100);
         [$orderBuyingLat, $orderBuyingLon] = LatLonHelper::generateRandomPoint($londonCenter, 200);
 
         $crossRateOn = (int)static::getFaker()->boolean();
-
         $sellingCashOn = (int)static::getFaker()->boolean();
         $buyingCashOn = (int)static::getFaker()->boolean();
 
-        $sellPaymentMethodsIds = $this->getPaymentMethodsIds($sellCurrencyId);
-        $buyPaymentMethodsIds = $this->getPaymentMethodsIds($buyCurrencyId);
+        $sellingPaymentMethodsIds = $this->getPaymentMethodsIds($sellCurrencyId);
+        $buyingPaymentMethodsIds = $this->getPaymentMethodsIds($buyCurrencyId);
 
-        if (!$sellPaymentMethodsIds || !$buyPaymentMethodsIds) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. There is no Cash Payment method or no Payment Methods at all, yet.\n";
-            $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
-            Yii::$app->controller->stdout($message, Console::BG_GREY);
-            return null;
+        if ($sellingPaymentMethodsIds) {
+            $orderSellingPaymentMethodsIds = static::getFaker()->randomElements(
+                $sellingPaymentMethodsIds,
+                static::getFaker()->numberBetween(1, count($sellingPaymentMethodsIds))
+            );
+        } else {
+            $orderSellingPaymentMethodsIds = [];
+            $sellingCashOn = CurrencyExchangeOrder::CASH_ON;
         }
 
-        $orderSellPaymentMethodsIds = static::getFaker()->randomElements(
-            $sellPaymentMethodsIds,
-            static::getFaker()->numberBetween(1, count($sellPaymentMethodsIds))
-        );
-        $orderBuyPaymentMethodsIds = static::getFaker()->randomElements(
-            $buyPaymentMethodsIds,
-            static::getFaker()->numberBetween(1, count($buyPaymentMethodsIds))
-        );
+        if ($buyingPaymentMethodsIds) {
+            $orderBuyingPaymentMethodsIds = static::getFaker()->randomElements(
+                $buyingPaymentMethodsIds,
+                static::getFaker()->numberBetween(1, count($buyingPaymentMethodsIds))
+            );
+        } else {
+            $orderBuyingPaymentMethodsIds = [];
+            $buyingCashOn = CurrencyExchangeOrder::CASH_ON;
+        }
 
         $model = new CurrencyExchangeOrder([
             'selling_currency_id' => $sellCurrencyId,
@@ -86,11 +85,15 @@ class CurrencyExchangeOrderFixture extends ARGenerator
                 static::getFaker()->valid(static function ($v) {
                     return (bool)$v;
                 })->randomFloat(1, 0.01, 10),
+            'buying_rate' => $crossRateOn ? null :
+                static::getFaker()->valid(static function ($v) {
+                    return (bool)$v;
+                })->randomFloat(1, 0.01, 10),
             'selling_currency_min_amount' => $min_amount = static::getFaker()->randomNumber(2),
             'selling_currency_max_amount' => $min_amount + static::getFaker()->randomNumber(2),
             'status' => CurrencyExchangeOrder::STATUS_ON,
-            'selling_delivery_radius' => static::getFaker()->numberBetween(1, 50),
-            'buying_delivery_radius' => static::getFaker()->numberBetween(1, 50),
+            'selling_delivery_radius' => static::getFaker()->randomNumber(3),
+            'buying_delivery_radius' => static::getFaker()->randomNumber(3),
             'selling_location_lat' => $orderSellingLat,
             'selling_location_lon' => $orderSellingLon,
             'buying_location_lat' => $orderBuyingLat,
@@ -104,7 +107,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
         }
 
-        $this->service->updatePaymentMethods($model, $orderSellPaymentMethodsIds, $orderBuyPaymentMethodsIds);
+        $this->service->updatePaymentMethods($model, $orderSellingPaymentMethodsIds, $orderBuyingPaymentMethodsIds);
 
         return $model;
     }
@@ -116,7 +119,6 @@ class CurrencyExchangeOrderFixture extends ARGenerator
     {
         return $this->factoryModel();
     }
-
 
     /**
      * @param int $currencyId
@@ -154,8 +156,10 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             $message = "\n$class: creation skipped. There is no Currencies yet.\n";
             $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
+
             return [];
         }
+
         return [$currenciesPairIds[0]['id'], $currenciesPairIds[1]['id']];
     }
 
@@ -171,8 +175,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
         }
+
         return $user;
     }
-
-
 }
