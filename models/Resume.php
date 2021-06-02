@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\matchers\ModelLinker;
+use app\models\scenarios\Resume\UpdateScenario;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -56,11 +58,21 @@ class Resume extends ActiveRecord
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
+    public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
+
     public $keywordsFromForm = [];
+
+    public bool $keywordsChanged = false;
 
     public static function tableName(): string
     {
         return '{{%resume}}';
+    }
+
+    public function init()
+    {
+        $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+        parent::init();
     }
 
     public function rules(): array
@@ -263,17 +275,6 @@ class Resume extends ActiveRecord
             ->viaTable('{{%job_resume_match}}', ['resume_id' => 'id']);
     }
 
-    public function getMatchedVacancies(): VacancyQuery
-    {
-        return Vacancy::find()
-            ->live()
-            ->matchLanguages($this)
-            ->matchRadius($this)
-            ->andWhere([
-                '!=', Vacancy::tableName() . '.user_id', $this->user_id,
-            ]);
-    }
-
     public function getCounterMatches(): ActiveQuery
     {
         return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
@@ -282,25 +283,12 @@ class Resume extends ActiveRecord
 
     public function clearMatches()
     {
-        if ($this->processed_at !== null) {
-            $this->unlinkAll('matches', true);
-            $this->unlinkAll('counterMatches', true);
-
-            $this->setAttributes([
-                'processed_at' => null,
-            ]);
-
-            $this->save();
-        }
+        (new ModelLinker($this))->clearMatches();
     }
 
     public function afterSave($insert, $changedAttributes)
     {
-        if (isset($changedAttributes['status'])) {
-            if ($this->status == self::STATUS_OFF) {
-                $this->clearMatches();
-            }
-        }
+        (new UpdateScenario($this))->run();
 
         parent::afterSave($insert, $changedAttributes);
     }

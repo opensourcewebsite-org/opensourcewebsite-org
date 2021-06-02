@@ -22,6 +22,10 @@ class UpdateKeywordsByIdsScenario {
         $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);
         $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
 
+        if ($toDeleteIds || $toAddIds) {
+            $this->model->trigger(Resume::EVENT_KEYWORDS_UPDATED);
+        }
+
         foreach($toAddIds as $id) {
             (new JobResumeKeyword(['resume_id' => $this->model->id, 'job_keyword_id' => $id]))->save();
         }
