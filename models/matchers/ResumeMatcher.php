@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\matchers;
 
 use app\models\LanguageLevel;
@@ -11,12 +12,10 @@ use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 use yii\db\Expression;
 
-final class ResumeMatcher {
-
+final class ResumeMatcher
+{
     private Resume $model;
-
     private ModelLinker $linker;
-
     private string $comparingTable;
 
     public function __construct(Resume $model)
@@ -132,7 +131,7 @@ final class ResumeMatcher {
             }
             $expression .= ')) = (SELECT COUNT(*) FROM `vacancy_language` WHERE `vacancy`.`id` = `vacancy_language`.`vacancy_id`)';
         }
+
         return new Expression($expression);
     }
-
 }

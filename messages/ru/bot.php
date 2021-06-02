@@ -17,6 +17,7 @@ return [
     'Welcome developers, activists, volunteers, sponsors' => 'Приветствуем разработчиков, активистов, волонтеров, спонсоров',
     'Join and build the digital future' => 'Присоединяйтесь и создавайте цифровое будущее',
     'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
+    'Join us and let’s build the future together' => 'Присоединяйтесь к нам и давайте создавать это будущее вместе',
     'Hello' => 'Здравствуйте',
     'Welcome' => 'Добро пожаловать',
     'I am a virtual personal assistant, multilingual and available everywhere where there is internet, I adhere to a privacy policy that guarantees 100% confidentiality for your personal data' => 'Я - виртуальный персональный ассистент, поддерживаю множество языков и доступен везде где есть интернет, гарантирую полную приватность и конфиденциальность ваших персональных данных',

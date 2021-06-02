@@ -5,8 +5,8 @@ namespace app\models\matchers;
 
 use yii\db\ActiveRecord;
 
-class ModelLinker {
-
+class ModelLinker
+{
     private ActiveRecord $model;
 
     public function __construct(ActiveRecord $model)

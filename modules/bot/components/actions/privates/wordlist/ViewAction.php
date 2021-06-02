@@ -58,7 +58,10 @@ class ViewAction extends BaseAction
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render($this->id, compact('phrase')),
-                $buttons
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

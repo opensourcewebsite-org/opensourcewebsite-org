@@ -35,6 +35,7 @@ return [
     'Web Services We Use' => 'Используемые сервисы',
     'Join Us' => 'Присоединяйтесь к нам',
     'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
+    'Join us and let’s build the future together' => 'Присоединяйтесь к нам и давайте создавать это будущее вместе',
     'Debt Redistribution' => 'Перераспределение долгов',
     'Debt Redistribution for user "#{userId}"' => 'Перераспределение долгов для Пользователя "#{userId}"',
     'Loyalty program' => 'Программа лояльности',

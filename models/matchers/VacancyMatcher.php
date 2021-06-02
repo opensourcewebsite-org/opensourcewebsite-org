@@ -18,11 +18,8 @@ use yii\db\Expression;
 
 final class VacancyMatcher
 {
-
     private Vacancy $model;
-
     private ModelLinker $linker;
-
     private string $comparingTable;
 
     public function __construct(Vacancy $model)
@@ -125,6 +122,7 @@ final class VacancyMatcher
             $newQuery->joinWith('keywords kw');
             $newQuery = $newQuery->andWhere(['in', 'kw.id', $keywordIds]);
         }
+
         return $newQuery;
     }
 
@@ -134,6 +132,7 @@ final class VacancyMatcher
         if ($this->model->gender_id) {
             $newQuery->andWhere(['user.gender_id' => $this->model->gender_id]);
         }
+
         return $newQuery;
     }
 
