@@ -29,10 +29,15 @@ class UpdateLanguagesScenario {
         $toAdd = array_diff_key($newLanguagesMapped, $currentLanguagesMapped);
         $sameIds = array_intersect_key($currentLanguagesMapped, $newLanguagesMapped);
         $toChange = [];
+
         foreach ($sameIds as $id => $langLevel) {
             if ($langLevel !== $newLanguagesMapped[$id]) {
                 $toChange[$id] = $newLanguagesMapped[$id];
             }
+        }
+
+        if ($toAdd || $toDelete || $toChange) {
+            $this->model->trigger(Vacancy::EVENT_LANGUAGES_CHANGED);
         }
 
         if ($toDelete) {

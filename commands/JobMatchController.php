@@ -10,7 +10,6 @@ use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\models\Resume;
 use app\models\Vacancy;
-use yii\console\Exception;
 
 /**
  * Class JobMatchController
