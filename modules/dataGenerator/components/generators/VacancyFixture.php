@@ -6,6 +6,7 @@ namespace app\modules\dataGenerator\components\generators;
 use app\models\Currency;
 use app\models\Gender;
 use app\models\JobKeyword;
+use app\models\matchers\ModelLinker;
 use app\models\User;
 use app\models\Vacancy;
 use app\modules\dataGenerator\helpers\LatLonHelper;
@@ -66,7 +67,9 @@ class VacancyFixture extends ARGenerator
             throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
         }
 
-        $this->linkKeywords($model);
+        if ($this->faker->boolean() && $keywords = $this->getRandomKeywords()) {
+            (new ModelLinker($model))->linkAll('keywords', $keywords);
+        }
 
         return $model;
     }
@@ -77,17 +80,6 @@ class VacancyFixture extends ARGenerator
     public function load(): ActiveRecord
     {
         return $this->factoryModel();
-    }
-
-    private function linkKeywords(Vacancy $model)
-    {
-        $keywords = JobKeyword::find()->orderByRandAlt(4)->all();
-
-        if ($keywords) {
-            foreach ($keywords as $keyword) {
-                $model->link('keywords', $keyword);
-            }
-        }
     }
 
     private function findUser(): ?User
@@ -115,6 +107,17 @@ class VacancyFixture extends ARGenerator
             ->orderByRandAlt(1)
             ->one();
         return $currency;
+    }
+
+    /**
+     * @return array<JobKeyword>
+     */
+    public function getRandomKeywords(): array
+    {
+        $numOfKeywords = $this->faker->randomNumber(1);
+        return JobKeyword::find()
+            ->orderByRandAlt($numOfKeywords)
+            ->all();
     }
 
     private function getRandomGender(): ?Gender
