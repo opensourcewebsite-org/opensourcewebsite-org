@@ -5,6 +5,7 @@ namespace app\models;
 
 use app\components\helpers\ArrayHelper;
 use app\models\interfaces\ModelWithLocationInterface;
+use app\models\matchers\ModelLinker;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use app\models\queries\VacancyQuery;
@@ -62,7 +63,18 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
+    public const EVENT_KEYWORDS_CHANGED = 'keywordsChanged';
+    public const EVENT_LANGUAGES_CHANGED = 'languagesChanged';
+
     public $keywordsFromForm = [];
+
+    public function init()
+    {
+        $this->on(self::EVENT_KEYWORDS_CHANGED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_LANGUAGES_CHANGED, [$this, 'clearMatches']);
+
+        parent::init();
+    }
 
     public static function tableName(): string
     {
@@ -280,20 +292,6 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
             ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id']);
     }
 
-    public function clearMatches()
-    {
-        if ($this->processed_at !== null) {
-            $this->unlinkAll('matches', true);
-            $this->unlinkAll('counterMatches', true);
-
-            $this->setAttributes([
-                'processed_at' => null,
-            ]);
-
-            $this->save();
-        }
-    }
-
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status'])) {
@@ -303,6 +301,11 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
         }
 
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    public function clearMatches()
+    {
+        (new ModelLinker($this))->clearMatches();
     }
 
     public function notPossibleToChangeStatus(): array

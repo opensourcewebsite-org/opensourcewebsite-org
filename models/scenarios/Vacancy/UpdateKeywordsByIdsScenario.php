@@ -23,6 +23,10 @@ class UpdateKeywordsByIdsScenario {
         $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);
         $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
 
+        if ($toAddIds || $toDeleteIds) {
+            $this->model->trigger(Vacancy::EVENT_KEYWORDS_CHANGED);
+        }
+
         foreach($toAddIds as $id) {
             (new JobVacancyKeyword(['vacancy_id' => $this->model->id, 'job_keyword_id' => $id]))->save();
         }
