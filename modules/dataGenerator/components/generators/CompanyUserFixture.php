@@ -3,19 +3,18 @@ declare(strict_types=1);
 
 namespace app\modules\dataGenerator\components\generators;
 
+use Yii;
 use app\models\Company;
 use app\models\CompanyUser;
 use app\models\Currency;
 use app\models\User;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
-use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
 class CompanyUserFixture extends ARGenerator
 {
-
     private Generator $faker;
 
     public function __construct($config = [])
@@ -61,7 +60,6 @@ class CompanyUserFixture extends ARGenerator
         return $this->factoryModel();
     }
 
-
     private function findUser(): ?User
     {
         /** @var User $user */
@@ -75,6 +73,7 @@ class CompanyUserFixture extends ARGenerator
             $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
         }
+
         return $user;
     }
 
@@ -86,6 +85,7 @@ class CompanyUserFixture extends ARGenerator
             ->where(['in', 'code', ['USD', 'EUR', 'RUB', 'ALL']])
             ->orderByRandAlt(1)
             ->one();
+
         return $currency;
     }
 
