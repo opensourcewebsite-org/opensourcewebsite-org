@@ -42,6 +42,7 @@ use yii\db\Query;
  * @property Contact $contact
  * @property Contact[] $contactsFromMe
  * @property Contact[] $contactsToMe
+ * @property UserLanguage[] $languages
  */
 class User extends ActiveRecord implements IdentityInterface
 {
