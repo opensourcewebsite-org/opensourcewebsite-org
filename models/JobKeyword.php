@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\JobKeywordQuery;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -28,6 +29,11 @@ class JobKeyword extends ActiveRecord
             [['keyword'], 'string'],
             [['keyword'], 'unique'],
         ];
+    }
+
+    public static function find(): JobKeywordQuery
+    {
+        return new JobKeywordQuery(get_called_class());
     }
 
     public function getVacancies(): ActiveQuery

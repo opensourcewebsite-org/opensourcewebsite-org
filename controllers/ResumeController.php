@@ -47,7 +47,10 @@ class ResumeController extends Controller
         $searchModel = new ResumeSearch(['status' => Resume::STATUS_ON]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', ['searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**

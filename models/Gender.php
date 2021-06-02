@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\GenderQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -9,6 +10,7 @@ use yii\db\ActiveRecord;
  * @package app\models
  *
  * @property string $name
+ * @property int $id
  */
 class Gender extends ActiveRecord
 {
@@ -23,5 +25,10 @@ class Gender extends ActiveRecord
             [ [ 'name' ], 'string' ],
             [ [ 'name' ], 'required' ],
         ];
+    }
+
+    public static function find(): GenderQuery
+    {
+        return new GenderQuery(get_called_class());
     }
 }
