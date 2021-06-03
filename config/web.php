@@ -14,6 +14,8 @@ $settingValidations = require __DIR__ . '/setting_validations.php';
 $params = array_merge($params, $settingValidations);
 $db = require __DIR__ . '/db.php';
 $common = require __DIR__ . '/common.php';
+$events = require __DIR__ . "/events.php";
+
 
 $config = [
     'id' => 'basic',
@@ -152,8 +154,9 @@ $config = [
     ],
 ];
 
+
 //$config have more priority than $common
-$config = ArrayHelper::merge($common, $config);
+$config = ArrayHelper::merge($common, array_merge($config, $events));
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
@@ -173,18 +176,5 @@ if (YII_ENV_DEV) {
 
     $config['components']['log']['targets']['file']['levels'] = ['error', 'warning'];
 }
-
-// TODO в момент обновления поля last_activity_at, надо проверять разницу с последним обновлением. и если разница больше чем требуемая (30 дней) то в сервисах бота очищать совпадения всех обьектов пользователя и processed_at обьектов занести null
-Event::on(Application::class, Application::EVENT_BEFORE_REQUEST, function ($event) {
-    /** @var Application $app */
-    $app = $event->sender;
-
-    /** @var \app\models\User|null $user */
-    $user = $app->user->getIdentity();
-
-    if (($user !== null) && !(Yii::$app->user->isGuest)) {
-        $user->updateLastActivity();
-    }
-});
 
 return $config;
