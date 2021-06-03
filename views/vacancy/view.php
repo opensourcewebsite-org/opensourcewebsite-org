@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
-use app\models\Resume;
 use app\models\Vacancy;
 use yii\helpers\Html;
 use yii\helpers\Url;

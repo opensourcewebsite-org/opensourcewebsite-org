@@ -9,6 +9,7 @@ use app\widgets\Alert;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
 use yii\grid\GridView;
@@ -87,6 +88,14 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             [
                                 'label' => Yii::t('app', 'Offers'),
                                 'enableSorting' => false,
+                                'format' => 'raw',
+                                'value' => function(Resume $model){
+                                    return $model->getMatches()->count() ?
+                                        Html::a(
+                                            $model->getMatches()->count(),
+                                            Url::to(['/vacancy/show-matches', 'resumeId' => $model->id]),
+                                        ) : '';
+                                }
                             ],
                             [
                                 'class' => ActionColumn::class,
