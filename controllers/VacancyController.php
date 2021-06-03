@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\JobResumeMatch;
+use app\models\Resume;
 use Yii;
 use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\JobVacancyKeyword;
@@ -14,6 +16,7 @@ use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
 use app\models\search\VacancySearch;
+use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\filters\AccessControl;
@@ -182,6 +185,25 @@ class VacancyController extends Controller {
         ]);
     }
 
+    public function actionShowMatches(int $resumeId): string
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => $this->findResumeByIdAndCurrentUser($resumeId)->getMatches()
+        ]);
+
+        return $this->render('matches', ['dataProvider' => $dataProvider, 'resumeId' => $resumeId]);
+    }
+
+    public function actionViewMatch(int $resumeId, int $vacancyId): string
+    {
+        $matchedVacancy = $this->findMatchedVacancyByIdAndResume(
+            $vacancyId,
+            $this->findResumeByIdAndCurrentUser($resumeId)
+        );
+
+        return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
+    }
+
     private function findModelByIdAndCurrentUser(int $id): Vacancy
     {
         /** @var WebVacancy $model */
@@ -192,6 +214,26 @@ class VacancyController extends Controller {
             return $model;
         }
 
+        throw new NotFoundHttpException('Requested Page Not Found');
+    }
+
+    private function findResumeByIdAndCurrentUser(int $id): Resume
+    {
+        /** @var Resume $model */
+        if ($model = Resume::find()
+            ->where(['id' => $id])
+            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->one()) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Requested Page Not Found');
+    }
+    private function findMatchedVacancyByIdAndResume(int $id, Resume $resume)
+    {
+        if ($vacancy = $resume->getMatches()->where(['id' => $id])->one()) {
+            return $vacancy;
+        }
         throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

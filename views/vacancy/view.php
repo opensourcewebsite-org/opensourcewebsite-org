@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
-use app\models\Resume;
 use app\models\Vacancy;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -107,6 +106,18 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'attribute' => 'gender_id',
                                         'value' => function() use ($model) {
                                             return $model->gender ? $model->gender->name : '';
+                                        }
+                                    ],
+                                    [
+                                        'label' => Yii::t('app', 'Offers'),
+                                        'visible' => $model->getMatches()->count(),
+                                        'format' => 'raw',
+                                        'value' => function() use ($model) {
+                                            return $model->getMatches()->count() ?
+                                                Html::a(
+                                                    $model->getMatches()->count(),
+                                                    Url::to(['/resume/show-matches', 'vacancyId' => $model->id]),
+                                                ) : '';
                                         }
                                     ],
                                 ]
