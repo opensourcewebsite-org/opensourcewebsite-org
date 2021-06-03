@@ -9,8 +9,10 @@ use yii\web\View;
 use yii\widgets\DetailView;
 use app\widgets\buttons\EditButton;
 
-/* @var $this View */
-/* @var $model Resume */
+/**
+ * @var View $this
+ * @var Resume $model
+ */
 
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
@@ -99,6 +101,18 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                 );
                                         },
                                         'format' => 'raw'
+                                    ],
+                                    [
+                                        'label' => Yii::t('app', 'Offers'),
+                                        'visible' => $model->getMatches()->count(),
+                                        'format' => 'raw',
+                                        'value' => function() use ($model) {
+                                            return $model->getMatches()->count() ?
+                                                Html::a(
+                                                    $model->getMatches()->count(),
+                                                    Url::to(['/vacancy/show-matches', 'resumeId' => $model->id]),
+                                                ) : '';
+                                        }
                                     ],
                                 ]
                             ]) ?>
