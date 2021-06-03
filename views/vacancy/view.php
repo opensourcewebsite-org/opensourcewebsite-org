@@ -108,6 +108,18 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             return $model->gender ? $model->gender->name : '';
                                         }
                                     ],
+                                    [
+                                        'label' => Yii::t('app', 'Offers'),
+                                        'visible' => $model->getMatches()->count(),
+                                        'format' => 'raw',
+                                        'value' => function() use ($model) {
+                                            return $model->getMatches()->count() ?
+                                                Html::a(
+                                                    $model->getMatches()->count(),
+                                                    Url::to(['/resume/show-matches', 'vacancyId' => $model->id]),
+                                                ) : '';
+                                        }
+                                    ],
                                 ]
                             ]) ?>
                         </div>

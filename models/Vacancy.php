@@ -49,7 +49,7 @@ use yii\web\JsExpression;
  * @property Resume[] $matchedResumes
  * @property Resume[] $counterMatches
  * @property VacancyLanguage[] $languagesWithLevels
- * @property User $globalUser
+ * @property User $user
  * @property JobKeyword[] $keywords
  *
  */
@@ -282,6 +282,11 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
     }
 
     public function getGlobalUser(): ActiveQuery
+    {
+        return $this->getUser();
+    }
+
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }

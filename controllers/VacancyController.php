@@ -187,15 +187,19 @@ class VacancyController extends Controller {
 
     public function actionShowMatches(int $resumeId): string
     {
-        $resume = $this->findResumeByIdAndCurrentUser($resumeId);
-        $dataProvider = new ActiveDataProvider(['query' => $resume->getMatches()]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $this->findResumeByIdAndCurrentUser($resumeId)->getMatches()
+        ]);
+
         return $this->render('matches', ['dataProvider' => $dataProvider, 'resumeId' => $resumeId]);
     }
 
     public function actionViewMatch(int $resumeId, int $vacancyId): string
     {
-        $resume = $this->findResumeByIdAndCurrentUser($resumeId);
-        $matchedVacancy = $this->findMatchedVacancyByIdAndResume($vacancyId, $resume);
+        $matchedVacancy = $this->findMatchedVacancyByIdAndResume(
+            $vacancyId,
+            $this->findResumeByIdAndCurrentUser($resumeId)
+        );
 
         return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
     }

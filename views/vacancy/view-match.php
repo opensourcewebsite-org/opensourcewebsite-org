@@ -50,18 +50,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     ],
                                     'remote_on:boolean',
                                     [
-                                        'attribute' => 'location',
-                                        'visible' => !$model->isRemote(),
-                                        'value' => function () use ($model) {
-                                            return Html::a(
-                                                $model->location,
-                                                Url::to(['view-location', 'id' => $model->id]),
-                                                ['class' => 'modal-btn-ajax']
-                                            ) ;
-                                        },
-                                        'format' => 'raw'
-                                    ],
-                                    [
                                         'attribute' => 'company_id',
                                         'value' => function() use ($model) {
                                             return $model->company ? $model->company->name : '';
@@ -111,4 +99,4 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
     </div>
 <?php endif; ?>
 
-<?= ContactWidget::widget(['user' => $model->globalUser])?>
+<?= ContactWidget::widget(['user' => $model->user])?>

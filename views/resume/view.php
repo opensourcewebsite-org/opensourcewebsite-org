@@ -9,8 +9,10 @@ use yii\web\View;
 use yii\widgets\DetailView;
 use app\widgets\buttons\EditButton;
 
-/* @var $this View */
-/* @var $model Resume */
+/**
+ * @var View $this
+ * @var Resume $model
+ */
 
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
