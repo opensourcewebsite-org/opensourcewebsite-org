@@ -17,53 +17,22 @@ use yii\grid\GridView;
 /**
  * @var View $this
  * @var ActiveDataProvider $dataProvider
- * @var ResumeSearch $searchModel
+ * @var int $vacancyId
  */
 
-$this->title = Yii::t('app', 'Resumes');
+$this->title = Yii::t('app', 'Matched Resumes');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' =>['/vacancy/index']];
+$this->params['breadcrumbs'][] = ['label' => "#{$vacancyId}", 'url' =>['/vacancy/view', 'id' => $vacancyId]];
 $this->params['breadcrumbs'][] = $this->title;
-
-$displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
 
 ?>
 <div class="resume-index">
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item mx-1">
-                            <?= Html::a(Yii::t('app', 'Active'),
-                                ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_ON],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? 'active' : '')
-                                ]);
-                            ?>
-                        </li>
-                        <li class="nav-item  mx-1">
-                            <?= Html::a(Yii::t('app', 'Inactive'),
-                                ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? '' : 'active')
-                                ]);
-                            ?>
-                        </li>
-                        <li class="nav-item align-self-center mr-4  mx-1">
-                            <?= AddButton::widget([
-                                'url' => ['create'],
-                                'options' => [
-                                    'title' => 'New Resume',
-                                ]
-                            ]); ?>
-                        </li>
-                    </ul>
-                </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        //'filterModel' => $searchModel,
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
@@ -86,30 +55,14 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                 'enableSorting' => false,
                             ],
                             [
-                                'label' => Yii::t('app', 'Offers'),
-                                'enableSorting' => false,
-                                'format' => 'raw',
-                                'value' => function(Resume $model){
-                                    return $model->getMatches()->count() ?
-                                        Html::a(
-                                            $model->getMatches()->count(),
-                                            Url::to(['/vacancy/show-matches', 'resumeId' => $model->id]),
-                                        ) : '';
-                                }
-                            ],
-                            [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url) {
+                                    'view' => function ($url, Resume $model) use($vacancyId) {
+                                        $url = Url::to(['/resume/view-match', 'vacancyId' => $vacancyId, 'resumeId' => $model->id]);
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
                                     },
-                                    'update' => function ($url) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-pen', 'data-toggle' => 'tooltip', 'title' => 'Update']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
-                                    },
-                                    'delete'
                                 ],
                             ],
                         ],
@@ -137,3 +90,4 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
         </div>
     </div>
 </div>
+

@@ -5,6 +5,7 @@ namespace app\modules\dataGenerator\components\generators;
 
 use app\models\Currency;
 use app\models\JobKeyword;
+use app\models\matchers\ModelLinker;
 use app\models\Resume;
 use app\models\User;
 use app\models\Vacancy;
@@ -52,9 +53,13 @@ class ResumeFixture extends ARGenerator
         $model->remote_on = $this->faker->boolean();
         $model->name = $this->faker->title();
         $model->experiences = $this->faker->realText();
-        $model->min_hourly_rate = $this->faker->randomNumber(2);
+
+        if ($this->faker->boolean()) {
+            $model->min_hourly_rate = $this->faker->randomNumber(2);
+            $model->currency_id = $currency->id;
+        }
+
         $model->search_radius = $this->faker->randomNumber(3);
-        $model->currency_id = $currency->id;
         $model->expectations = $this->faker->realText();
         $model->skills = $this->faker->realText();
         $model->location_lat = $location[0];
@@ -62,6 +67,10 @@ class ResumeFixture extends ARGenerator
 
         if (!$model->save()) {
             throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
+        }
+
+        if ($this->faker->boolean() && $keywords = $this->getRandomKeywords()) {
+            (new ModelLinker($model))->linkAll('keywords', $keywords);
         }
 
         return $model;
@@ -108,5 +117,16 @@ class ResumeFixture extends ARGenerator
         $message = "\n$class: creation skipped. There is no Currencies yet.\n";
         $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
         Yii::$app->controller->stdout($message, Console::BG_GREY);
+    }
+
+    /**
+     * @return array<JobKeyword>
+     */
+    public function getRandomKeywords(): array
+    {
+        $numOfKeywords = $this->faker->randomNumber(1);
+        return JobKeyword::find()
+            ->orderByRandAlt($numOfKeywords)
+            ->all();
     }
 }

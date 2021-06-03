@@ -47,6 +47,7 @@ use yii\web\JsExpression;
  * @property User $user
  * @property Vacancy[] $matches
  * @property UserLanguage[] $languages
+ * @property JobKeyword[] $keywords
  */
 class Resume extends ActiveRecord
 {
@@ -265,6 +266,11 @@ class Resume extends ActiveRecord
     }
 
     public function getGlobalUser(): ActiveQuery
+    {
+        return $this->getUser();
+    }
+
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
