@@ -22,6 +22,7 @@ use yii\db\ActiveRecord;
  */
 class SJobCompanyController extends CrudController
 {
+    public const DEFAULT_PAGE_SIZE = 9;
     protected $updateAttributes = [
         'name',
         'description',
@@ -80,7 +81,7 @@ class SJobCompanyController extends CrudController
 
         $pagination = new Pagination([
             'totalCount' => $companiesCount,
-            'pageSize' => 9,
+            'pageSize' => static::DEFAULT_PAGE_SIZE,
             'params' => [
                 'page' => $page,
             ],

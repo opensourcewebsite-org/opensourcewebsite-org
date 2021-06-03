@@ -45,7 +45,7 @@ class CompanyUser extends ActiveRecord
             [['user_id', 'company_id'], 'required'],
             ['user_role', 'integer'],
             ['user_role', 'in', 'range' => array_keys(static::getRoles())],
-            ['user_role', 'default', 'value' => static::ROLE_HR],
+            ['user_role', 'default', 'value' => static::ROLE_OWNER],
         ];
     }
 
