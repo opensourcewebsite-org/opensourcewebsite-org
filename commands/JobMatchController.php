@@ -10,6 +10,7 @@ use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\models\Resume;
 use app\models\Vacancy;
+use yii\db\ActiveRecord;
 
 /**
  * Class JobMatchController
@@ -37,13 +38,17 @@ class JobMatchController extends Controller implements CronChainedInterface
 
         foreach ($this->getResumes() as $resume) {
             try {
-                (new ResumeMatcher($resume))->match();
+                $matchedVacanciesCount = (new ResumeMatcher($resume))->match();
 
                 $resume->setAttributes([
                     'processed_at' => time(),
                 ]);
                 $resume->save();
+
+                $this->printMatchedCount($resume, $matchedVacanciesCount);
+
                 $updatesCount++;
+
             } catch (\Exception $e) {
                 echo 'ERROR: Resume #' . $resume->id . ': ' . $e->getMessage() . "\n";
             }
@@ -61,13 +66,14 @@ class JobMatchController extends Controller implements CronChainedInterface
 
         foreach ($this->getVacancies() as $vacancy) {
             try {
-                (new VacancyMatcher($vacancy))->match();
+                $matchedResumesCount = (new VacancyMatcher($vacancy))->match();
 
                 $vacancy->setAttributes([
                     'processed_at' => time(),
                 ]);
-
                 $vacancy->save();
+
+                $this->printMatchedCount($vacancy, $matchedResumesCount);
 
                 $updatesCount++;
 
@@ -79,6 +85,11 @@ class JobMatchController extends Controller implements CronChainedInterface
         if ($updatesCount) {
             $this->output('Vacancies updated: ' . $updatesCount);
         }
+    }
+
+    private function printMatchedCount(ActiveRecord $model, int $count)
+    {
+        $this->output("Number of Matches for " . get_class($model) . " : {$count}\n");
     }
 
     public function actionClearMatches()
