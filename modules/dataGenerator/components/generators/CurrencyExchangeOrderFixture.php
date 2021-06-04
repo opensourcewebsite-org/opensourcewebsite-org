@@ -23,7 +23,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
     public function init()
     {
         if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create Exchange Order - there are no Currency in DB!');
+            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
         }
 
         $this->service = new CurrencyExchangeService();
