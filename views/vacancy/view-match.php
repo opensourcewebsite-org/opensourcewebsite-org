@@ -46,8 +46,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     ],
                                     [
                                         'attribute' => 'max_hourly_rate',
-                                        'visible' => (bool)$model->max_hourly_rate,
-                                        'value' => $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '',
+                                        'value' => $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞',
                                     ],
                                     'remote_on:boolean',
                                     [

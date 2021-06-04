@@ -47,8 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                                 [
                                     'attribute' => 'min_hourly_rate',
-                                    'visible' => (bool)$model->min_hourly_rate,
-                                    'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '',
+                                    'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞',
                                 ],
                                 'remote_on:boolean',
                             ]
