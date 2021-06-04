@@ -21,8 +21,9 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 
     public function __construct($config = [])
     {
-        parent::__construct($config);
         $this->service = new CurrencyExchangeService();
+
+        parent::__construct($config);
     }
 
     /**
@@ -51,17 +52,17 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         [$orderSellingLat, $orderSellingLon] = LatLonHelper::generateRandomPoint($londonCenter, 100);
         [$orderBuyingLat, $orderBuyingLon] = LatLonHelper::generateRandomPoint($londonCenter, 200);
 
-        $crossRateOn = (int)static::getFaker()->boolean();
-        $sellingCashOn = (int)static::getFaker()->boolean();
-        $buyingCashOn = (int)static::getFaker()->boolean();
+        $crossRateOn = (int)$this->faker->boolean();
+        $sellingCashOn = (int)$this->faker->boolean();
+        $buyingCashOn = (int)$this->faker->boolean();
 
         $sellingPaymentMethodsIds = $this->getPaymentMethodsIds($sellCurrencyId);
         $buyingPaymentMethodsIds = $this->getPaymentMethodsIds($buyCurrencyId);
 
         if ($sellingPaymentMethodsIds) {
-            $orderSellingPaymentMethodsIds = static::getFaker()->randomElements(
+            $orderSellingPaymentMethodsIds = $this->faker->randomElements(
                 $sellingPaymentMethodsIds,
-                static::getFaker()->numberBetween(1, count($sellingPaymentMethodsIds))
+                $this->faker->numberBetween(1, count($sellingPaymentMethodsIds))
             );
         } else {
             $orderSellingPaymentMethodsIds = [];
@@ -69,32 +70,32 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         }
 
         if ($buyingPaymentMethodsIds) {
-            $orderBuyingPaymentMethodsIds = static::getFaker()->randomElements(
+            $orderBuyingPaymentMethodsIds = $this->faker->randomElements(
                 $buyingPaymentMethodsIds,
-                static::getFaker()->numberBetween(1, count($buyingPaymentMethodsIds))
+                $this->faker->numberBetween(1, count($buyingPaymentMethodsIds))
             );
         } else {
             $orderBuyingPaymentMethodsIds = [];
             $buyingCashOn = CurrencyExchangeOrder::CASH_ON;
         }
 
+        $sellingRate = $crossRateOn ? null :
+            $this->faker->valid(static function ($v) {
+                return (bool)$v;
+            })->randomFloat(1, 0.01, 10);
+        $buyingRate = $crossRateOn ? null : 1 / $sellingRate;
+
         $model = new CurrencyExchangeOrder([
             'selling_currency_id' => $sellCurrencyId,
             'buying_currency_id' => $buyCurrencyId,
             'user_id' => $user->id,
-            'selling_rate' => $crossRateOn ? null :
-                static::getFaker()->valid(static function ($v) {
-                    return (bool)$v;
-                })->randomFloat(1, 0.01, 10),
-            'buying_rate' => $crossRateOn ? null :
-                static::getFaker()->valid(static function ($v) {
-                    return (bool)$v;
-                })->randomFloat(1, 0.01, 10),
-            'selling_currency_min_amount' => $min_amount = static::getFaker()->randomNumber(2),
-            'selling_currency_max_amount' => $min_amount + static::getFaker()->randomNumber(2),
+            'selling_rate' => $sellingRate,
+            'buying_rate' => $buyingRate,
+            'selling_currency_min_amount' => $min_amount = $this->faker->boolean() ? $this->faker->randomNumber(2) : null,
+            'selling_currency_max_amount' => $this->faker->boolean() ? $min_amount + $this->faker->randomNumber(2) : null,
             'status' => CurrencyExchangeOrder::STATUS_ON,
-            'selling_delivery_radius' => static::getFaker()->randomNumber(3),
-            'buying_delivery_radius' => static::getFaker()->randomNumber(3),
+            'selling_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
+            'buying_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
             'selling_location_lat' => $orderSellingLat,
             'selling_location_lon' => $orderSellingLon,
             'buying_location_lat' => $orderBuyingLat,
