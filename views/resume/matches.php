@@ -43,16 +43,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'min_hourly_rate',
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'currency_id',
-                                'value' => function($model) {
-                                    /* @var $model Resume */
-                                    return $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '';
-                                },
-                                'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name'),
-                                'enableSorting' => false,
+                                'visible' => (bool)$model->min_hourly_rate,
+                                'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '',
                             ],
                             [
                                 'class' => ActionColumn::class,
@@ -90,4 +82,3 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-

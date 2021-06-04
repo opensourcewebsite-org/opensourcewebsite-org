@@ -40,14 +40,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'expectations:ntext',
                                 [
                                     'label' => Yii::t('app', 'Keywords'),
+                                    'visible' => (bool)$model->keywords,
                                     'value' => function () use ($model) {
                                         return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
                                     }
                                 ],
-                                'min_hourly_rate:decimal',
                                 [
-                                    'attribute' => 'currency_id',
-                                    'value' => $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '',
+                                    'attribute' => 'min_hourly_rate',
+                                    'visible' => (bool)$model->min_hourly_rate,
+                                    'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '',
                                 ],
                                 'remote_on:boolean',
                             ]

@@ -8,23 +8,21 @@ use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use yii\db\ActiveRecord;
 
-class JobKeywordsFixture extends ARGenerator
+class JobKeywordFixture extends ARGenerator
 {
-
     private Generator $faker;
 
     public function __construct($config = [])
     {
         $this->faker = FakerFactory::create();
+
         parent::__construct($config);
     }
 
-
     protected function factoryModel(): ?ActiveRecord
     {
-
         $model = new JobKeyword([
-            'keyword' => $this->faker->word()
+            'keyword' => $this->faker->word(),
         ]);
 
         if (!$model->save()) {

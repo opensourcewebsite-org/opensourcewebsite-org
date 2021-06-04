@@ -33,6 +33,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         if (!Currency::find()->exists()) {
             throw new ARGeneratorException('Impossible to create Exchange Order - there are no Currency in DB!');
         }
+
         parent::init();
     }
 
@@ -146,7 +147,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
     {
         $currenciesPairIds = Currency::find()
             ->select('id')
-            ->where(['in', 'code', ['USD', 'EUR', 'RUB', 'ALL']])
+            ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
             ->orderByRandAlt(2)
             ->asArray()
             ->all();
