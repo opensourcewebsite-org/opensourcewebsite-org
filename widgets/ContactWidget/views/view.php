@@ -35,13 +35,13 @@ use app\models\User;
                                 <?= Html::mailto($user->email, $user->email) ?>
                             </td>
                         </tr>
-                        <?php if ($user->botUser) : ?>
+                        <?php if ($user->botUser && $user->botUser->provider_username) : ?>
                             <tr>
                                 <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?></th>
                                 <td class="align-middle">
                                     <?= Html::a(
-                                        $user->botUser->getFullName(),
-                                        'https://t.me/user?id=' . $user->botUser->provider_user_id
+                                        '@' . $user->botUser->provider_username,
+                                        'https://t.me/' . $user->botUser->provider_username
                                     ) ?>
                                 </td>
                             </tr>
