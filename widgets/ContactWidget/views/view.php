@@ -29,12 +29,14 @@ use app\models\User;
                                 <?= Html::a('view', Url::to(['/contact/view', 'id' => $user->id])) ?>
                             </td>
                         </tr>
+                        <?php if ($user->email) : ?>
                         <tr>
                             <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?></th>
                             <td class="align-middle">
                                 <?= Html::mailto($user->email, $user->email) ?>
                             </td>
                         </tr>
+                        <?php endif; ?>
                         <?php if ($user->botUser && $user->botUser->provider_user_name) : ?>
                             <tr>
                                 <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?></th>
