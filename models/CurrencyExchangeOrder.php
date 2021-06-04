@@ -43,6 +43,8 @@ use yii\web\JsExpression;
  * @property CurrencyExchangeOrderMatch[] $currencyExchangeOrderMatches
  * @property CurrencyExchangeOrderMatch[] $currencyExchangeOrderMatches0
  * @property CurrencyExchangeOrderSellingPaymentMethod[] $currencyExchangeOrderSellingPaymentMethods
+ * @property string $selling_location
+ * @property string $buying_location
  */
 class CurrencyExchangeOrder extends ActiveRecord
 {

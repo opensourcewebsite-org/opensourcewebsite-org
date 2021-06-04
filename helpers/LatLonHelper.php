@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace app\modules\dataGenerator\helpers;
+namespace app\helpers;
 
 class LatLonHelper {
 
@@ -48,5 +48,10 @@ class LatLonHelper {
         $lat_rads = asin($z3);
 
         return array_map('rad2deg', [$lat_rads, $lng_rads]);
+    }
+
+    public static function getCircleDistance(float $lat1, float $lon1, float $lat2, float $lon2) {
+        $rad = M_PI / 180;
+        return acos(sin($lat2*$rad) * sin($lat1*$rad) + cos($lat2*$rad) * cos($lat1*$rad) * cos($lon2*$rad - $lon1*$rad)) * 6371;// Kilometers
     }
 }

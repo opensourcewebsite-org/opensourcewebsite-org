@@ -10,11 +10,9 @@ use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
 use app\models\User;
-use app\modules\dataGenerator\helpers\LatLonHelper;
+use app\helpers\LatLonHelper;
 use app\services\CurrencyExchangeService;
-use yii\base\Event;
 use yii\db\ActiveRecord;
-use yii\db\Exception;
 use yii\helpers\Console;
 
 class CurrencyExchangeOrderFixture extends ARGenerator

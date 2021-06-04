@@ -1,20 +1,44 @@
 <?php
 
+use app\helpers\LatLonHelper;
+use app\models\CurrencyExchangeOrder;
 use app\widgets\ContactWidget\ContactWidget;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use yii\web\View;
 
 /**
- * @var $this \yii\web\View
- * @var $orderModel \app\models\CurrencyExchangeOrder
- * @var $matchOrderModel \app\models\CurrencyExchangeOrder
+ * @var View $this
+ * @var CurrencyExchangeOrder $orderModel
+ * @var CurrencyExchangeOrder $matchOrderModel
  */
+
 $this->title = Yii::t('app', 'Offer');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['view-offers', 'id' => $orderModel->id]];
 $this->params['breadcrumbs'][] = $matchOrderModel->id;
+
+$buyingDistance = '';
+$sellingDistance = '';
+
+if ( $orderModel->selling_location && $matchOrderModel->buying_location ) {
+    $buyingDistance = LatLonHelper::getCircleDistance(
+        (float)$orderModel->selling_location_lat,
+        (float)$orderModel->selling_location_lon,
+        (float)$matchOrderModel->buying_location_lat,
+        (float)$matchOrderModel->buying_location_lon
+    );
+    $buyingDistance =' (' . (string)round($buyingDistance) . ' km)';
+}
+
+if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
+    $sellingDistance = LatLonHelper::getCircleDistance(
+        (float)$orderModel->buying_location_lat,
+        (float)$orderModel->buying_location_lon,
+        (float)$matchOrderModel->selling_location_lat,
+        (float)$matchOrderModel->selling_location_lon
+    );
+    $sellingDistance = ' (' . (string)round($sellingDistance) . ' km)';
+}
 
 ?>
 <div class="row">
@@ -100,7 +124,9 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                         <tbody>
                         <?php if ($matchOrderModel->selling_cash_on) : ?>
                             <tr>
-                                <td><?= Yii::t('app', 'Cash') ?></td>
+                                <td>
+                                    <?= Yii::t('app', 'Cash') . $sellingDistance ?>
+                                </td>
                             </tr>
                         <?php endif; ?>
                         <?php foreach ($matchOrderModel->getSellingPaymentMethods()->asArray()->all() as $method) : ?>
@@ -127,7 +153,7 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                         <tbody>
                         <?php if ($matchOrderModel->selling_cash_on): ?>
                             <tr>
-                                <td><?= Yii::t('app', 'Cash') ?></td>
+                                <td><?= Yii::t('app', 'Cash') . $buyingDistance ?></td>
                             </tr>
                         <?php endif; ?>
                         <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method) : ?>
