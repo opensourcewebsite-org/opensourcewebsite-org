@@ -15,6 +15,7 @@ use yii\helpers\Console;
 
 class CompanyUserFixture extends ARGenerator
 {
+
     public function init()
     {
         if (!Currency::find()->exists()) {

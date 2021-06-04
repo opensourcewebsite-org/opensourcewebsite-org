@@ -103,7 +103,7 @@ class KeywordsSelect extends Widget {
 
     private function getKeywords(): array
     {
-        return ArrayHelper::map(JobKeyword::find()->orderBy('keyword')->asArray()->all(), 'id', 'keyword');
+        return ArrayHelper::map(JobKeyword::find()->orderBy(['keyword' => SORT_ASC])->asArray()->all(), 'id', 'keyword');
     }
 
     private function preparePluginOptions(): array

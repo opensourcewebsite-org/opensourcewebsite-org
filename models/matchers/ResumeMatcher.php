@@ -25,10 +25,9 @@ final class ResumeMatcher
         $this->comparingTable = Vacancy::tableName();
     }
 
-    public function match()
+    public function match(): int
     {
         $this->linker->unlinkMatches();
-
         $vacanciesQuery = $this->prepareInitialMatchedVacanciesQuery();
 
         if ($this->model->min_hourly_rate) {
@@ -39,14 +38,21 @@ final class ResumeMatcher
             $rateMatches = $vacanciesQueryRateQuery->all();
             $noRateMatches = $vacanciesQueryNoRateQuery->all();
 
+            $matchesCount = count($rateMatches);
+
             $this->linker->linkMatches($rateMatches);
             $this->linker->linkCounterMatches($rateMatches);
 
             $this->linker->linkCounterMatches($noRateMatches);
 
         } else {
-            $this->linker->linkMatches($vacanciesQuery->all());
+            $matches = $vacanciesQuery->all();
+            $matchesCount = count($matches);
+
+            $this->linker->linkMatches($matches);
         }
+
+        return $matchesCount;
     }
 
     private function applyRateCondition(VacancyQuery $query): VacancyQuery

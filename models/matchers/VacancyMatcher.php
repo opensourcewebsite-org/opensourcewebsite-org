@@ -29,7 +29,7 @@ final class VacancyMatcher
         $this->comparingTable = Resume::tableName();
     }
 
-    public function match()
+    public function match(): int
     {
         $this->linker->unlinkMatches();
 
@@ -51,14 +51,20 @@ final class VacancyMatcher
             $rateMatches = $resumesQueryRateQuery->all();
             $rateNotMachResumes = $resumesQueryNoRateQuery->all();
 
+            $matchesCount = count($rateMatches);
+
             $this->linker->linkMatches($rateMatches);
             $this->linker->linkCounterMatches($rateMatches);
 
             $this->linker->linkCounterMatches($rateNotMachResumes);
 
         } else {
-            $this->linker->linkMatches($resumesQuery->all());
+            $matches = $resumesQuery->all();
+            $matchesCount = count($matches);
+
+            $this->linker->linkMatches();
         }
+        return $matchesCount;
     }
 
     public function prepareInitialMatchResumesQuery(): ResumeQuery

@@ -294,7 +294,8 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
     public function getKeywords(): ActiveQuery
     {
         return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id']);
+            ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id'])
+            ->orderBy(['keyword' => SORT_ASC]);
     }
 
     public function afterSave($insert, $changedAttributes)
