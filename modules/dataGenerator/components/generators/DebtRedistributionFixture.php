@@ -30,7 +30,7 @@ class DebtRedistributionFixture extends ARGenerator
 
         $model->setUsers($contact);
         $model->currency_id = $this->findCurrency($contact);
-        $model->max_amount = self::getFaker()->optional()->randomFloat();
+        $model->max_amount = $this->faker->optional()->randomFloat();
 
         return $model;
     }

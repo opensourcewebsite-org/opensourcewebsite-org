@@ -59,8 +59,8 @@ class DebtFixture extends ARGenerator
         };
 
         $model->currency_id     = $users['currency_id'];
-        $model->amount          = self::getFaker()->valid(static function ($v) { return (bool)$v; })->randomFloat();
-        $model->status          = self::getFaker()->randomElement(Debt::mapStatus());
+        $model->amount          = $this->faker->valid(static function ($v) { return (bool)$v; })->randomFloat();
+        $model->status          = $this->faker->randomElement(Debt::mapStatus());
         $model->setUsersFromContact($users['user_id'], $users['link_user_id']);
 
         return $model;

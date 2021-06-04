@@ -2,8 +2,6 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use Yii;
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
@@ -19,16 +17,6 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 {
     private CurrencyExchangeService $service;
 
-    private Generator $faker;
-
-    public function __construct($config = [])
-    {
-        $this->faker = FakerFactory::create();
-        $this->service = new CurrencyExchangeService();
-
-        parent::__construct($config);
-    }
-
     /**
      * @throws ARGeneratorException
      */
@@ -37,6 +25,8 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         if (!Currency::find()->exists()) {
             throw new ARGeneratorException('Impossible to create Exchange Order - there are no Currency in DB!');
         }
+
+        $this->service = new CurrencyExchangeService();
 
         parent::init();
     }

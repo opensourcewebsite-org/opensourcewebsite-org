@@ -10,25 +10,21 @@ use yii\test\Fixture;
 abstract class ARGenerator extends Fixture
 {
     /** @var Generator */
-    static private $faker;
+    protected Generator $faker;
 
-    /**
-     * magic getter for `$this->faker`
-     * initialize singleton faker
-     * @return Generator
-     */
-    public static function getFaker(): Generator
+    public function __construct($config = [])
     {
-        if (!self::$faker) {
-            self::$faker = Factory::create();
-        }
-
-        return self::$faker;
+        $this->faker = Factory::create();
+        parent::__construct($config);
     }
 
     public function init()
     {
         $this->setProviders();
+    }
+
+    public static function getFaker(): Generator {
+        return Factory::create();
     }
 
     /**
@@ -70,7 +66,7 @@ abstract class ARGenerator extends Fixture
 
     private function setProviders(): void
     {
-        $faker = self::getFaker();
+        $faker = $this->faker;
 
         foreach ($this->providers() as $class) {
             $isSet = false;

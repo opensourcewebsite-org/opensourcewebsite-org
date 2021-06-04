@@ -10,8 +10,6 @@ use app\models\matchers\ModelLinker;
 use app\models\Resume;
 use app\models\User;
 use app\helpers\LatLonHelper;
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
