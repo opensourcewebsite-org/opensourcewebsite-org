@@ -107,7 +107,7 @@ class VacancyFixture extends ARGenerator
         /** @var Currency|null $currency */
         $currency = Currency::find()
             ->select('id')
-            ->where(['in', 'code', ['USD', 'EUR', 'RUB', 'ALL']])
+            ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
             ->orderByRandAlt(1)
             ->one();
         return $currency;

@@ -39,24 +39,19 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'responsibilities:ntext',
                                     [
                                         'label' => Yii::t('app', 'Keywords'),
+                                        'visible' => (bool)$model->keywords,
                                         'value' => function() use ($model) {
                                             return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
                                         }
                                     ],
-                                    'max_hourly_rate:decimal',
                                     [
-                                        'attribute' => 'currency_id',
-                                        'value' => $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '',
+                                        'attribute' => 'max_hourly_rate',
+                                        'value' => $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞',
                                     ],
                                     'remote_on:boolean',
                                     [
-                                        'attribute' => 'company_id',
-                                        'value' => function() use ($model) {
-                                            return $model->company ? $model->company->name : '';
-                                        }
-                                    ],
-                                    [
                                         'attribute' => 'gender_id',
+                                        'visible' => (bool)$model->gender_id,
                                         'value' => function() use ($model) {
                                             return $model->gender ? $model->gender->name : '';
                                         }
@@ -69,6 +64,33 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
+
+<?php if ($model->company_id): ?>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('app', 'Company') ?></h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <?= DetailView::widget([
+                            'model' => $model->company,
+                            'attributes' => [
+                                'id',
+                                'name',
+                                'url:url',
+                                'address',
+                                'description:ntext',
+                            ]
+                        ]) ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 <?php if ($model->languagesWithLevels): ?>
     <div class="row">
         <div class="col-12">

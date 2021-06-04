@@ -24,25 +24,26 @@ use app\models\User;
                     <table class="table table-striped table-bordered detail-view mb-0">
                         <tbody>
                         <tr>
-                            <th class="align-middle" scope="col"><?= Yii::t('app', 'User Profile') ?>:</th>
+                            <th class="align-middle" scope="col"><?= Yii::t('app', 'Profile') ?></th>
                             <td class="align-middle">
-                                <?= Html::a('view', Url::to(['/contact/view', 'id' => $user->id]), ['target' => '_blank']) ?>
+                                <?= Html::a('view', Url::to(['/contact/view', 'id' => $user->id])) ?>
                             </td>
                         </tr>
+                        <?php if ($user->email) : ?>
                         <tr>
-                            <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?>:</th>
+                            <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?></th>
                             <td class="align-middle">
-                                <?= Html::a($user->email, 'mailto:' . $user->email, ['target' => '_blank']) ?>
+                                <?= Html::mailto($user->email, $user->email) ?>
                             </td>
                         </tr>
-                        <?php if ($user->botUser) : ?>
+                        <?php endif; ?>
+                        <?php if ($user->botUser && $user->botUser->provider_user_name) : ?>
                             <tr>
-                                <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?>:</th>
+                                <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?></th>
                                 <td class="align-middle">
                                     <?= Html::a(
-                                        $user->botUser->getFullName(),
-                                        'https://t.me/user?id=' . $user->botUser->provider_user_id,
-                                        ['target' => '_blank']
+                                        '@' . $user->botUser->provider_user_name,
+                                        'https://t.me/' . $user->botUser->provider_user_name
                                     ) ?>
                                 </td>
                             </tr>
