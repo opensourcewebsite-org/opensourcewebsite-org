@@ -10,10 +10,6 @@ use yii\db\ActiveRecord;
 
 class JobKeywordFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
 
     protected function factoryModel(): ?ActiveRecord
     {

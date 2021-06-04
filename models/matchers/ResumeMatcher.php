@@ -98,7 +98,7 @@ final class ResumeMatcher
         }
 
         if ($this->model->remote_on == Resume::REMOTE_ON) {
-            $remoteCondition = [Vacancy::tableName() . '.remote_on' => Vacancy::REMOTE_ON];
+            $remoteCondition = ["{$this->comparingTable}.remote_on" => Vacancy::REMOTE_ON];
             if ($radiusExpression) {
                 return new OrCondition([$remoteCondition, $radiusExpression]);
             } else {

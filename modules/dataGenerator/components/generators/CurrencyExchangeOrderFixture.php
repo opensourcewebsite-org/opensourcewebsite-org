@@ -8,23 +8,14 @@ use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
 use app\models\User;
-use app\modules\dataGenerator\helpers\LatLonHelper;
+use app\helpers\LatLonHelper;
 use app\services\CurrencyExchangeService;
-use yii\base\Event;
 use yii\db\ActiveRecord;
-use yii\db\Exception;
 use yii\helpers\Console;
 
 class CurrencyExchangeOrderFixture extends ARGenerator
 {
     private CurrencyExchangeService $service;
-
-    public function __construct($config = [])
-    {
-        $this->service = new CurrencyExchangeService();
-
-        parent::__construct($config);
-    }
 
     /**
      * @throws ARGeneratorException
@@ -34,6 +25,8 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         if (!Currency::find()->exists()) {
             throw new ARGeneratorException('Impossible to create Exchange Order - there are no Currency in DB!');
         }
+
+        $this->service = new CurrencyExchangeService();
 
         parent::init();
     }
@@ -85,14 +78,21 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             })->randomFloat(1, 0.01, 10);
         $buyingRate = $crossRateOn ? null : 1 / $sellingRate;
 
+        $min_amount = $this->faker->boolean() ? $min_amount = $this->faker->randomNumber(2) : null;
+        $max_amount = $this->faker->boolean() ?
+            (isset($min_amount) ?
+                $min_amount + $this->faker->randomNumber(2) :
+                $this->faker->randomNumber(2) )
+            : null;
+
         $model = new CurrencyExchangeOrder([
             'selling_currency_id' => $sellCurrencyId,
             'buying_currency_id' => $buyCurrencyId,
             'user_id' => $user->id,
             'selling_rate' => $sellingRate,
             'buying_rate' => $buyingRate,
-            'selling_currency_min_amount' => $min_amount = $this->faker->boolean() ? $this->faker->randomNumber(2) : null,
-            'selling_currency_max_amount' => $this->faker->boolean() ? $min_amount + $this->faker->randomNumber(2) : null,
+            'selling_currency_min_amount' => $min_amount,
+            'selling_currency_max_amount' => $max_amount,
             'status' => CurrencyExchangeOrder::STATUS_ON,
             'selling_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
             'buying_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
@@ -167,6 +167,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 
     private function findUser(): ?User
     {
+        /** @var User $user */
         $user = User::find()
             ->orderByRandAlt(1)
             ->one();

@@ -16,6 +16,8 @@ use yii\widgets\ActiveForm;
 /* @var $model Resume */
 /* @var $currencies Currency[] */
 
+$showLocation = $model->location || $model->isNewRecord;
+
 ?>
     <div class="resume-form">
         <?php $form = ActiveForm::begin(); ?>
@@ -64,12 +66,20 @@ use yii\widgets\ActiveForm;
                                 <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
                             </div>
                         </div>
-                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>" >
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> />
+                                    <label for="offline-work-checkbox" ><?= Yii::t('app', 'Offline Work') ?></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
                             </div>
                         </div>
-                        <div class="row location-row <?=$model->remote_on ? 'd-none' : ''?>" >
+                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
                                 <?= $form->field($model, 'search_radius')
                                     ->textInput(['maxlength' => true, 'placeholder' => 0])
@@ -103,7 +113,7 @@ use yii\widgets\ActiveForm;
     </div>
 <?php
 $js = <<<JS
-$('#webresume-remote_on').on('change', function () {
+$('#offline-work-checkbox').on('change', function () {
     $('.location-row').toggleClass('d-none');
 });
 JS;

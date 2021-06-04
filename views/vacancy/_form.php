@@ -27,7 +27,7 @@ use yii\widgets\ActiveForm;
  * @var Currency[] $currencies
  * @var Company[] $companies
  */
-
+$showLocation = $model->location || $model->isNewRecord;
 ?>
     <div class="vacancy-form">
         <?php $form = ActiveForm::begin(); ?>
@@ -74,6 +74,14 @@ use yii\widgets\ActiveForm;
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> />
+                                    <label for="offline-work-checkbox" ><?= Yii::t('app', 'Offline Work') ?></label>
+                                </div>
                             </div>
                         </div>
                         <div class="row location-row <?= $model->remote_on ? 'd-none' : '' ?>">
@@ -135,7 +143,7 @@ use yii\widgets\ActiveForm;
     </div>
 <?php
 $js = <<<JS
-$('#webvacancy-remote_on').on('change', function () {
+$('#offline-work-checkbox').on('change', function () {
     $('.location-row').toggleClass('d-none');
 });
 JS;
