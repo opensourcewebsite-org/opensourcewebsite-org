@@ -17,12 +17,8 @@ use yii\helpers\Console;
 
 class ResumeFixture extends ARGenerator
 {
-    private Generator $faker;
-
     public function __construct($config = [])
     {
-        $this->faker = FakerFactory::create();
-
         parent::__construct($config);
     }
 

@@ -18,12 +18,8 @@ use yii\helpers\Console;
 
 class VacancyFixture extends ARGenerator
 {
-    private Generator $faker;
-
     public function __construct($config = [])
     {
-        $this->faker = FakerFactory::create();
-
         parent::__construct($config);
     }
 

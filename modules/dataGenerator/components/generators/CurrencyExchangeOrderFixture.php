@@ -23,9 +23,10 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 
     public function __construct($config = [])
     {
-        parent::__construct($config);
         $this->faker = FakerFactory::create();
         $this->service = new CurrencyExchangeService();
+
+        parent::__construct($config);
     }
 
     /**
@@ -81,8 +82,13 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             $buyingCashOn = CurrencyExchangeOrder::CASH_ON;
         }
 
-        $min_amount = $this->faker->boolean() ? $min_amount = $this->faker->randomNumber(2) : null;
+        $sellingRate = $crossRateOn ? null :
+            $this->faker->valid(static function ($v) {
+                return (bool)$v;
+            })->randomFloat(1, 0.01, 10);
+        $buyingRate = $crossRateOn ? null : 1 / $sellingRate;
 
+        $min_amount = $this->faker->boolean() ? $min_amount = $this->faker->randomNumber(2) : null;
         $max_amount = $this->faker->boolean() ?
             (isset($min_amount) ?
                 $min_amount + $this->faker->randomNumber(2) :
@@ -93,22 +99,13 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             'selling_currency_id' => $sellCurrencyId,
             'buying_currency_id' => $buyCurrencyId,
             'user_id' => $user->id,
-
-            'selling_rate' => $crossRateOn ? null :
-                $this->faker->valid(static function ($v) {
-                    return (bool)$v;
-                })->randomFloat(1, 0.01, 10),
-
-            'buying_rate' => $crossRateOn ? null :
-                $this->faker->valid(static function ($v) {
-                    return (bool)$v;
-                })->randomFloat(1, 0.01, 10),
-
+            'selling_rate' => $sellingRate,
+            'buying_rate' => $buyingRate,
             'selling_currency_min_amount' => $min_amount,
             'selling_currency_max_amount' => $max_amount,
             'status' => CurrencyExchangeOrder::STATUS_ON,
-            'selling_delivery_radius' => $this->faker->randomNumber(3),
-            'buying_delivery_radius' => $this->faker->randomNumber(3),
+            'selling_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
+            'buying_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
             'selling_location_lat' => $orderSellingLat,
             'selling_location_lon' => $orderSellingLon,
             'buying_location_lat' => $orderBuyingLat,
