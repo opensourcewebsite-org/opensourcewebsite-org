@@ -1,5 +1,6 @@
 <?php
 
+use app\widgets\ContactWidget\ContactWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -76,34 +77,6 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
                                 <td class="align-middle"><?= $matchOrderModel->getSellingCurrencyMaxAmount() ?></td>
                                 <td></td>
                             </tr>
-
-                            <tr>
-                                <th class="align-middle" scope="col"><?= Yii::t('app', 'User Profile') ?>:</th>
-                                <td class="align-middle">
-                                    <?= Html::a('view', Url::to(['/contact/view', 'id' => $matchOrderModel->user_id]), ['target' => '_blank']) ?>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?>:</th>
-                                <td class="align-middle">
-                                    <?= Html::a($matchOrderModel->user->email, 'mailto:' . $matchOrderModel->user->email, ['target' => '_blank']) ?>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <?php if ($matchOrderModel->user->botUser) : ?>
-                                <tr>
-                                    <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?>:</th>
-                                    <td class="align-middle">
-                                        <?= Html::a(
-                                            $matchOrderModel->user->botUser->getFullName(),
-                                            'https://t.me/user?id=' . $matchOrderModel->user->botUser->provider_user_id,
-                                            ['target' => '_blank']
-                                        ) ?>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -112,6 +85,9 @@ $this->params['breadcrumbs'][] = $matchOrderModel->id;
         </div>
     </div>
 </div>
+
+<?= ContactWidget::widget(['user' => $matchOrderModel->user])?>
+
 <div class="row">
     <div class="col-12">
         <div class="card">
