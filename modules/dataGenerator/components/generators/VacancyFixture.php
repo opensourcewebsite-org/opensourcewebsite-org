@@ -10,7 +10,7 @@ use app\models\JobKeyword;
 use app\models\matchers\ModelLinker;
 use app\models\User;
 use app\models\Vacancy;
-use app\modules\dataGenerator\helpers\LatLonHelper;
+use app\helpers\LatLonHelper;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use yii\db\ActiveRecord;

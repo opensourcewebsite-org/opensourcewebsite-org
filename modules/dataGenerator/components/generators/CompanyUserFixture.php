@@ -15,10 +15,6 @@ use yii\helpers\Console;
 
 class CompanyUserFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
 
     public function init()
     {
