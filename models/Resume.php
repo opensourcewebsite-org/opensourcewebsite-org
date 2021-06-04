@@ -20,7 +20,6 @@ use app\modules\bot\components\helpers\LocationParser;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 
-
 /**
  * Class Resume
  *

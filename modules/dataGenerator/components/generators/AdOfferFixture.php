@@ -5,15 +5,18 @@ namespace app\modules\dataGenerator\components\generators;
 
 use Yii;
 use app\models\Currency;
-use app\models\JobKeyword;
+use app\models\AdKeyword;
 use app\models\matchers\ModelLinker;
-use app\models\Resume;
+use app\models\AdOffer;
+use app\models\AdSection;
 use app\models\User;
 use app\helpers\LatLonHelper;
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
-class ResumeFixture extends ARGenerator
+class AdOfferFixture extends ARGenerator
 {
     public function __construct($config = [])
     {
@@ -38,30 +41,26 @@ class ResumeFixture extends ARGenerator
             return null;
         }
 
-        $model = new Resume();
+        $model = new AdOffer();
 
         $model->user_id = $user->id;
-        $model->status = Resume::STATUS_ON;
-        $model->remote_on = $this->faker->boolean();
-        $model->name = $this->faker->jobTitle();
-        $model->skills = $this->faker->realText();
-        $model->experiences = $this->faker->realText();
-        $model->expectations = $this->faker->realText();
+        $model->status = AdOffer::STATUS_ON;
+        $model->section = AdSection::BUY_SELL;
+        $model->title = $this->faker->sentence();
+        $model->description = $this->faker->boolean() ? $this->faker->realText() : null;
 
         if ($this->faker->boolean()) {
-            $model->min_hourly_rate = $this->faker->randomNumber(2);
+            $model->price = $this->faker->randomNumber(3);
             $model->currency_id = $currency->id;
         }
 
-        if (!$model->remote_on || $this->faker->boolean()) {
-            $londonCenter = [51.509865, -0.118092];
-            $location = LatLonHelper::generateRandomPoint($londonCenter, 200);
+        $londonCenter = [51.509865, -0.118092];
+        $location = LatLonHelper::generateRandomPoint($londonCenter, 200);
 
-            $model->location_lat = $location[0];
-            $model->location_lon = $location[1];
+        $model->location_lat = $location[0];
+        $model->location_lon = $location[1];
 
-            $model->search_radius = $this->faker->randomNumber(3);
-        }
+        $model->delivery_radius = $this->faker->boolean() ? $this->faker->randomNumber(3) : 0;
 
         if (!$model->save()) {
             throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
@@ -126,7 +125,7 @@ class ResumeFixture extends ARGenerator
     {
         $numOfKeywords = $this->faker->randomNumber(1);
 
-        return JobKeyword::find()
+        return AdKeyword::find()
             ->orderByRandAlt($numOfKeywords)
             ->all();
     }

@@ -19,7 +19,7 @@ class CompanyUserFixture extends ARGenerator
     public function init()
     {
         if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create Resume - there are no Currency in DB!');
+            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
         }
         parent::init();
     }

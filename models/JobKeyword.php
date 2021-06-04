@@ -16,7 +16,6 @@ use yii\db\ActiveRecord;
  */
 class JobKeyword extends ActiveRecord
 {
-
     public static function tableName(): string
     {
         return '{{%job_keyword}}';

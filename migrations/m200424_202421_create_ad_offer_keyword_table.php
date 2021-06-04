@@ -40,7 +40,6 @@ class m200424_202421_create_ad_offer_keyword_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-ad_offer_keyword_ad_offer_id-ad_offer_id', '{{%ad_offer_keyword}}');
-
         $this->dropForeignKey('fk-ad_offer_keyword_ad_keyword_id-ad_keyword_id', '{{%ad_offer_keyword}}');
 
         $this->dropTable('{{%ad_offer_keyword}}');
