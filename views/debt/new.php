@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Debts'), 'url' => ['
 <div class="callout callout-danger">
     <h5><?= Yii::t('app', 'Attention') ?>!</h5>
     <p>
-        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted from 2020-08-01 or earlier') ?>. <?= Yii::t('app', 'After that, this feature will work in an operating mode') ?>.
+        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted after starting this feature in operating mode') ?>.
     </p>
 </div>
 
@@ -27,10 +27,10 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Debts'), 'url' => ['
                         <div class="col-sm-6">
                             <ul class="nav nav-pills">
                                 <li class="nav-item">
-                                    <?php 
+                                    <?php
                                         echo Html::a(Yii::t('app', 'New'), ['debt/index',], [
                                             'class' => 'btn btn-outline-primary mr-2 active',
-                                        ]); 
+                                        ]);
                                     ?>
                                 </li>
                                 <li class="nav-item">

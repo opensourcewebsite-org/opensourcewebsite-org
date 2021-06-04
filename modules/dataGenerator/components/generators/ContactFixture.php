@@ -2,11 +2,11 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
+use Yii;
 use app\models\Contact;
 use app\models\queries\ContactQuery;
 use app\models\User;
 use Faker\Provider\en_US\Person;
-use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 use yii\validators\NumberValidator;
@@ -32,9 +32,9 @@ class ContactFixture extends ARGenerator
 
         $model = new Contact();
 
-        $model->user_id      = $users[0];
+        $model->user_id = $users[0];
         $model->link_user_id = $users[1];
-        $model->name         = self::getFaker()->name;
+        $model->name = self::getFaker()->name;
         $this->setDRP($model);
 
         return $model;

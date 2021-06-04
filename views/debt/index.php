@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="callout callout-danger">
     <h5><?= Yii::t('app', 'Attention') ?>!</h5>
     <p>
-        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted from {0} or earlier', '2020-09-01') ?>. <?= Yii::t('app', 'After that, this feature will work in an operating mode') ?>.
+        <?= Yii::t('app', 'This feature works in test mode') ?>. <?= Yii::t('app', 'Please help to test all functions of this') ?>. <?= Yii::t('app', 'All data of debts will be deleted after starting this feature in operating mode') ?>.
     </p>
 </div>
 
