@@ -40,7 +40,6 @@ class m200520_201852_create_ad_search_keyword_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-ad_search_keyword_ad_search_id-ad_search_id', '{{%ad_search_keyword}}');
-
         $this->dropForeignKey('fk-ad_search_keyword_ad_keyword_id-ad_keyword_id', '{{%ad_search_keyword}}');
 
         $this->dropTable('{{%ad_search_keyword}}');
