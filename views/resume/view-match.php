@@ -41,15 +41,26 @@ $this->params['breadcrumbs'][] = $this->title;
                                 [
                                     'label' => Yii::t('app', 'Keywords'),
                                     'visible' => (bool)$model->keywords,
-                                    'value' => function () use ($model) {
-                                        return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                    }
+                                    'value' => function() use ($model) {
+                                        $text = '';
+
+                                        foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
+                                            $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                        }
+
+                                        return $text;
+                                    },
+                                    'format' => 'raw',
                                 ],
                                 [
                                     'attribute' => 'min_hourly_rate',
                                     'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞',
                                 ],
                                 'remote_on:boolean',
+                                [
+                                    'label' => Yii::t('app', 'Offline work'),
+                                    'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
+                                ],
                             ]
                         ]) ?>
                     </div>

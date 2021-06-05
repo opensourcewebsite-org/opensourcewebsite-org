@@ -76,14 +76,25 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'label' => Yii::t('app', 'Keywords'),
                                         'visible' => (bool)$model->keywords,
                                         'value' => function() use ($model) {
-                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                        }
+                                            $text = '';
+
+                                            foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
+                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                            }
+
+                                            return $text;
+                                        },
+                                        'format' => 'raw',
                                     ],
                                     [
                                         'attribute' => 'max_hourly_rate',
                                         'value' => $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞',
                                     ],
                                     'remote_on:boolean',
+                                    [
+                                        'label' => Yii::t('app', 'Offline work'),
+                                        'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
+                                    ],
                                     [
                                         'attribute' => 'location',
                                         'visible' => (bool)$model->location,
@@ -94,7 +105,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                     ['class' => 'modal-btn-ajax']
                                                 ) ;
                                         },
-                                        'format' => 'raw'
+                                        'format' => 'raw',
                                     ],
                                     [
                                         'attribute' => 'gender_id',
@@ -113,7 +124,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                     $model->getMatches()->count(),
                                                     Url::to(['/resume/show-matches', 'vacancyId' => $model->id]),
                                                 ) : '';
-                                        }
+                                        },
                                     ],
                                 ]
                             ]) ?>
