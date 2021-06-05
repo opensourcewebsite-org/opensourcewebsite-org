@@ -11,11 +11,11 @@ use yii\web\View;
  * @var CurrencyExchangeOrder $matchOrderModel
  */
 
-$this->title = Yii::t('app', 'Offer');
+$this->title = Yii::t('app', 'Order') . ' #' . $matchOrderModel->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['view-offers', 'id' => $orderModel->id]];
-$this->params['breadcrumbs'][] = $matchOrderModel->id;
+$this->params['breadcrumbs'][] = ['label' => '#' . $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['show-matches', 'id' => $orderModel->id]];
+$this->params['breadcrumbs'][] = '#' . $matchOrderModel->id;
 
 $buyingDistance = '';
 $sellingDistance = '';
@@ -110,8 +110,6 @@ if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
     </div>
 </div>
 
-<?= ContactWidget::widget(['user' => $matchOrderModel->user])?>
-
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -168,3 +166,5 @@ if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
         </div>
     </div>
 </div>
+
+<?= ContactWidget::widget(['user' => $matchOrderModel->user])?>

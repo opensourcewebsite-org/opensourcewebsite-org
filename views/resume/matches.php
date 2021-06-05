@@ -43,8 +43,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'min_hourly_rate',
-                                'visible' => (bool)$model->min_hourly_rate,
-                                'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '',
+                                'value' => function($model) {
+                                    /* @var $model Resume */
+                                    return $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '';
+                                },
+                                'enableSorting' => false,
                             ],
                             [
                                 'class' => ActionColumn::class,
