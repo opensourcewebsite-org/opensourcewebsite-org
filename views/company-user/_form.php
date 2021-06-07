@@ -52,7 +52,7 @@ use app\widgets\buttons\CancelButton;
                             'url' => ['delete', 'id' => $model->id],
                             'options' => [
                                 'data' => [
-                                    'confirm' => Yii::t('app', 'Are you sure you want to delete this Company?'),
+                                    'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                                     'method' => 'post'
                                 ]
                             ]
@@ -64,5 +64,3 @@ use app\widgets\buttons\CancelButton;
     </div>
     <?php ActiveForm::end() ?>
 </div>
-
-

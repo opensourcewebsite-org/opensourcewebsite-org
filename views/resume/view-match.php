@@ -18,7 +18,7 @@ use app\widgets\buttons\EditButton;
 
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' => ['/vacancies/index']];
-$this->params['breadcrumbs'][] = ['label' => "#" . $vacancyId, 'url' => ['/vacancy/view', 'id' => $vacancyId]];
+$this->params['breadcrumbs'][] = ['label' => '#' . $vacancyId, 'url' => ['/vacancy/view', 'id' => $vacancyId]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Resumes'), 'url' => ['/resume/show-matches', 'vacancyId' => $vacancyId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
