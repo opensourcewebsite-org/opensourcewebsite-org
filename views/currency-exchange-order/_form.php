@@ -228,8 +228,8 @@ $urlRedirect = Yii::$app->urlManager->createUrl(['/currency-exchange-order']);
 $locationMapActionUrl = Url::to(['/currency-exchange-order/location-map-modal']);
 
 $jsMessages = [
-    'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this order') . '?',
-    'delete-error' => Yii::t('app', 'Sorry, there was an error while trying to delete the order') . '.',
+    'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+    'delete-error' => Yii::t('app', 'Sorry, there was an error while trying to delete this item') . '.',
 ];
 
 $this->registerJs(<<<JS

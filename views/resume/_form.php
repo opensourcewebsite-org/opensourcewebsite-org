@@ -17,7 +17,6 @@ use yii\widgets\ActiveForm;
 /* @var $currencies Currency[] */
 
 $showLocation = $model->location || $model->isNewRecord;
-
 ?>
     <div class="resume-form">
         <?php $form = ActiveForm::begin(['id' => 'webresume-form']); ?>
@@ -84,8 +83,8 @@ $showLocation = $model->location || $model->isNewRecord;
                         <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
                                 <?= $form->field($model, 'search_radius')
-                                    ->textInput(['maxlength' => true, 'placeholder' => 0])
-                                    ->label($model->getAttributeLabel('search_radius').', km')
+                                    ->textInput(['maxlength' => true])
+                                    ->label($model->getAttributeLabel('search_radius') . ', km')
                                 ?>
                             </div>
                         </div>
@@ -101,7 +100,7 @@ $showLocation = $model->location || $model->isNewRecord;
                                 'url' => ['delete', 'id' => $model->id],
                                 'options' => [
                                     'data' => [
-                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this Resume?'),
+                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                                         'method' => 'post'
                                     ]
                                 ]

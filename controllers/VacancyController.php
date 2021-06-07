@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\JobResumeMatch;
 use app\models\Resume;
-use Yii;
 use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\JobVacancyKeyword;
 use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
@@ -63,13 +63,14 @@ class VacancyController extends Controller {
 
     public function actionCreate()
     {
-        $model = new WebVacancy();
         /** @var User $user */
         $user = Yii::$app->user->identity;
 
+        $model = new WebVacancy();
         $model->user_id = $user->id;
         $model->currency_id = $user->currency_id;
         $languageWithLevelsForm = new LanguageWithLevelsForm(['required' => true]);
+        $model->remote_on = WebVacancy::REMOTE_ON;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 

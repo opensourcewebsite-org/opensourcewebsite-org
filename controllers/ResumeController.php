@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
-use Yii;
 use app\models\Currency;
 use app\models\Resume;
 use app\models\scenarios\Resume\UpdateKeywordsByIdsScenario;
@@ -67,7 +67,8 @@ class ResumeController extends Controller
         $model = new WebResume();
         $model->user_id = $user->id;
         $model->currency_id = $user->currency_id;
-        $model->remote_on = 1;
+        $model->remote_on = WebResume::REMOTE_ON;
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
 

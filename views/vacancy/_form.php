@@ -27,6 +27,7 @@ use yii\widgets\ActiveForm;
  * @var Currency[] $currencies
  * @var Company[] $companies
  */
+
 $showLocation = $model->location || $model->isNewRecord;
 ?>
     <div class="vacancy-form">
@@ -86,19 +87,9 @@ $showLocation = $model->location || $model->isNewRecord;
                                 </div>
                             </div>
                         </div>
-                        <div class="row location-row <?= $model->remote_on ? 'd-none' : '' ?>">
+                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>">
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'company_id')->widget(
-                                    CompanySelectCreatable::class,
-                                    [
-                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
-                                    ]
-                                ) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -119,11 +110,21 @@ $showLocation = $model->location || $model->isNewRecord;
                                 ]) ?>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'company_id')->widget(
+                                    CompanySelectCreatable::class,
+                                    [
+                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
+                                    ]
+                                ) ?>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
 
-                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/resume/index') : Url::to(['/resume/view', 'id' => $model->id])?>
+                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/vacancy/index') : Url::to(['/vacancy/view', 'id' => $model->id])?>
                         <?= CancelButton::widget(['url' => $cancelUrl]); ?>
 
                         <?php if (!$model->isNewRecord): ?>
@@ -131,7 +132,7 @@ $showLocation = $model->location || $model->isNewRecord;
                                 'url' => ['delete', 'id' => $model->id],
                                 'options' => [
                                     'data' => [
-                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this Vacancy?'),
+                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                                         'method' => 'post'
                                     ]
                                 ]
