@@ -1,21 +1,18 @@
 <?php
+declare(strict_types=1);
 
 namespace app\controllers;
 
-use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 
-class AdsController extends Controller
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
+class AdOfferController extends Controller {
+
+    public function behaviors(): array
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
@@ -28,7 +25,21 @@ class AdsController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+
     }
 
+    public function actionCreate()
+    {
+
+    }
+
+    public function actionUpdate()
+    {
+
+    }
+
+    public function actionView()
+    {
+
+    }
 }
