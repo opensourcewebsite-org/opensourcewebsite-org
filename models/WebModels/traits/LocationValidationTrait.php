@@ -25,9 +25,11 @@ trait LocationValidationTrait {
                     }
                     return false;
                 },
-                'whenClient' => new JsExpression("function(attribute, value) {
-                    return !$('#{$formName}-remote_on').prop('checked');
-                }")
+                'whenClient' => new JsExpression("
+                    function(attribute, value) {
+                        return $('#offline-work-checkbox').prop('checked');
+                    }
+                ")
             ],
             [
                 'location',
@@ -41,6 +43,7 @@ trait LocationValidationTrait {
                 }
             ],
         ];
-        return array_merge($mainValidators, $webSpecificValidators);
+        $ret = array_merge($mainValidators, $webSpecificValidators);
+        return $ret;
     }
 }
