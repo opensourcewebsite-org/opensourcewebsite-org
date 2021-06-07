@@ -14,7 +14,11 @@ class AdSearchSearch extends AdSearch
     {
         return [
             [
-                ['id', 'currency_id'],
+                [
+                    'id',
+                    'currency_id',
+                    'status'
+                ],
                 'integer']
             ,
             ['title', 'string'],
@@ -36,7 +40,9 @@ class AdSearchSearch extends AdSearch
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['like', 'title', $this->title])
+        $query
+            ->andFilterWhere(['like', 'title', $this->title])
+            ->andFilterWhere(['status' => $this->status])
             ->andFilterWhere(['max_price' => $this->max_price])
             ->andFilterWhere(['currency_id' => $this->currency_id]);
 
