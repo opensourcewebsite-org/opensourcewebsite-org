@@ -89,7 +89,9 @@ class JobMatchController extends Controller implements CronChainedInterface
 
     private function printMatchedCount(ActiveRecord $model, int $count)
     {
-        $this->output(get_class($model) . ' matches added: ' . $count);
+        if ($count) {
+            $this->output(get_class($model) . ' matches added: ' . $count);
+        }
     }
 
     public function actionClearMatches()
