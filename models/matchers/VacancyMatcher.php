@@ -62,7 +62,7 @@ final class VacancyMatcher
             $matches = $resumesQuery->all();
             $matchesCount = count($matches);
 
-            $this->linker->linkMatches();
+            $this->linker->linkMatches($matches);
         }
         return $matchesCount;
     }
