@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\queries\AdSearchQuery;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -152,6 +153,11 @@ class AdSearch extends ActiveRecord
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    public static function find(): AdSearchQuery
+    {
+        return new AdSearchQuery(get_called_class());
     }
 
     public function isActive(): bool

@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\queries\AdOfferQuery;
+use app\models\queries\AdSearchQuery;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\db\ActiveQuery;
@@ -163,6 +165,11 @@ class AdOffer extends ActiveRecord
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    public static function find(): AdOfferQuery
+    {
+        return new AdOfferQuery(get_called_class());
     }
 
     public function isActive(): bool
