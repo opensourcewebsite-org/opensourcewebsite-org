@@ -15,9 +15,9 @@ use yii\widgets\DetailView;
  * @var int $resumeId
  */
 
-$this->title = Yii::t('app', 'Matched Vacancy') . ' #' . $model->id;
+$this->title = Yii::t('app', 'Vacancy') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['/resume/index']];
-$this->params['breadcrumbs'][] = ['label' => "#{$resumeId}", 'url' =>['/resume/view', 'id' => $resumeId]];
+$this->params['breadcrumbs'][] = ['label' => "#' . $resumeId, 'url' =>['/resume/view', 'id' => $resumeId]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Vacancies'), 'url' => ['/vacancy/show-matches', 'resumeId' => $resumeId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
@@ -41,8 +41,15 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'label' => Yii::t('app', 'Keywords'),
                                         'visible' => (bool)$model->keywords,
                                         'value' => function() use ($model) {
-                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                        }
+                                            $text = '';
+
+                                            foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
+                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                            }
+
+                                            return $text;
+                                        },
+                                        'format' => 'raw',
                                     ],
                                     [
                                         'attribute' => 'max_hourly_rate',
@@ -50,11 +57,27 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     ],
                                     'remote_on:boolean',
                                     [
+                                        'label' => Yii::t('app', 'Offline work'),
+                                        'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
+                                    ],
+                                    [
+                                        'attribute' => 'location',
+                                        'visible' => (bool)$model->location,
+                                        'value' => function () use ($model) {
+                                            return Html::a(
+                                                    $model->location,
+                                                    Url::to(['view-location', 'id' => $model->id]),
+                                                    ['class' => 'modal-btn-ajax']
+                                                ) ;
+                                        },
+                                        'format' => 'raw',
+                                    ],
+                                    [
                                         'attribute' => 'gender_id',
                                         'visible' => (bool)$model->gender_id,
                                         'value' => function() use ($model) {
                                             return $model->gender ? $model->gender->name : '';
-                                        }
+                                        },
                                     ],
                                 ]
                             ]) ?>

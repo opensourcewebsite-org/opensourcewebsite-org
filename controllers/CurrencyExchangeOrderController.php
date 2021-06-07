@@ -218,7 +218,7 @@ class CurrencyExchangeOrderController extends Controller
         return $this->renderAjax('map_modal', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'buy']);
     }
 
-    public function actionViewOffers(int $id): string
+    public function actionShowMatches(int $id): string
     {
         $model = $this->findModelByIdAndCurrentUser($id);
         if ($model->getMatchesOrderedByUserRating()->exists()){
@@ -227,12 +227,12 @@ class CurrencyExchangeOrderController extends Controller
             ]);
             $dataProvider->pagination->pageSize = 15;
 
-            return $this->render('view_offers', ['dataProvider' => $dataProvider, 'model' => $model]);
+            return $this->render('matches', ['dataProvider' => $dataProvider, 'model' => $model]);
         }
         throw new NotFoundHttpException('Currently no matched Offers found.');
     }
 
-    public function actionViewOffer(int $order_id, int $match_order_id): string
+    public function actionViewMatch(int $order_id, int $match_order_id): string
     {
 
         /** @var CurrencyExchangeOrderMatch $matchModel */
@@ -241,7 +241,7 @@ class CurrencyExchangeOrderController extends Controller
             ->one();
 
         if ($matchModel) {
-            return $this->render('view_offer', ['orderModel' => $matchModel->order, 'matchOrderModel' => $matchModel->matchOrder]);
+            return $this->render('view-match', ['orderModel' => $matchModel->order, 'matchOrderModel' => $matchModel->matchOrder]);
         }
 
         throw new NotFoundHttpException('No offer found with current orders combination!');

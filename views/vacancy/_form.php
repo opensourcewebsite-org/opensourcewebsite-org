@@ -80,7 +80,7 @@ $showLocation = $model->location || $model->isNewRecord;
                             <div class="col">
                                 <div class="form-group">
                                     <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> />
-                                    <label for="offline-work-checkbox" ><?= Yii::t('app', 'Offline Work') ?></label>
+                                    <label for="offline-work-checkbox" ><?= Yii::t('app', 'Offline work') ?></label>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +103,7 @@ $showLocation = $model->location || $model->isNewRecord;
                             <div class="col">
                                 <?= $form->field($model, 'gender_id')->dropDownList(
                                     ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
-                                    ['prompt' => 'Select Gender..']
+                                    ['prompt' => Yii::t('app', 'All')]
                                 ) ?>
                             </div>
                         </div>
@@ -149,7 +149,3 @@ $('#offline-work-checkbox').on('change', function () {
 JS;
 
 $this->registerJs($js);
-
-
-
-
