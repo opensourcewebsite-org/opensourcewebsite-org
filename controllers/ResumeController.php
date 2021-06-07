@@ -67,7 +67,7 @@ class ResumeController extends Controller
         $model = new WebResume();
         $model->user_id = $user->id;
         $model->currency_id = $user->currency_id;
-
+        $model->remote_on = 1;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
 

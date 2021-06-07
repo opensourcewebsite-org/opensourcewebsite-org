@@ -20,7 +20,7 @@ $showLocation = $model->location || $model->isNewRecord;
 
 ?>
     <div class="resume-form">
-        <?php $form = ActiveForm::begin(); ?>
+        <?php $form = ActiveForm::begin(['id' => 'webresume-form']); ?>
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -69,8 +69,10 @@ $showLocation = $model->location || $model->isNewRecord;
                         <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                    <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> />
-                                    <label for="offline-work-checkbox" ><?= Yii::t('app', 'Offline work') ?></label>
+                                    <label for="offline-work-checkbox">
+                                        <input id="offline-work-checkbox" type="checkbox" <?= $showLocation? 'checked' : '' ?> autocomplete="off" />
+                                        <?= Yii::t('app', 'Offline work') ?>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -115,6 +117,18 @@ $showLocation = $model->location || $model->isNewRecord;
 $js = <<<JS
 $('#offline-work-checkbox').on('change', function () {
     $('.location-row').toggleClass('d-none');
+});
+
+$('#webresume-form').on('afterValidate', function (){
+    if ($('#webresume-location').val() === '' && !$('#webresume-remote_on').is(':checked')) {
+        $('#webresume-form').yiiActiveForm(
+            'updateAttribute',
+            'webresume-remote_on',
+            ['Either Remote work or Location should be set!']
+            );
+        return false;
+    }
+    return true;
 });
 JS;
 
