@@ -41,6 +41,8 @@ class CronController extends Controller
 
     private $cronJobs;
 
+    private ?string $currentBranchHash = null;
+
     /**
      * {@inheritdoc}
      */
@@ -50,7 +52,7 @@ class CronController extends Controller
         $model->setCronJobs(static::$map);
         $model->add();
         $model->clear();
-
+        $this->currentBranchHash = $this->getCurrentGitBranchHeadHash();
         return parent::beforeAction($action);
     }
 
@@ -120,7 +122,45 @@ class CronController extends Controller
 
             $this->output();
 
+            if (!$this->isSameGitVersion()) {
+                $this->output(
+                    '[EXIT] Current git HEAD is updated, exiting!', [CustomConsole::FG_RED, CustomConsole::BOLD]
+                );
+                return;
+            }
+
             sleep(static::SLEEP_INTERVAL);
         }
+    }
+
+    private function isSameGitVersion(): bool
+    {
+        return $this->currentBranchHash === $this->getCurrentGitBranchHeadHash();
+    }
+
+    private function getCurrentGitBranchHeadHash(): ?string
+    {
+        if ( ($currentHeadFilename = $this->getCurrentBranchHeadRefFilename()) &&
+            file_exists($currentHeadFilename) &&
+            $hash = file_get_contents($currentHeadFilename) )
+        {
+            return trim($hash);
+        }
+        return null;
+    }
+
+    private function getCurrentBranchHeadRefFilename(): ?string
+    {
+        $projectDir = dirname(dirname(__FILE__));
+        $mainHeadFile = "{$projectDir}/.git/HEAD";
+
+        if ( file_exists($mainHeadFile) &&
+            ($headRef = file_get_contents($mainHeadFile)) &&
+            preg_match('#^ref:(.+)$#', $headRef, $matches) &&
+            ($currentHeadFilename = trim($matches[1] ?? null))
+        ) {
+            return "{$projectDir}/.git/{$currentHeadFilename}";
+        }
+        return null;
     }
 }
