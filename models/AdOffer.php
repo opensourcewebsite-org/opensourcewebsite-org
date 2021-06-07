@@ -2,13 +2,14 @@
 
 namespace app\models;
 
+use Yii;
 use yii\behaviors\TimestampBehavior;
-use app\components\helpers\ArrayHelper;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
+
 
 class AdOffer extends ActiveRecord
 {
@@ -89,9 +90,19 @@ class AdOffer extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User',
-            'section' => 'Section',
-            'delivery_radius' => 'Delivery radius',
+            'user_id' => Yii::t('app', 'User'),
+            'section' => Yii::t('app', 'Section'),
+            'title' => Yii::t('app', 'Title'),
+            'description' => Yii::t('app', 'Description'),
+            'currency_id' => Yii::t('app', 'Currency'),
+            'price' => Yii::t('app', 'Price'),
+            'delivery_radius' => Yii::t('app', 'Delivery radius'),
+            'location' => Yii::t('app', 'Location'),
+            'location_lat' => Yii::t('app', 'Location Lat'),
+            'location_lon' => Yii::t('app', 'Location Lon'),
+            'status' => Yii::t('app', 'Status'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'processed_at' => Yii::t('app', 'Processed At')
         ];
 
     }
