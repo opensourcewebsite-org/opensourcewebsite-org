@@ -62,8 +62,6 @@ class Resume extends ActiveRecord
 
     public $keywordsFromForm = [];
 
-    public bool $keywordsChanged = false;
-
     public static function tableName(): string
     {
         return '{{%resume}}';
@@ -143,11 +141,11 @@ class Resume extends ActiveRecord
             ],
             [
                 'keywordsFromForm', 'filter', 'filter' => function($val) {
-                if ($val === '')  {
-                    return [];
+                    if ($val === '')  {
+                        return [];
+                    }
+                    return $val;
                 }
-                return $val;
-            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']

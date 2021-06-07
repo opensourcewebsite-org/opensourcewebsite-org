@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace app\models;
 
+use app\components\helpers\ArrayHelper;
+use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -46,6 +48,15 @@ class AdOffer extends ActiveRecord
 
     public const LIVE_DAYS = 30;
 
+    public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
+
+    public $keywordsFromForm = [];
+
+    public function init()
+    {
+        $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+        parent::init();
+    }
 
     public static function tableName(): string
     {
@@ -89,6 +100,9 @@ class AdOffer extends ActiveRecord
                 LocationLonValidator::class,
             ],
             [
+                'location', 'string'
+            ],
+            [
                 [
                     'user_id',
                     'currency_id',
@@ -105,6 +119,17 @@ class AdOffer extends ActiveRecord
                 'double',
                 'min' => 0,
                 'max' => 9999999999999.99,
+            ],
+            [
+                'keywordsFromForm', 'filter', 'filter' => function($val) {
+                    if ($val === '')  {
+                        return [];
+                    }
+                    return $val;
+                }
+            ],
+            [
+                'keywordsFromForm', 'each', 'rule' => ['integer']
             ],
         ];
     }
@@ -143,6 +168,26 @@ class AdOffer extends ActiveRecord
     public function isActive(): bool
     {
         return (int)$this->status === self::STATUS_ON;
+    }
+
+    public function setLocation(string $location): self
+    {
+        [$lat, $lon] = (new LocationParser($location))->parse();
+        $this->location_lat = $lat;
+        $this->location_lon = $lon;
+        return $this;
+    }
+
+    public function getLocation(): string
+    {
+        return ($this->location_lat && $this->location_lon) ?
+            implode(',', [$this->location_lat, $this->location_lon]) :
+            '';
+    }
+
+    public function getKeywordsFromForm(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'id');
     }
 
     public function getKeywords(): ActiveQuery
