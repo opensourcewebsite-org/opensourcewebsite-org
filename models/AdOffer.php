@@ -10,11 +10,6 @@ use app\modules\bot\validators\LocationLonValidator;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 
-/**
- * Class AdOffer
- *
- * @package app\modules\bot\models
- */
 class AdOffer extends ActiveRecord
 {
     public const STATUS_OFF = 0;
@@ -25,7 +20,7 @@ class AdOffer extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'ad_offer';
     }
@@ -33,7 +28,7 @@ class AdOffer extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [
@@ -90,17 +85,15 @@ class AdOffer extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
-        return ArrayHelper::merge(
-            parent::attributeLabels(),
-            [
-                'delivery_radius' => 'Delivery radius',
-            ]
-        );
+        return [
+            'id' => 'ID',
+            'user_id' => 'User',
+            'section' => 'Section',
+            'delivery_radius' => 'Delivery radius',
+        ];
+
     }
 
     /**
