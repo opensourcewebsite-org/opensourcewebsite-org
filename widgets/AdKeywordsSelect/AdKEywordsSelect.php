@@ -1,48 +1,24 @@
 <?php
 declare(strict_types=1);
 
-namespace app\widgets\KeywordsSelect;
+namespace app\widgets\AdKeywordsSelect;
 
 use app\components\helpers\ArrayHelper;
-use app\models\JobKeyword;
+use app\models\AdKeyword;
+use app\widgets\base\Widget;
 use kartik\select2\Select2;
-use yii\base\InvalidConfigException;
 use yii\base\Model;
-use yii\base\Widget;
-use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveField;
-use kartik\select2\Select2Asset;
 use yii\helpers\Url;
 
-class KeywordsSelect extends Widget {
-
-    public ?ActiveField $field = null;
-
-    public ?Model $model = null;
-
-    public ?string $attribute = null;
-
-    public ?string $name = null;
-
-    public array $value = [];
-
-    public array $options = [];
+class AdKeywordsSelect extends Widget {
 
     private array $defaultOptions = ['class' => 'form-control', 'multiple' => true, 'placeholder' => 'Select Keywords...'];
-
     private array $pluginOptions = [];
 
-    public function init(){
+    public function init()
+    {
         $this->pluginOptions = $this->preparePluginOptions();
-
-        if ($this->name === null && !$this->hasModel()) {
-            throw new InvalidConfigException("Either 'name', or 'model' and 'attribute' properties must be specified.");
-        }
-        if (!isset($this->options['id'])) {
-            $this->options['id'] = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->getId();
-            $this->id = $this->options['id'];
-        }
         parent::init();
     }
 
@@ -50,6 +26,7 @@ class KeywordsSelect extends Widget {
     {
 
         $this->registerJs();
+
         if ($this->hasModel()) {
             return Select2::widget([
                 'model' => $this->model,
@@ -75,13 +52,13 @@ class KeywordsSelect extends Widget {
     }
 
     private function registerJs(){
-        $keywordCreateUrl = Url::to('/job-keyword/create-ajax');
+        $keywordCreateUrl = Url::to('/ad-keyword/create-ajax');
 
         $this->getView()->registerJs(new JsExpression("
             $('#{$this->getId()}').on('select2:select', function(e){
                 if (e.params.data.newKeyword) {
                     const keyword = e.params.data.text;
-                    $.post('{$keywordCreateUrl}', {'JobKeyword[keyword]': keyword}, function(res) {
+                    $.post('{$keywordCreateUrl}', {'AdKeyword[keyword]': keyword}, function(res) {
                        const currentData = $(e.target).val();
 
                        let newData = currentData.filter( (el) => el !== keyword );
@@ -96,14 +73,10 @@ class KeywordsSelect extends Widget {
         "));
     }
 
-    private function registerAssets()
-    {
-        Select2Asset::register($this->getView());
-    }
 
     private function getKeywords(): array
     {
-        return ArrayHelper::map(JobKeyword::find()->orderBy(['keyword' => SORT_ASC])->asArray()->all(), 'id', 'keyword');
+        return ArrayHelper::map(AdKeyword::find()->orderBy(['keyword' => SORT_ASC])->asArray()->all(), 'id', 'keyword');
     }
 
     private function preparePluginOptions(): array

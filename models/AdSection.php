@@ -32,4 +32,22 @@ class AdSection
     {
         return Yii::t('bot', static::$adSearchNames[$section]);
     }
+
+    public static function getAdOfferNames(): array
+    {
+        $ret = [];
+        foreach (static::$adOfferNames as $key => $name) {
+            $ret[$key] = Yii::t('app', $name);
+        }
+        return $ret;
+    }
+
+    public static function getAdSearchNames(): array
+    {
+        $ret = [];
+        foreach (static::$adSearchNames as $key => $name) {
+            $ret[$key] = Yii::t('app', $name);
+        }
+        return $ret;
+    }
 }

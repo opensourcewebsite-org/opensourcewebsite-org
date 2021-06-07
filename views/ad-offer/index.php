@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $displayActiveOffers = $searchModel->status === AdOfferSearch::STATUS_ON;
 
 ?>
-<div class="resume-index">
+<div class="ad-offer-index">
     <div class="row">
         <div class="col-12">
             <div class="card">

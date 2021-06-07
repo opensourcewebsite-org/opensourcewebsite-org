@@ -1,19 +1,12 @@
 <?php
 
-use app\components\helpers\ArrayHelper;
-use app\models\Company;
+use app\models\AdSection;
 use app\models\Currency;
-use app\models\FormModels\LanguageWithLevelsForm;
-use app\models\Gender;
-use app\models\Language;
-use app\models\LanguageLevel;
-use app\models\Vacancy;
+use app\models\Resume;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
-use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
 use app\widgets\CurrencySelect\CurrencySelect;
-use app\widgets\JobKeywordsSelect\JobKeywordsSelect;
-use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
+use app\widgets\AdKeywordsSelect\AdKeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
 use yii\helpers\Url;
@@ -22,54 +15,47 @@ use yii\widgets\ActiveForm;
 
 /**
  * @var View $this
- * @var Vacancy $model
- * @var LanguageWithLevelsForm $languageWithLevelsForm
+ * @var Resume $model
  * @var Currency[] $currencies
- * @var Company[] $companies
  */
 
 $showLocation = $model->location || $model->isNewRecord;
 ?>
-    <div class="vacancy-form">
-        <?php $form = ActiveForm::begin(['id' => 'webvacancy-form']); ?>
+    <div class="resume-form">
+        <?php $form = ActiveForm::begin(['id' => 'ad-offer-form']); ?>
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'name')->textInput() ?>
+                                <?= $form->field($model, 'section')->dropDownList(AdSection::getAdOfferNames(), ['prompt' => 'Select Section']) ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'requirements')->textarea() ?>
+                                <?= $form->field($model, 'title')->textInput() ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'conditions')->textarea() ?>
+                                <?= $form->field($model, 'description')->textarea() ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'responsibilities')->textarea() ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
-                                <?= $form->field($model, 'keywordsFromForm')->widget(JobKeywordsSelect::class) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'max_hourly_rate')->textInput() ?>
+                                <?= $form->field($model, 'price')->textInput() ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'currency_id')->widget(CurrencySelect::class); ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
+                                <?= $form->field($model, 'keywordsFromForm')->widget(AdKeywordsSelect::class,) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -81,50 +67,30 @@ $showLocation = $model->location || $model->isNewRecord;
                             <div class="col">
                                 <div class="form-group">
                                     <label for="offline-work-checkbox">
-                                        <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> autocomplete="off" />
+                                        <input id="offline-work-checkbox" type="checkbox" <?= $showLocation? 'checked' : '' ?> autocomplete="off" />
                                         <?= Yii::t('app', 'Offline work') ?>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>">
+                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
-                                <?= $form->field($model, 'gender_id')->dropDownList(
-                                    ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
-                                    ['prompt' => Yii::t('app', 'All')]
-                                ) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= LanguagesWithLevelSelect::widget([
-                                    'model' => $languageWithLevelsForm,
-                                    'form' => $form,
-                                    'languages' => ArrayHelper::map(Language::find()->asArray()->all(),'id','name_ascii'),
-                                    'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
-                                ]) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'company_id')->widget(
-                                    CompanySelectCreatable::class,
-                                    [
-                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
-                                    ]
-                                ) ?>
+                                <?= $form->field($model, 'search_radius')
+                                    ->textInput(['maxlength' => true])
+                                    ->label($model->getAttributeLabel('search_radius') . ', km')
+                                ?>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
 
-                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/vacancy/index') : Url::to(['/vacancy/view', 'id' => $model->id])?>
+                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/resume/index') : Url::to(['/resume/view', 'id' => $model->id])?>
                         <?= CancelButton::widget(['url' => $cancelUrl]); ?>
 
                         <?php if (!$model->isNewRecord): ?>
@@ -150,18 +116,17 @@ $('#offline-work-checkbox').on('change', function () {
     $('.location-row').toggleClass('d-none');
 });
 
-$('#webvacancy-form').on('afterValidate', function (){
-    if ($('#webvacancy-location').val() === '' && !$('#webvacancy-remote_on').is(':checked')) {
-        $('#webvacancy-form').yiiActiveForm(
+$('#webresume-form').on('afterValidate', function (){
+    if ($('#webresume-location').val() === '' && !$('#webresume-remote_on').is(':checked')) {
+        $('#webresume-form').yiiActiveForm(
             'updateAttribute',
-            'webvacancy-remote_on',
+            'webresume-remote_on',
             ['Either Remote work or Location should be set!']
             );
         return false;
     }
     return true;
 });
-
 JS;
 
 $this->registerJs($js);
