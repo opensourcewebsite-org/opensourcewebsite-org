@@ -16,6 +16,7 @@ use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
 use app\models\search\VacancySearch;
+use yii\base\UnknownClassException;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -164,7 +165,7 @@ class VacancyController extends Controller {
 
     public function actionViewLocation(int $id): string
     {
-        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModel($id)]);
     }
 
     public function actionUpdateLanguages(int $id)
@@ -202,6 +203,14 @@ class VacancyController extends Controller {
         );
 
         return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
+    }
+
+    private function findModel(int $id): Vacancy
+    {
+        if ($model = Vacancy::findOne($id)) {
+            return $model;
+        }
+        throw new NotFoundHttpException('Requested Page Not Found');
     }
 
     private function findModelByIdAndCurrentUser(int $id): Vacancy
