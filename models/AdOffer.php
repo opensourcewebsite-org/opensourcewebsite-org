@@ -1,16 +1,44 @@
 <?php
+declare(strict_types=1);
 
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
-use yii\db\ActiveRecord;
-use app\models\User as GlobalUser;
 
-
+/**
+ * Class AdOffer
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $section
+ * @property string $title
+ * @property string $description
+ * @property int $currency_id
+ * @property double $price
+ * @property int $delivery_radius
+ * @property string $location_lat
+ * @property string $location_lon
+ * @property int $status
+ * @property int $created_at
+ * @property int $processed_at
+ *
+ * @property string $location
+ * @property User $user
+ * @property Currency $currency
+ * @property string $sectionName
+ *
+ * @property AdKeyword[] $keywords
+ * @property AdPhoto[] $photos
+ * @property AdSearch[] $matches
+ * @property AdSearch[] $counterMatches
+ *
+ */
 class AdOffer extends ActiveRecord
 {
     public const STATUS_OFF = 0;
@@ -18,17 +46,12 @@ class AdOffer extends ActiveRecord
 
     public const LIVE_DAYS = 30;
 
-    /**
-     * {@inheritdoc}
-     */
+
     public static function tableName(): string
     {
         return 'ad_offer';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules(): array
     {
         return [
@@ -86,7 +109,7 @@ class AdOffer extends ActiveRecord
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -107,52 +130,61 @@ class AdOffer extends ActiveRecord
 
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
         ];
     }
 
-    public function getKeywords()
+    public function isActive(): bool
     {
-        return $this->hasMany(AdKeyword::className(), ['id' => 'ad_keyword_id'])
+        return (int)$this->status === self::STATUS_ON;
+    }
+
+    public function getKeywords(): ActiveQuery
+    {
+        return $this->hasMany(AdKeyword::class, ['id' => 'ad_keyword_id'])
             ->viaTable('{{%ad_offer_keyword}}', ['ad_offer_id' => 'id']);
     }
 
-    public function getPhotos()
+    public function getPhotos(): ActiveQuery
     {
-        return $this->hasMany(AdPhoto::className(), ['ad_offer_id' => 'id']);
+        return $this->hasMany(AdPhoto::class, ['ad_offer_id' => 'id']);
     }
 
-    public function isActive()
+    public function getUser(): ActiveQuery
     {
-        return $this->status == self::STATUS_ON;
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMatches()
+    public function getGlobalUser(): ActiveQuery
     {
-        return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
+        return $this->getUser();
+    }
+
+    public function getCurrency(): ActiveQuery
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    public function getSectionName(): string
+    {
+        return AdSection::getAdOfferName($this->section);
+    }
+
+    public function getMatches(): ActiveQuery
+    {
+        return $this->hasMany(AdSearch::class, ['id' => 'ad_search_id'])
             ->viaTable('{{%ad_offer_match}}', ['ad_offer_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getCounterMatches()
+    public function getCounterMatches(): ActiveQuery
     {
-        return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
+        return $this->hasMany(AdSearch::class, ['id' => 'ad_search_id'])
             ->viaTable('{{%ad_search_match}}', ['ad_offer_id' => 'id']);
     }
 
@@ -164,7 +196,7 @@ class AdOffer extends ActiveRecord
         $adSearchQuery = AdSearch::find()
             ->where(['!=', AdSearch::tableName() . '.user_id', $this->user_id])
             ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
-            ->joinWith('globalUser')
+            ->joinWith('user')
             ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
             ->andWhere([AdSearch::tableName() . '.section' => $this->section])
             ->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_search.location_lon, ad_search.location_lat)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
@@ -174,7 +206,7 @@ class AdOffer extends ActiveRecord
             ->andWhere(['not in', AdSearch::tableName() . '.id', AdSearchKeyword::find()->select('ad_search_id')]);
 
         $adSearchQueryKeywords = clone $adSearchQuery;
-        $adSearchQueryKeywords = $adSearchQuery
+        $adSearchQueryKeywords = $adSearchQueryKeywords
                 ->joinWith(['keywords' => function ($query) {
                     $query
                         ->joinWith('adOffers')
@@ -217,22 +249,6 @@ class AdOffer extends ActiveRecord
         }
     }
 
-    public function getGlobalUser()
-    {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrency()
-    {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function afterSave($insert, $changedAttributes)
     {
         if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
@@ -240,13 +256,5 @@ class AdOffer extends ActiveRecord
         }
 
         parent::afterSave($insert, $changedAttributes);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSectionName()
-    {
-        return AdSection::getAdOfferName($this->section);
     }
 }
