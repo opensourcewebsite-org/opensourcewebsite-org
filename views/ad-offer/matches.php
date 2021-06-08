@@ -14,52 +14,22 @@ use app\models\AdOffer;
  * @var View $this
  * @var ActiveDataProvider $dataProvider
  * @var AdOfferSearch $searchModel
+ * @var int $adSearchId
  */
 
-$this->title = Yii::t('app', 'Ad Offers');
+$this->title = Yii::t('app', 'Ad Offers Matches');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Search'), 'url' =>['/ad-search/index']];
+$this->params['breadcrumbs'][] = ['label' => "#{$adSearchId}", 'url' =>['/ad-search/view', 'id' => $adSearchId]];
 $this->params['breadcrumbs'][] = $this->title;
-
-$displayActiveOffers = $searchModel->status === AdOfferSearch::STATUS_ON;
 
 ?>
 <div class="ad-offer-index">
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item mx-1">
-                            <?= Html::a(Yii::t('app', 'Active'),
-                                ['/ad-offer/index', 'AdOfferSearch[status]' => AdOffer::STATUS_ON],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOffers ? 'active' : '')
-                                ]);
-                            ?>
-                        </li>
-                        <li class="nav-item  mx-1">
-                            <?= Html::a(Yii::t('app', 'Inactive'),
-                                ['/ad-offer/index', 'AdOfferSearch[status]' => AdOffer::STATUS_OFF],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOffers ? '' : 'active')
-                                ]);
-                            ?>
-                        </li>
-                        <li class="nav-item align-self-center mr-4 mx-1">
-                            <?= AddButton::widget([
-                                'url' => ['create'],
-                                'options' => [
-                                    'title' => 'New Ad Offer',
-                                ]
-                            ]); ?>
-                        </li>
-                    </ul>
-                </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        //'filterModel' => $searchModel,
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
@@ -73,22 +43,11 @@ $displayActiveOffers = $searchModel->status === AdOfferSearch::STATUS_ON;
                                 }
                             ],
                             [
-                                'label' => 'Offers',
-                                'enableSorting' => false,
-                                'format' => 'raw',
-                                'value' => function(AdOffer $model){
-                                    return $model->getMatches()->count() ?
-                                        Html::a(
-                                            $model->getMatches()->count(),
-                                            Url::to(['/ad-search/show-matches', 'adOfferId' => $model->id]),
-                                        ) : '';
-                                }
-                            ],
-                            [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url) {
+                                    'view' => function ($url, $model) use($adSearchId) {
+                                        $url = Url::to(['/ad-offer/view-match', 'adSearchId' => $adSearchId, 'adOfferId' => $model->id,]);
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
                                     },

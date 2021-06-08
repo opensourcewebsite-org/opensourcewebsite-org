@@ -10,7 +10,8 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
 
-class AdKeywordController extends Controller {
+class AdKeywordController extends Controller
+{
 
     public function behaviors(): array
     {

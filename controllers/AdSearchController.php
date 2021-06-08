@@ -16,7 +16,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-class AdSearchController extends Controller {
+class AdSearchController extends Controller
+{
 
     public function behaviors(): array
     {
