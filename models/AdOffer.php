@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\matchers\ModelLinker;
 use app\models\queries\AdOfferQuery;
-use app\models\queries\AdSearchQuery;
+use app\models\scenarios\AdOffer\UpdateScenario;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\db\ActiveQuery;
@@ -73,9 +74,7 @@ class AdOffer extends ActiveRecord
                     'user_id',
                     'section',
                     'title',
-                    'location_lat',
-                    'location_lon',
-                    'delivery_radius',
+                    'location',
                 ],
                 'required',
             ],
@@ -174,7 +173,19 @@ class AdOffer extends ActiveRecord
 
     public function isActive(): bool
     {
-        return (int)$this->status === self::STATUS_ON;
+        return (int)$this->status === static::STATUS_ON;
+    }
+
+    public function setActive(): self
+    {
+        $this->status = static::STATUS_ON;
+        return $this;
+    }
+
+    public function setInactive(): self
+    {
+        $this->status = static::STATUS_OFF;
+        return $this;
     }
 
     public function setLocation(string $location): self
@@ -289,24 +300,15 @@ class AdOffer extends ActiveRecord
 
     public function clearMatches()
     {
-        if ($this->processed_at !== null) {
-            $this->unlinkAll('matches', true);
-            $this->unlinkAll('counterMatches', true);
-
-            $this->setAttributes([
-                'processed_at' => null,
-            ]);
-
-            $this->save();
-        }
+        (new ModelLinker($this))->clearMatches();
     }
 
-    public function afterSave($insert, $changedAttributes)
+    public function beforeSave($insert)
     {
-        if (isset($changedAttributes['status']) && $this->status == self::STATUS_OFF) {
-            $this->clearMatches();
+        if ((new UpdateScenario($this))->run()) {
+            $this->processed_at = null;
         }
 
-        parent::afterSave($insert, $changedAttributes);
+        return parent::beforeSave($insert);
     }
 }
