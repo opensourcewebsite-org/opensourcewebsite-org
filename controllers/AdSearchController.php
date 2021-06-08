@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\Currency;
+use app\models\scenarios\AdSearch\SetActiveScenario;
+use app\models\scenarios\AdSearch\UpdateKeywordsByIdsScenario;
+use app\models\search\AdSearchSearch;
+use app\models\User;
 use Yii;
 use app\models\AdSearch;
 use app\models\search\AdOfferSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class AdSearchController extends Controller {
 
@@ -28,7 +35,7 @@ class AdSearchController extends Controller {
 
     public function actionIndex(): string
     {
-        $searchModel = new AdOfferSearch(['status' => AdSearch::STATUS_ON]);
+        $searchModel = new AdSearchSearch(['status' => AdSearch::STATUS_ON]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -39,16 +46,87 @@ class AdSearchController extends Controller {
 
     public function actionCreate()
     {
+        /** @var User $user */
+        $user = Yii::$app->user->identity;
 
+        $model = new AdSearch();
+        $model->user_id = $user->id;
+        $model->currency_id = $user->currency_id;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model))->run();
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('create', ['model' => $model, 'currencies' => Currency::find()->all()]);
     }
 
-    public function actionUpdate()
+    public function actionUpdate(int $id)
     {
+        $model = $this->findModelByIdAndCurrentUser($id);
 
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model))->run();
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', ['model' => $model, 'currencies' => Currency::find()->all()]);
     }
 
-    public function actionView()
+    public function actionView(int $id): string
     {
+        return $this->render('view', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+    }
 
+    /**
+     * @param int $id
+     * @return array|bool
+     * @throws NotFoundHttpException
+     */
+    public function actionSetActive(int $id)
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $this->response->format = Response::FORMAT_JSON;
+
+        $scenario = new SetActiveScenario($model);
+
+        if ($scenario->run()) {
+            $model->save();
+            return true;
+        }
+
+        return $scenario->getErrors();
+    }
+
+    public function actionSetInactive(int $id): bool
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $this->response->format = Response::FORMAT_JSON;
+
+        $model->setInactive()->save();
+
+        return true;
+    }
+
+    public function actionViewLocation(int $id): string
+    {
+        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+    }
+
+    private function findModelByIdAndCurrentUser(int $id): AdSearch
+    {
+        /** @var AdSearch $model */
+        if ($model = AdSearch::find()
+            ->where(['id' => $id])
+            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->one()) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

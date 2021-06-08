@@ -71,9 +71,6 @@ class AdOfferController extends Controller {
      */
     public function actionUpdate(int $id)
     {
-        /** @var User $user */
-        $user = Yii::$app->user->identity;
-
         $model = $this->findModelByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

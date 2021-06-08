@@ -296,6 +296,6 @@ class Resume extends ActiveRecord
             $this->processed_at = null;
         }
 
-        parent::beforeSave($insert);
+       return parent::beforeSave($insert);
     }
 }

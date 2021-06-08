@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
-use app\models\AdOffer;
+use app\models\AdSearch;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
@@ -11,15 +11,15 @@ use app\widgets\buttons\EditButton;
 
 /**
  * @var View $this
- * @var AdOffer $model
+ * @var AdSearch $model
  */
 
-$this->title = Yii::t('app', 'Ad Offer') . ' #' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Offers'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Ad Search') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Search'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
-    <div class="ad-offer-view">
+    <div class="ad-search-view">
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -41,13 +41,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
 
                                             <a class="dropdown-item status-update <?= $model->isActive() ? 'active' : '' ?>"
                                                href="#"
-                                               data-value="<?= AdOffer::STATUS_ON ?>">
+                                               data-value="<?= AdSearch::STATUS_ON ?>">
                                                 <?= Yii::t('app', 'Active') ?>
                                             </a>
 
                                             <a class="dropdown-item status-update <?= $model->isActive() ? '' : 'active' ?>"
                                                href="#"
-                                               data-value="<?= AdOffer::STATUS_OFF ?>">
+                                               data-value="<?= AdSearch::STATUS_OFF ?>">
                                                 <?= Yii::t('app', 'Inactive') ?>
                                             </a>
                                         </div>
@@ -55,9 +55,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             </li>
                             <li class="nav-item align-self-center mr-3">
                                 <?= EditButton::widget([
-                                    'url' => ['ad-offer/update', 'id' => $model->id],
+                                    'url' => ['ad-search/update', 'id' => $model->id],
                                     'options' => [
-                                        'title' => 'Edit Ad Offer',
+                                        'title' => 'Edit Ad Search',
                                     ]
                                 ]); ?>
                             </li>
@@ -87,8 +87,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'format' => 'raw',
                                     ],
                                     [
-                                        'attribute' => 'price',
-                                        'value' => $model->price ? $model->price . ' ' . $model->currency->code : '',
+                                        'attribute' => 'max_price',
+                                        'value' => $model->max_price ? $model->max_price . ' ' . $model->currency->code : '',
                                     ],
                                     [
                                         'attribute' => 'location',
@@ -103,8 +103,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'format' => 'raw',
                                     ],
                                     [
-                                        'attribute' => 'delivery_radius',
-                                        'value' => $model->delivery_radius ? $model->delivery_radius . ' ' . Yii::t('app', 'km') : '',
+                                        'attribute' => 'pickup_radius',
+                                        'value' => $model->pickup_radius ? $model->pickup_radius . ' ' . Yii::t('app', 'km') : '',
                                     ],
                                     [
                                         'label' => Yii::t('app', 'Offers'),
@@ -114,7 +114,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             return $model->getMatches()->count() ?
                                                 Html::a(
                                                     $model->getMatches()->count(),
-                                                    Url::to(['/ad-search/show-matches', 'adOfferId' => $model->id]),
+                                                    Url::to(['/ad-offer/show-matches', 'adSearchId' => $model->id]),
                                                 ) : '';
                                         },
                                     ],
@@ -128,8 +128,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
     </div>
 
 <?php
-$statusActiveUrl = Yii::$app->urlManager->createUrl(['/ad-offer/set-active?id=' . $model->id]);
-$statusInactiveUrl = Yii::$app->urlManager->createUrl(['/ad-offer/set-inactive?id=' . $model->id]);
+$statusActiveUrl = Yii::$app->urlManager->createUrl(['/ad-search/set-active?id=' . $model->id]);
+$statusInactiveUrl = Yii::$app->urlManager->createUrl(['/ad-search/set-inactive?id=' . $model->id]);
 
 $script = <<<JS
 
