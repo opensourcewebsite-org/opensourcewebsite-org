@@ -195,8 +195,22 @@ $leftMenuItems = [
     ],
     [
         'title' => 'Ads',
-        'url' => 'ads',
-        'route' => '/ads',
+        'urls' => [
+            'ad-offer',
+            'ad-search'
+        ],
+        'items' => [
+            [
+                'title' => Yii::t('app', 'Ad Offers'),
+                'url' => 'ad-offer',
+                'route' => '/ad-offer'
+            ],
+            [
+                'title' => Yii::t('app', 'Ad Search'),
+                'url' => 'ad-search',
+                'route' => '/ad-search',
+            ]
+        ]
     ],
     [
         'title' => 'Jobs',
