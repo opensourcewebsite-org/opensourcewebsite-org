@@ -12,7 +12,7 @@ use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
 use app\widgets\CurrencySelect\CurrencySelect;
-use app\widgets\KeywordsSelect\KeywordsSelect;
+use app\widgets\JobKeywordsSelect\JobKeywordsSelect;
 use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
@@ -59,7 +59,7 @@ $showLocation = $model->location || $model->isNewRecord;
                         <div class="row">
                             <div class="col">
                                 <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
-                                <?= $form->field($model, 'keywordsFromForm')->widget(KeywordsSelect::class) ?>
+                                <?= $form->field($model, 'keywordsFromForm')->widget(JobKeywordsSelect::class) ?>
                             </div>
                         </div>
                         <div class="row">
