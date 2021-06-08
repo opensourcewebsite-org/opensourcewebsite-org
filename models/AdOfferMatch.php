@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use Yii;
+
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "ad_offer_match".
  *
  * @property int $id
  * @property int $ad_offer_id
@@ -14,33 +15,37 @@ use Yii;
  * @property AdOffer $adOffer
  * @property AdSearch $adSearch
  */
-class AdOfferMatch extends \yii\db\ActiveRecord
+class AdOfferMatch extends ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+
+    public static function tableName(): string
     {
         return 'ad_offer_match';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['ad_offer_id', 'ad_search_id'], 'required'],
             [['ad_offer_id', 'ad_search_id'], 'integer'],
-            [['ad_offer_id'], 'exist', 'skipOnError' => true, 'targetClass' => AdOffer::className(), 'targetAttribute' => ['ad_offer_id' => 'id']],
-            [['ad_search_id'], 'exist', 'skipOnError' => true, 'targetClass' => AdSearch::className(), 'targetAttribute' => ['ad_search_id' => 'id']],
+            [
+                ['ad_offer_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => AdOffer::class,
+                'targetAttribute' => ['ad_offer_id' => 'id']
+            ],
+            [
+                ['ad_search_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => AdSearch::class,
+                'targetAttribute' => ['ad_search_id' => 'id']
+            ],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -49,23 +54,13 @@ class AdOfferMatch extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[AdOffer]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAdOffer()
+    public function getAdOffer(): ActiveQuery
     {
-        return $this->hasOne(AdOffer::className(), ['id' => 'ad_offer_id']);
+        return $this->hasOne(AdOffer::class, ['id' => 'ad_offer_id']);
     }
 
-    /**
-     * Gets query for [[AdSearch]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAdSearch()
+    public function getAdSearch(): ActiveQuery
     {
-        return $this->hasOne(AdSearch::className(), ['id' => 'ad_search_id']);
+        return $this->hasOne(AdSearch::class, ['id' => 'ad_search_id']);
     }
 }
