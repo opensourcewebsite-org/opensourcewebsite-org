@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\AdOffer;
 use app\models\Currency;
 use app\models\scenarios\AdSearch\SetActiveScenario;
 use app\models\scenarios\AdSearch\UpdateKeywordsByIdsScenario;
@@ -10,7 +11,7 @@ use app\models\search\AdSearchSearch;
 use app\models\User;
 use Yii;
 use app\models\AdSearch;
-use app\models\search\AdOfferSearch;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -115,7 +116,26 @@ class AdSearchController extends Controller
 
     public function actionViewLocation(int $id): string
     {
-        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+        return $this->renderAjax('view_location_map_modal', ['model' => AdSearch::findOne($id)]);
+    }
+
+    public function actionShowMatches(int $adOfferId): string
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => $this->findAdOfferByIdAndCurrentUser($adOfferId)->getMatches()
+        ]);
+
+        return $this->render('matches', ['adOfferId' => $adOfferId, 'dataProvider' => $dataProvider]);
+    }
+
+    public function actionViewMatch(int $adSearchId, int $adOfferId): string
+    {
+        $matchedOffer = $this->findMatchedAdSearchByIdAndAdOrder(
+            $adSearchId,
+            $this->findAdOfferByIdAndCurrentUser($adOfferId)
+        );
+
+        return $this->render('view-match', ['model' => $matchedOffer, 'adOfferId' => $adOfferId]);
     }
 
     private function findModelByIdAndCurrentUser(int $id): AdSearch
@@ -126,6 +146,28 @@ class AdSearchController extends Controller
             ->andWhere(['user_id' => Yii::$app->user->identity->id])
             ->one()) {
             return $model;
+        }
+
+        throw new NotFoundHttpException('Requested Page Not Found');
+    }
+
+    private function findAdOfferByIdAndCurrentUser(int $id): AdOffer
+    {
+        /** @var AdOffer $model */
+        if ($model = AdOffer::find()
+            ->where(['id' => $id])
+            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->one()) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Requested Page Not Found');
+    }
+
+    public function findMatchedAdSearchByIdAndAdOrder(int $id, AdOffer $adOffer)
+    {
+        if ($adSearch = $adOffer->getMatches()->where(['id' => $id])->one()) {
+            return $adSearch;
         }
 
         throw new NotFoundHttpException('Requested Page Not Found');

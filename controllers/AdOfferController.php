@@ -131,7 +131,7 @@ class AdOfferController extends Controller
     public function actionShowMatches(int $adSearchId): string
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => $this->findAdSearchByInAndCurrentUser($adSearchId)->getMatches()
+            'query' => $this->findAdSearchByIdAndCurrentUser($adSearchId)->getMatches()
         ]);
 
         return $this->render('matches', ['adSearchId' => $adSearchId, 'dataProvider' => $dataProvider]);
@@ -141,7 +141,7 @@ class AdOfferController extends Controller
     {
         $matchedOffer = $this->findMatchedAdOfferByIdAndAdSearch(
             $adOfferId,
-            $this->findAdSearchByInAndCurrentUser($adSearchId)
+            $this->findAdSearchByIdAndCurrentUser($adSearchId)
         );
 
         return $this->render('view-match', ['model' => $matchedOffer, 'adSearchId' => $adSearchId]);
@@ -160,7 +160,7 @@ class AdOfferController extends Controller
         throw new NotFoundHttpException('Requested Page Not Found');
     }
 
-    private function findAdSearchByInAndCurrentUser(int $id): AdSearch
+    private function findAdSearchByIdAndCurrentUser(int $id): AdSearch
     {
         /** @var AdSearch $model */
         if ($model = AdSearch::find()
