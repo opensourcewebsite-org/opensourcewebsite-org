@@ -6,7 +6,12 @@ use app\models\queries\AdKeywordQuery;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
-
+/**
+ * Class AdKeyword
+ *
+ * @property int $id
+ * @property string $keyword
+ */
 class AdKeyword extends ActiveRecord
 {
     public static function tableName(): string

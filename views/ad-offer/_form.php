@@ -1,8 +1,8 @@
 <?php
 
+use app\models\AdOffer;
 use app\models\AdSection;
 use app\models\Currency;
-use app\models\Resume;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\CurrencySelect\CurrencySelect;
@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
 
 /**
  * @var View $this
- * @var Resume $model
+ * @var AdOffer $model
  * @var Currency[] $currencies
  */
 
@@ -58,31 +58,17 @@ $showLocation = $model->location || $model->isNewRecord;
                                 <?= $form->field($model, 'keywordsFromForm')->widget(AdKeywordsSelect::class,) ?>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="offline-work-checkbox">
-                                        <input id="offline-work-checkbox" type="checkbox" <?= $showLocation? 'checked' : '' ?> autocomplete="off" />
-                                        <?= Yii::t('app', 'Offline work') ?>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
+
+                        <div class="row location-row">
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
                             </div>
                         </div>
-                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
+                        <div class="row location-row">
                             <div class="col">
-                                <?= $form->field($model, 'search_radius')
+                                <?= $form->field($model, 'delivery_radius')
                                     ->textInput(['maxlength' => true])
-                                    ->label($model->getAttributeLabel('search_radius') . ', km')
+                                    ->label($model->getAttributeLabel('delivery_radius') . ', km')
                                 ?>
                             </div>
                         </div>
@@ -90,7 +76,7 @@ $showLocation = $model->location || $model->isNewRecord;
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
 
-                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/resume/index') : Url::to(['/resume/view', 'id' => $model->id])?>
+                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/ad-offer/index') : Url::to(['/ad-offer/view', 'id' => $model->id])?>
                         <?= CancelButton::widget(['url' => $cancelUrl]); ?>
 
                         <?php if (!$model->isNewRecord): ?>
@@ -110,23 +96,3 @@ $showLocation = $model->location || $model->isNewRecord;
         </div>
         <?php ActiveForm::end(); ?>
     </div>
-<?php
-$js = <<<JS
-$('#offline-work-checkbox').on('change', function () {
-    $('.location-row').toggleClass('d-none');
-});
-
-$('#webresume-form').on('afterValidate', function (){
-    if ($('#webresume-location').val() === '' && !$('#webresume-remote_on').is(':checked')) {
-        $('#webresume-form').yiiActiveForm(
-            'updateAttribute',
-            'webresume-remote_on',
-            ['Either Remote work or Location should be set!']
-            );
-        return false;
-    }
-    return true;
-});
-JS;
-
-$this->registerJs($js);

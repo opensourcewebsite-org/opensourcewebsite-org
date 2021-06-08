@@ -290,10 +290,12 @@ class Resume extends ActiveRecord
         (new ModelLinker($this))->clearMatches();
     }
 
-    public function afterSave($insert, $changedAttributes)
+    public function beforeSave($insert)
     {
-        (new UpdateScenario($this))->run();
+        if ((new UpdateScenario($this))->run()) {
+            $this->processed_at = null;
+        }
 
-        parent::afterSave($insert, $changedAttributes);
+        parent::beforeSave($insert);
     }
 }

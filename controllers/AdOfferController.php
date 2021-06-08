@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace app\controllers;
 
 use app\models\Currency;
+use app\models\scenarios\AdOffer\UpdateKeywordsByIdsScenario;
+use app\models\scenarios\AdOffer\SetActiveScenario;
 use app\models\User;
 use Yii;
 use app\models\AdOffer;
@@ -11,6 +13,7 @@ use app\models\search\AdOfferSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class AdOfferController extends Controller {
 
@@ -40,6 +43,9 @@ class AdOfferController extends Controller {
         ]);
     }
 
+    /**
+     * @return string|Response
+     */
     public function actionCreate()
     {
         /** @var User $user */
@@ -50,6 +56,7 @@ class AdOfferController extends Controller {
         $model->currency_id = $user->currency_id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model))->run();
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -57,14 +64,68 @@ class AdOfferController extends Controller {
         return $this->render('create', ['model' => $model, 'currencies' => Currency::find()->all()]);
     }
 
-    public function actionUpdate()
+    /**
+     * @param int $id
+     * @return string|Response
+     * @throws NotFoundHttpException
+     */
+    public function actionUpdate(int $id)
     {
+        /** @var User $user */
+        $user = Yii::$app->user->identity;
 
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            (new UpdateKeywordsByIdsScenario($model))->run();
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', ['model' => $model, 'currencies' => Currency::find()->all()]);
     }
 
-    public function actionView()
+    /**
+     * @param int $id
+     * @return array|bool
+     * @throws NotFoundHttpException
+     */
+    public function actionSetActive(int $id)
     {
+        $model = $this->findModelByIdAndCurrentUser($id);
 
+        $this->response->format = Response::FORMAT_JSON;
+
+        $scenario = new SetActiveScenario($model);
+        if ($scenario->run()) {
+            $model->save();
+            return true;
+        }
+
+        return $scenario->getErrors();
+    }
+
+    public function actionSetInactive(int $id): bool
+    {
+        $model = $this->findModelByIdAndCurrentUser($id);
+
+        $this->response->format = Response::FORMAT_JSON;
+
+        $model->setInactive()->save();
+
+        return true;
+    }
+
+    public function actionView(int $id): string
+    {
+        return $this->render('view', [
+            'model' => $this->findModelByIdAndCurrentUser($id)
+        ]);
+    }
+
+    public function actionViewLocation(int $id): string
+    {
+        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
     }
 
     private function findModelByIdAndCurrentUser(int $id): AdOffer
