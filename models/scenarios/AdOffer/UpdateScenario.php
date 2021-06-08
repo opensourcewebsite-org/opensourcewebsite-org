@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace app\models\scenarios\Resume;
+namespace app\models\scenarios\AdOffer;
 
+use app\models\AdOffer;
 use app\models\matchers\ModelLinker;
-use app\models\Resume;
 
 class UpdateScenario {
 
-    private Resume $model;
+    private AdOffer $model;
 
     private ModelLinker $linker;
 
-    public function __construct(Resume $model)
+    public function __construct(AdOffer $model)
     {
         $this->model = $model;
         $this->linker = new ModelLinker($this->model);
@@ -21,9 +21,9 @@ class UpdateScenario {
     public function run(): bool
     {
         if ($this->model->isAttributeChanged('status') ||
-            $this->model->isAttributeChanged('remote_on') ||
-            $this->model->isAttributeChanged('min_hourly_rate', false) ||
-            $this->model->isAttributeChanged('search_radius') ||
+            $this->model->isAttributeChanged('section') ||
+            $this->model->isAttributeChanged('price', false) ||
+            $this->model->isAttributeChanged('delivery_radius') ||
             $this->model->isAttributeChanged('currency_id') ||
             $this->model->isAttributeChanged('location_lat') ||
             $this->model->isAttributeChanged('location_lon')

@@ -62,8 +62,6 @@ class Resume extends ActiveRecord
 
     public $keywordsFromForm = [];
 
-    public bool $keywordsChanged = false;
-
     public static function tableName(): string
     {
         return '{{%resume}}';
@@ -143,11 +141,11 @@ class Resume extends ActiveRecord
             ],
             [
                 'keywordsFromForm', 'filter', 'filter' => function($val) {
-                if ($val === '')  {
-                    return [];
+                    if ($val === '')  {
+                        return [];
+                    }
+                    return $val;
                 }
-                return $val;
-            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']
@@ -292,10 +290,12 @@ class Resume extends ActiveRecord
         (new ModelLinker($this))->clearMatches();
     }
 
-    public function afterSave($insert, $changedAttributes)
+    public function beforeSave($insert)
     {
-        (new UpdateScenario($this))->run();
+        if ((new UpdateScenario($this))->run()) {
+            $this->processed_at = null;
+        }
 
-        parent::afterSave($insert, $changedAttributes);
+        parent::beforeSave($insert);
     }
 }

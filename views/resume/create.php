@@ -5,9 +5,11 @@ use yii\web\View;
 use app\models\Resume;
 use app\models\Currency;
 
-/* @var $this View */
-/* @var $model Resume */
-/* @var $currencies Currency[] */
+/**
+ * @var View $this
+ * @var Resume $model
+ * @var Currency[] $currencies
+ */
 
 $this->title = Yii::t('app', 'Create Resume');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
