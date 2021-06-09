@@ -57,6 +57,7 @@ class AdOffer extends ActiveRecord
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+
         parent::init();
     }
 
@@ -255,53 +256,6 @@ class AdOffer extends ActiveRecord
             ->viaTable('{{%ad_search_match}}', ['ad_offer_id' => 'id']);
     }
 
-    public function updateMatches()
-    {
-        $this->unlinkAll('matches', true);
-        $this->unlinkAll('counterMatches', true);
-
-        $adSearchQuery = AdSearch::find()
-            ->where(['!=', AdSearch::tableName() . '.user_id', $this->user_id])
-            ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
-            ->joinWith('user')
-            ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere([AdSearch::tableName() . '.section' => $this->section])
-            ->andWhere("ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_search.location_lon, ad_search.location_lat)) <= 1000 * (ad_search.pickup_radius + $this->delivery_radius)");
-
-        $adSearchQueryNoKeywords = clone $adSearchQuery;
-        $adSearchQueryNoKeywords = $adSearchQueryNoKeywords
-            ->andWhere(['not in', AdSearch::tableName() . '.id', AdSearchKeyword::find()->select('ad_search_id')]);
-
-        $adSearchQueryKeywords = clone $adSearchQuery;
-        $adSearchQueryKeywords = $adSearchQueryKeywords
-                ->joinWith(['keywords' => function ($query) {
-                    $query
-                        ->joinWith('adOffers')
-                        ->andWhere([AdOffer::tableName() . '.id' => $this->id]);
-                }])
-                ->groupBy(AdSearch::tableName() . '.id');
-
-        if ($this->getKeywords()->count() > 0) {
-            foreach ($adSearchQueryKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch);
-                $this->link('counterMatches', $adSearch);
-            }
-
-            foreach ($adSearchQueryNoKeywords->all() as $adSearch) {
-                $this->link('counterMatches', $adSearch);
-            }
-        } else {
-            foreach ($adSearchQueryKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch);
-            }
-
-            foreach ($adSearchQueryNoKeywords->all() as $adSearch) {
-                $this->link('matches', $adSearch);
-                $this->link('counterMatches', $adSearch);
-            }
-        }
-    }
-
     public function clearMatches()
     {
         (new ModelLinker($this))->clearMatches();
@@ -309,7 +263,7 @@ class AdOffer extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        if ((new UpdateScenario($this))->run()) {
+        if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }
 
