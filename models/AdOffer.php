@@ -57,6 +57,7 @@ class AdOffer extends ActiveRecord
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+
         parent::init();
     }
 
@@ -309,7 +310,7 @@ class AdOffer extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        if ((new UpdateScenario($this))->run()) {
+        if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }
 

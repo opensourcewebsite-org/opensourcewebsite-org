@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use app\models\matchers\AdOfferMatcher;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
@@ -9,6 +10,8 @@ use app\commands\traits\ControllerLogTrait;
 use app\models\AdOffer;
 use app\models\AdSearch;
 use yii\console\Exception;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * Class AdMatchController
@@ -22,74 +25,6 @@ class AdMatchController extends Controller implements CronChainedInterface
     public function actionIndex()
     {
         $this->update();
-    }
-
-    protected function update()
-    {
-        $this->updateAdOffers();
-        $this->updateAdSearches();
-    }
-
-    protected function updateAdSearches()
-    {
-        $updatesCount = 0;
-
-        $adSearchQuery = AdSearch::find()
-            ->where([AdSearch::tableName() . '.processed_at' => null])
-            ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
-            ->joinWith('globalUser')
-            ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
-
-        foreach ($adSearchQuery->all() as $adSearch) {
-            try {
-                $adSearch->updateMatches();
-
-                $adSearch->setAttributes([
-                    'processed_at' => time(),
-                ]);
-                $adSearch->save();
-                $updatesCount++;
-            } catch (Exception $e) {
-                echo 'ERROR: AdSearch #' . $adSearch->id . ': ' . $e->getMessage() . "\n";
-            }
-        }
-
-        if ($updatesCount) {
-            $this->output('Searches processed: ' . $updatesCount);
-        }
-    }
-
-    protected function updateAdOffers()
-    {
-        $updatesCount = 0;
-
-        $adOfferQuery = AdOffer::find()
-            ->where([AdOffer::tableName() . '.processed_at' => null])
-            ->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
-            ->joinWith('globalUser')
-            ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
-
-        foreach ($adOfferQuery->all() as $adOffer) {
-            try {
-                $adOffer->updateMatches();
-
-                $adOffer->setAttributes([
-                    'processed_at' => time(),
-                ]);
-                $adOffer->save();
-                $updatesCount++;
-            } catch (Exception $e) {
-                echo 'ERROR: AdOffer #' . $adOffer->id . ': ' . $e->getMessage() . "\n";
-            }
-        }
-
-        if ($updatesCount) {
-            $this->output('Offers processed: ' . $updatesCount);
-        }
     }
 
     public function actionClearMatches()
@@ -113,5 +48,95 @@ class AdMatchController extends Controller implements CronChainedInterface
                 'processed_at' => null,
             ])
             ->execute();
+    }
+
+    protected function update()
+    {
+        $this->updateAdOffers();
+        $this->updateAdSearches();
+    }
+
+    protected function updateAdOffers()
+    {
+        $updatesCount = 0;
+
+        $adOfferQuery = $this->getAdOfferQuery();
+
+        /** @var AdOffer $adOffer */
+        foreach ($adOfferQuery->all() as $adOffer) {
+            try {
+                $matchedCount = (new AdOfferMatcher($adOffer))->match();
+
+                $adOffer->setAttributes([
+                    'processed_at' => time(),
+                ]);
+                $adOffer->save();
+                $updatesCount++;
+
+                $this->printMatchedCount($adOffer, $matchedCount);
+
+            } catch (\Exception $e) {
+                echo 'ERROR: AdOffer #' . $adOffer->id . ': ' . $e->getMessage() . "\n";
+            }
+        }
+
+        if ($updatesCount) {
+            $this->output('Offers processed: ' . $updatesCount);
+        }
+    }
+
+    protected function updateAdSearches()
+    {
+        $updatesCount = 0;
+
+        $adSearchQuery = $this->getAdSearchQuery();
+
+        /** @var AdSearch $adSearch */
+        foreach ($adSearchQuery->all() as $adSearch) {
+            try {
+                $adSearch->updateMatches();
+
+                $adSearch->setAttributes([
+                    'processed_at' => time(),
+                ]);
+                $adSearch->save();
+                $updatesCount++;
+            } catch (\Exception $e) {
+                echo 'ERROR: AdSearch #' . $adSearch->id . ': ' . $e->getMessage() . "\n";
+            }
+        }
+
+        if ($updatesCount) {
+            $this->output('Searches processed: ' . $updatesCount);
+        }
+    }
+
+    private function getAdOfferQuery(): ActiveQuery
+    {
+        return AdOffer::find()
+            ->where([AdOffer::tableName() . '.processed_at' => null])
+            ->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
+            ->joinWith('user')
+            ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC]);
+    }
+
+    private function getAdSearchQuery(): ActiveQuery
+    {
+        return AdSearch::find()
+            ->where([AdSearch::tableName() . '.processed_at' => null])
+            ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
+            ->joinWith('user')
+            ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
+            ->orderBy(['user.rating' => SORT_DESC])
+            ->addOrderBy(['user.created_at' => SORT_ASC]);
+    }
+
+    private function printMatchedCount(ActiveRecord $model, int $count)
+    {
+        if ($count) {
+            $this->output(get_class($model) . ' matches added: ' . $count);
+        }
     }
 }
