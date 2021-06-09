@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -17,7 +16,6 @@ use yii\db\ActiveRecord;
  */
 class AdOfferMatch extends ActiveRecord
 {
-
     public static function tableName(): string
     {
         return 'ad_offer_match';

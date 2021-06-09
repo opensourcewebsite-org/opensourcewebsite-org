@@ -19,7 +19,6 @@ use yii\web\Response;
 
 class AdOfferController extends Controller
 {
-
     public function behaviors(): array
     {
         return [

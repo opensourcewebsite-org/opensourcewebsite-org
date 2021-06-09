@@ -17,7 +17,7 @@ use app\models\AdOffer;
  * @var AdSearchSearch $searchModel
  */
 
-$this->title = Yii::t('app', 'Ad Search');
+$this->title = Yii::t('app', 'Searches');
 $this->params['breadcrumbs'][] = $this->title;
 
 $displayActiveAdSearch = (int)$searchModel->status === AdSearch::STATUS_ON;
@@ -51,7 +51,7 @@ $displayActiveAdSearch = (int)$searchModel->status === AdSearch::STATUS_ON;
                             <?= AddButton::widget([
                                 'url' => ['create'],
                                 'options' => [
-                                    'title' => 'New Ad Search',
+                                    'title' => 'New Search',
                                 ]
                             ]); ?>
                         </li>
@@ -64,13 +64,24 @@ $displayActiveAdSearch = (int)$searchModel->status === AdSearch::STATUS_ON;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'id',
-                            'sectionName',
-                            'title',
+                            [
+                                'attribute' => 'sectionName',
+                                'label' => Yii::t('app', 'Section'),
+                                'value' => function($model) {
+                                    return $model->sectionName;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'title',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'max_price',
                                 'content' => function (AdSearch $model) {
-                                    return $model->max_price ? $model->max_price . $model->currency->code : '';
-                                }
+                                    return $model->max_price ? $model->max_price . ' ' . $model->currency->code : '∞';
+                                },
+                                'enableSorting' => false,
                             ],
                             [
                                 'label' => 'Offers',

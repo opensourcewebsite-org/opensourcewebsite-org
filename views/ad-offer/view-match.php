@@ -15,10 +15,10 @@ use app\widgets\buttons\EditButton;
  * @var int $adSearchId
  */
 
-$this->title = Yii::t('app', 'Ad Offer') . ' #' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Searches'), 'url' => ['/ad-search/index']];
+$this->title = Yii::t('app', 'Offer') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['/ad-search/index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $adSearchId, 'url' => ['/ad-search/view', 'id' => $adSearchId]];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Ad Offers'), 'url' => ['/ad-offer/show-matches', 'adSearchId' => $adSearchId]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['/ad-offer/show-matches', 'adSearchId' => $adSearchId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
@@ -32,7 +32,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'model' => $model,
                                 'attributes' => [
                                     'id',
-                                    'sectionName',
+                                    [
+                                        'attribute' => 'sectionName',
+                                        'label' => Yii::t('app', 'Section'),
+                                        'value' => function($model) {
+                                            return $model->sectionName;
+                                        },
+                                    ],
                                     'title',
                                     'description:ntext',
                                     [
@@ -51,23 +57,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     ],
                                     [
                                         'attribute' => 'price',
-                                        'value' => $model->price ? $model->price . ' ' . $model->currency->code : '',
-                                    ],
-                                    [
-                                        'attribute' => 'location',
-                                        'visible' => (bool)$model->location,
-                                        'value' => function () use ($model) {
-                                            return Html::a(
-                                                $model->location,
-                                                Url::to(['view-location', 'id' => $model->id]),
-                                                ['class' => 'modal-btn-ajax']
-                                            );
-                                        },
-                                        'format' => 'raw',
-                                    ],
-                                    [
-                                        'attribute' => 'delivery_radius',
-                                        'value' => $model->delivery_radius ? $model->delivery_radius . ' ' . Yii::t('app', 'km') : '',
+                                        'value' => $model->price ? $model->price . ' ' . $model->currency->code : '∞',
                                     ],
                                 ]
                             ]) ?>
@@ -77,4 +67,3 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
-

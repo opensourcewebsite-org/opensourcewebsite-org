@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\scenarios\AdSearch;
 
 use Yii;
 use app\models\AdSearch;
 
-final class SetActiveScenario {
-
+final class SetActiveScenario
+{
     private AdSearch $model;
-
     private array $errors = [];
 
     public function __construct(AdSearch $model)
@@ -22,6 +22,7 @@ final class SetActiveScenario {
             $this->model->setActive();
             return true;
         }
+
         return false;
     }
 
@@ -41,7 +42,7 @@ final class SetActiveScenario {
             $this->errors['location'] = Yii::t('app', 'Location should be set');
             return false;
         }
+
         return true;
     }
 }
-

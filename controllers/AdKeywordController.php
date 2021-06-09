@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace app\controllers;
 
 use app\models\AdKeyword;
@@ -12,7 +13,6 @@ use yii\web\Response;
 
 class AdKeywordController extends Controller
 {
-
     public function behaviors(): array
     {
         return [
@@ -42,6 +42,7 @@ class AdKeywordController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return ['success' => true, 'id' => $model->id, 'keyword' => $model->keyword];
         }
+
         return ['success' => false];
     }
 }

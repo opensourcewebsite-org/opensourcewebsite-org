@@ -5,24 +5,16 @@ use yii\base\Model;
 use yii\bootstrap4\Widget;
 use yii\widgets\ActiveForm;
 
-class LanguagesWithLevelSelect extends Widget {
-
+class LanguagesWithLevelSelect extends Widget
+{
     public string $languageFieldName = 'language_id';
-
     public string $languageLevelFieldName = 'language_level_id';
-
     public string $formName = '';
-
     public ?Model $model = null;
-
     public ?ActiveForm $form = null;
-
     public string $label = 'Language';
-
     public array $languages = [];
-
     public array $languageLevels = [];
-
     private ?string $id;
 
     public function init()
@@ -37,7 +29,6 @@ class LanguagesWithLevelSelect extends Widget {
         }
         $this->languageFieldName .= "[]";
         $this->languageLevelFieldName .= "[]";
-
     }
 
     public function run(): string
@@ -53,5 +44,4 @@ class LanguagesWithLevelSelect extends Widget {
             'languageLevels' => $this->languageLevels,
         ]);
     }
-
 }

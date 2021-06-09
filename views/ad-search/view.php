@@ -14,8 +14,8 @@ use app\widgets\buttons\EditButton;
  * @var AdSearch $model
  */
 
-$this->title = Yii::t('app', 'Ad Search') . ' #' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Search'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Search') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
@@ -69,7 +69,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'model' => $model,
                                 'attributes' => [
                                     'id',
-                                    'sectionName',
+                                    [
+                                        'attribute' => 'sectionName',
+                                        'label' => Yii::t('app', 'Section'),
+                                        'value' => function($model) {
+                                            return $model->sectionName;
+                                        },
+                                    ],
                                     'title',
                                     'description:ntext',
                                     [
@@ -88,7 +94,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     ],
                                     [
                                         'attribute' => 'max_price',
-                                        'value' => $model->max_price ? $model->max_price . ' ' . $model->currency->code : '',
+                                        'value' => $model->max_price ? $model->max_price . ' ' . $model->currency->code : '∞',
                                     ],
                                     [
                                         'attribute' => 'location',
@@ -104,7 +110,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     ],
                                     [
                                         'attribute' => 'pickup_radius',
-                                        'value' => $model->pickup_radius ? $model->pickup_radius . ' ' . Yii::t('app', 'km') : '',
+                                        'visible' => (bool)$model->pickup_radius,
+                                        'value' => $model->pickup_radius . ' ' . Yii::t('app', 'km'),
                                     ],
                                     [
                                         'label' => Yii::t('app', 'Offers'),

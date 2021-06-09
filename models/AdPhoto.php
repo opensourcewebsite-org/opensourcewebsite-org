@@ -17,7 +17,6 @@ use yii\db\ActiveRecord;
  */
 class AdPhoto extends ActiveRecord
 {
-
     public static function tableName(): string
     {
         return 'ad_photo';

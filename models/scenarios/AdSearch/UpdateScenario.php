@@ -6,10 +6,9 @@ namespace app\models\scenarios\AdSearch;
 use app\models\AdSearch;
 use app\models\matchers\ModelLinker;
 
-class UpdateScenario {
-
+class UpdateScenario
+{
     private AdSearch $model;
-
     private ModelLinker $linker;
 
     public function __construct(AdSearch $model)
@@ -29,8 +28,10 @@ class UpdateScenario {
             $this->model->isAttributeChanged('location_lon')
         ) {
             $this->linker->unlinkMatches();
+
             return true;
         }
+
         return false;
     }
 

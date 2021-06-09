@@ -12,8 +12,8 @@ use app\models\Currency;
  * @var array $_params_
  */
 
-$this->title = Yii::t('app', 'Update Ad Search') . ' #' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Search'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Update Search') . ' #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 

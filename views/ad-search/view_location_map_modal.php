@@ -14,7 +14,7 @@ use dosamigos\leaflet\widgets\Map;
  * @var View $this
  * @var AdSearch $model
  */
-$this->title = Yii::t('app', 'Location of Ad search: ' . $model->id);
+$this->title = Yii::t('app', 'Location of Search: ' . $model->id);
 
 ?>
 <div class="modal-header">

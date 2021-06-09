@@ -16,7 +16,7 @@ use app\models\AdOffer;
  * @var AdOfferSearch $searchModel
  */
 
-$this->title = Yii::t('app', 'Ad Offers');
+$this->title = Yii::t('app', 'Offers');
 $this->params['breadcrumbs'][] = $this->title;
 
 $displayActiveOffers = $searchModel->status === AdOfferSearch::STATUS_ON;
@@ -50,7 +50,7 @@ $displayActiveOffers = $searchModel->status === AdOfferSearch::STATUS_ON;
                             <?= AddButton::widget([
                                 'url' => ['create'],
                                 'options' => [
-                                    'title' => 'New Ad Offer',
+                                    'title' => 'New Offer',
                                 ]
                             ]); ?>
                         </li>
@@ -64,13 +64,24 @@ $displayActiveOffers = $searchModel->status === AdOfferSearch::STATUS_ON;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'id',
-                            'sectionName',
-                            'title',
+                            [
+                                'attribute' => 'sectionName',
+                                'label' => Yii::t('app', 'Section'),
+                                'value' => function($model) {
+                                    return $model->sectionName;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'title',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'price',
                                 'content' => function (AdOffer $model) {
-                                    return $model->price ? $model->price . $model->currency->code : '';
-                                }
+                                    return $model->price ? $model->price . ' ' . $model->currency->code : '∞';
+                                },
+                                'enableSorting' => false,
                             ],
                             [
                                 'label' => 'Offers',

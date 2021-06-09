@@ -9,7 +9,6 @@ use yii\data\ActiveDataProvider;
 
 class AdSearchSearch extends AdSearch
 {
-
     public function rules(): array
     {
         return [

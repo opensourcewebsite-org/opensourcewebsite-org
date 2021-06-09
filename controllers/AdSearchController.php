@@ -19,7 +19,6 @@ use yii\web\Response;
 
 class AdSearchController extends Controller
 {
-
     public function behaviors(): array
     {
         return [

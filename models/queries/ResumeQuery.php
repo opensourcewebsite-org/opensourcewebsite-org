@@ -13,7 +13,6 @@ use yii\db\ActiveQuery;
  */
 class ResumeQuery extends ActiveQuery
 {
-
     public function live(): self
     {
         return $this->andWhere([Resume::tableName() . '.status' => Resume::STATUS_ON])

@@ -201,12 +201,12 @@ $leftMenuItems = [
         ],
         'items' => [
             [
-                'title' => Yii::t('app', 'Ad Offers'),
+                'title' => Yii::t('app', 'Offers'),
                 'url' => 'ad-offer',
                 'route' => '/ad-offer'
             ],
             [
-                'title' => Yii::t('app', 'Ad Search'),
+                'title' => Yii::t('app', 'Searches'),
                 'url' => 'ad-search',
                 'route' => '/ad-search',
             ]
@@ -631,6 +631,7 @@ $leftMenuItems = [
 
         <footer class="main-footer">
             <?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?> |
+            <?= Html::a(Yii::t('app', 'Telegram'), 'https://t.me/opensourcewebsite') ?> |
             <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?> |
             <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?> |
             <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?>

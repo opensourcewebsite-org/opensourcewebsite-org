@@ -13,7 +13,6 @@ use yii\db\ActiveQuery;
  */
 class VacancyQuery extends ActiveQuery
 {
-
     public function live(): self
     {
         return $this->andWhere([Vacancy::tableName() . '.status' => Vacancy::STATUS_ON])
@@ -27,5 +26,4 @@ class VacancyQuery extends ActiveQuery
         $new = clone $this;
         return $new->andWhere($ret);
     }
-
 }

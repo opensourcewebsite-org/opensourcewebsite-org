@@ -8,14 +8,15 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\grid\GridView;
+
 /**
  * @var View $this
  * @var ActiveDataProvider $dataProvider
  * @var int $adOfferId
  */
 
-$this->title = Yii::t('app', 'Ad Search Matches');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Offers'), 'url' =>['/ad-offer/index']];
+$this->title = Yii::t('app', 'Matched Searches');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' =>['/ad-offer/index']];
 $this->params['breadcrumbs'][] = ['label' => "#{$adOfferId}", 'url' =>['/ad-offer/view', 'id' => $adOfferId]];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -31,13 +32,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'id',
-                            'sectionName',
-                            'title',
+                            [
+                                'attribute' => 'sectionName',
+                                'label' => Yii::t('app', 'Section'),
+                                'value' => function($model) {
+                                    return $model->sectionName;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'title',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'max_price',
                                 'content' => function (AdSearch $model) {
-                                    return $model->max_price ? $model->max_price . $model->currency->code : '';
-                                }
+                                    return $model->max_price ? $model->max_price . ' ' . $model->currency->code : '∞';
+                                },
+                                'enableSorting' => false,
                             ],
                             [
                                 'class' => ActionColumn::class,

@@ -20,6 +20,7 @@ use yii\widgets\ActiveForm;
  */
 
 $showLocation = $model->location || $model->isNewRecord;
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
     <div class="resume-form">
         <?php $form = ActiveForm::begin(['id' => 'ad-offer-form']); ?>
@@ -67,8 +68,11 @@ $showLocation = $model->location || $model->isNewRecord;
                         <div class="row location-row">
                             <div class="col">
                                 <?= $form->field($model, 'delivery_radius')
-                                    ->textInput(['maxlength' => true])
-                                    ->label($model->getAttributeLabel('delivery_radius') . ', km')
+                                    ->textInput([
+                                        'maxlength' => true,
+                                        'placeholder' => 0,
+                                    ])
+                                    ->label($model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional)
                                 ?>
                             </div>
                         </div>

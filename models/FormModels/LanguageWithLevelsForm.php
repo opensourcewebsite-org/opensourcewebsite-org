@@ -6,12 +6,10 @@ namespace app\models\FormModels;
 use app\models\VacancyLanguage;
 use yii\base\Model;
 
-class LanguageWithLevelsForm extends Model {
-
+class LanguageWithLevelsForm extends Model
+{
     public array $language_id = [];
-
     public array $language_level_id = [];
-
     public bool $required = false;
 
     public function rules(): array
@@ -21,9 +19,11 @@ class LanguageWithLevelsForm extends Model {
                 ['language_id','language_level_id'], 'each', 'rule' => ['integer'],
             ]
         ];
+
         if ($this->required) {
             $rules[] = [['language_id', 'language_level_id'], 'required'];
         }
+
         return $rules;
     }
 

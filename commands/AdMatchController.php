@@ -88,7 +88,7 @@ class AdMatchController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Ad Offers processed: ' . $updatesCount);
+            $this->output('Offers processed: ' . $updatesCount);
         }
     }
 

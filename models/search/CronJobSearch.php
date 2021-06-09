@@ -14,7 +14,6 @@ use yii\data\ActiveDataProvider;
  */
 class CronJobSearch extends CronJobLog
 {
-
     /**
      * {@inheritdoc}
      */

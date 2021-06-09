@@ -42,7 +42,6 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property AdPhoto[] $photos
  * @property AdSearch[] $matches
  * @property AdSearch[] $counterMatches
- *
  */
 class AdOffer extends ActiveRecord
 {
@@ -91,6 +90,11 @@ class AdOffer extends ActiveRecord
             [
                 'delivery_radius',
                 RadiusValidator::class,
+            ],
+            [
+                'delivery_radius',
+                'default',
+                'value' => 0,
             ],
             [
                 'location_lat',

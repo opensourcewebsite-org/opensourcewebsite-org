@@ -10,6 +10,7 @@ use yii\web\View;
 use app\widgets\buttons\AddButton;
 use yii\grid\GridView;
 use app\models\AdOffer;
+
 /**
  * @var View $this
  * @var ActiveDataProvider $dataProvider
@@ -17,8 +18,8 @@ use app\models\AdOffer;
  * @var int $adSearchId
  */
 
-$this->title = Yii::t('app', 'Ad Offers Matches');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ad Search'), 'url' =>['/ad-search/index']];
+$this->title = Yii::t('app', 'Matched Offers');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' =>['/ad-search/index']];
 $this->params['breadcrumbs'][] = ['label' => "#{$adSearchId}", 'url' =>['/ad-search/view', 'id' => $adSearchId]];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -34,13 +35,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
                             'id',
-                            'sectionName',
-                            'title',
+                            [
+                                'attribute' => 'sectionName',
+                                'label' => Yii::t('app', 'Section'),
+                                'value' => function($model) {
+                                    return $model->sectionName;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'title',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'price',
                                 'content' => function (AdOffer $model) {
-                                    return $model->price ? $model->price . $model->currency->code : '';
-                                }
+                                    return $model->price ? $model->price . ' ' . $model->currency->code : '∞';
+                                },
+                                'enableSorting' => false,
                             ],
                             [
                                 'class' => ActionColumn::class,

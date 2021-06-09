@@ -39,7 +39,6 @@ use yii\db\ActiveRecord;
  * @property AdKeyword[] $keywords
  * @property AdOffer[] $matches
  * @property AdOffer[] $counterMatches
- *
  */
 class AdSearch extends ActiveRecord
 {
@@ -51,7 +50,6 @@ class AdSearch extends ActiveRecord
     public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
 
     public $keywordsFromForm = [];
-
 
     public function init()
     {
@@ -80,6 +78,11 @@ class AdSearch extends ActiveRecord
             [
                 'pickup_radius',
                 RadiusValidator::class,
+            ],
+            [
+                'pickup_radius',
+                'default',
+                'value' => 0,
             ],
             [
                 'location_lat',

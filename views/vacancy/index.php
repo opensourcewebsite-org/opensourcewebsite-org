@@ -73,8 +73,7 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                             [
                                 'attribute' => 'max_hourly_rate',
                                 'value' => function($model) {
-                                    /* @var $model Resume */
-                                    return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '';
+                                    return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],

@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\scenarios\Vacancy;
 
 use app\models\Vacancy;
 use app\models\JobVacancyKeyword;
 use app\components\helpers\ArrayHelper;
 
-class UpdateKeywordsByIdsScenario {
-
+class UpdateKeywordsByIdsScenario
+{
     private Vacancy $model;
 
     public function __construct(Vacancy $model)
@@ -17,7 +18,6 @@ class UpdateKeywordsByIdsScenario {
 
     public function run()
     {
-
         $currentKeywordsIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
 
         $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);

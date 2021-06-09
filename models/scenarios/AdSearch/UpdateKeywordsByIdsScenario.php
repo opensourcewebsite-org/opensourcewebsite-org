@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\scenarios\AdSearch;
 
 use app\models\AdSearch;
 use app\components\helpers\ArrayHelper;
 use app\models\AdSearchKeyword;
 
-class UpdateKeywordsByIdsScenario {
-
+class UpdateKeywordsByIdsScenario
+{
     private AdSearch $model;
 
     public function __construct(AdSearch $model)

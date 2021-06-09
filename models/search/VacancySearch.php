@@ -7,8 +7,8 @@ use Yii;
 use app\models\Vacancy;
 use yii\data\ActiveDataProvider;
 
-class VacancySearch extends Vacancy {
-
+class VacancySearch extends Vacancy
+{
     public function rules(): array
     {
         return [

@@ -6,10 +6,9 @@ namespace app\models\scenarios\Vacancy;
 use app\models\matchers\ModelLinker;
 use app\models\Vacancy;
 
-class UpdateScenario {
-
+class UpdateScenario
+{
     private Vacancy $model;
-
     private ModelLinker $linker;
 
     public function __construct(Vacancy $model)
@@ -30,8 +29,10 @@ class UpdateScenario {
             $this->model->isAttributeChanged('location_lon')
         ){
             $this->linker->unlinkMatches();
+
             return true;
         }
+
         return false;
     }
 }

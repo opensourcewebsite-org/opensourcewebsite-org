@@ -16,7 +16,6 @@ use yii\db\ActiveRecord;
  */
 class AdSearchMatch extends ActiveRecord
 {
-
     public static function tableName(): string
     {
         return 'ad_search_match';

@@ -12,7 +12,6 @@ use yii\data\ActiveDataProvider;
 
 class WikiPageSearch extends WikiPage
 {
-
     const TYPE_ALL = 'all';
     const TYPE_RECOMMENDED = 'recommended';
 
@@ -105,7 +104,7 @@ class WikiPageSearch extends WikiPage
         ]);
 
         $queryMissingPages = $queryMissingPages->instanceMissingPages();
-        
+
         $queryMissingPages->andFilterWhere(['like', 'title', $this->title]);
 
         $dataProvider = new ActiveDataProvider([
@@ -117,5 +116,5 @@ class WikiPageSearch extends WikiPage
     }
 
 
-    
+
 }
