@@ -55,10 +55,13 @@ class AdOfferMatcher
             $this->linker->linkCounterMatches($noKeywordsMatches);
 
         } else {
+            $keywordsMatches = $adSearchQueryKeywords->all();
             $noKeywordsMatches = $adSearchQueryNoKeywords->all();
 
             $matchedCount = count($noKeywordsMatches);
 
+
+            $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkMatches($noKeywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);
         }

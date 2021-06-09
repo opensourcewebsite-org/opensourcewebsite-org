@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use app\models\matchers\AdOfferMatcher;
+use app\models\matchers\AdSearchMatcher;
 use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
@@ -94,13 +95,16 @@ class AdMatchController extends Controller implements CronChainedInterface
         /** @var AdSearch $adSearch */
         foreach ($adSearchQuery->all() as $adSearch) {
             try {
-                $adSearch->updateMatches();
+                $matchedCount = (new AdSearchMatcher($adSearch))->match();
 
                 $adSearch->setAttributes([
                     'processed_at' => time(),
                 ]);
+
                 $adSearch->save();
                 $updatesCount++;
+
+                $this->printMatchedCount($adSearch, $matchedCount);
             } catch (\Exception $e) {
                 echo 'ERROR: AdSearch #' . $adSearch->id . ': ' . $e->getMessage() . "\n";
             }
