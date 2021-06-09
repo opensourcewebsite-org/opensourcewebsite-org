@@ -4,11 +4,13 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\matchers\ModelLinker;
 use app\models\queries\AdOfferQuery;
 use app\models\scenarios\AdOffer\UpdateScenario;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
+use yii\base\Event;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -43,7 +45,7 @@ use app\modules\bot\validators\LocationLonValidator;
  * @property AdSearch[] $matches
  * @property AdSearch[] $counterMatches
  */
-class AdOffer extends ActiveRecord
+class AdOffer extends ActiveRecord implements ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -57,13 +59,22 @@ class AdOffer extends ActiveRecord
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
-
+        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
         parent::init();
     }
 
     public static function tableName(): string
     {
         return 'ad_offer';
+    }
+
+    public function markViewedByUser(Event $event)
+    {
+        (new AdOfferResponse([
+            'user_id' => $event->user->id,
+            'ad_offer_id' => $this->id,
+        ]))
+            ->save();
     }
 
     public function rules(): array
