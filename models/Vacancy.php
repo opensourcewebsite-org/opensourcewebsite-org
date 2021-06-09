@@ -6,6 +6,7 @@ namespace app\models;
 use app\components\helpers\ArrayHelper;
 use app\models\interfaces\ModelWithLocationInterface;
 use app\models\matchers\ModelLinker;
+use app\models\scenarios\Vacancy\UpdateScenario;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use app\models\queries\VacancyQuery;
@@ -298,17 +299,6 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
             ->orderBy(['keyword' => SORT_ASC]);
     }
 
-    public function afterSave($insert, $changedAttributes)
-    {
-        if (isset($changedAttributes['status'])) {
-            if ($this->status == self::STATUS_OFF) {
-                 $this->clearMatches();
-            }
-        }
-
-        parent::afterSave($insert, $changedAttributes);
-    }
-
     public function clearMatches()
     {
         (new ModelLinker($this))->clearMatches();
@@ -317,5 +307,14 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
     public function notPossibleToChangeStatus(): array
     {
        return [];
+    }
+
+    public function beforeSave($insert)
+    {
+        if ((new UpdateScenario($this))->run()) {
+            $this->processed_at = null;
+        }
+
+        return parent::beforeSave($insert);
     }
 }

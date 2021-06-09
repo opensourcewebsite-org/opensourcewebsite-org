@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\scenarios\Vacancy;
 
 use Yii;
 use app\models\Vacancy;
 
-final class SetActiveScenario {
-
+final class SetActiveScenario
+{
     private Vacancy $vacancy;
-
     private array $errors = [];
 
     public function __construct(Vacancy $vacancy)
@@ -42,6 +42,7 @@ final class SetActiveScenario {
             $this->errors['languages'] = Yii::t('app', 'You must have at least one language for Vacancy');
             return false;
         }
+
         return true;
     }
 
@@ -53,7 +54,7 @@ final class SetActiveScenario {
                 return false;
             }
         }
+
         return true;
     }
 }
-

@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\scenarios\Resume;
 
 use Yii;
 use app\models\Resume;
 
-final class SetActiveScenario {
-
+final class SetActiveScenario
+{
     private Resume $resume;
-
     private array $errors = [];
 
     public function __construct(Resume $resume)
@@ -22,6 +22,7 @@ final class SetActiveScenario {
             $this->resume->setActive();
             return true;
         }
+
         return false;
     }
 
@@ -41,6 +42,7 @@ final class SetActiveScenario {
             $this->errors['languages'] = Yii::t('app', 'You must have at least one language set in your profile');
             return false;
         }
+
         return true;
     }
 
@@ -52,6 +54,7 @@ final class SetActiveScenario {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -63,7 +66,7 @@ final class SetActiveScenario {
                 return false;
             }
         }
+
         return true;
     }
 }
-

@@ -55,7 +55,7 @@ class CeMatchController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Orders updated: ' . $updatesCount);
+            $this->output('Orders processed: ' . $updatesCount);
         }
     }
 

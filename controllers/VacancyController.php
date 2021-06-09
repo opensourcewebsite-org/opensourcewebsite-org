@@ -24,8 +24,8 @@ use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-class VacancyController extends Controller {
-
+class VacancyController extends Controller
+{
     public function behaviors(): array
     {
         return [

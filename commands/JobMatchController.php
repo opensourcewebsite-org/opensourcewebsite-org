@@ -55,7 +55,7 @@ class JobMatchController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Resumes updated: ' . $updatesCount);
+            $this->output('Resumes processed: ' . $updatesCount);
         }
 
     }
@@ -83,13 +83,15 @@ class JobMatchController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Vacancies updated: ' . $updatesCount);
+            $this->output('Vacancies processed: ' . $updatesCount);
         }
     }
 
     private function printMatchedCount(ActiveRecord $model, int $count)
     {
-        $this->output("Number of Matches for " . get_class($model) . " : {$count}\n");
+        if ($count) {
+            $this->output(get_class($model) . ' matches added: ' . $count);
+        }
     }
 
     public function actionClearMatches()

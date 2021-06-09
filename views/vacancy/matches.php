@@ -42,8 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'max_hourly_rate',
                                 'value' => function($model) {
-                                    /* @var $model Resume */
-                                    return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '';
+                                    return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],

@@ -2,16 +2,9 @@
 
 namespace app\models\queries;
 
-use app\models\Language;
-use app\models\LanguageLevel;
 use app\models\queries\builders\ConditionExpressionBuilderInterface;
 use app\models\Resume;
-use app\models\UserLanguage;
-use app\models\Vacancy;
-use app\models\VacancyLanguage;
 use yii\db\ActiveQuery;
-use yii\db\conditions\OrCondition;
-use yii\db\Expression;
 
 /**
  * Class ResumeQuery
@@ -20,11 +13,10 @@ use yii\db\Expression;
  */
 class ResumeQuery extends ActiveQuery
 {
-
     public function live(): self
     {
         return $this->andWhere([Resume::tableName() . '.status' => Resume::STATUS_ON])
-            ->joinWith('globalUser')
+            ->joinWith('user')
             ->andWhere(['>=', 'user.last_activity_at', time() - Resume::LIVE_DAYS * 24 * 60 * 60]);
     }
 

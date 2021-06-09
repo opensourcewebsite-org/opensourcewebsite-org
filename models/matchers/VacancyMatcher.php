@@ -64,6 +64,7 @@ final class VacancyMatcher
 
             $this->linker->linkMatches($matches);
         }
+
         return $matchesCount;
     }
 

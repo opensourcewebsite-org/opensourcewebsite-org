@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\search;
 
 use app\models\Company;
@@ -7,8 +8,8 @@ use app\models\CompanyUser;
 use Yii;
 use yii\data\ActiveDataProvider;
 
-class CompanyUserSearch extends Company {
-
+class CompanyUserSearch extends Company
+{
     public function rules(): array
     {
         return [];

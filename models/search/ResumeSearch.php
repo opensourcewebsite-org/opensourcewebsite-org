@@ -7,8 +7,8 @@ use app\models\Resume;
 use yii\data\ActiveDataProvider;
 use Yii;
 
-class ResumeSearch extends Resume {
-
+class ResumeSearch extends Resume
+{
     public int $status = Resume::STATUS_ON;
 
     public function rules(): array
