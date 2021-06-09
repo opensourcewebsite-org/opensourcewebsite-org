@@ -16,11 +16,11 @@ use app\widgets\buttons\EditButton;
  * @var int $vacancyId
  */
 
-$this->title = Yii::t('app', 'Matched Resume') . ' #' . $model->id;
+$this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' => ['/vacancies/index']];
-$this->params['breadcrumbs'][] = ['label' => "#{$vacancyId}", 'url' => ['/vacancy/view', 'id' => $vacancyId]];
+$this->params['breadcrumbs'][] = ['label' => '#' . $vacancyId, 'url' => ['/vacancy/view', 'id' => $vacancyId]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Resumes'), 'url' => ['/resume/show-matches', 'vacancyId' => $vacancyId]];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
 
@@ -40,16 +40,27 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'expectations:ntext',
                                 [
                                     'label' => Yii::t('app', 'Keywords'),
-                                    'value' => function () use ($model) {
-                                        return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                    }
+                                    'visible' => (bool)$model->keywords,
+                                    'value' => function() use ($model) {
+                                        $text = '';
+
+                                        foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
+                                            $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                        }
+
+                                        return $text;
+                                    },
+                                    'format' => 'raw',
                                 ],
-                                'min_hourly_rate:decimal',
                                 [
-                                    'attribute' => 'currency_id',
-                                    'value' => $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '',
+                                    'attribute' => 'min_hourly_rate',
+                                    'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞',
                                 ],
                                 'remote_on:boolean',
+                                [
+                                    'label' => Yii::t('app', 'Offline work'),
+                                    'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
+                                ],
                             ]
                         ]) ?>
                     </div>

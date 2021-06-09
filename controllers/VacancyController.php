@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
 use app\models\JobResumeMatch;
 use app\models\Resume;
-use Yii;
 use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\JobVacancyKeyword;
 use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
@@ -16,6 +16,7 @@ use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
 use app\models\search\VacancySearch;
+use yii\base\UnknownClassException;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -23,8 +24,8 @@ use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-class VacancyController extends Controller {
-
+class VacancyController extends Controller
+{
     public function behaviors(): array
     {
         return [
@@ -62,13 +63,14 @@ class VacancyController extends Controller {
 
     public function actionCreate()
     {
-        $model = new WebVacancy();
         /** @var User $user */
         $user = Yii::$app->user->identity;
 
+        $model = new WebVacancy();
         $model->user_id = $user->id;
         $model->currency_id = $user->currency_id;
         $languageWithLevelsForm = new LanguageWithLevelsForm(['required' => true]);
+        $model->remote_on = WebVacancy::REMOTE_ON;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
@@ -164,7 +166,7 @@ class VacancyController extends Controller {
 
     public function actionViewLocation(int $id): string
     {
-        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModel($id)]);
     }
 
     public function actionUpdateLanguages(int $id)
@@ -202,6 +204,14 @@ class VacancyController extends Controller {
         );
 
         return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
+    }
+
+    private function findModel(int $id): Vacancy
+    {
+        if ($model = Vacancy::findOne($id)) {
+            return $model;
+        }
+        throw new NotFoundHttpException('Requested Page Not Found');
     }
 
     private function findModelByIdAndCurrentUser(int $id): Vacancy

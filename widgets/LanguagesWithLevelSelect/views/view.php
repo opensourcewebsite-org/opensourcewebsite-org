@@ -16,6 +16,7 @@ use app\models\FormModels\LanguageWithLevelsForm;
  * @var LanguageWithLevelsForm $model
  * @var ActiveForm|null $form
  */
+
 $templateId = "{$id}-row-template";
 ?>
 <template id="<?=$templateId?>">
@@ -95,5 +96,3 @@ $(document).on('click', '.remove-row-btn', function() {
 
 JS;
 $this->registerJs($js);
-
-

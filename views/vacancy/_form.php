@@ -12,7 +12,7 @@ use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
 use app\widgets\CurrencySelect\CurrencySelect;
-use app\widgets\KeywordsSelect\KeywordsSelect;
+use app\widgets\JobKeywordsSelect\JobKeywordsSelect;
 use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
@@ -28,9 +28,10 @@ use yii\widgets\ActiveForm;
  * @var Company[] $companies
  */
 
+$showLocation = $model->location || $model->isNewRecord;
 ?>
     <div class="vacancy-form">
-        <?php $form = ActiveForm::begin(); ?>
+        <?php $form = ActiveForm::begin(['id' => 'webvacancy-form']); ?>
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -58,7 +59,7 @@ use yii\widgets\ActiveForm;
                         <div class="row">
                             <div class="col">
                                 <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
-                                <?= $form->field($model, 'keywordsFromForm')->widget(KeywordsSelect::class) ?>
+                                <?= $form->field($model, 'keywordsFromForm')->widget(JobKeywordsSelect::class) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -76,26 +77,26 @@ use yii\widgets\ActiveForm;
                                 <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
                             </div>
                         </div>
-                        <div class="row location-row <?= $model->remote_on ? 'd-none' : '' ?>">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="offline-work-checkbox">
+                                        <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> autocomplete="off" />
+                                        <?= Yii::t('app', 'Offline work') ?>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>">
                             <div class="col">
                                 <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'company_id')->widget(
-                                    CompanySelectCreatable::class,
-                                    [
-                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
-                                    ]
-                                ) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
                                 <?= $form->field($model, 'gender_id')->dropDownList(
                                     ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
-                                    ['prompt' => 'Select Gender..']
+                                    ['prompt' => Yii::t('app', 'All')]
                                 ) ?>
                             </div>
                         </div>
@@ -109,11 +110,21 @@ use yii\widgets\ActiveForm;
                                 ]) ?>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'company_id')->widget(
+                                    CompanySelectCreatable::class,
+                                    [
+                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
+                                    ]
+                                ) ?>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <?= SubmitButton::widget() ?>
 
-                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/resume/index') : Url::to(['/resume/view', 'id' => $model->id])?>
+                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/vacancy/index') : Url::to(['/vacancy/view', 'id' => $model->id])?>
                         <?= CancelButton::widget(['url' => $cancelUrl]); ?>
 
                         <?php if (!$model->isNewRecord): ?>
@@ -121,7 +132,7 @@ use yii\widgets\ActiveForm;
                                 'url' => ['delete', 'id' => $model->id],
                                 'options' => [
                                     'data' => [
-                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this Vacancy?'),
+                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                                         'method' => 'post'
                                     ]
                                 ]
@@ -135,13 +146,22 @@ use yii\widgets\ActiveForm;
     </div>
 <?php
 $js = <<<JS
-$('#webvacancy-remote_on').on('change', function () {
+$('#offline-work-checkbox').on('change', function () {
     $('.location-row').toggleClass('d-none');
 });
+
+$('#webvacancy-form').on('afterValidate', function (){
+    if ($('#webvacancy-location').val() === '' && !$('#webvacancy-remote_on').is(':checked')) {
+        $('#webvacancy-form').yiiActiveForm(
+            'updateAttribute',
+            'webvacancy-remote_on',
+            ['Either Remote work or Location should be set!']
+            );
+        return false;
+    }
+    return true;
+});
+
 JS;
 
 $this->registerJs($js);
-
-
-
-

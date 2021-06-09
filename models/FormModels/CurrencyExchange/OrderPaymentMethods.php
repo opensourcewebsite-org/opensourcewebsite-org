@@ -6,8 +6,8 @@ use Yii;
 use yii\base\Model;
 use app\models\CurrencyExchangeOrder;
 
-class OrderPaymentMethods extends Model {
-
+class OrderPaymentMethods extends Model
+{
     public $sellingPaymentMethods = [];
     public $buyingPaymentMethods = [];
 
@@ -59,5 +59,4 @@ class OrderPaymentMethods extends Model {
     {
         return $this->_order;
     }
-
 }

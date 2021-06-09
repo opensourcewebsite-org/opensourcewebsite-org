@@ -3,35 +3,29 @@ declare(strict_types=1);
 
 namespace app\modules\dataGenerator\components\generators;
 
+use Yii;
 use app\models\Currency;
 use app\models\JobKeyword;
 use app\models\matchers\ModelLinker;
 use app\models\Resume;
 use app\models\User;
-use app\models\Vacancy;
-use app\modules\dataGenerator\helpers\LatLonHelper;
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
-use Yii;
+use app\helpers\LatLonHelper;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
 class ResumeFixture extends ARGenerator
 {
-
-    private Generator $faker;
-
     public function __construct($config = [])
     {
-        $this->faker = FakerFactory::create();
         parent::__construct($config);
     }
 
     public function init()
     {
         if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create Resume - there are no Currency in DB!');
+            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
         }
+
         parent::init();
     }
 
@@ -44,26 +38,30 @@ class ResumeFixture extends ARGenerator
             return null;
         }
 
-        $londonCenter = [51.509865, -0.118092];
-        $location = LatLonHelper::generateRandomPoint($londonCenter, 200);
         $model = new Resume();
 
         $model->user_id = $user->id;
         $model->status = Resume::STATUS_ON;
         $model->remote_on = $this->faker->boolean();
-        $model->name = $this->faker->title();
+        $model->name = $this->faker->jobTitle();
+        $model->skills = $this->faker->realText();
         $model->experiences = $this->faker->realText();
+        $model->expectations = $this->faker->realText();
 
         if ($this->faker->boolean()) {
             $model->min_hourly_rate = $this->faker->randomNumber(2);
             $model->currency_id = $currency->id;
         }
 
-        $model->search_radius = $this->faker->randomNumber(3);
-        $model->expectations = $this->faker->realText();
-        $model->skills = $this->faker->realText();
-        $model->location_lat = $location[0];
-        $model->location_lon = $location[1];
+        if (!$model->remote_on || $this->faker->boolean()) {
+            $londonCenter = [51.509865, -0.118092];
+            $location = LatLonHelper::generateRandomPoint($londonCenter, 200);
+
+            $model->location_lat = $location[0];
+            $model->location_lon = $location[1];
+
+            $model->search_radius = $this->faker->randomNumber(3);
+        }
 
         if (!$model->save()) {
             throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
@@ -97,6 +95,7 @@ class ResumeFixture extends ARGenerator
             $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
         }
+
         return $user;
     }
 
@@ -108,6 +107,7 @@ class ResumeFixture extends ARGenerator
             ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
             ->orderByRandAlt(1)
             ->one();
+
         return $currency;
     }
 
@@ -125,6 +125,7 @@ class ResumeFixture extends ARGenerator
     public function getRandomKeywords(): array
     {
         $numOfKeywords = $this->faker->randomNumber(1);
+
         return JobKeyword::find()
             ->orderByRandAlt($numOfKeywords)
             ->all();

@@ -75,7 +75,6 @@ return [
     'Attention' => 'Внимание',
     'This feature works in test mode' => 'Этот функционал работает в тестовом режиме',
     'Please help to test all functions of this' => 'Пожалуйста помогите протестировать все функции',
-    'All data of debts will be deleted from {0} or earlier' => 'Все данные о долгах будут удалены с {0} или раньше',
-    'After that, this feature will work in an operating mode' => 'После этого данный функционал будет работать в рабочем режиме',
+    'All data of debts will be deleted after starting this feature in operating mode' => 'Все данные о долгах будут удалены после запуска этого функционала в рабочий режим',
     'Partners' => 'Партнеры',
 ];

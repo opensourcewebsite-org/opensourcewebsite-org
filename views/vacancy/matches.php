@@ -41,15 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'max_hourly_rate',
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'currency_id',
                                 'value' => function($model) {
-                                    /* @var $model Vacancy */
-                                    return $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '';
+                                    return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
-                                'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name'),
                                 'enableSorting' => false,
                             ],
                             [

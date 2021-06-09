@@ -10,6 +10,7 @@ use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\models\Resume;
 use app\models\Vacancy;
+use yii\db\ActiveRecord;
 
 /**
  * Class JobMatchController
@@ -37,20 +38,24 @@ class JobMatchController extends Controller implements CronChainedInterface
 
         foreach ($this->getResumes() as $resume) {
             try {
-                (new ResumeMatcher($resume))->match();
+                $matchedVacanciesCount = (new ResumeMatcher($resume))->match();
 
                 $resume->setAttributes([
                     'processed_at' => time(),
                 ]);
                 $resume->save();
+
+                $this->printMatchedCount($resume, $matchedVacanciesCount);
+
                 $updatesCount++;
+
             } catch (\Exception $e) {
                 echo 'ERROR: Resume #' . $resume->id . ': ' . $e->getMessage() . "\n";
             }
         }
 
         if ($updatesCount) {
-            $this->output('Resumes updated: ' . $updatesCount);
+            $this->output('Resumes processed: ' . $updatesCount);
         }
 
     }
@@ -61,13 +66,14 @@ class JobMatchController extends Controller implements CronChainedInterface
 
         foreach ($this->getVacancies() as $vacancy) {
             try {
-                (new VacancyMatcher($vacancy))->match();
+                $matchedResumesCount = (new VacancyMatcher($vacancy))->match();
 
                 $vacancy->setAttributes([
                     'processed_at' => time(),
                 ]);
-
                 $vacancy->save();
+
+                $this->printMatchedCount($vacancy, $matchedResumesCount);
 
                 $updatesCount++;
 
@@ -77,7 +83,14 @@ class JobMatchController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Vacancies updated: ' . $updatesCount);
+            $this->output('Vacancies processed: ' . $updatesCount);
+        }
+    }
+
+    private function printMatchedCount(ActiveRecord $model, int $count)
+    {
+        if ($count) {
+            $this->output(get_class($model) . ' matches added: ' . $count);
         }
     }
 

@@ -50,7 +50,7 @@ class m180719_070831_import_currencies extends Migration
         (32, 'EGP', 'Egypt Pound', '£'),
         (33, 'SVC', 'El Salvador Colon', '$'),
         (34, 'EEK', 'Estonia Kroon', 'kr'),
-        (35, 'EUR', 'Euro Member Countries', '€'),
+        (35, 'EUR', 'Euro', '€'),
         (36, 'FKP', 'Falkland Islands (Malvinas) Pound', '£'),
         (37, 'FJD', 'Fiji Dollar', '$'),
         (38, 'GHC', 'Ghana Cedis', '¢'),

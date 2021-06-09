@@ -120,6 +120,14 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         <td class="align-middle"><?= $model->getSellingCurrencyMaxAmount() ?></td>
                                         <td></td>
                                     </tr>
+                                    <?php if ($offersCount = $model->getMatchesOrderedByUserRating()->count()) : ?>
+                                        <tr>
+                                            <th class="align-middle"
+                                                scope="col"><?= Yii::t('app', 'Offers') ?></th>
+                                            <td class="align-middle"><?= Html::a($offersCount, Url::to(['show-matches', 'id' => $model->id])) ?></td>
+                                            <td></td>
+                                        </tr>
+                                    <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -129,31 +137,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
-
-<?php if ($offersCount = $model->getMatchesOrderedByUserRating()->count()) : ?>
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <div id="w0" class="grid-view">
-                            <table class="table table-condensed table-hover" style="margin-bottom: 0;">
-                                <tbody>
-                                <tr>
-                                    <th class="align-middle" scope="col"><?= Yii::t('app', 'Offers') ?></th>
-                                    <td class="align-middle">
-                                        <?= Html::a($offersCount, Url::to(['view-offers', 'id' => $model->id])) ?>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
 
     <div class="row">
         <div class="col-12">

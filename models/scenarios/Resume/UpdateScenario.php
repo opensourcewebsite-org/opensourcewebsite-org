@@ -6,10 +6,9 @@ namespace app\models\scenarios\Resume;
 use app\models\matchers\ModelLinker;
 use app\models\Resume;
 
-class UpdateScenario {
-
+class UpdateScenario
+{
     private Resume $model;
-
     private ModelLinker $linker;
 
     public function __construct(Resume $model)
@@ -18,7 +17,7 @@ class UpdateScenario {
         $this->linker = new ModelLinker($this->model);
     }
 
-    public function run()
+    public function run(): bool
     {
         if ($this->model->isAttributeChanged('status') ||
             $this->model->isAttributeChanged('remote_on') ||
@@ -28,8 +27,11 @@ class UpdateScenario {
             $this->model->isAttributeChanged('location_lat') ||
             $this->model->isAttributeChanged('location_lon')
         ) {
-            $this->linker->clearMatches();
-        }
-    }
+            $this->linker->unlinkMatches();
 
+            return true;
+        }
+
+        return false;
+    }
 }

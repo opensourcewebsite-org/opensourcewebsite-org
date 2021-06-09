@@ -15,11 +15,11 @@ use yii\helpers\Url;
 $this->title = Yii::t('app', 'Offers');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
+$this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
 
 ?>
 
-<div class="currency-exchange-order-view-offers">
+<div class="currency-exchange-order-matches">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Offers');
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a(
                                             $icon,
-                                            Url::to(['view-offer', 'order_id' => $model->id, 'match_order_id' => $offer_order->id]),
+                                            Url::to(['view-match', 'order_id' => $model->id, 'match_order_id' => $offer_order->id]),
                                             ['class' => 'btn btn-outline-primary']
                                         );
                                     },

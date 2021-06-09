@@ -2,13 +2,13 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
+use Yii;
 use app\models\Contact;
 use app\modules\dataGenerator\models\Currency;
 use app\models\Debt;
 use app\models\SignupForm;
 use app\models\User;
 use Faker\Provider\DateTime;
-use Yii;
 use yii\base\Event;
 use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
@@ -23,8 +23,9 @@ class DebtFixture extends ARGenerator
     public function init()
     {
         if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create Debt - there are no Currency in DB!');
+            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
         }
+
         parent::init();
     }
 
@@ -58,9 +59,9 @@ class DebtFixture extends ARGenerator
             return $model->from_user_id;
         };
 
-        $model->currency_id     = $users['currency_id'];
-        $model->amount          = self::getFaker()->valid(static function ($v) { return (bool)$v; })->randomFloat();
-        $model->status          = self::getFaker()->randomElement(Debt::mapStatus());
+        $model->currency_id = $users['currency_id'];
+        $model->amount = $this->faker->valid(static function ($v) { return (bool)$v; })->randomFloat(2, 1, 10000);
+        $model->status = $this->faker->randomElement(Debt::mapStatus());
         $model->setUsersFromContact($users['user_id'], $users['link_user_id']);
 
         return $model;

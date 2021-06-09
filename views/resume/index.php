@@ -74,15 +74,9 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             ],
                             [
                                 'attribute' => 'min_hourly_rate',
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'currency_id',
                                 'value' => function($model) {
-                                    /* @var $model Resume */
-                                    return $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '';
+                                    return $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
-                                'filter' => ArrayHelper::map(Currency::find()->asArray()->all(), 'id', 'name'),
                                 'enableSorting' => false,
                             ],
                             [

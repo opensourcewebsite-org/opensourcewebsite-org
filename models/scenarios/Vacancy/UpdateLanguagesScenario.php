@@ -8,10 +8,9 @@ use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\Vacancy;
 use app\models\VacancyLanguage;
 
-class UpdateLanguagesScenario {
-
+class UpdateLanguagesScenario
+{
     private LanguageWithLevelsForm $form;
-
     private Vacancy $model;
 
     public function __construct(Vacancy $model, LanguageWithLevelsForm $form)

@@ -15,18 +15,11 @@ use yii\helpers\Console;
 
 class CompanyUserFixture extends ARGenerator
 {
-    private Generator $faker;
-
-    public function __construct($config = [])
-    {
-        $this->faker = FakerFactory::create();
-        parent::__construct($config);
-    }
 
     public function init()
     {
         if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create Resume - there are no Currency in DB!');
+            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
         }
         parent::init();
     }

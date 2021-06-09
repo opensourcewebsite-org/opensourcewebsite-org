@@ -9,7 +9,6 @@ use yii\data\ActiveDataProvider;
 
 class WikinewsSearch extends WikinewsPage
 {
-
     public function rules()
     {
         return [

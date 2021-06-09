@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
+
 namespace app\models\scenarios\Resume;
 
 use app\models\Resume;
 use app\models\JobResumeKeyword;
 use app\components\helpers\ArrayHelper;
 
-class UpdateKeywordsByIdsScenario {
-
+class UpdateKeywordsByIdsScenario
+{
     private Resume $model;
 
     public function __construct(Resume $model)
@@ -17,7 +18,6 @@ class UpdateKeywordsByIdsScenario {
 
     public function run()
     {
-
         $currentKeywordsIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
         $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);
         $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);

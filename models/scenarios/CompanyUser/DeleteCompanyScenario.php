@@ -7,8 +7,8 @@ use app\models\Company;
 use app\models\CompanyUser;
 use app\models\Vacancy;
 
-class DeleteCompanyScenario {
-
+class DeleteCompanyScenario
+{
     private Company $companyModel;
     private array $errors = [];
 
@@ -37,6 +37,7 @@ class DeleteCompanyScenario {
         if ($ret = reset($this->errors)){
             return $ret;
         }
+
         return '';
     }
 }

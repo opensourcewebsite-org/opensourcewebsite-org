@@ -76,31 +76,43 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'expectations:ntext',
                                     [
                                         'label' => Yii::t('app', 'Keywords'),
+                                        'visible' => (bool)$model->keywords,
                                         'value' => function() use ($model) {
-                                            return implode(',', ArrayHelper::getColumn($model->keywords, 'keyword'));
-                                        }
+                                            $text = '';
+
+                                            foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
+                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                            }
+
+                                            return $text;
+                                        },
+                                        'format' => 'raw',
                                     ],
-                                    'min_hourly_rate:decimal',
                                     [
-                                        'attribute' => 'currency_id',
-                                        'value' => $model->currency_id ? $model->currency->code . ' - ' . $model->currency->name : '',
+                                        'attribute' => 'min_hourly_rate',
+                                        'value' => $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞',
                                     ],
                                     'remote_on:boolean',
                                     [
+                                        'label' => Yii::t('app', 'Offline work'),
+                                        'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
+                                    ],
+                                    [
                                         'attribute' => 'location',
-                                        'visible' => !$model->isRemote(),
+                                        'visible' => (bool)$model->location,
                                         'value' => function () use ($model) {
                                             return Html::a(
                                                 $model->location,
                                                 Url::to(['view-location', 'id' => $model->id]),
                                                 ['class' => 'modal-btn-ajax']
-                                                ) . (
-                                                    $model->search_radius ?
-                                                        ", Radius: $model->search_radius " . Yii::t('app', 'km')
-                                                        : ''
                                                 );
                                         },
-                                        'format' => 'raw'
+                                        'format' => 'raw',
+                                    ],
+                                    [
+                                        'attribute' => 'search_radius',
+                                        'visible' => (bool)$model->location,
+                                        'value' => $model->search_radius ? $model->search_radius . ' ' . Yii::t('app', 'km') : '',
                                     ],
                                     [
                                         'label' => Yii::t('app', 'Offers'),
@@ -112,7 +124,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                     $model->getMatches()->count(),
                                                     Url::to(['/vacancy/show-matches', 'resumeId' => $model->id]),
                                                 ) : '';
-                                        }
+                                        },
                                     ],
                                 ]
                             ]) ?>
@@ -122,7 +134,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
-
 
 <?php
 $statusActiveUrl = Yii::$app->urlManager->createUrl(['resume/set-active?id=' . $model->id]);

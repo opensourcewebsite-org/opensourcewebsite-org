@@ -20,7 +20,6 @@ use app\modules\bot\components\helpers\LocationParser;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 
-
 /**
  * Class Resume
  *
@@ -62,8 +61,6 @@ class Resume extends ActiveRecord
     public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
 
     public $keywordsFromForm = [];
-
-    public bool $keywordsChanged = false;
 
     public static function tableName(): string
     {
@@ -144,11 +141,11 @@ class Resume extends ActiveRecord
             ],
             [
                 'keywordsFromForm', 'filter', 'filter' => function($val) {
-                if ($val === '')  {
-                    return [];
+                    if ($val === '')  {
+                        return [];
+                    }
+                    return $val;
                 }
-                return $val;
-            }
             ],
             [
                 'keywordsFromForm', 'each', 'rule' => ['integer']
@@ -247,7 +244,8 @@ class Resume extends ActiveRecord
     public function getKeywords(): ActiveQuery
     {
         return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id']);
+            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id'])
+            ->orderBy(['keyword' => SORT_ASC]);
     }
 
     public function getCurrency(): ActiveQuery
@@ -292,10 +290,12 @@ class Resume extends ActiveRecord
         (new ModelLinker($this))->clearMatches();
     }
 
-    public function afterSave($insert, $changedAttributes)
+    public function beforeSave($insert)
     {
-        (new UpdateScenario($this))->run();
+        if ((new UpdateScenario($this))->run()) {
+            $this->processed_at = null;
+        }
 
-        parent::afterSave($insert, $changedAttributes);
+       return parent::beforeSave($insert);
     }
 }
