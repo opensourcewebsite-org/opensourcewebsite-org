@@ -5,6 +5,7 @@ namespace app\models;
 
 use app\components\helpers\ArrayHelper;
 use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use app\models\matchers\ModelLinker;
 use app\models\queries\AdOfferQuery;
 use app\models\scenarios\AdOffer\UpdateScenario;
@@ -68,7 +69,7 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
         return 'ad_offer';
     }
 
-    public function markViewedByUser(Event $event)
+    public function markViewedByUser(ViewedByUserEvent $event)
     {
         (new AdOfferResponse([
             'user_id' => $event->user->id,
