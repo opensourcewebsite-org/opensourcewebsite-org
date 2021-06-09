@@ -10,25 +10,44 @@ class AdSection
     public const RENT = 2;
     public const SERVICES = 3;
 
-    public static function getAdOfferName($section)
-    {
-        $adOfferNames = [
-            1 => Yii::t('bot', 'Sell'),
-            2 => Yii::t('bot', 'Rent'),
-            3 => Yii::t('bot_ad', 'Services'),
-        ];
+    public static array $adOfferNames = [
+        self::BUY_SELL => 'Sell',
+        self::RENT => 'Rent',
+        self::SERVICES => 'Services'
+    ];
 
-        return $adOfferNames[$section];
+    public static array $adSearchNames = [
+        self::BUY_SELL => 'Buy',
+        self::RENT => 'Rent',
+        self::SERVICES => 'Services',
+    ];
+
+    public static function getAdOfferName(int $section): string
+    {
+
+        return Yii::t('bot', static::$adOfferNames[$section]);
     }
 
-    public static function getAdSearchName($section)
+    public static function getAdSearchName(int $section): string
     {
-        $adSearchNames = [
-            1 => Yii::t('bot', 'Buy'),
-            2 => Yii::t('bot', 'Rent'),
-            3 => Yii::t('bot_ad', 'Services'),
-        ];
+        return Yii::t('bot', static::$adSearchNames[$section]);
+    }
 
-        return $adSearchNames[$section];
+    public static function getAdOfferNames(): array
+    {
+        $ret = [];
+        foreach (static::$adOfferNames as $key => $name) {
+            $ret[$key] = Yii::t('app', $name);
+        }
+        return $ret;
+    }
+
+    public static function getAdSearchNames(): array
+    {
+        $ret = [];
+        foreach (static::$adSearchNames as $key => $name) {
+            $ret[$key] = Yii::t('app', $name);
+        }
+        return $ret;
     }
 }

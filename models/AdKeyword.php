@@ -3,21 +3,23 @@
 namespace app\models;
 
 use app\models\queries\AdKeywordQuery;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
  * Class AdKeyword
  *
- * @package app\modules\bot\models
+ * @property int $id
+ * @property string $keyword
  */
 class AdKeyword extends ActiveRecord
 {
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'ad_keyword';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['keyword'], 'required'],
@@ -31,23 +33,20 @@ class AdKeyword extends ActiveRecord
         return new AdKeywordQuery(get_called_class());
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->keyword;
     }
 
-    public function getAdSearches()
+    public function getAdSearches(): ActiveQuery
     {
-        return $this->hasMany(AdSearch::className(), ['id' => 'ad_search_id'])
+        return $this->hasMany(AdSearch::class, ['id' => 'ad_search_id'])
             ->viaTable('{{%ad_search_keyword}}', ['ad_keyword_id' => 'id']);
     }
 
-    public function getAdOffers()
+    public function getAdOffers(): ActiveQuery
     {
-        return $this->hasMany(AdOffer::className(), ['id' => 'ad_offer_id'])
+        return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
             ->viaTable('{{%ad_offer_keyword}}', ['ad_keyword_id' => 'id']);
     }
 }

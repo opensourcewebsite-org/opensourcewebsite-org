@@ -18,7 +18,7 @@ class UpdateScenario {
         $this->linker = new ModelLinker($this->model);
     }
 
-    public function run()
+    public function run(): bool
     {
         if ($this->model->isAttributeChanged('company_id') ||
             $this->model->isAttributeChanged('status') ||
@@ -29,7 +29,9 @@ class UpdateScenario {
             $this->model->isAttributeChanged('location_lat') ||
             $this->model->isAttributeChanged('location_lon')
         ){
-            $this->linker->clearMatches();
+            $this->linker->unlinkMatches();
+            return true;
         }
+        return false;
     }
 }
