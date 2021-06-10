@@ -2,16 +2,16 @@
 
 namespace app\models;
 
+use Yii;
 use app\components\helpers\ArrayHelper;
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use app\models\matchers\ModelLinker;
 use app\models\scenarios\Resume\UpdateScenario;
-use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use app\models\User as GlobalUser;
 use app\models\queries\ResumeQuery;
-use yii\db\conditions\AndCondition;
-use app\models\queries\VacancyQuery;
 use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
@@ -48,7 +48,7 @@ use yii\web\JsExpression;
  * @property UserLanguage[] $languages
  * @property JobKeyword[] $keywords
  */
-class Resume extends ActiveRecord
+class Resume extends ActiveRecord implements ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -70,7 +70,14 @@ class Resume extends ActiveRecord
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
+
         parent::init();
+    }
+
+    public function markViewedByUser(ViewedByUserEvent $event)
+    {
+        (new JobResumeResponse(['user_id' => $event->user->id, 'resume_id' => $this->id]))->save();
     }
 
     public function rules(): array

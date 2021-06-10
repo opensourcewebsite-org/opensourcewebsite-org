@@ -6,11 +6,21 @@ namespace app\models;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
-class AdOfferResponse extends ActiveRecord
+/**
+ * Class AdSearchResponse
+ * @package app\models
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $ad_search_id
+ * @property int $viewed_at
+ * @property int $archived_at
+ */
+class AdSearchResponse extends ActiveRecord
 {
     public static function tableName(): string
     {
-        return "ad_offer_response";
+        return "ad_search_response";
     }
 
     public function behaviors(): array
@@ -28,11 +38,11 @@ class AdOfferResponse extends ActiveRecord
     {
         return [
             [
-                ['user_id','ad_offer_id'],
+                ['user_id','ad_search_id'],
                 'required'
             ],
             [
-                ['user_id','ad_offer_id', 'viewed_at'],
+                ['user_id','ad_search_id', 'viewed_at', 'archived_at'],
                 'integer'
             ]
         ];

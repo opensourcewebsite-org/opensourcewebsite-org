@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use app\models\interfaces\ModelWithLocationInterface;
 use app\models\matchers\ModelLinker;
 use app\models\scenarios\Vacancy\UpdateScenario;
@@ -14,7 +16,6 @@ use app\models\User as GlobalUser;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\db\conditions\AndCondition;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
 use yii\helpers\Html;
@@ -54,7 +55,7 @@ use yii\web\JsExpression;
  * @property JobKeyword[] $keywords
  *
  */
-class Vacancy extends ActiveRecord implements ModelWithLocationInterface
+class Vacancy extends ActiveRecord implements ModelWithLocationInterface, ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -73,8 +74,14 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface
     {
         $this->on(self::EVENT_KEYWORDS_CHANGED, [$this, 'clearMatches']);
         $this->on(self::EVENT_LANGUAGES_CHANGED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
 
         parent::init();
+    }
+
+    public function markViewedByUser(ViewedByUserEvent $event)
+    {
+        (new JobVacancyResponse(['user_id' => $event->user->id, 'vacancy_id' => $this->id]))->save();
     }
 
     public static function tableName(): string

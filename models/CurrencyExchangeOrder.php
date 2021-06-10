@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -46,7 +48,7 @@ use yii\web\JsExpression;
  * @property string $selling_location
  * @property string $buying_location
  */
-class CurrencyExchangeOrder extends ActiveRecord
+class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -58,6 +60,17 @@ class CurrencyExchangeOrder extends ActiveRecord
 
     public const CASH_OFF = 0;
     public const CASH_ON = 1;
+
+    public function init()
+    {
+        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
+        parent::init();
+    }
+
+    public function markViewedByUser(ViewedByUserEvent $event)
+    {
+        (new CurrencyExchangeOrderResponse(['user_id' => $event->user->id, 'order_id' => $this->id]))->save();
+    }
 
     /**
      * {@inheritdoc}
