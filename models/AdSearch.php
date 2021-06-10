@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\components\helpers\ArrayHelper;
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use app\models\matchers\ModelLinker;
 use app\models\queries\AdSearchQuery;
 use app\models\scenarios\AdSearch\UpdateScenario;
@@ -40,7 +42,7 @@ use yii\db\ActiveRecord;
  * @property AdOffer[] $matches
  * @property AdOffer[] $counterMatches
  */
-class AdSearch extends ActiveRecord
+class AdSearch extends ActiveRecord implements ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -60,6 +62,11 @@ class AdSearch extends ActiveRecord
     public static function tableName(): string
     {
         return 'ad_search';
+    }
+
+    public function markViewedByUser(ViewedByUserEvent $event)
+    {
+
     }
 
     public function rules(): array
