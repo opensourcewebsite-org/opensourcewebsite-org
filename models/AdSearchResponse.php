@@ -18,6 +18,14 @@ use yii\db\ActiveRecord;
  */
 class AdSearchResponse extends ActiveRecord
 {
+    public static function findOrNewResponse(int $userId, int $modelId): self
+    {
+        if (!($response = self::findOne(['user_id' => $userId, 'ad_search_id' => $modelId]))) {
+            $response = new self(['user_id' => $userId, 'ad_search_id' => $modelId]);
+        }
+        return $response;
+    }
+
     public static function tableName(): string
     {
         return "ad_search_response";

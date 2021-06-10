@@ -11,7 +11,6 @@ use app\models\queries\AdOfferQuery;
 use app\models\scenarios\AdOffer\UpdateScenario;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
-use yii\base\Event;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -71,11 +70,9 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
 
     public function markViewedByUser(ViewedByUserEvent $event)
     {
-        (new AdOfferResponse([
-            'user_id' => $event->user->id,
-            'ad_offer_id' => $this->id,
-        ]))
-            ->save();
+        $response = AdOfferResponse::findOrNewResponse($event->user->id, $this->id);
+        $response->viewed_at = time();
+        $response->save();
     }
 
     public function rules(): array

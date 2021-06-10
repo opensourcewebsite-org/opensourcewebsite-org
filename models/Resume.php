@@ -77,7 +77,9 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
 
     public function markViewedByUser(ViewedByUserEvent $event)
     {
-        (new JobResumeResponse(['user_id' => $event->user->id, 'resume_id' => $this->id]))->save();
+        $response = JobResumeResponse::findOrNewResponse($event->user->id, $this->id);
+        $response->viewed_at = time();
+        $response->save();
     }
 
     public function rules(): array
