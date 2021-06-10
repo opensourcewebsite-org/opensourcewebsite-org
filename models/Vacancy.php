@@ -81,9 +81,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
 
     public function markViewedByUser(ViewedByUserEvent $event)
     {
-        $response = JobVacancyResponse::findOrNewResponse($event->user->id, $this->id);
-        $response->viewed_at = time();
-        $response->save();
+        (new JobVacancyResponse(['user_id' => $event->user->id, 'vacancy_id' => $this->id]))->save();
     }
 
     public static function tableName(): string
