@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use Yii;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrderMatch;
@@ -9,6 +11,7 @@ use app\models\FormModels\CurrencyExchange\OrderPaymentMethods;
 use app\services\CurrencyExchangeService;
 use app\models\CurrencyExchangeOrder;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -165,13 +168,6 @@ class CurrencyExchangeOrderController extends Controller
         ]);
     }
 
-    private function getPaymentMethodsForCurrency(int $currency_id)
-    {
-        return PaymentMethod::find()->joinWith('currencies')
-            ->where(['currency.id' => $currency_id])
-            ->all();
-    }
-
     /**
      * @param int $id
      * @return array|bool
@@ -240,6 +236,11 @@ class CurrencyExchangeOrderController extends Controller
             ->where(['order_id' => $order_id, 'match_order_id' => $match_order_id])
             ->one();
 
+        $matchModel->trigger(
+            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
+            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
+        );
+
         if ($matchModel) {
             return $this->render('view-match', ['orderModel' => $matchModel->order, 'matchOrderModel' => $matchModel->matchOrder]);
         }
@@ -259,4 +260,12 @@ class CurrencyExchangeOrderController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    private function getPaymentMethodsForCurrency(int $currency_id): array
+    {
+        return PaymentMethod::find()->joinWith('currencies')
+            ->where(['currency.id' => $currency_id])
+            ->all();
+    }
+
 }
