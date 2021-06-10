@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\models;
 
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
@@ -17,6 +18,17 @@ class JobVacancyResponse extends ActiveRecord
     public static function tableName(): string
     {
         return "job_vacancy_response";
+    }
+
+    public function behaviors(): array
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'viewed_at',
+                'updatedAtAttribute' => false,
+            ],
+        ];
     }
 
     public function rules(): array
