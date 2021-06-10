@@ -5,6 +5,8 @@ namespace app\controllers;
 
 use app\models\AdOffer;
 use app\models\Currency;
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use app\models\scenarios\AdSearch\SetActiveScenario;
 use app\models\scenarios\AdSearch\UpdateKeywordsByIdsScenario;
 use app\models\search\AdSearchSearch;
@@ -132,6 +134,11 @@ class AdSearchController extends Controller
         $matchedOffer = $this->findMatchedAdSearchByIdAndAdOrder(
             $adSearchId,
             $this->findAdOfferByIdAndCurrentUser($adOfferId)
+        );
+
+        $matchedOffer->trigger(
+            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
+            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
         );
 
         return $this->render('view-match', ['model' => $matchedOffer, 'adOfferId' => $adOfferId]);

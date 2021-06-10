@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use Yii;
-use app\models\JobResumeMatch;
 use app\models\Resume;
 use app\models\FormModels\LanguageWithLevelsForm;
-use app\models\JobVacancyKeyword;
 use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Vacancy\UpdateLanguagesScenario;
 use app\models\Currency;
@@ -16,7 +16,6 @@ use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
 use app\models\search\VacancySearch;
-use yii\base\UnknownClassException;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -201,6 +200,11 @@ class VacancyController extends Controller
         $matchedVacancy = $this->findMatchedVacancyByIdAndResume(
             $vacancyId,
             $this->findResumeByIdAndCurrentUser($resumeId)
+        );
+
+        $matchedVacancy->trigger(
+            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
+            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
         );
 
         return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
