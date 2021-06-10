@@ -69,7 +69,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
 
     public function markViewedByUser(ViewedByUserEvent $event)
     {
-        (new CurrencyExchangeOrderResponse(['user_id' => $event->user->id, 'order_id' => $this->id]))->save();
+        $response = CurrencyExchangeOrderResponse::findOrNewResponse($event->user->id, $this->id);
+        $response->viewed_at = time();
+        $response->save();
     }
 
     /**
@@ -321,7 +323,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->getMatches()
             ->joinWith('user u')
             ->orderBy(['u.rating' => SORT_DESC])
-            ->addOrderBy(['u.created_at' => SORT_ASC]);;
+            ->addOrderBy(['u.created_at' => SORT_ASC]);
     }
 
     /**
