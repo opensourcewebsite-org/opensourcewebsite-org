@@ -14,5 +14,5 @@ return [
         if (($user !== null) && !(Yii::$app->user->isGuest)) {
             $user->updateLastActivity();
         }
-    }
+    },
 ];
