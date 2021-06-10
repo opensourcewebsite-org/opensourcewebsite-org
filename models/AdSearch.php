@@ -68,7 +68,9 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
 
     public function markViewedByUser(ViewedByUserEvent $event)
     {
-        (new AdSearchResponse(['user_id' => $event->user->id, 'ad_search_id' => $this->id]))->save();
+        $response = AdSearchResponse::findOrNewResponse($event->user->id, $this->id);
+        $response->viewed_at = time();
+        $response->save();
     }
 
     public function rules(): array
