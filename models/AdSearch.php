@@ -56,6 +56,8 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
+
         parent::init();
     }
 
@@ -66,7 +68,7 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
 
     public function markViewedByUser(ViewedByUserEvent $event)
     {
-
+        (new AdSearchResponse(['user_id' => $event->user->id, 'ad_search_id' => $this->id]))->save();
     }
 
     public function rules(): array
