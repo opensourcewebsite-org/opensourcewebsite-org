@@ -27,7 +27,7 @@ if ( $orderModel->selling_location && $matchOrderModel->buying_location ) {
         (float)$matchOrderModel->buying_location_lat,
         (float)$matchOrderModel->buying_location_lon
     );
-    $buyingDistance =' (' . (string)round($buyingDistance) . ' km)';
+    $buyingDistance = (string)round($buyingDistance);
 }
 
 if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
@@ -37,7 +37,7 @@ if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
         (float)$matchOrderModel->selling_location_lat,
         (float)$matchOrderModel->selling_location_lon
     );
-    $sellingDistance = ' (' . (string)round($sellingDistance) . ' km)';
+    $sellingDistance = (string)round($sellingDistance);
 }
 
 ?>
@@ -123,7 +123,10 @@ if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
                         <?php if ($matchOrderModel->selling_cash_on) : ?>
                             <tr>
                                 <td>
-                                    <?= Yii::t('app', 'Cash') . $sellingDistance ?>
+                                    <?= Yii::t('app', 'Cash') ?>
+                                    <?php if ($sellingDistance): ?>
+                                        ( <?= Yii::t('app', 'Distance'); ?>: <?= $sellingDistance ?> <?= Yii::t('app', 'km'); ?> )
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -151,7 +154,12 @@ if ( $orderModel->buying_location && $matchOrderModel->selling_location ) {
                         <tbody>
                         <?php if ($matchOrderModel->selling_cash_on): ?>
                             <tr>
-                                <td><?= Yii::t('app', 'Cash') . $buyingDistance ?></td>
+                                <td>
+                                    <?= Yii::t('app', 'Cash') ?>
+                                    <?php if ($buyingDistance): ?>
+                                        ( <?= Yii::t('app', 'Distance'); ?>: <?= $buyingDistance ?> <?= Yii::t('app', 'km'); ?> )
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endif; ?>
                         <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method) : ?>

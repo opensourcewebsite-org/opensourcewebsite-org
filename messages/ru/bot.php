@@ -281,6 +281,7 @@ return [
     'Price' => 'Цена',
     'Location' => 'Местонахождение',
     'Delivery radius' => 'Радиус доставки',
+    'Distance' => 'Расстояние',
     'My location' => 'Моя геолокация',
     'MY LOCATION' => 'МОЯ ГЕОЛОКАЦИЯ',
     'Check ad correctness' => 'Проверьте правильность объявления',

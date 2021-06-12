@@ -11,9 +11,7 @@ use yii\db\ActiveQuery;
 class AdSearchMatcher
 {
     private AdSearch $model;
-
     private ModelLinker $linker;
-
     private string $comparingTable;
 
     public function __construct(AdSearch $model)
@@ -68,6 +66,7 @@ class AdSearchMatcher
             $this->linker->linkMatches($noKeywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);
         }
+
         return $matchedCount;
     }
 
@@ -86,5 +85,4 @@ class AdSearchMatcher
                 ) <= 1000 * (ad_offer.delivery_radius + {$this->model->pickup_radius})"
             );
     }
-
 }

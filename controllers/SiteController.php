@@ -212,6 +212,7 @@ class SiteController extends Controller
                 }
             }
         }
+
         return $this->render('mergeAccounts', [
             'model' => $mergeAccountsRequest ?? null,
             'user' => $user,
@@ -225,61 +226,33 @@ class SiteController extends Controller
         $transaction = $connection->beginTransaction();
         try {
             BotUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\CompanyUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\AdSearch::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\AdOffer::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\Resume::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\Vacancy::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
-
             \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\Contact::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\Contact::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
-
             \app\models\Debt::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
-
             \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
-
             \app\models\DebtBalance::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
-
             \app\models\DebtBalance::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
-
             \app\models\DebtRedistribution::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\DebtRedistribution::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
-
             \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\modules\comment\models\IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\Moqup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\SettingValueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\SupportGroup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\SupportGroupBotClient::updateAll(['provider_bot_user_id' => $user->id], "provider_bot_user_id = {$userToMerge->id}");
-
             \app\models\SupportGroupMember::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\UserIssueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\UserMoqupFollow::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\UserWikiPage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
             \app\models\CurrencyExchangeOrder::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             $userToMerge->delete();
@@ -287,8 +260,10 @@ class SiteController extends Controller
             $transaction->commit();
         } catch (\Throwable $e) {
             $transaction->rollBack();
+
             return false;
         }
+
         return true;
     }
 
@@ -411,6 +386,7 @@ class SiteController extends Controller
                 }
             }
         }
+
         return $this->render('changeEmail', [
             'model' => $changeEmailRequest ?? null,
             'user' => $user,
