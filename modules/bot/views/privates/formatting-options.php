@@ -10,3 +10,4 @@ use app\modules\bot\components\helpers\ExternalLink;
   <code><?= Yii::t('bot', 'code') ?></code> => <code>`<?= Yii::t('bot', 'code') ?>`</code><br/>
   <a href="<?= ExternalLink::getBotLink() ?>"><?= Yii::t('bot', 'link title') ?></a> => <code>[<?= Yii::t('bot', 'link title') ?>](<?= Yii::t('bot', 'link') ?>)</code><br/>
 <br/>
+<i><?= Yii::t('bot', 'Don\'t use html tags') ?>.</i><br/>
