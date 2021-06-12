@@ -13,4 +13,3 @@
 ————<br/>
 <br/>
 <?= $this->render("../formatting-options") ?>
-

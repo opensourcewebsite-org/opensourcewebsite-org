@@ -24,7 +24,7 @@ class MessageWithEntitiesConverter
         $entities = $message->getEntities();
 
         if (empty($text)) {
-            return "";
+            return '';
         }
 
         $start_tags = [];
@@ -48,7 +48,7 @@ class MessageWithEntitiesConverter
             }
         }
         $html_text = join('', $html);
-        return preg_replace("%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u", '<a href="$2">$1</a>', $html_text);
+        return preg_replace('%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u', '<a href="$2">$1</a>', $html_text);
     }
 
     /**
@@ -70,7 +70,7 @@ class MessageWithEntitiesConverter
             '%</i>%u',
             '%</s>%u',
             '%</code>%u',
-            '%<a +href="(.*)">(.*)</a>%u'
+            '%<a +href="(.*)">(.*)</a>%u',
         ], [
             '**',
             '__',
@@ -80,7 +80,7 @@ class MessageWithEntitiesConverter
             '__',
             '~~',
             '`',
-            '[$2]($1)'
+            '[$2]($1)',
         ], $text);
     }
 
@@ -88,13 +88,13 @@ class MessageWithEntitiesConverter
     {
         switch ($tag->getType()) {
             case MessageEntity::TYPE_BOLD:
-                return "<b>";
+                return '<b>';
             case MessageEntity::TYPE_ITALIC:
-                return "<i>";
+                return '<i>';
             case MessageEntity::TYPE_STRIKETHROUGH:
-                return "<s>";
+                return '<s>';
             case MessageEntity::TYPE_CODE:
-                return "<code>";
+                return '<code>';
             case MessageEntity::TYPE_TEXT_LINK:
                 $url = $tag->getUrl();
                 return "<a href=\"{$url}\">";
@@ -102,7 +102,7 @@ class MessageWithEntitiesConverter
                 $url = mb_substr($text, $tag->getOffset(), $tag->getLength(), 'UTF-8');
                 return "<a href=\"{$url}\">";
             default:
-                return "";
+                return '';
         }
     }
 
@@ -110,18 +110,18 @@ class MessageWithEntitiesConverter
     {
         switch ($tag->getType()) {
             case MessageEntity::TYPE_BOLD:
-                return "</b>";
+                return '</b>';
             case MessageEntity::TYPE_ITALIC:
-                return "</i>";
+                return '</i>';
             case MessageEntity::TYPE_STRIKETHROUGH:
-                return "</s>";
+                return '</s>';
             case MessageEntity::TYPE_CODE:
-                return "</code>";
+                return '</code>';
             case MessageEntity::TYPE_TEXT_LINK:
             case MessageEntity::TYPE_URL:
-                return "</a>";
+                return '</a>';
             default:
-                return "";
+                return '';
         }
     }
 }
