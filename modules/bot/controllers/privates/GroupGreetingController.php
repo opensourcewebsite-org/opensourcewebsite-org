@@ -2,11 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class GroupGreetingController
@@ -135,10 +136,8 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        $text = $this->getUpdate()->getMessage()->getText();
-        $text = strip_tags($text);
-        // TODO Convert markdown to html tags
-        $textLenght = strlen($text);
+        $text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage());
+        $textLenght = mb_strlen($text, 'UTF-8');
 
         if (!(($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX))) {
             return $this->getResponseBuilder()
