@@ -50,7 +50,8 @@
         "yii2tech/ar-position": "^1.0",
         "voskobovich/yii2-linker-behavior": "^4.1",
         "2amigos/yii2-leaflet-extension": "^1.1",
-        "npm-asset/leaflet.locatecontrol": "*"
+        "npm-asset/leaflet.locatecontrol": "*",
+        "lstrojny/functional-php": "^1.17"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",

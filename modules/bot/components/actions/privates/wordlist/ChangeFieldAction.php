@@ -3,7 +3,7 @@
 namespace app\modules\bot\components\actions\privates\wordlist;
 
 use app\modules\bot\components\actions\BaseAction;
-use app\modules\bot\models\Chat;
+use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 use app\modules\bot\components\helpers\Emoji;
 
 class ChangeFieldAction extends BaseAction
@@ -20,9 +20,12 @@ class ChangeFieldAction extends BaseAction
             'field' => $field,
         ]));
 
+        $phrase = $this->wordModelClass::findOne($phraseId);
+        $params = isset($phrase) ? [$field . 'Markdown' => MessageWithEntitiesConverter::fromHtml($phrase->$field)] : [];
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-' . $field),
+                $this->render('set-' . $field, $params),
                 [
                     [
                         [
