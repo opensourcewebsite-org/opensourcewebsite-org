@@ -8,6 +8,16 @@ use TelegramBot\Api\Types\MessageEntity;
 
 class MessageWithEntitiesConverter
 {
+    /**
+     * Convert message with {@see \TelegramBot\Api\Types\MessageEntity entities} to HTML format
+     *
+     * Also escapes HTML special characters in message text.
+     *
+     * Doesn't support underline, code blocks and mentions.
+     *
+     * @param Message $message telegram message, containing some text with markup
+     * @return string HTML representation of $message
+     */
     public static function toHtml(Message $message): string
     {
         $text = $message->getText();
@@ -19,7 +29,7 @@ class MessageWithEntitiesConverter
 
         $start_tags = [];
         $end_tags = [];
-        if ( ! empty($entities)) {
+        if (!empty($entities)) {
             $start_tags = group($entities, fn ($e) => $e->getOffset());
             $end_tags = group($entities, fn ($e) => $e->getOffset() + $e->getLength());
         }
@@ -41,6 +51,14 @@ class MessageWithEntitiesConverter
         return preg_replace("%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u", '<a href="$2">$1</a>', $html_text);
     }
 
+    /**
+     * Convert HTML {@see https://core.telegram.org/api/entities with restrictions} to {@see https://github.com/telegramdesktop/tdesktop/issues/330#issuecomment-326881955 Telegram Markdown}
+     *
+     * Doesn't support `<pre>`, `<u>` tags.
+     *
+     * @param string $text Telegram-compliant HTML code
+     * @return string Markdown representation of $text
+     */
     public static function fromHtml(string $text): string
     {
         return preg_replace([
