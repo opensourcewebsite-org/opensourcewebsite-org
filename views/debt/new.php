@@ -64,21 +64,28 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Debts'), 'url' => ['
                 'tableOptions' => ['class' => 'table table-hover'],
                 'columns' => [
                     [
-                        'label' => 'User',
+                        'label' => Yii::t('app', 'User'),
                         'value' => function ($data) use ($direction) {
                             return $data->getUserDisplayName($direction);
                         },
                         'format' => 'html',
                     ],
                     [
-                        'label' => 'Amount',
-                        'value' => function ($data) {
-                            return $data->amount ?? null;
+                        'label' => Yii::t('app', 'Direction'),
+                        'value' => function ($data) use ($direction) {
+                            return $direction == Debt::DIRECTION_DEPOSIT ? 'Deposit' : 'Credit';
                         },
                         'format' => 'html',
                     ],
                     [
-                        'label' => 'Created At',
+                        'label' => Yii::t('app', 'Amount'),
+                        'value' => function ($data) {
+                            return $data->amount . ' ' . $data->currency->code;
+                        },
+                        'format' => 'html',
+                    ],
+                    [
+                        'label' => Yii::t('app', 'Created At'),
                         'value' => function ($data) {
                             return $data->created_at ?? null;
                         },

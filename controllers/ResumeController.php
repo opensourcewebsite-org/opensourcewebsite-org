@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
 use Yii;
 use app\models\Vacancy;
 use app\models\WebModels\WebVacancy;
@@ -162,6 +164,11 @@ class ResumeController extends Controller
         $matchedResume = $this->findMatchedResumeByIdAndVacancy(
             $resumeId,
             $this->findVacancyByIdAndCurrentUser($vacancyId)
+        );
+
+        $matchedResume->trigger(
+            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
+            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
         );
 
         return $this->render('view-match', ['model' => $matchedResume, 'vacancyId' => $vacancyId]);
