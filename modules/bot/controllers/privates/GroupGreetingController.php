@@ -108,9 +108,12 @@ class GroupGreetingController extends Controller
                 'chatId' => $chatId,
             ]));
 
+        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+        $messageMarkdown = MessageWithEntitiesConverter::fromHtml($messageSetting->value);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-message'),
+                $this->render('set-message', ['messageMarkdown' => $messageMarkdown]),
                 [
                     [
                         [

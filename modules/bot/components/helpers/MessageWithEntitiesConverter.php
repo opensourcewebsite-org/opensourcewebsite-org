@@ -41,6 +41,31 @@ class MessageWithEntitiesConverter
         return preg_replace("%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u", '<a href="$2">$1</a>', $html_text);
     }
 
+    public static function fromHtml(string $text): string
+    {
+        return preg_replace([
+            '/<b>/u',
+            '/<i>/u',
+            '/<s>/u',
+            '/<code>/u',
+            '%</b>%u',
+            '%</i>%u',
+            '%</s>%u',
+            '%</code>%u',
+            '%<a +href="(.*)">(.*)</a>%u'
+        ], [
+            '**',
+            '__',
+            '~~',
+            '`',
+            '**',
+            '__',
+            '~~',
+            '`',
+            '[$2]($1)'
+        ], $text);
+    }
+
     private static function startTagToText(MessageEntity $tag, string $text): string
     {
         switch ($tag->getType()) {
