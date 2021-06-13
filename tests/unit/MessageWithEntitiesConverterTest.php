@@ -52,6 +52,13 @@ class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
         ]);
         $expected = 'text <b>bold</b> <i>italic</i> <code>code</code> <a href="example.com">link title</a> <s>strike</s>';
         expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
+
+        $message = self::message('🍪 text 🍩💚🧡🎂🍧 text text 💚🧡', [
+            self::entity(MessageEntity::TYPE_BOLD, 8, 10),
+            self::entity(MessageEntity::TYPE_ITALIC, 24, 4)
+        ]);
+        $expected = '🍪 text <b>🍩💚🧡🎂🍧</b> text <i>text</i> 💚🧡';
+        expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
     }
 
     public function testFromHtml()
@@ -60,6 +67,10 @@ class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
 
         $html = 'text <b>bold</b> <i>italic</i> <code>code</code> <a href="example.com">link title</a> <s>strike</s>';
         $expected = 'text **bold** __italic__ `code` [link title](example.com) ~~strike~~';
+        expect(MessageWithEntitiesConverter::fromHtml($html))->equals($expected);
+
+        $html = '🍪 text <b>🍩💚🧡🎂🍧</b> text <i>text</i> 💚🧡';
+        $expected = '🍪 text **🍩💚🧡🎂🍧** text __text__ 💚🧡';
         expect(MessageWithEntitiesConverter::fromHtml($html))->equals($expected);
     }
 }
