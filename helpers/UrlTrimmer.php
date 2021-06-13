@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace app\helpers;
 
-class UrlTrimmer {
-
+class UrlTrimmer
+{
     public function trim(string $url): string
     {
         $parsedUrl = parse_url($url);
