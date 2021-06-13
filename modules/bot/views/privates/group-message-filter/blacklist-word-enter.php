@@ -1,1 +1,1 @@
-<b><?= Yii::t('bot', 'Type a phrase or phrases (each phrase on a new line)'); ?>:</b>
+<b><?= Yii::t('bot', 'Send a phrase or phrases (each phrase on a new line)'); ?>:</b>
