@@ -23,7 +23,7 @@ class AdSearchMatcher
 
     public function match(): int
     {
-       $this->linker->unlinkMatches();
+        $this->linker->unlinkMatches();
 
         $adOfferQuery = $this->prepareMainQuery();
 
@@ -55,7 +55,6 @@ class AdSearchMatcher
             $this->linker->linkMatches($keywordsMatches);
             $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkMatches($noKeywordsMatches);
-
         } else {
             $keywordsMatches = $adOfferQueryKeywords->all();
             $noKeywordsMatches = $adOfferQueryNoKeywords->all();

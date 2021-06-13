@@ -24,7 +24,6 @@ use yii\db\ActiveRecord;
  */
 class VacancyLanguage extends ActiveRecord
 {
-
     public static function tableName(): string
     {
         return '{{%vacancy_language}}';

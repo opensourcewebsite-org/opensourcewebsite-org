@@ -140,15 +140,15 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             ],
             [
                 'currency_id', 'required', 'when' => function (self $model) {
-                        return $model->max_hourly_rate != '';
+                    return $model->max_hourly_rate != '';
                 },
                 'whenClient' => new JsExpression("function () {
                        return $('#".Html::getInputId($this, 'max_hourly_rate')."').val() != '';
                 }"),
             ],
             [
-                'keywordsFromForm', 'filter', 'filter' => function($val) {
-                    if ($val === '')  {
+                'keywordsFromForm', 'filter', 'filter' => function ($val) {
+                    if ($val === '') {
                         return [];
                     }
                     return $val;
@@ -190,12 +190,12 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             'company_id' => Yii::t('app', 'Company'),
             'status' => Yii::t('app', 'Status'),
             'name' => Yii::t('app', 'Name'),
-            'requirements' => Yii::t('app','Requirements'),
+            'requirements' => Yii::t('app', 'Requirements'),
             'currency_id' => Yii::t('app', 'Currency'),
-            'conditions' => Yii::t('app','Conditions'),
-            'responsibilities' => Yii::t('app','Responsibilities'),
+            'conditions' => Yii::t('app', 'Conditions'),
+            'responsibilities' => Yii::t('app', 'Responsibilities'),
             'keywordsFromForm' => Yii::t('app', 'Keywords'),
-            'gender_id' => Yii::t('app','Gender'),
+            'gender_id' => Yii::t('app', 'Gender'),
             'location_lat' => Yii::t('app', 'location_lat'),
             'location_lon' => Yii::t('app', 'location_lon'),
             'location' => Yii::t('app', 'Location'),
@@ -315,7 +315,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
 
     public function notPossibleToChangeStatus(): array
     {
-       return [];
+        return [];
     }
 
     public function beforeSave($insert)

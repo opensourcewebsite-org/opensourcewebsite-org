@@ -21,7 +21,6 @@ use yii\db\ActiveRecord;
  */
 class CompanyUser extends ActiveRecord
 {
-
     public const ROLE_OWNER = 0;
     public const ROLE_HR = 1;
 

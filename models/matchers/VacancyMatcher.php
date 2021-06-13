@@ -15,7 +15,6 @@ use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 use yii\db\Expression;
 
-
 final class VacancyMatcher
 {
     private Vacancy $model;
@@ -57,7 +56,6 @@ final class VacancyMatcher
             $this->linker->linkCounterMatches($rateMatches);
 
             $this->linker->linkCounterMatches($rateNotMachResumes);
-
         } else {
             $matches = $resumesQuery->all();
             $matchesCount = count($matches);

@@ -35,5 +35,4 @@ class AdPhoto extends ActiveRecord
     {
         return $this->hasOne(AdOffer::class, ['id' => 'ad_offer_id']);
     }
-
 }

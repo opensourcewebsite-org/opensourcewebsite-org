@@ -125,26 +125,26 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 LocationLonValidator::class,
             ],
             ['selling_location', 'required', 'when' => function ($model) {
-                    if ($model->selling_cash_on && !$model->selling_location) {
-                        return true;
-                    }
-                    return false;
-                }, 'whenClient' => new JsExpression("function(attribute, value) {
+                if ($model->selling_cash_on && !$model->selling_location) {
+                    return true;
+                }
+                return false;
+            }, 'whenClient' => new JsExpression("function(attribute, value) {
                     return $('#cashSellCheckbox').prop('checked');
                 }")
             ],
 
             ['buying_location', 'required', 'when' => function ($model) {
-                    if ($model->buying_cash_on && !$model->buying_location) {
-                        return true;
-                    }
-                    return false;
-                }, 'whenClient' => new JsExpression("function(attribute, value) {
+                if ($model->buying_cash_on && !$model->buying_location) {
+                    return true;
+                }
+                return false;
+            }, 'whenClient' => new JsExpression("function(attribute, value) {
                     return $('#cashBuyCheckbox').prop('checked');
                 }")
             ],
 
-            [['selling_location', 'buying_location'], function($attribute) {
+            [['selling_location', 'buying_location'], function ($attribute) {
                 [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
                 if (!(new LocationLatValidator())->validateLat($lat) ||
                     !(new LocationLonValidator())->validateLon($lon)
@@ -171,8 +171,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'selling_currency_max_amount',
                 ],
                 'filter', 'filter' => function ($value) {
-                return ($value != 0 ? $value : null);
-            },
+                    return ($value != 0 ? $value : null);
+                },
             ],
             [
                 [
@@ -191,7 +191,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 'when' => function ($model) {
                     return $model->selling_currency_min_amount != null;
                 },
-                'whenClient' => new JsExpression("
+                'whenClient' => new JsExpression(
+                    "
                     function (attribute, value) {
                         return $('#currencyexchangeorder-selling_currency_min_amount').val() != ''
                     }"
@@ -365,7 +366,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->joinWith('sellingPaymentMethods sm')
             ->joinWith('buyingPaymentMethods bm');
 
-        if ($this->selling_cash_on && $this->selling_location_lat && $this->selling_location_lon ) {
+        if ($this->selling_cash_on && $this->selling_location_lat && $this->selling_location_lon) {
             $matchesQuery->andWhere(
                 ['or',
                     ['and',
@@ -374,7 +375,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                         ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + " . ($this->selling_delivery_radius ?: 0) . ')'
                     ],
                     ['in', 'sm.id', $buyingMethodsIds]
-                ]);
+                ]
+            );
         } else {
             $matchesQuery->andWhere(['in', 'sm.id', $buyingMethodsIds]);
         }
@@ -398,7 +400,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             $this->link('matches', $matchedOrder);
             $this->link('counterMatches', $matchedOrder);
         }
-
     }
 
     public function getGlobalUser()
@@ -480,7 +481,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public function afterSave($insert, $changedAttributes)
     {
-
         $clearMatches = false;
 
         if (isset($changedAttributes['status'])) {
@@ -507,10 +507,10 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         $crossUpdated = false;
         if (
             !$this->cross_rate_on &&
-            ( isset($changedAttributes['selling_rate']) &&
+            (isset($changedAttributes['selling_rate']) &&
                 $this->selling_rate != $changedAttributes['selling_rate'])
         ) {
-            if (floatval($this->selling_rate) !== 0 ) {
+            if (floatval($this->selling_rate) !== 0) {
                 $this->buying_rate = 1 / $this->selling_rate;
                 $crossUpdated = true;
                 $this->save();
@@ -524,7 +524,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             (isset($changedAttributes['buying_rate']) &&
                 $this->buying_rate != $changedAttributes['buying_rate'])
         ) {
-            if (floatval($this->selling_rate) !== 0 ) {
+            if (floatval($this->selling_rate) !== 0) {
                 $this->selling_rate = 1 / $this->buying_rate;
                 $this->save();
             }
