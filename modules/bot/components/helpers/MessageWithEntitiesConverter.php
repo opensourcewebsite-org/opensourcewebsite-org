@@ -52,7 +52,13 @@ class MessageWithEntitiesConverter
             }
         }
         $html_text = join('', $html);
-        return preg_replace('%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u', '<a href="$2">$1</a>', $html_text);
+        return preg_replace([
+            '%\[(.+)]\(\1\)%u',
+            '%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u'
+        ], [
+            '$1',
+            '<a href="$2">$1</a>'
+        ], $html_text);
     }
 
     /**
@@ -74,6 +80,7 @@ class MessageWithEntitiesConverter
             '%</i>%u',
             '%</s>%u',
             '%</code>%u',
+            '%<a +href="(.*)">\1</a>%u',
             '%<a +href="(.*)">(.*)</a>%u',
         ], [
             '**',
@@ -84,6 +91,7 @@ class MessageWithEntitiesConverter
             '__',
             '~~',
             '`',
+            '$1',
             '[$2]($1)',
         ], $text);
     }

@@ -59,6 +59,14 @@ class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
         ]);
         $expected = '🍪 text <b>🍩💚🧡🎂🍧</b> text <i>text</i> 💚🧡';
         expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
+
+
+        $message = self::message('[example.com](example.com)', [
+            self::entity(MessageEntity::TYPE_URL, 1, 11),
+            self::entity(MessageEntity::TYPE_URL, 14, 11),
+        ]);
+        $expected = '<a href="example.com">example.com</a>';
+        expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
     }
 
     public function testFromHtml()
@@ -71,6 +79,10 @@ class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
 
         $html = '🍪 text <b>🍩💚🧡🎂🍧</b> text <i>text</i> 💚🧡';
         $expected = '🍪 text **🍩💚🧡🎂🍧** text __text__ 💚🧡';
+        expect(MessageWithEntitiesConverter::fromHtml($html))->equals($expected);
+
+        $html = '<a href="example.com">example.com</a>';
+        $expected = 'example.com';
         expect(MessageWithEntitiesConverter::fromHtml($html))->equals($expected);
     }
 }
