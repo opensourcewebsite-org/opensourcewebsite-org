@@ -8,7 +8,7 @@
 <br/>
 ————<br/>
 <br/>
-<pre><?= nl2br($messageMarkdown) ?></pre><br/>
+<?= nl2br($messageMarkdown) ?><br/>
 <br/>
 ————<br/>
 <br/>
