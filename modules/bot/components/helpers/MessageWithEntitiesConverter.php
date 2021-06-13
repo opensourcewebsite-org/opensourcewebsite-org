@@ -144,27 +144,26 @@ class MessageWithEntitiesConverter
      * @param MessageEntity[] $entities
      * @return MessageEntity[] $entities
      */
-    private static function correctEntities(array $characters, array $entities) {
+    private static function correctEntities(array $characters, array $entities)
+    {
         $tagGroups = group($entities, fn ($e) => $e->getOffset());
 
         // Offset correction for entities
-        {
-            $offsetCorrection = 0;
-            $codeLengths = [];
-            foreach ($characters as $i => $c) {
-                if (array_key_exists($i + $offsetCorrection, $tagGroups)) {
-                    foreach ($tagGroups[$i + $offsetCorrection] as &$tag) {
-                        $tag->setOffset($tag->getOffset() - $offsetCorrection);
-                    }
+        $offsetCorrection = 0;
+        $codeLengths = [];
+        foreach ($characters as $i => $c) {
+            if (array_key_exists($i + $offsetCorrection, $tagGroups)) {
+                foreach ($tagGroups[$i + $offsetCorrection] as &$tag) {
+                    $tag->setOffset($tag->getOffset() - $offsetCorrection);
                 }
-                $len = self::utf16CodePointsLength($c);
-                $codeLengths[] = $len;
-                $offsetCorrection += $len - 1;
             }
+            $len = self::utf16CodePointsLength($c);
+            $codeLengths[] = $len;
+            $offsetCorrection += $len - 1;
         }
 
         // Length correction for entities
-        foreach($tagGroups as &$tagGroup) {
+        foreach ($tagGroups as &$tagGroup) {
             foreach ($tagGroup as &$tag) {
                 $remainingLength = $tag->getLength();
                 $lengthCorrection = 0;

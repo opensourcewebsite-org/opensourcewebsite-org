@@ -12,4 +12,4 @@
 <br/>
 ————<br/>
 <br/>
-<?= $this->render("../formatting-options") ?>
+<?= $this->render('../formatting-options') ?>
