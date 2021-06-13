@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components\helpers;
 
+use function Functional\flatten;
 use function Functional\group;
 use TelegramBot\Api\Types\Message;
 use TelegramBot\Api\Types\MessageEntity;
@@ -26,15 +27,18 @@ class MessageWithEntitiesConverter
         if (empty($text)) {
             return '';
         }
-
-        $start_tags = [];
-        $end_tags = [];
-        if (!empty($entities)) {
-            $start_tags = group($entities, fn ($e) => $e->getOffset());
-            $end_tags = group($entities, fn ($e) => $e->getOffset() + $e->getLength());
+        if (empty($entities)) {
+            return htmlspecialchars($text);
         }
+        $characters = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        $entities = self::correctEntities($characters, $entities);
+
+        $start_tags = group($entities, fn ($e) => $e->getOffset());
+        $end_tags = group($entities, fn ($e) => $e->getOffset() + $e->getLength());
+
         $html = [];
-        foreach (preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) as $i => $c) {
+        foreach ($characters as $i => $c) {
             if (array_key_exists($i, $start_tags)) {
                 foreach ($start_tags[$i] as $tag) {
                     $html[] = self::startTagToText($tag, $text);
@@ -123,5 +127,58 @@ class MessageWithEntitiesConverter
             default:
                 return '';
         }
+    }
+
+    private static function utf16CodePointsLength(string $char): int
+    {
+        $chunks = str_split(bin2hex(mb_convert_encoding($char, 'UTF-16')), 4);
+        return count($chunks);
+    }
+
+    /**
+     * Offset and length correction for entities
+     *
+     * Needed to handle UTF-16 characters, for example, emoji.
+     *
+     * @param string[] $characters
+     * @param MessageEntity[] $entities
+     * @return MessageEntity[] $entities
+     */
+    private static function correctEntities(array $characters, array $entities) {
+        $tagGroups = group($entities, fn ($e) => $e->getOffset());
+
+        // Offset correction for entities
+        {
+            $offsetCorrection = 0;
+            $codeLengths = [];
+            foreach ($characters as $i => $c) {
+                if (array_key_exists($i + $offsetCorrection, $tagGroups)) {
+                    foreach ($tagGroups[$i + $offsetCorrection] as &$tag) {
+                        $tag->setOffset($tag->getOffset() - $offsetCorrection);
+                    }
+                }
+                $len = self::utf16CodePointsLength($c);
+                $codeLengths[] = $len;
+                $offsetCorrection += $len - 1;
+            }
+        }
+
+        // Length correction for entities
+        foreach($tagGroups as &$tagGroup) {
+            foreach ($tagGroup as &$tag) {
+                $remainingLength = $tag->getLength();
+                $lengthCorrection = 0;
+                foreach (array_slice($codeLengths, $tag->getOffset()) as $len) {
+                    if ($remainingLength <= 0) {
+                        break;
+                    }
+                    $lengthCorrection += $len - 1;
+                    $remainingLength -= $len;
+                }
+                $tag->setLength($tag->getLength() - $lengthCorrection);
+            }
+        }
+
+        return flatten($tagGroups);
     }
 }
