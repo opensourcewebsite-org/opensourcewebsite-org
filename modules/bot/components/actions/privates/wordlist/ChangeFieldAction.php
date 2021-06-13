@@ -21,7 +21,7 @@ class ChangeFieldAction extends BaseAction
         ]));
 
         $phrase = $this->wordModelClass::findOne($phraseId);
-        $params = isset($phrase) ? [$field . 'Markdown' => MessageWithEntitiesConverter::fromHtml($phrase->$field)] : [];
+        $params = isset($phrase) ? [$field . 'Markdown' => MessageWithEntitiesConverter::fromHtml($phrase->$field ?? '')] : [];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
