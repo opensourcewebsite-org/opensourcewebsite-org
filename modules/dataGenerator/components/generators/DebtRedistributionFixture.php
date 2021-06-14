@@ -26,6 +26,8 @@ class DebtRedistributionFixture extends ARGenerator
             return null;
         }
 
+        //var_dump($contact); die();
+
         $model = new DebtRedistribution();
 
         $model->setUsers($contact);
