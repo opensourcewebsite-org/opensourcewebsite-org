@@ -17,6 +17,8 @@ use yii\widgets\ActiveForm;
 /* @var $currencies Currency[] */
 
 $showLocation = $model->location || $model->isNewRecord;
+
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
     <div class="resume-form">
         <?php $form = ActiveForm::begin(['id' => 'webresume-form']); ?>
@@ -31,17 +33,20 @@ $showLocation = $model->location || $model->isNewRecord;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'skills')->textarea() ?>
+                                <?= $form->field($model, 'skills')->textarea()
+                                    ->label($model->getAttributeLabel('skills') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'experiences')->textarea() ?>
+                                <?= $form->field($model, 'experiences')->textarea()
+                                    ->label($model->getAttributeLabel('experiences') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'expectations')->textarea() ?>
+                                <?= $form->field($model, 'expectations')->textarea()
+                                    ->label($model->getAttributeLabel('expectations') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">
@@ -52,7 +57,11 @@ $showLocation = $model->location || $model->isNewRecord;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'min_hourly_rate')->textInput() ?>
+                                <?= $form->field($model, 'min_hourly_rate')
+                                    ->textInput([
+                                        'placeholder' => '∞',
+                                    ])
+                                    ->label($model->getAttributeLabel('min_hourly_rate') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">

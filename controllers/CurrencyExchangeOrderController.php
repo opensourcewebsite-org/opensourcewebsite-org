@@ -24,7 +24,6 @@ use yii\web\Response;
  */
 class CurrencyExchangeOrderController extends Controller
 {
-
     protected CurrencyExchangeService $service;
 
     /**
@@ -133,7 +132,6 @@ class CurrencyExchangeOrderController extends Controller
         ]);
     }
 
-
     public function actionUpdateSellMethods($id)
     {
         $model = $this->findModelByIdAndCurrentUser($id);
@@ -217,7 +215,7 @@ class CurrencyExchangeOrderController extends Controller
     public function actionShowMatches(int $id): string
     {
         $model = $this->findModelByIdAndCurrentUser($id);
-        if ($model->getMatchesOrderedByUserRating()->exists()){
+        if ($model->getMatchesOrderedByUserRating()->exists()) {
             $dataProvider = new ActiveDataProvider([
                 'query' => $model->getMatchesOrderedByUserRating(),
             ]);
@@ -267,5 +265,4 @@ class CurrencyExchangeOrderController extends Controller
             ->where(['currency.id' => $currency_id])
             ->all();
     }
-
 }

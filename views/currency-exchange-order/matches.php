@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'attribute' => 'selling_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        (round($model->selling_rate, 8) ?: '∞') :
+                                        ($model->selling_rate ? round($model->selling_rate, 8) . ' ' . $model->buyingCurrency->code : '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,
@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'attribute' => 'buying_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        (round($model->buying_rate, 8) ?: '∞') :
+                                        ($model->buying_rate ? round($model->buying_rate, 8) . ' ' . $model->sellingCurrency->code : '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,
@@ -61,14 +61,14 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                             [
                                 'attribute' => 'selling_currency_min_amount',
                                 'value' => function ($model) {
-                                    return $model->getSellingCurrencyMinAmount();
+                                    return $model->selling_currency_min_amount ? number_format($model->selling_currency_min_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'selling_currency_max_amount',
                                 'value' => function ($model) {
-                                    return $model->getSellingCurrencyMaxAmount();
+                                    return $model->selling_currency_max_amount ? number_format($model->selling_currency_max_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],
@@ -78,7 +78,6 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url, $offer_order) use ($model) {
-
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a(
                                             $icon,

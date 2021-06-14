@@ -213,7 +213,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'selling_currency_id' => 'Selling Currency',
             'buying_currency_id' => 'Buying Currency',
             'selling_rate' => Yii::t('bot', 'Exchange rate'),
-            'buying_rate' => Yii::t('bot', 'Reverse exchange rate'),
+            'buying_rate' => Yii::t('bot', 'Inverse rate'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
             'selling_currency_max_amount' => Yii::t('bot', 'Max. amount'),
             'status' => Yii::t('bot', 'Status'),
@@ -418,7 +418,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     /**
      * @return string
      */
-    public function getReverseTitle()
+    public function getInverseTitle()
     {
         return $this->buyingCurrency->code . '/' . $this->sellingCurrency->code;
     }

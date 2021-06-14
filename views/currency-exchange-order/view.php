@@ -6,6 +6,7 @@ use app\widgets\buttons\EditButton;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CurrencyExchangeOrder */
@@ -62,75 +63,48 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <div id="w0" class="grid-view">
-                                <table class="table table-condensed table-hover" style="margin-bottom: 0;">
-                                    <tbody>
-                                    <tr>
-                                        <th class="align-middle" scope="col" style="width: 50%;">
-                                            <?= $model->getAttributeLabel('id') ?>
-                                        </th>
-                                        <td class="align-middle">
-                                            <?= $model->id ?>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="align-middle"
-                                            scope="col">
-                                            <?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'); ?>
-                                        </th>
-                                        <td class="align-middle">
-                                            <?= $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code; ?>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="align-middle"
-                                            scope="col"><?= $model->getAttributeLabel('selling_rate'); ?></th>
-                                        <td class="align-middle">
-                                            <?=
-                                            !$model->cross_rate_on ?
-                                                (round($model->selling_rate, 8) ?: '∞') :
-                                                Yii::t('app', 'Cross Rate')
-                                            ?>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="align-middle"
-                                            scope="col"><?= $model->getAttributeLabel('buying_rate'); ?></th>
-                                        <td class="align-middle">
-                                            <?=
-                                            !$model->cross_rate_on ?
-                                                (round($model->buying_rate, 8) ?: '∞') :
-                                                Yii::t('app', 'Cross Rate')
-                                            ?>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="align-middle"
-                                            scope="col"><?= $model->getAttributeLabel('selling_currency_min_amount'); ?></th>
-                                        <td class="align-middle"><?= $model->getSellingCurrencyMinAmount() ?></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="align-middle"
-                                            scope="col"><?= $model->getAttributeLabel('selling_currency_max_amount'); ?></th>
-                                        <td class="align-middle"><?= $model->getSellingCurrencyMaxAmount() ?></td>
-                                        <td></td>
-                                    </tr>
-                                    <?php if ($offersCount = $model->getMatchesOrderedByUserRating()->count()) : ?>
-                                        <tr>
-                                            <th class="align-middle"
-                                                scope="col"><?= Yii::t('app', 'Offers') ?></th>
-                                            <td class="align-middle"><?= Html::a($offersCount, Url::to(['show-matches', 'id' => $model->id])) ?></td>
-                                            <td></td>
-                                        </tr>
-                                    <?php endif; ?>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <?= DetailView::widget([
+                                'model' => $model,
+                                'attributes' => [
+                                    'id',
+                                    [
+                                        'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
+                                        'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
+                                    ],
+                                    [
+                                        'attribute' => 'selling_rate',
+                                        'value' => !$model->cross_rate_on ?
+                                            ($model->selling_rate ? round($model->selling_rate, 8) . ' ' . $model->buyingCurrency->code : '∞') :
+                                            Yii::t('app', 'Cross Rate'),
+                                    ],
+                                    [
+                                        'attribute' => 'buying_rate',
+                                        'value' => !$model->cross_rate_on ?
+                                            ($model->buying_rate ? round($model->buying_rate, 8) . ' ' . $model->sellingCurrency->code : '∞') :
+                                            Yii::t('app', 'Cross Rate'),
+                                    ],
+                                    [
+                                        'attribute' => 'selling_currency_min_amount',
+                                        'value' => $model->selling_currency_min_amount ? number_format($model->selling_currency_min_amount, 2) . ' ' . $model->sellingCurrency->code : '∞',
+                                    ],
+                                    [
+                                        'attribute' => 'selling_currency_max_amount',
+                                        'value' => $model->selling_currency_max_amount ? number_format($model->selling_currency_max_amount, 2) . ' ' . $model->sellingCurrency->code : '∞',
+                                    ],
+                                    [
+                                        'label' => Yii::t('app', 'Offers'),
+                                        'visible' => $model->getMatchesOrderedByUserRating()->count(),
+                                        'format' => 'raw',
+                                        'value' => function () use ($model) {
+                                            return $model->getMatchesOrderedByUserRating()->count() ?
+                                                Html::a(
+                                                    $model->getMatchesOrderedByUserRating()->count(),
+                                                    Url::to(['show-matches', 'id' => $model->id]),
+                                                ) : '';
+                                        },
+                                    ],
+                                ]
+                            ]) ?>
                         </div>
                     </div>
                 </div>

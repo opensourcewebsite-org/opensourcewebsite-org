@@ -39,38 +39,38 @@ class GroupGreetingController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chatTitle', 'telegramUser', 'messageSetting')),
                 [
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('set-status', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
-                            ],
+                            'callback_data' => self::createRoute('set-status', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('set-message', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Message'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupController::createRoute('view', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                        ]
                     ],
                     [
-                        'disablePreview' => true,
-                    ]
+                        [
+                            'callback_data' => self::createRoute('set-message', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Message'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupController::createRoute('view', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }
@@ -122,7 +122,7 @@ class GroupGreetingController extends Controller
                             ]),
                             'text' => Emoji::BACK,
                         ],
-                    ]
+                    ],
                 ],
                 [
                     'disablePreview' => true,

@@ -85,7 +85,7 @@ class Controller extends \yii\web\Controller
      */
     protected function getResponseBuilder()
     {
-         return new ResponseBuilder();
+        return new ResponseBuilder();
     }
 
     // TODO refactoring, maybe remove

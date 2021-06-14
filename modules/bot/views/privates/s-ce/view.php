@@ -26,7 +26,7 @@ use app\modules\bot\components\helpers\Emoji;
 <br/>
 <b><?= Yii::t('bot', 'Buying currency') ?>:</b> <?= $model->buyingCurrency->code ?><br/>
 <br/>
-<b><?= Yii::t('bot', 'Reverse exchange rate') ?>:</b> <?= $model->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$model->buying_rate ?><br/>
+<b><?= Yii::t('bot', 'Inverse rate') ?>:</b> <?= $model->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$model->buying_rate ?><br/>
 <br/>
 <b><?= Yii::t('bot', 'Payment methods') ?>:</b><br/>
 <?php if ($model->buying_cash_on) : ?>
