@@ -46,10 +46,10 @@ class DebtRedistributionForm extends DebtRedistribution
     /**
      * @param int $id
      *
-     * @return null|self
+     * @return DebtRedistribution|DebtRedistributionForm|array|null
      * @throws NotFoundHttpException
      */
-    public static function findModel($id): ?self
+    public static function findModel(int $id)
     {
         return self::find()
             ->where(['id' => $id])
@@ -57,7 +57,7 @@ class DebtRedistributionForm extends DebtRedistribution
             ->one();
     }
 
-    public function rules()
+    public function rules(): array
     {
         $message = Yii::t('app', 'You are trying to save default values. Just close this form.');
         $rules = parent::rules();

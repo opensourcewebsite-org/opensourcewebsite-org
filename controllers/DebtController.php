@@ -40,9 +40,6 @@ class DebtController extends Controller
 
     public function actionIndex(): string
     {
-        if ((int)Debt::countStatusPending() === 0) {
-            return $this->actionCurrent();
-        }
 
         $userId = Yii::$app->user->id;
         $query = Debt::find()->andWhere(['to_user_id' => $userId, 'status' => Debt::STATUS_PENDING]);

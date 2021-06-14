@@ -92,10 +92,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -111,16 +108,16 @@ class Debt extends ActiveRecord implements ByDebtInterface
         ];
     }
 
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created_at',
                 'updatedAtAttribute' => 'updated_at',
             ],
             'blameable' => [
-                'class' => BlameableBehavior::className(),
+                'class' => BlameableBehavior::class,
                 'createdByAttribute' => 'created_by',
                 'updatedByAttribute' => 'updated_by',
             ],
@@ -132,7 +129,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
      */
     public function getCurrency()
     {
-        return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**
@@ -140,7 +137,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
      */
     public function getDebtBalanceDirectionSame()
     {
-        return $this->hasOne(DebtBalance::className(), [
+        return $this->hasOne(DebtBalance::class, [
             'currency_id'  => 'currency_id',
             'from_user_id' => 'from_user_id',
             'to_user_id'   => 'to_user_id',
@@ -152,7 +149,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
      */
     public function getDebtBalanceDirectionBack()
     {
-        return $this->hasOne(DebtBalance::className(), [
+        return $this->hasOne(DebtBalance::class, [
             'currency_id' => 'currency_id',
             'from_user_id' => 'to_user_id',
             'to_user_id' => 'from_user_id',
