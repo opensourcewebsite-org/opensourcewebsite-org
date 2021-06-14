@@ -22,6 +22,7 @@ class MessageWithEntitiesConverter
     public static function toHtml(Message $message): string
     {
         $text = $message->getText();
+
         $entities = $message->getEntities();
 
         if (empty($text)) {
@@ -54,10 +55,14 @@ class MessageWithEntitiesConverter
         $html_text = join('', $html);
         return preg_replace([
             '%\[(.+)]\(\1\)%u',
-            '%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u'
+            '%\[(<a href=\"[^\"]*\">.+</a>)]\(<a href=\"[^\"]*\">.+</a>\)%u',
+            '%\[(.+)]\(<a href=\"[^\"]*\">(.+)</a>\)%u',
+            '%(\n)(</a>)%u',
         ], [
             '$1',
-            '<a href="$2">$1</a>'
+            '$1',
+            '<a href="$2">$1</a>',
+            '$2$1',
         ], $html_text);
     }
 
@@ -80,8 +85,9 @@ class MessageWithEntitiesConverter
             '%</i>%u',
             '%</s>%u',
             '%</code>%u',
+            '%(\n)(</a>)%u',
             '%<a +href="(.*)">\1</a>%u',
-            '%<a +href="(.*)">(.*)</a>%u',
+            '%<a +href="(.*?)">(.*?)</a>%u',
         ], [
             '**',
             '__',
@@ -91,6 +97,7 @@ class MessageWithEntitiesConverter
             '__',
             '~~',
             '`',
+            '$2$1',
             '$1',
             '[$2]($1)',
         ], $text);
@@ -109,10 +116,10 @@ class MessageWithEntitiesConverter
                 return '<code>';
             case MessageEntity::TYPE_TEXT_LINK:
                 $url = $tag->getUrl();
-                return "<a href=\"{$url}\">";
+                return "<a href=\"$url\">";
             case MessageEntity::TYPE_URL:
                 $url = mb_substr($text, $tag->getOffset(), $tag->getLength(), 'UTF-8');
-                return "<a href=\"{$url}\">";
+                return "<a href=\"$url\">";
             default:
                 return '';
         }
@@ -152,7 +159,7 @@ class MessageWithEntitiesConverter
      * @param MessageEntity[] $entities
      * @return MessageEntity[] $entities
      */
-    private static function correctEntities(array $characters, array $entities)
+    private static function correctEntities(array $characters, array $entities): array
     {
         $tagGroups = group($entities, fn ($e) => $e->getOffset());
 
