@@ -28,7 +28,7 @@
 - Установите правильные значения в файле `.env` для вашего окружения
 - Установите [MySQL 8.X](https://www.mysql.com):
   - Создайте новую базу данных MySQL InnoDB ("opensourcewebsite" по умолчанию), с кодировкой "utf8mb4_0900_ai_ci" для вашего окружения
-  - Отключите sql_mode=ONLY_FULL_GROUP_BY 
+  - Отключите sql_mode=ONLY_FULL_GROUP_BY
 - Установите [веб-сервер Nginx](https://nginx.org) или [веб-сервер Apache](https://httpd.apache.org):
   - Установите корневую папку веб-сервера на `web`
 - Установите [PHP 7.4.X](https://www.php.net)
@@ -87,6 +87,8 @@ php yii dataGenerator "User, Contact" --interval=5
 ```
 php yii dataGenerator "*, -Contact" --interval=5
 ```
+
+## Отладка
 
 ## Тесты
 
