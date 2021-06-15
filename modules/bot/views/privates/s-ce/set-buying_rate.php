@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Send a reverse exchange rate') ?> (<?= $model->getReverseTitle() ?>).</b><br/>
+<b><?= Yii::t('bot', 'Send an inverse rate') ?> (<?= $model->getInverseTitle() ?>).</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>

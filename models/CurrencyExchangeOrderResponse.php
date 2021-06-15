@@ -16,7 +16,6 @@ use yii\db\ActiveRecord;
  */
 class CurrencyExchangeOrderResponse extends ActiveRecord
 {
-
     public static function findOrNewResponse(int $userId, int $modelId): self
     {
         if (!($response = self::findOne(['user_id' => $userId, 'order_id' => $modelId]))) {

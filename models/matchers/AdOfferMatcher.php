@@ -11,9 +11,7 @@ use yii\db\ActiveQuery;
 class AdOfferMatcher
 {
     private AdOffer $model;
-
     private ModelLinker $linker;
-
     private string $comparingTable;
 
     public function __construct(AdOffer $model)
@@ -53,7 +51,6 @@ class AdOfferMatcher
             $this->linker->linkMatches($keywordsMatches);
             $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);
-
         } else {
             $keywordsMatches = $adSearchQueryKeywords->all();
             $noKeywordsMatches = $adSearchQueryNoKeywords->all();
@@ -65,6 +62,7 @@ class AdOfferMatcher
             $this->linker->linkMatches($noKeywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);
         }
+
         return $matchedCount;
     }
 

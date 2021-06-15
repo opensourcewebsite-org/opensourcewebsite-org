@@ -3,7 +3,7 @@
 namespace app\modules\bot\components\actions\privates\wordlist;
 
 use app\modules\bot\components\actions\BaseAction;
-use app\modules\bot\models\Chat;
+use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 
 class UpdateFieldAction extends BaseAction
 {
@@ -15,7 +15,7 @@ class UpdateFieldAction extends BaseAction
         }
 
         $phrase = $this->wordModelClass::findOne($phraseId);
-        $text = $this->getUpdate()->getMessage()->getText();
+        $text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage());
 
         $phrase->$field = $text;
         $phrase->updated_by = $this->getTelegramUser()->id;

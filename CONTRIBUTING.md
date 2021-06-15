@@ -56,13 +56,9 @@ Start by looking through these issues:
 
 You can help improve documentations/translations by making them more coherent, consistent, or readable, adding missing information, correcting factual errors, fixing typos.
 
-Please read how [Internationalization (I18N)](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n) works.
+To help our CI servers add `[ci skip]` to your documentation commit message to skip build on that commit. Please remember to use it for commits containing only documentation changes.
 
-[All translations](https://github.com/opensourcewebsite-org/opensourcewebsite-org/tree/master/messages) are in source files.
-
-To do so, make changes to source files. Then open a pull request to apply your changes to `master` branch.
-
-To help our CI servers you should add `[ci skip]` to your documentation commit message to skip build on that commit. Please remember to use it for commits containing only documentation changes.
+Please read how [Internationalization (I18N)](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n) works and how to [find not translated texts](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n#message-command) in [translation source files](https://github.com/opensourcewebsite-org/opensourcewebsite-org/tree/master/messages).
 
 ## Style Guides
 

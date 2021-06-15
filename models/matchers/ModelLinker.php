@@ -58,7 +58,7 @@ class ModelLinker
      */
     public function linkAll(string $linkName, array $models)
     {
-        foreach($models as $model) {
+        foreach ($models as $model) {
             $this->model->link($linkName, $model);
         }
     }

@@ -135,8 +135,8 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
                 'max' => 9999999999999.99,
             ],
             [
-                'keywordsFromForm', 'filter', 'filter' => function($val) {
-                    if ($val === '')  {
+                'keywordsFromForm', 'filter', 'filter' => function ($val) {
+                    if ($val === '') {
                         return [];
                     }
                     return $val;
