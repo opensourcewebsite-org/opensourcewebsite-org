@@ -28,7 +28,7 @@ return $config
         'line_ending' => true,
         'list_syntax' => true,
         'lowercase_keywords' => true,
-        'method_argument_space' => true,
+        'method_argument_space' => ['after_heredoc' => true, 'keep_multiple_spaces_after_comma' => true],
         'method_chaining_indentation' => true,
         'no_blank_lines_after_phpdoc' => true,
         'no_break_comment' => true,
@@ -65,7 +65,9 @@ return $config
         'visibility_required' => true,
         'whitespace_after_comma_in_array' => true,
     ])
-    ->setFinder(PhpCsFixer\Finder::create()
+    ->setFinder(
+        PhpCsFixer\Finder::create()
         ->exclude('vendor')
         ->in(__DIR__)
-    );
+    )
+    ;
