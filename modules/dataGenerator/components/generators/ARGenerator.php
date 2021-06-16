@@ -30,7 +30,7 @@ abstract class ARGenerator extends Fixture
     /**
      * @throws ARGeneratorException
      */
-    public function load(): ActiveRecord
+    public function load(): ?ActiveRecord
     {
         $model = $this->factoryModel();
 

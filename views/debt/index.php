@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-6">
                             <div class="right-buttons float-right">
                                 <?= AddButton::widget([
-                                    'url' => 'debt/create',
+                                    'url' => '/debt/create',
                                     'options' => [
                                         'title' => 'New debt',
                                     ]

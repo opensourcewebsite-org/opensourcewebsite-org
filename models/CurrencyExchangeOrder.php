@@ -4,13 +4,13 @@ namespace app\models;
 
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
-use app\modules\bot\components\helpers\LocationParser;
-use Yii;
-use yii\behaviors\TimestampBehavior;
 use app\models\User as GlobalUser;
-use app\modules\bot\validators\RadiusValidator;
+use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use app\modules\bot\validators\RadiusValidator;
+use Yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -50,11 +50,13 @@ use yii\web\JsExpression;
 class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
+
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 30;
 
     public const CASH_OFF = 0;
+
     public const CASH_ON = 1;
 
     public function init()
@@ -108,11 +110,11 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 'integer',
             ],
             [
-                ['selling_delivery_radius','buying_delivery_radius'],
+                ['selling_delivery_radius', 'buying_delivery_radius'],
                 RadiusValidator::class,
             ],
             [
-                ['selling_location_lat','buying_location_lat'],
+                ['selling_location_lat', 'buying_location_lat'],
                 LocationLatValidator::class,
             ],
             [
@@ -120,7 +122,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 LocationLonValidator::class,
             ],
             ['selling_location', 'required', 'when' => function ($model) {
-                if ($model->selling_cash_on && !$model->selling_location) {
+                if ($model->selling_cash_on && ! $model->selling_location) {
                     return true;
                 }
                 return false;
@@ -130,7 +132,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ],
 
             ['buying_location', 'required', 'when' => function ($model) {
-                if ($model->buying_cash_on && !$model->buying_location) {
+                if ($model->buying_cash_on && ! $model->buying_location) {
                     return true;
                 }
                 return false;
@@ -141,8 +143,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
 
             [['selling_location', 'buying_location'], function ($attribute) {
                 [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
-                if (!(new LocationLatValidator())->validateLat($lat) ||
-                    !(new LocationLonValidator())->validateLon($lon)
+                if ( ! (new LocationLatValidator())->validateLat($lat) ||
+                    ! (new LocationLonValidator())->validateLon($lon)
                 ) {
                     $this->addError($attribute, Yii::t('app', 'Incorrect Location!'));
                 }
@@ -247,7 +249,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ],
         ];
     }
-
 
     public function setSelling_location(string $location): self
     {
@@ -354,15 +355,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->andWhere(["$tblName.buying_currency_id" => $this->selling_currency_id])
             ->andWhere(["$tblName.selling_currency_id" => $this->buying_currency_id]);
 
-        if (!$this->cross_rate_on) {
-            if ($this->buying_rate) {
-                $matchesQuery->andWhere(["$tblName.cross_rate_on" => false])
-                    ->andWhere(['<=', "$tblName.selling_rate", $this->buying_rate]);
-            }
-        } else {
-            $matchesQuery->andWhere(["$tblName.cross_rate_on" => true]);
-        }
-
         $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
         $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
 
@@ -376,7 +368,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     ['and',
                         ['buying_cash_on' => true],
                         "ST_Distance_Sphere(POINT($this->selling_location_lon, $this->selling_location_lat),"
-                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + " . ($this->selling_delivery_radius ?: 0) . ')'
+                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + ".($this->selling_delivery_radius ?: 0).')'
                     ],
                     ['in', 'sm.id', $buyingMethodsIds]
                 ]
@@ -391,7 +383,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     ['and',
                         ['selling_cash_on' => true],
                         "ST_Distance_Sphere(POINT($this->buying_location_lon, $this->buying_location_lat),"
-                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + " . ($this->buying_delivery_radius ?: 0) . ')'
+                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + ".($this->buying_delivery_radius ?: 0).')'
                     ],
                     ['in', 'bm.id', $sellingMethodsIds]
                 ]
@@ -416,7 +408,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public function getTitle()
     {
-        return $this->sellingCurrency->code . '/' . $this->buyingCurrency->code;
+        return $this->sellingCurrency->code.'/'.$this->buyingCurrency->code;
     }
 
     /**
@@ -424,7 +416,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public function getInverseTitle()
     {
-        return $this->buyingCurrency->code . '/' . $this->sellingCurrency->code;
+        return $this->buyingCurrency->code.'/'.$this->sellingCurrency->code;
     }
 
     /**
@@ -520,11 +512,11 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     {
         $notFilledFields = [];
 
-        if (!$this->selling_cash_on && !$this->sellingPaymentMethods) {
+        if ( ! $this->selling_cash_on && ! $this->sellingPaymentMethods) {
             $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Sell');
         }
 
-        if (!$this->buying_cash_on && !$this->buyingPaymentMethods) {
+        if ( ! $this->buying_cash_on && ! $this->buyingPaymentMethods) {
             $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Buy');
         }
 

@@ -48,37 +48,26 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
     /** @var int limit is 0, so deny to redistribute. Default value. */
     public const MAX_AMOUNT_DENY = 0;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'debt_redistribution';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             ['currency_id', 'required'],
 
-            //max_amount:
             ['max_amount', 'number', 'min' => 0],
             ['max_amount', $this->fnFormatMaxAmount(), 'skipOnEmpty' => false],
             ['max_amount', $this->getFloatRuleFilter()],
 
-            //db:
             'unique' => [['user_id', 'link_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['user_id', 'link_user_id', 'currency_id']],
             ['currency_id', 'exist', 'targetRelation' => 'currency'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id'           => 'ID',
@@ -89,10 +78,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
         ];
     }
 
-    /**
-     * @return DebtRedistributionQuery
-     */
-    public static function find()
+    public static function find(): DebtRedistributionQuery
     {
         return new DebtRedistributionQuery(get_called_class());
     }
@@ -102,7 +88,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
      */
     public function getCurrency()
     {
-        return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**
@@ -110,7 +96,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
      */
     public function getContact(): ContactQuery
     {
-        return $this->hasOne(Contact::className(), [
+        return $this->hasOne(Contact::class, [
             'user_id' => 'user_id',
             'link_user_id' => 'link_user_id',
         ]);
@@ -121,7 +107,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
      */
     public function getDebtBalanceDirectionBack()
     {
-        return $this->hasOne(DebtBalance::className(), [
+        return $this->hasOne(DebtBalance::class, [
             'currency_id' => 'currency_id',
             DebtBalance::getDebtReceiverAttribute() => self::getOwnerAttribute(),
             DebtBalance::getDebtorAttribute() => self::getLinkedAttribute(),
@@ -133,7 +119,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
      */
     public function getDebtBalanceDirectionSame()
     {
-        return $this->hasOne(DebtBalance::className(), [
+        return $this->hasOne(DebtBalance::class, [
             'currency_id' => 'currency_id',
             DebtBalance::getDebtorAttribute() => self::getOwnerAttribute(),
             DebtBalance::getDebtReceiverAttribute() => self::getLinkedAttribute(),
