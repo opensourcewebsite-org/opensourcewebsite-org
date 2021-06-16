@@ -62,7 +62,7 @@ class SCeController extends CrudController
             'create' => [
                 'sellingCurrency',
                 'buyingCurrency',
-                'selling_rate',
+                'fee',
                 'selling_currency_min_amount',
                 'selling_currency_max_amount',
                 'selling_cash_on',
@@ -118,29 +118,7 @@ class SCeController extends CrudController
                         ],
                     ],
                 ],
-                'selling_rate' => [
-                    'buttons' => [
-                        [
-                            'text' => Yii::t('bot', 'CROSS RATE'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->cross_rate_on = CurrencyExchangeOrder::CROSS_RATE_ON;
-
-                                return $model;
-                            },
-                        ],
-                    ],
-                ],
-                'buying_rate' => [
-                    'buttons' => [
-                        [
-                            'text' => Yii::t('bot', 'CROSS RATE'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->cross_rate_on = CurrencyExchangeOrder::CROSS_RATE_ON;
-
-                                return $model;
-                            },
-                        ],
-                    ],
+                'fee' => [
                 ],
                 'selling_currency_min_amount' => [
                     'isRequired' => false,

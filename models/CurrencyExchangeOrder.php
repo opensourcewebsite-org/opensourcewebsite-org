@@ -23,8 +23,7 @@ use yii\web\JsExpression;
  * @property int $user_id
  * @property int $selling_currency_id
  * @property int $buying_currency_id
- * @property float|null $selling_rate
- * @property float|null $buying_rate
+ * @property float|null $fee
  * @property float|null $selling_currency_min_amount
  * @property float|null $selling_currency_max_amount
  * @property int $status
@@ -38,7 +37,7 @@ use yii\web\JsExpression;
  * @property int|null $processed_at
  * @property int $selling_cash_on
  * @property int $buying_cash_on
- * @property int $cross_rate_on
+ * @property string $label
  *
  * @property User $user
  * @property CurrencyExchangeOrderBuyingPaymentMethod[] $currencyExchangeOrderBuyingPaymentMethods
@@ -54,9 +53,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 30;
-
-    public const CROSS_RATE_OFF = 0;
-    public const CROSS_RATE_ON = 1;
 
     public const CASH_OFF = 0;
     public const CASH_ON = 1;
@@ -108,7 +104,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'processed_at',
                     'selling_cash_on',
                     'buying_cash_on',
-                    'cross_rate_on',
                 ],
                 'integer',
             ],
@@ -154,16 +149,26 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             }],
 
             [
-                ['selling_location', 'buying_location'], 'string',
+                [
+                    'selling_location',
+                    'buying_location',
+                    'label',
+                ],
+                'string',
+                'max' => 255,
             ],
             [
                 [
-                    'selling_rate',
-                    'buying_rate',
+                    'fee',
                 ],
                 'double',
-                'min' => 0,
-                'max' => 9999999999999.99999999,
+                'min' => -99.99999999,
+                'max' => 99.99999999,
+            ],
+            [
+                'fee',
+                'default',
+                'value' => 0,
             ],
             [
                 [
@@ -210,10 +215,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'selling_currency_id' => 'Selling Currency',
-            'buying_currency_id' => 'Buying Currency',
-            'selling_rate' => Yii::t('bot', 'Exchange rate'),
-            'buying_rate' => Yii::t('bot', 'Inverse rate'),
+            'selling_currency_id' => Yii::t('bot', 'Selling Currency'),
+            'buying_currency_id' => Yii::t('bot', 'Buying Currency'),
+            'fee' => Yii::t('bot', 'Fee'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
             'selling_currency_max_amount' => Yii::t('bot', 'Max. amount'),
             'status' => Yii::t('bot', 'Status'),
@@ -227,7 +231,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'processed_at' => 'Processed At',
             'selling_cash_on' => Yii::t('bot', 'Cash'),
             'buying_cash_on' => Yii::t('bot', 'Cash'),
-            'cross_rate_on' => Yii::t('bot', 'Cross Rate'),
+            'label' => Yii::t('app', 'Label'),
         ];
     }
 
@@ -494,43 +498,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             $clearMatches = true;
         }
 
-        if (isset($changedAttributes['cross_rate_on']) &&
-            ((bool)$this->cross_rate_on !== (bool)$changedAttributes['cross_rate_on'])
-        ) {
-            if ($this->cross_rate_on == self::CROSS_RATE_ON) {
-                $clearMatches = true;
-                Yii::warning('cross_rate_on');
-            }
-            Yii::warning('cross_rate_on2');
-        }
-
-        $crossUpdated = false;
-        if (
-            !$this->cross_rate_on &&
-            (isset($changedAttributes['selling_rate']) &&
-                $this->selling_rate != $changedAttributes['selling_rate'])
-        ) {
-            if (floatval($this->selling_rate) !== 0) {
-                $this->buying_rate = 1 / $this->selling_rate;
-                $crossUpdated = true;
-                $this->save();
-            }
+        if (isset($changedAttributes['fee']) && ($this->fee !== $changedAttributes['fee'])) {
             $clearMatches = true;
-            Yii::warning('selling_rate');
-        }
-
-        if (
-            !$this->cross_rate_on && !$crossUpdated &&
-            (isset($changedAttributes['buying_rate']) &&
-                $this->buying_rate != $changedAttributes['buying_rate'])
-        ) {
-            if (floatval($this->selling_rate) !== 0) {
-                $this->selling_rate = 1 / $this->buying_rate;
-                $this->save();
-            }
-
-            $clearMatches = true;
-            Yii::warning('buying_rate');
+            Yii::warning('fee');
         }
 
         if (isset($changedAttributes['selling_currency_min_amount'])
