@@ -1,7 +1,7 @@
 <?php
 /*
  * This document has been generated with
- * https://mlocati.github.io/php-cs-fixer-configurator/#version:2.18|configurator
+ * https://mlocati.github.io/php-cs-fixer-configurator/#version:3.0.0|configurator
  * you can change this configuration by importing this file.
  */
 $config = new PhpCsFixer\Config();
@@ -9,7 +9,7 @@ return $config
     ->setRiskyAllowed(true)
     ->setRules([
         'array_indentation' => true,
-        'array_syntax' => ['syntax'=>'short'],
+        'array_syntax' => ['syntax' => 'short'],
         'backtick_to_shell_exec' => true,
         'binary_operator_spaces' => true,
         'blank_line_after_namespace' => true,
@@ -17,18 +17,18 @@ return $config
         'class_attributes_separation' => true,
         'class_definition' => true,
         'compact_nullable_typehint' => true,
-        'concat_space' => ['spacing'=>'none'],
+        'concat_space' => true,
         'constant_case' => true,
         'elseif' => true,
         'encoding' => true,
         'full_opening_tag' => true,
         'function_declaration' => true,
         'function_typehint_space' => true,
-        'hash_to_slash_comment' => true,
         'indentation_type' => true,
         'line_ending' => true,
+        'list_syntax' => true,
         'lowercase_keywords' => true,
-        'method_argument_space' => ['after_heredoc'=>true,'keep_multiple_spaces_after_comma'=>true],
+        'method_argument_space' => ['after_heredoc' => true, 'keep_multiple_spaces_after_comma' => true],
         'method_chaining_indentation' => true,
         'no_blank_lines_after_phpdoc' => true,
         'no_break_comment' => true,
@@ -54,6 +54,7 @@ return $config
         'single_class_element_per_statement' => true,
         'single_import_per_statement' => true,
         'single_line_after_imports' => true,
+        'single_line_comment_style' => true,
         'space_after_semicolon' => true,
         'switch_case_semicolon_to_colon' => true,
         'switch_case_space' => true,
@@ -68,4 +69,5 @@ return $config
         PhpCsFixer\Finder::create()
         ->exclude('vendor')
         ->in(__DIR__)
-    );
+    )
+    ;
