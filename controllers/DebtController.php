@@ -152,7 +152,10 @@ class DebtController extends Controller
         ]);
     }
 
-    public function actionCreate(): string
+    /**
+     * @return string|Response
+     */
+    public function actionCreate()
     {
         $model = new Debt();
         $model->scenario = Debt::SCENARIO_FORM;
