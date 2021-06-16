@@ -9,6 +9,7 @@ use app\modules\bot\models\ChatMember;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
+use TelegramBot\Api\HttpException;
 
 /**
  * Class GroupRefreshController
@@ -35,6 +36,8 @@ class GroupRefreshController extends Controller
             try {
                 $this->getBotApi()->getChat($chat->chat_id);
             } catch (HttpException $e) {
+                Yii::warning($e);
+
                 if ($e->getCode() == 400) {
                     $isChatExists = false;
                     $chat->unlinkAll('phrases', true);
