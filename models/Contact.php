@@ -330,6 +330,23 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         parent::afterDelete();
     }
 
+    //some magic here, moved out from beforeSave
+    public function setUserIdOrName($idOrName)
+    {
+        $user = User::find()
+            ->andWhere([
+                'OR',
+                ['id' => $idOrName],
+                ['username' => $this->idOrName]
+            ])
+            ->one();
+        if ((!empty($user->contact)) && (((int) $user->contact->id !== (int) $this->id))) {
+            $contact = $user->contact;
+            $contact->link_user_id = null;
+            $contact->save(false);
+        }
+    }
+
     /**
      * @param bool $insert
      *
@@ -342,25 +359,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         if (!parent::beforeSave($insert)) {
             return false;
-        }
-
-        if (!empty($this->userIdOrName)) {
-            $user = User::find()
-                ->andWhere([
-                    'OR',
-                    ['id' => $this->userIdOrName],
-                    ['username' => $this->userIdOrName]
-                ])
-                ->one();
-            if ((!empty($user->contact)) && ($insert || ((int) $user->contact->id !== (int) $this->id))) {
-                $contact = $user->contact;
-                $contact->link_user_id = null;
-                $contact->save(false);
-            }
-
-            $this->link_user_id = $user->id;
-        } else {
-            $this->link_user_id = null;
         }
 
         $this->deleteOldUserSettings();

@@ -64,8 +64,8 @@
         "codeception/specify": "^1.3",
         "codeception/verify": "^1.3",
         "fzaninotto/faker": "^1.9",
-        "friendsofphp/php-cs-fixer": "^2.0",
-        "phpunit/php-code-coverage": "^8.0"
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "phpunit/php-code-coverage": "^9.0"
     },
     "config": {
         "process-timeout": 1800,

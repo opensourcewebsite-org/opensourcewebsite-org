@@ -36,7 +36,7 @@ class CronController extends Controller
         'UaLawmakingParser',
         'WikipediaParser',
         //'WikinewsParser',
-        'CeMatch',
+        //'CeMatch',
     ];
 
     private $cronJobs;
@@ -124,7 +124,8 @@ class CronController extends Controller
 
             if (!$this->isSameGitVersion()) {
                 $this->output(
-                    '[EXIT] Current git HEAD is updated, exiting!', [CustomConsole::FG_RED, CustomConsole::BOLD]
+                    '[EXIT] Current git HEAD is updated, exiting!',
+                    [CustomConsole::FG_RED, CustomConsole::BOLD]
                 );
                 return;
             }
@@ -140,10 +141,9 @@ class CronController extends Controller
 
     private function getCurrentGitBranchHeadHash(): ?string
     {
-        if ( ($currentHeadFilename = $this->getCurrentBranchHeadRefFilename()) &&
+        if (($currentHeadFilename = $this->getCurrentBranchHeadRefFilename()) &&
             file_exists($currentHeadFilename) &&
-            $hash = file_get_contents($currentHeadFilename) )
-        {
+            $hash = file_get_contents($currentHeadFilename)) {
             return trim($hash);
         }
         return null;
@@ -154,7 +154,7 @@ class CronController extends Controller
         $projectDir = dirname(dirname(__FILE__));
         $mainHeadFile = "{$projectDir}/.git/HEAD";
 
-        if ( file_exists($mainHeadFile) &&
+        if (file_exists($mainHeadFile) &&
             ($headRef = file_get_contents($mainHeadFile)) &&
             preg_match('#^ref:(.+)$#', $headRef, $matches) &&
             ($currentHeadFilename = trim($matches[1] ?? null))

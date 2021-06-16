@@ -35,7 +35,7 @@ class ContactFixture extends ARGenerator
         $model->user_id = $users[0];
         $model->link_user_id = $users[1];
         $model->name = self::getFaker()->name;
-        $model->fake = $this->faker->boolean();
+        $model->is_real = (int)$this->faker->boolean();
         $this->setDRP($model);
 
         return $model;

@@ -14,10 +14,8 @@ use yii\data\Sort;
  */
 class DebtRedistributionSearch extends DebtRedistribution
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
+
+    public function rules(): array
     {
         return [
             [['id', 'user_id', 'link_user_id', 'currency_id'], 'integer', 'min' => 1],
