@@ -41,20 +41,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'enableSorting' => false,
                             ],
                             [
-                                'attribute' => 'selling_rate',
+                                'label' => Yii::t('app', 'Exchange rate'),
                                 'value' => function ($model) {
-                                    return !$model->cross_rate_on ?
-                                        ($model->selling_rate ? round($model->selling_rate, 8) . ' ' . $model->buyingCurrency->code : '∞') :
-                                        Yii::t('app', 'Cross Rate');
-                                },
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'buying_rate',
-                                'value' => function ($model) {
-                                    return !$model->cross_rate_on ?
-                                        ($model->buying_rate ? round($model->buying_rate, 8) . ' ' . $model->sellingCurrency->code : '∞') :
-                                        Yii::t('app', 'Cross Rate');
+                                    return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : '');
                                 },
                                 'enableSorting' => false,
                             ],
@@ -72,7 +61,6 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 },
                                 'enableSorting' => false,
                             ],
-
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',

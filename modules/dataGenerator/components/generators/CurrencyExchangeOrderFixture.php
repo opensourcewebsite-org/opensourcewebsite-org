@@ -72,25 +72,24 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             $buyingCashOn = CurrencyExchangeOrder::CASH_ON;
         }
 
-        $sellingRate = $crossRateOn ? null :
+        // TODO add negative value too
+        $fee = $this->faker->boolean() ? null :
             $this->faker->valid(static function ($v) {
                 return (bool)$v;
-            })->randomFloat(1, 0.01, 10);
-        $buyingRate = $crossRateOn ? null : 1 / $sellingRate;
+            })->randomFloat(2, -20, 20);
 
         $min_amount = $this->faker->boolean() ? $min_amount = $this->faker->randomNumber(2) : null;
         $max_amount = $this->faker->boolean() ?
             (isset($min_amount) ?
                 $min_amount + $this->faker->randomNumber(2) :
-                $this->faker->randomNumber(2) )
+                $this->faker->randomNumber(2))
             : null;
 
         $model = new CurrencyExchangeOrder([
+            'user_id' => $user->id,
             'selling_currency_id' => $sellCurrencyId,
             'buying_currency_id' => $buyCurrencyId,
-            'user_id' => $user->id,
-            'selling_rate' => $sellingRate,
-            'buying_rate' => $buyingRate,
+            'fee' => $fee,
             'selling_currency_min_amount' => $min_amount,
             'selling_currency_max_amount' => $max_amount,
             'status' => CurrencyExchangeOrder::STATUS_ON,
@@ -102,7 +101,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             'buying_location_lon' => $orderBuyingLon,
             'selling_cash_on' => $sellingCashOn,
             'buying_cash_on' => $buyingCashOn,
-            'cross_rate_on' => $crossRateOn,
+            'label' => $this->faker->boolean() ? $this->faker->sentence() : null,
         ]);
 
         if (!$model->save()) {
@@ -128,7 +127,8 @@ class CurrencyExchangeOrderFixture extends ARGenerator
      */
     private function getPaymentMethodsIds(int $currencyId): array
     {
-        return array_map('intval',
+        return array_map(
+            'intval',
             ArrayHelper::getColumn(
                 PaymentMethod::find()->joinWith('currencies c')
                     ->where(['c.id' => $currencyId])

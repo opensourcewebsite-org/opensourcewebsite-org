@@ -25,6 +25,7 @@ use app\assets\LeafletLocateControlAsset;
 LeafletLocateControlAsset::register($this);
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 ?>
     <div class="currency-exchange-order-form">
         <?php $form = ActiveForm::begin(); ?>
@@ -51,40 +52,12 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <?php endif; ?>
                         <div class="row">
                             <div class="col">
-                                <div class="custom-control custom-switch">
-                                    <input type="hidden" name="CurrencyExchangeOrder[cross_rate_on]" value="0"/>
-                                    <input type="checkbox"
-                                           name="CurrencyExchangeOrder[cross_rate_on]"
-                                        <?= $model->cross_rate_on ? 'checked' : '' ?>
-                                           value="1"
-                                           class="custom-control-input"
-                                           id="crossRateCheckbox"
-                                    >
-                                    <label class="custom-control-label" for="crossRateCheckbox"><?= $model->getAttributeLabel('cross_rate_on') ?></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="sell-buy-rates-div" <?= !$model->cross_rate_on ?: 'style="display: none;"' ?>>
-                            <div class="row">
-                                <div class="col">
-                                    <?= $form->field($model, 'selling_rate')
-                                        ->textInput([
-                                            'maxlength' => true,
-                                            'placeholder' => '∞',
-                                        ])
-                                        ->label($model->getAttributeLabel('selling_rate') . $labelOptional); ?>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <?= $form->field($model, 'buying_rate')
-                                        ->textInput([
-                                            'id' => 'buying_rate',
-                                            'maxlength' => true,
-                                            'placeholder' => '∞',
-                                        ])
-                                        ->label($model->getAttributeLabel('buying_rate') . $labelOptional); ?>
-                                </div>
+                                <?= $form->field($model, 'fee')
+                                    ->textInput([
+                                        'maxlength' => true,
+                                        'placeholder' => 0 . ', ' . Yii::t('app', 'Cross Rate'),
+                                    ])
+                                    ->label($model->getAttributeLabel('fee') . ', %' . $labelOptional); ?>
                             </div>
                         </div>
                         <hr/>
@@ -110,6 +83,16 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         </div>
                         <hr/>
                         <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'label')
+                                    ->textInput([
+                                        'maxlength' => true,
+                                    ])
+                                    ->label($iconPrivate . $model->getAttributeLabel('label') . $labelOptional); ?>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
                             <div class="custom-control custom-switch">
                                 <input type="hidden" name="CurrencyExchangeOrder[selling_cash_on]" value="0"/>
                                 <input type="checkbox"
@@ -125,7 +108,10 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <div class="selling-location-radius-div">
                             <div class="row">
                                 <div class="col">
-                                    <?= $form->field($model, 'selling_location')->widget(LocationPickerWidget::class) ?>
+                                    <?= $form->field($model, 'selling_location')
+                                        ->widget(LocationPickerWidget::class)
+                                        ->label($iconPrivate . $model->getAttributeLabel('selling_location'))
+                                    ?>
                                 </div>
                             </div>
                             <div class="row">
@@ -133,9 +119,9 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                     <?= $form->field($model, 'selling_delivery_radius')
                                         ->textInput([
                                             'maxlength' => true,
-                                            'placeholder' => 0,
+                                            'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
                                         ])
-                                        ->label(Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                        ->label($iconPrivate . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
                                     ?>
                                 </div>
                             </div>
@@ -157,7 +143,10 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         <div class="buying-location-radius-div">
                             <div class="row">
                                 <div class="col">
-                                    <?= $form->field($model, 'buying_location')->widget(LocationPickerWidget::class) ?>
+                                    <?= $form->field($model, 'buying_location')
+                                        ->widget(LocationPickerWidget::class)
+                                        ->label($iconPrivate . $model->getAttributeLabel('buying_location'))
+                                    ?>
                                 </div>
                             </div>
                             <div class="row">
@@ -165,9 +154,9 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                     <?= $form->field($model, 'buying_delivery_radius')
                                         ->textInput([
                                             'maxlength' => true,
-                                            'placeholder' => 0,
+                                            'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
                                         ])
-                                        ->label(Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                        ->label($iconPrivate . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
                                     ?>
                                 </div>
                             </div>
@@ -228,30 +217,6 @@ $jsMessages = [
 
 $this->registerJs(
     <<<JS
-
-$('#crossRateCheckbox').on('change', function(){
-    if (!$(this).prop('checked')) {
-        $('.sell-buy-rates-div').show();
-    } else {
-        $('.sell-buy-rates-div').hide();
-    }
-});
-
-const calculateCrossRate = (rate) => {
-    const curVal = parseFloat(rate);
-    if (!isNaN(curVal) && curVal !== 0) {
-        return (1/curVal).toFixed(8);
-    }
-    return '';
-}
-
-$('#currencyexchangeorder-selling_rate').on('change', function(){
-    $('#buying_rate').val(calculateCrossRate($(this).val()));
-});
-
-$('#buying_rate').on('change', function(){
-    $('#currencyexchangeorder-selling_rate').val(calculateCrossRate($(this).val()));
-});
 
 $("#delete-currency-exchange-order").on("click", function(event) {
     event.preventDefault();

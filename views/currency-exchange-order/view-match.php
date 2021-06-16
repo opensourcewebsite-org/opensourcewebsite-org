@@ -57,16 +57,8 @@ $model = $matchOrderModel;
                                 'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
                             ],
                             [
-                                'attribute' => 'selling_rate',
-                                'value' => !$model->cross_rate_on ?
-                                    ($model->selling_rate ? round($model->selling_rate, 8) . ' ' . $model->buyingCurrency->code : '∞') :
-                                    Yii::t('app', 'Cross Rate'),
-                            ],
-                            [
-                                'attribute' => 'buying_rate',
-                                'value' => !$model->cross_rate_on ?
-                                    ($model->buying_rate ? round($model->buying_rate, 8) . ' ' . $model->sellingCurrency->code : '∞') :
-                                    Yii::t('app', 'Cross Rate'),
+                                'label' => Yii::t('app', 'Exchange rate'),
+                                'value' => Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : ''),
                             ],
                             [
                                 'attribute' => 'selling_currency_min_amount',

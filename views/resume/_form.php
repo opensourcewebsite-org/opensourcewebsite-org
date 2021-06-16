@@ -19,6 +19,7 @@ use yii\widgets\ActiveForm;
 $showLocation = $model->location || $model->isNewRecord;
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 ?>
     <div class="resume-form">
         <?php $form = ActiveForm::begin(['id' => 'webresume-form']); ?>
@@ -86,14 +87,17 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         </div>
                         <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
-                                <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
+                                <?= $form->field($model, 'location')
+                                    ->widget(LocationPickerWidget::class)
+                                    ->label($iconPrivate . $model->getAttributeLabel('location'))
+                                ?>
                             </div>
                         </div>
                         <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                             <div class="col">
                                 <?= $form->field($model, 'search_radius')
                                     ->textInput(['maxlength' => true])
-                                    ->label($model->getAttributeLabel('search_radius') . ', km')
+                                    ->label($iconPrivate . $model->getAttributeLabel('search_radius') . ', km')
                                 ?>
                             </div>
                         </div>

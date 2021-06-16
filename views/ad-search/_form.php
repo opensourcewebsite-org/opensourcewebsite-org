@@ -21,6 +21,7 @@ use yii\widgets\ActiveForm;
 
 $showLocation = $model->location || $model->isNewRecord;
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 ?>
 <div class="resume-form">
     <?php $form = ActiveForm::begin(['id' => 'ad-offer-form']); ?>
@@ -56,13 +57,16 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                     <div class="row">
                         <div class="col">
                             <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
-                            <?= $form->field($model, 'keywordsFromForm')->widget(AdKeywordsSelect::class,) ?>
+                            <?= $form->field($model, 'keywordsFromForm')->widget(AdKeywordsSelect::class, ) ?>
                         </div>
                     </div>
 
                     <div class="row location-row">
                         <div class="col">
-                            <?= $form->field($model, 'location')->widget(LocationPickerWidget::class) ?>
+                            <?= $form->field($model, 'location')
+                                ->widget(LocationPickerWidget::class)
+                                ->label($iconPrivate . $model->getAttributeLabel('location'))
+                            ?>
                         </div>
                     </div>
                     <div class="row location-row">
@@ -70,9 +74,9 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                             <?= $form->field($model, 'pickup_radius')
                                 ->textInput([
                                     'maxlength' => true,
-                                    'placeholder' => 0,
+                                    'placeholder' => 0  . ', ' . Yii::t('app', 'No pickup'),
                                 ])
-                                ->label($model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional)
+                                ->label($iconPrivate . $model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional)
                             ?>
                         </div>
                     </div>
