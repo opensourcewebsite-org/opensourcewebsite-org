@@ -71,22 +71,39 @@ class GroupRefreshController extends Controller
                                 ->all();
 
             foreach ($outdatedAdministrators as $outdatedAdministrator) {
-                $telegramChatMember = $this->getBotApi()->getChatMember(
-                    $chat->chat_id,
-                    $outdatedAdministrator->provider_user_id
-                );
+                try {
+                    $telegramChatMember = $this->getBotApi()->getChatMember(
+                        $chat->chat_id,
+                        $outdatedAdministrator->provider_user_id
+                    );
+                } catch (HttpException $e) {
+                    Yii::warning($e);
+
+                    $chat->unlink('users', $outdatedAdministrator, true);
+
+                    continue;
+                }
+
                 if ($telegramChatMember->isActualChatMember()) {
-                    $chatMember = ChatMember::findOne(['chat_id' => $chat->id, 'user_id' => $outdatedAdministrator->id]);
+                    $chatMember = ChatMember::findOne([
+                        'chat_id' => $chat->id,
+                        'user_id' => $outdatedAdministrator->id,
+                    ]);
+
                     $chatMember->setAttributes([
                         'status' => $telegramChatMember->getStatus(),
                     ]);
+
                     $chatMember->save();
+
                     continue;
                 }
+
                 $chat->unlink('users', $outdatedAdministrator, true);
             }
 
             $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdministratorsIds])->all(), 'provider_user_id');
+
             foreach ($telegramAdministrators as $telegramAdministrator) {
                 $user = isset($users[$telegramAdministrator->getUser()->getId()]) ? $users[$telegramAdministrator->getUser()->getId()] : null;
                 if (!isset($user)) {
@@ -109,8 +126,9 @@ class GroupRefreshController extends Controller
         }
 
         if (!$result) {
-            $result = $this->run('admin/index');
+            return $this->run('group/index');
         }
+
         return $result;
     }
 }
