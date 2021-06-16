@@ -13,6 +13,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\web\JsExpression;
 
@@ -382,8 +383,10 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 ['or',
                     ['and',
                         ['selling_cash_on' => true],
-                        "ST_Distance_Sphere(POINT($this->buying_location_lon, $this->buying_location_lat),"
-                        ."POINT($tblName.selling_location_lon, $tblName.selling_location_lat)) <= 1000 * ($tblName.selling_delivery_radius + ".($this->buying_delivery_radius ?: 0).')'
+                        "ST_Distance_Sphere(
+                            POINT($this->buying_location_lon, $this->buying_location_lat),
+                            POINT($tblName.selling_location_lon, $tblName.selling_location_lat)
+                        ) <= 1000 * ($tblName.selling_delivery_radius + ".($this->buying_delivery_radius ?: 0).')'
                     ],
                     ['in', 'bm.id', $sellingMethodsIds]
                 ]
@@ -391,6 +394,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         } else {
             $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
         }
+
+        $matchesQuery->andWhere(['<=', 'fee', (-1 * (float)$this->fee)]);
 
         foreach ($matchesQuery->all() as $matchedOrder) {
             $this->link('matches', $matchedOrder);
