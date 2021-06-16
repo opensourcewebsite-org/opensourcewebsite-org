@@ -241,10 +241,12 @@ class ResponseBuilder
         array $optionalParams,
         array $optionalParamsFilter
     ) : array {
-        $optionalParams = ArrayHelper::merge([
-            'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
-        ],
-        ArrayHelper::filter($optionalParams, $optionalParamsFilter));
+        $optionalParams = ArrayHelper::merge(
+            [
+                'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,
+            ],
+            ArrayHelper::filter($optionalParams, $optionalParamsFilter)
+        );
 
         return $optionalParams;
     }
@@ -373,11 +375,11 @@ class ResponseBuilder
      */
     public function sendLocation(int $longitude, int $latitude)
     {
-            $this->commands[] = new SendLocationCommand(
-                $this->getChat()->getChatId(),
-                $longitude,
-                $latitude
-            );
+        $this->commands[] = new SendLocationCommand(
+            $this->getChat()->getChatId(),
+            $longitude,
+            $latitude
+        );
 
         return $this;
     }
@@ -410,9 +412,9 @@ class ResponseBuilder
             try {
                 $answer[] = $command->send($this->getBotApi());
             } catch (\Exception $e) {
-                    Yii::error('[' . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
-                }
+                Yii::error('[' . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
             }
+        }
 
         if ($answer && (count($answer) == 1)) {
             $answer = current($answer);

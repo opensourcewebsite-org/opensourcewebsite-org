@@ -24,7 +24,6 @@ class AdSection
 
     public static function getAdOfferName(int $section): string
     {
-
         return Yii::t('bot', static::$adOfferNames[$section]);
     }
 

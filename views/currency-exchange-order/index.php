@@ -36,21 +36,25 @@ $offersCol = $displayActiveOrders  ?
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item">
-                            <?= Html::a(Yii::t('app', 'Active'),
-                                ['/currency-exchange-order', 'status' => CurrencyExchangeOrder::STATUS_ON],
-                                [
+                            <?= Html::a(
+    Yii::t('app', 'Active'),
+    ['/currency-exchange-order', 'status' => CurrencyExchangeOrder::STATUS_ON],
+    [
                                     'class' => 'nav-link show ' .
                                         ($displayActiveOrders ? 'active' : '')
-                                ]);
+                                ]
+);
                             ?>
                         </li>
                         <li class="nav-item">
-                            <?= Html::a(Yii::t('app', 'Inactive'),
+                            <?= Html::a(
+                                Yii::t('app', 'Inactive'),
                                 ['/currency-exchange-order', 'status' => CurrencyExchangeOrder::STATUS_OFF],
                                 [
                                     'class' => 'nav-link show ' .
                                         (!$displayActiveOrders ? 'active' : '')
-                                ]);
+                                ]
+                            );
                             ?>
                         </li>
                         <li class="nav-item align-self-center mr-4">
@@ -84,7 +88,7 @@ $offersCol = $displayActiveOrders  ?
                                 'attribute' => 'selling_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        (round($model->selling_rate, 8) ?: '∞') :
+                                        ($model->selling_rate ? round($model->selling_rate, 8) . ' ' . $model->buyingCurrency->code : '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,
@@ -93,7 +97,7 @@ $offersCol = $displayActiveOrders  ?
                                 'attribute' => 'buying_rate',
                                 'value' => function ($model) {
                                     return !$model->cross_rate_on ?
-                                        (round($model->buying_rate, 8) ?: '∞') :
+                                        ($model->buying_rate ? round($model->buying_rate, 8) . ' ' . $model->sellingCurrency->code : '∞') :
                                         Yii::t('app', 'Cross Rate');
                                 },
                                 'enableSorting' => false,
@@ -101,14 +105,14 @@ $offersCol = $displayActiveOrders  ?
                             [
                                 'attribute' => 'selling_currency_min_amount',
                                 'value' => function ($model) {
-                                    return $model->getSellingCurrencyMinAmount();
+                                    return $model->selling_currency_min_amount ? number_format($model->selling_currency_min_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'selling_currency_max_amount',
                                 'value' => function ($model) {
-                                    return $model->getSellingCurrencyMaxAmount();
+                                    return $model->selling_currency_max_amount ? number_format($model->selling_currency_max_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],

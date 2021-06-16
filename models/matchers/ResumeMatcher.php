@@ -44,7 +44,6 @@ final class ResumeMatcher
             $this->linker->linkCounterMatches($rateMatches);
 
             $this->linker->linkCounterMatches($noRateMatches);
-
         } else {
             $matches = $vacanciesQuery->all();
             $matchesCount = count($matches);
@@ -70,7 +69,8 @@ final class ResumeMatcher
             new AndCondition([
                 ['<', "{$this->comparingTable}.max_hourly_rate", $this->model->min_hourly_rate],
                 ['<>', "{$this->comparingTable}.currency_id", $this->model->currency_id],
-            ]));
+            ])
+        );
     }
 
     private function prepareInitialMatchedVacanciesQuery(): VacancyQuery

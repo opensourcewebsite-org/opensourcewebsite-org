@@ -136,8 +136,8 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
                 'max' => 9999999999999.99,
             ],
             [
-                'keywordsFromForm', 'filter', 'filter' => function($val) {
-                    if ($val === '')  {
+                'keywordsFromForm', 'filter', 'filter' => function ($val) {
+                    if ($val === '') {
                         return [];
                     }
                     return $val;
@@ -167,7 +167,6 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
             'created_at' => Yii::t('app', 'Created At'),
             'processed_at' => Yii::t('app', 'Processed At')
         ];
-
     }
 
     public function behaviors(): array

@@ -41,7 +41,7 @@ class FaqController extends Controller
             if (isset($question)) {
                 return $this->getResponseBuilder()
                     ->sendMessage(
-                        $this->render('show-answer',[
+                        $this->render('show-answer', [
                             'question' => $question,
                         ]),
                         [],

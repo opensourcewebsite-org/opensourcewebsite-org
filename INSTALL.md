@@ -88,6 +88,8 @@ Generates all models except `Contact` with a delay of 5 seconds:
 php yii dataGenerator "*, -Contact" --interval=5
 ```
 
+## Debug
+
 ## Tests
 
 #### Setup

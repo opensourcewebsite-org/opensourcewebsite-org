@@ -135,8 +135,8 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
             ],
             [
                 'currency_id', 'required', 'when' => function (self $model) {
-                return $model->min_hourly_rate != '';
-            },
+                    return $model->min_hourly_rate != '';
+                },
                 'whenClient' => new JsExpression("function () {
                        return $('#".Html::getInputId($this, 'min_hourly_rate')."').val() != '';
                 }"),
@@ -149,8 +149,8 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
                 'max' => 255,
             ],
             [
-                'keywordsFromForm', 'filter', 'filter' => function($val) {
-                    if ($val === '')  {
+                'keywordsFromForm', 'filter', 'filter' => function ($val) {
+                    if ($val === '') {
                         return [];
                     }
                     return $val;
@@ -187,9 +187,9 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
             'search_radius' => Yii::t('bot', 'Search radius'),
             'currency_id' => Yii::t('app', 'Currency'),
             'keywordsFromForm' => Yii::t('app', 'Keywords'),
-            'experiences' => Yii::t('app','Experiences'),
+            'experiences' => Yii::t('app', 'Experiences'),
             'expectations' => Yii::t('app', 'Expectations'),
-            'skills' => Yii::t('app','Skills'),
+            'skills' => Yii::t('app', 'Skills'),
             'location_lat' => Yii::t('app', 'location_lat'),
             'location_lon' => Yii::t('app', 'location_lon'),
             'location' => Yii::t('app', 'Location'),
@@ -305,6 +305,6 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
             $this->processed_at = null;
         }
 
-       return parent::beforeSave($insert);
+        return parent::beforeSave($insert);
     }
 }

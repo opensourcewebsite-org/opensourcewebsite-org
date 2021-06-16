@@ -33,23 +33,19 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                 <div class="card">
                     <div class="card-body">
                         <?php if ($model->isNewRecord): ?>
-                            <?= $this->render('__sell_buy_currency_fields',
-                                [
+                            <?= $this->render('__sell_buy_currency_fields', [
                                     'form' => $form,
                                     'model' => $model,
-                                ]
-                            ) ?>
+                            ]) ?>
                         <?php else: ?>
                             <div class="row">
                                 <div class="col d-flex">
-                                    <p><?= $model->getAttributeLabel('selling_currency_id') ?>:</p>&nbsp
-                                    <strong><?= $model->sellingCurrency->name ?> (<?= $model->sellingCurrency->code ?>
-                                        )</strong>
+                                    <p><?= $model->getAttributeLabel('selling_currency_id') ?>:</p>&nbsp;
+                                    <strong><?= $model->sellingCurrency->code ?> - <?= $model->sellingCurrency->name ?></strong>
                                 </div>
                                 <div class="col d-flex">
-                                    <p><?= $model->getAttributeLabel('buying_currency_id') ?>
-                                        :</p>&nbsp;<strong><?= $model->buyingCurrency->name ?>
-                                        (<?= $model->buyingCurrency->code ?>)</strong>
+                                    <p><?= $model->getAttributeLabel('buying_currency_id') ?>:</p>&nbsp;
+                                    <strong><?= $model->buyingCurrency->code ?> - <?= $model->buyingCurrency->name ?></strong>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -64,8 +60,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                            class="custom-control-input"
                                            id="crossRateCheckbox"
                                     >
-                                    <label class="custom-control-label"
-                                           for="crossRateCheckbox"><?= $model->getAttributeLabel('cross_rate_on') ?></label>
+                                    <label class="custom-control-label" for="crossRateCheckbox"><?= $model->getAttributeLabel('cross_rate_on') ?></label>
                                 </div>
                             </div>
                         </div>
@@ -122,13 +117,12 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                     <?= $model->selling_cash_on ? 'checked' : '' ?>
                                        value="1"
                                        class="custom-control-input allowCacheCheckbox"
-                                       id="cashSellCheckbox">
-
+                                       id="cashSellCheckbox"
+                                >
                                 <label class="custom-control-label" for="cashSellCheckbox"><?= Yii::t('app', 'Selling cash') ?></label>
                             </div>
                         </div>
                         <div class="selling-location-radius-div">
-                            <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'selling_location')->widget(LocationPickerWidget::class) ?>
@@ -155,13 +149,12 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                                     <?= $model->buying_cash_on ? 'checked' : '' ?>
                                        value="1"
                                        class="custom-control-input allowCacheCheckbox"
-                                       id="cashBuyCheckbox">
-
+                                       id="cashBuyCheckbox"
+                                >
                                 <label class="custom-control-label" for="cashBuyCheckbox"><?= Yii::t('app', 'Buying cash') ?></label>
                             </div>
                         </div>
                         <div class="buying-location-radius-div">
-                            <strong><?= Yii::t('app', 'Location') ?></strong>
                             <div class="row">
                                 <div class="col">
                                     <?= $form->field($model, 'buying_location')->widget(LocationPickerWidget::class) ?>
@@ -181,7 +174,8 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
                         </div>
 
                         <?php
-                        $this->registerJs(<<<JS
+                        $this->registerJs(
+                                        <<<JS
 
                         function updateVisibility() {
                             const sellingLocationDiv = $('.selling-location-radius-div');
@@ -200,7 +194,7 @@ $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 
                         updateVisibility();
                         JS
-                        );
+                                    );
                         ?>
 
                     </div>
@@ -232,8 +226,8 @@ $jsMessages = [
     'delete-error' => Yii::t('app', 'Sorry, there was an error while trying to delete this item') . '.',
 ];
 
-$this->registerJs(<<<JS
-
+$this->registerJs(
+    <<<JS
 
 $('#crossRateCheckbox').on('change', function(){
     if (!$(this).prop('checked')) {

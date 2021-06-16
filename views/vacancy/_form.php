@@ -29,6 +29,8 @@ use yii\widgets\ActiveForm;
  */
 
 $showLocation = $model->location || $model->isNewRecord;
+
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 ?>
     <div class="vacancy-form">
         <?php $form = ActiveForm::begin(['id' => 'webvacancy-form']); ?>
@@ -64,7 +66,11 @@ $showLocation = $model->location || $model->isNewRecord;
                         </div>
                         <div class="row">
                             <div class="col">
-                                <?= $form->field($model, 'max_hourly_rate')->textInput() ?>
+                                <?= $form->field($model, 'max_hourly_rate')
+                                ->textInput([
+                                    'placeholder' => '∞',
+                                ])
+                                ->label($model->getAttributeLabel('max_hourly_rate') . $labelOptional); ?>
                             </div>
                         </div>
                         <div class="row">
@@ -105,7 +111,7 @@ $showLocation = $model->location || $model->isNewRecord;
                                 <?= LanguagesWithLevelSelect::widget([
                                     'model' => $languageWithLevelsForm,
                                     'form' => $form,
-                                    'languages' => ArrayHelper::map(Language::find()->asArray()->all(),'id','name_ascii'),
+                                    'languages' => ArrayHelper::map(Language::find()->asArray()->all(), 'id', 'name_ascii'),
                                     'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
                                 ]) ?>
                             </div>

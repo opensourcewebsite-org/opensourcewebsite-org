@@ -114,11 +114,11 @@ class MessageController extends Controller
                         ])
                         ->one();
 
-                        if (isset($question)) {
-                            $this->run('faq/show-answer', [
+                    if (isset($question)) {
+                        $this->run('faq/show-answer', [
                                 'questionId' => $question->id,
                             ]);
-                        }
+                    }
                 }
             }
         }
