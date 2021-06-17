@@ -20,15 +20,15 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <td><?= $model->id; ?></td>
                 </tr>
                 <tr>
-                    <th scope="col">Name</th>
+                    <th scope="col"><?= Yii::t('app', 'Name') ?></th>
                     <td><?= $model->name; ?></td>
                 </tr>
                 <tr>
-                    <th scope="col">Code</th>
+                    <th scope="col"><?= Yii::t('app', 'Code') ?></th>
                     <td><?= $model->code; ?></td>
                 </tr>
                 <tr>
-                    <th scope="col">Symbol</th>
+                    <th scope="col"><?= Yii::t('app', 'Symbol') ?></th>
                     <td><?= $model->symbol; ?></td>
                 </tr>
             </tbody>
@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
 <?php if ($currencyRates) : ?>
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Currency Rates</h3>
+        <h3 class="card-title"><?= Yii::t('app', 'Currency') ?> Rates</h3>
         <div class="card-tools">
             <?= LinkPager::widget([
                 'pagination' => $pages,

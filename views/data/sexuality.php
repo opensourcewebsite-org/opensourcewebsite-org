@@ -5,7 +5,7 @@ use yii\widgets\LinkPager;
 ?>
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Sexualities</h3>
+        <h3 class="card-title"><?= Yii::t('app', 'Sexualities') ?></h3>
         <div class="card-tools">
             <?php echo LinkPager::widget([
                 'pagination' => $pages,
@@ -28,7 +28,7 @@ use yii\widgets\LinkPager;
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Name</th>
+                    <th scope="col"><?= Yii::t('app', 'Name') ?></th>
                 </tr>
             </thead>
             <tbody>

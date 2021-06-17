@@ -51,13 +51,11 @@ use yii\web\JsExpression;
 class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterface
 {
     public const STATUS_OFF = 0;
-
     public const STATUS_ON = 1;
 
     public const LIVE_DAYS = 30;
 
     public const CASH_OFF = 0;
-
     public const CASH_ON = 1;
 
     public function init()
@@ -131,26 +129,33 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     return $('#cashSellCheckbox').prop('checked');
                 }")
             ],
-
-            ['buying_location', 'required', 'when' => function ($model) {
-                if ($model->buying_cash_on && ! $model->buying_location) {
-                    return true;
-                }
-                return false;
-            }, 'whenClient' => new JsExpression("function(attribute, value) {
-                    return $('#cashBuyCheckbox').prop('checked');
-                }")
+            [
+                'buying_location',
+                'required',
+                'when' => function ($model) {
+                    if ($model->buying_cash_on && ! $model->buying_location) {
+                        return true;
+                    }
+                    return false;
+                },
+                'whenClient' => new JsExpression("function(attribute, value) {
+                        return $('#cashBuyCheckbox').prop('checked');
+                    }")
             ],
-
-            [['selling_location', 'buying_location'], function ($attribute) {
-                [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
-                if ( ! (new LocationLatValidator())->validateLat($lat) ||
-                    ! (new LocationLonValidator())->validateLon($lon)
-                ) {
-                    $this->addError($attribute, Yii::t('app', 'Incorrect Location!'));
+            [
+                [
+                    'selling_location',
+                    'buying_location'
+                ],
+                function ($attribute) {
+                    [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
+                    if (!(new LocationLatValidator())->validateLat($lat) ||
+                        !(new LocationLonValidator())->validateLon($lon)
+                    ) {
+                        $this->addError($attribute, Yii::t('app', 'Incorrect Location!'));
+                    }
                 }
-            }],
-
+            ],
             [
                 [
                     'selling_location',
@@ -517,11 +522,11 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     {
         $notFilledFields = [];
 
-        if ( ! $this->selling_cash_on && ! $this->sellingPaymentMethods) {
+        if (!$this->selling_cash_on && !$this->sellingPaymentMethods) {
             $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Sell');
         }
 
-        if ( ! $this->buying_cash_on && ! $this->buyingPaymentMethods) {
+        if (!$this->buying_cash_on && !$this->buyingPaymentMethods) {
             $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Buy');
         }
 

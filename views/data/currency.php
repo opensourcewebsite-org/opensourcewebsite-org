@@ -6,7 +6,7 @@ use yii\helpers\Html;
 ?>
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Currencies</h3>
+        <h3 class="card-title"><?= Yii::t('app', 'Currencies') ?></h3>
         <div class="card-tools">
             <?php echo LinkPager::widget([
                 'pagination' => $pages,
@@ -29,9 +29,9 @@ use yii\helpers\Html;
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Symbol</th>
+                    <th scope="col"><?= Yii::t('app', 'Name') ?></th>
+                    <th scope="col"><?= Yii::t('app', 'Code') ?></th>
+                    <th scope="col"><?= Yii::t('app', 'Symbol') ?></th>
                 </tr>
             </thead>
             <tbody>
