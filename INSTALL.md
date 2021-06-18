@@ -105,7 +105,12 @@ php yii dataGenerator "*, -Contact" --interval=5
 
 ## Telegram bot
 
-We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your public URL with HTTPS. ngrok is a tool that exposes your local environment to the world.
+We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com),
+for local development and testing of Telegram bots.
+Telegram webhooks require your public URL with HTTPS.
+ngrok is a tool that exposes your local environment to the world.
+
+Also, you can use [Localtunnel](https://localtunnel.me/) to receive Telegram webhooks by your local server.
 
 - Use [Telegram BotFather](https://t.me/BotFather) to create new bot and get a bot token.
 - Set `baseUrl` in `params.php` for your public URL with HTTPS.
