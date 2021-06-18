@@ -105,7 +105,13 @@ php yii dataGenerator "*, -Contact" --interval=5
 
 ## Telegram-бот
 
-Мы рекомендуем использовать [ngrok - безопасные интроспективные туннели к localhost](https://ngrok.com), для локальной разработки и тестирования Telegram-ботов. Telegram webhooks требуют ваш публичный URL с HTTPS. ngrok - это инструмент, который сделает ваше локальное окружение доступным в Интернете.
+Мы рекомендуем использовать [ngrok - безопасные интроспективные туннели к localhost](https://ngrok.com),
+для локальной разработки и тестирования Telegram-ботов.
+Telegram webhooks требуют ваш публичный URL с HTTPS.
+ngrok - это инструмент, который сделает ваше локальное окружение доступным в Интернете.
+
+Также вы можете воспользоваться [Localtunnel](https://localtunnel.me/) для того, чтобы принимать Telegram webhooks
+с помощью вашего локального сервера.
 
 - Используйте [Telegram BotFather](https://t.me/BotFather) для создания нового бота и получения его токена.
 - Установите `baseUrl` в `params.php` для вашего открытого URL с HTTPS.
