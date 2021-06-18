@@ -2,14 +2,14 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
-use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
-use yii\helpers\ArrayHelper;
 use TelegramBot\Api\HttpException;
+use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class GroupRefreshController
@@ -19,116 +19,124 @@ use TelegramBot\Api\HttpException;
 class GroupRefreshController extends Controller
 {
     /**
+     * @param string|int|null $chatId
      * @return array
+     * @throws \TelegramBot\Api\HttpException
+     * @throws \yii\db\Exception
      */
-    public function actionIndex($chatId = null)
+    public function actionIndex($chatId = null): array
     {
-        $result = [];
-        $isChatExists = true;
-
-        if ($chatId) {
-            $chat = Chat::findOne($chatId);
+        function removeFromDb(Chat &$chat)
+        {
+            $chat->unlinkAll('phrases', true);
+            $chat->unlinkAll('settings', true);
+            $chat->unlinkAll('users', true);
+            $chat->delete();
         }
 
-        $isChatExists = !empty($chat);
-
-        if ($isChatExists) {
-            try {
-                $this->getBotApi()->getChat($chat->chat_id);
-            } catch (HttpException $e) {
-                Yii::warning($e);
-
-                if ($e->getCode() == 400) {
-                    $isChatExists = false;
-                    $chat->unlinkAll('phrases', true);
-                    $chat->unlinkAll('settings', true);
-                    $chat->unlinkAll('users', true);
-                    $chat->delete();
-                }
-            }
-        }
-
-        if ($isChatExists) {
-            $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
-            $telegramAdministratorsIds = ArrayHelper::getColumn($telegramAdministrators, function ($telegramAdministrator) {
-                return $telegramAdministrator->getUser()->getId();
-            });
-
-            $currentUser = $this->getTelegramUser();
-            $currentUserIsAdministrator = false;
-            if (in_array($currentUser->provider_user_id, $telegramAdministratorsIds)) {
-                $currentUserIsAdministrator = true;
-            }
-
-            $curAdministrators = $chat->getAdministrators()->all();
-            $curAdministratorsIndexdByIds = ArrayHelper::index($curAdministrators, function ($curAdministrator) {
-                return $curAdministrator->provider_user_id;
-            });
-            $curAdministratorsIds = array_keys($curAdministratorsIndexdByIds);
-
-            $outdatedAdministrators = $chat->getAdministrators()
-                                ->andWhere(['not',['provider_user_id'=>$telegramAdministratorsIds]])
-                                ->all();
-
-            foreach ($outdatedAdministrators as $outdatedAdministrator) {
-                try {
-                    $telegramChatMember = $this->getBotApi()->getChatMember(
-                        $chat->chat_id,
-                        $outdatedAdministrator->provider_user_id
-                    );
-                } catch (HttpException $e) {
-                    Yii::warning($e);
-
-                    $chat->unlink('users', $outdatedAdministrator, true);
-
-                    continue;
-                }
-
-                if ($telegramChatMember->isActualChatMember()) {
-                    $chatMember = ChatMember::findOne([
-                        'chat_id' => $chat->id,
-                        'user_id' => $outdatedAdministrator->id,
-                    ]);
-
-                    $chatMember->setAttributes([
-                        'status' => $telegramChatMember->getStatus(),
-                    ]);
-
-                    $chatMember->save();
-
-                    continue;
-                }
-
-                $chat->unlink('users', $outdatedAdministrator, true);
-            }
-
-            $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdministratorsIds])->all(), 'provider_user_id');
-
-            foreach ($telegramAdministrators as $telegramAdministrator) {
-                $user = isset($users[$telegramAdministrator->getUser()->getId()]) ? $users[$telegramAdministrator->getUser()->getId()] : null;
-                if (!isset($user)) {
-                    $user = User::createUser($telegramAdministrator->getUser());
-                    $user->updateInfo($telegramAdministrator->getUser());
-                }
-                if (!in_array($user->provider_user_id, $curAdministratorsIds)) {
-                    $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
-                }
-            }
-
-            if ($currentUserIsAdministrator) {
-                $result = $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('index'),
-                    true
-                )
-                ->build();
-            }
-        }
-
-        if (!$result) {
+        if (!isset($chatId)) {
             return $this->run('group/index');
         }
 
-        return $result;
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return $this->run('group/index');
+        }
+
+        try {
+            $this->getBotApi()->getChat($chat->chat_id);
+        } catch (HttpException $e) {
+            Yii::warning($e);
+
+            if ($e->getCode() == 400) {
+                // group has been removed in Telegram
+                removeFromDb($chat);
+                return $this->run('group/index');
+            }
+
+            throw $e;
+        }
+
+        if (!$this->getBotApi()
+            ->getChatMember($chat->chat_id, explode(':', $this->getBot()->token)[0])
+            ->isActualChatMember()) {
+            // bot is not the chat member => remove chat from db
+            removeFromDb($chat);
+            return $this->run('group/index');
+        }
+
+        $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
+        $telegramAdministratorsIds = array_map(
+            fn ($a) => $a->getUser()->getId(),
+            $telegramAdministrators
+        );
+
+        if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
+            // user is not in Telegram's admins list
+
+            if (empty($telegramAdministratorsIds)) {
+                // and no administrators left => remove chat from db
+                removeFromDb($chat);
+            }
+            return $this->run('group/index');
+        }
+
+        $curAdministratorsIds = array_map(fn ($a) => $a->provider_user_id, $chat->getAdministrators()->all());
+
+        $outdatedAdministrators = $chat->getAdministrators()
+            ->andWhere(['not', ['provider_user_id' => $telegramAdministratorsIds]])
+            ->all();
+        foreach ($outdatedAdministrators as $outdatedAdministrator) {
+            try {
+                $telegramChatMember = $this->getBotApi()->getChatMember(
+                    $chat->chat_id,
+                    $outdatedAdministrator->provider_user_id
+                );
+            } catch (HttpException $e) {
+                Yii::warning($e);
+
+                $chat->unlink('users', $outdatedAdministrator, true);
+
+                continue;
+            }
+
+            if ($telegramChatMember->isActualChatMember()) {
+                $chatMember = ChatMember::findOne([
+                    'chat_id' => $chat->id,
+                    'user_id' => $outdatedAdministrator->id,
+                ]);
+
+                $chatMember->setAttributes([
+                    'status' => $telegramChatMember->getStatus(),
+                ]);
+
+                $chatMember->save();
+
+                continue;
+            }
+
+            $chat->unlink('users', $outdatedAdministrator, true);
+        }
+
+        $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdministratorsIds])->all(), 'provider_user_id');
+
+        foreach ($telegramAdministrators as $telegramAdministrator) {
+            $user = $users[$telegramAdministrator->getUser()->getId()];
+            if (!isset($user)) {
+                $user = User::createUser($telegramAdministrator->getUser());
+                $user->updateInfo($telegramAdministrator->getUser());
+            }
+            if (!in_array($user->provider_user_id, $curAdministratorsIds)) {
+                $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery(
+                $this->render('index'),
+                true
+            )
+            ->build();
     }
 }
