@@ -7,7 +7,11 @@ services:
       - ./:/app:delegated
     ports:
       - '8000:80'
-    
+    environment:
+      PHP_ENABLE_XDEBUG: ${PHP_ENABLE_XDEBUG:-0}
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG:-}
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+
   adminer:
     image: adminer
     restart: always
