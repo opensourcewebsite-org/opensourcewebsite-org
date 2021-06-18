@@ -1,6 +1,6 @@
 <?php
 
-use \app\models\CurrencyExchangeOrder;
+use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
 use app\widgets\buttons\EditButton;
 use yii\helpers\ArrayHelper;
@@ -76,12 +76,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'value' => Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : ''),
                                     ],
                                     [
-                                        'attribute' => 'selling_currency_min_amount',
-                                        'value' => $model->selling_currency_min_amount ? number_format($model->selling_currency_min_amount, 2) . ' ' . $model->sellingCurrency->code : '∞',
-                                    ],
-                                    [
-                                        'attribute' => 'selling_currency_max_amount',
-                                        'value' => $model->selling_currency_max_amount ? number_format($model->selling_currency_max_amount, 2) . ' ' . $model->sellingCurrency->code : '∞',
+                                        'label' => Yii::t('app', 'Limits'),
+                                        'value' => $model->getFormatLimits(),
                                     ],
                                     [
                                         'attribute' => 'label',

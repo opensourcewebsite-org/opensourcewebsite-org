@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $displayActiveOrders = (int)Yii::$app->request->get('status', CurrencyExchangeOrder::STATUS_ON) === CurrencyExchangeOrder::STATUS_ON;
 
-$offersCol = $displayActiveOrders  ?
+$offersCol = $displayActiveOrders ?
     [
         'label' => Yii::t('app', 'Offers'),
         'value' => function ($model) {
@@ -27,7 +27,7 @@ $offersCol = $displayActiveOrders  ?
         },
         'format' => 'raw',
         'enableSorting' => false,
-    ]: [];
+    ] : [];
 ?>
 <div class="currency-exchange-order-index">
     <div class="row">
@@ -92,16 +92,9 @@ $offersCol = $displayActiveOrders  ?
                                 'enableSorting' => false,
                             ],
                             [
-                                'attribute' => 'selling_currency_min_amount',
+                                'label' => Yii::t('app', 'Limits'),
                                 'value' => function ($model) {
-                                    return $model->selling_currency_min_amount ? number_format($model->selling_currency_min_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
-                                },
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'selling_currency_max_amount',
-                                'value' => function ($model) {
-                                    return $model->selling_currency_max_amount ? number_format($model->selling_currency_max_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
+                                    return $model->getFormatLimits();
                                 },
                                 'enableSorting' => false,
                             ],

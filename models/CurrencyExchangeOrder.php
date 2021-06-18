@@ -246,6 +246,16 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     /**
      * {@inheritdoc}
      */
+    public function attributeHints()
+    {
+        return [
+            'fee' => Yii::t('app', 'Fee is zero by default and can be positive (you get) or negative (you give)') . '. ' . Yii::t('app', 'Fee is added to the cross rate') . '. ' . Yii::t('app', 'Cross rate is the current international exchange rate'),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
@@ -584,5 +594,20 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'intval',
             ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id')
         );
+    }
+
+    public function getFormatLimits(): string
+    {
+        if (($this->selling_currency_min_amount) && ($this->selling_currency_max_amount)) {
+            return number_format($this->selling_currency_min_amount, 2) . ' - ' . number_format($this->selling_currency_max_amount, 2) . ' ' . $this->sellingCurrency->code;
+        }
+        if ($this->selling_currency_min_amount) {
+            return number_format($this->selling_currency_min_amount, 2) . ' - ' . '∞' . ' ' . $this->sellingCurrency->code;
+        }
+        if ($this->selling_currency_max_amount) {
+            return  '∞' . ' - ' . number_format($this->selling_currency_max_amount, 2) . ' ' . $this->sellingCurrency->code;
+        }
+
+        return '∞';
     }
 }

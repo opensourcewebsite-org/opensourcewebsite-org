@@ -48,16 +48,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'enableSorting' => false,
                             ],
                             [
-                                'attribute' => 'selling_currency_min_amount',
+                                'label' => Yii::t('app', 'Limits'),
                                 'value' => function ($model) {
-                                    return $model->selling_currency_min_amount ? number_format($model->selling_currency_min_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
-                                },
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'selling_currency_max_amount',
-                                'value' => function ($model) {
-                                    return $model->selling_currency_max_amount ? number_format($model->selling_currency_max_amount, 2) . ' ' . $model->sellingCurrency->code : '∞';
+                                    return $model->getFormatLimits();
                                 },
                                 'enableSorting' => false,
                             ],
