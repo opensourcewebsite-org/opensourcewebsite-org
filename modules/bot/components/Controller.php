@@ -113,7 +113,7 @@ class Controller extends \yii\web\Controller
     }
 
     /**
-     * @return BotApi
+     * @return \app\modules\bot\components\api\BotApi
      */
     protected function getBotApi()
     {
