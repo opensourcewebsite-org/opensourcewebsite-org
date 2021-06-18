@@ -7,7 +7,6 @@ use app\models\User;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
-use TelegramBot\Api\BotApi;
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\response\ResponseBuilder;
 use TelegramBot\Api\HttpException;
@@ -114,7 +113,7 @@ class Controller extends \yii\web\Controller
     }
 
     /**
-     * @return BotApi
+     * @return \app\modules\bot\components\api\BotApi
      */
     protected function getBotApi()
     {
