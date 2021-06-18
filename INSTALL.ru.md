@@ -97,10 +97,10 @@ php yii dataGenerator "*, -Contact" --interval=5
 
 Используйте эти методы класса `Yii` для логирования сообщений различных уровней важности:
 
-* [`Yii::debug()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#debug()-detail)
-* [`Yii::error()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#error()-detail)
-* [`Yii::warning()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#warning()-detail)
-* [`Yii::info()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#info()-detail)
+- [`Yii::debug()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#debug()-detail)
+- [`Yii::error()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#error()-detail)
+- [`Yii::warning()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#warning()-detail)
+- [`Yii::info()`](https://www.yiiframework.com/doc/api/2.0/yii-baseyii#info()-detail)
 
 Логи можно посмотреть в файле `runtime/logs/web.log`, или здесь: <http://localhost:8000/debug/default/view?panel=log>.
 
@@ -108,13 +108,13 @@ php yii dataGenerator "*, -Contact" --interval=5
 
 1. Установить следующие переменные окружения в `.env` файле:
 
-   ```dotenv
-   PHP_ENABLE_XDEBUG=1
-   XDEBUG_CONFIG="client_host=172.17.0.1 client_port=9005 start_with_request=yes idekey=PHPSTORM log_level=1 log=/app/xdebug.log remote_enable=true remote_autostart=true discover_client_host=true remote_log=/app/remote.xdebug.log"
-   XDEBUG_MODE=develop,debug
-   ```
-2. Задать порт отладки для Xdebug в вашей среде разработки равным `9005`. ([File | Settings | PHP | Debug](jetbrains://PhpStorm/settings?name=PHP--Debug) для PHPStorm).
-3. Запустить `docker-compose up -d`.
+    ```dotenv
+    PHP_ENABLE_XDEBUG=1
+    XDEBUG_CONFIG="client_host=172.17.0.1 client_port=9005 start_with_request=yes idekey=PHPSTORM log_level=1 log=/app/xdebug.log remote_enable=true remote_autostart=true discover_client_host=true remote_log=/app/remote.xdebug.log"
+    XDEBUG_MODE=develop,debug
+    ```
+1. Задать порт отладки для Xdebug в вашей среде разработки равным `9005`. ([File | Settings | PHP | Debug](jetbrains://PhpStorm/settings?name=PHP--Debug) для PHPStorm).
+1. Запустить `docker-compose up -d`.
 
 P.S. Тестировалось только в PHPStorm.
 
