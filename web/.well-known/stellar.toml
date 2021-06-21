@@ -3,7 +3,8 @@
 
 ACCOUNTS=[
 "GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH",
-"GDOB5BAYE25LLEU6CCQCGGJB2ILUEIMA2DTQRGCVHX3XX2ATGMXP5ERH"
+"GDOB5BAYE25LLEU6CCQCGGJB2ILUEIMA2DTQRGCVHX3XX2ATGMXP5ERH",
+"GAUR5W3VKPRAYUUEH6VXJWIU4SQFACJIG7HM6YLTQTFBR56NAHQ5J3FC"
 ]
 
 [DOCUMENTATION]
@@ -36,8 +37,8 @@ anchor_asset="USD"
 is_asset_anchored=true
 is_unlimited=true
 name="OSW US Dollar"
-desc="Cryptocurrency backed 1:1 to the US dollar with a guaranteed monthly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
-conditions="2% monthly deposit profit on the 1st of each month will added to accounts with a minimum balance of 50 USD."
+desc="Cryptocurrency backed 1:1 to the US dollar with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
+conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 50 USD."
 redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
@@ -51,8 +52,8 @@ anchor_asset="EUR"
 is_asset_anchored=true
 is_unlimited=true
 name="OSW Euro"
-desc="Cryptocurrency backed 1:1 to the Euro with a guaranteed monthly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
-conditions="2% monthly deposit profit on the 1st of each month will added to accounts with a minimum balance of 50 EUR."
+desc="Cryptocurrency backed 1:1 to the Euro with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
+conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 50 EUR."
 redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
@@ -66,8 +67,8 @@ anchor_asset="THB"
 is_asset_anchored=true
 is_unlimited=true
 name="OSW Thai Baht"
-desc="Cryptocurrency backed 1:1 to the Thai Baht with a guaranteed monthly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
-conditions="2% monthly deposit profit on the 1st of each month will added to accounts with a minimum balance of 1000 THB."
+desc="Cryptocurrency backed 1:1 to the Thai Baht with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
+conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 1000 THB."
 redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
@@ -81,8 +82,8 @@ anchor_asset="UAH"
 is_asset_anchored=true
 is_unlimited=true
 name="OSW Ukrainian Hryvna"
-desc="Cryptocurrency backed 1:1 to the Ukrainian Hryvna with a guaranteed monthly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
-conditions="2% monthly deposit profit on the 1st of each month will added to accounts with a minimum balance of 1000 UAH."
+desc="Cryptocurrency backed 1:1 to the Ukrainian Hryvna with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
+conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 1000 UAH."
 redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
@@ -96,8 +97,8 @@ anchor_asset="RUB"
 is_asset_anchored=true
 is_unlimited=true
 name="OSW Russian Ruble"
-desc="Cryptocurrency backed 1:1 to the Russian Ruble with a guaranteed monthly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
-conditions="2% monthly deposit profit on the 1st of each month will added to accounts with a minimum balance of 2000 RUB."
+desc="Cryptocurrency backed 1:1 to the Russian Ruble with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
+conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 2000 RUB."
 redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
