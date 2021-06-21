@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\helpers;
@@ -14,8 +15,8 @@ class UrlTrimmer
         }
 
         return (isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '')
-            . ( $parsedUrl['host'] ?? '')
-            . ( $parsedUrl['path'] ?? '')
+            . ($parsedUrl['host'] ?? '')
+            . ($parsedUrl['path'] ?? '')
             . (isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '');
     }
 }

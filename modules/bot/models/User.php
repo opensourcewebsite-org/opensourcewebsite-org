@@ -83,7 +83,13 @@ class User extends ActiveRecord
                 ],
                 'integer',
             ],
-            [['location_lat', 'location_lon'], 'number'],
+            [
+                [
+                    'location_lat',
+                    'location_lon',
+                ],
+                'number'
+            ],
             [
                 [
                     'provider_user_name',

@@ -1,4 +1,4 @@
-<b><?= $chatTitle ?></b><br/>
+<b><?= $chat->title ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Select a feature to manage the channel') ?>.<br/>
 <br/>

@@ -42,7 +42,6 @@ class ListAction extends BaseAction
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
 
-        $chatTitle = $chat->title;
         $phrases = $phraseQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
@@ -87,7 +86,7 @@ class ListAction extends BaseAction
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render($this->id, compact('chatTitle')),
+                $this->render($this->id, compact('chat')),
                 $buttons
             )
             ->build();

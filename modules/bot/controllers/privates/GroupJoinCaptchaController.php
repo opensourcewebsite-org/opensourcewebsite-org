@@ -27,14 +27,11 @@ class GroupJoinCaptchaController extends Controller
             return [];
         }
 
-        $chatTitle = $chat->title;
-
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-        $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
+        $statusOn = ($chat->join_captcha_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'telegramUser')),
+                $this->render('index', compact('chat', 'telegramUser')),
                 [
                         [
                             [
@@ -69,15 +66,11 @@ class GroupJoinCaptchaController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-
-        if ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
-            $statusSetting->value = ChatSetting::JOIN_CAPTCHA_STATUS_OFF;
+        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
+            $chat->join_captcha_status = ChatSetting::STATUS_OFF;
         } else {
-            $statusSetting->value = ChatSetting::JOIN_CAPTCHA_STATUS_ON;
+            $chat->join_captcha_status = ChatSetting::STATUS_ON;
         }
-
-        $statusSetting->save();
 
         return $this->actionIndex($chatId);
     }

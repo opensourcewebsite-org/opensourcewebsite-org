@@ -34,4 +34,5 @@ class Emoji
     public const DONATE = '👼';
     public const CONTRIBUTE = '👨‍🚀';
     public const DEVELOPMENT = '🏗';
+    public const WARNING = '⚠️';
 }

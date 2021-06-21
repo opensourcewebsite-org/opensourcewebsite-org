@@ -28,6 +28,12 @@ class MyAccountController extends Controller
                 [
                     [
                         [
+                            'callback_data' => MyStellarController::createRoute(),
+                            'text' => 'Stellar',
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyRatingController::createRoute(),
                             'text' => Yii::t('bot', 'Rating'),
                         ],

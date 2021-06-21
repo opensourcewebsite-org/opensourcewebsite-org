@@ -26,9 +26,8 @@ class FaqController extends Controller
     public function actionShowAnswer($questionId = null)
     {
         $chat = $this->getTelegramChat();
-        $faqStatus = $chat->getSetting(ChatSetting::FAQ_STATUS);
 
-        if (isset($faqStatus) && $faqStatus->value == ChatSetting::FAQ_STATUS_ON) {
+        if ($chat->faq_status == ChatSetting::STATUS_ON) {
             $question = $chat->getQuestionPhrases()
                 ->where([
                     'id' => $questionId,

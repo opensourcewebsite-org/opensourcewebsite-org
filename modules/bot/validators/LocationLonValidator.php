@@ -24,7 +24,6 @@ class LocationLonValidator extends Validator
 
     public function validateLon($lon): bool
     {
-        return (is_numeric($lon)
-            && (doubleval($lon) >= -180) && (doubleval($lon) <= 180));
+        return (is_numeric($lon) && (doubleval($lon) >= -180) && (doubleval($lon) <= 180));
     }
 }

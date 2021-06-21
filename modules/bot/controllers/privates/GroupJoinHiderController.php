@@ -26,14 +26,11 @@ class GroupJoinHiderController extends Controller
             return [];
         }
 
-        $chatTitle = $chat->title;
-
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-        $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
+        $statusOn = ($chat->join_hider_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle')),
+                $this->render('index', compact('chat')),
                 [
                         [
                             [
@@ -68,15 +65,11 @@ class GroupJoinHiderController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-
-        if ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
-            $statusSetting->value = ChatSetting::JOIN_HIDER_STATUS_OFF;
+        if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            $chat->join_hider_status = ChatSetting::STATUS_OFF;
         } else {
-            $statusSetting->value = ChatSetting::JOIN_HIDER_STATUS_ON;
+            $chat->join_hider_status = ChatSetting::STATUS_ON;
         }
-
-        $statusSetting->save();
 
         return $this->actionIndex($chatId);
     }

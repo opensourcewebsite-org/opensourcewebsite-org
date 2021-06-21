@@ -31,9 +31,8 @@ class JoinCaptchaController extends Controller
     public function actionShowCaptcha()
     {
         $chat = $this->getTelegramChat();
-        $joinCaptchaStatus = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
 
-        if (isset($joinCaptchaStatus) && $joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON) {
+        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
             $telegramUser = $this->getTelegramUser();
 
             $chatMember = ChatMember::findOne([

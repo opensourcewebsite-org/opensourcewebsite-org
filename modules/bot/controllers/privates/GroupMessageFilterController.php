@@ -53,17 +53,12 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        $chatTitle = $chat->title;
-
-        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
-        $statusOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
-
-        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
-        $isModeWhitelist = ($modeSetting->value == ChatSetting::FILTER_MODE_WHITELIST);
+        $statusOn = ($chat->filter_status == ChatSetting::STATUS_ON);
+        $isModeWhitelist = ($chat->filter_mode == ChatSetting::FILTER_MODE_WHITELIST);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle')),
+                $this->render('index', compact('chat')),
                 [
                     [
                         [
@@ -75,7 +70,7 @@ class GroupMessageFilterController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('update', [
+                            'callback_data' => self::createRoute('set-mode', [
                                 'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Mode') . ': ' . ($isModeWhitelist ? Yii::t('bot', 'Whitelist') : Yii::t('bot', 'Blacklist')),
@@ -114,27 +109,6 @@ class GroupMessageFilterController extends Controller
             ->build();
     }
 
-    public function actionUpdate($chatId = null)
-    {
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat)) {
-            return [];
-        }
-
-        $modeSetting = $chat->getSetting(ChatSetting::FILTER_MODE);
-
-        if ($modeSetting->value == ChatSetting::FILTER_MODE_WHITELIST) {
-            $modeSetting->value = ChatSetting::FILTER_MODE_BLACKLIST;
-        } else {
-            $modeSetting->value = ChatSetting::FILTER_MODE_WHITELIST;
-        }
-
-        $modeSetting->save();
-
-        return $this->actionIndex($chatId);
-    }
-
     public function actionSetStatus($chatId = null)
     {
         $chat = Chat::findOne($chatId);
@@ -143,15 +117,28 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
-
-        if ($statusSetting->value == ChatSetting::FILTER_STATUS_ON) {
-            $statusSetting->value = ChatSetting::FILTER_STATUS_OFF;
+        if ($chat->filter_status == ChatSetting::STATUS_ON) {
+            $chat->filter_status = ChatSetting::STATUS_OFF;
         } else {
-            $statusSetting->value = ChatSetting::FILTER_STATUS_ON;
+            $chat->filter_status = ChatSetting::STATUS_ON;
         }
 
-        $statusSetting->save();
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetMode($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        if ($chat->filter_mode == ChatSetting::FILTER_MODE_WHITELIST) {
+            $chat->filter_mode = ChatSetting::FILTER_MODE_BLACKLIST;
+        } else {
+            $chat->filter_mode = ChatSetting::FILTER_MODE_WHITELIST;
+        }
 
         return $this->actionIndex($chatId);
     }

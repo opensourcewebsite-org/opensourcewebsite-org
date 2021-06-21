@@ -22,25 +22,23 @@ class MessageController extends Controller
     public function actionIndex()
     {
         $telegramUser = $this->getTelegramUser();
-        $telegramChat = $this->getTelegramChat();
+        $chat = $this->getTelegramChat();
 
-        $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-
-        if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
+        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
             $chatMember = ChatMember::findOne([
-                'chat_id' => $telegramChat->id,
+                'chat_id' => $chat->id,
                 'user_id' => $telegramUser->id,
             ]);
 
             if (($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdmin()) {
                 $this->getBotApi()->deleteMessage(
-                    $telegramChat->chat_id,
+                    $chat->chat_id,
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
 
                 $botCaptcha = BotChatCaptcha::find()
                     ->where([
-                        'chat_id' => $telegramChat->id,
+                        'chat_id' => $chat->id,
                         'provider_user_id' => $telegramUser->provider_user_id,
                     ])
                     ->one();
@@ -52,24 +50,21 @@ class MessageController extends Controller
             }
         }
 
-        $messageFilterStatus = $telegramChat->getSetting(ChatSetting::FILTER_STATUS);
-        $messageFilterMode = $telegramChat->getSetting(ChatSetting::FILTER_MODE);
-
         $deleteMessage = false;
 
-        if (isset($messageFilterStatus) && isset($messageFilterMode) && ($messageFilterStatus->value == ChatSetting::FILTER_STATUS_ON)) {
+        if ($chat->filter_status == ChatSetting::STATUS_ON) {
             if ($this->getMessage()->getText() !== null) {
-                $adminUser = $telegramChat->getAdministrators()
+                $adminUser = $chat->getAdministrators()
                     ->where([
                         'id' => $telegramUser->user_id,
                     ])
                     ->one();
 
                 if (!isset($adminUser)) {
-                    if ($messageFilterMode->value == ChatSetting::FILTER_MODE_BLACKLIST) {
+                    if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
                         $deleteMessage = false;
 
-                        $phrases = $telegramChat->getBlacklistPhrases()->all();
+                        $phrases = $chat->getBlacklistPhrases()->all();
 
                         foreach ($phrases as $phrase) {
                             if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
@@ -80,7 +75,7 @@ class MessageController extends Controller
                     } else {
                         $deleteMessage = true;
 
-                        $phrases = $telegramChat->getWhitelistPhrases()->all();
+                        $phrases = $chat->getWhitelistPhrases()->all();
 
                         foreach ($phrases as $phrase) {
                             if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
@@ -94,18 +89,16 @@ class MessageController extends Controller
 
             if ($deleteMessage) {
                 $this->getBotApi()->deleteMessage(
-                    $telegramChat->chat_id,
+                    $chat->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
             }
         }
 
         if (!$deleteMessage) {
-            $faqStatus = $telegramChat->getSetting(ChatSetting::FAQ_STATUS);
-
-            if (isset($faqStatus) && ($faqStatus->value == ChatSetting::FAQ_STATUS_ON)) {
+            if ($chat->faq_status == ChatSetting::STATUS_ON) {
                 if ($this->getMessage()->getText() !== null) {
-                    $question = $telegramChat->getQuestionPhrases()
+                    $question = $chat->getQuestionPhrases()
                         ->where([
                             'text' => $this->getMessage()->getText(),
                         ])

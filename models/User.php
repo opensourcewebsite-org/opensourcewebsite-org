@@ -46,10 +46,10 @@ use yii\db\Query;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
-    const STATUS_ACTIVE = 10;
+    public const STATUS_DELETED = 0;
+    public const STATUS_ACTIVE = 10;
 
-    const DATE_FORMAT = 'Y-m-d';
+    public const DATE_FORMAT = 'Y-m-d';
 
     /**
      * {@inheritdoc}
@@ -82,27 +82,34 @@ class User extends ActiveRecord implements IdentityInterface
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
-            ['status',
+            [
+                'status',
                 'default',
-                'value' => self::STATUS_ACTIVE],
-            ['status',
+                'value' => self::STATUS_ACTIVE
+            ],
+            [
+                'status',
                 'in',
-                'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-
+                'range' => [
+                    self::STATUS_ACTIVE,
+                    self::STATUS_DELETED,
+                ],
+            ],
             ['email', 'email'],
-            ['email',
+            [
+                'email',
                 'unique',
-                'message' => 'Email must be unique.'
+                'message' => 'Email must be unique',
             ],
             ['username', 'trim'],
-            ['username',
+            [
+                'username',
                 'match',
                 'pattern' => '/^[a-zA-Z0-9_]+$/i',
-                'message' => 'Username can contain only letters, numbers and \'_\' symbols'
+                'message' => 'Username can contain only letters, numbers and \'_\' symbols',
             ],
             ['username', 'validateUsernameUnique'],
             ['username', 'default', 'value' => null],
-
             ['name', 'string'],
             ['name', 'trim'],
             ['name', 'validateNameString'],
@@ -115,6 +122,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateUsernameUnique()
     {
         $oldUsername = $this->getOldAttribute('username');
+
         if (is_numeric($this->username)) {
             $this->addError('username', 'User name can\'t be number');
         }
@@ -133,6 +141,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateNameString()
     {
         $oldName = $this->getOldAttribute('name');
+
         if ($this->name == $oldName) {
             return;
         }
@@ -140,6 +149,28 @@ class User extends ActiveRecord implements IdentityInterface
         if (is_numeric($this->name)) {
             $this->addError('name', 'Name can\'t be number');
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'email' => 'Email',
+            'rating' => 'Social Rating',
+            'username' => 'Username (optional)',
+            'name' => 'Name (optional)',
+        ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($insert) {
+            $this->is_authenticated = false;
+        }
+        return parent::beforeSave($insert);
     }
 
     /**
@@ -185,7 +216,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function setActive(): void
     {
         $this->is_authenticated = true;
-        $this->status           = self::STATUS_ACTIVE;
+        $this->status = self::STATUS_ACTIVE;
     }
 
     /**
@@ -302,28 +333,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'email' => 'Email',
-            'rating' => 'Social Rating',
-            'username' => 'Username (optional)',
-            'name' => 'Name (optional)',
-        ];
-    }
-
-    public function beforeSave($insert)
-    {
-        if ($insert) {
-            $this->is_authenticated = false;
-        }
-        return parent::beforeSave($insert);
     }
 
     /**
@@ -609,14 +618,14 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getRank()
     {
-        $subQuery = (new Query)
+        $subQuery = (new Query())
            ->select([
                'ROW_NUMBER() OVER(ORDER BY rating DESC, created_at ASC) `rank`',
                'id',
            ])
            ->from(self::tableName());
 
-         $query = (new Query)
+        $query = (new Query())
             ->select([
                 'rank',
             ])
@@ -733,7 +742,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getGender()
     {
-        return $this->hasOne(Gender::class, [ 'id' => 'gender_id' ]);
+        return $this->hasOne(Gender::class, ['id' => 'gender_id']);
     }
 
     /**
@@ -741,7 +750,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getSexuality()
     {
-        return $this->hasOne(Sexuality::class, [ 'id' => 'sexuality_id' ]);
+        return $this->hasOne(Sexuality::class, ['id' => 'sexuality_id']);
     }
 
     /**
@@ -757,7 +766,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getLanguages()
     {
-        return $this->hasMany(UserLanguage::class, [ 'user_id' => 'id' ]);
+        return $this->hasMany(UserLanguage::class, ['user_id' => 'id']);
     }
 
     /**
@@ -849,6 +858,7 @@ class User extends ActiveRecord implements IdentityInterface
                 }
             }
         }
+
         return $hasEmptyGroup;
     }
 
@@ -891,12 +901,15 @@ class User extends ActiveRecord implements IdentityInterface
     public function updateLastActivity()
     {
         Yii::$app->db->createCommand()
-            ->update('{{%user}}', [
+            ->update(
+                '{{%user}}',
+                [
                 'last_activity_at' => time(),
             ],
-            [
+                [
                 'id' => $this->id,
-            ])
+            ]
+            )
             ->execute();
     }
 
@@ -934,5 +947,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function getCurrencyExchangeOrders()
     {
         return $this->hasMany(CurrencyExchangeOrder::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStellar()
+    {
+        return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
     }
 }

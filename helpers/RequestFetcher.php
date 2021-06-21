@@ -2,6 +2,7 @@
 /**
  * (c) Nex-Otaku (https://github.com/Nex-Otaku)
  */
+
 namespace app\helpers;
 
 use yii\web\BadRequestHttpException;

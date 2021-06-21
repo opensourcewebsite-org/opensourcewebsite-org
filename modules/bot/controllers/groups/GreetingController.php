@@ -25,22 +25,19 @@ class GreetingController extends Controller
     public function actionShowGreeting($telegramUserId = null)
     {
         $chat = $this->getTelegramChat();
-        $greetingStatus = $chat->getSetting(ChatSetting::GREETING_STATUS);
 
-        if (isset($greetingStatus) && $greetingStatus->value == ChatSetting::GREETING_STATUS_ON) {
+        if ($chat->greeting_status == ChatSetting::STATUS_ON) {
             if (!empty($telegramUserId)) {
                 $telegramUser = User::findOne($telegramUserId);
             } else {
                 $telegramUser = $this->getTelegramUser();
             }
 
-            $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
-
             $response =  $this->getResponseBuilder()
                 ->sendMessage(
                     $this->render('show-greeting', [
                         'user' => $telegramUser,
-                        'message' => $messageSetting->value,
+                        'message' => $chat->greeting_message,
                     ]),
                     [],
                     [

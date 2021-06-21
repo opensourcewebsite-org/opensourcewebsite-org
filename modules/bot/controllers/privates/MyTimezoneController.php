@@ -21,6 +21,8 @@ class MyTimezoneController extends Controller
      */
     public function actionIndex($timezone = null)
     {
+        $this->getState()->setName(null);
+
         $user = $this->getUser();
         $timezones = TimeHelper::timezonesList();
 
@@ -56,6 +58,9 @@ class MyTimezoneController extends Controller
 
     public function actionList($page = 2)
     {
+        // TODO add text input to set timezone (Examples: 07, 06:30, -07, -06:30)
+        $this->getState()->setName(null);
+
         $timezones = TimeHelper::timezonesList();
 
         $pagination = new Pagination([

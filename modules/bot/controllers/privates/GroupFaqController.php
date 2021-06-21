@@ -47,14 +47,11 @@ class GroupFaqController extends Controller
             return [];
         }
 
-        $chatTitle = $chat->title;
-
-        $statusSetting = $chat->getSetting(ChatSetting::FAQ_STATUS);
-        $statusOn = ($statusSetting->value == ChatSetting::FAQ_STATUS_ON);
+        $statusOn = ($chat->faq_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle')),
+                $this->render('index', compact('chat')),
                 [
                         [
                             [
@@ -97,15 +94,11 @@ class GroupFaqController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::FAQ_STATUS);
-
-        if ($statusSetting->value == ChatSetting::FAQ_STATUS_ON) {
-            $statusSetting->value = ChatSetting::FAQ_STATUS_OFF;
+        if ($chat->faq_status == ChatSetting::STATUS_ON) {
+            $chat->faq_status = ChatSetting::STATUS_OFF;
         } else {
-            $statusSetting->value = ChatSetting::FAQ_STATUS_ON;
+            $chat->faq_status = ChatSetting::STATUS_ON;
         }
-
-        $statusSetting->save();
 
         return $this->actionIndex($chatId);
     }

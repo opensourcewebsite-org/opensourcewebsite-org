@@ -97,7 +97,7 @@ class GroupController extends Controller
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
                         $this->render('view', [
-                            'chatTitle' => $chat->title,
+                            'chat' => $chat,
                             'admins' => $admins,
                         ]),
                         [
@@ -108,8 +108,7 @@ class GroupController extends Controller
                                     ]),
                                     'text' => call_user_func(
                                         function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::JOIN_HIDER_STATUS_ON);
+                                            $statusOn = ($chat->join_hider_status == ChatSetting::STATUS_ON);
 
                                             return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Join Hider');
                                         }
@@ -123,8 +122,7 @@ class GroupController extends Controller
                                     ]),
                                     'text' => call_user_func(
                                         function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON);
+                                            $statusOn = ($chat->join_captcha_status == ChatSetting::STATUS_ON);
 
                                             return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Join Captcha');
                                         }
@@ -138,8 +136,7 @@ class GroupController extends Controller
                                     ]),
                                     'text' => call_user_func(
                                         function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
+                                            $statusOn = ($chat->greeting_status == ChatSetting::STATUS_ON);
 
                                             return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Greeting');
                                         }
@@ -153,8 +150,7 @@ class GroupController extends Controller
                                     ]),
                                     'text' => call_user_func(
                                         function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::FILTER_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::FILTER_STATUS_ON);
+                                            $statusOn = ($chat->filter_status == ChatSetting::STATUS_ON);
 
                                             return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter');
                                         }
@@ -168,10 +164,23 @@ class GroupController extends Controller
                                     ]),
                                     'text' => call_user_func(
                                         function () use ($chat) {
-                                            $statusSetting = $chat->getSetting(ChatSetting::FAQ_STATUS);
-                                            $statusOn = ($statusSetting->value == ChatSetting::FAQ_STATUS_ON);
+                                            $statusOn = ($chat->faq_status == ChatSetting::STATUS_ON);
 
                                             return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'FAQ');
+                                        }
+                                    ),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => GroupStellarController::createRoute('index', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => call_user_func(
+                                        function () use ($chat) {
+                                            $statusOn = ($chat->stellar_status == ChatSetting::STATUS_ON);
+
+                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' Stellar';
                                         }
                                     ),
                                 ],

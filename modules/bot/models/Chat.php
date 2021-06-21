@@ -13,6 +13,8 @@ class Chat extends ActiveRecord
     public const TYPE_SUPERGROUP = 'supergroup';
     public const TYPE_CHANNEL = 'channel';
 
+    private array $settings = [];
+
     public static function tableName()
     {
         return 'bot_chat';
@@ -32,6 +34,78 @@ class Chat extends ActiveRecord
         return [
             TimestampBehavior::class,
         ];
+    }
+
+    /**
+     * PHP getter magic method.
+     *
+     * @param string $name property name
+     * @return mixed property value
+     * @see getAttribute()
+     */
+    public function __get($name)
+    {
+        if ($this->hasAttribute($name)) {
+            return $this->getAttribute($name);
+        }
+
+        if (isset($this->settings[$name]) || array_key_exists($name, $this->settings)) {
+            return $this->settings[$name]->value;
+        }
+
+        $chatSetting = $this->getSettings()
+            ->where([
+                'setting' => $name,
+            ])
+            ->one();
+
+        if (!isset($chatSetting)) {
+            $chatSetting = new ChatSetting();
+
+            $chatSetting->setAttributes([
+                'chat_id' => $this->id,
+                'setting' => $name,
+                'value' => isset(ChatSetting::$default_settings[$name]) ?: null,
+            ]);
+        }
+
+        $this->settings[$name] = &$chatSetting;
+
+        return $this->settings[$name]->value;
+    }
+
+    /**
+     * PHP setter magic method.
+     *
+     * @param string $name property name
+     * @param mixed $value property value
+     * @see setAttribute()
+     */
+    public function __set($name, $value)
+    {
+        if ($this->hasAttribute($name)) {
+            return $this->setAttribute($name, $value);
+        }
+
+        $chatSetting = $this->getSettings()
+            ->where([
+                'setting' => $name,
+            ])
+            ->one();
+
+        if (!isset($chatSetting)) {
+            $chatSetting = new ChatSetting();
+
+            $chatSetting->setAttributes([
+                'chat_id' => $this->id,
+                'setting' => $name,
+            ]);
+        }
+
+        $chatSetting->value = $value;
+        $chatSetting->save();
+
+        $this->settings[$name] = &$chatSetting;
     }
 
     public function isPrivate()
@@ -124,7 +198,7 @@ class Chat extends ActiveRecord
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
-        });
+            });
     }
 
     public function getChatId()

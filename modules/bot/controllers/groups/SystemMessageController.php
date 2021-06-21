@@ -25,17 +25,14 @@ class SystemMessageController extends Controller
     public function actionNewChatMembers()
     {
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
-            $telegramChat = $this->getTelegramChat();
+            $chat = $this->getTelegramChat();
 
-            $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-            $joinCaptchaStatus = $telegramChat->getSetting(ChatSetting::JOIN_CAPTCHA_STATUS);
-            $greetingStatus = $telegramChat->getSetting(ChatSetting::GREETING_STATUS);
             $role = JoinCaptchaController::ROLE_VERIFIED;
 
-            if (isset($joinHiderStatus) && ($joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON)) {
+            if (isset($joinHiderStatus) && ($chat->join_hider_status == ChatSetting::STATUS_ON)) {
                 // Remove join message
                 $this->getBotApi()->deleteMessage(
-                    $telegramChat->chat_id,
+                    $chat->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
             }
@@ -51,19 +48,19 @@ class SystemMessageController extends Controller
                     $telegramUser->save();
                 }
 
-                if (isset($joinCaptchaStatus) && ($joinCaptchaStatus->value == ChatSetting::JOIN_CAPTCHA_STATUS_ON)) {
+                if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
                     if (!$newChatMember->isBot()) {
                         $role = JoinCaptchaController::ROLE_UNVERIFIED;
                     }
                 }
 
-                if (!$chatMember = $telegramChat->getChatMemberByUser($telegramUser)) {
+                if (!$chatMember = $chat->getChatMemberByUser($telegramUser)) {
                     $telegramChatMember = $this->getBotApi()->getChatMember(
-                        $telegramChat->chat_id,
+                        $chat->getChatId(),
                         $telegramUser->provider_user_id
                     );
 
-                    $telegramChat->link('users', $telegramUser, [
+                    $chat->link('users', $telegramUser, [
                         'status' => $telegramChatMember->getStatus(),
                         'role' => $role,
                     ]);
@@ -75,7 +72,7 @@ class SystemMessageController extends Controller
                 }
 
                 // Send greeting message
-                if (isset($greetingStatus) && ($greetingStatus->value == ChatSetting::GREETING_STATUS_ON)) {
+                if ($chat->greeting_status == ChatSetting::STATUS_ON) {
                     if (!$newChatMember->isBot()) {
                         $this->run('greeting/show-greeting', [
                             'telegramUserId' => $telegramUser->id,
@@ -92,15 +89,13 @@ class SystemMessageController extends Controller
     public function actionLeftChatMember()
     {
         if ($this->getUpdate()->getMessage()->getLeftChatMember()) {
-            $telegramChat = $this->getTelegramChat();
+            $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
 
-            $joinHiderStatus = $telegramChat->getSetting(ChatSetting::JOIN_HIDER_STATUS);
-
-            if (isset($joinHiderStatus) && $joinHiderStatus->value == ChatSetting::JOIN_HIDER_STATUS_ON) {
+            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
                 // Remove left message
                 $this->getBotApi()->deleteMessage(
-                    $telegramChat->chat_id,
+                    $chat->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
             }
@@ -109,14 +104,14 @@ class SystemMessageController extends Controller
             // Doesn't work if someone kicked the user from the group
             $botCaptcha = BotChatCaptcha::find()
                 ->where([
-                    'chat_id' => $telegramChat->id,
+                    'chat_id' => $chat->id,
                     'provider_user_id' => $telegramUser->provider_user_id,
                 ])
                 ->one();
 
             if (isset($botCaptcha)) {
                 $this->getBotApi()->deleteMessage(
-                    $telegramChat->chat_id,
+                    $chat->getChatId(),
                     $botCaptcha->captcha_message_id
                 );
 
@@ -127,14 +122,14 @@ class SystemMessageController extends Controller
             // Doesn't work if someone kicked the user from the group
             $botGreeting = BotChatGreeting::find()
                 ->where([
-                    'chat_id' => $telegramChat->id,
+                    'chat_id' => $chat->id,
                     'provider_user_id' => $telegramUser->provider_user_id,
                 ])
                 ->one();
 
             if (isset($botGreeting)) {
                 $this->getBotApi()->deleteMessage(
-                    $telegramChat->chat_id,
+                    $chat->getChatId(),
                     $botGreeting->message_id
                 );
 
@@ -146,14 +141,14 @@ class SystemMessageController extends Controller
     public function actionGroupToSupergroup()
     {
         if ($this->getUpdate()->getMessage()->getMigrateToChatId()) {
-            $telegramChat = $this->getTelegramChat();
+            $chat = $this->getTelegramChat();
 
-            $telegramChat->setAttributes([
+            $chat->setAttributes([
                 'type' => Chat::TYPE_SUPERGROUP,
                 'chat_id' => $this->getMessage()->getMigrateToChatId(),
             ]);
 
-            $telegramChat->save();
+            $chat->save();
         }
     }
 }

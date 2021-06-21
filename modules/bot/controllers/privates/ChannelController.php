@@ -1,5 +1,7 @@
 <?php
+
 // TODO
+
 namespace app\modules\bot\controllers\privates;
 
 use Yii;
@@ -97,7 +99,7 @@ class ChannelController extends Controller
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
                         $this->render('view', [
-                            'chatTitle' => $chat->title,
+                            'chat' => $chat,
                             'admins' => $admins,
                         ]),
                         [

@@ -88,7 +88,7 @@ class BotCommandController extends Controller implements CronChainedInterface
      *
      * @param $token
      */
-    public function actionAdd(string $token) : bool
+    public function actionAdd(string $token): bool
     {
         if (!$bot = Bot::findOne(['token' => $token])) {
             $bot = new Bot();
@@ -131,7 +131,7 @@ class BotCommandController extends Controller implements CronChainedInterface
         if ($bots) {
             foreach ($bots as $bot) {
                 $messagesToRemove = BotChatCaptcha::find()
-                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_LIFETIME_DEFAULT])
+                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME])
                     ->joinWith('chat')
                     ->andWhere(['bot_chat.bot_id' => $bot->id])
                     ->all();
@@ -180,7 +180,7 @@ class BotCommandController extends Controller implements CronChainedInterface
         if ($bots) {
             foreach ($bots as $bot) {
                 $messagesToRemove = BotChatGreeting::find()
-                    ->where(['<', 'sent_at', time() - ChatSetting::GREETING_LIFETIME_DEFAULT])
+                    ->where(['<', 'sent_at', time() - ChatSetting::GREETING_MESSAGE_LIFETIME])
                     ->joinWith('chat')
                     ->andWhere(['bot_chat.bot_id' => $bot->id])
                     ->all();

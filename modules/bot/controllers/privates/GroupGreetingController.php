@@ -28,16 +28,11 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        $chatTitle = $chat->title;
-
-        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
-        $statusOn = ($statusSetting->value == ChatSetting::GREETING_STATUS_ON);
-
-        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
+        $statusOn = ($chat->greeting_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chatTitle', 'telegramUser', 'messageSetting')),
+                $this->render('index', compact('chat', 'telegramUser')),
                 [
                     [
                         [
@@ -83,15 +78,11 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        $statusSetting = $chat->getSetting(ChatSetting::GREETING_STATUS);
-
-        if ($statusSetting->value == ChatSetting::GREETING_STATUS_ON) {
-            $statusSetting->value = ChatSetting::GREETING_STATUS_OFF;
+        if ($chat->greeting_status == ChatSetting::STATUS_ON) {
+            $chat->greeting_status = ChatSetting::STATUS_OFF;
         } else {
-            $statusSetting->value = ChatSetting::GREETING_STATUS_ON;
+            $chat->greeting_status = ChatSetting::STATUS_ON;
         }
-
-        $statusSetting->save();
 
         return $this->actionIndex($chatId);
     }
@@ -104,12 +95,27 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        $this->getState()->setName(self::createRoute('save-message', [
+        $this->getState()->setName(self::createRoute('set-message', [
                 'chatId' => $chatId,
             ]));
 
-        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
-        $messageMarkdown = MessageWithEntitiesConverter::fromHtml($messageSetting->value ?? '');
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
+                $textLenght = mb_strlen($text, 'UTF-8');
+
+                if (($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX)) {
+                    $chat->greeting_message = $text;
+
+                    $this->getState()->setName(null);
+
+                    return $this->runAction('index', [
+                         'chatId' => $chatId,
+                     ]);
+                }
+            }
+        }
+
+        $messageMarkdown = MessageWithEntitiesConverter::fromHtml($chat->greeting_message ?? '');
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -129,33 +135,5 @@ class GroupGreetingController extends Controller
                 ]
             )
             ->build();
-    }
-
-    public function actionSaveMessage($chatId = null)
-    {
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat)) {
-            return [];
-        }
-
-        $text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage());
-        $textLenght = mb_strlen($text, 'UTF-8');
-
-        if (!(($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX))) {
-            return $this->getResponseBuilder()
-                ->deleteMessage()
-                ->build();
-        }
-
-        $messageSetting = $chat->getSetting(ChatSetting::GREETING_MESSAGE);
-        $messageSetting->value = $text;
-        $messageSetting->save();
-
-        $this->getState()->setName(null);
-
-        return $this->runAction('index', [
-            'chatId' => $chatId,
-        ]);
     }
 }
