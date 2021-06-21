@@ -8,6 +8,7 @@
 
 Вы можете сделать пожертвование от себя или своей организации удобным для вас способом:
 
+- [Stellar](https://stellar.org): [GDOB5BAYE25LLEU6CCQCGGJB2ILUEIMA2DTQRGCVHX3XX2ATGMXP5ERH](https://stellar.expert/explorer/public/account/GDOB5BAYE25LLEU6CCQCGGJB2ILUEIMA2DTQRGCVHX3XX2ATGMXP5ERH)
 - [Coingate.com (более 50 криптовалют)](https://coingate.com/pay/opensourcewebsite)
 - [Coinbase.com (6 криптовалют)](https://commerce.coinbase.com/checkout/e89005ec-c8c2-47c1-9ca4-b1deb9992794)
 - [PayPal.Me (PayPal и кредитные карты)](https://paypal.me/opensourcewebsite)
