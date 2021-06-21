@@ -28,6 +28,8 @@ class GroupGreetingController extends Controller
             return [];
         }
 
+        $this->getState()->setName(null);
+
         $statusOn = ($chat->greeting_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()

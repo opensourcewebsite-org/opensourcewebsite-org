@@ -53,6 +53,8 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
+        $this->getState()->setName(null);
+
         $statusOn = ($chat->filter_status == ChatSetting::STATUS_ON);
         $isModeWhitelist = ($chat->filter_mode == ChatSetting::FILTER_MODE_WHITELIST);
 

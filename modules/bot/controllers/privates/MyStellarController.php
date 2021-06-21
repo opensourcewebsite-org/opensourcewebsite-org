@@ -29,17 +29,17 @@ class MyStellarController extends Controller
                 $user->stellar->delete();
                 unset($user->stellar);
 
-                return $this->actionUpdate();
+                return $this->actionSetPublicKey();
             }
         } else {
-            return $this->actionUpdate();
+            return $this->actionSetPublicKey();
         }
 
         if (!$user->stellar->isConfirmed()) {
             $buttons[] = [
                 [
                     'callback_data' => self::createRoute('confirm'),
-                    'text' => Yii::t('app', 'Confirm'),
+                    'text' => Yii::t('bot', 'Confirm'),
                 ],
             ];
         }
@@ -49,7 +49,7 @@ class MyStellarController extends Controller
             $buttons[] = [
                 [
                     'callback_data' => self::createRoute('index'),
-                    'text' => Yii::t('app', 'Telegram groups'),
+                    'text' => Yii::t('bot', 'Telegram groups'),
                 ],
             ];
         }
@@ -64,7 +64,7 @@ class MyStellarController extends Controller
                 'callback_data' => MenuController::createRoute(),
             ],
             [
-                'callback_data' => self::createRoute('update'),
+                'callback_data' => self::createRoute('set-public-key'),
                 'text' => Emoji::EDIT,
             ],
             [
@@ -86,9 +86,9 @@ class MyStellarController extends Controller
             ->build();
     }
 
-    public function actionUpdate()
+    public function actionSetPublicKey()
     {
-        $this->getState()->setName(self::createRoute('update'));
+        $this->getState()->setName(self::createRoute('set-public-key'));
         $user = $this->getUser();
 
         if ($this->getUpdate()->getMessage()) {
@@ -112,15 +112,13 @@ class MyStellarController extends Controller
                     unset($user->stellar);
 
                     return $this->actionIndex();
-                } else {
-                    Yii::warning($userStellar->getErrors());
                 }
             }
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
+                $this->render('set-public-key'),
                 [
                     [
                         [

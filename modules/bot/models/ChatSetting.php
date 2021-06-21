@@ -36,9 +36,11 @@ class ChatSetting extends ActiveRecord
         'filter_mode',
         'faq_status',
         'stellar_status',
+        'stellar_mode',
         'stellar_asset',
         'stellar_issuer',
         'stellar_threshold',
+        'stellar_invite_link',
     ];
 
     public static array $default_settings = [

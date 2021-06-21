@@ -47,6 +47,8 @@ class GroupFaqController extends Controller
             return [];
         }
 
+        $this->getState()->setName(null);
+
         $statusOn = ($chat->faq_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
