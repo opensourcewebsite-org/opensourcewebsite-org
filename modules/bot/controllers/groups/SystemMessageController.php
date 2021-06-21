@@ -29,7 +29,7 @@ class SystemMessageController extends Controller
 
             $role = JoinCaptchaController::ROLE_VERIFIED;
 
-            if (isset($joinHiderStatus) && ($chat->join_hider_status == ChatSetting::STATUS_ON)) {
+            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
                 // Remove join message
                 $this->getBotApi()->deleteMessage(
                     $chat->getChatId(),
