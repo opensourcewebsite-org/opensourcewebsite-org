@@ -2,9 +2,9 @@
 
 namespace app\models;
 
+use app\modules\bot\validators\StellarPublicKeyValidator;
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use app\modules\bot\validators\StellarPublicKeyValidator;
 
 /**
  * This is the model class for table "user_stellar".
@@ -22,7 +22,7 @@ class UserStellar extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'user_stellar';
     }
@@ -30,11 +30,11 @@ class UserStellar extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'timestamp' => [
-                'class'=> TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
         ];
@@ -43,7 +43,7 @@ class UserStellar extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['user_id', 'public_key'], 'required'],
@@ -65,7 +65,7 @@ class UserStellar extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -79,7 +79,7 @@ class UserStellar extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function getPublicKey()
+    public function getPublicKey(): string
     {
         return $this->public_key;
     }
@@ -87,24 +87,17 @@ class UserStellar extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function isConfirmed()
+    public function isConfirmed(): bool
     {
-        if ($this->confirmed_at != null) {
-            return true;
-        }
-
-        return false;
+        return $this->confirmed_at != null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isExpired()
+    public function isExpired(): bool
     {
-        if (($this->confirmed_at == null) && ($this->created_at < (time() - self::CONFIRM_REQUEST_LIFETIME))) {
-            return true;
-        }
-
-        return false;
+        return $this->confirmed_at == null
+            && $this->created_at < (time() - self::CONFIRM_REQUEST_LIFETIME);
     }
 }
