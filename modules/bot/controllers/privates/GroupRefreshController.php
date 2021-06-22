@@ -126,6 +126,7 @@ class GroupRefreshController extends Controller
             if (!isset($user)) {
                 $user = User::createUser($telegramAdministrator->getUser());
                 $user->updateInfo($telegramAdministrator->getUser());
+                $user->save();
             }
             if (!in_array($user->provider_user_id, $curAdministratorsIds)) {
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);

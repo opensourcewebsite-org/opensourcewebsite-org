@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use app\models\Language;
 use app\models\User as GlobalUser;
@@ -23,6 +24,7 @@ use app\models\User as GlobalUser;
  * @property string $currency_code
  * @property string $state
  * @property int $language_id
+ * @property bool $is_bot
  */
 class User extends ActiveRecord
 {
@@ -36,7 +38,7 @@ class User extends ActiveRecord
         return 'bot_user';
     }
 
-    public static function createUser($updateUser)
+    public static function createUser(&$updateUser)
     {
         $language = Language::findOne([
             'code' => $updateUser->getLanguageCode(),
@@ -80,6 +82,7 @@ class User extends ActiveRecord
                     'provider_user_blocked',
                     'location_at',
                     'language_id',
+                    'is_bot',
                 ],
                 'integer',
             ],
@@ -191,16 +194,16 @@ class User extends ActiveRecord
         return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
-    public function updateInfo($updateUser)
+    public function updateInfo(&$updateUser)
     {
         $this->setAttributes([
             'provider_user_name' => $updateUser->getUsername(),
             'provider_user_first_name' => $updateUser->getFirstName(),
             'provider_user_last_name' => $updateUser->getLastName(),
-            'provider_bot_user_blocked' => 0,
+            'is_bot' => (int)$updateUser->isBot(),
+            // TODO only for private chat
+            'provider_user_blocked' => 0,
         ]);
-
-        $this->save();
     }
 
     public function getFullLink()

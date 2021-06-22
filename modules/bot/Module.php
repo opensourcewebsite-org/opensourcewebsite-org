@@ -153,6 +153,7 @@ class Module extends \yii\base\Module
 
                         // Update bot user information
                         $administratorBotUser->updateInfo($administratorUpdateUser);
+                        $administratorBotUser->save();
                     }
 
                     $administratorBotUser->link('chats', $chat, [
