@@ -39,7 +39,7 @@ class MyStellarController extends Controller
             $buttons[] = [
                 [
                     'callback_data' => self::createRoute('confirm'),
-                    'text' => Yii::t('bot', 'Confirm'),
+                    'text' => Yii::t('bot', 'CONFIRM'),
                 ],
             ];
         }

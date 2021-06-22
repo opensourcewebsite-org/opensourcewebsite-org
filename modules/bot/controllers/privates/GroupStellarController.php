@@ -36,61 +36,62 @@ class GroupStellarController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', compact('chat', 'isModeSigners')),
                 [
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('set-status', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
-                            ],
+                            'callback_data' => self::createRoute('set-status', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('set-mode', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Mode') . ': ' . ($isModeSigners ? Yii::t('bot', 'Signers') : Yii::t('bot', 'Holders')),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('set-asset', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Asset'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('set-threshold', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Threshold for holders'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('set-invite-link', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Invite link'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupController::createRoute('view', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                        ]
                     ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-mode', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Mode') . ': ' . ($isModeSigners ? Yii::t('bot', 'Signers') : Yii::t('bot', 'Holders')),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-asset', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Asset'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-threshold', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Threshold for holders'),
+                            'visible' => !$isModeSigners,
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-invite-link', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Invite link'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupController::createRoute('view', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ]
+                ],
                 [
                         'disablePreview' => true,
                 ]

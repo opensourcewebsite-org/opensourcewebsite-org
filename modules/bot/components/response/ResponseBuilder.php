@@ -192,7 +192,7 @@ class ResponseBuilder
     private function collectEditMessageOptionalParams(
         array $replyMarkup,
         array $optionalParams = []
-    ) : array {
+    ): array {
         return $this->filterAndMergeOptionalParams(
             $replyMarkup,
             $optionalParams,
@@ -215,7 +215,7 @@ class ResponseBuilder
     private function collectSendMessageOptionalParams(
         array $replyMarkup,
         array $optionalParams = []
-    ) : array {
+    ): array {
         return $this->filterAndMergeOptionalParams(
             $replyMarkup,
             $optionalParams,
@@ -240,7 +240,20 @@ class ResponseBuilder
         array $replyMarkup,
         array $optionalParams,
         array $optionalParamsFilter
-    ) : array {
+    ): array {
+        // remove all items vith visible = 0
+        foreach ($replyMarkup as $key1 => $array1) {
+            foreach ($array1 as $key2 => $array2) {
+                if (isset($array2['visible'])) {
+                    if ($array2['visible']) {
+                        unset($replyMarkup[$key1][$key2]['visible']);
+                    } else {
+                        unset($replyMarkup[$key1][$key2]);
+                    }
+                }
+            }
+        }
+
         $optionalParams = ArrayHelper::merge(
             [
                 'replyMarkup' => !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null,

@@ -10,7 +10,7 @@ Stellar - <?= Yii::t('bot', 'helps to manage the list of group members of holder
 <br/>
 <?= Yii::t('bot', 'Asset') ?>: <?= ExternalLink::getStellarExpertAssetFullLink($chat->stellar_asset, $chat->stellar_issuer) ?><br/>
 <?php endif; ?>
-<?php if ($chat->stellar_threshold) : ?>
+<?php if (!$isModeSigners && $chat->stellar_threshold) : ?>
 <br/>
 <?= Yii::t('bot', 'Threshold for holders') ?>: <?= $chat->stellar_threshold ?><br/>
 <?php endif; ?>
