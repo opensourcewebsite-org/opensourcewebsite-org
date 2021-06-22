@@ -19,19 +19,19 @@ class MyStellarController extends Controller
     /**
      * @return array
      */
-    public function actionIndex()
+    public function actionIndex(): array
     {
         $this->getState()->setName(null);
         $user = $this->getUser();
 
-        if (isset($user->stellar)) {
-            if ($user->stellar->isExpired()) {
-                $user->stellar->delete();
-                unset($user->stellar);
+        if (!isset($user->stellar)) {
+            return $this->actionSetPublicKey();
+        }
 
-                return $this->actionSetPublicKey();
-            }
-        } else {
+        if ($user->stellar->isExpired()) {
+            $user->stellar->delete();
+            unset($user->stellar);
+
             return $this->actionSetPublicKey();
         }
 
@@ -80,19 +80,19 @@ class MyStellarController extends Controller
                 ]),
                 $buttons,
                 [
-                        'disablePreview' => true,
+                    'disablePreview' => true,
                 ]
             )
             ->build();
     }
 
-    public function actionSetPublicKey()
+    public function actionSetPublicKey(): array
     {
         $this->getState()->setName(self::createRoute('set-public-key'));
         $user = $this->getUser();
 
         if ($this->getUpdate()->getMessage()) {
-            if ($text =  $this->getUpdate()->getMessage()->getText()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
                 if (isset($user->stellar)) {
                     if ($user->stellar->public_key != $text) {
                         $user->stellar->public_key = $text;
@@ -131,7 +131,7 @@ class MyStellarController extends Controller
             ->build();
     }
 
-    public function actionDelete()
+    public function actionDelete(): array
     {
         $user = $this->getUser();
 
@@ -144,8 +144,21 @@ class MyStellarController extends Controller
     }
 
     // TODO use Stellar API
-    public function actionConfirm()
+    public function actionConfirm(): array
     {
+        $user = $this->getUser()->getStellar();
+        $pubic_key = $user->getPublicKey();
+
+
+
+        if (!$userExists) {
+            return [];
+        }
+
+        if (!userSentTransaction) {
+            return [];
+        }
+
         return $this->actionIndex();
     }
 }
