@@ -97,7 +97,6 @@ class UserStellar extends \yii\db\ActiveRecord
      */
     public function isExpired(): bool
     {
-        return $this->confirmed_at == null
-            && $this->created_at < (time() - self::CONFIRM_REQUEST_LIFETIME);
+        return ($this->confirmed_at == null) && ($this->created_at < (time() - self::CONFIRM_REQUEST_LIFETIME));
     }
 }
