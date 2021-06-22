@@ -51,7 +51,8 @@
         "voskobovich/yii2-linker-behavior": "^4.1",
         "2amigos/yii2-leaflet-extension": "^1.1",
         "npm-asset/leaflet.locatecontrol": "*",
-        "lstrojny/functional-php": "^1.17"
+        "lstrojny/functional-php": "^1.17",
+        "opensourcewebsite-org/php-stellar-sdk": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
