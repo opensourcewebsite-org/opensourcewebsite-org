@@ -156,7 +156,12 @@ class MyStellarController extends Controller
         $server = Server::testNet();
 
         if (!($server->accountExists($pubic_key))) {
-            return $this->actionIndex();
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('account-doesnt-exist'),
+                    true
+                )
+                ->build();
         }
 
         $distributor_public_key = Yii::$app->params['stellar']['distributor_public_key'];
@@ -181,7 +186,12 @@ class MyStellarController extends Controller
         ));
 
         if (!$userSentTransaction) {
-            return $this->actionIndex();
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('transaction-not-found'),
+                    true
+                )
+                ->build();
         }
 
         $user->confirmed_at = time();
