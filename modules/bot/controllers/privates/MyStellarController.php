@@ -147,11 +147,9 @@ class MyStellarController extends Controller
 
     public function actionConfirm(): array
     {
-        $user = $this->getUser()->stellar;
+        $userStellar = $this->getUser()->stellar;
 
-        assert(!$user->isConfirmed(), 'User should not be confirmed yet');
-
-        $pubic_key = $user->getPublicKey();
+        $pubic_key = $userStellar->getPublicKey();
 
         $server = Server::testNet();
 
@@ -164,16 +162,18 @@ class MyStellarController extends Controller
                 ->build();
         }
 
-        $distributor_public_key = Yii::$app->params['stellar']['distributor_public_key'];
-        assert(!empty($distributor_public_key), 'Distribution public key must be nonempty');
+        $distributorPublicKey = Yii::$app->params['stellar']['distributor_public_key'];
 
-        $user_created_at = new DateTime();
-        $user_created_at->setTimestamp($user->created_at);
+        $userCreatedAt = new DateTime();
+        $userCreatedAt->setTimestamp($userStellar->created_at);
+        $tooLate = new DateTime();
+        $tooLate->setTimestamp($userStellar->created_at + UserStellar::CONFIRM_REQUEST_LIFETIME);
 
         $userSentTransaction = !empty(array_filter(
             $server->getAccount($pubic_key)->getTransactions(),
             fn ($t) =>
-                $t->getCreatedAt() >= $user_created_at
+                $t->getCreatedAt() >= $userCreatedAt
+                && $t->getCreatedAt() <= $tooLate
                 && !empty(array_filter(
                     $t->getPayments(),
                     fn ($p) =>
@@ -181,7 +181,7 @@ class MyStellarController extends Controller
                         && $p->isNativeAsset()
                         && $p->getAmount()->getBalance() > 0
                         && $p->getFromAccountId() === $pubic_key
-                        && $p->getToAccountId() === $distributor_public_key
+                        && $p->getToAccountId() === $distributorPublicKey
                 ))
         ));
 
@@ -194,7 +194,7 @@ class MyStellarController extends Controller
                 ->build();
         }
 
-        $user->confirmed_at = time();
+        $userStellar->confirmed_at = time();
 
         return $this->actionIndex();
     }
