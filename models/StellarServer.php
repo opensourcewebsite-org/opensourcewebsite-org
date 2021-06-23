@@ -10,9 +10,9 @@ class StellarServer
 {
     private Server $server;
 
-    public function __construct(Server $server)
+    public function __construct(bool $useTestNet)
     {
-        $this->server = $server;
+        $this->server = $useTestNet ? Server::testNet() : Server::publicNet();
     }
 
     public function accountExists($accountId): bool

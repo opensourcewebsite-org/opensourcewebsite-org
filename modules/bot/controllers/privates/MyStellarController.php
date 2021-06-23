@@ -152,7 +152,7 @@ class MyStellarController extends Controller
 
         $pubicKey = $userStellar->getPublicKey();
 
-        $server = new StellarServer(Server::publicNet());
+        $server = new StellarServer(Yii::$app->params['stellar']['testNet']);
 
         if (!($server->accountExists($pubicKey))) {
             return $this->getResponseBuilder()
