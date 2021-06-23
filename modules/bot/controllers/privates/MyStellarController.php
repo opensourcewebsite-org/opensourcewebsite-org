@@ -38,50 +38,45 @@ class MyStellarController extends Controller
             return $this->actionSetPublicKey();
         }
 
-        if (!$user->stellar->isConfirmed()) {
-            $buttons[] = [
-                [
-                    'callback_data' => self::createRoute('confirm'),
-                    'text' => Yii::t('bot', 'CONFIRM'),
-                ],
-            ];
-        }
-
-        // TODO на экране групп делать проверку для доступа пользователя к группам, и показывать их отдельными кнопками
-        if ($user->stellar->isConfirmed()) {
-            $buttons[] = [
-                [
-                    'callback_data' => self::createRoute('index'),
-                    'text' => Yii::t('bot', 'Telegram groups'),
-                ],
-            ];
-        }
-
-        $buttons[] = [
-            [
-                'callback_data' => MyAccountController::createRoute(),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'text' => Emoji::MENU,
-                'callback_data' => MenuController::createRoute(),
-            ],
-            [
-                'callback_data' => self::createRoute('set-public-key'),
-                'text' => Emoji::EDIT,
-            ],
-            [
-                'callback_data' => self::createRoute('delete'),
-                'text' => Emoji::DELETE,
-            ],
-        ];
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'stellar' => $user->stellar,
                 ]),
-                $buttons,
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('confirm'),
+                            'text' => Yii::t('bot', 'CONFIRM'),
+                            'visible' => !$user->stellar->isConfirmed(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('index'),
+                            'text' => Yii::t('bot', 'Telegram groups'),
+                            'visible' => $user->stellar->isConfirmed(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyAccountController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                        [
+                            'callback_data' => self::createRoute('set-public-key'),
+                            'text' => Emoji::EDIT,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete'),
+                            'text' => Emoji::DELETE,
+                        ],
+                    ],
+                ],
                 [
                     'disablePreview' => true,
                 ]
@@ -148,40 +143,45 @@ class MyStellarController extends Controller
 
     public function actionConfirm(): array
     {
-        $userStellar = $this->getUser()->stellar;
+        $user = $this->getUser();
 
-        $pubicKey = $userStellar->getPublicKey();
-
-        $server = new StellarServer(Yii::$app->params['stellar']['testNet']);
-
-        if (!($server->accountExists($pubicKey))) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('account-doesnt-exist'),
-                    true
-                )
-                ->build();
+        if (!isset($user->stellar)) {
+            return $this->actionIndex();
         }
 
-        $distributorPublicKey = Yii::$app->params['stellar']['distributor_public_key'];
-        $userSentTransaction = $server->operationExists(
-            $pubicKey,
-            $distributorPublicKey,
-            $userStellar->created_at,
-            $userStellar->created_at + UserStellar::CONFIRM_REQUEST_LIFETIME
-        );
+        $userStellar = $user->stellar;
 
-        if (!$userSentTransaction) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('transaction-not-found'),
-                    true
-                )
-                ->build();
+        if ($stellarServer = new StellarServer()) {
+            if (!($stellarServer->accountExists($userStellar->getPublicKey()))) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('alert-account-doesnt-exist'),
+                        true
+                    )
+                    ->build();
+            }
+
+            $userSentTransaction = $stellarServer->operationExists(
+                $userStellar->getPublicKey(),
+                $stellarServer->getDistributorPublicKey(),
+                $userStellar->created_at,
+                $userStellar->created_at + UserStellar::CONFIRM_REQUEST_LIFETIME
+            );
+
+            if (!$userSentTransaction) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('alert-transaction-not-found'),
+                        true
+                    )
+                    ->build();
+            }
+
+            $userStellar->confirmed_at = time();
+            $userStellar->save();
+            unset($user->stellar);
         }
 
-        $userStellar->confirmed_at = time();
-        $userStellar->save();
         return $this->actionIndex();
     }
 }

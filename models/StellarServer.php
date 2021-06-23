@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use DateTime;
 use ZuluCrypto\StellarSdk\Model\Payment;
 use ZuluCrypto\StellarSdk\Server;
@@ -10,9 +11,13 @@ class StellarServer
 {
     private Server $server;
 
-    public function __construct(bool $useTestNet)
+    public function __construct()
     {
-        $this->server = $useTestNet ? Server::testNet() : Server::publicNet();
+        if (!isset(Yii::$app->params['stellar'])) {
+            throw new \Exception('No stellar params');
+        }
+
+        $this->server = isset(Yii::$app->params['stellar']['testNet']) && Yii::$app->params['stellar']['testNet'] ? Server::testNet() : Server::publicNet();
     }
 
     public function accountExists(string $accountId): bool
@@ -42,5 +47,20 @@ class StellarServer
                         && $p->getToAccountId() === $destinationId
                 ))
         ));
+    }
+
+    public function getIssuerPublicKey()
+    {
+        return Yii::$app->params['stellar']['issuer_public_key'] ?? null;
+    }
+
+    public function getDistributorPublicKey()
+    {
+        return Yii::$app->params['stellar']['distributor_public_key'] ?? null;
+    }
+
+    public function getOperatorPublicKey()
+    {
+        return Yii::$app->params['stellar']['operator_public_key'] ?? null;
     }
 }
