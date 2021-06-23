@@ -207,6 +207,7 @@ return [
     'Confirm' => 'Подтвердить',
     'CONFIRM' => 'ПОДТВЕРДИТЬ',
     'In the next {0,number} minutes, send any amount of XLM to OSW account "{1}" and then click the "CONFIRM" button' => 'В следующие {0,number} минут отправьте любое количество XLM в аккаунт OSW "{1}", а затем нажмите кнопку "ПОДТВЕРДИТЬ"',
+    'Receive {0} weekly deposit income every Friday with our stablecoins, become our community ambassador and redeem the stablecoins with other users' => 'Получайте {0} еженедельный депозитный доход каждую пятницу с помощью наших стейблкоинов, становитесь послом нашего сообщества и обменивайтесь стейблкоинами с другими участниками',
     'Send your Stellar Public Key' => 'Отправьте ваш публичный ключ в системе Stellar',
     'Mode' => 'Режим',
     'Refresh' => 'Обновить',

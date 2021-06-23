@@ -44,7 +44,7 @@ class MyStellarController extends Controller
             ];
         }
 
-        // TODO показывать только при наличии доступных групп для пользователя
+        // TODO на экране групп делать проверку для доступа пользователя к группам, и показывать их отдельными кнопками
         if ($user->stellar->isConfirmed()) {
             $buttons[] = [
                 [
