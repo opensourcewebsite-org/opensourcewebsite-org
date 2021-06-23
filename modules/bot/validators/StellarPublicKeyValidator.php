@@ -29,10 +29,10 @@ class StellarPublicKeyValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateValue($value)
+    public function validateValue($value): ?array
     {
         if (preg_match("/^G([a-zA-Z2-7]){55}$/", $value, $matches)) {
-            return;
+            return null;
         }
 
         return ['Public key has invalid format.', []];

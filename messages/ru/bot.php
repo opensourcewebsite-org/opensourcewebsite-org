@@ -417,4 +417,6 @@ return [
     'Choose a payment method for selling currency' => 'Выберите метод оплаты для продаваемой валюты',
     'Choose a payment method for buying currency' => 'Выберите метод оплаты для покупаемой валюты',
     'Your offer with payment methods sees other offers that contain at least one of the payment method listed' => 'Ваше предложение с методами оплаты видит другие предложения в которых есть хотя бы один из перечисленных методов оплаты',
+    "Stellar account with this public key doesn't exist" => 'Аккаунта Stellar с таким публичным ключом нет',
+    'No transactions from you to OSW found' => 'Не найдено транзакций от вас к OSW',
 ];
