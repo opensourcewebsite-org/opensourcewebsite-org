@@ -147,7 +147,7 @@ class MyStellarController extends Controller
 
     public function actionConfirm(): array
     {
-        $user = $this->getUser()->getStellar();
+        $user = $this->getUser()->stellar;
 
         assert(!$user->isConfirmed(), 'User should not be confirmed yet');
 
