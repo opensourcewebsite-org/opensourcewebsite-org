@@ -17,7 +17,7 @@ use yii\behaviors\TimestampBehavior;
  */
 class UserStellar extends \yii\db\ActiveRecord
 {
-    public const CONFIRM_REQUEST_LIFETIME = 600; // seconds
+    public const CONFIRM_REQUEST_LIFETIME = 1200; // seconds
 
     /**
      * {@inheritdoc}
@@ -98,5 +98,13 @@ class UserStellar extends \yii\db\ActiveRecord
     public function isExpired(): bool
     {
         return ($this->confirmed_at == null) && ($this->created_at < (time() - self::CONFIRM_REQUEST_LIFETIME));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTimeLimit(): int
+    {
+        return (int)self::CONFIRM_REQUEST_LIFETIME/60;
     }
 }

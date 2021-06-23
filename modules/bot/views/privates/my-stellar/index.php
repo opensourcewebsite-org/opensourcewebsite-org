@@ -21,7 +21,7 @@ $assets = [
 <?php if (!$stellar->isConfirmed()) : ?>
 <?= Emoji::WARNING ?> <?= Yii::t('bot', 'Confirm your Stellar account') ?>.
 <?php if (isset(Yii::$app->params['stellar']['distributor_public_key'])) : ?>
- <?= Yii::t('bot', 'In the next {0,number} minutes, send any amount of XLM to OSW account "{1}" and then click the "CONFIRM" button', [10, ExternalLink::getStellarExpertAccountFullLink(Yii::$app->params['stellar']['distributor_public_key'])]) ?>.<br/>
+ <?= Yii::t('bot', 'In the next {0,number} minutes, send any amount of XLM to OSW account "{1}" and then click the "CONFIRM" button', [$stellar->getTimeLimit(), ExternalLink::getStellarExpertAccountFullLink(Yii::$app->params['stellar']['distributor_public_key'])]) ?>.<br/>
 <?php endif; ?>
 <br/>
 <?php endif; ?>
