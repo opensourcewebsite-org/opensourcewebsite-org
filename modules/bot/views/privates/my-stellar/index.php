@@ -29,4 +29,4 @@ $assets = [
 <br/>
 <?= Yii::t('bot', 'Receive {0} weekly deposit income every Friday with our stablecoins, become our community ambassador and redeem the stablecoins with other users', '0.5%') ?>.<br/>
 <br/>
-<?= implode(', ', $assets) ?>.<br/>
+<?= implode(' | ', $assets) ?><br/>
