@@ -181,7 +181,7 @@ class MyStellarController extends Controller
         }
 
         $userStellar->confirmed_at = time();
-
+        $userStellar->save();
         return $this->actionIndex();
     }
 }
