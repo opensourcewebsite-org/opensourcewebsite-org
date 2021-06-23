@@ -15,7 +15,7 @@ class StellarServer
         $this->server = $useTestNet ? Server::testNet() : Server::publicNet();
     }
 
-    public function accountExists($accountId): bool
+    public function accountExists(string $accountId): bool
     {
         return $this->server->accountExists($accountId);
     }
