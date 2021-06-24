@@ -32,13 +32,13 @@ class StellarServer
 
         return !empty(array_filter(
             // NOTE limit=50
-            $this->server->getAccount($sourceId)->getTransactions(),
+            $this->server->getAccount($sourceId)->getTransactions(null, 10, 'desc'),
             fn ($t) =>
                 $t->getCreatedAt() >= $timeLowerBound
                 && $t->getCreatedAt() <= $timeUpperBound
                 && !empty(array_filter(
                     // NOTE limit=50
-                    $t->getPayments(),
+                    $t->getPayments(null, 10, 'desc'),
                     fn ($p) =>
                         get_class($p) === Payment::class
                         && $p->isNativeAsset()
