@@ -65,7 +65,7 @@ class Chat extends ActiveRecord
             $chatSetting->setAttributes([
                 'chat_id' => $this->id,
                 'setting' => $name,
-                'value' => isset(ChatSetting::$default_settings[$name]) ?: null,
+                'value' => $chatSetting->getDefault($name),
             ]);
         }
 

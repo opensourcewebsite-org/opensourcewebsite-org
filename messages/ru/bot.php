@@ -420,4 +420,6 @@ return [
     'Your offer with payment methods sees other offers that contain at least one of the payment method listed' => 'Ваше предложение с методами оплаты видит другие предложения в которых есть хотя бы один из перечисленных методов оплаты',
     'Stellar account with this public key was not found, please use a different public key' => 'Stellar aккаунт с данным публичным ключом не найден, пожалуйста используйте другой публичный ключ',
     'No confirmation transaction found, please follow the instructions to confirm your account' => 'Подтверждающая транзакция не найдена, пожалуйста следуйте инструкции для подтверждения аккаунта',
+    'No telegram groups available for your account' => 'Для вашего аккаунта нет доступных телеграмм групп',
+    'Telegram groups for your Stellar account' => 'Телеграм группы для вашего Stellar аккаунта',
 ];

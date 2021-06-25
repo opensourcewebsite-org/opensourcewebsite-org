@@ -11,6 +11,8 @@ use DateTime;
 use Yii;
 use ZuluCrypto\StellarSdk\Model\Payment;
 use ZuluCrypto\StellarSdk\Server;
+use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\Chat;
 
 /**
  * Class MyStellarController
@@ -53,7 +55,7 @@ class MyStellarController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('index'),
+                            'callback_data' => self::createRoute('groups'),
                             'text' => Yii::t('bot', 'Telegram groups'),
                             'visible' => $user->stellar->isConfirmed(),
                         ],
@@ -152,7 +154,7 @@ class MyStellarController extends Controller
         $userStellar = $user->stellar;
 
         if ($stellarServer = new StellarServer()) {
-            if (!($stellarServer->accountExists($userStellar->getPublicKey()))) {
+            if (!$stellarServer->accountExists($userStellar->getPublicKey())) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
                         $this->render('alert-account-doesnt-exist'),
@@ -180,6 +182,77 @@ class MyStellarController extends Controller
             $userStellar->confirmed_at = time();
             $userStellar->save();
             unset($user->stellar);
+        }
+
+        return $this->actionIndex();
+    }
+
+    public function actionGroups(): array
+    {
+        $user = $this->getUser();
+
+        if (!isset($user->stellar) || !$user->stellar->isConfirmed()) {
+            return $this->actionIndex();
+        }
+
+        $userStellar = $user->stellar;
+
+        if ($stellarServer = new StellarServer()) {
+            if ($account = $stellarServer->getAccount($userStellar->getPublicKey())) {
+                $buttons = [];
+
+                // TODO add logic for links for signers
+                foreach ($account->getBalances() as $asset) {
+                    if (($asset->getBalance() > 0) && (!$asset->isNativeAsset())) {
+                        $chatSetting = ChatSetting::find()
+                            ->where([
+                                'setting' => 'stellar_asset',
+                                'value' => $asset->getAssetCode(),
+                            ])
+                            ->one();
+
+                        if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
+                            if (($chat->stellar_status == ChatSetting::STATUS_ON)
+                                && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_HOLDERS)
+                                && ($chat->stellar_issuer == $asset->getAssetIssuerAccountId())
+                                && ($chat->stellar_threshold <= $asset->getBalance())
+                                && ($chat->stellar_invite_link)) {
+                                $buttons[][] = [
+                                    'url' => $chat->stellar_invite_link,
+                                    'text' => $chat->title,
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!$buttons) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('alert-groups-not-found'),
+                        true
+                    )
+                    ->build();
+            }
+
+            $buttons[] = [
+                [
+                    'callback_data' => MyStellarController::createRoute(),
+                    'text' => Emoji::BACK,
+                ],
+                [
+                    'callback_data' => MenuController::createRoute(),
+                    'text' => Emoji::MENU,
+                ],
+            ];
+
+            return $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('groups'),
+                    $buttons
+                )
+                ->build();
         }
 
         return $this->actionIndex();

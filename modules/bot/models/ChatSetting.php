@@ -107,4 +107,14 @@ class ChatSetting extends ActiveRecord
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id']);
     }
+
+    public function getDefault($name)
+    {
+        return self::$default_settings[$name] ?? null;
+    }
+
+    public function getChatId()
+    {
+        return $this->chat_id;
+    }
 }

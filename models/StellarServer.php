@@ -6,23 +6,22 @@ use Yii;
 use DateTime;
 use ZuluCrypto\StellarSdk\Model\Payment;
 use ZuluCrypto\StellarSdk\Server;
+use ZuluCrypto\StellarSdk\Horizon\ApiClient;
 
-class StellarServer
+class StellarServer extends Server
 {
-    private Server $server;
-
     public function __construct()
     {
         if (!isset(Yii::$app->params['stellar'])) {
             throw new \Exception('No stellar params');
         }
 
-        $this->server = isset(Yii::$app->params['stellar']['testNet']) && Yii::$app->params['stellar']['testNet'] ? Server::testNet() : Server::publicNet();
-    }
-
-    public function accountExists(string $accountId): bool
-    {
-        return $this->server->accountExists($accountId);
+        if (isset(Yii::$app->params['stellar']['testNet']) && Yii::$app->params['stellar']['testNet']) {
+            parent::__construct(ApiClient::newTestnetClient());
+            $this->isTestnet = true;
+        } else {
+            parent::__construct(ApiClient::newPublicClient());
+        }
     }
 
     public function operationExists(string $sourceId, string $destinationId, int $timeLowerBound, int $timeUpperBound): bool
@@ -32,7 +31,7 @@ class StellarServer
 
         return !empty(array_filter(
             // NOTE limit=50
-            $this->server->getAccount($sourceId)->getTransactions(null, 10, 'desc'),
+            $this->getAccount($sourceId)->getTransactions(null, 10, 'desc'),
             fn ($t) =>
                 $t->getCreatedAt() >= $timeLowerBound
                 && $t->getCreatedAt() <= $timeUpperBound
