@@ -9,8 +9,6 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
 use DateTime;
 use Yii;
-use ZuluCrypto\StellarSdk\Model\Payment;
-use ZuluCrypto\StellarSdk\Server;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Chat;
 
@@ -147,7 +145,7 @@ class MyStellarController extends Controller
     {
         $user = $this->getUser();
 
-        if (!isset($user->stellar)) {
+        if (!isset($user->stellar) || $user->stellar->isConfirmed()) {
             return $this->actionIndex();
         }
 
@@ -204,55 +202,57 @@ class MyStellarController extends Controller
                 // TODO add logic for links for signers
                 foreach ($account->getBalances() as $asset) {
                     if (($asset->getBalance() > 0) && (!$asset->isNativeAsset())) {
-                        $chatSetting = ChatSetting::find()
+                        $chatSettings = ChatSetting::find()
                             ->where([
                                 'setting' => 'stellar_asset',
                                 'value' => $asset->getAssetCode(),
                             ])
-                            ->one();
+                            ->all();
 
-                        if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
-                            if (($chat->stellar_status == ChatSetting::STATUS_ON)
-                                && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_HOLDERS)
-                                && ($chat->stellar_issuer == $asset->getAssetIssuerAccountId())
-                                && ($chat->stellar_threshold <= $asset->getBalance())
-                                && ($chat->stellar_invite_link)) {
-                                $buttons[][] = [
-                                    'url' => $chat->stellar_invite_link,
-                                    'text' => $chat->title,
-                                ];
+                        foreach ($chatSettings as $chatSetting) {
+                            if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
+                                if (($chat->stellar_status == ChatSetting::STATUS_ON)
+                                    && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_HOLDERS)
+                                    && ($chat->stellar_issuer == $asset->getAssetIssuerAccountId())
+                                    && ($chat->stellar_threshold <= $asset->getBalance())
+                                    && $chat->stellar_invite_link) {
+                                    $buttons[][] = [
+                                        'url' => $chat->stellar_invite_link,
+                                        'text' => $chat->title,
+                                    ];
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (!$buttons) {
+                if (!$buttons) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-groups-not-found'),
+                            true
+                        )
+                        ->build();
+                }
+
+                $buttons[] = [
+                    [
+                        'callback_data' => MyStellarController::createRoute(),
+                        'text' => Emoji::BACK,
+                    ],
+                    [
+                        'callback_data' => MenuController::createRoute(),
+                        'text' => Emoji::MENU,
+                    ],
+                ];
+
                 return $this->getResponseBuilder()
-                    ->answerCallbackQuery(
-                        $this->render('alert-groups-not-found'),
-                        true
+                    ->editMessageTextOrSendMessage(
+                        $this->render('groups'),
+                        $buttons
                     )
                     ->build();
             }
-
-            $buttons[] = [
-                [
-                    'callback_data' => MyStellarController::createRoute(),
-                    'text' => Emoji::BACK,
-                ],
-                [
-                    'callback_data' => MenuController::createRoute(),
-                    'text' => Emoji::MENU,
-                ],
-            ];
-
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('groups'),
-                    $buttons
-                )
-                ->build();
         }
 
         return $this->actionIndex();

@@ -44,6 +44,14 @@ class ChatSetting extends ActiveRecord
     ];
 
     public static array $default_settings = [
+        'join_hider_status' => self::STATUS_OFF,
+        'join_captcha_status' => self::STATUS_OFF,
+        'greeting_status' => self::STATUS_OFF,
+        'filter_status' => self::STATUS_OFF,
+        'filter_mode' => self::FILTER_MODE_BLACKLIST,
+        'faq_status' => self::STATUS_OFF,
+        'stellar_status' => self::STATUS_OFF,
+        'stellar_mode' => self::STELLAR_MODE_HOLDERS,
         'stellar_threshold' => 1,
     ];
 
