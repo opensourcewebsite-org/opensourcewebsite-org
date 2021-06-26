@@ -30,13 +30,11 @@ class StellarServer extends Server
         $timeUpperBound = (new DateTime())->setTimestamp($timeUpperBound);
 
         return !empty(array_filter(
-            // NOTE limit=50
             $this->getAccount($sourceId)->getTransactions(null, 10, 'desc'),
             fn ($t) =>
                 $t->getCreatedAt() >= $timeLowerBound
                 && $t->getCreatedAt() <= $timeUpperBound
                 && !empty(array_filter(
-                    // NOTE limit=50
                     $t->getPayments(null, 10, 'desc'),
                     fn ($p) =>
                         get_class($p) === Payment::class
@@ -48,17 +46,17 @@ class StellarServer extends Server
         ));
     }
 
-    public function getIssuerPublicKey()
+    public function getIssuerPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['issuer_public_key'] ?? null;
     }
 
-    public function getDistributorPublicKey()
+    public function getDistributorPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['distributor_public_key'] ?? null;
     }
 
-    public function getOperatorPublicKey()
+    public function getOperatorPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['operator_public_key'] ?? null;
     }
