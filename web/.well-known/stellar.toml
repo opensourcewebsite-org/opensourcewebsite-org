@@ -39,7 +39,7 @@ is_unlimited=true
 name="OSW US Dollar"
 desc="Cryptocurrency backed 1:1 to the US dollar with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 50 USD."
-redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
+redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
@@ -54,7 +54,7 @@ is_unlimited=true
 name="OSW Euro"
 desc="Cryptocurrency backed 1:1 to the Euro with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 50 EUR."
-redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
+redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
@@ -69,7 +69,7 @@ is_unlimited=true
 name="OSW Thai Baht"
 desc="Cryptocurrency backed 1:1 to the Thai Baht with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 1000 THB."
-redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
+redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
@@ -84,7 +84,7 @@ is_unlimited=true
 name="OSW Ukrainian Hryvna"
 desc="Cryptocurrency backed 1:1 to the Ukrainian Hryvna with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 1000 UAH."
-redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
+redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
@@ -99,7 +99,7 @@ is_unlimited=true
 name="OSW Russian Ruble"
 desc="Cryptocurrency backed 1:1 to the Russian Ruble with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 2000 RUB."
-redemption_instructions="This asset is redeemed by community representatives and ambassadors within accordance with National, Federal, State, and Local Laws."
+redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
 image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
 
 [[CURRENCIES]]
