@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use app\helpers\UrlTrimmer;
+use Yii;
 
 /**
  * This is the model class for table "payment_method".
@@ -10,15 +14,18 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property string $name
  * @property int $type
+ * @property string|null $url
  */
 class PaymentMethod extends ActiveRecord
 {
-    const TYPE_EMONEY = 0;
-    const TYPE_BANK = 1;
+    public const TYPE_EMONEY = 0;
+    public const TYPE_BANK = 1;
+    public const TYPE_STABLECOIN = 2;
 
     public static $types = [
         self::TYPE_EMONEY => 'E-Money',
         self::TYPE_BANK => 'Bank',
+        self::TYPE_STABLECOIN => 'Stablecoin',
     ];
 
     /**
@@ -37,7 +44,25 @@ class PaymentMethod extends ActiveRecord
         return [
             [['name', 'type'], 'required'],
             [['type'], 'integer'],
-            [['name'], 'string', 'max' => 255],
+            [['name', 'url'], 'string', 'max' => 255],
+            [
+                [
+                    'url',
+                ],
+                'filter',
+                'skipOnEmpty' => true,
+                'filter' => [
+                    new UrlTrimmer(),
+                    'trim',
+                ],
+            ],
+            [
+                [
+                    'url',
+                ],
+                'url',
+                'defaultScheme' => Yii::$app->params['defaultScheme'] ?? 'https',
+            ],
         ];
     }
 
@@ -48,8 +73,9 @@ class PaymentMethod extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'type' => 'Type',
+            'name' => Yii::t('app', 'Name'),
+            'type' => Yii::t('app', 'Type'),
+            'url' => Yii::t('app', 'Website'),
         ];
     }
 

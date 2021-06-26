@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -43,30 +44,34 @@ class Company extends ActiveRecord
     public function rules(): array
     {
         return [
+            [['name'], 'required'],
+            [['name', 'address', 'url'], 'string', 'max' => 255],
             [
                 [
-                    'name',
-                    'address',
+                    'url',
                 ],
-                'string',
-                'max' => 255,
+                'filter',
+                'skipOnEmpty' => true,
+                'filter' => [
+                    new UrlTrimmer(),
+                    'trim',
+                ],
             ],
             [
-                ['url'], 'filter', 'skipOnEmpty' => true, 'filter' => [new UrlTrimmer(), 'trim']
-            ],
-            [
-                ['url'], 'url',
+                [
+                    'url',
+                ],
+                'url',
                 'defaultScheme' => Yii::$app->params['defaultScheme'] ?? 'https',
             ],
             [['description'], 'string'],
-            [['name'], 'required'],
         ];
     }
 
     public function attributeLabels(): array
     {
         return [
-            'id' => Yii::t('app', 'ID'),
+            'id' => 'ID',
             'name' => Yii::t('app', 'Name'),
             'url' => Yii::t('app', 'Website'),
             'address' => Yii::t('app', 'Address'),

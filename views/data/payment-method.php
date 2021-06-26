@@ -31,6 +31,7 @@ use yii\helpers\Html;
                     <th scope="col">ID</th>
                     <th scope="col"><?= Yii::t('app', 'Name') ?></th>
                     <th scope="col"><?= Yii::t('app', 'Type') ?></th>
+                    <th scope="col"><?= Yii::t('app', 'Website') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +40,7 @@ use yii\helpers\Html;
                         <td><?= $model->id ?></td>
                         <td><?= Html::a($model->name, ['data/payment-method/' . $model->id]); ?></td>
                         <td><?= $model->getTypeName(); ?></td>
+                        <td><?= Html::a($model->url, $model->url); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

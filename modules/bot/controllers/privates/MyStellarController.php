@@ -7,7 +7,6 @@ use app\models\UserStellar;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
-use DateTime;
 use Yii;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Chat;

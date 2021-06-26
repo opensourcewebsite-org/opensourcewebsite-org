@@ -26,6 +26,10 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <th scope="col"><?= Yii::t('app', 'Type') ?></th>
                     <td><?= $model->getTypeName(); ?></td>
                 </tr>
+                <tr>
+                    <th scope="col"><?= Yii::t('app', 'Website') ?></th>
+                    <td><?= Html::a($model->url, $model->url); ?></td>
+                </tr>
             </tbody>
         </table>
     </div>
