@@ -27,6 +27,6 @@ $assets = [
 <?php endif; ?>
 ————<br/>
 <br/>
-<?= Yii::t('bot', 'Receive {0} weekly deposit income every Friday with our stablecoins, become our community ambassador and redeem the stablecoins with other users', '0.5%') ?>.<br/>
+<?= Yii::t('bot', 'Start earning {0} weekly deposit income every Friday with OSW stablecoins, become the community ambassador and redeem the stablecoins with other users', '0.5%') ?>.<br/>
 <br/>
 <?= implode(' | ', $assets) ?><br/>

@@ -42,7 +42,6 @@
         "npm-asset/ace-builds": "^1.4.1",
         "yiisoft/yii2-httpclient": "^2.0.0",
         "telegram-bot/api": "^2.3",
-        "longman/telegram-bot": "^0.61",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
         "ivankff/yii2-modal-ajax": "^4.1",

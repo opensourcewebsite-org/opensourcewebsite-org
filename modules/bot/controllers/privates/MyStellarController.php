@@ -198,7 +198,7 @@ class MyStellarController extends Controller
             if ($account = $stellarServer->getAccount($userStellar->getPublicKey())) {
                 $buttons = [];
 
-                // TODO add logic for links for signers
+                // check telegram groups for holders
                 foreach ($account->getBalances() as $asset) {
                     if (($asset->getBalance() > 0) && (!$asset->isNativeAsset())) {
                         $chatSettings = ChatSetting::find()
@@ -214,6 +214,31 @@ class MyStellarController extends Controller
                                     && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_HOLDERS)
                                     && ($chat->stellar_issuer == $asset->getAssetIssuerAccountId())
                                     && ($chat->stellar_threshold <= $asset->getBalance())
+                                    && $chat->stellar_invite_link) {
+                                    $buttons[][] = [
+                                        'url' => $chat->stellar_invite_link,
+                                        'text' => $chat->title,
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // check telegram groups for signers
+                if ($signedAccounts = $stellarServer->getAccountsForSigner($userStellar->getPublicKey())) {
+                    foreach ($signedAccounts as $signedAccount) {
+                        $chatSettings = ChatSetting::find()
+                            ->where([
+                                'setting' => 'stellar_issuer',
+                                'value' => $signedAccount->getAccountId(),
+                            ])
+                            ->all();
+
+                        foreach ($chatSettings as $chatSetting) {
+                            if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
+                                if (($chat->stellar_status == ChatSetting::STATUS_ON)
+                                    && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_SIGNERS)
                                     && $chat->stellar_invite_link) {
                                     $buttons[][] = [
                                         'url' => $chat->stellar_invite_link,
