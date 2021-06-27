@@ -178,9 +178,9 @@ Each package must contain specific version. Don't use `*` and `@dev` versions.
 
 ### Programming principles and recommendations
 
-[KISS principle (keep it simple, stupid)](https://en.wikipedia.org/wiki/KISS_principle)
-[Don't repeat yourself (DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
-[You aren't gonna need it (YAGNI)](https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it)
-[https://en.wikipedia.org/wiki/Worse_is_better](https://en.wikipedia.org/wiki/Worse_is_better)
-[SOLID](https://en.wikipedia.org/wiki/SOLID)
-[GRASP](https://en.wikipedia.org/wiki/GRASP_(object-oriented_design)
+- [KISS principle (keep it simple, stupid)](https://en.wikipedia.org/wiki/KISS_principle)
+- [Don't repeat yourself (DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
+- [You aren't gonna need it (YAGNI)](https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it)
+- [Worse is better](https://en.wikipedia.org/wiki/Worse_is_better)
+- [SOLID](https://en.wikipedia.org/wiki/SOLID)
+- [GRASP](https://en.wikipedia.org/wiki/GRASP_(object-oriented_design))
