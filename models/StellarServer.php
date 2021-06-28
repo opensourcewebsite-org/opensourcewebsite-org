@@ -128,7 +128,7 @@ class StellarServer extends Server
 
         $payments = array_map(
             fn ($d) => PaymentOp::newCustomPayment(
-                $publicKey,
+                $d->getAccountId(),
                 $income($d->getCustomAssetBalanceValue($asset)),
                 $assetCode,
                 $assetIssuerId,
