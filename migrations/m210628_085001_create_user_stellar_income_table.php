@@ -19,8 +19,8 @@ class m210628_085001_create_user_stellar_income_table extends Migration
             'balance' => $this->string()->notNull(),
             'income' => $this->string()->notNull(),
             'created_at' => $this->integer()->unsigned()->notNull(),
-            'processed_at' => $this->integer()->unsigned()->notNull(),
-            'result_code' => $this->string()->notNull(),
+            'processed_at' => $this->integer()->unsigned(),
+            'result_code' => $this->string(),
         ]);
     }
 
