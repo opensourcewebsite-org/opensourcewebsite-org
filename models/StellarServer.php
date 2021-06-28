@@ -144,10 +144,10 @@ class StellarServer extends Server
             foreach ($paymentGroup as $payment) {
                 $transaction = $transaction->addOperation($payment);
             }
+            $transaction = $transaction
+                ->setTextMemo($memoText);
 
             try {
-                $transaction = $transaction
-                    ->setTextMemo($memoText);
                 $transaction->submit($privateKey);
             } catch (PostTransactionException $e) {
                 $results[] = ['transaction' => $transaction, 'result' => $e->getResult()];
