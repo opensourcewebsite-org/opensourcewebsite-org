@@ -36,7 +36,7 @@ class StellarController extends Controller implements CronChainedInterface
         foreach ($ASSETS as $assetCode => $minimumBalance) {
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
             $holders = $server->getAssetHolders($assetCode, $minimumBalance);
-            $incomes = array_map(function ($holder) use ($created_at, $assetCode, $asset) {
+            $incomes = array_map(function ($holder) use ($assetCode, $asset) {
                 $income = new UserStellarIncome();
                 $income->account_id = $holder->getAccountId();
                 $income->asset_code = $assetCode;
