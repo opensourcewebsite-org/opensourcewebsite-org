@@ -4,11 +4,9 @@ namespace app\commands;
 
 use app\models\StellarServer;
 use app\models\UserStellarIncome;
-use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
-use yii\console\Exception;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 
 /**
@@ -27,13 +25,17 @@ class StellarController extends Controller implements CronChainedInterface
 
     protected function sendDepositProfits()
     {
-        $ASSET_CODES = ['EUR', 'USD', 'THB', 'RUB'];
-        $MINIMUM_BALANCE = 50;
+        $ASSETS = [
+            'EUR' => 50,
+            'USD' => 50,
+            'THB' => 50,
+            'RUB' => 50
+        ];
         $server = new StellarServer();
 
-        foreach ($ASSET_CODES as $assetCode) {
+        foreach ($ASSETS as $assetCode => $minimumBalance) {
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
-            $holders = $server->getAssetHolders($assetCode, $MINIMUM_BALANCE);
+            $holders = $server->getAssetHolders($assetCode, $minimumBalance);
             $created_at = time();
             $incomes = array_map(function ($holder) use ($created_at, $assetCode, $asset) {
                 $income = new UserStellarIncome();
