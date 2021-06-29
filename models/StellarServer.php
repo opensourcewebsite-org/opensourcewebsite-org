@@ -73,6 +73,11 @@ class StellarServer extends Server
         return Yii::$app->params['stellar']['operator_public_key'] ?? null;
     }
 
+    private static function getOperatorPrivateKey(): ?string
+    {
+        return Yii::$app->params['stellar']['operator_private_key'] ?? null;
+    }
+
     /**
      * @param string $assetCode
      * @param float $minimumBalance
@@ -84,8 +89,8 @@ class StellarServer extends Server
     {
         MathSafety::require64Bit();
 
-        $assetIssuerId = $this->getIssuerPublicKey();
-        $blacklist = [$this->getDistributorPublicKey(), $this->getOperatorPublicKey()];
+        $assetIssuerId = self::getIssuerPublicKey();
+        $blacklist = [self::getDistributorPublicKey(), self::getOperatorPublicKey()];
 
         return array_filter(
             $this->getAccountsForAsset($assetCode, $assetIssuerId, 'asc', 200),
@@ -119,9 +124,9 @@ class StellarServer extends Server
 
         $TRANSACTION_LIMIT = 100;
 
-        $assetIssuerId = $this->getIssuerPublicKey();
-        $publicKey = $this->getDistributorPublicKey();
-        $privateKey = $this->getDistributorPrivateKey();
+        $assetIssuerId = self::getIssuerPublicKey();
+        $publicKey = self::getDistributorPublicKey();
+        $privateKey = self::getOperatorPrivateKey();
         $asset = Asset::newCustomAsset($assetCode, $assetIssuerId);
 
         $payments = array_map(
