@@ -53,22 +53,22 @@ class StellarServer extends Server
         ));
     }
 
-    public function getIssuerPublicKey(): ?string
+    public static function getIssuerPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['issuer_public_key'] ?? null;
     }
 
-    public function getDistributorPublicKey(): ?string
+    public static function getDistributorPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['distributor_public_key'] ?? null;
     }
 
-    public function getDistributorPrivateKey(): ?string
+    public static function getDistributorPrivateKey(): ?string
     {
         return Yii::$app->params['stellar']['distributor_private_key'] ?? null;
     }
 
-    public function getOperatorPublicKey(): ?string
+    public static function getOperatorPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['operator_public_key'] ?? null;
     }
@@ -99,25 +99,23 @@ class StellarServer extends Server
         );
     }
 
+    public static function incomeWeekly(float $balance): float
+    {
+        $balance = floor($balance * 100.0) / 100.0;
+        return $balance * self::INTEREST_RATE_WEEKLY;
+    }
+
     /**
      * @param string $assetCode
      * @param \ZuluCrypto\StellarSdk\Model\Account[] $destinations
-     * @return array Schema: [['transaction' => TransactionBuilder, 'result' => TransactionResult]]
-     * Each element contains failed transaction and result, containing code of transaction result and codes
-     * for each operation in transaction.
+     * @return string[] codes for each operation in transaction for all transactions
      * @throws \ErrorException
      */
     public function sendIncomeToAssetHolders(string $assetCode, array $destinations): array
     {
         MathSafety::require64Bit();
 
-        $interestRateWeekly = self::INTEREST_RATE_WEEKLY;
         $memoText = self::MEMO_TEXT;
-
-        $income = function ($balance) use ($interestRateWeekly) {
-            $balance = floor($balance * 100.0) / 100.0;
-            return $balance * $interestRateWeekly;
-        };
 
         $TRANSACTION_LIMIT = 100;
 
@@ -129,7 +127,7 @@ class StellarServer extends Server
         $payments = array_map(
             fn ($d) => PaymentOp::newCustomPayment(
                 $d->getAccountId(),
-                $income($d->getCustomAssetBalanceValue($asset)),
+                self::incomeWeekly($d->getCustomAssetBalanceValue($asset)),
                 $assetCode,
                 $assetIssuerId,
                 $publicKey
@@ -148,9 +146,16 @@ class StellarServer extends Server
                 ->setTextMemo($memoText);
 
             try {
-                $transaction->submit($privateKey);
+                $response = $transaction->submit($privateKey);
+                $results += array_map(
+                    fn ($r) => $r->getErrorCode(),
+                    $response->getResult()->getOperationResults()
+                );
             } catch (PostTransactionException $e) {
-                $results[] = ['transaction' => $transaction, 'result' => $e->getResult()];
+                $results += array_map(
+                    fn ($r) => $r->getErrorCode(),
+                    $e->getResult()->getOperationResults()
+                );
             }
         }
 
