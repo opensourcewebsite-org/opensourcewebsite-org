@@ -34,6 +34,7 @@ class UserStellarIncome extends \yii\db\ActiveRecord
         return [
             [['account_id', 'asset_code', 'balance', 'income', 'created_at'], 'required'],
             [['created_at', 'processed_at'], 'integer'],
+            [['created_at'], 'default', 'value' => time()],
             [['account_id', 'asset_code', 'balance', 'income', 'result_code'], 'string', 'max' => 255],
         ];
     }
