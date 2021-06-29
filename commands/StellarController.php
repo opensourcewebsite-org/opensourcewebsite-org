@@ -27,13 +27,13 @@ class StellarController extends Controller implements CronChainedInterface
 
     protected function sendDepositProfits()
     {
-        $assetCodes = ['EUR', 'USD', 'THB', 'RUB'];
-        $minimumBalance = 50;
+        $ASSET_CODES = ['EUR', 'USD', 'THB', 'RUB'];
+        $MINIMUM_BALANCE = 50;
         $server = new StellarServer();
 
-        foreach ($assetCodes as $assetCode) {
+        foreach ($ASSET_CODES as $assetCode) {
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
-            $holders = $server->getAssetHolders($assetCode, $minimumBalance);
+            $holders = $server->getAssetHolders($assetCode, $MINIMUM_BALANCE);
             $created_at = time();
             $incomes = array_map(function ($holder) use ($created_at, $assetCode, $asset) {
                 $income = new UserStellarIncome();
