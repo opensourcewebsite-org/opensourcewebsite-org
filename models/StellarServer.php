@@ -2,20 +2,21 @@
 
 namespace app\models;
 
-use Yii;
 use DateTime;
+use Yii;
+use ZuluCrypto\StellarSdk\Horizon\ApiClient;
 use ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException;
 use ZuluCrypto\StellarSdk\Model\Payment;
 use ZuluCrypto\StellarSdk\Server;
-use ZuluCrypto\StellarSdk\Horizon\ApiClient;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
 
 class StellarServer extends Server
 {
-    const INTEREST_RATE_WEEKLY = 0.5 / 100;
-    const MEMO_TEXT = 'Thanks For Your Deposit';
+    public const INTEREST_RATE_WEEKLY = 0.5 / 100;
+
+    public const MEMO_TEXT = 'Thanks For Your Deposit';
 
     public function __construct()
     {
@@ -73,7 +74,7 @@ class StellarServer extends Server
         return Yii::$app->params['stellar']['operator_public_key'] ?? null;
     }
 
-    private static function getOperatorPrivateKey(): ?string
+    public static function getOperatorPrivateKey(): ?string
     {
         return Yii::$app->params['stellar']['operator_private_key'] ?? null;
     }
