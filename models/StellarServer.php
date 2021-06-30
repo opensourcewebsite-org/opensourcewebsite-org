@@ -106,8 +106,7 @@ class StellarServer extends Server
 
     public static function incomeWeekly(float $balance): float
     {
-        $balance = floor($balance * 100.0) / 100.0;
-        return $balance * self::INTEREST_RATE_WEEKLY;
+        return floor($balance * self::INTEREST_RATE_WEEKLY * 100.0) / 100.0;
     }
 
     /**
