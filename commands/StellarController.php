@@ -33,6 +33,25 @@ class StellarController extends Controller implements CronChainedInterface
         ];
         $server = new StellarServer();
 
+        $paymentDate = $server->getAccountDataByKey(StellarServer::getDistributorPublicKey(), 'next_payment_date');
+        $today = new \DateTime('today');
+        $nextFriday = new \DateTime('next Friday');
+        if (!isset($paymentDate)) {
+            $paymentDate = $today->format('l') === 'Friday' ? $today : $nextFriday;
+        } else {
+            $paymentDate = \DateTime::createFromFormat('Y-m-d|', $paymentDate);
+        }
+        if ($paymentDate !== $today) {
+            if ($paymentDate < $today) {
+                $paymentDate = $nextFriday;
+            }
+            $server
+                ->buildTransaction(StellarServer::getDistributorPublicKey())
+                ->setAccountData('next_payment_date', $paymentDate->format('Y-m-d'))
+                ->submit(StellarServer::getOperatorPrivateKey());
+            return;
+        }
+
         foreach ($ASSETS as $assetCode => $minimumBalance) {
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
             $holders = $server->getAssetHolders($assetCode, $minimumBalance);
@@ -53,5 +72,10 @@ class StellarController extends Controller implements CronChainedInterface
                 $income->save();
             }
         }
+
+        $server
+            ->buildTransaction(StellarServer::getDistributorPublicKey())
+            ->setAccountData('next_payment_date', $nextFriday->format('Y-m-d'))
+            ->submit(StellarServer::getOperatorPrivateKey());
     }
 }
