@@ -45,8 +45,7 @@ class StellarController extends Controller implements CronChainedInterface
                 $income = new UserStellarIncome();
                 $income->account_id = $holder->getAccountId();
                 $income->asset_code = $assetCode;
-                $income->balance = $holder->getCustomAssetBalanceValue($asset);
-                $income->income = StellarServer::incomeWeekly($income->balance);
+                $income->income = StellarServer::incomeWeekly($holder->getCustomAssetBalanceValue($asset));
                 $income->save();
                 return $income;
             }, $holders);

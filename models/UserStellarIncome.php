@@ -10,8 +10,7 @@ use Yii;
  * @property int $id
  * @property string $account_id
  * @property string $asset_code
- * @property string $balance
- * @property string $income
+ * @property float $income
  * @property int $created_at
  * @property int|null $processed_at
  * @property string|null $result_code
@@ -32,10 +31,10 @@ class UserStellarIncome extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['account_id', 'asset_code', 'balance', 'income', 'created_at'], 'required'],
+            [['account_id', 'asset_code', 'income', 'created_at'], 'required'],
+            [['income'], 'number'],
             [['created_at', 'processed_at'], 'integer'],
-            [['created_at'], 'default', 'value' => time()],
-            [['account_id', 'asset_code', 'balance', 'income', 'result_code'], 'string', 'max' => 255],
+            [['account_id', 'asset_code', 'result_code'], 'string', 'max' => 255],
         ];
     }
 
@@ -48,7 +47,6 @@ class UserStellarIncome extends \yii\db\ActiveRecord
             'id' => 'ID',
             'account_id' => 'Account ID',
             'asset_code' => 'Asset Code',
-            'balance' => 'Balance',
             'income' => 'Income',
             'created_at' => 'Created At',
             'processed_at' => 'Processed At',
