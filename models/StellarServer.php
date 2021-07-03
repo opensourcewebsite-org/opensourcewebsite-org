@@ -22,6 +22,13 @@ class StellarServer extends Server
     // ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     public const INCOME_WEEK_DAY = 'Friday';
 
+    public const MINIMUM_BALANCES = [
+        'EUR' => 50,
+        'USD' => 50,
+        'THB' => 50,
+        'RUB' => 50
+    ];
+
     public function __construct()
     {
         if (!isset(Yii::$app->params['stellar'])) {
