@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Cassandra\Date;
 use DateTime;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
@@ -17,6 +18,9 @@ class StellarServer extends Server
     public const INTEREST_RATE_WEEKLY = 0.5 / 100;
 
     public const MEMO_TEXT = 'Thanks For Your Deposit';
+
+    // ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    public const INCOME_WEEK_DAY = 'Friday';
 
     public function __construct()
     {
@@ -165,5 +169,34 @@ class StellarServer extends Server
         }
 
         return $results;
+    }
+
+    /**
+     * Next date of income for asset holders. Accessed via data from distributor Stellar account
+     * @return \DateTime
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     */
+    public function getNextPaymentDate(): DateTime
+    {
+        $paymentDate = $this->getAccountDataByKey(StellarServer::getDistributorPublicKey(), 'next_payment_date');
+        $today = new DateTime('today');
+        $nextWeekDay = new DateTime('next ' . self::INCOME_WEEK_DAY);
+        if (!isset($paymentDate)) {
+            $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today : $nextWeekDay;
+        } else {
+            $paymentDate = DateTime::createFromFormat('Y-m-d|', $paymentDate);
+        }
+        if ($paymentDate < $today) {
+            $paymentDate = $nextWeekDay;
+        }
+        return $paymentDate;
+    }
+
+    public function setNextPaymentDate(DateTime $nextPaymentDate): void
+    {
+        $this
+            ->buildTransaction(self::getDistributorPublicKey())
+            ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
+            ->submit(self::getOperatorPrivateKey());
     }
 }
