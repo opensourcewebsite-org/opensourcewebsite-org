@@ -31,19 +31,30 @@ class StellarController extends Controller implements CronChainedInterface
             'THB' => 50,
             'RUB' => 50
         ];
+
+        $weekDay = [
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday'
+        ][4];
+
         $server = new StellarServer();
 
         $paymentDate = $server->getAccountDataByKey(StellarServer::getDistributorPublicKey(), 'next_payment_date');
         $today = new \DateTime('today');
-        $nextFriday = new \DateTime('next Friday');
+        $nextWeekDay = new \DateTime('next ' . $weekDay);
         if (!isset($paymentDate)) {
-            $paymentDate = $today->format('l') === 'Friday' ? $today : $nextFriday;
+            $paymentDate = $today->format('l') === $weekDay ? $today : $nextWeekDay;
         } else {
             $paymentDate = \DateTime::createFromFormat('Y-m-d|', $paymentDate);
         }
         if ($paymentDate !== $today) {
             if ($paymentDate < $today) {
-                $paymentDate = $nextFriday;
+                $paymentDate = $nextWeekDay;
             }
             $server
                 ->buildTransaction(StellarServer::getDistributorPublicKey())
@@ -75,7 +86,7 @@ class StellarController extends Controller implements CronChainedInterface
 
         $server
             ->buildTransaction(StellarServer::getDistributorPublicKey())
-            ->setAccountData('next_payment_date', $nextFriday->format('Y-m-d'))
+            ->setAccountData('next_payment_date', $nextWeekDay->format('Y-m-d'))
             ->submit(StellarServer::getOperatorPrivateKey());
     }
 }
