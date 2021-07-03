@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use Cassandra\Date;
 use DateTime;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
@@ -185,22 +184,31 @@ class StellarServer extends Server
      */
     public function getNextPaymentDate(): DateTime
     {
-        $paymentDate = $this->getAccountDataByKey(StellarServer::getDistributorPublicKey(), 'next_payment_date');
+        $paymentDate = $this->getAccountDataByKey(self::getDistributorPublicKey(), 'next_payment_date');
         $today = new DateTime('today');
         $nextWeekDay = new DateTime('next ' . self::INCOME_WEEK_DAY);
+        $needToSet = false;
         if (!isset($paymentDate)) {
             $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today : $nextWeekDay;
+            $needToSet = true;
         } else {
             $paymentDate = DateTime::createFromFormat('Y-m-d|', $paymentDate);
+            if ($paymentDate < $today) {
+                $paymentDate = $nextWeekDay;
+                $needToSet = true;
+            }
         }
-        if ($paymentDate < $today) {
-            $paymentDate = $nextWeekDay;
+        if ($needToSet) {
+            $this->setNextPaymentDate($paymentDate);
         }
         return $paymentDate;
     }
 
-    public function setNextPaymentDate(DateTime $nextPaymentDate): void
+    public function setNextPaymentDate(?DateTime $nextPaymentDate = null): void
     {
+        if (!isset($nextPaymentDate)) {
+            $nextPaymentDate = new DateTime('next ' . self::INCOME_WEEK_DAY);
+        }
         $this
             ->buildTransaction(self::getDistributorPublicKey())
             ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))

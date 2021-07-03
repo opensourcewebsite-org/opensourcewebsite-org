@@ -33,9 +33,10 @@ class StellarController extends Controller implements CronChainedInterface
         $paymentDate = $server->getNextPaymentDate();
 
         if ($paymentDate !== $today) {
-            $server->setNextPaymentDate($paymentDate);
             return;
         }
+
+        $report = [];
 
         foreach ($minimumBalances as $assetCode => $minimumBalance) {
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
@@ -55,9 +56,18 @@ class StellarController extends Controller implements CronChainedInterface
                 $income->processed_at = $processed_at;
                 $income->result_code = $result;
                 $income->save();
+                $report[$assetCode][$result] += $income->income;
             }
         }
 
-        $server->setNextPaymentDate($paymentDate);
+        foreach ($report as $assetCode => $results) {
+            foreach ($results as $resultCode => $sum) {
+                $resultCode = strtoupper($resultCode ?? 'success');
+                $sum = number_format($sum, 2);
+                $this->output("$resultCode: $assetCode $sum");
+            }
+        }
+
+        $server->setNextPaymentDate();
     }
 }
