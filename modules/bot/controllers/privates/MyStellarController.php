@@ -162,7 +162,7 @@ class MyStellarController extends Controller
 
             $userSentTransaction = $stellarServer->operationExists(
                 $userStellar->getPublicKey(),
-                $stellarServer->getDistributorPublicKey(),
+                StellarServer::getDistributorPublicKey(),
                 $userStellar->created_at,
                 $userStellar->created_at + UserStellar::CONFIRM_REQUEST_LIFETIME
             );
