@@ -188,7 +188,7 @@ class StellarServer extends Server
         $today = new DateTime('today');
         $nextWeekDay = new DateTime('next ' . self::INCOME_WEEK_DAY);
         $needToSet = false;
-        if (!isset($paymentDate)) {
+        if (!$paymentDate) {
             $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today : $nextWeekDay;
             $needToSet = true;
         } else {
@@ -206,7 +206,7 @@ class StellarServer extends Server
 
     public function setNextPaymentDate(?DateTime $nextPaymentDate = null): void
     {
-        if (!isset($nextPaymentDate)) {
+        if (!$nextPaymentDate) {
             $nextPaymentDate = new DateTime('next ' . self::INCOME_WEEK_DAY);
         }
         $this
