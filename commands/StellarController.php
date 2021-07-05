@@ -2,11 +2,12 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
 use app\models\StellarServer;
 use app\models\UserStellarIncome;
+use DateTime;
 use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
-use app\commands\traits\ControllerLogTrait;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 
 /**
@@ -27,7 +28,7 @@ class StellarController extends Controller implements CronChainedInterface
     {
         $server = new StellarServer();
 
-        $today = new \DateTime('today');
+        $today = new DateTime('today');
         $paymentDate = $server->getNextPaymentDate();
 
         if ($paymentDate !== $today) {
@@ -35,6 +36,12 @@ class StellarController extends Controller implements CronChainedInterface
         }
 
         foreach (StellarServer::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
+            if (self::moneySentAlready($assetCode, $today)) {
+                continue;
+            }
+
+            self::deleteIncomesData($assetCode, $today);
+
             // Collect and save all asset holders
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
             $holders = $server->getAssetHolders($assetCode, $minimumBalance);
@@ -69,5 +76,27 @@ class StellarController extends Controller implements CronChainedInterface
         }
 
         $server->setNextPaymentDate();
+    }
+
+    private static function moneySentAlready(string $assetCode, DateTime $date): bool
+    {
+        UserStellarIncome::find()
+            ->where([
+                'asset_code' => $assetCode,
+                'created_at' => $date->format('Y-m-d'),
+            ])
+            ->andWhere([
+                'not', ['processed_at' => null]
+            ])
+            ->exists();
+    }
+
+    private static function deleteIncomesData(string $assetCode, DateTime $date): void
+    {
+        UserStellarIncome::deleteAll([
+            'asset_code' => $assetCode,
+            'created_at' => $date->format('Y-m-d'),
+            'processed_at' => null,
+        ]);
     }
 }
