@@ -25,8 +25,6 @@ class StellarController extends Controller implements CronChainedInterface
 
     protected function sendDepositProfits()
     {
-        $minimumBalances = StellarServer::MINIMUM_BALANCES;
-
         $server = new StellarServer();
 
         $today = new \DateTime('today');
@@ -36,9 +34,8 @@ class StellarController extends Controller implements CronChainedInterface
             return;
         }
 
-        $report = [];
-
-        foreach ($minimumBalances as $assetCode => $minimumBalance) {
+        foreach (StellarServer::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
+            // Collect and save all asset holders
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
             $holders = $server->getAssetHolders($assetCode, $minimumBalance);
             $incomes = array_map(function ($holder) use ($assetCode, $asset) {
@@ -49,18 +46,22 @@ class StellarController extends Controller implements CronChainedInterface
                 $income->save();
                 return $income;
             }, $holders);
+
+            // Send income to asset holders
             $results = $server->sendIncomeToAssetHolders($assetCode, $holders);
+
+            // Save info about when and how much value were sent
             $processed_at = time();
+            $report = [];
             foreach (array_map(null, $incomes, $results) as [$income, $result]) {
                 $income->processed_at = $processed_at;
                 $income->result_code = $result;
                 $income->save();
-                $report[$assetCode][$result] += $income->income;
+                $report[$result] += $income->income;
             }
-        }
 
-        foreach ($report as $assetCode => $results) {
-            foreach ($results as $resultCode => $sum) {
+            // Report about how much value were sent with which result code
+            foreach ($report as $resultCode => $sum) {
                 $resultCode = strtoupper($resultCode ?? 'success');
                 $sum = number_format($sum, 2);
                 $this->output("$resultCode: $assetCode $sum");
