@@ -74,11 +74,6 @@ class StellarServer extends Server
         return Yii::$app->params['stellar']['distributor_public_key'] ?? null;
     }
 
-    public static function getDistributorPrivateKey(): ?string
-    {
-        return Yii::$app->params['stellar']['distributor_private_key'] ?? null;
-    }
-
     public static function getOperatorPublicKey(): ?string
     {
         return Yii::$app->params['stellar']['operator_public_key'] ?? null;
