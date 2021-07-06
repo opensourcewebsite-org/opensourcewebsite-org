@@ -33,38 +33,40 @@ class GreetingController extends Controller
                 $telegramUser = $this->getTelegramUser();
             }
 
-            $response =  $this->getResponseBuilder()
-                ->sendMessage(
-                    $this->render('show-greeting', [
-                        'user' => $telegramUser,
-                        'message' => $chat->greeting_message,
-                    ]),
-                    [],
-                    [
-                        'disablePreview' => true,
-                        'disableNotification' => true,
-                    ]
-                )
-                ->send();
+            $hasGreeting = BotChatGreeting::find()
+                ->where([
+                    'chat_id' => $chat->id,
+                    'provider_user_id' => $telegramUser->provider_user_id,
+                ])
+                ->exists();
 
-            if ($response) {
-                $botGreeting = BotChatGreeting::find()
-                    ->where([
-                        'chat_id' => $chat->id,
-                        'provider_user_id' => $telegramUser->provider_user_id,
-                    ])
-                    ->exists();
+            if (!$hasGreeting) {
+                $response =  $this->getResponseBuilder()
+                    ->sendMessage(
+                        $this->render('show-greeting', [
+                            'user' => $telegramUser,
+                            'message' => $chat->greeting_message,
+                        ]),
+                        [],
+                        [
+                            'disablePreview' => true,
+                            'disableNotification' => true,
+                        ]
+                    )
+                    ->send();
 
-                if (!$botGreeting) {
-                    $botGreeting = new BotChatGreeting([
+                if ($response) {
+                    $greeting = new BotChatGreeting([
                         'chat_id' => $chat->id,
                         'provider_user_id' => $telegramUser->provider_user_id,
                         'message_id' => $response->getMessageId(),
                     ]);
-                    $botGreeting->save();
+
+                    $greeting->save();
+
+                    // remove all active previous greetings
+                    $this->deletePreviousGreetings($greeting);
                 }
-                // remove all active previous greetings
-                $this->deletePreviousGreetings($botGreeting);
             }
         }
     }

@@ -15,9 +15,7 @@ return [
     //[
     //    'testNet' => true, // https://developers.stellar.org/docs/glossary/testnet/
     //    'issuer_public_key' => '',
-    //    'issuer_private_key' => '',
     //    'distributor_public_key' => '',
-    //    'distributor_private_key' => '',
     //    'operator_public_key' => '',
     //    'operator_private_key' => '',
     //],
