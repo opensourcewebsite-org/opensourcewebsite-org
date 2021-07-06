@@ -11,7 +11,7 @@ ACCOUNTS=[
 ORG_NAME="OpenSourceWebsite"
 ORG_DBA="OpenSourceWebsite"
 ORG_URL="https://opensourcewebsite.org"
-ORG_LOGO="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+ORG_LOGO="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 ORG_DESCRIPTION="OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code"
 ORG_GITHUB="opensourcewebsite-org"
 ORG_OFFICIAL_EMAIL="hello@opensourcewebsite.org"
@@ -25,7 +25,7 @@ display_decimals=7
 anchor_asset_type="other"
 name="OSW Crypto Fund"
 desc="Cryptocurrency backed 1:1 to the share of OSW Crypto Fund."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="USD"
@@ -40,7 +40,7 @@ name="OSW US Dollar"
 desc="Cryptocurrency backed 1:1 to the US dollar with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 50 USD."
 redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="EUR"
@@ -55,7 +55,7 @@ name="OSW Euro"
 desc="Cryptocurrency backed 1:1 to the Euro with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 50 EUR."
 redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="THB"
@@ -70,7 +70,7 @@ name="OSW Thai Baht"
 desc="Cryptocurrency backed 1:1 to the Thai Baht with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 1000 THB."
 redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="UAH"
@@ -85,7 +85,7 @@ name="OSW Ukrainian Hryvna"
 desc="Cryptocurrency backed 1:1 to the Ukrainian Hryvna with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 1000 UAH."
 redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="RUB"
@@ -100,7 +100,7 @@ name="OSW Russian Ruble"
 desc="Cryptocurrency backed 1:1 to the Russian Ruble with a guaranteed weekly deposit income with floating rate. Backed funds are invested in the stock market for high frequency algorithmic trading."
 conditions="0.5% weekly deposit income every Friday will added to accounts with a minimum balance of 2000 RUB."
 redemption_instructions="This asset is redeemed by community ambassadors within accordance with National, Federal, State, and Local Laws."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="SGD"
@@ -113,7 +113,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW Singapore Dollar"
 desc="Cryptocurrency backed 1:1 to the Singapore Dollar."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="KRW"
@@ -126,7 +126,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW South Korean Won"
 desc="Cryptocurrency backed 1:1 to the South Korean Won."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="BYN"
@@ -139,7 +139,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW Belarusian Ruble"
 desc="Cryptocurrency backed 1:1 to the Belarusian Ruble."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="CNY"
@@ -152,7 +152,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW Chinese Yuan"
 desc="Cryptocurrency backed 1:1 to the Chinese Yuan."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="PHP"
@@ -165,7 +165,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW Philippine Peso"
 desc="Cryptocurrency backed 1:1 to the Philippine Peso."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="GBP"
@@ -178,7 +178,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW British Pound"
 desc="Cryptocurrency backed 1:1 to the British Pound."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="MYR"
@@ -191,7 +191,7 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW Malaysian Ringgit"
 desc="Cryptocurrency backed 1:1 to the Malaysian Ringgit."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
 
 [[CURRENCIES]]
 code="IDR"
@@ -204,4 +204,4 @@ is_asset_anchored=true
 is_unlimited=true
 name="OSW Indonesian Rupiah"
 desc="Cryptocurrency backed 1:1 to the Indonesian Rupiah."
-image="https://opensourcewebsite.org/images/logo/osw-white-logo.png"
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
