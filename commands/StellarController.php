@@ -6,6 +6,7 @@ use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\StellarServer;
 use app\models\UserStellarIncome;
+use DateInterval;
 use DateTime;
 use yii\console\Controller;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
@@ -80,10 +81,15 @@ class StellarController extends Controller implements CronChainedInterface
 
     private static function moneySentAlready(string $assetCode, DateTime $date): bool
     {
+        $date = $date->setTime(0, 0);
+        $nextDay = $date->add(new DateInterval('P1d'));
+
         UserStellarIncome::find()
             ->where([
-                'asset_code' => $assetCode,
-                'created_at' => $date->format('Y-m-d'),
+                'asset_code' => $assetCode
+            ])
+            ->andWhere([
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()
             ])
             ->andWhere([
                 'not', ['processed_at' => null]
@@ -93,10 +99,14 @@ class StellarController extends Controller implements CronChainedInterface
 
     private static function deleteIncomesData(string $assetCode, DateTime $date): void
     {
+        $date = $date->setTime(0, 0);
+        $nextDay = $date->add(new DateInterval('P1d'));
+
         UserStellarIncome::deleteAll([
-            'asset_code' => $assetCode,
-            'created_at' => $date->format('Y-m-d'),
-            'processed_at' => null,
+            'and',
+            ['asset_code' => $assetCode],
+            ['between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()],
+            ['processed_at' => null],
         ]);
     }
 }
