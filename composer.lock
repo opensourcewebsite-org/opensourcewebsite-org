@@ -1368,12 +1368,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-stellar-sdk.git",
-                "reference": "c9ca0dd6e2405691b13a2c74890aba3a1d8d7dd0"
+                "reference": "e7f4278537187b4abe3716344e144c7e032e5d27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-stellar-sdk/zipball/c9ca0dd6e2405691b13a2c74890aba3a1d8d7dd0",
-                "reference": "c9ca0dd6e2405691b13a2c74890aba3a1d8d7dd0",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-stellar-sdk/zipball/e7f4278537187b4abe3716344e144c7e032e5d27",
+                "reference": "e7f4278537187b4abe3716344e144c7e032e5d27",
                 "shasum": ""
             },
             "require": {
@@ -1423,7 +1423,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-stellar-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-stellar-sdk"
             },
-            "time": "2021-06-30T06:58:06+00:00"
+            "time": "2021-07-06T13:16:08+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
