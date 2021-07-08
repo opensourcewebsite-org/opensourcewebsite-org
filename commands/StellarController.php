@@ -32,7 +32,7 @@ class StellarController extends Controller implements CronChainedInterface
         $today = new DateTime('today');
         $paymentDate = $server->getNextPaymentDate();
 
-        if ($paymentDate !== $today) {
+        if ($paymentDate != $today) {
             return;
         }
 
@@ -65,12 +65,15 @@ class StellarController extends Controller implements CronChainedInterface
                 $income->processed_at = $processed_at;
                 $income->result_code = $result;
                 $income->save();
+                if (!array_key_exists($result, $report)) {
+                    $report[$result] = 0;
+                }
                 $report[$result] += $income->income;
             }
 
             // Report about how much value were sent with which result code
             foreach ($report as $resultCode => $sum) {
-                $resultCode = strtoupper($resultCode ?? 'success');
+                $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);
                 $sum = number_format($sum, 2);
                 $this->output("$resultCode: $assetCode $sum");
             }
@@ -82,9 +85,9 @@ class StellarController extends Controller implements CronChainedInterface
     private static function moneySentAlready(string $assetCode, DateTime $date): bool
     {
         $date = $date->setTime(0, 0);
-        $nextDay = $date->add(new DateInterval('P1d'));
+        $nextDay = $date->add(new DateInterval('P1D'));
 
-        UserStellarIncome::find()
+        return UserStellarIncome::find()
             ->where([
                 'asset_code' => $assetCode
             ])
@@ -100,7 +103,7 @@ class StellarController extends Controller implements CronChainedInterface
     private static function deleteIncomesData(string $assetCode, DateTime $date): void
     {
         $date = $date->setTime(0, 0);
-        $nextDay = $date->add(new DateInterval('P1d'));
+        $nextDay = $date->add(new DateInterval('P1D'));
 
         UserStellarIncome::deleteAll([
             'and',

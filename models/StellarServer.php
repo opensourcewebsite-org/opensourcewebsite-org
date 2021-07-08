@@ -84,6 +84,11 @@ class StellarServer extends Server
         return Yii::$app->params['stellar']['operator_private_key'] ?? null;
     }
 
+    public function isTestnet(): bool
+    {
+        return $this->isTestnet;
+    }
+
     /**
      * @param string $assetCode
      * @param float $minimumBalance
@@ -112,6 +117,9 @@ class StellarServer extends Server
 
     public static function incomeWeekly(float $balance): float
     {
+        if (Yii::$app->params['stellar']['testNet'] ?? false) {
+            return 0.01;
+        }
         return floor($balance * self::INTEREST_RATE_WEEKLY * 100.0) / 100.0;
     }
 
@@ -155,17 +163,31 @@ class StellarServer extends Server
             $transaction = $transaction
                 ->setTextMemo($memoText);
 
-            try {
-                $response = $transaction->submit($privateKey);
-                $results += array_map(
-                    fn ($r) => $r->getErrorCode(),
-                    $response->getResult()->getOperationResults()
-                );
-            } catch (PostTransactionException $e) {
-                $results += array_map(
-                    fn ($r) => $r->getErrorCode(),
-                    $e->getResult()->getOperationResults()
-                );
+            $sleepDuration = 5; // seconds
+            while (true) {
+                try {
+                    $response = $transaction->submit($privateKey);
+                    $results += array_map(
+                        fn ($r) => $r->getErrorCode(),
+                        $response->getResult()->getOperationResults()
+                    );
+                } catch (PostTransactionException $e) {
+                    $results += array_map(
+                        fn ($r) => $r->getErrorCode(),
+                        $e->getResult()->getOperationResults()
+                    );
+                } catch (ServerException $e) {
+                    if ($e->getCode() === 504) {
+                        sleep($sleepDuration);
+                        $sleepDuration += 5;
+                        if ($sleepDuration >= 30) {
+                            throw $e;
+                        }
+                        continue;
+                    }
+                    throw $e;
+                }
+                break;
             }
         }
 
