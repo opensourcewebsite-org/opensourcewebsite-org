@@ -66,7 +66,7 @@ class BalanceChecker extends Component
 
             $data[$currencyId][$fromUID][$toUID] = [
                 'debt_sum' => $row['debt_sum'],
-                'balance' => $row['balance'] ?: 0,
+                'balance' => $row['balance'],
             ];
         }
 
