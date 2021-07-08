@@ -276,6 +276,13 @@ class MyStellarController extends Controller
                         $buttons
                     )
                     ->build();
+            } else {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('alert-account-doesnt-exist'),
+                        true
+                    )
+                    ->build();
             }
         }
 

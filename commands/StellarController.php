@@ -27,17 +27,17 @@ class StellarController extends Controller implements CronChainedInterface
 
     protected function sendDepositProfits()
     {
-        $server = new StellarServer();
+        $stellarServer = new StellarServer();
 
         $today = new DateTime('today');
-        $paymentDate = $server->getNextPaymentDate();
+        $paymentDate = $stellarServer->getNextPaymentDate();
 
         if ($paymentDate != $today) {
             return;
         }
 
         foreach (StellarServer::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
-            if (self::moneySentAlready($assetCode, $today)) {
+            if (self::incomesSentAlready($assetCode, $today)) {
                 continue;
             }
 
@@ -45,7 +45,7 @@ class StellarController extends Controller implements CronChainedInterface
 
             // Collect and save all asset holders
             $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
-            $holders = $server->getAssetHolders($assetCode, $minimumBalance);
+            $holders = $stellarServer->getAssetHolders($assetCode, $minimumBalance);
             $incomes = array_map(function ($holder) use ($assetCode, $asset) {
                 $income = new UserStellarIncome();
                 $income->account_id = $holder->getAccountId();
@@ -55,8 +55,8 @@ class StellarController extends Controller implements CronChainedInterface
                 return $income;
             }, $holders);
 
-            // Send income to asset holders
-            $results = $server->sendIncomeToAssetHolders($assetCode, $holders);
+            // Send incomes to asset holders
+            $results = $stellarServer->sendIncomeToAssetHolders($assetCode, $holders);
 
             // Save info about when and how much value were sent
             $processed_at = time();
@@ -79,23 +79,23 @@ class StellarController extends Controller implements CronChainedInterface
             }
         }
 
-        $server->setNextPaymentDate();
+        $stellarServer->setNextPaymentDate();
     }
 
-    private static function moneySentAlready(string $assetCode, DateTime $date): bool
+    private static function incomesSentAlready(string $assetCode, DateTime $date): bool
     {
         $date = $date->setTime(0, 0);
         $nextDay = $date->add(new DateInterval('P1D'));
 
         return UserStellarIncome::find()
             ->where([
-                'asset_code' => $assetCode
+                'asset_code' => $assetCode,
             ])
             ->andWhere([
-                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
             ])
             ->andWhere([
-                'not', ['processed_at' => null]
+                'not', ['processed_at' => null],
             ])
             ->exists();
     }

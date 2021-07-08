@@ -14,19 +14,20 @@ use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
 
 class StellarServer extends Server
 {
-    public const INTEREST_RATE_WEEKLY = 0.5 / 100;
-
-    public const MEMO_TEXT = 'Thanks For Your Deposit';
-
     // ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     public const INCOME_WEEK_DAY = 'Friday';
+
+    public const INCOME_MEMO_TEXT = 'Thanks For Your Deposit';
 
     public const MINIMUM_BALANCES = [
         'EUR' => 50,
         'USD' => 50,
-        'THB' => 50,
-        'RUB' => 50
+        'THB' => 1000,
+        'RUB' => 2000,
+        'UAH' => 1000,
     ];
+
+    public const INTEREST_RATE_WEEKLY = 0.5 / 100;
 
     public function __construct()
     {
@@ -100,16 +101,18 @@ class StellarServer extends Server
     {
         MathSafety::require64Bit();
 
-        $assetIssuerId = self::getIssuerPublicKey();
-        $blacklist = [self::getDistributorPublicKey(), self::getOperatorPublicKey()];
+        $blacklist = [
+            self::getDistributorPublicKey(),
+            self::getOperatorPublicKey(),
+        ];
 
         return array_filter(
-            $this->getAccountsForAsset($assetCode, $assetIssuerId, 'asc', 200),
+            $this->getAccountsForAsset($assetCode, self::getIssuerPublicKey(), 'asc', 200),
             fn ($a) => !in_array($a->getAccountId(), $blacklist)
                 && !empty(array_filter(
                     $a->getBalances(),
                     fn ($b) => $b->getAssetCode() === $assetCode
-                        && $b->getAssetIssuerAccountId() === $assetIssuerId
+                        && $b->getAssetIssuerAccountId() === self::getIssuerPublicKey()
                         && $b->getBalance() >= $minimumBalance
                 ))
         );
@@ -120,6 +123,7 @@ class StellarServer extends Server
         if (Yii::$app->params['stellar']['testNet'] ?? false) {
             return 0.01;
         }
+
         return floor($balance * self::INTEREST_RATE_WEEKLY * 100.0) / 100.0;
     }
 
@@ -133,22 +137,17 @@ class StellarServer extends Server
     {
         MathSafety::require64Bit();
 
-        $memoText = self::MEMO_TEXT;
-
         $TRANSACTION_LIMIT = 100;
 
-        $assetIssuerId = self::getIssuerPublicKey();
-        $publicKey = self::getDistributorPublicKey();
-        $privateKey = self::getOperatorPrivateKey();
-        $asset = Asset::newCustomAsset($assetCode, $assetIssuerId);
+        $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
 
         $payments = array_map(
             fn ($d) => PaymentOp::newCustomPayment(
                 $d->getAccountId(),
                 self::incomeWeekly($d->getCustomAssetBalanceValue($asset)),
                 $assetCode,
-                $assetIssuerId,
-                $publicKey
+                self::getIssuerPublicKey(),
+                self::getDistributorPublicKey()
             ),
             $destinations
         );
@@ -156,17 +155,19 @@ class StellarServer extends Server
         $results = [];
 
         foreach (array_chunk($payments, $TRANSACTION_LIMIT) as $paymentGroup) {
-            $transaction = $this->buildTransaction($publicKey);
+            $transaction = $this->buildTransaction(self::getDistributorPublicKey());
+
             foreach ($paymentGroup as $payment) {
                 $transaction = $transaction->addOperation($payment);
             }
+
             $transaction = $transaction
-                ->setTextMemo($memoText);
+                ->setTextMemo(self::INCOME_MEMO_TEXT);
 
             $sleepDuration = 5; // seconds
             while (true) {
                 try {
-                    $response = $transaction->submit($privateKey);
+                    $response = $transaction->submit(self::getOperatorPrivateKey());
                     $results += array_map(
                         fn ($r) => $r->getErrorCode(),
                         $response->getResult()->getOperationResults()
@@ -202,9 +203,11 @@ class StellarServer extends Server
     public function getNextPaymentDate(): DateTime
     {
         $paymentDate = $this->getAccountDataByKey(self::getDistributorPublicKey(), 'next_payment_date');
+
         $today = new DateTime('today');
         $nextWeekDay = new DateTime('next ' . self::INCOME_WEEK_DAY);
         $needToSet = false;
+
         if (!$paymentDate) {
             $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today : $nextWeekDay;
             $needToSet = true;
@@ -215,9 +218,11 @@ class StellarServer extends Server
                 $needToSet = true;
             }
         }
+
         if ($needToSet) {
             $this->setNextPaymentDate($paymentDate);
         }
+
         return $paymentDate;
     }
 
@@ -226,6 +231,7 @@ class StellarServer extends Server
         if (!$nextPaymentDate) {
             $nextPaymentDate = new DateTime('next ' . self::INCOME_WEEK_DAY);
         }
+
         $this
             ->buildTransaction(self::getDistributorPublicKey())
             ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
