@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_stellar_income".
@@ -15,7 +15,7 @@ use Yii;
  * @property int|null $processed_at
  * @property string|null $result_code
  */
-class UserStellarIncome extends \yii\db\ActiveRecord
+class UserStellarIncome extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -31,9 +31,10 @@ class UserStellarIncome extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['account_id', 'asset_code', 'income', 'created_at'], 'required'],
+            [['account_id', 'asset_code', 'income'], 'required'],
             [['income'], 'number'],
             [['created_at', 'processed_at'], 'integer'],
+            [['created_at'], 'default', 'value' => time()],
             [['account_id', 'asset_code', 'result_code'], 'string', 'max' => 255],
         ];
     }
