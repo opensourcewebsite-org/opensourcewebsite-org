@@ -33,14 +33,13 @@ class StellarController extends Controller implements CronChainedInterface
         }
 
         foreach (StellarServer::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
-            if (StellarServer::incomesSentAlready($assetCode, $today)) {
-                continue;
+            if (!StellarServer::incomesSentAlready($assetCode, $today)) {
+                // Delete all unfinished incomes data
+                StellarServer::deleteIncomesDataFromDatabase($assetCode, $today);
+
+                // Collect and save all asset holders
+                $stellarServer->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
             }
-
-            StellarServer::deleteIncomesDataFromDatabase($assetCode, $today);
-
-            // Collect and save all asset holders
-            $stellarServer->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
 
             // Send incomes to asset holders
             $report = $stellarServer->sendIncomeToAssetHolders($assetCode, $today);
@@ -49,12 +48,12 @@ class StellarController extends Controller implements CronChainedInterface
             foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
                 $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);
                 $incomeSent = number_format($incomeSent, 2);
-                $this->output("$accountsCount accounts processed with status $resultCode. Paid $assetCode $incomeSent");
+                $this->output('Accounts processed: ' . $accountsCount . '. Paid: ' . $incomeSent . ' ' . $assetCode);
             }
         }
 
         $stellarServer->setNextPaymentDate();
         $nextPaymentDate = $stellarServer->getNextPaymentDate()->format('Y-m-d');
-        $this->output("Next Payment Date: $nextPaymentDate");
+        $this->output('Next Payment Date: ' . $nextPaymentDate);
     }
 }

@@ -5,7 +5,6 @@ namespace app\models;
 use DateInterval;
 use DateTime;
 use Exception;
-use function Functional\group;
 use GuzzleHttp\Exception\ServerException;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
@@ -15,6 +14,7 @@ use ZuluCrypto\StellarSdk\Server;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
+use function Functional\group;
 
 class StellarServer extends Server
 {
@@ -192,7 +192,7 @@ class StellarServer extends Server
         $transactionResults = [];
 
         foreach (array_chunk($payments, self::TRANSACTION_LIMIT) as $paymentGroup) {
-            $transaction = $this->buildTransaction(self::getDistributorPublicKey());
+            $transaction = $this->buildTransaction();
 
             foreach ($paymentGroup as $payment) {
                 $transaction = $transaction->addOperation($payment);
@@ -318,7 +318,7 @@ class StellarServer extends Server
         }
 
         $this
-            ->buildTransaction(self::getDistributorPublicKey())
+            ->buildTransaction()
             ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
             ->submit(self::getOperatorPrivateKey());
     }
@@ -373,5 +373,14 @@ class StellarServer extends Server
                 'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
             ])
             ->all();
+    }
+
+    /**
+     * @param $accountId string|Keypair|null
+     * @return ZuluCrypto\StellarSdk\Transaction\TransactionBuilder
+     */
+    public function buildTransaction($accountId = null)
+    {
+        return parent::buildTransaction($accountId ?: self::getDistributorPublicKey());
     }
 }
