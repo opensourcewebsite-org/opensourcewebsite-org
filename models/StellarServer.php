@@ -3,6 +3,7 @@
 namespace app\models;
 
 use DateTime;
+use GuzzleHttp\Exception\ServerException;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
 use ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException;
