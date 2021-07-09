@@ -68,8 +68,8 @@ class StellarController extends Controller implements CronChainedInterface
      */
     private static function getAssetHolders(string $assetCode, DateTime $date): array
     {
-        $date = $date->setTime(0, 0);
-        $nextDay = $date->add(new DateInterval('P1D'));
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
         return UserStellarIncome::find()
             ->where([
@@ -84,8 +84,8 @@ class StellarController extends Controller implements CronChainedInterface
 
     private static function incomesSentAlready(string $assetCode, DateTime $date): bool
     {
-        $date = $date->setTime(0, 0);
-        $nextDay = $date->add(new DateInterval('P1D'));
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
         return UserStellarIncome::find()
             ->where([
@@ -102,8 +102,8 @@ class StellarController extends Controller implements CronChainedInterface
 
     private static function deleteIncomesData(string $assetCode, DateTime $date): void
     {
-        $date = $date->setTime(0, 0);
-        $nextDay = $date->add(new DateInterval('P1D'));
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
         UserStellarIncome::deleteAll([
             'and',
