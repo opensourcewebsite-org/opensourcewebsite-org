@@ -3,6 +3,8 @@
 namespace app\models;
 
 use DateTime;
+use Exception;
+use function Functional\group;
 use GuzzleHttp\Exception\ServerException;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
@@ -30,10 +32,14 @@ class StellarServer extends Server
 
     public const INTEREST_RATE_WEEKLY = 0.5 / 100;
 
+    /**
+     * StellarServer constructor. Creates either testnet server or public server connection depending on Yii config
+     * @throws \Exception
+     */
     public function __construct()
     {
         if (!isset(Yii::$app->params['stellar'])) {
-            throw new \Exception('No stellar params');
+            throw new Exception('No stellar params');
         }
 
         if (isset(Yii::$app->params['stellar']['testNet']) && Yii::$app->params['stellar']['testNet']) {
@@ -44,6 +50,14 @@ class StellarServer extends Server
         }
     }
 
+    /**
+     * @param string $sourceId
+     * @param string $destinationId
+     * @param int $timeLowerBound
+     * @param int $timeUpperBound
+     * @return bool
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     */
     public function operationExists(string $sourceId, string $destinationId, int $timeLowerBound, int $timeUpperBound): bool
     {
         $timeLowerBound = (new DateTime())->setTimestamp($timeLowerBound);
@@ -119,6 +133,25 @@ class StellarServer extends Server
         );
     }
 
+    /**
+     * @param string $assetCode
+     * @param float $minimumBalance
+     * @throws \ErrorException
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     */
+    public function fetchAndSaveAssetHolders(string $assetCode, float $minimumBalance): void
+    {
+        $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
+        $holders = $this->getAssetHolders($assetCode, $minimumBalance);
+        foreach ($holders as $holder) {
+            $income = new UserStellarIncome();
+            $income->account_id = $holder->getAccountId();
+            $income->asset_code = $assetCode;
+            $income->income = self::incomeWeekly($holder->getCustomAssetBalanceValue($asset));
+            $income->save();
+        }
+    }
+
     public static function incomeWeekly(float $balance): float
     {
         if (Yii::$app->params['stellar']['testNet'] ?? false) {
@@ -130,8 +163,9 @@ class StellarServer extends Server
 
     /**
      * @param string $assetCode
-     * @param \ZuluCrypto\StellarSdk\Model\Account[] $destinations
-     * @return string[] codes for each operation in transaction for all transactions
+     * @param \app\models\UserStellarIncome[] $destinations
+     * @return array with elements like
+     * <code>$resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]</code>
      * @throws \ErrorException
      */
     public function sendIncomeToAssetHolders(string $assetCode, array $destinations): array
@@ -140,12 +174,10 @@ class StellarServer extends Server
 
         $TRANSACTION_LIMIT = 100;
 
-        $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
-
         $payments = array_map(
             fn ($d) => PaymentOp::newCustomPayment(
-                $d->getAccountId(),
-                self::incomeWeekly($d->getCustomAssetBalanceValue($asset)),
+                $d->account_id,
+                $d->income,
                 $assetCode,
                 self::getIssuerPublicKey(),
                 self::getDistributorPublicKey()
@@ -153,7 +185,8 @@ class StellarServer extends Server
             $destinations
         );
 
-        $results = [];
+        $operationResults = [];
+        $transactionResults = [];
 
         foreach (array_chunk($payments, $TRANSACTION_LIMIT) as $paymentGroup) {
             $transaction = $this->buildTransaction(self::getDistributorPublicKey());
@@ -169,15 +202,27 @@ class StellarServer extends Server
             while (true) {
                 try {
                     $response = $transaction->submit(self::getOperatorPrivateKey());
-                    $results += array_map(
+                    $operationResults += array_map(
                         fn ($r) => $r->getErrorCode(),
                         $response->getResult()->getOperationResults()
                     );
+                    $transactionResults[] = [
+                        'status' => $response->getResult()->getResultCode(),
+                        'accounts_count' => count($response->getResult()->getOperationResults()),
+                        'income_sent' => array_sum(
+                            array_map(fn (PaymentOp $p) => $p->getAmount()->getScaledValue(), $paymentGroup)
+                        ),
+                    ];
                 } catch (PostTransactionException $e) {
-                    $results += array_map(
+                    $operationResults += array_map(
                         fn ($r) => $r->getErrorCode(),
                         $e->getResult()->getOperationResults()
                     );
+                    $transactionResults[] = [
+                        'status' => $e->getResult()->getResultCode(),
+                        'accounts_count' => count($e->getResult()->getOperationResults()),
+                        'income_sent' => 0,
+                    ];
                 } catch (ServerException $e) {
                     if ($e->getCode() === 504) {
                         sleep($sleepDuration);
@@ -193,13 +238,30 @@ class StellarServer extends Server
             }
         }
 
-        return $results;
+        $processed_at = time();
+        foreach (array_map(null, $destinations, $operationResults) as [$holder, $result]) {
+            $holder->processed_at = $processed_at;
+            $holder->result_code = $result;
+            $holder->save();
+        }
+
+        return array_map(
+            fn ($ts) => array_reduce($ts, fn ($carry, $t) => [
+                'accounts_count' => $carry['accounts_count'] + $t['accounts_count'],
+                'income_sent' => $carry['income_sent'] + $t['income_sent'],
+            ], [
+                'accounts_count' => 0,
+                'income_sent' => 0,
+            ]),
+            group($transactionResults, fn ($t) => $t['status'])
+        );
     }
 
     /**
      * Next date of income for asset holders. Accessed via data from distributor Stellar account
      * @return \DateTime
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     * @throws \ErrorException
      */
     public function getNextPaymentDate(): DateTime
     {
@@ -227,6 +289,24 @@ class StellarServer extends Server
         return $paymentDate;
     }
 
+    /**
+     * @param \DateTime|null $date
+     * @return bool
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     * @throws \ErrorException
+     */
+    public function isPaymentDate(?DateTime $date = null): bool
+    {
+        $date = $date ?? new DateTime('today');
+        return $this->getNextPaymentDate() == $date;
+    }
+
+    /**
+     * @param \DateTime|null $nextPaymentDate
+     * @throws \ErrorException
+     * @throws \Exception
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
+     */
     public function setNextPaymentDate(?DateTime $nextPaymentDate = null): void
     {
         if (!$nextPaymentDate) {
