@@ -147,14 +147,14 @@ class StellarServer extends Server
             $income = new UserStellarIncome();
             $income->account_id = $holder->getAccountId();
             $income->asset_code = $assetCode;
-            $income->income = self::incomeWeekly($holder->getCustomAssetBalanceValue($asset));
+            $income->income = $this->incomeWeekly($holder->getCustomAssetBalanceValue($asset));
             $income->save();
         }
     }
 
-    public static function incomeWeekly(float $balance): float
+    public function incomeWeekly(float $balance): float
     {
-        if (Yii::$app->params['stellar']['testNet'] ?? false) {
+        if ($this->isTestnet()) {
             return 0.01;
         }
 
@@ -262,6 +262,7 @@ class StellarServer extends Server
      * @return \DateTime
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      * @throws \ErrorException
+     * @throws \Exception
      */
     public function getNextPaymentDate(): DateTime
     {
