@@ -5,16 +5,17 @@ namespace app\models;
 use DateInterval;
 use DateTime;
 use Exception;
+use function Functional\group;
 use GuzzleHttp\Exception\ServerException;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
 use ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException;
 use ZuluCrypto\StellarSdk\Model\Payment;
 use ZuluCrypto\StellarSdk\Server;
+use ZuluCrypto\StellarSdk\Transaction\TransactionBuilder;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
-use function Functional\group;
 
 class StellarServer extends Server
 {
@@ -144,14 +145,23 @@ class StellarServer extends Server
      */
     public function fetchAndSaveAssetHolders(string $assetCode, float $minimumBalance): void
     {
-        $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
-        $holders = $this->getAssetHolders($assetCode, $minimumBalance);
-        foreach ($holders as $holder) {
-            $income = new UserStellarIncome();
-            $income->account_id = $holder->getAccountId();
-            $income->asset_code = $assetCode;
-            $income->income = $this->incomeWeekly($holder->getCustomAssetBalanceValue($asset));
-            $income->save();
+        while (true) {
+            $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
+            $lastLedger = $this->getLastLedger();
+            $holders = $this->getAssetHolders($assetCode, $minimumBalance);
+            foreach ($holders as $holder) {
+                if ($holder->getLastModifiedLedger() > $lastLedger) {
+                    self::deleteIncomesDataFromDatabase($assetCode, new DateTime('today'));
+                    continue 2; // goto `while (true) {` line
+                }
+
+                $income = new UserStellarIncome();
+                $income->account_id = $holder->getAccountId();
+                $income->asset_code = $assetCode;
+                $income->income = $this->incomeWeekly($holder->getCustomAssetBalanceValue($asset));
+                $income->save();
+            }
+            return;
         }
     }
 
@@ -355,6 +365,20 @@ class StellarServer extends Server
     }
 
     /**
+     * @param $accountId string|\ZuluCrypto\StellarSdk\Keypair|null
+     * @return \ZuluCrypto\StellarSdk\Transaction\TransactionBuilder
+     */
+    public function buildTransaction($accountId = null): TransactionBuilder
+    {
+        return parent::buildTransaction($accountId ?: self::getDistributorPublicKey());
+    }
+
+    public function getLastLedger(): string
+    {
+        return $this->getLedgers(null, 'desc', 1)[0]->getSequence();
+    }
+
+    /**
      * @param string $assetCode
      * @param \DateTime $date
      * @return UserStellarIncome[]
@@ -373,14 +397,5 @@ class StellarServer extends Server
                 'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
             ])
             ->all();
-    }
-
-    /**
-     * @param $accountId string|Keypair|null
-     * @return ZuluCrypto\StellarSdk\Transaction\TransactionBuilder
-     */
-    public function buildTransaction($accountId = null)
-    {
-        return parent::buildTransaction($accountId ?: self::getDistributorPublicKey());
     }
 }
