@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateInterval;
 use DateTime;
 use Exception;
 use function Functional\group;
@@ -31,6 +32,8 @@ class StellarServer extends Server
     ];
 
     public const INTEREST_RATE_WEEKLY = 0.5 / 100;
+
+    public const TRANSACTION_LIMIT = 100;
 
     /**
      * StellarServer constructor. Creates either testnet server or public server connection depending on Yii config
@@ -122,7 +125,7 @@ class StellarServer extends Server
         ];
 
         return array_filter(
-            $this->getAccountsForAsset($assetCode, self::getIssuerPublicKey(), 'asc', 200),
+            $this->getAccountsForAsset($assetCode, self::getIssuerPublicKey(), 'asc', 100),
             fn ($a) => !in_array($a->getAccountId(), $blacklist)
                 && !empty(array_filter(
                     $a->getBalances(),
@@ -163,16 +166,16 @@ class StellarServer extends Server
 
     /**
      * @param string $assetCode
-     * @param \app\models\UserStellarIncome[] $destinations
+     * @param \DateTime $date used to fetch asset holders from database with this date.
      * @return array with elements like
      * <code>$resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]</code>
      * @throws \ErrorException
      */
-    public function sendIncomeToAssetHolders(string $assetCode, array $destinations): array
+    public function sendIncomeToAssetHolders(string $assetCode, DateTime $date): array
     {
         MathSafety::require64Bit();
 
-        $TRANSACTION_LIMIT = 100;
+        $destinations = self::getAssetHoldersFromDatabase($assetCode, $date);
 
         $payments = array_map(
             fn ($d) => PaymentOp::newCustomPayment(
@@ -188,7 +191,7 @@ class StellarServer extends Server
         $operationResults = [];
         $transactionResults = [];
 
-        foreach (array_chunk($payments, $TRANSACTION_LIMIT) as $paymentGroup) {
+        foreach (array_chunk($payments, self::TRANSACTION_LIMIT) as $paymentGroup) {
             $transaction = $this->buildTransaction(self::getDistributorPublicKey());
 
             foreach ($paymentGroup as $payment) {
@@ -318,5 +321,57 @@ class StellarServer extends Server
             ->buildTransaction(self::getDistributorPublicKey())
             ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
             ->submit(self::getOperatorPrivateKey());
+    }
+
+    public static function incomesSentAlready(string $assetCode, DateTime $date): bool
+    {
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
+
+        return UserStellarIncome::find()
+            ->where([
+                'asset_code' => $assetCode,
+            ])
+            ->andWhere([
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
+            ])
+            ->andWhere([
+                'not', ['processed_at' => null],
+            ])
+            ->exists();
+    }
+
+    public static function deleteIncomesDataFromDatabase(string $assetCode, DateTime $date): void
+    {
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
+
+        UserStellarIncome::deleteAll([
+            'and',
+            ['asset_code' => $assetCode],
+            ['between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()],
+            ['processed_at' => null],
+        ]);
+    }
+
+    /**
+     * @param string $assetCode
+     * @param \DateTime $date
+     * @return UserStellarIncome[]
+     */
+    private static function getAssetHoldersFromDatabase(string $assetCode, DateTime $date): array
+    {
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
+
+        return UserStellarIncome::find()
+            ->where([
+                'asset_code' => $assetCode,
+                'processed_at' => null,
+            ])
+            ->andWhere([
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
+            ])
+            ->all();
     }
 }
