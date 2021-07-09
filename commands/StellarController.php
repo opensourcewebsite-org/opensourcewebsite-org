@@ -9,7 +9,6 @@ use app\models\UserStellarIncome;
 use DateInterval;
 use DateTime;
 use yii\console\Controller;
-use ZuluCrypto\StellarSdk\XdrModel\Asset;
 
 /**
  * Class StellarController
@@ -30,9 +29,8 @@ class StellarController extends Controller implements CronChainedInterface
         $stellarServer = new StellarServer();
 
         $today = new DateTime('today');
-        $paymentDate = $stellarServer->getNextPaymentDate();
 
-        if ($paymentDate != $today) {
+        if (!$stellarServer->isPaymentDate($today)) {
             return;
         }
 
@@ -44,42 +42,44 @@ class StellarController extends Controller implements CronChainedInterface
             self::deleteIncomesData($assetCode, $today);
 
             // Collect and save all asset holders
-            $asset = Asset::newCustomAsset($assetCode, StellarServer::getIssuerPublicKey());
-            $holders = $stellarServer->getAssetHolders($assetCode, $minimumBalance);
-            $incomes = array_map(function ($holder) use ($assetCode, $asset) {
-                $income = new UserStellarIncome();
-                $income->account_id = $holder->getAccountId();
-                $income->asset_code = $assetCode;
-                $income->income = StellarServer::incomeWeekly($holder->getCustomAssetBalanceValue($asset));
-                $income->save();
-                return $income;
-            }, $holders);
+            $stellarServer->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
+            $holders = self::getAssetHolders($assetCode, $today);
 
             // Send incomes to asset holders
-            $results = $stellarServer->sendIncomeToAssetHolders($assetCode, $holders);
-
-            // Save info about when and how much value were sent
-            $processed_at = time();
-            $report = [];
-            foreach (array_map(null, $incomes, $results) as [$income, $result]) {
-                $income->processed_at = $processed_at;
-                $income->result_code = $result;
-                $income->save();
-                if (!array_key_exists($result, $report)) {
-                    $report[$result] = 0;
-                }
-                $report[$result] += $income->income;
-            }
+            $report = $stellarServer->sendIncomeToAssetHolders($assetCode, $holders);
 
             // Report about how much value were sent with which result code
-            foreach ($report as $resultCode => $sum) {
+            foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
                 $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);
-                $sum = number_format($sum, 2);
-                $this->output("$resultCode: $assetCode $sum");
+                $incomeSent = number_format($incomeSent, 2);
+                $this->output("$accountsCount accounts processed with status $resultCode. Paid $assetCode $incomeSent");
             }
         }
 
         $stellarServer->setNextPaymentDate();
+        $nextPaymentDate = $stellarServer->getNextPaymentDate()->format('Y-m-d');
+        $this->output("Next Payment Date: $nextPaymentDate");
+    }
+
+    /**
+     * @param string $assetCode
+     * @param \DateTime $date
+     * @return UserStellarIncome[]
+     */
+    private static function getAssetHolders(string $assetCode, DateTime $date): array
+    {
+        $date = $date->setTime(0, 0);
+        $nextDay = $date->add(new DateInterval('P1D'));
+
+        return UserStellarIncome::find()
+            ->where([
+                'asset_code' => $assetCode,
+                'processed_at' => null,
+            ])
+            ->andWhere([
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
+            ])
+            ->all();
     }
 
     private static function incomesSentAlready(string $assetCode, DateTime $date): bool
