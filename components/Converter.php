@@ -3,7 +3,7 @@
 namespace app\components;
 
 use Yii;
-use \yii\base\BaseObject;
+use yii\base\BaseObject;
 
 class Converter extends BaseObject
 {
@@ -33,6 +33,7 @@ class Converter extends BaseObject
     public static function byteToMega($bytes)
     {
         $megas = $bytes / 1024 / 1024;
+
         return $megas;
     }
 
@@ -51,6 +52,7 @@ class Converter extends BaseObject
         if ($format) {
             $result = self::formatNumber($result);
         }
+
         return $result;
     }
 }

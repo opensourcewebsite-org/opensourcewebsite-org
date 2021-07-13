@@ -25,7 +25,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
     // Data structure https://data.rada.gov.ua/ogd/zal/ppz/stru/chron-stru.xsd
     private $remoteSourceDirectory = 'https://data.rada.gov.ua/ogd/zal/ppz/skl9/json';
     private $eventType = 0; //
-    const UPDATE_INTERVAL = 1 * 60 * 60; // seconds
+    public const UPDATE_INTERVAL = 1 * 60 * 60; // seconds
 
     public function actionIndex()
     {
@@ -65,7 +65,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
                 ->send();
 
             if ($response->headers['http-code'] == 200) {
-                $this->console('Parsing: ' . $remoteURL);
+                $this->debug('Parsing: ' . $remoteURL);
                 if ($response->headers['content-type'] == 'application/json') {
                     $uaLawmakingVotingExists = UaLawmakingVoting::find()
                         ->where([
@@ -111,7 +111,7 @@ class UaLawmakingParserController extends Controller implements CronChainedInter
                                                 if ($uaLawmakingVoting->parsed_at != strtotime($response->headers['last-modified'])) {
                                                     $uaLawmakingVoting->name = $event['name_event'];
                                                     $uaLawmakingVoting->against = (int)$result['against'];
-                                                    $uaLawmakingVoting->for = $result['for']?$result['for']:((int)$result['presence'] - $uaLawmakingVoting->against);
+                                                    $uaLawmakingVoting->for = $result['for'] ? $result['for'] : ((int)$result['presence'] - $uaLawmakingVoting->against);
                                                     $uaLawmakingVoting->abstain = (int)$result['abstain'];
                                                     $uaLawmakingVoting->presence = (int)$result['presence'];
                                                     $uaLawmakingVoting->absent = (int)$result['absent'];

@@ -31,7 +31,6 @@ class Html extends BaseHtml
      */
     protected static function isUrlExternal($url)
     {
-
         $host = Yii::$app->params['host'] ?? null;
 
         $components = parse_url($url);

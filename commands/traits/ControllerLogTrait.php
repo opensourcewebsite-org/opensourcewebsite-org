@@ -62,23 +62,17 @@ trait ControllerLogTrait
         return CustomConsole::output($message, $options);
     }
 
-    protected function console(string $message = '', $ansiFormat = [])
+    protected function debug(string $message = '', $ansiFormat = [])
     {
         if (YII_ENV_DEV) {
-            $options = [
-                'logs' => $this->log,
-            ];
-
-            if ($this instanceof CronChainedInterface) {
-                $options['jobName'] = CustomConsole::convertName(get_class($this));
-            }
-            if (!empty($ansiFormat)) {
-                $message = CustomConsole::ansiFormat($message, $ansiFormat);
-            }
-
-            return CustomConsole::output($message, $options);
+            return $this->output($message, $ansiFormat);
         }
 
         return;
+    }
+
+    protected function console(string $message = '', $ansiFormat = [])
+    {
+        return static::stdout($message . PHP_EOL);
     }
 }

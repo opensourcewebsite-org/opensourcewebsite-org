@@ -75,7 +75,6 @@ class AdMatchController extends Controller implements CronChainedInterface
                 $updatesCount++;
 
                 $this->printMatchedCount($adOffer, $matchedCount);
-
             } catch (\Exception $e) {
                 echo 'ERROR: AdOffer #' . $adOffer->id . ': ' . $e->getMessage() . "\n";
             }

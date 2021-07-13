@@ -23,7 +23,6 @@ use yii\httpclient\Client;
  */
 class WikipediaParser extends BaseObject
 {
-
     public $user_id;
     public $language_id;
     public $language;
@@ -93,7 +92,6 @@ class WikipediaParser extends BaseObject
             $data = $response->data;
 
             if (isset($data['error']['code'])) {
-
                 if (!$justValidateUser) {
 
                     // User changed his token or username
@@ -114,7 +112,6 @@ class WikipediaParser extends BaseObject
             }
 
             if (isset($data['watchlistraw']) && is_array($data['watchlistraw'])) {
-
                 foreach ($data['watchlistraw'] as $page) {
 
                     //Search if the page already exists

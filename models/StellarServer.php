@@ -5,7 +5,6 @@ namespace app\models;
 use DateInterval;
 use DateTime;
 use Exception;
-use function Functional\group;
 use GuzzleHttp\Exception\ServerException;
 use Yii;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
@@ -16,6 +15,7 @@ use ZuluCrypto\StellarSdk\Transaction\TransactionBuilder;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
+use function Functional\group;
 
 class StellarServer extends Server
 {
@@ -124,7 +124,7 @@ class StellarServer extends Server
             self::getDistributorPublicKey(),
             self::getOperatorPublicKey(),
         ];
-
+        // TODO add pagination for big response list
         return array_filter(
             $this->getAccountsForAsset($assetCode, self::getIssuerPublicKey(), 'asc', 100),
             fn ($a) => !in_array($a->getAccountId(), $blacklist)
@@ -149,6 +149,7 @@ class StellarServer extends Server
             $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
             $lastLedger = $this->getLastLedger();
             $holders = $this->getAssetHolders($assetCode, $minimumBalance);
+
             foreach ($holders as $holder) {
                 if ($holder->getLastModifiedLedger() > $lastLedger) {
                     self::deleteIncomesDataFromDatabase($assetCode, new DateTime('today'));
@@ -184,7 +185,7 @@ class StellarServer extends Server
     public function sendIncomeToAssetHolders(string $assetCode, DateTime $date): array
     {
         MathSafety::require64Bit();
-
+        // TODO refactoring for db query for big amount of holders and dont use one array
         $destinations = self::getAssetHoldersFromDatabase($assetCode, $date);
 
         $payments = array_map(

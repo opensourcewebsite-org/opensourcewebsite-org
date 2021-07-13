@@ -105,6 +105,6 @@ class UserStellar extends \yii\db\ActiveRecord
      */
     public function getTimeLimit(): int
     {
-        return (int)self::CONFIRM_REQUEST_LIFETIME/60;
+        return (int)(self::CONFIRM_REQUEST_LIFETIME / 60);
     }
 }

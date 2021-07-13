@@ -196,70 +196,78 @@ class MyStellarController extends Controller
 
         if ($stellarServer = new StellarServer()) {
             if ($account = $stellarServer->getAccount($userStellar->getPublicKey())) {
-                $buttons = [];
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('alert-account-doesnt-exist'),
+                        true
+                    )
+                    ->build();
+            }
 
-                // check telegram groups for holders
-                foreach ($account->getBalances() as $asset) {
-                    if (($asset->getBalance() > 0) && (!$asset->isNativeAsset())) {
-                        $chatSettings = ChatSetting::find()
+            $buttons = [];
+
+            // check telegram groups for holders
+            foreach ($account->getBalances() as $asset) {
+                if (($asset->getBalance() > 0) && (!$asset->isNativeAsset())) {
+                    $chatSettings = ChatSetting::find()
                             ->where([
                                 'setting' => 'stellar_asset',
                                 'value' => $asset->getAssetCode(),
                             ])
                             ->all();
 
-                        foreach ($chatSettings as $chatSetting) {
-                            if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
-                                if (($chat->stellar_status == ChatSetting::STATUS_ON)
+                    foreach ($chatSettings as $chatSetting) {
+                        if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
+                            if (($chat->stellar_status == ChatSetting::STATUS_ON)
                                     && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_HOLDERS)
                                     && ($chat->stellar_issuer == $asset->getAssetIssuerAccountId())
                                     && ($chat->stellar_threshold <= $asset->getBalance())
                                     && $chat->stellar_invite_link) {
-                                    $buttons[][] = [
+                                $buttons[][] = [
                                         'url' => $chat->stellar_invite_link,
                                         'text' => $chat->title,
                                     ];
-                                }
                             }
                         }
                     }
                 }
+            }
 
-                // check telegram groups for signers
-                if ($signedAccounts = $stellarServer->getAccountsForSigner($userStellar->getPublicKey())) {
-                    foreach ($signedAccounts as $signedAccount) {
-                        $chatSettings = ChatSetting::find()
+            // check telegram groups for signers
+            if ($signedAccounts = $stellarServer->getAccountsForSigner($userStellar->getPublicKey())) {
+                foreach ($signedAccounts as $signedAccount) {
+                    $chatSettings = ChatSetting::find()
                             ->where([
                                 'setting' => 'stellar_issuer',
                                 'value' => $signedAccount->getAccountId(),
                             ])
                             ->all();
 
-                        foreach ($chatSettings as $chatSetting) {
-                            if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
-                                if (($chat->stellar_status == ChatSetting::STATUS_ON)
+                    foreach ($chatSettings as $chatSetting) {
+                        if ($chatSetting && ($chat = Chat::findOne($chatSetting->getChatId()))) {
+                            if (($chat->stellar_status == ChatSetting::STATUS_ON)
                                     && ($chat->stellar_mode == ChatSetting::STELLAR_MODE_SIGNERS)
                                     && $chat->stellar_invite_link) {
-                                    $buttons[][] = [
+                                $buttons[][] = [
                                         'url' => $chat->stellar_invite_link,
                                         'text' => $chat->title,
                                     ];
-                                }
                             }
                         }
                     }
                 }
+            }
 
-                if (!$buttons) {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery(
-                            $this->render('alert-groups-not-found'),
-                            true
-                        )
-                        ->build();
-                }
+            if (!$buttons) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery(
+                        $this->render('alert-groups-not-found'),
+                        true
+                    )
+                    ->build();
+            }
 
-                $buttons[] = [
+            $buttons[] = [
                     [
                         'callback_data' => MyStellarController::createRoute(),
                         'text' => Emoji::BACK,
@@ -270,20 +278,12 @@ class MyStellarController extends Controller
                     ],
                 ];
 
-                return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('groups'),
-                        $buttons
-                    )
-                    ->build();
-            } else {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery(
-                        $this->render('alert-account-doesnt-exist'),
-                        true
-                    )
-                    ->build();
-            }
+            return $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('groups'),
+                    $buttons
+                )
+                ->build();
         }
 
         return $this->actionIndex();

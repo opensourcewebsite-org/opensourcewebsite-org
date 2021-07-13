@@ -7,5 +7,4 @@ use yii\helpers\Url;
 
 class AssetManager extends \yii\web\AssetManager
 {
-
 }

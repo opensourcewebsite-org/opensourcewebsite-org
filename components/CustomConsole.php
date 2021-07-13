@@ -1,4 +1,5 @@
 <?php
+
 namespace app\components;
 
 use app\models\CronJob;
@@ -52,6 +53,7 @@ class CustomConsole extends Console
     public static function convertName($name)
     {
         $start = mb_strrpos($name, '\\') + 1;
+
         return mb_substr($name, $start, -10);
     }
 }

@@ -23,9 +23,9 @@ class CronController extends Controller
 {
     use ControllerLogTrait;
 
-    const SLEEP_INTERVAL = 60; // seconds
-    const PREFIX = 'app\commands\\';
-    const POSTFIX = 'Controller';
+    public const SLEEP_INTERVAL = 60; // seconds
+    public const PREFIX = 'app\commands\\';
+    public const POSTFIX = 'Controller';
 
     protected static array $map = [
         'AdMatch',
@@ -37,6 +37,7 @@ class CronController extends Controller
         'WikipediaParser',
         //'WikinewsParser',
         'CeMatch',
+        //'Stellar',
     ];
 
     private $cronJobs;
@@ -53,6 +54,7 @@ class CronController extends Controller
         $model->add();
         $model->clear();
         $this->currentBranchHash = $this->getCurrentGitBranchHeadHash();
+
         return parent::beforeAction($action);
     }
 
@@ -127,6 +129,7 @@ class CronController extends Controller
                     '[EXIT] Current git HEAD is updated, exiting!',
                     [CustomConsole::FG_RED, CustomConsole::BOLD]
                 );
+
                 return;
             }
 
@@ -146,6 +149,7 @@ class CronController extends Controller
             $hash = file_get_contents($currentHeadFilename)) {
             return trim($hash);
         }
+
         return null;
     }
 
@@ -161,6 +165,7 @@ class CronController extends Controller
         ) {
             return "{$projectDir}/.git/{$currentHeadFilename}";
         }
+
         return null;
     }
 }

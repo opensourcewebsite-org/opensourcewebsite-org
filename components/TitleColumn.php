@@ -7,7 +7,6 @@ use yii\grid\DataColumn;
 
 class TitleColumn extends DataColumn
 {
-
     public $title;
     public $encodeLabel = false;
     public $headerTitle = true;

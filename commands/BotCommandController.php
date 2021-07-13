@@ -242,7 +242,7 @@ class BotCommandController extends Controller implements CronChainedInterface
                 }
             }
         } else {
-            $this->console('Missing params in config/params.php');
+            $this->debug('Missing params in config/params.php');
         }
 
         return false;

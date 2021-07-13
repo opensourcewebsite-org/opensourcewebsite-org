@@ -48,7 +48,6 @@ class JobMatchController extends Controller implements CronChainedInterface
                 $this->printMatchedCount($resume, $matchedVacanciesCount);
 
                 $updatesCount++;
-
             } catch (\Exception $e) {
                 echo 'ERROR: Resume #' . $resume->id . ': ' . $e->getMessage() . "\n";
             }
@@ -57,7 +56,6 @@ class JobMatchController extends Controller implements CronChainedInterface
         if ($updatesCount) {
             $this->output('Resumes processed: ' . $updatesCount);
         }
-
     }
 
     protected function updateVacancies()
@@ -76,7 +74,6 @@ class JobMatchController extends Controller implements CronChainedInterface
                 $this->printMatchedCount($vacancy, $matchedResumesCount);
 
                 $updatesCount++;
-
             } catch (\Exception $e) {
                 echo 'ERROR: Vacancy #' . $vacancy->id . ': ' . $e->getMessage() . "\n";
             }
