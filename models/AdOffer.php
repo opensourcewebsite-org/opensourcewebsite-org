@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -192,12 +193,14 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
     public function setActive(): self
     {
         $this->status = static::STATUS_ON;
+
         return $this;
     }
 
     public function setInactive(): self
     {
         $this->status = static::STATUS_OFF;
+
         return $this;
     }
 
@@ -206,6 +209,7 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
         [$lat, $lon] = (new LocationParser($location))->parse();
         $this->location_lat = $lat;
         $this->location_lon = $lon;
+
         return $this;
     }
 

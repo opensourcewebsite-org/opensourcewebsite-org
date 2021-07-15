@@ -79,7 +79,6 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
             [
                 [
                     'title',
-                    'pickup_radius',
                     'location',
                     'location_lat',
                     'location_lon',
@@ -157,8 +156,8 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
             'title' => Yii::t('app', 'Title'),
             'description' => Yii::t('app', 'Description'),
             'currency_id' => Yii::t('app', 'Currency'),
-            'max_price' => Yii::t('app', 'Max. Price'),
-            'pickup_radius' => Yii::t('app', 'Pickup Radius'),
+            'max_price' => Yii::t('app', 'Max. price'),
+            'pickup_radius' => Yii::t('app', 'Pickup radius'),
             'location' => Yii::t('app', 'Location'),
             'location_lat' => Yii::t('app', 'Location Lat'),
             'location_lon' => Yii::t('app', 'Location Lon'),
@@ -191,12 +190,14 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
     public function setActive(): self
     {
         $this->status = static::STATUS_ON;
+
         return $this;
     }
 
     public function setInactive(): self
     {
         $this->status = static::STATUS_OFF;
+
         return $this;
     }
 
@@ -205,6 +206,7 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
         [$lat, $lon] = (new LocationParser($location))->parse();
         $this->location_lat = $lat;
         $this->location_lon = $lon;
+
         return $this;
     }
 

@@ -76,7 +76,7 @@ $iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') 
                                     'maxlength' => true,
                                     'placeholder' => 0  . ', ' . Yii::t('app', 'No pickup'),
                                 ])
-                                ->label($iconPrivate . $model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional)
+                                ->label($iconPrivate . $model->getAttributeLabel('pickup_radius') . ', km' . $labelOptional)
                             ?>
                         </div>
                     </div>

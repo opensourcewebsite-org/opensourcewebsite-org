@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\search;
@@ -16,10 +17,10 @@ class AdSearchSearch extends AdSearch
                 [
                     'id',
                     'currency_id',
-                    'status'
+                    'status',
                 ],
-                'integer']
-            ,
+                'integer',
+            ],
             ['title', 'string'],
             ['max_price', 'double'],
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\search;
@@ -13,9 +14,13 @@ class AdOfferSearch extends AdOffer
     {
         return [
             [
-                ['id', 'currency_id', 'status'],
-                'integer']
-            ,
+                [
+                    'id',
+                    'currency_id',
+                    'status',
+                ],
+                'integer',
+            ],
             ['title', 'string'],
             ['price', 'double'],
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\search;
@@ -31,7 +32,7 @@ class ResumeSearch extends Resume
 
         if (!$this->validate()) {
             $query->where('0=1');
-           return $dataProvider;
+            return $dataProvider;
         }
 
         $query->andFilterWhere(['status' => $this->status]);

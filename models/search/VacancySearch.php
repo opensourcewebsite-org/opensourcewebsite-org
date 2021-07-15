@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\search;
@@ -26,7 +27,7 @@ class VacancySearch extends Vacancy
             ],
             [
                 'max_hourly_rate',
-                'string'
+                'string',
             ],
             [
                 [
