@@ -36,6 +36,18 @@ abstract class CrudController extends Controller
     const FIELD_NAME_ID = 'id';
     const VALUE_NO = 'NO';
 
+    const ACTION_ADD_ATTRIBUTE = 'a-a';
+    const ACTION_CLEAR_ATTRIBUTE = 'c-a';
+    const ACTION_EDIT_ATTRIBUTE = 'e-a';
+    const ACTION_ENTER_ATTRIBUTE = 'en-a';
+    const ACTION_EDIT_RELATION_ATTRIBUTE = 'e-r-a';
+    const ACTION_NEXT_ATTRIBUTE = 'n-a';
+    const ACTION_PREVIOUS_ATTRIBUTE = 'p-a';
+    const ACTION_REMOVE_ATTRIBUTE = 'r-a';
+    const ACTION_SET_ATTRIBUTE = 's-a';
+    const ACTION_SHOW_ATTRIBUTE = 'sh-a';
+    const ACTION_BUTTON_CALLBACK = 'b-c';
+
     /** @var BackRouteService */
     public $backRoute;
     /** @var EndRouteService */
@@ -916,7 +928,7 @@ abstract class CrudController extends Controller
             return [
                 [
                     'text' => Yii::t('bot', $model->getAttributeLabel($attribute)),
-                    'callback_data' => self::createRoute('e-a', [
+                    'callback_data' => self::createRoute(self::ACTION_EDIT_ATTRIBUTE, [
                         'id' => $id,
                         'a' => $attribute,
                     ]),
@@ -1496,7 +1508,7 @@ abstract class CrudController extends Controller
             $isPrivateAttribute = $this->attributeButtons->isPrivateAttribute($attributeName, $rule);
             $buttonSkip = ArrayHelper::merge([
                 'text' => Yii::t('bot', $isEdit ? 'NO' : 'SKIP'),
-                'callback_data' => self::createRoute($isPrivateAttribute ? 's-a' : 'en-a', [
+                'callback_data' => self::createRoute($isPrivateAttribute ? self::ACTION_SET_ATTRIBUTE : self::ACTION_ENTER_ATTRIBUTE, [
                     'a' => $attributeName,
                     'text' => self::VALUE_NO,
                 ]),
@@ -1527,7 +1539,7 @@ abstract class CrudController extends Controller
         $state = $this->getState();
         $state->setName(
             self::createRoute(
-                's-a',
+                self::ACTION_SET_ATTRIBUTE,
                 [
                     'a' => $attributeName,
                     'p' => $page,
@@ -1575,7 +1587,7 @@ abstract class CrudController extends Controller
                     $query,
                     function (int $page) use ($attributeName) {
                         return self::createRoute(
-                            's-a',
+                            self::ACTION_SET_ATTRIBUTE,
                             [
                                 'a' => $attributeName,
                                 'p' => $page,
@@ -1586,7 +1598,7 @@ abstract class CrudController extends Controller
                         return [
                             'text' => $model->getLabel(),
                             'callback_data' => self::createRoute(
-                                's-a',
+                                self::ACTION_SET_ATTRIBUTE,
                                 [
                                     'a' => $attributeName,
                                     'v' => $model->getAttribute($valueAttribute),
@@ -1643,7 +1655,7 @@ abstract class CrudController extends Controller
             $attributeValues,
             function (int $page) use ($attributeName) {
                 return self::createRoute(
-                    'a-a',
+                    self::ACTION_ADD_ATTRIBUTE,
                     [
                         'a' => $attributeName,
                         'p' => $page,
@@ -1681,7 +1693,7 @@ abstract class CrudController extends Controller
                 $buttonParams = $this->prepareButton($relation, [
                     'text' => $label,
                     'callback_data' => self::createRoute(
-                        'e-r-a',
+                        self::ACTION_EDIT_RELATION_ATTRIBUTE,
                         [
                             'i' => $id,
                         ]
@@ -1696,7 +1708,7 @@ abstract class CrudController extends Controller
                         [
                             'text' => Emoji::DELETE,
                             'callback_data' => self::createRoute(
-                                'r-a',
+                                self::ACTION_REMOVE_ATTRIBUTE,
                                 [
                                     'i' => $id,
                                 ]
@@ -1764,7 +1776,7 @@ abstract class CrudController extends Controller
         $state = $this->getState();
         $state->setName(
             self::createRoute(
-                'en-a',
+                self::ACTION_ENTER_ATTRIBUTE,
                 [
                     'a' => $attributeName,
                 ]
@@ -1862,7 +1874,7 @@ abstract class CrudController extends Controller
         if ($this->enableGlobalBackRoute) {
             $backRoute = $this->backRoute->get();
         } else {
-            $backRoute = self::createRoute('p-a');
+            $backRoute = self::createRoute(self::ACTION_PREVIOUS_ATTRIBUTE);
         }
 
         $systemButtons = [];
@@ -1938,7 +1950,7 @@ abstract class CrudController extends Controller
             if (!$isAttributeRequired && !$isEmpty) {
                 $systemButtons['delete'] = [
                     'text' => Emoji::DELETE,
-                    'callback_data' => self::createRoute('c-a'),
+                    'callback_data' => self::createRoute(self::ACTION_CLEAR_ATTRIBUTE),
                 ];
             }
         } elseif ($config['enableAddButton'] ?? false) {
@@ -1946,7 +1958,7 @@ abstract class CrudController extends Controller
             $systemButtons['add'] = [
                 'text' => Emoji::ADD,
                 'callback_data' => self::createRoute(
-                    'a-a',
+                    self::ACTION_ADD_ATTRIBUTE,
                     [
                         'a' => $attributeName,
                     ]
@@ -1957,7 +1969,7 @@ abstract class CrudController extends Controller
             $systemButtons['delete'] = [
                 'text' => Emoji::DELETE,
                 'callback_data' => self::createRoute(
-                    'r-a',
+                    self::ACTION_REMOVE_ATTRIBUTE,
                     [
                         'i' => $editableRelationId,
                     ]
