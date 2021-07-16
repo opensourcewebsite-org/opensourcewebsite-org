@@ -411,7 +411,7 @@ class SCeController extends CrudController
         $buttons[] = [
             [
                 'text' => $order->getTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->selling_rate),
-                'callback_data' => self::createRoute('e-a', [
+                'callback_data' => self::createRoute(CrudController::ACTION_EDIT_ATTRIBUTE, [
                     'id' => $order->id,
                     'a' => 'selling_rate',
                 ]),
@@ -421,7 +421,7 @@ class SCeController extends CrudController
         $buttons[] = [
             [
                 'text' => $order->getInverseTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->buying_rate),
-                'callback_data' => self::createRoute('e-a', [
+                'callback_data' => self::createRoute(CrudController::ACTION_EDIT_ATTRIBUTE, [
                     'id' => $order->id,
                     'a' => 'buying_rate',
                 ]),
