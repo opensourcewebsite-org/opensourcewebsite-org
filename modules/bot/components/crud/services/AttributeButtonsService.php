@@ -150,8 +150,9 @@ class AttributeButtonsService
      * @param array $options
      *
      * @return string
+     * @throws \Exception
      */
-    private function getButtonRoute(&$configButton, $buttonKey, $options = [])
+    private function getButtonRoute(array &$configButton, int $buttonKey, array $options = [])
     {
         $attributeName = ArrayHelper::getValue($options, 'attributeName', null);
         $id = ArrayHelper::getValue($options, 'modelId', null);
