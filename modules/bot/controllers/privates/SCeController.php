@@ -26,6 +26,8 @@ use yii\db\ActiveRecord;
 /**
  * Class SCeController
  *
+ * Currency Exchange Service
+ *
  * @package app\modules\bot\controllers\privates
  */
 class SCeController extends CrudController

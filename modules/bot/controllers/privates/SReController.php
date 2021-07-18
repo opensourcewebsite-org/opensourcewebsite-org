@@ -9,6 +9,8 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class SReController
  *
+ * Real Estates Service
+ *
  * @package app\modules\bot\controllers\privates
  */
 class SReController extends Controller
