@@ -207,7 +207,7 @@ class MyStellarController extends Controller
         $userStellar = $user->stellar;
 
         if ($stellarServer = new StellarServer()) {
-            if ($account = $stellarServer->getAccount($userStellar->getPublicKey())) {
+            if (!$account = $stellarServer->getAccount($userStellar->getPublicKey())) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
                         $this->render('alert-account-doesnt-exist'),

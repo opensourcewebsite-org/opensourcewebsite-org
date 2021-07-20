@@ -11,8 +11,7 @@ return [
     //        'chat_id' => null,
     //    ],
     //],
-    //'stellar' => // Used for stellar fund and telegram bot
-    //[
+    //'stellar' => [ // Used for stellar fund and telegram bot
     //    'testNet' => true, // https://developers.stellar.org/docs/glossary/testnet/
     //    'issuer_public_key' => '',
     //    'distributor_public_key' => '',

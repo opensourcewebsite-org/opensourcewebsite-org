@@ -19,6 +19,8 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
 
     public const PRIZE_MEMO_TEXT = 'Winner Prize';
 
+    public const MINIMUM_BET = 0.001; // XLM
+
     public function actionIndex()
     {
         $this->sendGameProfits();

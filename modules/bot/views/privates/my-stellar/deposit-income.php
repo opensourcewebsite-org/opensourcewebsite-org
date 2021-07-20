@@ -16,8 +16,10 @@ $assets = [
 ?>
 <b><?= Yii::t('bot', 'Deposit Income') ?></b><br/>
 <br/>
+<?php if ($issuer) : ?>
 <?= Yii::t('bot', 'Start earning {0} weekly deposit income every Friday with OSW stablecoins, become the community ambassador and redeem the stablecoins with other users', '0.5%') ?>.<br/>
 <br/>
 <?= implode(' | ', $assets) ?><br/>
 <br/>
+<?php endif; ?>
 <i><?= Yii::t('bot', 'If you have any suggestions, questions or feedback, please contact our team') ?>: @opensourcewebsite</i>
