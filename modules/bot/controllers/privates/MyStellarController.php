@@ -52,6 +52,18 @@ class MyStellarController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('deposit-income'),
+                            'text' => Yii::t('bot', 'Deposit Income'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('fortune-game'),
+                            'text' => Yii::t('bot', 'Fortune Game'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('groups'),
                             'text' => Yii::t('bot', 'Telegram groups'),
                             'visible' => $user->stellar->isConfirmed(),
@@ -287,5 +299,53 @@ class MyStellarController extends Controller
         }
 
         return $this->actionIndex();
+    }
+
+    public function actionDepositIncome(): array
+    {
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('deposit-income'),
+                [
+                    [
+                        [
+                            'callback_data' => MyStellarController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    public function actionFortuneGame(): array
+    {
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('fortune-game'),
+                [
+                    [
+                        [
+                            'callback_data' => MyStellarController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
     }
 }

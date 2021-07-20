@@ -14,6 +14,11 @@ class ExternalLink
         return 'https://t.me/opensourcewebsite_bot';
     }
 
+    public static function getGroupLink()
+    {
+        return 'https://t.me/opensourcewebsite';
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -23,22 +23,22 @@ class HelloController extends Controller
             ->sendMessage(
                 $this->render('index'),
                 [
+                    [
                         [
-                            [
-                                'url' => ExternalLink::getBotLink(),
-                                'text' => Yii::t('bot', 'Bot'),
-                            ],
+                            'url' => ExternalLink::getBotLink(),
+                            'text' => Yii::t('bot', 'BOT'),
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                                'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
-                            ],
-                            [
-                                'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                                'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
-                            ],
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
                         ],
+                    ],
                 ],
                 [
                     'disablePreview' => true,

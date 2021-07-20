@@ -6,6 +6,7 @@
 /channel - <?= Yii::t('bot', 'Telegram channels') ?><br/>
 <br/>
 /my_account - <?= Yii::t('bot', 'Account') ?><br/>
+/my_stellar - <?= Yii::t('bot', 'Stellar') ?><br/>
 /my_rating - <?= Yii::t('bot', 'Rating') ?><br/>
 /my_referrals - <?= Yii::t('bot', 'Referrals') ?><br/>
 /my_location - <?= Yii::t('bot', 'Location') ?><br/>
