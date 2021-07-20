@@ -3,13 +3,15 @@
 namespace tests;
 
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
+use Codeception\Test\Unit;
 use TelegramBot\Api\Types\Message;
 use TelegramBot\Api\Types\MessageEntity;
+use UnitTester;
 
-class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
+class MessageWithEntitiesConverterTest extends Unit
 {
 
-    protected \UnitTester $tester;
+    protected UnitTester $tester;
 
     protected function _before()
     {
@@ -43,12 +45,13 @@ class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
         $message = self::message('some text', []);
         expect(MessageWithEntitiesConverter::toHtml($message))->equals('some text');
 
-        $message = self::message('text bold italic code [link title](example.com) strike', [
-            self::entity(MessageEntity::TYPE_BOLD, 5, 4),
-            self::entity(MessageEntity::TYPE_ITALIC, 10, 6),
-            self::entity(MessageEntity::TYPE_CODE, 17, 4),
-            self::entity(MessageEntity::TYPE_URL, 35, 11),
-            self::entity(MessageEntity::TYPE_STRIKETHROUGH, 48, 6)
+        $text = 'text bold italic code [link title](example.com) strike';
+        $message = self::message($text, [
+            self::entity(MessageEntity::TYPE_BOLD, strpos($text, 'bold'), strlen('bold')),
+            self::entity(MessageEntity::TYPE_ITALIC, strpos($text, 'italic'), strlen('italic')),
+            self::entity(MessageEntity::TYPE_CODE, strpos($text, 'code'), strlen('code')),
+            self::entity(MessageEntity::TYPE_URL, strpos($text, 'example.com'), strlen('example.com')),
+            self::entity(MessageEntity::TYPE_STRIKETHROUGH, strpos($text, 'strike'), strlen('strike'))
         ]);
         $expected = 'text <b>bold</b> <i>italic</i> <code>code</code> <a href="example.com">link title</a> <s>strike</s>';
         expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
@@ -62,10 +65,21 @@ class MessageWithEntitiesConverterTest extends \Codeception\Test\Unit
 
 
         $message = self::message('[example.com](example.com)', [
-            self::entity(MessageEntity::TYPE_URL, 1, 11),
-            self::entity(MessageEntity::TYPE_URL, 14, 11),
+            self::entity(MessageEntity::TYPE_URL, 1, strlen('example.com')),
+            self::entity(MessageEntity::TYPE_URL, 14, strlen('example.com')),
         ]);
         $expected = '<a href="example.com">example.com</a>';
+        expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
+
+        $message = self::message(
+            'some text [text](https://example.com/) or [similar](https://example.com/projects? omet = ipsum # lorem) text [some](https://example.com/) text',
+            [
+                self::entity(MessageEntity::TYPE_URL, 17, strlen('https://example.com/')),
+                self::entity(MessageEntity::TYPE_URL, 52, strlen('https://example.com/projects')),
+                self::entity(MessageEntity::TYPE_URL, 116, strlen('https://example.com/')),
+            ]
+        );
+        $expected = 'some text <a href="https://example.com/">text</a> or [similar](<a href="https://example.com/projects">https://example.com/projects</a>? omet = ipsum # lorem) text <a href="https://example.com/">some</a> text';
         expect(MessageWithEntitiesConverter::toHtml($message))->equals($expected);
     }
 
