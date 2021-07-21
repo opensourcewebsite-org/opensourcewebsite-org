@@ -66,6 +66,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                     ->addLumenPayment($playerPublicKey, $prizeAmount)
                     ->setTextMemo(sprintf(self::PRIZE_MEMO_TEXT, $result['winner_rate']))
                     ->submit(StellarServer::getCroupierPrivateKey());
+                $croupierBalance -= $prizeAmount;
             }
 
             // TODO save $payment->getPagingToken()
