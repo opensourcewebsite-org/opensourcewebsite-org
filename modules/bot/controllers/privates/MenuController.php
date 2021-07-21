@@ -26,12 +26,14 @@ class MenuController extends Controller
                         [
                             'callback_data' => SAdController::createRoute(),
                             'text' => Yii::t('bot', 'Ads'),
+                            'visible' => YII_ENV_DEV,
                         ],
                     ],
                     [
                         [
                             'callback_data' => SJobController::createRoute(),
                             'text' => Yii::t('bot', 'Jobs'),
+                            'visible' => YII_ENV_DEV,
                         ],
                     ],
                     [

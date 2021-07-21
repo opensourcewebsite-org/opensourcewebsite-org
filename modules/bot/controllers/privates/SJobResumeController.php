@@ -43,6 +43,16 @@ class SJobResumeController extends CrudController
         'search_radius',
     ];
 
+    public function beforeAction($action)
+    {
+        // TODO only for DEV
+        if (!YII_ENV_DEV) {
+            exit();
+        }
+
+        return parent::beforeAction($action);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -585,7 +595,7 @@ class SJobResumeController extends CrudController
         $scenario = new SetActiveScenario($resume);
 
         if (!$resume->isActive()) {
-            if (!$scenario->run() ) {
+            if (!$scenario->run()) {
                 $notFilledFields = array_values($scenario->getErrors());
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
