@@ -7,6 +7,7 @@ use app\interfaces\CronChainedInterface;
 use app\models\Croupier;
 use app\models\StellarCroupier;
 use app\models\StellarCroupierData;
+use app\models\StellarServer;
 use yii\console\Controller;
 
 /**
@@ -25,6 +26,20 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
         $this->sendGameProfits();
     }
 
+    public function actionProduceBets(string $sourcePublicKey, string $sourcePrivateKey, float $amount, int $count = 10)
+    {
+        $stellarServer = new StellarServer();
+        for ($i = 0; $i < $count; $i++) {
+            $response = $stellarServer
+                ->buildTransaction($sourcePublicKey)
+                ->addLumenPayment(StellarServer::getCroupierPublicKey(), $amount)
+                ->submit($sourcePrivateKey);
+            if ($response->getResult()->succeeded()) {
+                $this->output('Send XLM ' . number_format($amount, 6) . 'to Croupier from source');
+            }
+        }
+    }
+
     /**
      * @throws \ErrorException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
@@ -33,8 +48,6 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
     protected function sendGameProfits()
     {
         $stellarServer = new StellarCroupier();
-
-        // TODO get sinceCursor
 
         $sinceCursor = StellarCroupierData::getLastPagingToken();
 
