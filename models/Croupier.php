@@ -19,6 +19,25 @@ class Croupier
     public const PRIZE_RETURN_PERCENT = 95; // %
     public const WINNER_RATES = [2, 3, 4, 5, 10, 20, 50, 100, 500, 1000, 10000, 100000, 1000000];
 
+    /**
+     * Prize amount based on bet amount, croupier balance, randomly chose win rate and randomly chose option
+     * (has won or has lost)
+     *
+     * Returns array with scheme
+     *
+     * ```php
+     * [
+     *    'winner_rate' => int,
+     *    'prize_amount' => float,
+     * ]
+     * ```
+     *
+     * If player lost, empty array returned
+     *
+     * @param float $betAmount
+     * @param float $croupierBalance
+     * @return array
+     */
     public static function prizeAmount(float $betAmount, float $croupierBalance): array
     {
         if ($betAmount < self::BET_MINIMUM_AMOUNT) {
@@ -28,15 +47,21 @@ class Croupier
         $winnerRate = self::WINNER_RATES[array_rand(self::WINNER_RATES)];
         $winChance = (self::PRIZE_RETURN_PERCENT / 100) / $winnerRate;
 
-        if (self::generateBool($winChance)) {
-            $prePrizeAmount = $betAmount * $winnerRate;
-            return [
-                'winner_rate' => $winnerRate,
-                'prize_amount' => min($prePrizeAmount, self::maximalPrizeAmount($croupierBalance))
-            ];
-        } else {
+        if (!self::generateBool($winChance)) {
             return [];
         }
+
+        $prePrizeAmount = $betAmount * $winnerRate;
+        $prizeAmount = min($prePrizeAmount, self::maximalPrizeAmount($croupierBalance));
+
+        if ($prizeAmount < 0.000_000_1) {
+            return [];
+        }
+
+        return [
+            'winner_rate' => $winnerRate,
+            'prize_amount' => $prizeAmount,
+        ];
     }
 
     private static function generateBool(float $probability): bool
