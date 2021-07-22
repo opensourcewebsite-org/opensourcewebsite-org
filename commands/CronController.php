@@ -34,7 +34,7 @@ class CronController extends Controller
         'Debt',
         //'CurrencyRatesParser',
         'UaLawmakingParser',
-        'WikipediaParser',
+        //'WikipediaParser',
         //'WikinewsParser',
         'CeMatch',
         //'StellarCroupier',

@@ -142,7 +142,7 @@ AdminLteUserAsset::register($this);
                             ]
                         ],
                     ],
-                    'encode' => FALSE,
+                    'encode' => false,
                     'options' => ['class' => 'nav-item'],
                     'linkOptions' => ['class' => 'nav-link'],
                 ]
@@ -178,11 +178,11 @@ $leftMenuItems = [
         'url' => 'support-groups',
         'route' => '/support-groups',
     ],
-    [
-        'title' => 'Wikipedia watchlists',
-        'url' => 'wikipedia-pages',
-        'route' => '/wikipedia-pages/index',
-    ],
+    //[
+    //    'title' => 'Wikipedia watchlists',
+    //    'url' => 'wikipedia-pages',
+    //    'route' => '/wikipedia-pages/index',
+    //],
     //[
     //    'title' => 'Wikinews pages',
     //    'url' => 'wikinews-pages',
@@ -221,7 +221,7 @@ $leftMenuItems = [
         ],
         'items' => [
             [
-                'title' => Yii::t('app','Companies'),
+                'title' => Yii::t('app', 'Companies'),
                 'url' => 'company-user',
                 'route' => '/company-user'
             ],
