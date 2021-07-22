@@ -24,7 +24,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
 {
     use ControllerLogTrait;
 
-    const UPDATE_INTERVAL = 24 * 60 * 60; // seconds
+    public const UPDATE_INTERVAL = 24 * 60 * 60; // seconds
 
     public function options($actionID)
     {
@@ -79,7 +79,7 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
 
             if (isset($response)) {
                 $data = $response->data;
-                if ($data['success'] == 1 && count($data['entities'])) {
+                if (isset($data['success']) && ($data['success'] == 1) && count($data['entities'])) {
                     $result = array_shift($data['entities']);
                     if (isset($result['sitelinks'])) {
                         $query = clone $baseQuery;
@@ -106,13 +106,15 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                         }
                         $pageIds = $query->column();
                         $time = time();
-                        WikiPage::updateAll([
+                        WikiPage::updateAll(
+                            [
                             'group_id' => $groupId,
                             'updated_at' => $time,
                         ],
-                        [
+                            [
                             'id' => $pageIds,
-                        ]);
+                        ]
+                        );
                         $existingLanguageIds = WikiPage::find()
                             ->select('language_id')
                             ->where(['id' => $pageIds])
