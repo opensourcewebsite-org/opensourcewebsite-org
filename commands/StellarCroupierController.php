@@ -50,7 +50,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
         );
 
         $croupierBalance = $croupierAccount->getNativeBalance();
-
+        $winners_count = 0;
         /** @var Payment $payment */
         foreach ($payments as $payment) {
             $playerPublicKey = $payment->getFromAccountId();
@@ -61,15 +61,19 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                 } else {
                     $prizeAmount = $result['prize_amount'];
                 }
-                $stellarServer
+                $response = $stellarServer
                     ->buildTransaction(StellarServer::getCroupierPublicKey())
                     ->addLumenPayment($playerPublicKey, $prizeAmount)
                     ->setTextMemo(sprintf(self::PRIZE_MEMO_TEXT, $result['winner_rate']))
                     ->submit(StellarServer::getCroupierPrivateKey());
-                $croupierBalance -= $prizeAmount;
+                $croupierBalance -= $prizeAmount + $response->getResult()->getFeeCharged()->getScaledValue();
+
+                $this->output('[Croupier] User with account ' . $playerPublicKey . 'has won XLM ' . number_format($prizeAmount, 6) . 'with rate x' . $result['winner_rate']);
+                $winners_count++;
             }
 
             // TODO save $payment->getPagingToken()
         }
+        $this->output('[Croupier] ' . $winners_count . ' users won out of ' . count($payments));
     }
 }
