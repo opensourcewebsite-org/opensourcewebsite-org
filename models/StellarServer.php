@@ -133,6 +133,7 @@ class StellarServer extends Server
         $blacklist = [
             self::getDistributorPublicKey(),
             self::getOperatorPublicKey(),
+            self::getCroupierPublicKey(),
         ];
         // TODO add pagination for big response list
         return array_filter(
