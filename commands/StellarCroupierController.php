@@ -6,6 +6,7 @@ use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\Croupier;
 use app\models\StellarCroupier;
+use app\models\StellarCroupierData;
 use yii\console\Controller;
 
 /**
@@ -34,7 +35,8 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
         $stellarServer = new StellarCroupier();
 
         // TODO get sinceCursor
-        $sinceCursor = null;
+
+        $sinceCursor = StellarCroupierData::getLastPagingToken();
 
         $winners_count = 0;
         $bets = $stellarServer->getBets($sinceCursor);
@@ -55,7 +57,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                 $winners_count++;
             }
 
-            // TODO save $pagingToken
+            StellarCroupierData::setLastPagingToken($pagingToken);
         }
         $this->output('[Croupier] ' . $winners_count . ' users won out of ' . count($bets));
     }
