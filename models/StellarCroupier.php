@@ -110,9 +110,9 @@ class StellarCroupier extends StellarServer
         $bets = $this->getBets($sinceCursor);
         $wins = [];
         foreach ($bets as [
-                 'player_public_key' => $playerPublicKey,
-                 'bet_amount' => $betAmount,
-                 'paging_token' => $pagingToken,
+            'player_public_key' => $playerPublicKey,
+            'bet_amount' => $betAmount,
+            'paging_token' => $pagingToken,
         ]) {
             if ($result = $this->prizeAmount($betAmount)) {
                 $this->sendPrize($playerPublicKey, $result['prize_amount'], $result['winner_rate']);
