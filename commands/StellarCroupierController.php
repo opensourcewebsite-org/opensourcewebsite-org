@@ -54,9 +54,9 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
         $winners_count = 0;
         $bets = $stellarServer->getBets($sinceCursor);
         foreach ($bets as [
-                 'player_public_key' => $playerPublicKey,
-                 'bet_amount' => $betAmount,
-                 'paging_token' => $pagingToken,
+            'player_public_key' => $playerPublicKey,
+            'bet_amount' => $betAmount,
+            'paging_token' => $pagingToken,
         ]) {
             if ($result = Croupier::prizeAmount($betAmount, $stellarServer->getCroupierBalance())) {
                 if ($stellarServer->isTestnet()) {
