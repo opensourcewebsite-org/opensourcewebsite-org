@@ -4,10 +4,7 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
-use app\models\Croupier;
 use app\models\StellarCroupier;
-use app\models\StellarCroupierData;
-use app\models\StellarServer;
 use yii\console\Controller;
 
 /**
@@ -26,15 +23,19 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
         $this->sendGameProfits();
     }
 
+    /**
+     * @param string $sourcePublicKey
+     * @param string $sourcePrivateKey
+     * @param float $amount
+     * @param int $count
+     * @throws \ErrorException
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
+     */
     public function actionProduceBets(string $sourcePublicKey, string $sourcePrivateKey, float $amount, int $count = 10)
     {
-        $stellarServer = new StellarServer();
+        $stellarServer = new StellarCroupier();
         for ($i = 0; $i < $count; $i++) {
-            $response = $stellarServer
-                ->buildTransaction($sourcePublicKey)
-                ->addLumenPayment(StellarServer::getCroupierPublicKey(), $amount)
-                ->submit($sourcePrivateKey);
-            if ($response->getResult()->succeeded()) {
+            if ($stellarServer->makeBet($sourcePublicKey, $sourcePrivateKey, $amount)) {
                 $this->output('Sent XLM ' . number_format($amount, 6) . ' to Croupier from Source');
             }
         }
@@ -49,29 +50,15 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
     {
         $stellarServer = new StellarCroupier();
 
-        $sinceCursor = StellarCroupierData::getLastPagingToken();
+        ['bets_count' => $betsCount, 'wins' => $wins] = $stellarServer->sendPrizesToPlayers();
 
-        $winners_count = 0;
-        $bets = $stellarServer->getBets($sinceCursor);
-        foreach ($bets as [
+        foreach ($wins as [
             'player_public_key' => $playerPublicKey,
-            'bet_amount' => $betAmount,
-            'paging_token' => $pagingToken,
+            'prize_amount' => $prizeAmount,
+            'winner_rate' => $winnerRate,
         ]) {
-            if ($result = Croupier::prizeAmount($betAmount, $stellarServer->getCroupierBalance())) {
-                if ($stellarServer->isTestnet()) {
-                    $prizeAmount = 0.01;
-                } else {
-                    $prizeAmount = $result['prize_amount'];
-                }
-
-                $stellarServer->sendPrize($playerPublicKey, $prizeAmount, $result['winner_rate']);
-                $this->output('[Croupier] User with account ' . $playerPublicKey . ' has won XLM ' . number_format($prizeAmount, 6) . ' with rate x' . $result['winner_rate']);
-                $winners_count++;
-            }
-
-            StellarCroupierData::setLastPagingToken($pagingToken);
+            $this->output('[Croupier] User with account ' . $playerPublicKey . ' has won XLM ' . number_format($prizeAmount, 6) . ' with rate x' . $winnerRate);
         }
-        $this->output('[Croupier] ' . $winners_count . ' users won out of ' . count($bets));
+        $this->output('[Croupier] ' . count($wins) . ' users won out of ' . $betsCount);
     }
 }
