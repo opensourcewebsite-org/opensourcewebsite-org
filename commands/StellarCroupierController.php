@@ -35,7 +35,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                 ->addLumenPayment(StellarServer::getCroupierPublicKey(), $amount)
                 ->submit($sourcePrivateKey);
             if ($response->getResult()->succeeded()) {
-                $this->output('Send XLM ' . number_format($amount, 6) . ' to Croupier from source');
+                $this->output('Sent XLM ' . number_format($amount, 6) . ' to Croupier from Source');
             }
         }
     }
