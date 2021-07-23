@@ -35,7 +35,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                 ->addLumenPayment(StellarServer::getCroupierPublicKey(), $amount)
                 ->submit($sourcePrivateKey);
             if ($response->getResult()->succeeded()) {
-                $this->output('Send XLM ' . number_format($amount, 6) . 'to Croupier from source');
+                $this->output('Send XLM ' . number_format($amount, 6) . ' to Croupier from source');
             }
         }
     }
@@ -66,7 +66,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                 }
 
                 $stellarServer->sendPrize($playerPublicKey, $prizeAmount, $result['winner_rate']);
-                $this->output('[Croupier] User with account ' . $playerPublicKey . 'has won XLM ' . number_format($prizeAmount, 6) . 'with rate x' . $result['winner_rate']);
+                $this->output('[Croupier] User with account ' . $playerPublicKey . ' has won XLM ' . number_format($prizeAmount, 6) . ' with rate x' . $result['winner_rate']);
                 $winners_count++;
             }
 
