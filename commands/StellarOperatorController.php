@@ -4,7 +4,7 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
-use app\models\StellarServer;
+use app\models\StellarOperator;
 use DateTime;
 use yii\console\Controller;
 
@@ -24,17 +24,17 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
 
     protected function sendDepositProfits()
     {
-        if ($stellarServer = new StellarServer()) {
+        if ($stellarServer = new StellarOperator()) {
             $today = new DateTime('today');
 
             if (!$stellarServer->isPaymentDate($today)) {
                 return;
             }
 
-            foreach (StellarServer::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
-                if (!StellarServer::incomesSentAlready($assetCode, $today)) {
+            foreach (StellarOperator::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
+                if (!StellarOperator::incomesSentAlready($assetCode, $today)) {
                     // Delete all unfinished incomes data
-                    StellarServer::deleteIncomesDataFromDatabase($assetCode, $today);
+                    StellarOperator::deleteIncomesDataFromDatabase($assetCode, $today);
 
                     // Collect and save all asset holders
                     $stellarServer->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
@@ -47,7 +47,7 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
                 foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
                     $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);
                     $incomeSent = number_format($incomeSent, 2);
-                    $this->output('Accounts processed: ' . $accountsCount . '. Paid: ' . $incomeSent . ' ' . $assetCode);
+                    $this->output($resultCode . ' Accounts processed: ' . $accountsCount . '. Paid: ' . $incomeSent . ' ' . $assetCode);
                 }
             }
 
