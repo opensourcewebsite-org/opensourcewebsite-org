@@ -13,7 +13,7 @@ class m210722_124550_create_stellar_croupier_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%stellar_croupier}}', [
-            'id' => $this->primaryKey(),
+            'id' => $this->primaryKey()->unsigned(),
             'key' => $this->string()->notNull()->unique(),
             'value' => $this->string(),
         ]);
