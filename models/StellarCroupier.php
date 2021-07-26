@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use yii\base\InvalidArgumentException;
 use ZuluCrypto\StellarSdk\Model\Account;
 use ZuluCrypto\StellarSdk\Model\Payment;
 
@@ -50,52 +49,6 @@ class StellarCroupier extends StellarServer
     }
 
     /**
-     * Get bets from Stellar (proper payments to Croupier account) since provided cursor
-     *
-     * Returns array with scheme
-     *
-     * ```php
-     * [
-     *     [
-     *         'player_public_key' => string,
-     *         'bet_amount' => float,
-     *         'paging_token' => int,
-     *     ]
-     * ]
-     * ```
-     * @param string|null $sinceCursor can be paging_token of bet
-     * @param int $limit
-     * @return array
-     * @throws \ErrorException
-     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
-     */
-    public function getBets(?string $sinceCursor = null, int $limit = 200): array
-    {
-        // in range [1..200]
-        if ($limit < 1) {
-            $limit = 1;
-        } elseif ($limit > 200) {
-            $limit = 200;
-        }
-
-        return array_map(
-            fn (Payment $p) => [
-                'player_public_key' => $p->getFromAccountId(),
-                'bet_amount' => $p->getAmount()->getBalance(),
-                'paging_token' => $p->getPagingToken(),
-            ],
-            array_filter(
-                $this->getCroupierAccount()->getPayments($sinceCursor, $limit),
-                fn ($p) =>
-                    get_class($p) === Payment::class
-                    && $p->getToAccountId() == self::getCroupierPublicKey()
-                    && $p->isNativeAsset()
-                    && $p->getAmount()->getBalance() >= self::BET_MINIMUM_AMOUNT
-            )
-        );
-    }
-
-    /**
      * Returns array with scheme
      *
      * ```php
@@ -119,28 +72,34 @@ class StellarCroupier extends StellarServer
     public function processBets(): array
     {
         $sinceCursor = StellarCroupierData::getLastPagingToken();
+        $limit = 200;
+        $payments = $this->getCroupierAccount()->getPayments($sinceCursor, $limit);
 
-        $bets = $this->getBets($sinceCursor);
         $wins = [];
+        $betsCount = 0;
+        foreach ($payments as $payment) {
+            $pagingToken = $payment->getPagingToken();
 
-        foreach ($bets as [
-            'player_public_key' => $playerPublicKey,
-            'bet_amount' => $betAmount,
-            'paging_token' => $pagingToken,
-        ]) {
-            if ($result = $this->prizeAmount($betAmount)) {
-                $this->sendPrize($playerPublicKey, $result['prize_amount'], $result['winner_rate']);
-                $wins[] = [
-                    'prize_amount' => $result['prize_amount'],
-                    'winner_rate' => $result['winner_rate'],
-                ];
+            if (self::isBet($payment)) {
+                /** @var Payment $payment */
+                $playerPublicKey = $payment->getFromAccountId();
+                $betAmount = $payment->getAmount()->getBalance();
+
+                if ($result = $this->prizeAmount($betAmount)) {
+                    $this->sendPrize($playerPublicKey, $result['prize_amount'], $result['winner_rate']);
+                    $wins[] = [
+                        'prize_amount' => $result['prize_amount'],
+                        'winner_rate' => $result['winner_rate'],
+                    ];
+                }
+                $betsCount++;
             }
 
             StellarCroupierData::setLastPagingToken($pagingToken);
         }
 
         return [
-            'bets_count' => count($bets),
+            'bets_count' => $betsCount,
             'wins' => $wins,
         ];
     }
@@ -231,6 +190,10 @@ class StellarCroupier extends StellarServer
         return $rand <= $probability;
     }
 
+    /**
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     * @throws \ErrorException
+     */
     private function getPrizeBalance(): float
     {
         $balance = $this->getCroupierBalance() - self::BALANCE_RESERVE_AMOUNT;
@@ -241,5 +204,13 @@ class StellarCroupier extends StellarServer
         }
 
         return $balance;
+    }
+
+    private static function isBet($operation): bool
+    {
+        return get_class($operation) === Payment::class
+            && $operation->getToAccountId() == self::getCroupierPublicKey()
+            && $operation->isNativeAsset()
+            && $operation->getAmount()->getBalance() >= self::BET_MINIMUM_AMOUNT;
     }
 }
