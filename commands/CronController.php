@@ -37,7 +37,7 @@ class CronController extends Controller
         //'WikipediaParser',
         //'WikinewsParser',
         'CeMatch',
-        //'StellarCroupier',
+        'StellarCroupier',
     ];
 
     private $cronJobs;

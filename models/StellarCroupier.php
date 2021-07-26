@@ -194,7 +194,7 @@ class StellarCroupier extends StellarServer
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      * @throws \ErrorException
      */
-    private function getPrizeBalance(): float
+    public function getPrizeBalance(): float
     {
         $balance = $this->getCroupierBalance() - self::BALANCE_RESERVE_AMOUNT;
         $balance *= (1 - (self::PRIZE_RESERVE_PERCENT / 100));
