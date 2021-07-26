@@ -233,6 +233,7 @@ class StellarOperator extends StellarServer
     public function isPaymentDate(?DateTime $date = null): bool
     {
         $date = $date ?? new DateTime('today');
+
         return $this->getNextPaymentDate() == $date;
     }
 

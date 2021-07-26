@@ -19,18 +19,14 @@ class StellarServer extends Server
      */
     public function __construct()
     {
-        if (!isset(Yii::$app->params['stellar'])) {
-            throw new Exception('No stellar params');
-        }
-
-        if (isset(Yii::$app->params['stellar']['testNet']) && Yii::$app->params['stellar']['testNet']) {
+        if (!isset(Yii::$app->params['stellar'])
+            || (isset(Yii::$app->params['stellar']['testNet']) && Yii::$app->params['stellar']['testNet'])) {
             parent::__construct(ApiClient::newTestnetClient());
             $this->isTestnet = true;
         } else {
             parent::__construct(ApiClient::newPublicClient());
         }
     }
-
 
     public static function getIssuerPublicKey(): ?string
     {

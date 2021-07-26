@@ -20,24 +20,49 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
 
     public function actionIndex()
     {
-        $this->sendGameProfits();
+        $this->processingBets();
     }
 
     /**
      * @param string $sourcePublicKey
      * @param string $sourcePrivateKey
-     * @param float $amount
-     * @param int $count
+     * @param float|null $amount
+     * @param int|null $count
      * @throws \ErrorException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    public function actionProduceBets(string $sourcePublicKey, string $sourcePrivateKey, float $amount, int $count = 10)
+    public function actionGenerateBets(string $sourcePublicKey, string $sourcePrivateKey, float $amount = null, int $betCount = null)
     {
         $stellarServer = new StellarCroupier();
-        for ($i = 0; $i < $count; $i++) {
-            if ($stellarServer->makeBet($sourcePublicKey, $sourcePrivateKey, $amount)) {
-                $this->output('Sent XLM ' . number_format($amount, 6) . ' to Croupier from Source');
+
+        if ($stellarServer->isTestnet()) {
+            if (!$betCount) {
+                $betCount = rand(1, 10);
             }
+
+            if (!$amount) {
+                $amount = rand(1, 10000) / 1000;
+            } else {
+                $amount = max($amount, StellarCroupier::BET_MINIMUM_AMOUNT);
+            }
+
+            for ($i = 1; $i <= $betCount; $i++) {
+                $request = $stellarServer->buildTransaction($sourcePublicKey);
+                $operationCount = rand(1, 3);
+                for ($operationNumber = 1; $operationNumber <= $operationCount; $operationNumber++) {
+                    $request = $request->addLumenPayment(StellarCroupier::getCroupierPublicKey(), $amount);
+                }
+
+                $response = $request->submit($sourcePrivateKey);
+
+                if ($response->getResult()->succeeded()) {
+                    $this->debug('Sent ' . $amount . ' XLM ' . ' (Operations: ' . $operationCount . ') to Croupier (Bets: ' . $i . '/' . $betCount . ')');
+                } else {
+                    $this->debug('ERROR: failed to send ' . $amount . ' XLM ' . '(Operations: ' . $operationCount . ') to Croupier (Bets: ' . $i . '/' . $betCount . ')');
+                }
+            }
+        } else {
+            $this->debug('ERROR: this action available only for Testnet');
         }
     }
 
@@ -46,19 +71,21 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    protected function sendGameProfits()
+    protected function processingBets()
     {
         $stellarServer = new StellarCroupier();
 
-        ['bets_count' => $betsCount, 'wins' => $wins] = $stellarServer->sendPrizesToPlayers();
+        ['bets_count' => $betsCount, 'wins' => $wins] = $stellarServer->processingBets();
 
-        foreach ($wins as [
-            'player_public_key' => $playerPublicKey,
-            'prize_amount' => $prizeAmount,
-            'winner_rate' => $winnerRate,
-        ]) {
-            $this->output('[Croupier] User with account ' . $playerPublicKey . ' has won XLM ' . number_format($prizeAmount, 6) . ' with rate x' . $winnerRate);
+        if ($betsCount) {
+            foreach ($wins as [
+                'prize_amount' => $prizeAmount,
+                'winner_rate' => $winnerRate,
+            ]) {
+                $this->output('Sent ' . $prizeAmount . ' XLM (x' . $winnerRate . ' Winner Prize)');
+            }
+
+            $this->output('Winners found: ' . count($wins) . '. Bets processed: ' . $betsCount);
         }
-        $this->output('[Croupier] ' . count($wins) . ' users won out of ' . $betsCount);
     }
 }
