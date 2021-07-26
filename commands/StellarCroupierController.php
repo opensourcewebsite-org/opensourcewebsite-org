@@ -87,7 +87,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
                 $this->output('Sent ' . $prizeAmount . ' XLM (x' . $winnerRate . ' Winner Prize)');
             }
 
-            $this->output('Winners found: ' . count($wins) . '. Bets processed: ' . $betsCount);
+            $this->output('Bets processed: ' . $betsCount . '. Winners found: ' . count($wins));
         }
     }
 }
