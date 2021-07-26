@@ -20,7 +20,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
 
     public function actionIndex()
     {
-        $this->processingBets();
+        $this->processBets();
     }
 
     /**
@@ -35,34 +35,36 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
     {
         $stellarServer = new StellarCroupier();
 
-        if ($stellarServer->isTestnet()) {
-            if (!$betCount) {
-                $betCount = rand(1, 10);
-            }
-
-            if (!$amount) {
-                $amount = rand(1, 10000) / 1000;
-            } else {
-                $amount = max($amount, StellarCroupier::BET_MINIMUM_AMOUNT);
-            }
-
-            for ($i = 1; $i <= $betCount; $i++) {
-                $request = $stellarServer->buildTransaction($sourcePublicKey);
-                $operationCount = rand(1, 3);
-                for ($operationNumber = 1; $operationNumber <= $operationCount; $operationNumber++) {
-                    $request = $request->addLumenPayment(StellarCroupier::getCroupierPublicKey(), $amount);
-                }
-
-                $response = $request->submit($sourcePrivateKey);
-
-                if ($response->getResult()->succeeded()) {
-                    $this->debug('Sent ' . $amount . ' XLM ' . ' (Operations: ' . $operationCount . ') to Croupier (Bets: ' . $i . '/' . $betCount . ')');
-                } else {
-                    $this->debug('ERROR: failed to send ' . $amount . ' XLM ' . '(Operations: ' . $operationCount . ') to Croupier (Bets: ' . $i . '/' . $betCount . ')');
-                }
-            }
-        } else {
+        if (!$stellarServer->isTestnet()) {
             $this->debug('ERROR: this action available only for Testnet');
+
+            return;
+        }
+
+        if (!$betCount) {
+            $betCount = rand(1, 10);
+        }
+
+        if (!$amount) {
+            $amount = rand(1, 10000) / 1000;
+        } else {
+            $amount = max($amount, StellarCroupier::BET_MINIMUM_AMOUNT);
+        }
+
+        for ($betNumber = 1; $betNumber <= $betCount; $betNumber++) {
+            $request = $stellarServer->buildTransaction($sourcePublicKey);
+            $operationCount = rand(1, 3);
+            for ($operationNumber = 1; $operationNumber <= $operationCount; $operationNumber++) {
+                $request = $request->addLumenPayment(StellarCroupier::getCroupierPublicKey(), $amount);
+            }
+
+            $response = $request->submit($sourcePrivateKey);
+
+            if ($response->getResult()->succeeded()) {
+                $this->debug('Sent ' . $amount . ' XLM (Operations: ' . $operationCount . ') to Croupier (Bets: ' . $betNumber . '/' . $betCount . ')');
+            } else {
+                $this->debug('ERROR: failed to send ' . $amount . ' XLM (Operations: ' . $operationCount . ') to Croupier (Bets: ' . $betNumber . '/' . $betCount . ')');
+            }
         }
     }
 
@@ -71,11 +73,11 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    protected function processingBets()
+    protected function processBets()
     {
         $stellarServer = new StellarCroupier();
 
-        ['bets_count' => $betsCount, 'wins' => $wins] = $stellarServer->processingBets();
+        ['bets_count' => $betsCount, 'wins' => $wins] = $stellarServer->processBets();
 
         if ($betsCount) {
             foreach ($wins as [

@@ -116,7 +116,7 @@ class StellarCroupier extends StellarServer
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    public function processingBets(): array
+    public function processBets(): array
     {
         $sinceCursor = StellarCroupierData::getLastPagingToken();
 
@@ -209,6 +209,10 @@ class StellarCroupier extends StellarServer
         if (!$this->isTestnet()) {
             $prizeAmount = $betAmount * $winnerRate;
             $prizeAmount = min($prizeAmount, $this->getPrizeBalance());
+
+            if ($prizeAmount < 0.001) {
+                return [];
+            }
         } else {
             $prizeAmount = 0.001;
         }
@@ -229,10 +233,10 @@ class StellarCroupier extends StellarServer
 
     private function getPrizeBalance(): float
     {
-        $balance = $tis->getCroupierBalance() - self::BALANCE_RESERVE_AMOUNT;
+        $balance = $this->getCroupierBalance() - self::BALANCE_RESERVE_AMOUNT;
         $balance *= (1 - (self::PRIZE_RESERVE_PERCENT / 100));
 
-        if ($balance < 0.01) {
+        if ($balance < 0.001) {
             $balance = 0;
         }
 
