@@ -237,6 +237,8 @@ class SiteController extends Controller
             \app\models\CurrencyExchangeOrder::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\CurrencyExchangeOrderResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
+            \app\models\UserLanguage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\UserCitizenship::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\Contact::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
