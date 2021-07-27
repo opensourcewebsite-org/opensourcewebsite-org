@@ -204,9 +204,8 @@ class SiteController extends Controller
                 }
             } else {
                 $created_at = $mergeAccountsRequest->created_at;
-                $requestLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
 
-                if ($created_at + $requestLifeTime < time()) {
+                if ($created_at + User::PASSWORD_RESET_TOKEN_EXPIRE < time()) {
                     $mergeAccountsRequest->delete();
                     unset($mergeAccountsRequest);
                 }
@@ -228,9 +227,15 @@ class SiteController extends Controller
             BotUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\CompanyUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\AdSearch::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\AdSearchResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\AdOffer::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\AdOfferResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\Resume::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\ResumeResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\Vacancy::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\VacancyResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\CurrencyExchangeOrder::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\CurrencyExchangeOrderResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
             \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
@@ -253,7 +258,7 @@ class SiteController extends Controller
             \app\models\UserMoqupFollow::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\UserWikiPage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\CurrencyExchangeOrder::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\UserStellar::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             $userToMerge->delete();
 
@@ -378,9 +383,8 @@ class SiteController extends Controller
                 }
             } else {
                 $created_at = $changeEmailRequest->created_at;
-                $requestLifeTime = Yii::$app->params['user.passwordResetTokenExpire'];
 
-                if ($created_at + $requestLifeTime < time()) {
+                if ($created_at + User::PASSWORD_RESET_TOKEN_EXPIRE < time()) {
                     $changeEmailRequest->delete();
                     unset($changeEmailRequest);
                 }

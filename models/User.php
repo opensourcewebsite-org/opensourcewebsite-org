@@ -46,6 +46,8 @@ use yii\db\Query;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    public const PASSWORD_RESET_TOKEN_EXPIRE = 24 * 60 * 60; // seconds
+
     public const STATUS_DELETED = 0;
     public const STATUS_ACTIVE = 10;
 
@@ -276,9 +278,8 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expireTime = Yii::$app->params['user.passwordResetTokenExpire'];
 
-        return $timestamp + $expireTime >= time();
+        return $timestamp + self::PASSWORD_RESET_TOKEN_EXPIRE >= time();
     }
 
     public static function createWithRandomPassword()
