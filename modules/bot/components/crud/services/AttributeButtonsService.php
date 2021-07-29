@@ -4,6 +4,7 @@ namespace app\modules\bot\components\crud\services;
 
 use app\components\helpers\ArrayHelper;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\controllers\privates\MenuController;
 
 /**
@@ -149,8 +150,9 @@ class AttributeButtonsService
      * @param array $options
      *
      * @return string
+     * @throws \Exception
      */
-    private function getButtonRoute(&$configButton, $buttonKey, $options = [])
+    private function getButtonRoute(array &$configButton, int $buttonKey, array $options = [])
     {
         $attributeName = ArrayHelper::getValue($options, 'attributeName', null);
         $id = ArrayHelper::getValue($options, 'modelId', null);
@@ -166,7 +168,13 @@ class AttributeButtonsService
             $route = $configButton['route'];
             unset($configButton['route']);
         } elseif (isset($configButton['callback'])) {
-            $route = $this->controller::createRoute('b-c', ['a' => $attributeName, 'i' => $buttonKey]);
+            $route = $this->controller::createRoute(
+                CrudController::ACTION_BUTTON_CALLBACK,
+                [
+                    'a' => $attributeName,
+                    'i' => $buttonKey
+                ]
+            );
             unset($configButton['callback']);
         } else {
             $route = MenuController::createRoute();
@@ -188,16 +196,18 @@ class AttributeButtonsService
     public function createAttributeRoute($modelName, $attribute, $id = null)
     {
         if ($id) {
+            $actionName = CrudController::ACTION_EDIT_ATTRIBUTE;
             $routeParams = [
                 'id' => $id,
                 'a' => $attribute,
             ];
         } else {
+            $actionName = CrudController::ACTION_SHOW_ATTRIBUTE;
             $routeParams = [
                 'a' => $attribute,
             ];
         }
 
-        return $this->controller::createRoute($id ? 'e-a' : 'sh-a', $routeParams);
+        return $this->controller::createRoute($actionName, $routeParams);
     }
 }

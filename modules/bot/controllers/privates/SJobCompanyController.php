@@ -23,7 +23,7 @@ use yii\db\ActiveRecord;
 class SJobCompanyController extends CrudController
 {
     public const DEFAULT_PAGE_SIZE = 9;
-    protected $updateAttributes = [
+    protected array $updateAttributes = [
         'name',
         'description',
         'address',
@@ -31,7 +31,7 @@ class SJobCompanyController extends CrudController
     ];
 
     /** @inheritDoc */
-    protected function rules()
+    protected function rules(): array
     {
         return [
             'model' => Company::class,
@@ -135,6 +135,7 @@ class SJobCompanyController extends CrudController
     }
 
     /**
+     * View
      * @param int $id
      *
      * @return array

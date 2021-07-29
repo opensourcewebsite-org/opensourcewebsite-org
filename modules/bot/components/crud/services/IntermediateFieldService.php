@@ -93,7 +93,7 @@ class IntermediateFieldService
      */
     public function hasFlag()
     {
-        $flag = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE_FLAG, null);
+        $flag = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE_FLAG);
         $this->state->setIntermediateField(self::SAFE_ATTRIBUTE_FLAG, null);
 
         return $flag;

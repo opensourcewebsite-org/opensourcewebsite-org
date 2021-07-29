@@ -16,7 +16,7 @@ use yii\db\ActiveRecord;
  */
 class ModelRelationService
 {
-    /** @var Controller */
+    /** @var CrudController */
     public $controller;
 
     /**
@@ -175,7 +175,7 @@ class ModelRelationService
     }
 
     /**
-     * @param                     $relation
+     * @param $relation
      *
      * @return array [['column_id', 'ref_column_id', 'class'], ['sec_column_id','sec_ref_column_id', 'class', ?'field']]
      */
