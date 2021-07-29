@@ -9,6 +9,8 @@ use app\modules\bot\components\helpers\Emoji;
 /**
  * Class SDaController
  *
+ * Dating service
+ *
  * @package app\modules\bot\controllers\privates
  */
 class SDaController extends Controller

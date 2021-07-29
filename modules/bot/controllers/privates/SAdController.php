@@ -10,6 +10,8 @@ use app\models\AdSection;
 /**
  * Class SAdController
  *
+ * Ads Service Menu
+ *
  * @package app\modules\bot\controllers\privates
  */
 class SAdController extends Controller
