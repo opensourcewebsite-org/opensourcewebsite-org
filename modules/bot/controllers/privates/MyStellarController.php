@@ -309,12 +309,18 @@ class MyStellarController extends Controller
                 [
                     [
                         [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/commands/StellarOperatorController.php',
+                            'text' => Yii::t('bot', 'Source Code'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyStellarController::createRoute(),
                             'text' => Emoji::BACK,
                         ],
                         [
-                            'text' => Emoji::MENU,
                             'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ],
@@ -333,12 +339,18 @@ class MyStellarController extends Controller
                 [
                     [
                         [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/commands/StellarCroupierController.php',
+                            'text' => Yii::t('bot', 'Source Code'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyStellarController::createRoute(),
                             'text' => Emoji::BACK,
                         ],
                         [
-                            'text' => Emoji::MENU,
                             'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
                     ],
                 ],

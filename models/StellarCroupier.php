@@ -14,7 +14,9 @@ class StellarCroupier extends StellarServer
     public const BALANCE_RESERVE_AMOUNT = 5; // XLM
     // croupier balance percent reserved, so any prize won't exceed (100 - self::PRIZE_RESERVE_PERCENT) % of the balance
     public const PRIZE_RESERVE_PERCENT = 20; // %
+    // percentage return to player (% RTP), the expected percentage of wagers that a game will return to the player in the long run
     public const PRIZE_RETURN_PERCENT = 95; // %
+    // list of prizes, any prize is the player's bet multiplied by one of winner rate
     public const WINNER_RATES = [2, 3, 4, 5, 10, 20, 50, 100, 500, 1000, 10000, 100000, 1000000];
 
     private ?Account $croupierAccount = null;
