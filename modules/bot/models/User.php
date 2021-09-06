@@ -221,4 +221,9 @@ class User extends ActiveRecord
 
         return false;
     }
+
+    public function getProviderUserId()
+    {
+        return $this->provider_user_id;
+    }
 }

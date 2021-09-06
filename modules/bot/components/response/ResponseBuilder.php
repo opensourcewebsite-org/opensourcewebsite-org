@@ -181,6 +181,38 @@ class ResponseBuilder
     }
 
     /**
+     * @param ?string $photoFileId
+     * @param MessageText $messageText
+     * @param array $replyMarkup
+     * @param array $optionalParams
+     *
+     * @return ResponseBuilder
+     */
+    public function sendPhoto(
+        ?string $photoFileId,
+        MessageText $messageText,
+        array $replyMarkup = [],
+        array $optionalParams = []
+    ) {
+        $photo = new Photo($photoFileId);
+
+        if (!$photo->isNull()) {
+            $commands[] = new SendPhotoCommand(
+                $this->getChat()->getChatId(),
+                $photo,
+                $messageText,
+                $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
+            );
+        }
+
+        if (!empty($commands)) {
+            $this->commands = array_merge($this->commands, $commands);
+        }
+
+        return $this;
+    }
+
+    /**
      * filter params and create array of optional params  for edit message api
      * command
      *
