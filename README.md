@@ -1,8 +1,6 @@
 [![Website](https://img.shields.io/badge/Website-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
 [![Telegram Bot](https://img.shields.io/badge/Telegram_bot-opensourcewebsite__bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
 [![Slack](https://img.shields.io/badge/Slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
-[![Discord](https://img.shields.io/badge/Discord-chat-CC2B5E.svg?style=flat-square&logo=discord)](https://discord.gg/94WpSPJ)
-[![Gitter](https://img.shields.io/badge/Gitter-chat-CC2B5E.svg?style=flat-square&logo=gitter)](https://gitter.im/opensourcewebsite-org)
 
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 [![Travis CI Build Status](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org.svg?style=flat-square&branch=master)](https://travis-ci.org/opensourcewebsite-org/opensourcewebsite-org)
@@ -61,7 +59,7 @@ Please read through our [API Documentation](https://github.com/opensourcewebsite
 
 ## Feedback
 
-Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY), [Discord](https://discord.gg/94WpSPJ), [Gitter](https://gitter.im/opensourcewebsite-org), [Telegram](https://t.me/opensourcewebsite).
+Join our [Slack](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY).
 
 To request a new feature, submit a bug report, give us feedback, start a design discussion or have an idea to make this code better feel free to [open an issue](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues), or [create a pull request](https://github.com/opensourcewebsite-org/opensourcewebsite-org/pulls).
 

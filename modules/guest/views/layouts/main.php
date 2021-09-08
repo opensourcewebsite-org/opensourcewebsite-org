@@ -19,8 +19,8 @@ $currentUrl = Yii::$app->controller->id.'/' . Yii::$app->controller->action->id;
 <html lang="<?= Yii::$app->language ?>">
 <head>
     <?php if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'analytics.php')) {
-        echo $this->render('analytics');
-    } ?>
+    echo $this->render('analytics');
+} ?>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -61,7 +61,7 @@ $this->beginBody();
                 if (!empty($languages)) {
                     foreach ($languages as $language) {
                         //Check if the language is the active
-                        $active = ($language->code == Yii::$app->language) ? 'active' : NULL;
+                        $active = ($language->code == Yii::$app->language) ? 'active' : null;
                         echo Html::a($language->name_ascii, Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]), ['class' => ['dropdown-item', $active]]);
                     }
                 } ?>
@@ -89,15 +89,6 @@ $this->beginBody();
             <ul class="list-inline quicklinks">
               <li class="list-inline-item">
                 <?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?>
-              </li>
-              <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Slack'), 'https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY') ?>
-              </li>
-              <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Discord'), 'https://discord.gg/94WpSPJ') ?>
-              </li>
-              <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Gitter'), 'https://gitter.im/opensourcewebsite-org') ?>
               </li>
               <li class="list-inline-item">
                 <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
