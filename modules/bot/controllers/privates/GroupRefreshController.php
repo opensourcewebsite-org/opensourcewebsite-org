@@ -7,7 +7,6 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
-use TelegramBot\Api\HttpException;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -21,7 +20,6 @@ class GroupRefreshController extends Controller
     /**
      * @param string|int|null $chatId
      * @return array
-     * @throws \TelegramBot\Api\HttpException
      * @throws \yii\db\Exception
      */
     public function actionIndex($chatId = null): array
@@ -46,7 +44,7 @@ class GroupRefreshController extends Controller
 
         try {
             $this->getBotApi()->getChat($chat->chat_id);
-        } catch (HttpException $e) {
+        } catch (\Exception $e) {
             Yii::warning($e);
 
             if ($e->getCode() == 400) {
@@ -93,7 +91,7 @@ class GroupRefreshController extends Controller
                     $chat->chat_id,
                     $outdatedAdministrator->provider_user_id
                 );
-            } catch (HttpException $e) {
+            } catch (\Exception $e) {
                 Yii::warning($e);
 
                 $chat->unlink('users', $outdatedAdministrator, true);
