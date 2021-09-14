@@ -44,6 +44,13 @@ class GroupRefreshController extends Controller
 
         try {
             $this->getBotApi()->getChat($chat->chat_id);
+            $this->getBotApi()->getChatMember($chat->chat_id, explode(':', $this->getBot()->token)[0])->isActualChatMember();
+            $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
+            $telegramAdministratorsIds = array_map(
+                fn ($a) => $a->getUser()->getId(),
+                $telegramAdministrators
+            );
+
         } catch (\Exception $e) {
             Yii::warning($e);
 
@@ -55,20 +62,6 @@ class GroupRefreshController extends Controller
 
             throw $e;
         }
-
-        if (!$this->getBotApi()
-            ->getChatMember($chat->chat_id, explode(':', $this->getBot()->token)[0])
-            ->isActualChatMember()) {
-            // bot is not the chat member => remove chat from db
-            removeFromDb($chat);
-            return $this->run('group/index');
-        }
-
-        $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
-        $telegramAdministratorsIds = array_map(
-            fn ($a) => $a->getUser()->getId(),
-            $telegramAdministrators
-        );
 
         if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
             // user is not in Telegram's admins list
