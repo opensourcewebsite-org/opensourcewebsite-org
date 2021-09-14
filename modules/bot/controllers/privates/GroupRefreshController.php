@@ -47,7 +47,7 @@ class GroupRefreshController extends Controller
         } catch (\Exception $e) {
             Yii::warning($e);
 
-            if ($e->getCode() == 400) {
+            if (in_array($e->getCode(),[400,403])) {
                 // group has been removed in Telegram
                 removeFromDb($chat);
                 return $this->run('group/index');
