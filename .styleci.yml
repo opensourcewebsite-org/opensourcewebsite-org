@@ -1,9 +1,7 @@
 # https://styleci.io
 preset: psr12
 risky: true
-
 version: 8
-
 finder:
     exclude:
         - docs
@@ -16,7 +14,6 @@ finder:
         - UnionCar.php
         - TimerUnionTypes.php
         - schema1.php
-
 enabled:
     - alpha_ordered_traits
     - array_indentation

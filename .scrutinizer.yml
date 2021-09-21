@@ -1,0 +1,50 @@
+# https://scrutinizer-ci.com/g/opensourcewebsite-org/opensourcewebsite-org
+# https://scrutinizer-ci.com/docs/
+# https://scrutinizer-ci.com/docs/guides/php
+build:
+  image: default-bionic
+  environment:
+    php: 7.4
+  nodes:
+    mysql:
+      services:
+        # For available tags, see https://hub.docker.com/_/mysql/
+        mysql:
+          image: 'mysql:8'
+          command: --default-authentication-plugin=mysql_native_password
+          env:
+            MYSQL_DATABASE: opensourcewebsite_test
+            MYSQL_USER: root
+            MYSQL_ALLOW_EMPTY_PASSWORD: true
+  dependencies:
+    before:
+      - cp .env.test.dist .env.test
+      - cp config/params.dist.php config/params.php
+      - cp config/web-local.dist.php config/web-local.php
+      - export PATH="$HOME/.composer/vendor/bin:$PATH"
+      - composer install --prefer-dist --no-interaction
+      - php --version
+      - php -m
+      #- mysql --version
+      - mysql -uroot -e 'SHOW VARIABLES like "version"';
+      - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+      - ./tests/bin/yii migrate --interactive=0 -c
+      - ./tests/bin/yii fixture/load '*' --interactive=0
+  tests:
+    override:
+      - php-scrutinizer-run
+      - ./vendor/bin/codecept run unit --coverage
+      - phpcs-run
+        use_website_config: false
+      - js-scrutinizer-run
+      - jshint-run
+        use_website_config: false
+  cache:
+    directories:
+      - ~/.composer/cache
+      - ~/.composer/vendor
+      - vendor
+filter:
+  excluded_paths:
+    - tests/*
+    - vendor/*

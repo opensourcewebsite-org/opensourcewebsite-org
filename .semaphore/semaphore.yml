@@ -1,6 +1,6 @@
 # https://opensourcewebsite.semaphoreci.com/projects/opensourcewebsite-org
 # https://docs.semaphoreci.com
-# For more PHP information and examples, see https://docs.semaphoreci.com/article/84-language-php
+# https://docs.semaphoreci.com/article/84-language-php
 version: v1.0
 name: Main Pipeline
 agent:
