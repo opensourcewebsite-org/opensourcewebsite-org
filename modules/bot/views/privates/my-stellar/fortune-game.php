@@ -32,4 +32,4 @@ $stellarCroupier = new StellarCroupier();
 <?= Yii::t('bot', 'To start playing, send any amount of XLM to OSW account {0} as a bet', ExternalLink::getStellarExpertAccountFullLink(StellarCroupier::getCroupierPublicKey())) ?>. <?= Yii::t('bot', 'Minimum bet is {0} XLM', StellarCroupier::BET_MINIMUM_AMOUNT) ?>. <?= Yii::t('bot', 'Unlimited attempts to win') ?>. <?= Yii::t('bot', 'Go ahead') ?>!<br/>
 <br/>
 <?php endif; ?>
-<i><?= Yii::t('bot', 'If you have any suggestions, questions or feedback, please contact our team') ?>: @opensourcewebsite</i>
+<i><?= Yii::t('bot', 'If you have any suggestions, questions or feedback, please contact our team') ?>.</i>

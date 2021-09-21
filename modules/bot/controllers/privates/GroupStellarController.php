@@ -149,6 +149,7 @@ class GroupStellarController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $text = str_replace(['-', ' '], PHP_EOL, $text);
                 $rows = explode(PHP_EOL, $text);
 
                 if (count($rows) == 2) {
@@ -199,8 +200,9 @@ class GroupStellarController extends Controller
             ]));
 
         if ($this->getUpdate()->getMessage()) {
-            if ($text = (int)$this->getUpdate()->getMessage()->getText()) {
-                if (is_int($text) && ($text >= ChatSetting::STELLAR_THRESHOLD_MIN)) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                Yii::warning($text);
+                if ($text >= ChatSetting::STELLAR_THRESHOLD_MIN) {
                     $chat->stellar_threshold = $text;
 
                     $this->getState()->setName(null);

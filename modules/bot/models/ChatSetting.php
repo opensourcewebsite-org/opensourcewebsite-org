@@ -22,7 +22,7 @@ class ChatSetting extends ActiveRecord
     public const FAQ_ANSWER_LENGHT_MIN = 1;
     public const FAQ_ANSWER_LENGHT_MAX = 10000;
 
-    public const STELLAR_THRESHOLD_MIN = 1;
+    public const STELLAR_THRESHOLD_MIN = 0.00000001;
     public const STELLAR_MODE_HOLDERS = 1;
     public const STELLAR_MODE_SIGNERS = 2;
 

@@ -12,11 +12,13 @@ Stellar - <?= Yii::t('bot', 'helps to manage the list of group members of holder
 <?php endif; ?>
 <?php if (!$isModeSigners && $chat->stellar_threshold) : ?>
 <br/>
-<?= Yii::t('bot', 'Threshold for holders') ?>: <?= $chat->stellar_threshold ?><br/>
+<?= Yii::t('bot', 'Threshold for holders') ?>: <?= $chat->stellar_threshold . ' ' . $chat->stellar_asset?><br/>
 <?php endif; ?>
 <?php if ($chat->stellar_invite_link) : ?>
 <br/>
 <?= Yii::t('bot', 'Invite link') ?>: <?= $chat->stellar_invite_link ?><br/>
 <?php endif; ?>
+<br/>
 ————<br/>
+<br/>
 <a href="https://www.stellar.org">Stellar.org</a>

@@ -1,2 +1,2 @@
-<b><?= Yii::t('bot', 'Send a threshold from minimum amount of the asset for holders who can join this group (integer)') ?>:</b><br/>
+<b><?= Yii::t('bot', 'Send a minimum asset amount required for the threshold for holders who can join this group') ?>:</b><br/>
 <br/>

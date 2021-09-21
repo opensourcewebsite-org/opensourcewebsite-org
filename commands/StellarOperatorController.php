@@ -47,7 +47,7 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
                 foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
                     $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);
                     $incomeSent = number_format($incomeSent, 2);
-                    $this->output($resultCode . ' Accounts processed: ' . $accountsCount . '. Paid: ' . $incomeSent . ' ' . $assetCode);
+                    $this->output($resultCode . '. Accounts processed: ' . $accountsCount . '. Paid: ' . $incomeSent . ' ' . $assetCode);
                 }
             }
 

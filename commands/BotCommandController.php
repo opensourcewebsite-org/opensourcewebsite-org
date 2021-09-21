@@ -30,6 +30,19 @@ class BotCommandController extends Controller implements CronChainedInterface
     }
 
     /**
+     * Restart all bots
+     *
+     * @throws \TelegramBot\Api\Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionRestartAll()
+    {
+        $this->actionDisableAll();
+        $this->actionEnableAll();
+    }
+
+    /**
      * Enable all inactive bots
      *
      * @throws \TelegramBot\Api\Exception

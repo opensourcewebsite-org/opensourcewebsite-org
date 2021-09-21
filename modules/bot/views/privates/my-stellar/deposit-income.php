@@ -22,4 +22,4 @@ $assets = [
 <?= implode(' | ', $assets) ?><br/>
 <br/>
 <?php endif; ?>
-<i><?= Yii::t('bot', 'If you have any suggestions, questions or feedback, please contact our team') ?>: @opensourcewebsite</i>
+<i><?= Yii::t('bot', 'If you have any suggestions, questions or feedback, please contact our team') ?>.</i>

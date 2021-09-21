@@ -50,12 +50,12 @@ class GroupRefreshController extends Controller
                 fn ($a) => $a->getUser()->getId(),
                 $telegramAdministrators
             );
-
         } catch (\Exception $e) {
             Yii::warning($e);
 
-            if (in_array($e->getCode(),[400,403])) {
-                // group has been removed in Telegram
+            if (in_array($e->getCode(), [400, 403])) {
+                // group has been removed in Telegram or bot is not the chat member => remove chat from db
+
                 removeFromDb($chat);
                 return $this->run('group/index');
             }
@@ -65,7 +65,6 @@ class GroupRefreshController extends Controller
 
         if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
             // user is not in Telegram's admins list
-
             if (empty($telegramAdministratorsIds)) {
                 // and no administrators left => remove chat from db
                 removeFromDb($chat);
