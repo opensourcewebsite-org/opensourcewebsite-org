@@ -41,7 +41,6 @@
         "kartik-v/yii2-widget-select2": "^2.1",
         "npm-asset/ace-builds": "^1.4.1",
         "yiisoft/yii2-httpclient": "^2.0.0",
-        "telegram-bot/api": "^2.3",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "janisto/yii2-timepicker": "^1.1",
         "ivankff/yii2-modal-ajax": "^4.1",
@@ -51,7 +50,8 @@
         "2amigos/yii2-leaflet-extension": "^1.1",
         "npm-asset/leaflet.locatecontrol": "*",
         "lstrojny/functional-php": "^1.17",
-        "opensourcewebsite-org/php-stellar-sdk": "dev-master"
+        "opensourcewebsite-org/php-stellar-sdk": "dev-master",
+        "opensourcewebsite-org/php-telegram-sdk": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "^2.0",
