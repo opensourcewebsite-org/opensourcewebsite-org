@@ -1,6 +1,5 @@
 <?php
 
-use yii\faker\FixtureController;
 use yii\helpers\ArrayHelper;
 
 $params = require __DIR__ . '/params.php';
@@ -41,11 +40,11 @@ $config = [
             'statusCode' => 503,
         ],
         'log' => [
-			'flushInterval' => 1,
+            'flushInterval' => 1,
             'targets' => [
                 'file' => [
                     'class' => 'yii\log\FileTarget',
-					'exportInterval' => 1,
+                    'exportInterval' => 1,
                     'logFile' => '@runtime/logs/console.log',
                     'levels' => ['error'],
                     'logVars' => [],
@@ -74,7 +73,7 @@ $config = [
     'params' => $params,
     'controllerMap' => [
         'fixture' => [
-            'class' => FixtureController::class,
+            'class' => 'yii\faker\FixtureController',
             'namespace' => 'app\tests\fixtures',
             'fixtureDataPath' => '@tests/fixtures/data',
             'templatePath' => '@tests/fixtures/templates',

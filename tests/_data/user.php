@@ -19,7 +19,7 @@ return [
         'username' => 'webmaster',
         'auth_key' => 'test101key',
         'password_hash' => Yii::$app->security->generatePasswordHash('webmaster'),
-        'email' => 'demo@example.com',
+        'email' => 'webmaster@example.com',
         'is_authenticated' => 1,
         'status' => 10,
         'referrer_id' => 100,

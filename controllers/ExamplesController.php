@@ -6,6 +6,8 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\db\Query;
+use yii\data\Pagination;
 
 class ExamplesController extends Controller
 {
@@ -79,6 +81,30 @@ class ExamplesController extends Controller
 
         return $this->render('mysql-info', [
             'mysqlVars' => $mysqlVars
+        ]);
+    }
+
+    // https://www.yiiframework.com/doc/guide/2.0/en/db-migrations
+    public function actionMigrations(): string
+    {
+        $query = (new Query())
+            ->select([
+                '*',
+            ])
+            ->from('{{%migration}}')
+            ->orderBy([
+                'apply_time' => SORT_DESC,
+            ]);
+
+        $countQuery = clone $query;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $models = $query->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('migration', [
+            'models' => $models,
+            'pages' => $pages,
         ]);
     }
 }

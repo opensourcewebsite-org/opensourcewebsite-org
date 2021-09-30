@@ -10,12 +10,9 @@ $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap
 $params['currency'] = 'USD';
 $params['defaultScheme'] = 'https';
 
-$settingValidations = require __DIR__ . '/setting_validations.php';
-$params = array_merge($params, $settingValidations);
 $db = require __DIR__ . '/db.php';
 $common = require __DIR__ . '/common.php';
 $events = require __DIR__ . "/events.php";
-
 
 $config = [
     'id' => 'basic',
@@ -52,23 +49,31 @@ $config = [
             'appendTimestamp' => true,
             'bundles' => [
                 'yii\bootstrap4\BootstrapAsset' => [
-                    'css' => ['//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css'],
+                    'css' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css',
+                        // TODO '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.1/css/bootstrap.min.css',
+                    ],
                 ],
                 'yii\bootstrap4\BootstrapPluginAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js',
+                        // TODO '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js',
                     ],
                 ],
                 'yii\web\JqueryAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js',
                         '//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js',
                     ],
-                    'jsOptions' => ['position' => View::POS_HEAD],
+                    'jsOptions' => [
+                        'position' => View::POS_HEAD,
+                    ],
                 ],
                 'yii\jui\JuiAsset' => [
                     'css' => [],
-                    'js' => ['//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'],
+                    'js' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
+                    ],
                 ],
             ],
         ],
@@ -146,14 +151,13 @@ $config = [
                 ],
             ],
         ],
+        'settings' => [
+            'class' => 'app\components\Setting',
+        ],
     ],
     'timeZone' => 'UTC',
     'params' => $params,
-    'as ConfirmEmail' => [
-        'class' => '\app\behaviors\ConfirmEmailBehavior',
-    ],
 ];
-
 
 //$config have more priority than $common
 $config = ArrayHelper::merge($common, array_merge($config, $events));

@@ -10,10 +10,11 @@ use yii\base\Model;
  */
 class LoginForm extends Model
 {
-    public $email;
+    public $username;
     public $password;
+    public $captcha;
 
-    private $_user;
+    private $user;
 
     /**
      * {@inheritdoc}
@@ -21,11 +22,23 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            // email and password are both required
-            [['email', 'password'], 'required'],
-            // password is validated by validatePassword()
+            ['captcha', 'captcha', 'skipOnEmpty' => YII_ENV_TEST],
+            [['username', 'password'], 'required'],
+            ['username', 'trim'],
+            ['username', 'string', 'max' => 255],
             ['password', 'validatePassword'],
-            ['email', 'validateEmailConfirmation'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'username' => Yii::t('app', 'Username') . ' / ID / ' . Yii::t('app', 'Email'),
+            'password' => Yii::t('app', 'Password'),
+            'captcha' => Yii::t('app', 'Captcha'),
         ];
     }
 
@@ -38,27 +51,17 @@ class LoginForm extends Model
      */
     public function validatePassword($attribute, $params)
     {
-        if (!$this->hasErrors()) {
-            $user = $this->getUser();
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect email or password.');
-            }
+        if ($this->hasErrors()) {
+            return false;
+        }
+
+        $user = $this->getUser();
+
+        if (!$user || !$user->validatePassword($this->password)) {
+            $this->addError($attribute, 'Incorrect username or password.');
         }
     }
 
-    public function validateEmailConfirmation($attribute, $params)
-    {
-        if (!$this->hasErrors()) {
-            $user = $this->getUser();
-            if (!$user || !$user->is_authenticated) {
-                $this->addError($attribute, 'Please confirm your email.');
-
-                if ($user->sendConfirmationEmail($user)) {
-                    Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
-                }
-            }
-        }
-    }
     /**
      * Logs in a user using the provided email and password.
      *
@@ -66,26 +69,23 @@ class LoginForm extends Model
      */
     public function login()
     {
-        if ($this->validate()) {
-            $user = $this->getUser();
+        if (!$this->validate()) {
+            $this->captcha = null;
 
-            return Yii::$app->user->login($user, 3600 * 24 * 30);
+            return false;
         }
 
-        return false;
+        $user = $this->getUser();
+
+        return Yii::$app->user->login($user, 3600 * 24 * 30);
     }
 
-    /**
-     * Finds user by [[email]]
-     *
-     * @return User|null
-     */
     protected function getUser()
     {
-        if ($this->_user === null) {
-            $this->_user = User::findByEmail($this->email);
+        if ($this->user === null) {
+            $this->user = User::findByUsername($this->username) ?: User::findById($this->username) ?: User::findByEmail($this->username) ?: null;
         }
 
-        return $this->_user;
+        return $this->user;
     }
 }

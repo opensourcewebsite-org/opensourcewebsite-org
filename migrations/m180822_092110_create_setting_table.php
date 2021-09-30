@@ -5,12 +5,13 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `setting`.
  */
-class m180822_092110_create_setting_table extends Migration {
-
+class m180822_092110_create_setting_table extends Migration
+{
     /**
      * {@inheritdoc}
      */
-    public function safeUp() {
+    public function safeUp()
+    {
         $this->createTable('setting', [
             'id' => $this->primaryKey()->unsigned(),
             'key' => $this->string()->notNull(),
@@ -22,8 +23,8 @@ class m180822_092110_create_setting_table extends Migration {
     /**
      * {@inheritdoc}
      */
-    public function safeDown() {
+    public function safeDown()
+    {
         $this->dropTable('setting');
     }
-
 }

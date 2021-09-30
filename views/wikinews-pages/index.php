@@ -27,7 +27,6 @@ $this->title = Yii::t('app', 'Wikinews pages');
                         'style' =>  ['float' => 'right'],
                     ],
                     'url' => Url::to(['wikinews-pages/create']),
-                    'ajaxSubmit' => true,
                 ]);?>
             </li>
         </ul>

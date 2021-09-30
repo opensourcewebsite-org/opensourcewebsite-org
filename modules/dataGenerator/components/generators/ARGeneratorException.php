@@ -19,6 +19,7 @@ class ARGeneratorException extends Exception
         if ($message instanceof Model) {
             $message = VarDumper::dumpAsString($message->errors);
         }
+
         parent::__construct($message, $code, $previous);
     }
 }

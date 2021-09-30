@@ -10,12 +10,11 @@ use app\tests\fixtures\UserFixture;
 use app\tests\fixtures\UserMoqupFollowFixture;
 use app\tests\fixtures\RatingFixture;
 
-
 class LoginFormTest extends \Codeception\Test\Unit
 {
     private $model;
 
-	public function _fixtures()
+    public function _fixtures()
     {
         return [
             'user' => [
@@ -49,7 +48,7 @@ class LoginFormTest extends \Codeception\Test\Unit
     public function testLoginNoUser()
     {
         $this->model = new LoginForm([
-            'email' => 'not_existing_email',
+            'username' => 'not_existing_username',
             'password' => 'not_existing_password',
         ]);
 
@@ -57,10 +56,34 @@ class LoginFormTest extends \Codeception\Test\Unit
         expect_that(\Yii::$app->user->isGuest);
     }
 
+    public function testLoginWrongUsername()
+    {
+        $this->model = new LoginForm([
+            'username' => 'admin',
+            'password' => 'webmaster',
+        ]);
+
+        expect_not($this->model->login());
+        expect_that(\Yii::$app->user->isGuest);
+        expect($this->model->errors)->hasKey('password');
+    }
+
+    public function testLoginWrongId()
+    {
+        $this->model = new LoginForm([
+            'username' => '999',
+            'password' => 'webmaster',
+        ]);
+
+        expect_not($this->model->login());
+        expect_that(\Yii::$app->user->isGuest);
+        expect($this->model->errors)->hasKey('password');
+    }
+
     public function testLoginWrongEmail()
     {
         $this->model = new LoginForm([
-            'email' => 'example@demo.com',
+            'username' => 'demo@example.com',
             'password' => 'webmaster',
         ]);
 
@@ -72,7 +95,7 @@ class LoginFormTest extends \Codeception\Test\Unit
     public function testLoginWrongPassword()
     {
         $this->model = new LoginForm([
-            'email' => 'demo@example.com',
+            'username' => 'webmaster',
             'password' => 'wrong_password',
         ]);
 
@@ -81,16 +104,40 @@ class LoginFormTest extends \Codeception\Test\Unit
         expect($this->model->errors)->hasKey('password');
     }
 
-    public function testLoginCorrect()
+    public function testLoginCorrectUsername()
     {
         $this->model = new LoginForm([
-            'email' => 'demo@example.com',
+            'username' => 'webmaster',
             'password' => 'webmaster',
         ]);
 
         expect_that($this->model->login());
         expect_not(\Yii::$app->user->isGuest);
-        expect($this->model->errors)->hasntKey('password');
+        expect($this->model->errors)->hasNotKey('password');
+    }
+
+    public function testLoginCorrectId()
+    {
+        $this->model = new LoginForm([
+            'username' => '101',
+            'password' => 'webmaster',
+        ]);
+
+        expect_that($this->model->login());
+        expect_not(\Yii::$app->user->isGuest);
+        expect($this->model->errors)->hasNotKey('password');
+    }
+
+    public function testLoginCorrectEmail()
+    {
+        $this->model = new LoginForm([
+            'username' => 'webmaster@example.com',
+            'password' => 'webmaster',
+        ]);
+
+        expect_that($this->model->login());
+        expect_not(\Yii::$app->user->isGuest);
+        expect($this->model->errors)->hasNotKey('password');
     }
 
     protected function _after()

@@ -4,6 +4,7 @@ use app\components\Converter;
 use yii\widgets\LinkPager;
 
 $this->title = Yii::t('app', 'Rating transactions');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Account'), 'url' => ['account']];
 ?>
 <div class="issue-index">
     <div class="row">

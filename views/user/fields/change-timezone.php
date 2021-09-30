@@ -8,11 +8,10 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 
 $timezones = TimeHelper::timezonesList();
+
+$form = ActiveForm::begin();
 ?>
-<div class="profile-form">
-    <?php
-    $timezoneForm = ActiveForm::begin();
-    ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -24,17 +23,19 @@ $timezones = TimeHelper::timezonesList();
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $timezoneForm->field($user, 'timezone')->widget(
+                            <?= $form->field($user, 'timezone')
+                                ->widget(
                                     Select2::class,
                                     [
-                                        'name'    => 'change-timezone',
-                                        'value'   => Yii::$app->user->identity->timezone,
-                                        'data'    => $timezones,
+                                        'name' => 'change-timezone',
+                                        'value' => Yii::$app->user->identity->timezone,
+                                        'data' => $timezones,
                                         'options' => [
-                                            'id'     => 'timezone-value',
+                                            'id' => 'timezone-value',
                                             'prompt' => '',
-                                        ]
-                                    ])->label(Yii::t('app', 'Timezone')); ?>
+                                        ],
+                                    ]
+                                )->label(Yii::t('app', 'Timezone')); ?>
                         </div>
                     </div>
                 </div>
@@ -49,5 +50,5 @@ $timezones = TimeHelper::timezonesList();
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

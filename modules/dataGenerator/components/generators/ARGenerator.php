@@ -6,6 +6,8 @@ use Faker\Factory;
 use Faker\Generator;
 use yii\db\ActiveRecord;
 use yii\test\Fixture;
+use app\models\User;
+use app\models\Currency;
 
 abstract class ARGenerator extends Fixture
 {
@@ -15,6 +17,7 @@ abstract class ARGenerator extends Fixture
     public function __construct($config = [])
     {
         $this->faker = Factory::create();
+
         parent::__construct($config);
     }
 
@@ -23,7 +26,8 @@ abstract class ARGenerator extends Fixture
         $this->setProviders();
     }
 
-    public static function getFaker(): Generator {
+    public static function getFaker(): Generator
+    {
         return Factory::create();
     }
 
@@ -35,7 +39,7 @@ abstract class ARGenerator extends Fixture
         $model = $this->factoryModel();
 
         if ($model && !$model->save()) {
-            throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
+            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
         return $model;
@@ -83,5 +87,37 @@ abstract class ARGenerator extends Fixture
                 $faker->addProvider(new $class($faker));
             }
         }
+    }
+
+    protected function getRandomUser(): ?User
+    {
+        /** @var User $user */
+        $user = User::find()
+            ->orderByRandAlt(1)
+            ->one();
+
+        if (!$user) {
+            $message = "\n" . self::classNameModel() . ': creation skipped. There is no Users.' . "\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
+        }
+
+        return $user;
+    }
+
+    protected function getRandomCurrency(): ?Currency
+    {
+        /** @var Currency|null $currency */
+        $currency = Currency::find()
+            ->select('id')
+            ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
+            ->orderByRandAlt(1)
+            ->one();
+
+        if (!$currency) {
+            $message = "\n" . self::classNameModel() . ': creation skipped. There is no Currencies.' . "\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
+        }
+
+        return $currency;
     }
 }

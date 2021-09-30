@@ -29,14 +29,18 @@ class SetDefaultCurrencyBehavior extends AttributeBehavior
         if (!$this->telegramUser) {
             throw new \Exception('You should set the telegramUser property');
         }
+
         /** @var ActiveRecord $model */
         $model = $event->sender;
+
         if (!$model->currency_id) {
             $user = User::findOne($this->telegramUser);
+
             if ($user->currency_id) {
                 return $user->currency_id;
             } elseif ($currencyCode = (Yii::$app->params['currency'] ?? '')) {
                 $currency = Currency::findOne(['code' => $currencyCode]);
+
                 if ($currency) {
                     return $currency->id;
                 }

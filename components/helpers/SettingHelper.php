@@ -8,21 +8,18 @@ use yii\base\Component;
 class SettingHelper extends Component
 {
     /**
-     * @param settingValues object of SettingValues model
+     * @param settingValue $settingValue
+     *
      * @return string html to display vote percentage
      */
-    public static function getVoteHTMl($settingValues = '', $vote = 0)
+    public static function getVotesHTMl($settingValue = '')
     {
-        if ($settingValues != null) {
-            $vote = $settingValues->getUserVotesPercent(false);
-        }
+        $votes = $settingValue->getVotesPercent();
 
-        $vote = floor($vote);
-
-        $voteFormat = Converter::formatNumber($vote, 0) . '%';
+        $voteFormat = Converter::formatNumber($votes, 2) . ' %';
 
         return '<div class="progress" style="height: 20px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: ' . $vote . '%" aria-valuenow="' . $vote . '" aria-valuemin="0" aria-valuemax="100">' . $voteFormat . '</div>
+                    <div class="progress-bar bg-success" role="progressbar" style="width: ' . $votes . '%" aria-valuenow="' . $votes . '" aria-valuemin="0" aria-valuemax="100">' . $voteFormat . '</div>
                 </div>';
     }
 }

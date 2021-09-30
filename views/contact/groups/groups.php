@@ -30,7 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'label' => Icon::ADD,
                                     'class' => 'btn btn-outline-success',
                                 ],
-                                'ajaxSubmit' => true,
                             ]) ?>
                         </li>
                         <li class="nav-item">
@@ -80,7 +79,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'update-group',
                                                 'id' => $key
                                             ],
-                                            'ajaxSubmit' => true,
                                         ]);
                                         return EditButton::widget([
                                             'url' => '#',

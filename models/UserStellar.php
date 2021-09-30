@@ -17,7 +17,7 @@ use yii\behaviors\TimestampBehavior;
  */
 class UserStellar extends \yii\db\ActiveRecord
 {
-    public const CONFIRM_REQUEST_LIFETIME = 1200; // seconds
+    public const CONFIRM_REQUEST_LIFETIME = 20 * 60; // seconds
 
     /**
      * {@inheritdoc}

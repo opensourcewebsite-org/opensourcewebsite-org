@@ -187,20 +187,10 @@ class Module extends \yii\base\Module
                         }
                     }
 
-                    $transaction = Yii::$app->db->beginTransaction();
+                    $user->save();
 
-                    try {
-                        $user->save();
-                        $botUser->user_id = $user->id;
-                        $botUser->save();
-                        // Add 1 rating for new user
-                        $user->addRating(Rating::USE_TELEGRAM_BOT, 1, false);
-
-                        $transaction->commit();
-                    } catch (\Exception $e) {
-                        $transaction->rollBack();
-                        return false;
-                    }
+                    $botUser->user_id = $user->id;
+                    $botUser->save();
                 }
 
                 $this->user = $user;

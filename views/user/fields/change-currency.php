@@ -7,11 +7,9 @@ use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$form = ActiveForm::begin();
 ?>
-<div class="profile-form">
-    <?php
-    $currencyForm = ActiveForm::begin();
-    ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -23,7 +21,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $currencyForm->field($user, 'currency_id')
+                            <?= $form->field($user, 'currency_id')
                                 ->widget(CurrencySelect::class)
                                 ->label(Yii::t('app', 'Currency')); ?>
                         </div>

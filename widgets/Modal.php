@@ -11,6 +11,7 @@ class Modal extends \yii\bootstrap4\Modal
     public function initOptions()
     {
         parent::initOptions();
+
         $this->initOptionsExt();
     }
 }

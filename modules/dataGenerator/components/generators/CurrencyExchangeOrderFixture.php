@@ -33,11 +33,13 @@ class CurrencyExchangeOrderFixture extends ARGenerator
 
     protected function factoryModel(): ?ActiveRecord
     {
-        $user = $this->findUser();
+        if (!$user = $this->getRandomUser()) {
+            return null;
+        }
 
         [$sellCurrencyId, $buyCurrencyId] = $this->getRandCurrenciesPair();
 
-        if (!$user || !$sellCurrencyId || !$buyCurrencyId) {
+        if (!$sellCurrencyId || !$buyCurrencyId) {
             return null;
         }
 
@@ -105,7 +107,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         ]);
 
         if (!$model->save()) {
-            throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
+            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
         $this->service->updatePaymentMethods($model, $orderSellingPaymentMethodsIds, $orderBuyingPaymentMethodsIds);
@@ -116,7 +118,7 @@ class CurrencyExchangeOrderFixture extends ARGenerator
     /**
      * @throws ARGeneratorException
      */
-    public function load(): ActiveRecord
+    public function load(): ?ActiveRecord
     {
         return $this->factoryModel();
     }
@@ -154,31 +156,12 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             ->all();
 
         if (!$currenciesPairIds || count($currenciesPairIds) !== 2) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. There is no Currencies yet.\n";
-            $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
+            $message = "\n" . self::classNameModel() . ': creation skipped. There is no Currencies.' . "\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];
         }
 
         return [$currenciesPairIds[0]['id'], $currenciesPairIds[1]['id']];
-    }
-
-    private function findUser(): ?User
-    {
-        /** @var User $user */
-        $user = User::find()
-            ->orderByRandAlt(1)
-            ->one();
-
-        if (!$user) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. There is no Users\n";
-            $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
-            Yii::$app->controller->stdout($message, Console::BG_GREY);
-        }
-
-        return $user;
     }
 }

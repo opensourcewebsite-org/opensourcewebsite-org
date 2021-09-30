@@ -15,23 +15,6 @@ class UserFixture extends ARGenerator
     }
 
     /**
-     * @return User
-     * @throws ARGeneratorException
-     */
-    public function load(): ActiveRecord
-    {
-        /** @var User $model */
-        $model = parent::load();
-
-        $model->setActive(); //can't do it before 1st save, because User::beforeSave() overwrite is_authenticated
-        if ($model->save()) {
-            return $model;
-        }
-
-        throw new ARGeneratorException($model);
-    }
-
-    /**
      * @param SignupForm|null $modelForm
      *
      * @return User
@@ -44,7 +27,7 @@ class UserFixture extends ARGenerator
         //I decided not to use Generator::unique() modifier on email generator. Because:
         //  1. Module dataGenerator designed to run continuously. So we should optimize memory, not CPU.
         //  2. SignupForm::validate() will check is email unique anyway.
-        $modelForm->email    = $this->faker->email;
+        $modelForm->email = $this->faker->email;
         $modelForm->password = $modelForm->email;
 
         if ($modelForm->validate()) {
@@ -52,7 +35,9 @@ class UserFixture extends ARGenerator
         }
 
         $errors = $modelForm->errors;
+
         unset($errors['email']);
+
         if (!empty($errors)) {
             //error either in changed  password rules, or new required fields were added
             throw new ARGeneratorException($modelForm);

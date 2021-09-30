@@ -6,12 +6,9 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\date\DatePicker;
 
-
+$form = ActiveForm::begin();
 ?>
-<div class="profile-form">
-    <?php
-    $birthdayForm = ActiveForm::begin();
-    ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -47,5 +44,5 @@ use kartik\date\DatePicker;
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\modules\dataGenerator\components\generators;
@@ -20,21 +21,13 @@ class ResumeFixture extends ARGenerator
         parent::__construct($config);
     }
 
-    public function init()
-    {
-        if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
-        }
-
-        parent::init();
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
-        $user = $this->findUser();
+        if (!$user = $this->getRandomUser()) {
+            return null;
+        }
 
         if (!($currency = $this->getRandomCurrency())) {
-            $this->printNoCurrencyError();
             return null;
         }
 
@@ -64,7 +57,7 @@ class ResumeFixture extends ARGenerator
         }
 
         if (!$model->save()) {
-            throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
+            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
         if ($this->faker->boolean() && $keywords = $this->getRandomKeywords()) {
@@ -77,46 +70,9 @@ class ResumeFixture extends ARGenerator
     /**
      * @throws ARGeneratorException
      */
-    public function load(): ActiveRecord
+    public function load(): ?ActiveRecord
     {
         return $this->factoryModel();
-    }
-
-    private function findUser(): ?User
-    {
-        /** @var User $user */
-        $user = User::find()
-            ->orderByRandAlt(1)
-            ->one();
-
-        if (!$user) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. There is no Users\n";
-            $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
-            Yii::$app->controller->stdout($message, Console::BG_GREY);
-        }
-
-        return $user;
-    }
-
-    private function getRandomCurrency(): ?Currency
-    {
-        /** @var Currency|null $currency */
-        $currency = Currency::find()
-            ->select('id')
-            ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
-            ->orderByRandAlt(1)
-            ->one();
-
-        return $currency;
-    }
-
-    private function printNoCurrencyError()
-    {
-        $class = self::classNameModel();
-        $message = "\n$class: creation skipped. There is no Currencies yet.\n";
-        $message .= "It's not error - few iterations later new ExchangeOrder will be generated.\n";
-        Yii::$app->controller->stdout($message, Console::BG_GREY);
     }
 
     /**

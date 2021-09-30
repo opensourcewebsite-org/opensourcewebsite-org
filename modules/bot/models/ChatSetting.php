@@ -27,32 +27,40 @@ class ChatSetting extends ActiveRecord
     public const STELLAR_MODE_SIGNERS = 2;
 
     public static array $settings = [
-        'join_hider_status',
-        'join_captcha_status',
-        'greeting_status',
-        'greeting_lifetime',
-        'greeting_message',
-        'filter_status',
-        'filter_mode',
-        'faq_status',
-        'stellar_status',
-        'stellar_mode',
-        'stellar_asset',
-        'stellar_issuer',
-        'stellar_threshold',
-        'stellar_invite_link',
-    ];
-
-    public static array $default_settings = [
-        'join_hider_status' => self::STATUS_OFF,
-        'join_captcha_status' => self::STATUS_OFF,
-        'greeting_status' => self::STATUS_OFF,
-        'filter_status' => self::STATUS_OFF,
-        'filter_mode' => self::FILTER_MODE_BLACKLIST,
-        'faq_status' => self::STATUS_OFF,
-        'stellar_status' => self::STATUS_OFF,
-        'stellar_mode' => self::STELLAR_MODE_HOLDERS,
-        'stellar_threshold' => 1,
+        'join_hider_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'join_captcha_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'greeting_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'greeting_lifetime' => [],
+        'greeting_message' => [],
+        'filter_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_mode' => [
+            'default' => self::FILTER_MODE_BLACKLIST,
+        ],
+        'faq_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'stellar_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'stellar_mode' => [
+            'default' => self::STELLAR_MODE_HOLDERS,
+        ],
+        'stellar_asset' => [],
+        'stellar_issuer' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'stellar_threshold' => [
+            'default' => 1,
+        ],
+        'stellar_invite_link' => [],
     ];
 
     public static function tableName()
@@ -118,7 +126,7 @@ class ChatSetting extends ActiveRecord
 
     public function getDefault($name)
     {
-        return self::$default_settings[$name] ?? null;
+        return self::$settings[$name]['default'] ?? null;
     }
 
     public function getChatId()

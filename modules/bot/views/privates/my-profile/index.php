@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Your Profile') ?></b><br/>
+<b><?= Yii::t('bot', 'Your Profile') ?> #<?= $id ?></b><br/>
 <br/>
 <?php if (isset($firstName)) : ?>
 <?= Yii::t('bot', 'First Name') . ': ' . $firstName; ?><br/>

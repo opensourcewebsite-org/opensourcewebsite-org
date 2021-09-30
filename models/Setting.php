@@ -5,6 +5,7 @@ namespace app\models;
 use app\components\Converter;
 use Yii;
 use yii\db\ActiveRecord;
+use app\models\queries\SettingQuery;
 
 /**
  * This is the model class for table "setting".
@@ -16,6 +17,89 @@ use yii\db\ActiveRecord;
  */
 class Setting extends ActiveRecord
 {
+    public static array $settings = [
+        'issue_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 3,
+            'more' => 0,
+        ],
+        'days_count_to_calculate_active_rating' => [
+            'type' => 'integer',
+            'default' => 30,
+            'more' => 0,
+        ],
+        'moqup_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 3,
+            'more' => 0,
+        ],
+        'moqup_html_field_max_value' => [
+            'type' => 'integer',
+            'default' => 100000,
+            'more' => 0,
+        ],
+        'moqup_css_field_max_value' => [
+            'type' => 'integer',
+            'default' => 100000,
+            'more' => 0,
+        ],
+        'issue_text_field_max_value' => [
+            'type' => 'integer',
+            'default' => 10000,
+            'more' => 0,
+        ],
+        'website_setting_min_vote_percent_to_apply_change' => [
+            'type' => 'float',
+            'default' => 70,
+            'more' => 0,
+            'max' => 100,
+        ],
+        'support_group_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'support_group_bot_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'support_group_member_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'bot_group_join_hider_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'bot_group_join_captcha_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'bot_group_greeting_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'bot_group_filter_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'bot_group_faq_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'bot_group_stellar_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+    ];
 
     /**
      * {@inheritdoc}
@@ -31,10 +115,18 @@ class Setting extends ActiveRecord
     public function rules()
     {
         return [
-            [['key', 'value'], 'required'],
-            [['value'], 'string'],
+            [['key'], 'required'],
             [['updated_at'], 'integer'],
-            [['key'], 'string', 'max' => 255],
+            [['key'], 'string', 'length' => [2, 255]],
+            ['key', 'filter', 'filter' => 'strtolower'],
+            [
+                'key',
+                'match',
+                'pattern' => '/(?:^(?:[A-Za-z][_]{0,1})*[A-Za-z]$)/i',
+                'message' => 'Key can contain only letters and _ symbols.',
+            ],
+//            ['key', 'validateKey'],
+            [['value'], 'safe'],
         ];
     }
 
@@ -45,10 +137,15 @@ class Setting extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'key' => 'Key',
-            'value' => 'Value',
-            'updated_at' => 'Updated At',
+            'key' => Yii::t('app', 'Key'),
+            'value' => Yii::t('app', 'Value'),
+            'updated_at' => Yii::t('app', 'Updated At'),
         ];
+    }
+
+    public static function find()
+    {
+        return new SettingQuery(get_called_class());
     }
 
     /**
@@ -60,14 +157,6 @@ class Setting extends ActiveRecord
     }
 
     /**
-     * @return SettingValue
-     */
-    public function getDefaultSettingValue()
-    {
-        return SettingValue::find()->where(['setting_id' => $this->id, 'is_current' => 1])->one();
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getSettingValueVotes()
@@ -76,13 +165,22 @@ class Setting extends ActiveRecord
     }
 
     /**
-     * @return SettingValueVote vote record of login user
+     * @param int|null $userId
+     *
+     * @return SettingValueVote
      */
-    public function getSettingValueUserVote()
+    public function getSettingValueVoteByUserId($userId = null)
     {
-        $user_id = Yii::$app->user->id;
+        if (!$userId) {
+            $userId = Yii::$app->user->id;
+        }
 
-        return SettingValueVote::find()->where(['setting_id' => $this->id, 'user_id' => $user_id])->one();
+        return SettingValueVote::find()
+            ->where([
+                'setting_id' => $this->id,
+                'user_id' => $userId,
+            ])
+            ->one();
     }
 
     /**
@@ -90,12 +188,20 @@ class Setting extends ActiveRecord
      */
     public function getSettingValuesByDefault()
     {
-        return SettingValue::find()->where(['setting_id' => $this->id, 'is_current' => 0])->all();
+        return SettingValue::find()
+            ->where([
+                'setting_id' => $this->id,
+            ])
+            ->andWhere([
+                '!=', 'value', $this->value,
+            ])
+            ->all();
     }
 
     /**
      * Percentage of votes for all values of setiing except current value
      * @param bool $format whether to return formatted percent value or not
+     *
      * @return mixed Total votes percentage of a setting
      */
     public function getTotalVotesPercent($format = true)
@@ -103,7 +209,7 @@ class Setting extends ActiveRecord
         $values = $this->getSettingValuesByDefault();
         $votes = 0;
         foreach ($values as $value) {
-            $votes += $value->getUserVotesPercent(false);
+            $votes += $value->getVotesPercent();
         }
         if ($format) {
             $votes = Converter::formatNumber($votes);
@@ -114,19 +220,51 @@ class Setting extends ActiveRecord
     /**
      * Percentage of vote for current value of setting
      * @param bool $format whether to return formatted percent value or not
+     *
      * @return mixed Percentage of vote for current value of setting
      */
-    public function getCurrentValueVotes($format = true)
+    public function getVotesCount($format = true)
     {
         $remainingVotes = 100 - $this->getTotalVotesPercent(false);
         if ($format) {
             $remainingVotes = Converter::formatNumber($remainingVotes);
         }
+
         return $remainingVotes;
     }
 
+    // TODO remove old code
     public static function getValue($key)
     {
-        return static::findOne(['key' => $key])->value;
+        $setting = static::findOne(['key' => $key]);
+
+        if (!$setting && isset(self::$settings[$key]['default'])) {
+            $setting = new self();
+
+            $setting->setAttributes([
+                'key' => $key,
+                'value' => self::$settings[$key]['default'],
+                'updated_at' => time(),
+            ]);
+
+            $setting->save();
+        }
+
+        return $setting->value;
+    }
+
+    public function getValidationRules()
+    {
+        return self::$settings[$this->key] ?? null;
+    }
+
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    public function getDefault($name)
+    {
+        return self::$settings[$name]['default'] ?? null;
     }
 }

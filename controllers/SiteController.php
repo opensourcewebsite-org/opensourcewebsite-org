@@ -15,7 +15,6 @@ use app\models\Currency;
 use app\models\Sexuality;
 use app\modules\bot\models\User as BotUser;
 use app\models\MergeAccountsRequest;
-use app\models\ChangeEmailRequest;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -95,16 +94,14 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['site/account']);
+            return $this->redirect(['/account']);
         }
 
         $model = new LoginForm();
 
-        if (Yii::$app->request->isPost) {
-            $postData = Yii::$app->request->post();
-
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
             if ($model->load($postData) && $model->login()) {
-                return $this->redirect(['site/account']);
+                return $this->redirect(['/account']);
             }
         }
 
@@ -135,22 +132,14 @@ class SiteController extends Controller
     public function actionSignup()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['site/account']);
+            return $this->redirect(['/account']);
         }
 
         $model = new SignupForm();
 
-        if (Yii::$app->request->isPost) {
-            $postData = Yii::$app->request->post();
-
-            if ($model->load($postData)) {
-                if ($user = $model->signup()) {
-                    if ($user->sendConfirmationEmail($user)) {
-                        Yii::$app->session->setFlash('success', 'Check your email for confirmation.');
-
-                        return $this->redirect(['site/login']);
-                    }
-                }
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
+            if ($model->load($postData) && $model->signup()) {
+                return $this->redirect(['/account']);
             }
         }
 
@@ -298,104 +287,6 @@ class SiteController extends Controller
 
         return $this->render('resetPassword', [
             'model' => $model,
-        ]);
-    }
-
-    public function actionAccount()
-    {
-        $model = Yii::$app->user->identity;
-
-        $activeRating = $model->activeRating;
-
-        $rating = $model->rating;
-        $totalRating = User::getTotalRating();
-        $percent = $totalRating ? Converter::percentage($rating, $totalRating) : 0;
-
-        $rank = $model->getRank();
-        $totalRank = User::getTotalRank();
-
-        $realConfirmations = $model->getContactsToMe()->where(['is_real' => 1])->count();
-
-        $params = [
-            'model' => $model,
-            'realConfirmations' => $realConfirmations,
-            'activeRating' => $activeRating,
-            'overallRating' => [
-                'rating' => $rating,
-                'totalRating' => $totalRating,
-                'percent' => $percent,
-            ],
-            'ranking' => [
-                'rank' => $rank,
-                'total' => $totalRank,
-            ],
-        ];
-
-        return $this->render('account', $params);
-    }
-
-    /**
-     * Confirm user email.
-     *
-     * @param int $id the user id
-     * @param string $authKey the user auth_key
-     *
-     * @return string
-     */
-    public function actionConfirm(int $id, string $authKey)
-    {
-        $transaction = Yii::$app->db->beginTransaction();
-        $commit = false;
-
-        $user = SignupForm::confirmEmail($id, $authKey);
-
-        if (!empty($user)) {
-            $user->is_authenticated = true;
-            if ($user->save()) {
-                //Add user rating for confirm email
-                $commit = $user->addRating(Rating::CONFIRM_EMAIL, 1, false);
-            }
-        }
-
-        if ($commit) {
-            $transaction->commit();
-            Yii::$app->session->setFlash('success', 'Your email has been successfully confirmed.');
-        } else {
-            $transaction->rollback();
-            Yii::$app->session->setFlash('warning', 'There was an error validating your email, please try again.');
-        }
-
-        return $this->redirect(['site/login']);
-    }
-
-    public function actionChangeEmail($token)
-    {
-        $changeEmailRequest = ChangeEmailRequest::findOne(['token' => $token]);
-        $user = null;
-        if ($changeEmailRequest) {
-            $user = User::findOne(['id' => $changeEmailRequest->user_id]);
-            if (Yii::$app->request->isPost) {
-                $user->email = $changeEmailRequest->email;
-
-                $changeEmailRequest->delete();
-                unset($changeEmailRequest);
-
-                if ($user->save()) {
-                    return $this->redirect(['site/login']);
-                }
-            } else {
-                $created_at = $changeEmailRequest->created_at;
-
-                if ($created_at + User::PASSWORD_RESET_TOKEN_EXPIRE < time()) {
-                    $changeEmailRequest->delete();
-                    unset($changeEmailRequest);
-                }
-            }
-        }
-
-        return $this->render('changeEmail', [
-            'model' => $changeEmailRequest ?? null,
-            'user' => $user,
         ]);
     }
 

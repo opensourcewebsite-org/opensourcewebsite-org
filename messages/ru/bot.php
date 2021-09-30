@@ -210,6 +210,7 @@ return [
     'Confirm your Stellar account' => 'Подтвердите ваш Stellar аккаунт',
     'added {0}' => 'добавлен {0}',
     'confirmed' => 'подтвержден',
+    'not confirmed' => 'не подтвержден',
     'Confirm' => 'Подтвердить',
     'CONFIRM' => 'ПОДТВЕРДИТЬ',
     'In the next {0,number} minutes, send any amount of XLM to OSW account {1} and then click the "CONFIRM" button' => 'В следующие {0,number} минут отправьте любое количество XLM в OSW аккаунт {1}, а затем нажмите кнопку "ПОДТВЕРДИТЬ"',

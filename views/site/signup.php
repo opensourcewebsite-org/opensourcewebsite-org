@@ -8,6 +8,7 @@
 use app\models\SignupForm;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
+use yii\captcha\Captcha;
 
 $this->title = 'Signup';
 $this->params['breadcrumbs'][] = $this->title;
@@ -23,10 +24,16 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
             <div class="card-body">
                 <div class="form-group">
-                    <?= $form->field($model, 'email') ?>
+                    <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
                 </div>
                 <div class="form-group">
                     <?= $form->field($model, 'password')->passwordInput() ?>
+                </div>
+                <div class="form-group">
+                    <?= $form->field($model, 'password_repeat')->passwordInput() ?>
+                </div>
+                <div class="form-group">
+                    <?= $form->field($model, 'captcha')->widget(Captcha::className()) ?>
                 </div>
 
                 <div>

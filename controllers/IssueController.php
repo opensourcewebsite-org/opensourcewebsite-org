@@ -82,7 +82,7 @@ class IssueController extends Controller
     {
         $userId = Yii::$app->user->id;
         $user = User::findOne($userId);
-        $weightage = $user->getOverallRatingPercent();
+        $weightage = $user->getRatingPercent();
 
         $model = $this->findModel($id);
         $votes = $model->getUserVotesPercent(false);

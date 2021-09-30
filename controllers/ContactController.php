@@ -141,6 +141,7 @@ class ContactController extends Controller
         }
 
         $groups = Yii::$app->user->identity->getContactGroups()->all();
+
         return $this->renderAjax('groups/group', [
             'model'    => $contactGroupModel,
             'groups' => $groups,
@@ -153,6 +154,7 @@ class ContactController extends Controller
         if (!empty($group)) {
             $group->delete();
         }
+
         return $this->redirect('groups');
     }
 
@@ -168,6 +170,7 @@ class ContactController extends Controller
         }
 
         $groups = Yii::$app->user->identity->getContactGroups()->all();
+
         return $this->renderAjax('groups/group', [
             'model' => $group,
             'groups' => $groups,
@@ -251,8 +254,6 @@ class ContactController extends Controller
         return $this->hasMany(ContactGroup::class, ['id' => 'group_id'])
                     ->viaTable('contact_has_group', ['contact_id' => 'id']);
     }
-
-
 
     /**
      * Finds the Contact model based on its primary key value.

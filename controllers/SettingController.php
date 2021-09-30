@@ -5,15 +5,18 @@ namespace app\controllers;
 use app\models\Setting;
 use app\models\SettingValue;
 use app\models\SettingValueVote;
+use app\models\search\SettingSearch;
+use app\models\search\SettingValueSearch;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 class SettingController extends Controller
 {
-
     /**
      * {@inheritdoc}
      */
@@ -45,146 +48,168 @@ class SettingController extends Controller
     }
 
     /**
-     * Website settings
      * @return string
      */
     public function actionIndex()
     {
-        $setting = Setting::find();
-        $countQuery = clone $setting;
-        $pages = new Pagination(['totalCount' => $countQuery->count()]);
-        $models = $setting->offset($pages->offset)
-            ->limit($pages->limit)
-            ->orderBy(['updated_at' => SORT_DESC])
-            ->all();
+        $searchModel = new SettingSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'models' => $models,
-            'pages' => $pages,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
-     * Setting values added by users
+     * @param int|string $key
+     *
      * @return string
      */
-    public function actionValues($id)
+    public function actionView($key = null)
     {
-        //Get settings validation configuration from params
-        $settingsConfig = json_encode(Yii::$app->params['settings']);
-
-        $settingValues = SettingValue::find()->where(['setting_id' => $id, 'is_current' => 0])->all();
-        $setting = Setting::find()->where(['id' => $id])->one();
-
-        if (empty($setting)) {
-            throw new NotFoundHttpException('Setting not found');
+        if (!$key) {
+            return $this->redirect(['index']);
         }
 
-        return $this->render('setting-values', [
-            'settingValues' => $settingValues,
+        $setting = Setting::find()
+            ->where([
+                'id' => $key,
+            ])
+            ->orWhere([
+                'key' => $key,
+            ])
+            ->one();
+
+        if (!$setting) {
+            $setting = new Setting();
+
+            $setting->setAttributes([
+                    'key' => $key,
+                ]);
+
+            if (!$setting->validate()) {
+                throw new NotFoundHttpException();
+            }
+        }
+
+        $searchModel = new SettingValueSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('view', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
             'setting' => $setting,
-            'settingsConfig' => $settingsConfig,
         ]);
     }
 
     /**
-     * Create new value for a setting
+     * Add new value for a setting
+     * @param int|string $setting_key
+     *
      * @return string|void
      */
-    public function actionCreateValue()
+    public function actionAddValue($setting_key)
     {
-        if (!Yii::$app->request->isAjax) {
-            return;
+        if (Yii::$app->request->isPost) {
+            $setting_key = Yii::$app->request->post('setting_key');
+            $value = Yii::$app->request->post('SettingValue')['value'];
+
+            $setting = Setting::find()
+                ->where([
+                    'key' => $setting_key,
+                ])
+                ->one();
+
+            if ($setting) {
+                $settingValue = SettingValue::find()
+                    ->where([
+                        'setting_id' => $setting->id,
+                        'value' => $value,
+                    ])
+                    ->one();
+            }
+
+            if (empty($settingValue)) {
+                if (empty($setting)) {
+                    $setting = new Setting();
+
+                    $setting->setAttributes([
+                        'key' => $setting_key,
+                        'updated_at' => time(),
+                    ]);
+
+                    if (!$setting->validate()) {
+                        throw new NotFoundHttpException();
+                    }
+
+                    $setting->save();
+                }
+
+                $settingValue = new SettingValue();
+
+                $settingValue->setAttributes([
+                    'setting_id' => $setting->id,
+                    'value' => $value,
+                ]);
+
+                if (!$settingValue->validate()) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+
+                    return ActiveForm::validate($settingValue);
+                }
+
+                $settingValue->save();
+            }
+
+            if ($settingValue->id) {
+                // Switch user vote to added value
+                $settingValue->setVoteByUserId($this->user->id);
+
+                return $this->redirect([
+                    'setting/view',
+                    'key' => $setting_key,
+                ]);
+            }
         }
 
-        $postData = Yii::$app->request->post();
-        $setting_id = $postData['setting_id'];
-        $new_value = $postData['new_value'];
-        $settingValue = new SettingValue(['setting_id' => $setting_id, 'value' => $new_value, 'updated_at' => time()]);
-        if ($settingValue->save()) {
-            //Switch user vote to added value
-            $this->saveVote(['setting_id' => $setting_id, 'value_id' => $settingValue->id]);
-            return $this->redirect(['setting/values', 'id' => $setting_id]);
+        $settingValue = new SettingValue();
+
+        $renderParams = [
+            'setting_key' => $setting_key,
+            'settingValue' => $settingValue,
+        ];
+        Yii::warning(Yii::$app->request->isAjax);
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/add-value', $renderParams);
+        } else {
+            return $this->render('modals/add-value', $renderParams);
         }
     }
 
     /**
-     * Vote for a setting value.
-     * @return integer
+     * Vote for a setting value
+     *
+     * @return string
      */
     public function actionVote()
     {
-        if (Yii::$app->request->isAjax) {
-            $postData = Yii::$app->request->post();
-            return $this->saveVote($postData);
-        }
-        return 0;
-    }
+        if (Yii::$app->request->isPost) {
+            if ($setting_value_id = Yii::$app->request->post('setting_value_id')) {
+                $settingValue = SettingValue::findOne($setting_value_id);
 
-    private function saveVote($postData)
-    {
-        $setting = Setting::findOne($postData['setting_id']);
+                if ($settingValue) {
+                    //Switch user vote to selected value
+                    $settingValue->setVoteByUserId($this->user->id);
 
-        $settingVote = SettingValueVote::find()->where(['setting_id' => $postData['setting_id'], 'user_id' => Yii::$app->user->id])->one();
-
-        if (!empty($settingVote)) {
-            $settingVote->delete();
-        }
-
-        $settingVote = new SettingValueVote(['setting_id' => $postData['setting_id'], 'user_id' => Yii::$app->user->identity->id, 'created_at' => time()]);
-
-        //Save current value in setting_value table if user voted for it
-        if ($postData['value_id'] == -1) {
-            $settingValue = new SettingValue(['setting_id' => $postData['setting_id'], 'value' => $setting->value, 'is_current' => 1, 'updated_at' => time()]);
-
-            if ($settingValue->save()) {
-                $postData['value_id'] = $settingValue->id;
+                    return $this->redirect([
+                        'setting/view',
+                        'key' => $settingValue->setting->getKey(),
+                    ]);
+                }
             }
         }
 
-        //Save vote
-        if (!empty($postData['value_id']) && $postData['value_id'] != -1) {
-            $settingVote->setting_value_id = $postData['value_id'];
-
-            if ($settingVote->save()) {
-
-                //Delete the setting value for which no votes exist
-                $settingValues = $setting->settingValues;
-                foreach ($settingValues as $settingValue) {
-                    if (empty($settingValue->settingValueVotes)) {
-                        $settingValue->delete();
-                    }
-                }
-
-                //Make the voted setting value as current setting value, if it reach a threshhold of setting value 'website_setting_min_vote_percent_to_apply_change'
-                try {
-                    $votePercent = floor($settingVote->settingValue->getUserVotesPercent(false));
-
-                    $threshHold = Setting::getValue('website_setting_min_vote_percent_to_apply_change');
-
-                    if ($threshHold <= $votePercent) {
-                        $setting->value = $settingVote->settingValue->value;
-                        $setting->updated_at = time();
-                        $setting->save();
-
-                        //change the current value state in setting_value table
-                        $settingValue = $setting->getDefaultSettingValue();
-                        if (!empty($settingValue)) {
-                            $settingValue->is_current = 0;
-                            $settingValue->save();
-                        }
-
-                        $settingVote->settingValue->is_current = 1;
-                        $settingVote->settingValue->save();
-
-                    }
-
-                } catch (\Exception $e) {
-                    return 0;
-                }
-                return 1;
-            }
-        }
-        return 0;
+        return $this->redirect(['index']);
     }
 }

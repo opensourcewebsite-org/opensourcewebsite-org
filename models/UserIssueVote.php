@@ -19,8 +19,8 @@ use Yii;
  */
 class UserIssueVote extends \yii\db\ActiveRecord
 {
-    const YES = 1;
-    const NO = 3;
+    public const YES = 1;
+    public const NO = 3;
 
     /**
      * {@inheritdoc}
@@ -93,7 +93,7 @@ class UserIssueVote extends \yii\db\ActiveRecord
      */
     public function getVotesPercent()
     {
-        return $this->user->getOverallRatingPercent(false);
+        return $this->user->getRatingPercent(false);
     }
 
     /**

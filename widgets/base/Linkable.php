@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\widgets\base;
 
 use Yii;
@@ -32,6 +34,12 @@ class Linkable extends Widget
      */
     public $text;
 
+    /**
+     * @var boolean|null
+     * visible
+     */
+    public $visible = true;
+
     public function init()
     {
         parent::init();
@@ -43,10 +51,14 @@ class Linkable extends Widget
         if ($this->defaultOptions == null) {
             $this->defaultOptions = [];
         }
+
+        if ($this->url == null) {
+            $this->url = '#';
+        }
     }
 
     public function run()
     {
-        return Html::a(Yii::t('app', $this->text), $this->url, array_merge($this->defaultOptions, $this->options));
+        return (bool)$this->visible ? Html::a($this->text, $this->url, array_merge($this->defaultOptions, $this->options)) : '';
     }
 }

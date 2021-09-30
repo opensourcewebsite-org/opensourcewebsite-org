@@ -6,7 +6,7 @@ use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
 
 ActiveForm::begin(); ?>
-<div class="profile-form">
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -35,12 +35,11 @@ ActiveForm::begin(); ?>
                             ]); ?>
                         </div>
                     </div>
-                    </div>
                 </div>
-                <div class="card-footer">
-                    <?= SaveButton::widget(); ?>
-                    <?= CancelButton::widget() ?>
-                </div>
+            </div>
+            <div class="card-footer">
+                <?= SaveButton::widget(); ?>
+                <?= CancelButton::widget() ?>
             </div>
         </div>
     </div>

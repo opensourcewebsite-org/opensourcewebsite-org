@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "setting_value_vote".
@@ -19,6 +20,8 @@ use Yii;
  */
 class SettingValueVote extends \yii\db\ActiveRecord
 {
+    protected $rating = null;
+
     /**
      * {@inheritdoc}
      */
@@ -51,7 +54,17 @@ class SettingValueVote extends \yii\db\ActiveRecord
             'user_id' => 'User ID',
             'setting_value_id' => 'Setting Value ID',
             'setting_id' => 'Setting ID',
-            'created_at' => 'Created At',
+            'created_at' => Yii::t('app', 'Created At'),
+        ];
+    }
+
+    public function behaviors(): array
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::class,
+                'updatedAtAttribute' => false,
+            ],
         ];
     }
 
@@ -80,10 +93,19 @@ class SettingValueVote extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return integer The vote percentage
+     * @return integer vote rating
      */
-    public function getVotesPercent()
+    public function getRating()
     {
-        return $this->user->getOverallRatingPercent(false);
+        if (is_null($this->rating)) {
+            $this->rating = $this->user->getRating();
+        }
+
+        return $this->rating;
+    }
+
+    public function getSettingValueId()
+    {
+        return $this->setting_value_id;
     }
 }

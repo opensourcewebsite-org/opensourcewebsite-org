@@ -24,9 +24,7 @@ class ContactFixture extends ARGenerator
      */
     protected function factoryModel(): ?ActiveRecord
     {
-        $users = $this->findUsers();
-
-        if (empty($users)) {
+        if (!$users = $this->getRandomUsers()) {
             return null;
         }
 
@@ -45,9 +43,9 @@ class ContactFixture extends ARGenerator
      * @return array
      * @throws ARGeneratorException
      */
-    private function findUsers(): array
+    private function getRandomUsers(): array
     {
-        $userQty = User::find()->active()->count();
+        $usersCount = User::find()->active()->count();
 
         /** @var array $usersFrom users, who can has additional Contact */
         $usersFrom = User::find()
@@ -57,16 +55,13 @@ class ContactFixture extends ARGenerator
             }])
             ->active()
             ->groupBy('user.id')
-            ->having('n_contact < :nUser', [':nUser' => $userQty - 1])
+            ->having('n_contact < :nUser', [':nUser' => $usersCount - 1])
             ->orderBy('n_contact')
             ->limit(30)
             ->column();
 
         if (empty($usersFrom)) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. ";
-            $message .= "Either no active User, or all Users have full set of Contacts.\n";
-            $message .= "\nIt's not error - few iterations later new User will be generated.\n";
+            $message = "\n" . self::classNameModel() . ': creation skipped. Either no active User, or all Users have full set of Contacts.' . "\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];

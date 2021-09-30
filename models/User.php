@@ -49,6 +49,7 @@ class User extends ActiveRecord implements IdentityInterface
     public const PASSWORD_RESET_TOKEN_EXPIRE = 24 * 60 * 60; // seconds
 
     public const STATUS_DELETED = 0;
+    public const STATUS_PENDING = 5;
     public const STATUS_ACTIVE = 10;
 
     public const DATE_FORMAT = 'Y-m-d';
@@ -77,7 +78,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['is_authenticated', 'boolean'],
             [['gender_id', 'sexuality_id', 'currency_id', 'rating'], 'integer'],
             [['created_at', 'updated_at', 'last_activity_at'], 'integer'],
             [['created_at', 'updated_at', 'last_activity_at'], 'default', 'value' => time()],
@@ -97,59 +97,59 @@ class User extends ActiveRecord implements IdentityInterface
                     self::STATUS_DELETED,
                 ],
             ],
-            ['email', 'email'],
-            [
-                'email',
-                'unique',
-                'message' => 'Email must be unique',
-            ],
+            ['username', 'string'],
             ['username', 'trim'],
+            [['username'], 'string', 'length' => [2, 255]],
             [
                 'username',
                 'match',
-                'pattern' => '/^[a-zA-Z0-9_]+$/i',
-                'message' => 'Username can contain only letters, numbers and \'_\' symbols',
+                'pattern' => '/(?:^(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]$)/i',
+                'message' => 'Username can contain only letters, numbers and _ symbols.',
             ],
             ['username', 'validateUsernameUnique'],
             ['username', 'default', 'value' => null],
             ['name', 'string'],
             ['name', 'trim'],
+            [['name'], 'string', 'length' => [1, 255]],
             ['name', 'validateNameString'],
+            ['rating', 'integer'],
+            ['rating', 'default', 'value' => Rating::DEFAULT],
         ];
     }
 
-    /*
-     * Username validation
-     */
     public function validateUsernameUnique()
     {
-        $oldUsername = $this->getOldAttribute('username');
+        $oldValue = $this->getOldAttribute('username');
 
         if (is_numeric($this->username)) {
-            $this->addError('username', 'User name can\'t be number');
+            $this->addError('username', 'Username can\'t be number.');
         }
 
-        if (strcasecmp($oldUsername, $this->username) !== 0) {
-            $isUserInDB = User::findOne(['username' => $this->username]);
-            if ($isUserInDB) {
-                $this->addError('username', 'User name must be unique.');
-            }
+        if (strcasecmp($oldValue, $this->username) === 0) {
+            return;
+        }
+
+        $existUsername = User::find()
+            ->where([
+                'username' => $this->username,
+            ])
+            ->exists();
+
+        if ($existUsername) {
+            $this->addError('username', 'Username must be unique.');
         }
     }
 
-    /*
-     * Name validation
-     */
     public function validateNameString()
     {
-        $oldName = $this->getOldAttribute('name');
+        $oldValue = $this->getOldAttribute('name');
 
-        if ($this->name == $oldName) {
+        if (strcasecmp($oldValue, $this->name) === 0) {
             return;
         }
 
         if (is_numeric($this->name)) {
-            $this->addError('name', 'Name can\'t be number');
+            $this->addError('name', 'Name can\'t be number.');
         }
     }
 
@@ -160,27 +160,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'email' => 'Email',
             'rating' => 'Social Rating',
             'username' => 'Username (optional)',
             'name' => 'Name (optional)',
         ];
-    }
-
-    public function beforeSave($insert)
-    {
-        if ($insert) {
-            $this->is_authenticated = false;
-        }
-        return parent::beforeSave($insert);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentity($id)
-    {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -217,8 +200,41 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function setActive(): void
     {
-        $this->is_authenticated = true;
         $this->status = self::STATUS_ACTIVE;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEmail()
+    {
+        return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
+    }
+
+    public function isEmailConfirmed()
+    {
+        return $this->email && $this->email->isConfirmed();
+    }
+
+    // Compatible with IdentityInterface
+    public static function findIdentity($id)
+    {
+        return static::findById($id);
+    }
+
+    /**
+     * Finds user by ID
+     *
+     * @param string $id
+     *
+     * @return static|null
+     */
+    public static function findById($id): ?User
+    {
+        return static::findOne([
+            'id' => $id,
+            'status' => self::STATUS_ACTIVE,
+        ]);
     }
 
     /**
@@ -228,9 +244,12 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByUsername($username): ?User
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne([
+            'username' => $username,
+            'status' => self::STATUS_ACTIVE,
+        ]);
     }
 
     /**
@@ -240,9 +259,14 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @return static|null
      */
-    public static function findByEmail($email)
+    public static function findByEmail($email): ?User
     {
-        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
+        return static::find()
+            ->where([self::tableName() . '.status' => self::STATUS_ACTIVE])
+            ->joinWith('email')
+            ->andWhere([UserEmail::tableName() . '.email' => $email])
+            ->andWhere(['not', [UserEmail::tableName() . '.confirmed_at' => null]])
+            ->one();
     }
 
     /**
@@ -287,6 +311,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user = new User();
         $user->password = Yii::$app->security->generateRandomString();
         $user->generateAuthKey();
+
         return $user;
     }
 
@@ -337,25 +362,68 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Sends an email with a link, for confirming the registration.
+     * Sends an email with a confirmation link.
      *
      * @return bool whether the email was send
      */
-    public function sendConfirmationEmail($user)
+    public function sendConfirmationEmail()
     {
-        $link = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'id' => $user->id, 'authKey' =>
-            $user->auth_key]);
+        $time = time();
+        unset($this->email);
+        $userEmail = $this->email;
+        Yii::warning($userEmail);
+        $link = Yii::$app->urlManager->createAbsoluteUrl([
+            'user/confirm-email',
+            'id' => $this->id,
+            'time' => $time,
+            'hash' => md5($userEmail->email . $this->auth_key . $time),
+        ]);
 
-        return Yii::$app
-            ->mailer
-            ->compose('register', [
-                'user' => $user,
+        return Yii::$app->mailer
+            ->compose('change-email', [
+                'user' => $this,
                 'link' => $link,
             ])
             ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name . ' Robot'])
-            ->setTo($user->email)
-            ->setSubject('Register for ' . Yii::$app->name)
+            ->setTo($userEmail->email)
+            ->setSubject('Confirmation email for ' . Yii::$app->name)
             ->send();
+    }
+
+    /**
+     * Confirm email.
+     *
+     * @param int $id user id
+     * @param int $time
+     * @param string $hash
+     *
+     * @return boolean
+     */
+    public function confirmEmail(int $id, $time, string $hash)
+    {
+        if ($this->isEmailConfirmed()) {
+            return true;
+        }
+
+        if ($userEmail = $this->email) {
+            if ($hash == md5($userEmail->email . $this->auth_key . $time)) {
+                // for all users reset all confirmations for this email
+                UserEmail::updateAll(
+                    [
+                        'confirmed_at' => null,
+                    ],
+                    [
+                        'email' => $userEmail->email,
+                    ]
+                );
+
+                $userEmail->confirm();
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -593,9 +661,10 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * @param bool $format whether to return formatted percent value or not
+     *
      * @return mixed The number in percentage
      */
-    public function getOverallRatingPercent($format = true)
+    public function getRatingPercent($format = true)
     {
         $totalRating = self::getTotalRating();
 
@@ -607,7 +676,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getActiveRating()
     {
-        $daysActiveRating = intval(Setting::getValue('days_count_to_calculate_active_rating'));
+        $daysActiveRating = intval(Yii::$app->settings->days_count_to_calculate_active_rating);
 
         $activeRating = Rating::find()
             ->where(['>', 'created_at', time() - 3600 * 24 * $daysActiveRating])
@@ -637,15 +706,17 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $rank ?: 0;
     }
-
+    // TODO сохранять ли дефолт
     public function updateRating()
     {
         $totalRating = Rating::find()
-            ->where(['user_id' => $this->id])
+            ->where([
+                'user_id' => $this->id,
+            ])
             ->sum('amount');
 
-        if ($this->rating != $totalRating) {
-            $this->rating = $totalRating;
+        if ($this->rating != ($totalRating + Rating::DEFAULT)) {
+            $this->rating = $totalRating + Rating::DEFAULT;
             $this->save(false);
         }
 
@@ -655,42 +726,24 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Add user rating
      *
-     * @param int $ratingType integer value for rating type constants defined in Rating model
-     * @param int $ratingAmount rating amount to be added
-     * @param bool $existMultiple, false: given $ratingType can exist only once for a user
+     * @param int $type integer value for rating type constants defined in Rating model
+     * @param int $amount rating amount to be added
      *
      * @return bool true|false
      */
-    public function addRating($ratingType = Rating::CONFIRM_EMAIL, $ratingAmount = 1, $existMultiple = true)
+    public function addRating($type, $amount = 1)
     {
-        $commit = false;
-        $rating = null;
+        $rating = new Rating([
+            'user_id' => $this->id,
+            'amount' => $amount,
+            'type' => $type,
+        ]);
 
-        //If a rating can exist only once
-        if (!$existMultiple) {
-            $rating = Rating::findOne([
-                'user_id' => $this->id,
-                'type' => $ratingType,
-            ]);
-
-            if ($rating !== null) {
-                $commit = true;
-            }
-        }
-        if ($rating == null) {
-            $rating = new Rating([
-                'user_id' => $this->id,
-                'amount' => $ratingAmount,
-                'type' => $ratingType,
-            ]);
-
-            if ($rating->save()) {
-                $this->updateRating();
-                $commit = true;
-            }
+        if ($rating->save()) {
+            $this->updateRating();
         }
 
-        return $commit;
+        return true;
     }
 
     /**
@@ -698,10 +751,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
-        return User::find()->where([
-            'referrer_id' => $this->id,
-            'is_authenticated' => true,
-        ]);
+        return User::find()
+            ->where([
+                'referrer_id' => $this->id,
+            ]);
     }
 
     /**

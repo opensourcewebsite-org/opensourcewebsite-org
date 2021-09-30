@@ -24,7 +24,6 @@ $this->title = Yii::t('app', 'Resumes');
 $this->params['breadcrumbs'][] = $this->title;
 
 $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
-
 ?>
 <div class="resume-index">
     <div class="row">
@@ -33,24 +32,31 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item mx-1">
-                            <?= Html::a(Yii::t('app', 'Active'),
-                                ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_ON],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? 'active' : '')
-                                ]);
+                            <?= Html::a(
+    Yii::t('app', 'Active'),
+    [
+                                    '/resume/index',
+                                    'ResumeSearch[status]' => ResumeSearch::STATUS_ON,
+                                ],
+    [
+                                        'class' => 'nav-link show ' .
+                                            ($displayActiveOrders ? 'active' : ''),
+                                ]
+);
                             ?>
                         </li>
-                        <li class="nav-item  mx-1">
-                            <?= Html::a(Yii::t('app', 'Inactive'),
+                        <li class="nav-item mx-1">
+                            <?= Html::a(
+                                Yii::t('app', 'Inactive'),
                                 ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
                                 [
                                     'class' => 'nav-link show ' .
                                         ($displayActiveOrders ? '' : 'active')
-                                ]);
+                                ]
+                            );
                             ?>
                         </li>
-                        <li class="nav-item align-self-center mr-4  mx-1">
+                        <li class="nav-item align-self-center mr-4 mx-1">
                             <?= AddButton::widget([
                                 'url' => ['create'],
                                 'options' => [
@@ -74,7 +80,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             ],
                             [
                                 'attribute' => 'min_hourly_rate',
-                                'value' => function($model) {
+                                'value' => function ($model) {
                                     return $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
                                 'enableSorting' => false,
@@ -83,7 +89,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                 'label' => Yii::t('app', 'Offers'),
                                 'enableSorting' => false,
                                 'format' => 'raw',
-                                'value' => function(Resume $model){
+                                'value' => function (Resume $model) {
                                     return $model->getMatches()->count() ?
                                         Html::a(
                                             $model->getMatches()->count(),

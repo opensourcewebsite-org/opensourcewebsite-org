@@ -16,13 +16,14 @@ use yii\db\ActiveQuery;
 class UserQuery extends ActiveQuery
 {
     use RandomTrait;
+
     /**
      * @return UserQuery
      */
     public function active()
     {
         return $this->andWhere([
-            'user.status'           => User::STATUS_ACTIVE,
+            'user.status' => User::STATUS_ACTIVE,
             'user.is_authenticated' => 1,
         ]);
     }
@@ -32,7 +33,9 @@ class UserQuery extends ActiveQuery
      */
     public function authenticated()
     {
-        return $this->andWhere(['is_authenticated' => true]);
+        return $this->andWhere([
+            'is_authenticated' => true,
+        ]);
     }
 
     /**
@@ -44,7 +47,7 @@ class UserQuery extends ActiveQuery
             ->andHaving(['not', ['age' => null]])
             ->groupBy('age')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 
@@ -57,7 +60,7 @@ class UserQuery extends ActiveQuery
             ->andHaving(['not', ['year' => null]])
             ->groupBy('year')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 
@@ -73,7 +76,7 @@ class UserQuery extends ActiveQuery
             ->groupBy('gender')
             ->having(['not', ['gender' => null]])
             ->orderBy([
-               'users' => SORT_DESC
+               'users' => SORT_DESC,
             ]);
     }
 
@@ -88,7 +91,7 @@ class UserQuery extends ActiveQuery
             ->having(['not', ['sexuality' => null]])
             ->groupBy('sexuality')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 
@@ -104,7 +107,7 @@ class UserQuery extends ActiveQuery
             ->having(['not', ['currency' => null]])
             ->groupBy('currency')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 
@@ -118,7 +121,7 @@ class UserQuery extends ActiveQuery
             ->join('inner join', 'language l', 'l.id=b.language_id')
             ->groupBy('lang')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 
@@ -133,7 +136,7 @@ class UserQuery extends ActiveQuery
             ->join('inner join', 'language_level lev', 'lev.id=ul.language_level_id')
             ->groupBy('level, lang')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 
@@ -144,7 +147,7 @@ class UserQuery extends ActiveQuery
             ->join('inner join', 'country', 'country.id=uc.country_id')
             ->groupBy('country')
             ->orderBy([
-                'users' => SORT_DESC
+                'users' => SORT_DESC,
             ]);
     }
 }

@@ -3,6 +3,7 @@
 * ErrorAction class is used to extend yii\web\ErrorAction for more capabilities while output error description.
 * For example, when users`s browser doesn`t support cookies, it`s preferably to warn user enable it, but not output "Bad Request"
 */
+
 namespace app\actions;
 
 use Yii;
@@ -10,7 +11,6 @@ use yii\web\BadRequestHttpException;
 
 class ErrorAction extends \yii\web\ErrorAction
 {
-
     /**
      * Renders a view that represents the exception.
      * @return string

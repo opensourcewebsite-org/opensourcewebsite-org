@@ -40,6 +40,7 @@ class m200212_071339_create_change_email_request_table extends Migration
             'fk-change_email_request-user_id',
             'change_email_request'
         );
+
         $this->dropTable('{{%change_email_request}}');
     }
 }

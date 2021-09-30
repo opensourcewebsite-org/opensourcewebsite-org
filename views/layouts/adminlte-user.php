@@ -106,22 +106,22 @@ AdminLteUserAsset::register($this);
             'options' => ['class' => 'navbar-nav'],
             'items' => [
                 [
-                    'label' => Gravatar::widget([
-                        'email' => Yii::$app->user->identity->email,
+                    'label' => ($userEmail = Yii::$app->user->identity->email) ? Gravatar::widget([
+                        'email' => $userEmail->email,
                         'secure' => true,
                         'options' => [
                             'alt' => 'Profile Gravatar',
                             'class' => 'img-circle',
                         ],
                         'size' => 20,
-                    ]),
+                    ]) : '<i class="fas fa-user"></i>',
                     'items' => [
                         [
                             'label' => Yii::t('app', 'Account'),
-                            'url' => ['site/account'],
+                            'url' => ['/account'],
                             'linkOptions' => [
                                 'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'site/account') ? 'active' : ''),
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/account') ? 'active' : ''),
                             ]
                         ],
                         [
@@ -253,7 +253,7 @@ $leftMenuItems = [
     ],
     [
         'title' => 'Website settings',
-        'url' => 'website-settings',
+        'url' => 'setting',
         'route' => '/setting/index',
     ],
     [
@@ -288,6 +288,11 @@ $leftMenuItems = [
         'title' => 'MySQL Info',
         'url' => 'examples/mysql-info',
         'route' => '/examples/mysql-info',
+    ],
+    [
+        'title' => Yii::t('app', 'Migrations'),
+        'url' => 'examples/migrations',
+        'route' => '/examples/migrations',
     ],
     [
         'title' => 'CONTRIBUTION',

@@ -12,7 +12,7 @@ use app\models\Language;
 AgencyAsset::register($this);
 FontAwesomeAsset::register($this);
 
-$currentUrl = Yii::$app->controller->id.'/' . Yii::$app->controller->action->id;
+$currentUrl = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

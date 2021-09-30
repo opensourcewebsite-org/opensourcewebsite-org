@@ -11,141 +11,66 @@ use Codeception\Test\Unit;
 
 class SignupFormTest extends Unit
 {
-
     public $tester;
     private $model;
 
     public function testSignupWithNoCredentials()
     {
         $this->model = new SignupForm([
-            'email' => '',
+            'username' => '',
             'password' => '',
+            'password_repeat' => '',
         ]);
 
         expect_not($this->model->signup());
         expect_that(\Yii::$app->user->isGuest);
-        expect($this->model->errors)->hasKey('email');
+        expect($this->model->errors)->hasKey('username');
         expect($this->model->errors)->hasKey('password');
     }
 
-    public function testSignupWithEmailAlreadyInUse()
+    public function testSignupWithUsernameAlreadyInUse()
     {
         $this->model = new SignupForm([
-            'email' => 'demo@example.com',
+            'username' => 'webmaster',
             'password' => 'webmaster',
+            'password_repeat' => 'webmaster',
         ]);
 
         expect_not($this->model->signup());
         expect_that(\Yii::$app->user->isGuest);
-        expect($this->model->errors)->hasKey('email');
+        expect($this->model->errors)->hasKey('username');
     }
 
-    public function testSignupWithValidCredentials()
+    public function testSignupWithCorrectCredentials()
     {
         $this->model = new SignupForm([
-            'email' => 'user1@example.com',
+            'username' => 'user1',
             'password' => 'webmaster',
+            'password_repeat' => 'webmaster',
         ]);
 
         expect_that($this->model->signup());
-        expect($this->model->errors)->hasntKey('email');
-        expect($this->model->errors)->hasntKey('password');
+        expect($this->model->errors)->hasNotKey('username');
+        expect($this->model->errors)->hasNotKey('password');
     }
 
-    public function testIsSignupConfirmationEmailSend()
+    public function testSignupWithMismatchedPasswords()
     {
-        $this->model = new SignupForm();
-        $this->model->setAttributes([
-            'email' => 'user2@example.com',
+        $this->model = new SignupForm([
+            'username' => 'webmaster',
             'password' => 'webmaster',
+            'password_repeat' => 'demo1',
         ]);
 
-        $user = $this->model->signup();
-        expect_that($user->sendConfirmationEmail($user));
-        expect($this->model->errors)->hasntKey('email');
-        expect($this->model->errors)->hasntKey('password');
-
-        $this->tester->seeEmailIsSent();
-        $email = $this->tester->grabLastSentEmail();
-        expect($email->getTo())->hasKey($user->email);
-        expect($email->getSubject())->equals('Register for My Application');
-    }
-
-    public function testConfirmEmailWithoutLogin()
-    {
+        expect_not($this->model->signup());
         expect_that(\Yii::$app->user->isGuest);
-        expect_that(SignupForm::confirmEmail(102, 'test102key'));
-    }
-
-    public function testConfirmEmailWithWrongLogin()
-    {
-        $this->model = new LoginForm([
-            'email' => 'demo@example.com',
-            'password' => 'webmaster',
-        ]);
-
-        expect_that($this->model->login());
-        expect_not(\Yii::$app->user->isGuest);
-        expect_not(SignupForm::confirmEmail(102, 'test102key'));
-    }
-
-    public function testConfirmEmailWrongUserId()
-    {
-        $this->model = new LoginForm([
-            'email' => 'newuser@example.com',
-            'password' => 'newuser',
-        ]);
-
-        expect_that($this->model->login());
-        expect_not(\Yii::$app->user->isGuest);
-
-        expect_not(SignupForm::confirmEmail(101, 'test102key'));
-    }
-
-    public function testConfirmEmailWrongUserAuthKey()
-    {
-        $this->model = new LoginForm([
-            'email' => 'newuser@example.com',
-            'password' => 'newuser',
-        ]);
-
-        expect_that($this->model->login());
-        expect_not(\Yii::$app->user->isGuest);
-
-        expect_not(SignupForm::confirmEmail(102, 'test100key'));
-    }
-
-    public function testConfirmEmailCorrect()
-    {
-        $this->model = new LoginForm([
-            'email' => 'testuser@example.com',
-            'password' => 'testuser',
-        ]);
-
-        expect($user = SignupForm::confirmEmail(103, 'test103key'))->notNull();
-        expect_that($this->model->login());
-        expect_not(\Yii::$app->user->isGuest);
-
-        expect($user->is_authenticated)->equals(true);
-        expect($user->status)->equals(User::STATUS_ACTIVE);
-    }
-
-    /**
-     * @depends testConfirmEmailCorrect
-     */
-    public function testAddRatingConfirmEmail($user)
-    {
-        $user = User::findIdentity(102);
-        expect_that($user->addRating(Rating::CONFIRM_EMAIL, 1, false));
-        expect($user->getRating())->equals(1);
-
-        expect($user->addRating(Rating::CONFIRM_EMAIL, 1, false))->true();
-        expect($user->getRating())->notEquals(2);
+        expect($this->model->errors)->hasKey('password_repeat');
     }
 
     protected function _after()
     {
         Rating::deleteAll();
+
         Yii::$app->user->logout();
     }
 }

@@ -9,7 +9,7 @@ use app\widgets\buttons\SaveButton;
 
 ActiveForm::begin();
 ?>
-<div class="profile-form">
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -43,7 +43,14 @@ ActiveForm::begin();
                     <?= SaveButton::widget(); ?>
                     <?= CancelButton::widget(); ?>
                     <?= DeleteButton::widget([
-                        'url' => ['/user/delete-language', 'id' => $userLanguageRecord->id],
+                        'url' => [
+                            '/user/delete-language',
+                        ],
+                        'options' => [
+                            'data-params' => [
+                                'id' => $userLanguageRecord->id,
+                            ],
+                        ],
                     ]); ?>
                 </div>
             </div>

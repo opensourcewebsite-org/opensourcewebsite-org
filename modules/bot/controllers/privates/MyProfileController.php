@@ -26,6 +26,7 @@ class MyProfileController extends Controller
         $user = $this->getUser();
 
         $params = [
+            'id' => $user->id,
             'firstName' => $telegramUser->provider_user_first_name,
             'lastName' => $telegramUser->provider_user_last_name,
             'username' => $telegramUser->provider_user_name,

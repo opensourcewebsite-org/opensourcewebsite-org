@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\modules\dataGenerator\components\generators;
@@ -10,7 +11,6 @@ use yii\db\ActiveRecord;
 
 class JobKeywordFixture extends ARGenerator
 {
-
     protected function factoryModel(): ?ActiveRecord
     {
         $model = new JobKeyword([
@@ -18,7 +18,7 @@ class JobKeywordFixture extends ARGenerator
         ]);
 
         if (!$model->save()) {
-            throw new ARGeneratorException("Can't save " . static::classNameModel() . "!\r\n");
+            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
         return $model;
@@ -27,7 +27,7 @@ class JobKeywordFixture extends ARGenerator
     /**
      * @throws ARGeneratorException
      */
-    public function load(): ActiveRecord
+    public function load(): ?ActiveRecord
     {
         return $this->factoryModel();
     }

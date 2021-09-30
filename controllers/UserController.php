@@ -3,8 +3,8 @@
 namespace app\controllers;
 
 use Yii;
+use app\components\Controller;
 use app\components\helpers\ReferrerHelper;
-use app\models\ChangeEmailRequest;
 use app\models\Country;
 use app\models\Contact;
 use app\models\EditProfileForm;
@@ -17,17 +17,16 @@ use app\models\UserCitizenship;
 use app\models\UserLanguage;
 use app\models\UserStatistic;
 use app\models\User;
+use app\models\UserEmail;
 use app\models\UserMoqupFollow;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
-use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
+use app\components\Converter;
 
 class UserController extends Controller
 {
-    private $user;
-
     /**
      * {@inheritdoc}
      */
@@ -36,7 +35,6 @@ class UserController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['edit-profile', 'display', 'follow-moqup', 'unfollow-moqup', 'follow-user', 'unfollow-user'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -57,13 +55,6 @@ class UserController extends Controller
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
-    }
-
-    public function init()
-    {
-        $this->user = Yii::$app->user->identity;
-
-        parent::init();
     }
 
     /**
@@ -128,6 +119,40 @@ class UserController extends Controller
         exit;
     }
 
+    public function actionAccount()
+    {
+        $activeRating = $this->user->getActiveRating();
+        $rating = $this->user->getRating();
+        $totalRating = User::getTotalRating();
+        $percent = $totalRating ? Converter::percentage($rating, $totalRating) : 0;
+
+        $rank = $this->user->getRank();
+        $totalRank = User::getTotalRank();
+
+        $realConfirmations = $this->user->getContactsToMe()
+            ->where([
+                'is_real' => 1,
+            ])
+            ->count();
+
+        $params = [
+            'model' => $this->user,
+            'realConfirmations' => $realConfirmations,
+            'activeRating' => $activeRating,
+            'overallRating' => [
+                'rating' => $rating,
+                'totalRating' => $totalRating,
+                'percent' => $percent,
+            ],
+            'ranking' => [
+                'rank' => $rank,
+                'total' => $totalRank,
+            ],
+        ];
+
+        return $this->render('account', $params);
+    }
+
     public function actionProfile()
     {
         $userId = \Yii::$app->request->get('id');
@@ -190,34 +215,78 @@ class UserController extends Controller
 
     public function actionChangeEmail()
     {
-        $renderParams = [
-            'user' => $this->user,
-        ];
+        $userEmail = $this->user->email;
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-email', $renderParams);
+        if (!$userEmail) {
+            $userEmail = new UserEmail();
+            $userEmail->user_id = $this->user->id;
         }
 
-        $postData = Yii::$app->request->post('User');
-        $email = $postData['email'];
+        $renderParams = [
+            'userEmail' => $userEmail,
+        ];
 
-        if ($email !== $this->user->email) {
-            $changeEmailRequest = new ChangeEmailRequest();
-            $changeEmailRequest->setAttributes([
-                'email' => $email,
-                'user_id' => $this->user->id,
-                'token' => Yii::$app->security->generateRandomString(),
-            ]);
+        if (Yii::$app->request->isPost) {
+            $postData = Yii::$app->request->post('UserEmail');
+            $email = $postData['email'];
 
-            if ($changeEmailRequest->save()) {
-                if ($changeEmailRequest->sendEmail()) {
-                    Yii::$app->session->setFlash('success', 'Check your new email.');
+            if ($userEmail->isNewRecord || ($userEmail->email != $email)) {
+                $userEmail->email = $email;
+            }
+
+            if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
+                unset($this->user->email);
+                if ($this->user->sendConfirmationEmail()) {
+                    Yii::$app->session->setFlash('success', 'Check your email with confirmation link.');
                 }
+
                 return $this->redirect('/account');
             }
         }
 
         return $this->render('fields/change-email', $renderParams);
+    }
+
+    /**
+     * Confirm user email.
+     *
+     * @param int $id user id
+     * @param int $time
+     * @param string $hash
+     *
+     * @return string
+     */
+    public function actionConfirmEmail(int $id, int $time, string $hash)
+    {
+        if ((($time + UserEmail::CONFIRM_REQUEST_LIFETIME) > time()) && !$this->user->isEmailConfirmed()) {
+            if (Yii::$app->request->isPost) {
+                if ($this->user->confirmEmail($id, $time, $hash)) {
+                    Yii::$app->session->setFlash('success', 'Your email has been successfully confirmed.');
+                } else {
+                    Yii::$app->session->setFlash('warning', 'There was an error validating your email, please try again.');
+                }
+
+                return $this->redirect(['/account']);
+            }
+            // TODO add render invalid-confirm-email
+            return $this->render('confirm-email', [
+                'user' => $this->user,
+            ]);
+        } else {
+            return $this->render('expired-confirm-email');
+        }
+    }
+
+    public function actionDeleteEmail()
+    {
+        if (Yii::$app->request->isPost) {
+            if ($userEmail = $this->user->email) {
+                $userEmail->delete();
+                unset($this->user->email);
+            }
+        }
+
+        $this->redirect('/account');
     }
 
     public function actionChangeUsername()
@@ -226,17 +295,26 @@ class UserController extends Controller
             'user' => $this->user,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-username', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->load(Yii::$app->request->post());
 
-        $this->user->load(Yii::$app->request->post());
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-username', $renderParams);
+    }
+
+    public function actionDeleteUsername()
+    {
+        if (Yii::$app->request->isPost) {
+            $this->user->username = null;
+
+            $this->user->save();
+        }
+
+        $this->redirect('/account');
     }
 
     public function actionChangeName()
@@ -245,14 +323,12 @@ class UserController extends Controller
             'user' => $this->user,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-name', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->load(Yii::$app->request->post());
 
-        $this->user->load(Yii::$app->request->post());
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-name', $renderParams);
@@ -264,14 +340,12 @@ class UserController extends Controller
             'user' => $this->user,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-birthday', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->birthday = Yii::$app->formatter->asDate(Yii::$app->request->post('birthday'));
 
-        $this->user->birthday = Yii::$app->formatter->asDate(Yii::$app->request->post('birthday'));
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-birthday', $renderParams);
@@ -279,7 +353,15 @@ class UserController extends Controller
 
     public function actionChangeGender()
     {
-        $genders = Gender::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        $genders = Gender::find()
+            ->select([
+                'name',
+                'id',
+            ])
+            ->indexBy('id')
+            ->asArray()
+            ->column();
+
         foreach ($genders as $key => $gender) {
             $genders[$key] = Yii::t('app', $gender);
         }
@@ -289,14 +371,12 @@ class UserController extends Controller
             'genders' => $genders,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-gender', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->load(Yii::$app->request->post());
 
-        $this->user->load(Yii::$app->request->post());
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-gender', $renderParams);
@@ -308,14 +388,12 @@ class UserController extends Controller
             'user' => $this->user,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-timezone', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->load(Yii::$app->request->post());
 
-        $this->user->load(Yii::$app->request->post());
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-timezone', $renderParams);
@@ -323,7 +401,15 @@ class UserController extends Controller
 
     public function actionChangeCurrency()
     {
-        $currencies = Currency::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        $currencies = Currency::find()
+            ->select([
+                'name',
+                'id',
+            ])
+            ->indexBy('id')
+            ->asArray()
+            ->column();
+
         foreach ($currencies as $key => $currency) {
             $currencies[$key] = Yii::t('app', $currency);
         }
@@ -333,14 +419,12 @@ class UserController extends Controller
             'currencies' => $currencies,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-currency', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->load(Yii::$app->request->post());
 
-        $this->user->load(Yii::$app->request->post());
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-currency', $renderParams);
@@ -348,7 +432,15 @@ class UserController extends Controller
 
     public function actionChangeSexuality()
     {
-        $sexualities = Sexuality::find()->select(['name', 'id'])->indexBy('id')->asArray()->column();
+        $sexualities = Sexuality::find()
+            ->select([
+                'name',
+                'id',
+            ])
+            ->indexBy('id')
+            ->asArray()
+            ->column();
+
         foreach ($sexualities as $key => $sexuality) {
             $sexualities[$key] = Yii::t('app', $sexuality);
         }
@@ -358,14 +450,12 @@ class UserController extends Controller
             'sexualities' => $sexualities,
         ];
 
-        if (!Yii::$app->request->isPost) {
-            return $this->render('fields/change-sexuality', $renderParams);
-        }
+        if (Yii::$app->request->isPost) {
+            $this->user->load(Yii::$app->request->post());
 
-        $this->user->load(Yii::$app->request->post());
-
-        if ($this->user->save()) {
-            return $this->redirect('/account');
+            if ($this->user->save()) {
+                return $this->redirect('/account');
+            }
         }
 
         return $this->render('fields/change-sexuality', $renderParams);
@@ -462,16 +552,23 @@ class UserController extends Controller
         }
     }
 
-    public function actionDeleteLanguage(int $id)
+    public function actionDeleteLanguage()
     {
-        $language = UserLanguage::find()->where([ 'id' => $id, 'user_id' => $this->user->id ])->one();
-        if (!$language) {
-            $this->redirect('/account');
-        }
-        try {
+        if (Yii::$app->request->isPost) {
+            $id = Yii::$app->request->post('id');
+
+            $language = UserLanguage::find()
+                ->where([
+                    'id' => $id,
+                    'user_id' => $this->user->id,
+                ])
+            ->one();
+
+            if (!$language) {
+                $this->redirect('/account');
+            }
+
             $language->delete();
-        } catch (StaleObjectException $e) {
-        } catch (\Throwable $e) {
         }
 
         $this->redirect('/account');
@@ -513,16 +610,23 @@ class UserController extends Controller
         }
     }
 
-    public function actionDeleteCitizenship(int $id)
+    public function actionDeleteCitizenship()
     {
-        $citizenship = UserCitizenship::find()->where([ 'country_id' => $id, 'user_id' => $this->user->id ])->one();
-        if (!$citizenship) {
-            $this->redirect('/account');
-        }
-        try {
+        if (Yii::$app->request->isPost) {
+            $id = Yii::$app->request->post('id');
+
+            $citizenship = UserCitizenship::find()
+                ->where([
+                    'country_id' => $id,
+                    'user_id' => $this->user->id,
+                ])
+                ->one();
+
+            if (!$citizenship) {
+                $this->redirect('/account');
+            }
+
             $citizenship->delete();
-        } catch (StaleObjectException $e) {
-        } catch (\Throwable $e) {
         }
 
         $this->redirect('/account');

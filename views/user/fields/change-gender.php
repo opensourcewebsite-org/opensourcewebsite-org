@@ -6,11 +6,9 @@ use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$form = ActiveForm::begin();
 ?>
-<div class="profile-form">
-    <?php
-    $genderForm = ActiveForm::begin();
-    ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -22,17 +20,19 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $genderForm->field($user, 'gender_id')->widget(
-                                Select2::class,
-                                [
-                                    'name'    => 'change-gender',
-                                    'value'   => Yii::$app->user->identity->gender ?? '',
-                                    'data'    => $genders,
+                            <?= $form->field($user, 'gender_id')
+                                ->widget(
+                                    Select2::class,
+                                    [
+                                    'name' => 'change-gender',
+                                    'value' => Yii::$app->user->identity->gender ?? '',
+                                    'data' => $genders,
                                     'options' => [
-                                        'id'     => 'gender-value',
+                                        'id' => 'gender-value',
                                         'prompt' => '',
-                                    ]
-                                ])->label(Yii::t('app', 'Gender')); ?>
+                                    ],
+                                ]
+                                )->label(Yii::t('app', 'Gender')); ?>
                         </div>
                     </div>
                 </div>
@@ -45,5 +45,5 @@ use yii\widgets\ActiveForm;
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

@@ -7,8 +7,8 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
 use app\models\User;
+use app\models\UserEmail;
 use app\models\MergeAccountsRequest;
-use app\models\ChangeEmailRequest;
 
 /**
  * Class MyEmailController
@@ -24,113 +24,66 @@ class MyEmailController extends Controller
     {
         $user = $this->getUser();
 
-        if (isset($user->email)) {
-            $email = $user->email;
-        } else {
-            return $this->actionUpdate();
-        }
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('index', [
-                    'email' => $email,
-                ]),
-                [
-                    [
-                        [
-                            'callback_data' => MyProfileController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'text' => Emoji::MENU,
-                            'callback_data' => MenuController::createRoute(),
-                        ],
-                        [
-                            'callback_data' => self::createRoute('update'),
-                            'text' => Emoji::EDIT,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionCreate()
-    {
-        $email = $this->getUpdate()->getMessage()->getText();
-        $user = $this->getUser();
-
-        $changeRequest = false;
-        $mergeRequest = false;
-
-        $userWithSameEmail = User::findOne(['email' => $email]);
-        if (isset($userWithSameEmail)) {
-            if ($userWithSameEmail->id != $user->id) {
-                $mergeRequest = true;
-                $this->getState()->setName('waiting_for_merge');
-                $this->getState()->setIntermediateField('email', $email);
-            } else {
-                $this->getState()->setName(null);
-                return $this->actionIndex();
-            }
-        } else {
-            $changeEmailRequest = new ChangeEmailRequest();
-            $changeEmailRequest->setAttributes([
-                'email' => $email,
-                'user_id' => $user->id,
-                'token' => Yii::$app->security->generateRandomString(),
-            ]);
-
-            if ($changeEmailRequest->save()) {
-                if ($changeEmailRequest->sendEmail()) {
-                    $changeRequest = true;
-                    $this->getState()->setName(null);
-                }
-            }
-        }
-
-        if ($changeRequest) {
+        if ($userEmail = $user->email) {
             return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
-                    $this->render('create'),
+                    $this->render('index', [
+                        'userEmail' => $userEmail,
+                        'user' => $user,
+                    ]),
                     [
                         [
                             [
                                 'callback_data' => MyProfileController::createRoute(),
                                 'text' => Emoji::BACK,
                             ],
+                            [
+                                'text' => Emoji::MENU,
+                                'callback_data' => MenuController::createRoute(),
+                            ],
+                            [
+                                'callback_data' => self::createRoute('update'),
+                                'text' => Emoji::EDIT,
+                            ],
+                            [
+                                'callback_data' => self::createRoute('delete'),
+                                'text' => Emoji::DELETE,
+                            ],
                         ],
                     ]
                 )
                 ->build();
-        } elseif ($mergeRequest) {
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('merge-request'),
-                    [
-                        [
-                            [
-                                'callback_data' => self::createRoute('merge-accounts'),
-                                'text' => Yii::t('bot', 'Yes'),
-                            ],
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => Yii::t('bot', 'No'),
-                            ]
-                        ]
-                    ]
-                )
-                ->build();
         }
+
+        return $this->actionUpdate();
     }
 
     public function actionUpdate()
     {
-        $this->getState()->setName(self::createRoute('create'));
-        $user = $this->getUser();
+        $this->getState()->setName(self::createRoute('update'));
 
-        MergeAccountsRequest::deleteAll("user_id = {$user->id}");
-        ChangeEmailRequest::deleteAll("user_id = {$user->id}");
+        $userEmail = $this->user->email;
+
+        if (!$userEmail) {
+            $userEmail = new UserEmail();
+            $userEmail->user_id = $this->user->id;
+        }
+
+        if ($this->getUpdate()->getMessage()) {
+            $email = $this->getUpdate()->getMessage()->getText();
+
+            if ($userEmail->isNewRecord || ($userEmail->email != $email)) {
+                $userEmail->email = $email;
+            }
+
+            if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
+                unset($this->user->email);
+                $this->user->sendConfirmationEmail();
+                $this->getState()->setName(null);
+
+                return $this->actionIndex();
+            }
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -138,7 +91,7 @@ class MyEmailController extends Controller
                 [
                     [
                         [
-                            'callback_data' => ($user->email ? self::createRoute() : MyProfileController::createRoute()),
+                            'callback_data' => ($userEmail->isNewRecord ? MyProfileController::createRoute() : self::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],
@@ -147,63 +100,15 @@ class MyEmailController extends Controller
             ->build();
     }
 
-    public function actionMergeAccounts()
+    public function actionDelete(): array
     {
         $user = $this->getUser();
 
-        if ($this->getState()->getName() == 'waiting_for_merge') {
-            $userToMerge = User::findOne(['email' => $this->getState()->getIntermediateField('email', null)]);
-            if ($userToMerge) {
-                $mergeAccountsRequest = new MergeAccountsRequest();
-                $mergeAccountsRequest->setAttributes([
-                    'user_to_merge_id' => $user->id,
-                    'user_id' => $userToMerge->id,
-                    'token' => Yii::$app->security->generateRandomString(),
-                ]);
-                // MergeAccountsRequest::sendEmail also call ActiveRecord::save method
-                if ($mergeAccountsRequest->sendEmail()) {
-                    return $this->getResponseBuilder()
-                        ->editMessageTextOrSendMessage(
-                            $this->render('merge-accounts'),
-                            [
-                                [
-                                    [
-                                        'text' => Yii::t('bot', 'Cancel request'),
-                                        'callback_data' => self::createRoute('discard-merge-request', [
-                                            'mergeAccountsRequestId' => $mergeAccountsRequest->id,
-                                        ]),
-                                    ],
-                                ],
-                                [
-                                    [
-                                        'callback_data' => MyProfileController::createRoute(),
-                                        'text' => Emoji::BACK,
-                                    ],
-                                ],
-                            ]
-                        )
-                        ->build();
-                } else {
-                }
-            } else {
-            }
-        } else {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    new MessageText(Yii::t('bot', 'This request has expired')),
-                    true
-                )
-                ->build();
+        if ($userEmail = $this->user->email) {
+            $userEmail->delete();
+            unset($this->user->email);
         }
-    }
 
-    public function actionDiscardMergeRequest($mergeAccountsRequestId)
-    {
-        $mergeAccountsRequest = MergeAccountsRequest::findOne($mergeAccountsRequestId);
-        if (isset($mergeAccountsRequest)) {
-            $mergeAccountsRequest->delete();
-
-            return $this->actionUpdate();
-        }
+        return $this->run('my-profile/index');
     }
 }

@@ -69,6 +69,7 @@ class GroupRefreshController extends Controller
                 // and no administrators left => remove chat from db
                 removeFromDb($chat);
             }
+
             return $this->run('group/index');
         }
 

@@ -108,12 +108,12 @@ class WikipediaParserController extends Controller implements CronChainedInterfa
                         $time = time();
                         WikiPage::updateAll(
                             [
-                            'group_id' => $groupId,
-                            'updated_at' => $time,
-                        ],
+                                'group_id' => $groupId,
+                                'updated_at' => $time,
+                            ],
                             [
-                            'id' => $pageIds,
-                        ]
+                                'id' => $pageIds,
+                            ]
                         );
                         $existingLanguageIds = WikiPage::find()
                             ->select('language_id')

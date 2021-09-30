@@ -17,18 +17,6 @@ use yii\helpers\Console;
 
 class DebtFixture extends ARGenerator
 {
-    /**
-     * @throws ARGeneratorException
-     */
-    public function init()
-    {
-        if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
-        }
-
-        parent::init();
-    }
-
     protected function providers(): array
     {
         return [DateTime::class];
@@ -60,7 +48,9 @@ class DebtFixture extends ARGenerator
         };
 
         $model->currency_id = $users['currency_id'];
-        $model->amount = $this->faker->valid(static function ($v) { return (bool)$v; })->randomFloat(2, 1, 10000);
+        $model->amount = $this->faker->valid(static function ($v) {
+            return (bool)$v;
+        })->randomFloat(2, 1, 10000);
         $model->status = $this->faker->randomElement(Debt::mapStatus());
         $model->setUsersFromContact($users['user_id'], $users['link_user_id']);
 
@@ -88,9 +78,7 @@ class DebtFixture extends ARGenerator
 
         //looks like $currencyId should always be not empty. But, just in case, let's check it too.
         if (empty($contact) || !$currencyId) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. No Contact exists\n";
-            $message .= "It's not error - few iterations later new Contact will be generated.\n";
+            $message = "\n" . self::classNameModel() . ': creation skipped. There is no Contacts.' . "\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return [];

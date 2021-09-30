@@ -8,6 +8,7 @@
 use app\models\LoginForm;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
+use yii\captcha\Captcha;
 
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
@@ -20,13 +21,18 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-header">
                 <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
             </div>
-            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+            <?php $form = ActiveForm::begin([
+                'id' => 'login-form',
+            ]); ?>
             <div class="card-body">
                 <div class="form-group">
-                    <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
+                    <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
                 </div>
                 <div class="form-group">
                     <?= $form->field($model, 'password')->passwordInput() ?>
+                </div>
+                <div class="form-group">
+                    <?= $form->field($model, 'captcha')->widget(Captcha::className()) ?>
                 </div>
 
                 <div>
@@ -41,7 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     </p>
                 </div>
             </div>
-
             <div class="card-footer">
                 <div class="form-group">
                     <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>

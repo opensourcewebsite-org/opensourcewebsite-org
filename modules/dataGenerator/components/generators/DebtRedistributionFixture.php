@@ -56,10 +56,7 @@ class DebtRedistributionFixture extends ARGenerator
             ->one();
 
         if (!$contact) {
-            $class = self::classNameModel();
-            $message = "\n$class: creation skipped. ";
-            $message .= "Either no Contact exists, or all Contacts have full set of DebtRedistributions.\n";
-            $message .= "It's not error - few iterations later new Contact will be generated.\n";
+            $message = "\n" . self::classNameModel() . ': creation skipped. Either no Contact exists, or all Contacts have full set of DebtRedistributions.' . "\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
 
             return null;

@@ -55,7 +55,6 @@ class User extends ActiveRecord
         $newUser->setAttributes([
             'provider_user_id' => $updateUser->getId(),
             'language_id' => $language->id,
-            'is_authenticated' => true,
         ]);
 
         $newUser->save();
@@ -225,5 +224,10 @@ class User extends ActiveRecord
     public function getProviderUserId()
     {
         return $this->provider_user_id;
+    }
+
+    public function getUsername()
+    {
+        return $this->provider_user_name;
     }
 }

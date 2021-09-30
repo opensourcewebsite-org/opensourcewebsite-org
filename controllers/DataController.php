@@ -14,7 +14,6 @@ use yii\web\Controller;
 
 class DataController extends Controller
 {
-
     /**
      * {@inheritdoc}
      */

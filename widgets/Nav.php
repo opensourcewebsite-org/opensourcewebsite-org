@@ -9,7 +9,6 @@ use Yii;
  */
 class Nav extends \yii\bootstrap4\Nav
 {
-
     /**
      * Initializes the widget.
      */

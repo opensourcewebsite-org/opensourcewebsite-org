@@ -9,6 +9,7 @@ use yii\grid\ActionColumn;
 use app\models\UserWikiToken;
 use app\models\UserWikiPage;
 use app\components\TitleColumn;
+
 /* @var $this \yii\web\View */
 
 $this->title = Yii::t('app', 'Wikipedia watchlists');
@@ -28,7 +29,6 @@ $countTokens = $tokensDataProvider->count;
                         'style' =>  ['float' => 'right'],
                     ],
                     'url' => Url::to(['wiki-tokens/create']),
-                    'ajaxSubmit' => true,
                 ]);?>
             </li>
         </ul>

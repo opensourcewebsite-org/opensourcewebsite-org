@@ -17,7 +17,6 @@ use app\widgets\buttons\EditButton;
 $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
 
     <div class="resume-view">
@@ -77,7 +76,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     [
                                         'label' => Yii::t('app', 'Keywords'),
                                         'visible' => (bool)$model->keywords,
-                                        'value' => function() use ($model) {
+                                        'value' => function () use ($model) {
                                             $text = '';
 
                                             foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
@@ -105,7 +104,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                                 $model->location,
                                                 Url::to(['view-location', 'id' => $model->id]),
                                                 ['class' => 'modal-btn-ajax']
-                                                );
+                                            );
                                         },
                                         'format' => 'raw',
                                     ],
@@ -118,7 +117,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'label' => Yii::t('app', 'Offers'),
                                         'visible' => $model->getMatches()->count(),
                                         'format' => 'raw',
-                                        'value' => function() use ($model) {
+                                        'value' => function () use ($model) {
                                             return $model->getMatches()->count() ?
                                                 Html::a(
                                                     $model->getMatches()->count(),

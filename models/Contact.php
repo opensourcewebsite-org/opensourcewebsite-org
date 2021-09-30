@@ -47,9 +47,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public const DEBT_REDISTRIBUTION_PRIORITY_DENY = 0;
     public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
-    const VIEW_USER = 1;
-    const VIEW_VIRTUALS = 2;
-    const RELATIONS = [
+    public const VIEW_USER = 1;
+    public const VIEW_VIRTUALS = 2;
+    public const RELATIONS = [
         0 => 'Neutral',
         1 => 'Friend',
         2 => 'Enemy',
@@ -146,10 +146,14 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             [
                 'debt_redistribution_priority',
                 'filter',
-                'filter' => static function ($v) { return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY; },
+                'filter' => static function ($v) {
+                    return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
+                },
             ],
             ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
-            ['vote_delegation_priority', 'filter', 'filter' => static function ($v) { return ((int)$v) ?: null; }],
+            ['vote_delegation_priority', 'filter', 'filter' => static function ($v) {
+                return ((int)$v) ?: null;
+            }],
         ];
     }
 
@@ -163,7 +167,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'user_id' => 'User ID',
             'link_user_id' => 'Link User ID',
             'name' => Yii::t('user', 'Name'),
-            'userIdOrName' => Yii::t('user', 'User ID') . ' / ' . Yii::t('user', 'Username'),
+            'userIdOrName' => 'User ID / ' . Yii::t('user', 'Username'),
             'is_real' => Yii::t('app', 'Is Real'),
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
@@ -421,9 +425,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     ->viaTable('contact_has_group', ['contact_id' => 'id']);
     }
 
-/*
- * validate count empty groups
- */
+    /*
+     * validate count empty groups
+     */
     public function validateHasEmptyGroup()
     {
         if (Yii::$app->user->identity->hasEmptyContactGroup()) {

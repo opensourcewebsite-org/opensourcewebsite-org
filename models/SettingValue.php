@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\components\Converter;
 use Yii;
+use app\models\queries\SettingValueQuery;
 
 /**
  * This is the model class for table "setting_value".
@@ -11,7 +12,6 @@ use Yii;
  * @property int $id
  * @property int $setting_id
  * @property string $value
- * @property int $updated_at
  *
  * @property Setting $setting
  * @property User $user
@@ -20,6 +20,8 @@ use Yii;
 class SettingValue extends \yii\db\ActiveRecord
 {
     public $settingValueUserVote;
+
+    protected $rating = null;
 
     /**
      * {@inheritdoc}
@@ -36,8 +38,9 @@ class SettingValue extends \yii\db\ActiveRecord
     {
         return [
             [['setting_id', 'value'], 'required'],
-            [['setting_id', 'updated_at'], 'integer'],
-            [['value'], 'string'],
+            [['setting_id'], 'integer'],
+            ['value', 'trim'],
+            ['value', 'validateValue'],
             [['setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::className(), 'targetAttribute' => ['setting_id' => 'id']],
         ];
     }
@@ -50,9 +53,66 @@ class SettingValue extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'setting_id' => 'Setting ID',
-            'value' => 'Value',
-            'updated_at' => 'Last updated',
+            'value' => Yii::t('app', 'Value'),
         ];
+    }
+
+    public function validateValue()
+    {
+        $rules = $this->getValidationRules();
+
+        if ($rules) {
+            if (isset($rules['type'])) {
+                switch ($rules['type']) {
+                    case 'integer':
+                        $this->value = intval($this->value);
+                        if (!is_int($this->value)) {
+                            $this->addError('value', 'Value must be an integer.');
+                        }
+                    break;
+                    case 'float':
+                        $this->value = floatval($this->value);
+                        if (!is_float($this->value)) {
+                            $this->addError('value', 'Value must be a number.');
+                        }
+                    break;
+                }
+            }
+
+            if (isset($rules['min'])) {
+                if ($this->value < $rules['min']) {
+                    $this->addError('value', 'Value must be no less than ' . $rules['min'] . '.');
+                }
+            }
+
+            if (isset($rules['max'])) {
+                if ($this->value > $rules['max']) {
+                    $this->addError('value', 'Value must be no greater than ' . $rules['max'] . '.');
+                }
+            }
+
+            if (isset($rules['less'])) {
+                if ($this->value >= $rules['less']) {
+                    $this->addError('value', 'Value must be less than ' . $rules['less'] . '.');
+                }
+            }
+
+            if (isset($rules['more'])) {
+                if ($this->value <= $rules['more']) {
+                    $this->addError('value', 'Value must be greater than ' . $rules['more'] . '.');
+                }
+            }
+        }
+    }
+
+    public function getValidationRules()
+    {
+        return $this->setting->getValidationRules();
+    }
+
+    public static function find()
+    {
+        return new SettingValueQuery(get_called_class());
     }
 
     /**
@@ -72,29 +132,111 @@ class SettingValue extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return SettingValueVote vote record of login user
+     * @param int|null $userId
+     *
+     * @return SettingValueVote
      */
-    public function getSettingValueUserVote()
+    public function getSettingValueVoteByUserId($userId = null)
     {
-        $user_id = Yii::$app->user->id;
+        if (!$userId) {
+            $userId = Yii::$app->user->id;
+        }
 
-        return SettingValueVote::find()->where(['setting_value_id' => $this->id, 'user_id' => $user_id])->one();
+        return SettingValueVote::find()
+            ->where([
+                'setting_value_id' => $this->id,
+                'user_id' => $userId,
+            ])
+            ->one();
     }
 
     /**
-     * @param bool $format whether to return formatted percent value or not
      * @return mixed Votes percentage of a setting values
      */
-    public function getUserVotesPercent($format = true)
+    public function getVotesPercent()
     {
-        $valueVotes = $this->settingValueVotes;
-        $votes = 0;
-        foreach ($valueVotes as $valueVote) {
-            $votes += $valueVote->getVotesPercent();
+        $totalRating = User::getTotalRating();
+
+        return Converter::percentage($this->getRating(), $totalRating, false);
+    }
+
+    public function isCurrent()
+    {
+        return $this->value == $this->setting->value;
+    }
+
+    /**
+     * @return integer value rating
+     */
+    public function getRating()
+    {
+        if (is_null($this->rating)) {
+            $this->rating = 0;
+
+            foreach ($this->settingValueVotes as $settingValueVote) {
+                $this->rating += $settingValueVote->getRating();
+            }
         }
-        if ($format) {
-            $votes = Converter::formatNumber($votes);
+
+        return $this->rating;
+    }
+
+    /**
+     * @param integer $userId
+     */
+    public function setVoteByUserId($userId)
+    {
+        $vote = SettingValueVote::find()
+            ->where([
+                'setting_id' => $this->setting_id,
+                'user_id' => $userId,
+            ])
+            ->one();
+        // delete another user vote
+        if ($vote && ($vote->getSettingValueId() != $this->id)) {
+            $valueId = $vote->getSettingValueId();
+            $vote->delete();
+
+            $existVotes = SettingValueVote::find()
+                ->where([
+                    'setting_id' => $this->setting_id,
+                    'setting_value_id' => $valueId,
+                ])
+                ->exists();
+            // delete the value without votes
+            if (!$existVotes) {
+                SettingValue::deleteAll([
+                    'id' => $valueId,
+                ]);
+            }
         }
-        return $votes;
+
+        $vote = new SettingValueVote([
+            'setting_id' => $this->setting_id,
+            'setting_value_id' => $this->id,
+            'user_id' => $userId,
+        ]);
+
+        if ($vote->save() && array_key_exists($this->setting->key, Setting::$settings)) {
+            //Make the voted setting value as current setting value, if it reach a threshhold of setting value 'website_setting_min_vote_percent_to_apply_change'
+            try {
+                $threshHold = Yii::$app->settings->website_setting_min_vote_percent_to_apply_change;
+
+                if ($threshHold < $this->getVotesPercent()) {
+                    $this->setting->value = $this->value;
+                    $this->setting->updated_at = time();
+                    $this->setting->save();
+                }
+            } catch (\Exception $e) {
+                Yii::warning($e);
+            }
+        }
+
+        return $vote;
+    }
+
+    public function getSettingId()
+    {
+        return $this->setting_id;
     }
 }

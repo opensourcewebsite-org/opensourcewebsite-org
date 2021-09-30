@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\widgets\buttons;
 
 use app\widgets\base\PjaxButton;
@@ -7,7 +9,6 @@ use Yii;
 
 class SendButton extends PjaxButton
 {
-
     public function init()
     {
         parent::init();

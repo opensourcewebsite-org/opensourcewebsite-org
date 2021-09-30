@@ -88,7 +88,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             'header' => Yii::t('app', 'Update groups'),
                                             'id' => 'groups-modal',
                                             'url' => ['update-contact-groups', 'id' => $model->id],
-                                            'ajaxSubmit' => true,
                                         ]); ?>
 
                                         <td><?= EditButton::widget([

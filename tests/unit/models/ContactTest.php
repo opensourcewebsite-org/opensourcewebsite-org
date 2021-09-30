@@ -29,12 +29,13 @@ class ContactTest extends \Codeception\Test\Unit
             ],
         ];
     }
-    
+
     protected function _before()
     {
         parent::_before();
 
         $user = User::findOne(['email' => 'admin@example.com']); // id=100
+
         Yii::$app->user->login($user, 3600);
     }
 
@@ -72,7 +73,7 @@ class ContactTest extends \Codeception\Test\Unit
         $prevContact->user_id = Yii::$app->user->id;
         $prevContact->userIdOrName = "101";
         expect("prevContact save() is success", $prevContact->save())->true();
-        expect("prevContact is not virtual", !$prevContact->isVirtual())->true();
+        expect("prevContact is not virtual", !$prevContact->isVirtual())->false();
 
         $newContact = new Contact();
         $newContact->userIdOrName = $prevContact->userIdOrName;

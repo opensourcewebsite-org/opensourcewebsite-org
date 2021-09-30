@@ -47,7 +47,9 @@ class ContactQuery extends ActiveQuery
     public function forDebtRedistribution($contactId): self
     {
         return $this
-            ->where(['id' => $contactId])
+            ->where([
+                'id' => $contactId,
+            ])
             ->userOwner()
             ->virtual(false);
     }

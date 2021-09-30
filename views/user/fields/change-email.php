@@ -4,12 +4,11 @@ use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\widgets\buttons\DeleteButton;
 
+$form = ActiveForm::begin();
 ?>
-<div class="profile-form">
-    <?php
-    $emailForm = ActiveForm::begin();
-    ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -21,8 +20,12 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $emailForm->field($user, 'email')->input('email', ['value' =>
-                                Yii::$app->user->identity->email])->label(Yii::t('app', 'Email')); ?>
+                            <?= $form->field($userEmail, 'email')
+                                ->input('email', [
+                                    'value' => $userEmail ? $userEmail->email : '',
+                                ])
+                                ->label(Yii::t('app', 'Email'));
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -31,9 +34,15 @@ use yii\widgets\ActiveForm;
                     <?= CancelButton::widget([
                         'url' => ['/account']
                     ]); ?>
+                    <?= DeleteButton::widget([
+                        'url' => [
+                            '/user/delete-email',
+                        ],
+                        'visible' => Yii::$app->user->identity->email,
+                    ]); ?>
                 </div>
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

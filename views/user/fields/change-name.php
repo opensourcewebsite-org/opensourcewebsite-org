@@ -5,11 +5,9 @@ use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$form = ActiveForm::begin();
 ?>
-<div class="profile-form">
-    <?php
-    $nameForm = ActiveForm::begin();
-    ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -21,7 +19,7 @@ use yii\widgets\ActiveForm;
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $nameForm->field($user, 'name')->textInput(['value' =>
+                            <?= $form->field($user, 'name')->textInput(['value' =>
                                 Yii::$app->user->identity->name])->label(Yii::t('app', 'Name')); ?>
                         </div>
                     </div>
@@ -35,5 +33,5 @@ use yii\widgets\ActiveForm;
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

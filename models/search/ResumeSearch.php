@@ -32,6 +32,7 @@ class ResumeSearch extends Resume
 
         if (!$this->validate()) {
             $query->where('0=1');
+
             return $dataProvider;
         }
 

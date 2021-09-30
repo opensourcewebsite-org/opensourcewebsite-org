@@ -18,16 +18,15 @@ use yii\db\Query;
  */
 class Rating extends \yii\db\ActiveRecord
 {
-    const CONFIRM_EMAIL = 0;
-    const TEAM = 1;
-    const DONATE = 2;
-    const USE_TELEGRAM_BOT = 3;
+    // initial value for every user
+    public const DEFAULT = 1;
+
+    public const TEAM = 1;
+    public const DONATE = 2;
 
     public static $types = [
-        0 => 'Registration',
         1 => 'Contribution',
         2 => 'Donation',
-        3 => 'Registration',
     ];
 
     /**
