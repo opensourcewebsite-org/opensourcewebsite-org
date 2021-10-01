@@ -22,9 +22,9 @@ class SignupForm extends Model
     public function rules()
     {
         return [
-            ['captcha', 'captcha', 'skipOnEmpty' => YII_ENV_TEST],
-            [['username', 'password'], 'required'],
+            ['captcha', 'captcha', 'skipOnEmpty' => YII_ENV_TEST || YII_ENV_DEV],
             ['username', 'trim'],
+            [['username', 'password', 'password_repeat'], 'required'],
             ['username', 'string', 'max' => 255],
             ['username', 'validateUsername'],
             [

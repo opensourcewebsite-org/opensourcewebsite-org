@@ -14,7 +14,10 @@ class LoginForm extends Model
     public $password;
     public $captcha;
 
-    private $user;
+    /**
+     * @var User
+     */
+    protected $user;
 
     /**
      * {@inheritdoc}
@@ -22,9 +25,9 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            ['captcha', 'captcha', 'skipOnEmpty' => YII_ENV_TEST],
-            [['username', 'password'], 'required'],
+            ['captcha', 'captcha', 'skipOnEmpty' => YII_ENV_TEST || YII_ENV_DEV],
             ['username', 'trim'],
+            [['username', 'password'], 'required'],
             ['username', 'string', 'max' => 255],
             ['password', 'validatePassword'],
         ];

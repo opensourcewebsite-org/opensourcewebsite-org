@@ -46,7 +46,7 @@ use yii\db\Query;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    public const PASSWORD_RESET_TOKEN_EXPIRE = 24 * 60 * 60; // seconds
+    public const RESET_PASSWORD_REQUEST_LIFETIME = 24 * 60 * 60; // seconds
 
     public const STATUS_DELETED = 0;
     public const STATUS_PENDING = 5;
@@ -269,43 +269,6 @@ class User extends ActiveRecord implements IdentityInterface
             ->one();
     }
 
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
-     *
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token)
-    {
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
-        }
-
-        return static::findOne([
-            'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
-        ]);
-    }
-
-    /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     *
-     * @return bool
-     */
-    public static function isPasswordResetTokenValid($token)
-    {
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-
-        return $timestamp + self::PASSWORD_RESET_TOKEN_EXPIRE >= time();
-    }
-
     public static function createWithRandomPassword()
     {
         $user = new User();
@@ -346,22 +309,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken()
-    {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-
-    /**
-     * Removes password reset token
-     */
-    public function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
-    }
-
-    /**
      * Sends an email with a confirmation link.
      *
      * @return bool whether the email was send
@@ -369,9 +316,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function sendConfirmationEmail()
     {
         $time = time();
-        unset($this->email);
         $userEmail = $this->email;
-        Yii::warning($userEmail);
         $link = Yii::$app->urlManager->createAbsoluteUrl([
             'user/confirm-email',
             'id' => $this->id,
@@ -380,13 +325,19 @@ class User extends ActiveRecord implements IdentityInterface
         ]);
 
         return Yii::$app->mailer
-            ->compose('change-email', [
-                'user' => $this,
-                'link' => $link,
-            ])
+            ->compose(
+                [
+                    'html' => 'change-email-html',
+                    'text' => 'change-email-text',
+                ],
+                [
+                    'user' => $this,
+                    'link' => $link,
+                ]
+            )
             ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name . ' Robot'])
             ->setTo($userEmail->email)
-            ->setSubject('Confirmation email for ' . Yii::$app->name)
+            ->setSubject('Confirm email for ' . Yii::$app->name)
             ->send();
     }
 
@@ -399,7 +350,7 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @return boolean
      */
-    public function confirmEmail(int $id, $time, string $hash)
+    public function confirmEmail(int $id, int $time, string $hash)
     {
         if ($this->isEmailConfirmed()) {
             return true;
@@ -407,16 +358,6 @@ class User extends ActiveRecord implements IdentityInterface
 
         if ($userEmail = $this->email) {
             if ($hash == md5($userEmail->email . $this->auth_key . $time)) {
-                // for all users reset all confirmations for this email
-                UserEmail::updateAll(
-                    [
-                        'confirmed_at' => null,
-                    ],
-                    [
-                        'email' => $userEmail->email,
-                    ]
-                );
-
                 $userEmail->confirm();
 
                 return true;

@@ -21,7 +21,7 @@ class UserEmail extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'user_email';
+        return '{{%user_email}}';
     }
 
     /**
@@ -71,6 +71,16 @@ class UserEmail extends \yii\db\ActiveRecord
      */
     public function confirm()
     {
+        // reset all confirmations for this email
+        self::updateAll(
+            [
+                'confirmed_at' => null,
+            ],
+            [
+                'email' => $this->email,
+            ]
+        );
+
         $this->confirmed_at = time();
 
         if ($this->save()) {

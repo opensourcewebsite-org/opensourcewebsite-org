@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <div>
                     <p>
-                        If you forgot your password you can <?= Html::a(Yii::t('app', 'Restore password'), ['site/request-password-reset']) ?>.
+                        If you forgot your password you can <?= Html::a(Yii::t('app', 'Reset password'), ['site/request-reset-password']) ?> with email.
                     </p>
                     <p>
                         If you dont have an account you can <?= Html::a(Yii::t('app', 'Signup'), ['site/signup']) ?>.

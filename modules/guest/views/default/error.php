@@ -7,6 +7,7 @@
 /* @var $exception Exception */
 
 use yii\helpers\Html;
+use app\components\helpers\ExternalLink;
 
 $this->title = $name;
 ?>
@@ -22,7 +23,7 @@ $this->title = $name;
         The above error occurred while the Web server was processing your request.
     </p>
     <p>
-        Please <?= Html::a('contact us', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues') ?> if you think this is a server error. Thank you.
+        Please <?= Html::a('contact', ExternalLink::getGithubIssuesLink()) ?> us if you think this is a server error. Thank you.
     </p>
 
 </div>

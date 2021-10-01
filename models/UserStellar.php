@@ -24,7 +24,7 @@ class UserStellar extends \yii\db\ActiveRecord
      */
     public static function tableName(): string
     {
-        return 'user_stellar';
+        return '{{%user_stellar}}';
     }
 
     /**

@@ -226,8 +226,7 @@ class UserController extends Controller
             'userEmail' => $userEmail,
         ];
 
-        if (Yii::$app->request->isPost) {
-            $postData = Yii::$app->request->post('UserEmail');
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserEmail'))) {
             $email = $postData['email'];
 
             if ($userEmail->isNewRecord || ($userEmail->email != $email)) {
@@ -236,6 +235,7 @@ class UserController extends Controller
 
             if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
                 unset($this->user->email);
+
                 if ($this->user->sendConfirmationEmail()) {
                     Yii::$app->session->setFlash('success', 'Check your email with confirmation link.');
                 }
@@ -263,7 +263,7 @@ class UserController extends Controller
                 if ($this->user->confirmEmail($id, $time, $hash)) {
                     Yii::$app->session->setFlash('success', 'Your email has been successfully confirmed.');
                 } else {
-                    Yii::$app->session->setFlash('warning', 'There was an error validating your email, please try again.');
+                    Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
                 }
 
                 return $this->redirect(['/account']);

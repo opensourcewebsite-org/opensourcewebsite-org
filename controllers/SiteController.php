@@ -6,11 +6,12 @@ use Yii;
 use app\models\Contact;
 use app\models\Gender;
 use app\models\LoginForm;
-use app\models\PasswordResetRequestForm;
+use app\models\RequestResetPasswordForm;
 use app\models\Rating;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
 use app\models\User;
+use app\models\UserEmail;
 use app\models\Currency;
 use app\models\Sexuality;
 use app\modules\bot\models\User as BotUser;
@@ -33,11 +34,13 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => [
-                    'logout', 'design-list', 'design-view', 'design-edit', 'account',
+                    'logout',
                 ],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'design-list', 'design-view', 'design-edit', 'account'],
+                        'actions' => [
+                            'logout',
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -153,25 +156,27 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionRequestPasswordReset()
+    public function actionRequestResetPassword()
     {
-        $model = new PasswordResetRequestForm();
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect(['/account']);
+        }
 
-        if (Yii::$app->request->isPost) {
-            $postData = Yii::$app->request->post();
+        $model = new RequestResetPasswordForm();
 
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
             if ($model->load($postData) && $model->validate()) {
                 if ($model->sendEmail()) {
-                    Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
-
-                    return $this->redirect(['site/login']);
+                    Yii::$app->session->setFlash('success', 'Check your email for further instructions and a link to reset your password.');
+                } else {
+                    Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
                 }
 
-                $model->addError('email', 'Sorry, we are unable to reset password for the provided email address.');
+                return $this->redirect(['site/login']);
             }
         }
 
-        return $this->render('requestPasswordResetToken', [
+        return $this->render('request-reset-password', [
             'model' => $model,
         ]);
     }
@@ -250,6 +255,7 @@ class SiteController extends Controller
             \app\models\UserWikiPage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\UserStellar::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            \app\models\UserEmail::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
             $userToMerge->delete();
 
@@ -266,38 +272,55 @@ class SiteController extends Controller
     /**
      * Resets password.
      *
-     * @param string $token
+     * @param int $id user id
+     * @param int $time
+     * @param string $hash
      *
      * @return mixed
      * @throws BadRequestHttpException
      */
-    public function actionResetPassword($token)
+    public function actionResetPassword(int $id, int $time, string $hash)
     {
-        try {
-            $model = new ResetPasswordForm($token);
-        } catch (InvalidParamException $e) {
-            throw new BadRequestHttpException($e->getMessage());
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect(['/account']);
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'New password saved.');
+        /* @var $user User */
+        $user = User::findById($id);
 
-            return $this->redirect(['site/login']);
+        if ((($time + User::RESET_PASSWORD_REQUEST_LIFETIME) > time()) && $user && $user->isEmailConfirmed()) {
+            $model = new ResetPasswordForm();
+
+            if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+                if ($model->resetPassword($id, $time, $hash)) {
+                    Yii::$app->session->setFlash('success', 'Your new password has been successfully saved.');
+
+                    return $this->redirect(['/account']);
+                } else {
+                    Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
+
+                    return $this->redirect(['site/login']);
+                }
+            }
+            // TODO add render invalid-reset-password
+            return $this->render('reset-password', [
+                'model' => $model,
+            ]);
+        } else {
+            return $this->render('expired-reset-password');
         }
-
-        return $this->render('resetPassword', [
-            'model' => $model,
-        ]);
     }
 
     /**
      * Change the actual language, saving it on a cookie
      * @param $lang String The language to be set
+     *
      * @return Redirect to the previous page or if is not set, to the home page
      */
     public function actionChangeLanguage($lang)
     {
-        $language = \app\models\Language::find($lang)->one();
+        $language = \app\models\Language::find($lang)
+            ->one();
 
         if ($language != null) {
             $cookies = Yii::$app->response->cookies;
@@ -311,20 +334,5 @@ class SiteController extends Controller
 
             return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
         }
-    }
-
-    public function actionDesignList()
-    {
-        return $this->render('design-list');
-    }
-
-    public function actionDesignView()
-    {
-        return $this->render('design-view');
-    }
-
-    public function actionDesignEdit()
-    {
-        return $this->render('design-edit');
     }
 }

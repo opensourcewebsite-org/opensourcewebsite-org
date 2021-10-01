@@ -8,6 +8,7 @@ use app\assets\AgencyAsset;
 use app\assets\FontAwesomeAsset;
 use yii\helpers\Html;
 use app\models\Language;
+use app\components\helpers\ExternalLink;
 
 AgencyAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -88,10 +89,10 @@ $this->beginBody();
           <div class="col-md-12">
             <ul class="list-inline quicklinks">
               <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?>
+                <?= Html::a(Yii::t('app', 'Telegram Bot'), ExternalLink::getBotLink()) ?>
               </li>
               <li class="list-inline-item">
-                <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
+                <?= Html::a(Yii::t('app', 'Source Code'), ExternalLink::getGithubLink()) ?>
               </li>
               <li class="list-inline-item">
                 <?= Html::a(Yii::t('app', 'Terms of Use'), ['terms-of-use'], ['target' => '_blank']) ?>

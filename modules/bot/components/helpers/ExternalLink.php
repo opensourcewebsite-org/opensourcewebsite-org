@@ -4,11 +4,17 @@ namespace app\modules\bot\components\helpers;
 
 class ExternalLink
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function getOSMLink($latitude, $longitude)
     {
         return 'https://www.openstreetmap.org/#map=14/' . $latitude . '/' . $longitude;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getBotLink()
     {
         return 'https://t.me/opensourcewebsite_bot';

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
+use app\components\helpers\ExternalLink;
 
 ?>
 <div class="card">
@@ -35,7 +36,7 @@ use yii\widgets\LinkPager;
             <tbody>
                 <?php foreach ($models as $model) : ?>
                     <tr>
-                        <td><?= $model['version'] ?></td>
+                        <td><?= Html::a($model['version'], ExternalLink::getGithubMigrationLink($model['version'])) ?></td>
                         <td><?= Yii::$app->formatter->asRelativeTime($model['apply_time']) ?></td>
                     </tr>
                 <?php endforeach; ?>

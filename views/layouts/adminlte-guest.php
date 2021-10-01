@@ -12,6 +12,7 @@ use app\widgets\NavBar;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use app\models\Language;
+use app\components\helpers\ExternalLink;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -124,8 +125,8 @@ $this->beginBody();
     </div>
 
     <footer class="main-footer">
-        <?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?> |
-        <?= Html::a(Yii::t('app', 'Source Code'), 'https://github.com/opensourcewebsite-org/opensourcewebsite-org') ?>
+        <?= Html::a(Yii::t('app', 'Telegram Bot'), ExternalLink::getBotLink()) ?> |
+        <?= Html::a(Yii::t('app', 'Source Code'), ExternalLink::getGithubLink()) ?>
     </footer>
 </div>
 <?php $this->endBody() ?>

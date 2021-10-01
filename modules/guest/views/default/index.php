@@ -3,6 +3,7 @@
 /* @var $this yii\web\View */
 
 use yii\helpers\Html;
+use app\components\helpers\ExternalLink;
 
 ?>
 <header class="masthead">
@@ -187,8 +188,8 @@ use yii\helpers\Html;
         <div class="col-md-12">
           <ul>
               <li><?= Html::a('How to Contribute', 'https://opensource.guide/how-to-contribute/') ?></li>
-              <li><?= Html::a('Contributing Guidelines', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md') ?></li>
-              <li><?= Html::a('Code of Conduct', 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CODE_OF_CONDUCT.md') ?></li>
+              <li><?= Html::a('Contributing Guidelines', ExternalLink::getGithubContributionLink()) ?></li>
+              <li><?= Html::a('Code of Conduct', ExternalLink::getGithubCodeOfConductLink()) ?></li>
           </ul>
         </div>
       </div>

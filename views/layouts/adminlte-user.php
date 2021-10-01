@@ -13,6 +13,7 @@ use yii\widgets\Breadcrumbs;
 use cebe\gravatar\Gravatar;
 use yii\bootstrap4\Modal;
 use app\models\Language;
+use app\components\helpers\ExternalLink;
 
 /**
  * @var View $this
@@ -248,6 +249,11 @@ $leftMenuItems = [
         'route' => '/ua-lawmaking',
     ],
     [
+        'title' => Yii::t('app', 'Telegram Bot'),
+        'icon' => 'fab fa-telegram',
+        'href' => ExternalLink::getBotLink(),
+    ],
+    [
         'title' => 'COMMUNITY',
         'icon' => 'fas fa-users',
     ],
@@ -301,12 +307,12 @@ $leftMenuItems = [
     [
         'title' => 'Getting started',
         'icon' => 'fab fa-github',
-        'href' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+        'href' => ExternalLink::getGithubContributionLink(),
     ],
     [
         'title' => Yii::t('app', 'Source code'),
         'icon' => 'fab fa-github',
-        'href' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org',
+        'href' => ExternalLink::getGithubLink(),
     ],
     [
         'title' => 'Moqups',
@@ -534,7 +540,7 @@ $leftMenuItems = [
     [
         'title' => 'Getting started',
         'icon' => 'fab fa-github',
-        'href' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+        'href' => ExternalLink::getGithubDonationLink(),
     ],
 ];
 ?>
@@ -635,7 +641,7 @@ $leftMenuItems = [
         </div>
 
         <footer class="main-footer">
-            <?= Html::a(Yii::t('app', 'Telegram Bot'), 'https://t.me/opensourcewebsite_bot') ?>
+
         </footer>
     </div>
 <?php $this->endBody() ?>

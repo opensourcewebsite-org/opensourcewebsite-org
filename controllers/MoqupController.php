@@ -27,7 +27,6 @@ class MoqupController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['design-add', 'design-list', 'design-view', 'design-edit', 'design-delete', 'design-preview'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -121,8 +120,8 @@ class MoqupController extends Controller
             }
 
             $moqup = new Moqup(['user_id' => Yii::$app->user->identity->id]);
-            $css = new Css;
-        } else if ($id == null && $fork != null) {
+            $css = new Css();
+        } elseif ($id == null && $fork != null) {
             $origin = Moqup::findOne($fork);
 
             if ($origin == null || Yii::$app->user->identity->reachMaxMoqupsNumber || Yii::$app->user->identity->reachMaxMoqupsSize) {
@@ -143,13 +142,13 @@ class MoqupController extends Controller
             $moqup = Moqup::findOne($id);
 
             if ($moqup == null) {
-                throw new \yii\web\NotFoundHttpException;
+                throw new \yii\web\NotFoundHttpException();
             }
 
             if ($moqup->css != null) {
                 $css = $moqup->css;
             } else {
-                $css = new Css;
+                $css = new Css();
             }
         }
 

@@ -2,8 +2,8 @@
 
 use yii\helpers\Html;
 
-$this->title = 'Confirm email';
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Account'), 'url' => ['account']];
+$this->title = 'Reset password';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
     <div class="offset-md-2 col-md-8">
