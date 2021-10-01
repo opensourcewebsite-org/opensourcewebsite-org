@@ -24,17 +24,6 @@ class UserQuery extends ActiveQuery
     {
         return $this->andWhere([
             'user.status' => User::STATUS_ACTIVE,
-            'user.is_authenticated' => 1,
-        ]);
-    }
-
-    /**
-     * @return UserQuery
-     */
-    public function authenticated()
-    {
-        return $this->andWhere([
-            'is_authenticated' => true,
         ]);
     }
 

@@ -19,7 +19,6 @@ use yii\db\Query;
  * @property integer $id
  * @property string $username
  * @property string $password_hash
- * @property string $password_reset_token
  * @property string $email
  * @property string $auth_key
  * @property integer $status
@@ -34,7 +33,6 @@ use yii\db\Query;
  * @property integer $gender_id
  * @property integer $currency_id
  * @property integer $sexuality_id
- * @property bool $is_authenticated
  * @property bool $gender
  *
  * @property Company[] $companies

@@ -52,7 +52,7 @@ class MoqupTest extends \Codeception\Test\Unit
         $moqup = $this->tester->grabFixture('moqup', 1);
         expect_that($user = $moqup->getUser());
         expect_that($user = $user->one());
-        expect($user->email)->equals('webmaster@example.com');
+        expect($user->email->email)->equals('webmaster@example.com');
         expect($user->username)->equals('webmaster');
     }
 

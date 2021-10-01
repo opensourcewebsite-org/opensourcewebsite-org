@@ -33,7 +33,8 @@ class DebtRedistributionFormTest extends Unit
 
         DebtRedistribution::deleteAll();
 
-        $user = User::findOne(['email' => 'admin@example.com']); // id=100
+        $user = User::findOne(['id' => 100]);
+
         Yii::$app->user->login($user, 3600);
     }
 
