@@ -67,20 +67,18 @@ class ContactTest extends \Codeception\Test\Unit
         expect("Attribute 'userIdOrName' is not valid because it's equal to user owner", $contact->hasErrors("userIdOrName"))->true();
     }
 
-    public function testContactBecomesVirtual()
+    public function testCreateContacts()
     {
         $prevContact = new Contact();
         $prevContact->user_id = Yii::$app->user->id;
-        $prevContact->userIdOrName = "101";
+        $prevContact->userIdOrName = "102";
         expect("prevContact save() is success", $prevContact->save())->true();
-        expect("prevContact is not virtual", !$prevContact->isVirtual())->false();
+        expect("prevContact is user", $prevContact->isUser())->true();
 
         $newContact = new Contact();
-        $newContact->userIdOrName = $prevContact->userIdOrName;
-        $newContact->user_id = $prevContact->user_id;
+        $newContact->name = 'name';
+        $newContact->user_id = Yii::$app->user->id;
         expect("newContact save() is success", $newContact->save())->true();
-
-        $prevContact->refresh();
-        expect("prevContact becomes virtual, because newContact has same owner and linked users", $prevContact->isVirtual())->true();
+        expect("newContact is non-user", $newContact->isNonUser())->true();
     }
 }

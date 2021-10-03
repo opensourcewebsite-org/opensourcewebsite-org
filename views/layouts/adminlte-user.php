@@ -260,7 +260,7 @@ $leftMenuItems = [
     [
         'title' => 'Website settings',
         'url' => 'setting',
-        'route' => '/setting/index',
+        'route' => '/setting',
     ],
     [
         'title' => 'Issues',
@@ -273,8 +273,13 @@ $leftMenuItems = [
     ],
     [
         'title' => 'Users',
-        'url' => 'user/display',
-        'route' => '/user/display',
+        'url' => 'users',
+        'route' => '/users',
+    ],
+    [
+        'title' => 'Statistics',
+        'url' => 'statistics',
+        'route' => '/statistics',
     ],
     [
         'title' => 'SYSTEM REPORTS',
@@ -313,6 +318,11 @@ $leftMenuItems = [
         'title' => Yii::t('app', 'Source code'),
         'icon' => 'fab fa-github',
         'href' => ExternalLink::getGithubLink(),
+    ],
+    [
+        'title' => 'DevOps',
+        'icon' => 'fab fa-github',
+        'href' => ExternalLink::getGithubDevopsLink(),
     ],
     [
         'title' => 'Moqups',

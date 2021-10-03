@@ -15,9 +15,7 @@ use app\widgets\buttons\EditButton;
 $this->title = Yii::t('app', 'Vacancy') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
-
     <div class="vacancy-view">
         <div class="row">
             <div class="col-12">
@@ -75,11 +73,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     [
                                         'label' => Yii::t('app', 'Keywords'),
                                         'visible' => (bool)$model->keywords,
-                                        'value' => function() use ($model) {
+                                        'value' => function () use ($model) {
                                             $text = '';
 
                                             foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
-                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                                $text .= Html::tag('span', $keyword, ['class' => 'badge badge-primary']) . '&nbsp';
                                             }
 
                                             return $text;
@@ -100,17 +98,17 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'visible' => (bool)$model->location,
                                         'value' => function () use ($model) {
                                             return Html::a(
-                                                    $model->location,
-                                                    Url::to(['view-location', 'id' => $model->id]),
-                                                    ['class' => 'modal-btn-ajax']
-                                                ) ;
+                                                $model->location,
+                                                Url::to(['view-location', 'id' => $model->id]),
+                                                ['class' => 'modal-btn-ajax']
+                                            ) ;
                                         },
                                         'format' => 'raw',
                                     ],
                                     [
                                         'attribute' => 'gender_id',
                                         'visible' => (bool)$model->gender_id,
-                                        'value' => function() use ($model) {
+                                        'value' => function () use ($model) {
                                             return $model->gender ? $model->gender->name : '';
                                         }
                                     ],
@@ -118,7 +116,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                         'label' => Yii::t('app', 'Offers'),
                                         'visible' => $model->getMatches()->count(),
                                         'format' => 'raw',
-                                        'value' => function() use ($model) {
+                                        'value' => function () use ($model) {
                                             return $model->getMatches()->count() ?
                                                 Html::a(
                                                     $model->getMatches()->count(),
@@ -181,7 +179,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered detail-view mb-0">
                             <tbody>
-                                <?php foreach($model->languagesWithLevels as $languagesWithLevel): ?>
+                                <?php foreach ($model->languagesWithLevels as $languagesWithLevel): ?>
                                     <tr>
                                         <td>
                                             <strong><?= $languagesWithLevel->language->name ?></strong>

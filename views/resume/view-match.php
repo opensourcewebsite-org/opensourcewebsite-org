@@ -21,9 +21,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' =
 $this->params['breadcrumbs'][] = ['label' => '#' . $vacancyId, 'url' => ['/vacancy/view', 'id' => $vacancyId]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Resumes'), 'url' => ['/resume/show-matches', 'vacancyId' => $vacancyId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
-
 <div class="resume-view">
     <div class="row">
         <div class="col-12">
@@ -41,11 +39,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 [
                                     'label' => Yii::t('app', 'Keywords'),
                                     'visible' => (bool)$model->keywords,
-                                    'value' => function() use ($model) {
+                                    'value' => function () use ($model) {
                                         $text = '';
 
                                         foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
-                                            $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                            $text .= Html::tag('span', $keyword, ['class' => 'badge badge-primary']) . '&nbsp';
                                         }
 
                                         return $text;

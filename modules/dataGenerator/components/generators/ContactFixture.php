@@ -51,7 +51,7 @@ class ContactFixture extends ARGenerator
         $usersFrom = User::find()
             ->select('user.id, count(contact.id) as n_contact')
             ->joinWith(['contactsFromMe' => static function (ContactQuery $query) {
-                $query->virtual(false, 'andOnCondition');
+                $query->isUser('andOnCondition');
             }])
             ->active()
             ->groupBy('user.id')

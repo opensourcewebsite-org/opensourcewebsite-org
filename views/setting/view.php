@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 use app\components\helpers\SettingHelper;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use app\widgets\buttons\AddButton;
 use app\widgets\ModalAjax;
-use app\components\helpers\Icon;
 use yii\helpers\Url;
 use yii\grid\GridView;
 use app\widgets\buttons\SelectButton;
@@ -29,7 +28,7 @@ $this->params['breadcrumbs'][] = '#' . ($setting->id ?? ' NEW');
                             'id' => 'add-value',
                             'header' => Yii::t('app', 'New Value'),
                             'toggleButton' => [
-                                'label' => Icon::ADD,
+                                'label' => Html::icon('add'),
                                 'title' => Yii::t('app', 'New Value'),
                                 'class' => 'btn btn-outline-success',
                                 'style' => [

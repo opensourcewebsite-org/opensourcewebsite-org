@@ -5,6 +5,8 @@ use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+
 $form = ActiveForm::begin();
 ?>
 <div class="form">
@@ -20,7 +22,7 @@ $form = ActiveForm::begin();
                     <div class="row">
                         <div class="col">
                             <?= $form->field($user, 'name')->textInput(['value' =>
-                                Yii::$app->user->identity->name])->label(Yii::t('app', 'Name')); ?>
+                                Yii::$app->user->identity->name])->label($user->getAttributeLabel('name') . $labelOptional); ?>
                         </div>
                     </div>
                 </div>

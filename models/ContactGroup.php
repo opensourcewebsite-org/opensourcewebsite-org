@@ -10,19 +10,16 @@ class ContactGroup extends ActiveRecord
 {
     public static function tableName()
     {
-        return 'contact_group';
+        return '{{%contact_group}}';
     }
-
 
     public function rules()
     {
         return [
+            [['name'], 'trim'],
             [['name'], 'required'],
-            [['name'], 'unique', 'filter' => ['user_id' => Yii::$app->user->identity->id]],
             [['name'], 'string', 'max' => 255],
-            [['name'], 'validateHasEmptyGroup', 'when' => function () {
-                return $this->isNewRecord;
-            },],
+            [['name'], 'unique', 'filter' => ['user_id' => Yii::$app->user->identity->id]],
         ];
     }
 
@@ -35,29 +32,20 @@ class ContactGroup extends ActiveRecord
         ];
     }
 
-    /*
-     * validate count empty groups
+    /**
+     * {@inheritdoc}
      */
-    public function validateHasEmptyGroup()
+    public function attributeLabels()
     {
-        if (Yii::$app->user->identity->hasEmptyContactGroup()) {
-            $this->addError('name', 'You already have an empty group!');
-        }
+        return [
+            'id' => 'ID',
+            'user_id' => 'User ID',
+            'name' => Yii::t('app', 'Name'),
+        ];
     }
 
     public function getContactsWithGroup()
     {
         return $this->hasMany(ContactHasGroup::class, ['contact_group_id' => 'id']);
-    }
-
-    public function beforeSave($insert)
-    {
-        if (!parent::beforeSave($insert)) {
-            return false;
-        }
-
-        $this->user_id = Yii::$app->user->identity->id;
-
-        return true;
     }
 }

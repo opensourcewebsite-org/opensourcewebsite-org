@@ -1,8 +1,7 @@
 <?php
 
-use app\components\helpers\Icon;
 use app\widgets\ModalAjax;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
@@ -24,7 +23,7 @@ $countTokens = $tokensDataProvider->count;
                     'id' => 'add-wikinews',
                     'header' => Yii::t('user', 'Add wikinews page'),
                     'toggleButton' => [
-                        'label' => Icon::ADD,
+                        'label' => Html::icon('add'),
                         'class' => 'btn btn-outline-success',
                         'style' =>  ['float' => 'right'],
                     ],

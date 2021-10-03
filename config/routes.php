@@ -25,8 +25,9 @@ return [
     'examples/<action>/<id>' => 'examples/<action>',
     'data/payment-method/<id>' => 'data/payment-method-view',
     'data/currency/<id>' => 'data/currency-view',
+    'u/<id>' => 'contact/view-user',
 
-    '<controller:[-\w]+>/<action:[-\w]+>/<id:\d+>' => '<controller>/<action>',
+    '<controller:[-\w]+>/<action:[-\w]+>/<id:[\d]+>' => '<controller>/<action>',
     '<controller:[-\w]+>/<action:[-\w]+>/' => '<controller>/<action>',
     '<controller:[-\w]+>/<action:[-\w]+>' => '<controller>/<action>',
 ];

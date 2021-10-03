@@ -23,20 +23,19 @@ class ContactQuery extends ActiveQuery
     use RandomTrait;
     use SelfSearchTrait;
 
-    public function virtual(bool $isVirtual, $method = 'andWhere'): self
+    public function user(string $method = 'andWhere'): self
     {
-        if ($isVirtual) {
-            $this->$method(['contact.link_user_id' => null]);
-        } else {
-            $this->$method(['IS NOT', 'contact.link_user_id', null]);
-        }
+        return $this->$method(['not', ['contact.link_user_id' => null]]);
+    }
 
-        return $this;
+    public function nonUser(string $method = 'andWhere'): self
+    {
+        return $this->$method(['contact.link_user_id' => null]);
     }
 
     public function userOwner($id = null, $method = 'andWhere'): self
     {
-        return $this->$method(['contact.user_id' => $id ?? Yii::$app->user->id]);
+        return $this->$method(['contact.user_id' => ($id ?? Yii::$app->user->id)]);
     }
 
     public function userLinked($id, $operand = 'IN', $method = 'andWhere'): self
@@ -51,7 +50,7 @@ class ContactQuery extends ActiveQuery
                 'id' => $contactId,
             ])
             ->userOwner()
-            ->virtual(false);
+            ->nonUser();
     }
 
     public function withDebtRedistributionByCurrency($currencyId, $joinType = 'LEFT JOIN'): self

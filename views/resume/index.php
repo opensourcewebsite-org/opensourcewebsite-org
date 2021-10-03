@@ -30,41 +30,48 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item mx-1">
-                            <?= Html::a(
+                    <div class="col-sm-6">
+                        <ul class="nav nav-pills ml-auto p-2">
+                            <li class="nav-item">
+                                <?= Html::a(
     Yii::t('app', 'Active'),
     [
-                                    '/resume/index',
-                                    'ResumeSearch[status]' => ResumeSearch::STATUS_ON,
-                                ],
+                                        '/resume/index',
+                                        'ResumeSearch[status]' => ResumeSearch::STATUS_ON,
+                                    ],
     [
-                                        'class' => 'nav-link show ' .
-                                            ($displayActiveOrders ? 'active' : ''),
-                                ]
+                                            'class' => 'nav-link show ' .
+                                                ($displayActiveOrders ? 'active' : ''),
+                                    ]
 );
-                            ?>
-                        </li>
-                        <li class="nav-item mx-1">
-                            <?= Html::a(
-                                Yii::t('app', 'Inactive'),
-                                ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? '' : 'active')
-                                ]
-                            );
-                            ?>
-                        </li>
-                        <li class="nav-item align-self-center mr-4 mx-1">
+                                ?>
+                            </li>
+                            <li class="nav-item">
+                                <?= Html::a(
+                                    Yii::t('app', 'Inactive'),
+                                    ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
+                                    [
+                                        'class' => 'nav-link show ' .
+                                            ($displayActiveOrders ? '' : 'active')
+                                    ]
+                                );
+                                ?>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="right-buttons float-right">
                             <?= AddButton::widget([
                                 'url' => ['create'],
                                 'options' => [
                                     'title' => 'New Resume',
+                                    'style' => [
+                                        'float' => 'right',
+                                    ],
                                 ]
                             ]); ?>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([

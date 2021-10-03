@@ -66,7 +66,7 @@ class DebtFixture extends ARGenerator
         /** @var array $contact choose random NOT virtual Contact */
         $contact = Contact::find()
             ->select('contact.user_id, contact.link_user_id')
-            ->virtual(false)
+            ->user()
             ->orderByRandAlt(1)
             ->createCommand()
             ->queryOne();

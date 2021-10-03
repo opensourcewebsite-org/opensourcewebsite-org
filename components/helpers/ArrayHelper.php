@@ -4,9 +4,8 @@ namespace app\components\helpers;
 
 use Yii;
 
-class ArrayHelper extends yii\helpers\ArrayHelper
+class ArrayHelper extends \yii\helpers\ArrayHelper
 {
-
     /**
      * @param array $items
      * @param callable $boolFunc
@@ -20,6 +19,7 @@ class ArrayHelper extends yii\helpers\ArrayHelper
                 return $item;
             }
         }
+
         return $defaultValue;
     }
 
@@ -35,6 +35,7 @@ class ArrayHelper extends yii\helpers\ArrayHelper
                 return false;
             }
         }
+
         return true;
     }
 }

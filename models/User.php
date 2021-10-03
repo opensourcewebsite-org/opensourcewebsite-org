@@ -158,9 +158,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'rating' => 'Social Rating',
-            'username' => 'Username (optional)',
-            'name' => 'Name (optional)',
+            'rating' => Yii::t('app', 'Social Rating'),
+            'username' => Yii::t('app', 'Username'),
+            'name' => Yii::t('app', 'Name'),
         ];
     }
 
@@ -725,6 +725,15 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
+    public function getRealConfirmations()
+    {
+        return $this->getContactsToMe()
+            ->where([
+                'is_real' => 1,
+            ])
+            ->count();
+    }
+
     public function getDisplayName()
     {
         return $this->contact->getContactName();
@@ -818,41 +827,13 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getContactGroups()
     {
-        return $this->hasMany(ContactGroup::className(), ['user_id' => 'id']);
+        return $this->hasMany(ContactGroup::className(), ['user_id' => 'id'])
+            ->orderBy('name');
     }
 
     public function getBotUser(): ActiveQuery
     {
         return $this->hasOne(\app\modules\bot\models\User::class, ['user_id' => 'id']);
-    }
-
-    /**
-     * @return boolean
-     *
-     * Checks if there is empty group
-     */
-    public function hasEmptyContactGroup()
-    {
-        $groups = $this->getContactGroups()->all();
-        $hasEmptyGroup = false;
-
-        if (!empty($groups)) {
-            foreach ($groups as $group) {
-                $groupId = $group->id;
-                $countGroupContacts = ContactHasGroup::find()
-                    ->where([
-                        'contact_group_id' => $groupId,
-                    ])
-                    ->count();
-
-                if ($countGroupContacts == 0) {
-                    $hasEmptyGroup = true;
-                    break;
-                }
-            }
-        }
-
-        return $hasEmptyGroup;
     }
 
     /**

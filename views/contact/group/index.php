@@ -1,10 +1,8 @@
 <?php
 
-use app\components\grid\SortActionColumn;
-use app\components\helpers\Icon;
 use app\widgets\buttons\EditButton;
 use app\widgets\ModalAjax;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\grid\GridView;
 use app\models\Contact;
 use yii\grid\ActionColumn;
@@ -16,38 +14,32 @@ $this->title = Yii::t('app', 'Contact groups');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="groups-index">
+<div class="group-index">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item align-self-center mr-4">
+                    <div class="col-sm-6">
+                        <?= $this->render('../_navbar'); ?>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="right-buttons float-right">
                             <?= ModalAjax::widget([
-                                'header' => Yii::t('app', 'Add group'),
-                                'url' => ['create-group'],
+                                'header' => Yii::t('app', 'New Group'),
                                 'toggleButton' => [
-                                    'label' => Icon::ADD,
                                     'class' => 'btn btn-outline-success',
+                                    'label' => Html::icon('add'),
+                                    'style' => [
+                                        'float' => 'right',
+                                    ],
+                                    'title' => Yii::t('app', 'New Group'),
+                                ],
+                                'url' => [
+                                    '/contact/create-group',
                                 ],
                             ]) ?>
-                        </li>
-                        <li class="nav-item">
-                            <?= Html::a(Yii::t('app', 'Users'), ['contact/index', 'view' => Contact::VIEW_USER], [
-                                'class' => 'nav-link show',
-                            ]); ?>
-                        </li>
-                        <li class="nav-item">
-                            <?= Html::a(Yii::t('app', 'Virtuals'), ['contact/index', 'view' => Contact::VIEW_VIRTUALS], [
-                                'class' => 'nav-link show'
-                            ]); ?>
-                        </li>
-                        <li class="nav-item">
-                            <?= Html::a(Yii::t('app', 'Groups'), ['contact/groups'], [
-                                'class' => 'nav-link show active',
-                            ]); ?>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
@@ -56,16 +48,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'showHeader' => false,
                         'tableOptions' => ['class' => 'table table-hover table-condensed'],
                         'options' => [
-                            'id' => 'contact-groups-grid',
+                            'id' => 'contact-group-grid',
                         ],
                         'columns' => [
                             'name',
-                            [
-                                'class' => SortActionColumn::class,
-                                'contentOptions' => ['class' => 'lif-td'],
-                                'sortUpUrl' => 'sort-up-group',
-                                'sortDownUrl' => 'sort-down-group',
-                            ],
                             [
                                 'class' => ActionColumn::class,
                                 'contentOptions' => ['class' => 'lif-td'],
@@ -73,19 +59,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'update' => static function ($url, $model, $key) {
                                         echo ModalAjax::widget([
-                                            'id' => 'change-group' . $key,
-                                            'header' => Yii::t('app', 'Change group'),
+                                            'id' => 'update-group' . $key,
+                                            'header' => Yii::t('app', 'Edit group'),
                                             'url' => [
-                                                'update-group',
-                                                'id' => $key
+                                                '/contact/update-group',
+                                                'id' => $key,
                                             ],
                                         ]);
+
                                         return EditButton::widget([
                                             'url' => '#',
                                             'options' => [
-                                                'data-target' => '#change-group' . $key,
+                                                'data-target' => '#update-group' . $key,
                                                 'data-toggle' => 'modal',
-                                                'class' => 'text-primary'
+                                                'class' => 'text-primary',
                                             ],
                                         ]);
                                     },

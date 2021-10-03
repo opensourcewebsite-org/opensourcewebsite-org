@@ -32,7 +32,7 @@ $form = ActiveForm::begin();
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
                     <?= CancelButton::widget([
-                        'url' => ['/account']
+                        'url' => ['/account'],
                     ]); ?>
                     <?= DeleteButton::widget([
                         'url' => [

@@ -40,6 +40,7 @@ class Chat extends ActiveRecord
      * PHP getter magic method.
      *
      * @param string $name property name
+     *
      * @return mixed property value
      * @see getAttribute()
      */

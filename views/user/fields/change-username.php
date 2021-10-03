@@ -6,6 +6,8 @@ use app\widgets\buttons\DeleteButton;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+
 $form = ActiveForm::begin();
 ?>
 <div class="form">
@@ -21,7 +23,7 @@ $form = ActiveForm::begin();
                     <div class="row">
                         <div class="col">
                             <?= $form->field($user, 'username')->textInput(['value' =>
-                                Yii::$app->user->identity->username])->label(Yii::t('app', 'Username')); ?>
+                                Yii::$app->user->identity->username])->label($user->getAttributeLabel('username') . $labelOptional); ?>
                         </div>
                     </div>
                 </div>

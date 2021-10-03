@@ -17,7 +17,6 @@ use app\widgets\buttons\EditButton;
 $this->title = Yii::t('app', 'Search') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
     <div class="ad-search-view">
         <div class="row">
@@ -72,7 +71,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     [
                                         'attribute' => 'sectionName',
                                         'label' => Yii::t('app', 'Section'),
-                                        'value' => function($model) {
+                                        'value' => function ($model) {
                                             return $model->sectionName;
                                         },
                                     ],
@@ -85,7 +84,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             $text = '';
 
                                             foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
-                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                                $text .= Html::tag('span', $keyword, ['class' => 'badge badge-primary']) . '&nbsp';
                                             }
 
                                             return $text;

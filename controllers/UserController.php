@@ -58,25 +58,6 @@ class UserController extends Controller
     }
 
     /**
-     * Lists all User models.
-     *
-     * @param string $type
-     * @return mixed
-     */
-    public function actionDisplay($type = 'age')
-    {
-        $usersCount = User::find()->count();
-
-        $userStatistics = new UserStatistic();
-        $dataProvider = $userStatistics->getDataProvider($type);
-
-        return $this->render('display', [
-            'usersCount' => $usersCount,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * Add a moqup to the list followed by the user
      * @return boolean If the relation was saved
      */
@@ -126,27 +107,13 @@ class UserController extends Controller
         $totalRating = User::getTotalRating();
         $percent = $totalRating ? Converter::percentage($rating, $totalRating) : 0;
 
-        $rank = $this->user->getRank();
-        $totalRank = User::getTotalRank();
-
-        $realConfirmations = $this->user->getContactsToMe()
-            ->where([
-                'is_real' => 1,
-            ])
-            ->count();
-
         $params = [
             'model' => $this->user,
-            'realConfirmations' => $realConfirmations,
             'activeRating' => $activeRating,
             'overallRating' => [
                 'rating' => $rating,
                 'totalRating' => $totalRating,
                 'percent' => $percent,
-            ],
-            'ranking' => [
-                'rank' => $rank,
-                'total' => $totalRank,
             ],
         ];
 

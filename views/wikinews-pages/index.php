@@ -1,7 +1,6 @@
 <?php
 
-use app\components\helpers\Icon;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
@@ -22,7 +21,7 @@ $this->title = Yii::t('app', 'Wikinews pages');
                     'id' => 'add-wikinews',
                     'header' => Yii::t('user', 'Add wikinews page'),
                     'toggleButton' => [
-                        'label' => Icon::ADD,
+                        'label' => Html::icon('add'),
                         'class' => 'btn btn-outline-success',
                         'style' =>  ['float' => 'right'],
                     ],

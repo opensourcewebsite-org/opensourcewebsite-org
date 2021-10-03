@@ -284,7 +284,7 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     private static function factory(Debt $debt): self
     {
-        $model = new self;
+        $model = new self();
 
         $model->currency_id  = $debt->currency_id;
         $model->from_user_id = $debt->from_user_id;

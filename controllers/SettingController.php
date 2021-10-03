@@ -153,13 +153,11 @@ class SettingController extends Controller
                     'value' => $value,
                 ]);
 
-                if (!$settingValue->validate()) {
+                if (!$settingValue->save()) {
                     Yii::$app->response->format = Response::FORMAT_JSON;
 
                     return ActiveForm::validate($settingValue);
                 }
-
-                $settingValue->save();
             }
 
             if ($settingValue->id) {
@@ -179,7 +177,7 @@ class SettingController extends Controller
             'setting_key' => $setting_key,
             'settingValue' => $settingValue,
         ];
-        Yii::warning(Yii::$app->request->isAjax);
+
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('modals/add-value', $renderParams);
         } else {

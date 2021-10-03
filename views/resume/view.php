@@ -18,7 +18,6 @@ $this->title = Yii::t('app', 'Resume') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 ?>
-
     <div class="resume-view">
         <div class="row">
             <div class="col-12">
@@ -80,7 +79,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             $text = '';
 
                                             foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
-                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                                $text .= Html::tag('span', $keyword, ['class' => 'badge badge-primary']) . '&nbsp';
                                             }
 
                                             return $text;

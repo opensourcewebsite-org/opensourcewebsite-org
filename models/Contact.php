@@ -14,7 +14,7 @@ use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\VarDumper;
 
 /**
@@ -47,12 +47,15 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public const DEBT_REDISTRIBUTION_PRIORITY_DENY = 0;
     public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
-    public const VIEW_USER = 1;
-    public const VIEW_VIRTUALS = 2;
-    public const RELATIONS = [
+    public const RELATION_LABELS = [
         0 => 'Neutral',
-        1 => 'Friend',
-        2 => 'Enemy',
+        1 => 'Positive',
+        2 => 'Negative',
+    ];
+
+    public const IS_REAL_LABELS = [
+        0 => 'Virtual',
+        1 => 'Real',
     ];
 
     public $userIdOrName;
@@ -67,7 +70,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 'class' => LinkerBehavior::class,
                 'relations' => [
                     'contact_group_ids' => [
-                        'contactGroups',
+                        'groups',
                         'updater' => [
                             'class' => ManyToManyUpdater::class,
                         ],
@@ -75,38 +78,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 ],
             ],
         ]);
-    }
-
-    public function beforeValidate()
-    {
-        if (!parent::beforeValidate()) {
-            return false;
-        }
-
-        /*
-         * Prepare for LinkerBehavior
-         */
-        if (is_array($this->contact_group_ids)) {
-            $contactGroupIds = [];
-            foreach ($this->contact_group_ids as $contact_group_id) {
-                if (!is_numeric($contact_group_id)) {
-                    $this->validateHasEmptyGroup();
-                    $contactGroup = new ContactGroup();
-                    $contactGroup->setAttributes([
-                        'name' => $contact_group_id,
-                        'user_id' => Yii::$app->user->identity->id
-                    ]);
-                    if ($contactGroup->save()) {
-                        $contactGroupIds[] = $contactGroup->id;
-                    }
-                } else {
-                    $contactGroupIds[] = $contact_group_id;
-                }
-            }
-            $this->contact_group_ids = $contactGroupIds;
-        }
-
-        return true;
     }
 
     /**
@@ -123,12 +94,23 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function rules()
     {
         return [
-            ['userIdOrName', 'string'],
-            ['userIdOrName', 'validateUserExistence'],
-            ['userIdOrName', 'validateLinkUserAndOwnerNotSame'],
-            [['contact_group_ids'], 'each', 'rule' => ['integer']],
+            [['user_id'], 'required'],
             [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
-            [['name'], 'string', 'max' => 255],
+            ['userIdOrName', 'string'],
+            ['userIdOrName', 'trim'],
+            [['userIdOrName'], 'required',
+                'when' => static function (self $model) {
+                    return empty($model->name);
+                },
+                'whenClient' => "function (attribute, value) {
+                    return $('#contact-name').val() == '';
+                }",
+                'message' => $this->getAttributeLabel('userIdOrName') . ' cannot be blank if ' . $this->getAttributeLabel('name') . ' is empty.',
+            ],
+            ['userIdOrName', 'validateUserExists'],
+            ['link_user_id', 'validateLinkUserAndOwnerNotSame'],
+            ['link_user_id', 'validateLinkUsedIdUnique'],
+            [['contact_group_ids'], 'each', 'rule' => ['integer']],
             ['name', 'required',
                 'when' => static function (self $model) {
                     return empty($model->userIdOrName);
@@ -136,7 +118,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 'whenClient' => "function (attribute, value) {
                     return $('#contact-useridorname').val() == '';
                 }",
+                'message' => $this->getAttributeLabel('name') . ' cannot be blank if ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
             ],
+            [['name'], 'string', 'max' => 255],
             [
                 'debt_redistribution_priority',
                 'integer',
@@ -150,10 +134,20 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
                 },
             ],
-            ['vote_delegation_priority', 'integer', 'min' => 0, 'max' => 255],
-            ['vote_delegation_priority', 'filter', 'filter' => static function ($v) {
-                return ((int)$v) ?: null;
-            }],
+            [
+                'vote_delegation_priority',
+                'integer',
+                'min' => 0,
+                'max' => 255,
+            ],
+            [
+                'vote_delegation_priority',
+                'filter',
+                'filter' => static function ($v) {
+                    return ((int)$v) ?: 0;
+                }
+            ],
+            [['is_real', 'relation'], 'default', 'value' => 0],
         ];
     }
 
@@ -168,47 +162,59 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'link_user_id' => 'Link User ID',
             'name' => Yii::t('user', 'Name'),
             'userIdOrName' => 'User ID / ' . Yii::t('user', 'Username'),
-            'is_real' => Yii::t('app', 'Is Real'),
+            'is_real' => Yii::t('app', 'Real confirmation'),
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
-            'debt_redistribution_priority:empty' => Yii::t('app', 'Deny'),
         ];
     }
 
     public function attributeHints()
     {
-        $labelUserIdOrName = $this->getAttributeLabel('userIdOrName');
-
         return [
             'debt_redistribution_priority' => Html::ul([
-                "It's priority of debtor's reliability. Balance will not redistributed into contact with lower priority.",
-                '"1" - the highest.',
-                "Note: it has no affect, if field \"$labelUserIdOrName\" is empty.",
+                'It\'s priority of debtor\'s reliability. Debts will not redistributed to contacts with lower priority.',
+                '1 - the highest. 255 - the lowest.',
+                'It has no affect, if ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
             ]),
             'vote_delegation_priority' => Html::ul([
-                '"1" - the highest.',
-                "Note: it has no affect, if field \"$labelUserIdOrName\" is empty.",
+                '1 - the highest. 255 - the lowest.',
+                'It has no affect, if field ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
             ]),
+            'userIdOrName' => Yii::t('app', 'To associate this contact with another user') . '.',
+            'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a fake or a bot') . '.' ,
+            'relation' => Yii::t('app', 'To see social recommendations in the profiles of other users') . '.',
         ];
     }
 
+    public function beforeValidate()
+    {
+        if (!$this->userIdOrName) {
+            $this->link_user_id = null;
+        }
+
+        return parent::beforeValidate();
+    }
+
     /**
-     * Validates the user existence.
+     * Validates the user exists.
      *
      * @param string $attribute the attribute currently being validated
      */
-    public function validateUserExistence($attribute)
+    public function validateUserExists($attribute)
     {
         $user = User::find()
             ->andWhere([
                 'OR',
                 ['id' => $this->userIdOrName],
-                ['username' => $this->userIdOrName]
+                ['username' => $this->userIdOrName],
             ])
-            ->exists();
-        if (!$user) {
-            $this->addError($attribute, "User ID / Username doesn't exists.");
+            ->one();
+
+        if ($user) {
+            $this->link_user_id = $user->id;
+        } else {
+            $this->addError('userIdOrName', Yii::t('app', 'User ID / Username doesn\'t exists.'));
         }
     }
 
@@ -219,10 +225,25 @@ class Contact extends ActiveRecord implements ByOwnerInterface
      */
     public function validateLinkUserAndOwnerNotSame($attribute)
     {
-        if ((!empty($this->userIdOrName)) && (!empty($this->user_id))
-            && ($this->user_id == $this->userIdOrName)
-        ) {
-            $this->addError($attribute, "Contact owner and user which will be linked can't be same.");
+        if ($this->link_user_id == $this->user_id) {
+            $this->addError('userIdOrName', 'Contact owner and linked user cannot be same.');
+        }
+    }
+
+    public function validateLinkUsedIdUnique($attribute)
+    {
+        $contactExists = Contact::find()
+            ->andWhere([
+                'link_user_id' => $this->link_user_id,
+                'user_id' => Yii::$app->user->identity->id,
+            ])
+            ->andWhere([
+                'not', ['id' => $this->id],
+            ])
+            ->exists();
+
+        if ($contactExists) {
+            $this->addError('userIdOrName', 'This User ID is already in use for another contact.');
         }
     }
 
@@ -273,6 +294,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function getContactName()
     {
         $contactName = $this->id;
+
         if (!empty($this->name)) {
             $contactName = $this->name;
             if (!empty($this->linkedUser)) {
@@ -286,15 +308,21 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 $contactName = !empty($this->linkedUser->username) ? '@' . $this->linkedUser->username : '#' . $this->linkedUser->id;
             }
         }
+
         return $contactName;
     }
 
     public function canHaveDebtRedistribution(): bool
     {
-        return !$this->isVirtual();
+        return !$this->isNonUser();
     }
 
-    public function isVirtual(): bool
+    public function isUser(): bool
+    {
+        return (bool)$this->link_user_id;
+    }
+
+    public function isNonUser(): bool
     {
         return !$this->link_user_id;
     }
@@ -302,15 +330,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function isDebtRedistributionPriorityDeny(): bool
     {
         return (int)$this->debt_redistribution_priority === self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
-    }
-
-    public function renderDebtRedistributionPriority(): string
-    {
-        if ($this->isDebtRedistributionPriorityDeny()) {
-            return $this->getAttributeLabel('debt_redistribution_priority:empty');
-        }
-
-        return (string)$this->debt_redistribution_priority;
     }
 
     public static function find()
@@ -331,6 +350,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function afterDelete()
     {
         $this->deleteDebtRedistributions($this->debtRedistributions);
+
         parent::afterDelete();
     }
 
@@ -353,7 +373,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     /**
      * @param bool $insert
-     *
      * @return bool
      * @throws Exception
      * @throws \Throwable
@@ -391,7 +410,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     /**
      * @param DebtRedistribution[] $models
-     *
      * @throws Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -419,19 +437,48 @@ class Contact extends ActiveRecord implements ByOwnerInterface
      *
      * Get contact's groups
      */
-    public function getContactGroups()
+    public function getGroups()
     {
         return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
-                    ->viaTable('contact_has_group', ['contact_id' => 'id']);
+                    ->viaTable('contact_has_group', ['contact_id' => 'id'])
+                    ->orderBy('name');
     }
 
-    /*
-     * validate count empty groups
-     */
-    public function validateHasEmptyGroup()
+    public function getLinkUserId()
     {
-        if (Yii::$app->user->identity->hasEmptyContactGroup()) {
-            $this->addError('contact_group_ids', 'You already have an empty group!');
+        return $this->link_user_id;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLinkedUser()
+    {
+        if ($this->link_user_id) {
+            return $this->hasOne(User::class, ['id' => 'link_user_id']);
         }
+
+        return false;
+    }
+
+    public function getRelationBadge()
+    {
+        $classes = [
+            0 => 'secondary',
+            1 => 'success',
+            2 => 'danger',
+        ];
+
+        return Html::badge($classes[(int)$this->relation], self::RELATION_LABELS[(int)$this->relation]);
+    }
+
+    public function getIsRealBadge()
+    {
+        $classes = [
+            0 => 'secondary',
+            1 => 'primary',
+        ];
+
+        return Html::badge($classes[(int)$this->is_real], self::IS_REAL_LABELS[(int)$this->is_real]);
     }
 }

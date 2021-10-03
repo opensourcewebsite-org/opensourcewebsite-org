@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace app\widgets\buttons;
 
 use app\widgets\base\LinkButton;
-use app\components\helpers\Icon;
+use app\components\helpers\Html;
 use Yii;
 
 class EditButton extends LinkButton
@@ -20,7 +20,7 @@ class EditButton extends LinkButton
         $this->defaultOptions['class'] = 'edit-btn';
 
         if ($this->text == null) {
-            $this->text = Icon::EDIT;
+            $this->text = Html::icon('edit');
         }
 
         if ($this->ajax) {

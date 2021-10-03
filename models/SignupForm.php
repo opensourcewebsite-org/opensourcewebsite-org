@@ -29,7 +29,7 @@ class SignupForm extends Model
             ['username', 'validateUsername'],
             [
                 'username', 'unique', 'targetClass' => User::class,
-                'message' => 'This username address has already been taken.',
+                'message' => 'This username has already been taken.',
             ],
             ['password', 'string', 'min' => 6],
             ['password_repeat', 'string'],

@@ -2,20 +2,16 @@
 
 namespace app\controllers;
 
-use app\components\actions\SortAction;
 use app\models\ContactGroup;
 use Yii;
 use app\models\User;
 use app\models\Contact;
-use yii\web\Controller;
+use app\components\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 
-/**
- * ContactController implements the CRUD actions for Contact model.
- */
 class ContactController extends Controller
 {
     /**
@@ -44,45 +40,50 @@ class ContactController extends Controller
         ];
     }
 
-    public function actions()
+    /**
+     * Lists all Contact models.
+     * @return mixed
+     */
+    public function actionIndex()
     {
-        return [
-            'sort-up-group' => [
-                'class' => SortAction::class,
-                'modelClass' => ContactGroup::class,
-                'method' => 'movePrev',
-                'returnUrl' => 'groups',
-            ],
-            'sort-down-group' => [
-                'class' => SortAction::class,
-                'modelClass' => ContactGroup::class,
-                'method' => 'moveNext',
-                'returnUrl' => 'groups',
-            ],
-        ];
-    }
+        $query = Contact::find()
+            ->userOwner()
+            ->user();
 
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'name' => SORT_ASC,
+                ],
+            ],
+        ]);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 
     /**
      * Lists all Contact models.
      * @return mixed
      */
-    public function actionIndex($view = Contact::VIEW_USER)
+    public function actionNonUsers()
     {
         $query = Contact::find()
             ->userOwner()
-            ->virtual((int)$view !== Contact::VIEW_USER);
+            ->nonUser();
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [
                 'defaultOrder' => [
-                    'name' => SORT_ASC
-                ]
-            ]
+                    'name' => SORT_ASC,
+                ],
+            ],
         ]);
 
         return $this->render('index', [
-            'view' => (int)$view,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -95,116 +96,188 @@ class ContactController extends Controller
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->link_user_id) {
-            $realConfirmations = Contact::find()->where([
-                'link_user_id' => $model->link_user_id,
-                'is_real' => 1
-            ])->count();
-        } else {
-            $realConfirmations = 0;
-        }
+        $contact = $this->findModel($id);
 
         return $this->render('view', [
-            'model' => $model,
-            'realConfirmations' => $realConfirmations,
+            'contact' => $contact,
+            'user' => $contact->linkedUser,
         ]);
+    }
+
+    /**
+     * @param integer|string|null $id User ID / Username
+     * @return mixed
+     * @throws NotFoundHttpException if the user cannot be found
+     */
+    public function actionViewUser($id = null)
+    {
+        if ($id) {
+            if ($id == $this->user->id) {
+                return $this->run('user/account');
+            }
+
+            $user = User::findByUsername($id) ?: User::findById($id);
+
+            if ($user) {
+                $contact = Contact::find()
+                    ->andWhere([
+                        'link_user_id' => $user->id,
+                        ])
+                    ->userOwner()
+                    ->one();
+
+                if (!$contact) {
+                    $contact = new Contact();
+                    $contact->user_id = $this->user->id;
+                    $contact->link_user_id = $user->id;
+                    $contact->save(false);
+                }
+
+                return $this->render('view', [
+                    'contact' => $contact,
+                    'user' => $user,
+                ]);
+            }
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /*
      * View groups list
      */
-    public function actionGroups()
+    public function actionGroup()
     {
-        $query = Yii::$app->user->identity->getContactGroups()->orderBy('position');
+        $query = $this->user->getContactGroups();
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => false,
-            'pagination' => false,
+            'sort'=> [
+                'defaultOrder' => [
+                    'name' => SORT_ASC,
+                ],
+            ],
         ]);
 
-        return $this->render('groups/groups', [
+        return $this->render('group/index', [
             'dataProvider' => $dataProvider,
         ]);
     }
 
     public function actionCreateGroup()
     {
-        $contactGroupModel = new ContactGroup();
-        $postData = Yii::$app->request->post();
+        $group = new ContactGroup();
 
-        if ($contactGroupModel->load($postData) && $contactGroupModel->validate()) {
-            if ($contactGroupModel->save()) {
-                return $this->redirect(['contact/groups']);
-            }
-        }
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $group->load($postData)) {
+            $group->user_id = $this->user->id;
 
-        $groups = Yii::$app->user->identity->getContactGroups()->all();
-
-        return $this->renderAjax('groups/group', [
-            'model'    => $contactGroupModel,
-            'groups' => $groups,
-        ]);
-    }
-
-    public function actionDeleteGroup($id)
-    {
-        $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-        if (!empty($group)) {
-            $group->delete();
-        }
-
-        return $this->redirect('groups');
-    }
-
-    public function actionUpdateGroup($id)
-    {
-        $group = ContactGroup::findOne(['id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-        $postData = Yii::$app->request->post();
-
-        if ($group->load($postData) && $group->validate()) {
             if ($group->save()) {
-                return $this->redirect(['contact/groups']);
+                return $this->redirect(['contact/group']);
             }
         }
 
-        $groups = Yii::$app->user->identity->getContactGroups()->all();
-
-        return $this->renderAjax('groups/group', [
+        $renderParams = [
             'model' => $group,
-            'groups' => $groups,
-        ]);
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('group/create', $renderParams);
+        } else {
+            return $this->render('group/create', $renderParams);
+        }
     }
 
-    public function actionUpdateContactGroups($id)
+    public function actionDeleteGroup(int $id)
     {
-        $model = Contact::findOne($id);
+        $model = ContactGroup::findOne([
+            'id' => $id,
+            'user_id' => $this->user->id,
+        ]);
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate(['contact_group_ids'])) {
-            if ($model->save(false)) {
-                return $this->redirect(['view', 'id' => $id]);
+        if ($model) {
+            $model->delete();
+        }
+
+        return $this->redirect(['contact/group']);
+    }
+
+    public function actionUpdateGroup(int $id)
+    {
+        $group = ContactGroup::findOne([
+            'id' => $id,
+            'user_id' => $this->user->id,
+        ]);
+
+        if (!$group) {
+            return $this->redirect(['contact/group']);
+        }
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $group->load($postData)) {
+            if ($group->save()) {
+                return $this->redirect(['contact/group']);
             }
         }
 
-        return $this->renderAjax('groups/contact-groups', [
-            'model' => $model,
+        $renderParams = [
+            'model' => $group,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('group/create', $renderParams);
+        } else {
+            return $this->render('group/create', $renderParams);
+        }
+    }
+
+    public function actionUpdateGroups(int $id = null, int $link_user_id = null)
+    {
+        $contact = Contact::findOne([
+            'id' => $id,
+            'user_id' => $this->user->id,
         ]);
+
+        if (!$contact) {
+            return $this->redirect(['index']);
+        }
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $contact->load($postData)) {
+            if ($contact->validate(['contact_group_ids']) && $contact->save()) {
+                return $this->redirect([
+                    'view',
+                    'id' => $id,
+                ]);
+            }
+        }
+
+        $renderParams = [
+            'model' => $contact,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('update-groups', $renderParams);
+        } else {
+            return $this->render('update-groups', $renderParams);
+        }
     }
 
     /**
      * Creates a new Contact model.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     *
      * @return mixed
      */
     public function actionCreate()
     {
         $model = new Contact();
+        $model->user_id = $this->user->id;
 
-        $model->user_id = Yii::$app->user->id;
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->save(false);
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+            if ($model->save()) {
+                return $this->redirect([
+                    'view',
+                    'id' => $model->id,
+                ]);
+            }
         }
 
         return $this->render('create', [
@@ -219,15 +292,18 @@ class ContactController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
         $model->userIdOrName = $model->getUserIdOrName();
 
-        $model->user_id = Yii::$app->user->id;
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->save(false);
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+            if ($model->save()) {
+                return $this->redirect([
+                    'view',
+                    'id' => $model->id,
+                ]);
+            }
         }
 
         return $this->render('update', [
@@ -242,11 +318,15 @@ class ContactController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
 
-        return $this->redirect(['index', 'view' => Contact::VIEW_USER]);
+        if ($model) {
+            $model->delete();
+        }
+
+        return $this->redirect(['index']);
     }
 
     public function getContactGroups()
@@ -264,7 +344,14 @@ class ContactController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Contact::find()->andWhere(['id' => $id])->userOwner()->one()) !== null) {
+        $model = Contact::find()
+            ->andWhere([
+                'id' => $id,
+                ])
+            ->userOwner()
+            ->one();
+
+        if ($model) {
             return $model;
         }
 

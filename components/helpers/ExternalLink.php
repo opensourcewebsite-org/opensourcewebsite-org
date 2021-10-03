@@ -83,4 +83,12 @@ class ExternalLink
     {
         return self::getGithubLink() . '/issues';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getGithubDevopsLink()
+    {
+        return 'https://github.com/opensourcewebsite-org/osw-devops';
+    }
 }

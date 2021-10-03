@@ -20,7 +20,6 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' =>
 $this->params['breadcrumbs'][] = ['label' => '#' . $adSearchId, 'url' => ['/ad-search/view', 'id' => $adSearchId]];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['/ad-offer/show-matches', 'adSearchId' => $adSearchId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
     <div class="ad-offer-view">
         <div class="row">
@@ -35,7 +34,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     [
                                         'attribute' => 'sectionName',
                                         'label' => Yii::t('app', 'Section'),
-                                        'value' => function($model) {
+                                        'value' => function ($model) {
                                             return $model->sectionName;
                                         },
                                     ],
@@ -48,7 +47,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                             $text = '';
 
                                             foreach (ArrayHelper::getColumn($model->keywords, 'keyword') as $keyword) {
-                                                $text .= '<small class="badge badge-primary">' . $keyword . '</small>&nbsp';
+                                                $text .= Html::tag('span', $keyword, ['class' => 'badge badge-primary']) . '&nbsp';
                                             }
 
                                             return $text;
