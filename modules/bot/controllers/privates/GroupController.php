@@ -21,10 +21,13 @@ use yii\helpers\ArrayHelper;
 class GroupController extends Controller
 {
     /**
+     * @param int $page
      * @return array
      */
     public function actionIndex($page = 1)
     {
+        $this->getState()->setName(null);
+
         $chatQuery = $this->getTelegramUser()->getAdministratedGroups();
 
         $pagination = new Pagination([
@@ -79,10 +82,13 @@ class GroupController extends Controller
     }
 
     /**
+     * @param int|null $chatId
      * @return array
      */
     public function actionView($chatId = null)
     {
+        $this->getState()->setName(null);
+
         if ($chatId) {
             $chat = Chat::findOne($chatId);
 
@@ -90,9 +96,20 @@ class GroupController extends Controller
                 return [];
             }
 
+            $telegramUser = $this->getTelegramUser();
+
+            $chatMember = ChatMember::findOne([
+                'chat_id' => $chat->id,
+                'user_id' => $telegramUser->id,
+            ]);
+
+            if (!isset($chatMember)) {
+                return [];
+            }
+
             // TODO refactoring, для того чтобы ограничить доступ к настройкам группы
             if ($this->getUpdate()->getCallbackQuery()) {
-                $admins = $chat->getAdministrators()->all();
+                $admins = $chat->getActiveAdministrators()->all();
 
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
@@ -101,6 +118,15 @@ class GroupController extends Controller
                             'admins' => $admins,
                         ]),
                         [
+                            [
+                                [
+                                    'callback_data' => self::createRoute('administrators', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Administrators'),
+                                    'visible' => $chatMember->isCreator(),
+                                ],
+                            ],
                             [
                                 [
                                     'callback_data' => GroupJoinHiderController::createRoute('index', [
@@ -208,5 +234,143 @@ class GroupController extends Controller
 
             return [];
         }
+    }
+
+    /**
+     * @param int $page
+     * @param int|null $chatId
+     * @return array
+     */
+    public function actionAdministrators($page = 1, $chatId = null)
+    {
+        $this->getState()->setName(null);
+
+        if ($chatId) {
+            $chat = Chat::findOne($chatId);
+
+            if (!isset($chat)) {
+                return [];
+            }
+
+            $telegramUser = $this->getTelegramUser();
+
+            $chatMember = ChatMember::findOne([
+                'chat_id' => $chat->id,
+                'user_id' => $telegramUser->id,
+            ]);
+
+            if (!isset($chatMember) || !$chatMember->isCreator()) {
+                return [];
+            }
+
+            $query = $chat->getAdministrators();
+
+            $pagination = new Pagination([
+                'totalCount' => $query->count(),
+                'pageSize' => 9,
+                'params' => [
+                    'page' => $page,
+                ],
+            ]);
+
+            $pagination->pageSizeParam = false;
+            $pagination->validatePage = true;
+
+            $administrators = $query->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            });
+
+            $buttons = [];
+
+            if ($administrators) {
+                foreach ($administrators as $botUser) {
+                    $administratorChatMember = $chat->getChatMemberByUser($botUser);
+
+                    $buttons[][] = [
+                        'callback_data' => self::createRoute('set-administrator', [
+                            'chatId' => $chatId,
+                            'administratorId' => $botUser->id,
+                        ]),
+                        'text' => ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . $botUser->getFullName() . ($botUser->provider_user_name ? ' @' . $botUser->provider_user_name : ''),
+                    ];
+                }
+
+                if ($paginationButtons) {
+                    $buttons[] = $paginationButtons;
+                }
+            }
+
+            $buttons[] = [
+                [
+                    'callback_data' => GroupController::createRoute('view', [
+                        'chatId' => $chatId,
+                    ]),
+                    'text' => Emoji::BACK,
+                ],
+                [
+                    'callback_data' => MenuController::createRoute(),
+                    'text' => Emoji::MENU,
+                ]
+            ];
+
+            return $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('administrators', [
+                        'chat' => $chat,
+                    ]),
+                    $buttons
+                )
+                ->build();
+        }
+    }
+
+    // TODO remove this action and join it to 'administrators' action to display the current page correctly
+    public function actionSetAdministrator($chatId = null, $administratorId = null)
+    {
+        $this->getState()->setName(null);
+
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        $telegramUser = $this->getTelegramUser();
+
+        $chatMember = ChatMember::findOne([
+            'chat_id' => $chat->id,
+            'user_id' => $telegramUser->id,
+        ]);
+
+        if (!isset($chatMember) || !$chatMember->isCreator()) {
+            return [];
+        }
+
+        $administratorChatMember = ChatMember::findOne([
+            'chat_id' => $chat->id,
+            'user_id' => $administratorId,
+        ]);
+
+        if (!isset($administratorChatMember)) {
+            return [];
+        }
+
+        if ($administratorChatMember->isActiveAdministrator()) {
+            $administratorChatMember->role = ChatMember::ROLE_MEMBER;
+        } else {
+            $administratorChatMember->role = ChatMember::ROLE_ADMINISTRATOR;
+        }
+
+        $administratorChatMember->save();
+
+        return $this->runAction('administrators', [
+             'chatId' => $chatId,
+         ]);
     }
 }

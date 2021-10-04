@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
@@ -22,6 +23,9 @@ class ChatMember extends ActiveRecord
     public const STATUS_LEFT = 'left';
     public const STATUS_KICKED = 'kicked';
 
+    public const ROLE_ADMINISTRATOR = 2;
+    public const ROLE_MEMBER = 1;
+
     public static function tableName()
     {
         return 'bot_chat_member';
@@ -44,9 +48,19 @@ class ChatMember extends ActiveRecord
         ];
     }
 
-    public function isAdmin()
+    public function isCreator()
+    {
+        return $this->status == self::STATUS_CREATOR;
+    }
+
+    public function isAdministrator()
     {
         return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
+    }
+
+    public function isActiveAdministrator()
+    {
+        return $this->role == self::ROLE_ADMINISTRATOR;
     }
 
     /**

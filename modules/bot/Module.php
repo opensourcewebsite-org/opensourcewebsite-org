@@ -8,6 +8,7 @@ use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\UserState;
 use app\modules\bot\models\User as BotUser;
 use yii\base\InvalidRouteException;
@@ -139,14 +140,14 @@ class Module extends \yii\base\Module
 
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
-                $administrators = $this->getBotApi()->getChatAdministrators($this->getUpdate()->chat->getId());
+                $administrators = $this->getBotApi()->getChatAdministrators($this->getUpdate()->getChat()->getId());
 
                 foreach ($administrators as $administrator) {
                     $administratorBotUser = BotUser::findOne([
                         'provider_user_id' => $administrator->getUser()->getId(),
                     ]);
 
-                    if (!isset($administratorBotmUser)) {
+                    if (!isset($administratorBotUser)) {
                         $administratorUpdateUser = $administrator->getUser();
 
                         $administratorBotUser = BotUser::createUser($administratorUpdateUser);
@@ -158,6 +159,7 @@ class Module extends \yii\base\Module
 
                     $administratorBotUser->link('chats', $chat, [
                         'status' => $administrator->getStatus(),
+                        'role' => $administrator->getStatus() == ChatMember::STATUS_CREATOR ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
                     ]);
                 }
             }

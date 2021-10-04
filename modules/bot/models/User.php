@@ -149,6 +149,11 @@ class User extends ActiveRecord
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
     }
 
+    public function getChatMembers()
+    {
+        return $this->hasMany(ChatMember::class, ['user_id' => 'id']);
+    }
+
     public function getAdministratedGroups()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
@@ -162,6 +167,9 @@ class User extends ActiveRecord
                     'or',
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                ])
+                ->andWhere([
+                    'role' => ChatMember::ROLE_ADMINISTRATOR,
                 ]);
             })
             ->orderBy(['title' => SORT_ASC]);
@@ -178,6 +186,9 @@ class User extends ActiveRecord
                     'or',
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                ])
+                ->andWhere([
+                    'role' => ChatMember::ROLE_ADMINISTRATOR,
                 ]);
             })
             ->orderBy(['title' => SORT_ASC]);
