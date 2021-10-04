@@ -121,8 +121,10 @@ class AdMatchController extends Controller implements CronChainedInterface
             ->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
             ->joinWith('user')
             ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
     }
 
     private function getAdSearchQuery(): ActiveQuery
@@ -132,8 +134,10 @@ class AdMatchController extends Controller implements CronChainedInterface
             ->andWhere([AdSearch::tableName() . '.status' => AdSearch::STATUS_ON])
             ->joinWith('user')
             ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
     }
 
     private function printMatchedCount(ActiveRecord $model, int $count)

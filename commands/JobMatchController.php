@@ -122,8 +122,10 @@ class JobMatchController extends Controller implements CronChainedInterface
         return Resume::find()
             ->where([Resume::tableName() . '.processed_at' => null])
             ->live()
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC])
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
             ->all();
     }
 

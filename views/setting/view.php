@@ -60,11 +60,19 @@ $this->params['breadcrumbs'][] = '#' . ($setting->id ?? ' NEW');
                                 'enableSorting' => false,
                             ],
                             [
+                                'label' => Yii::t('app', 'Votes') . ' %',
+                                'value' => function ($model) {
+                                    return $model->getVotesPercent();
+                                },
+                                'format' => 'html',
+                                'enableSorting' => false,
+                            ],
+                            [
                                 'label' => Yii::t('app', 'Votes'),
                                 'value' => function ($model) {
                                     return SettingHelper::getVotesHTMl($model);
                                 },
-                                'format' => 'html',
+                                'format' => 'raw',
                                 'enableSorting' => false,
                                 'contentOptions' => [
                                     'style' => 'width:100%;',

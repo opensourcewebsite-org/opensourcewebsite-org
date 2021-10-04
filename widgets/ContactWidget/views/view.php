@@ -12,7 +12,6 @@ use app\models\User;
  */
 
 ?>
-
 <div class="row" id="<?=$options['id']?>">
     <div class="col-12">
         <div class="card">
@@ -26,25 +25,22 @@ use app\models\User;
                         <tr>
                             <th class="align-middle" scope="col"><?= Yii::t('app', 'Profile') ?></th>
                             <td class="align-middle">
-                                <?= Html::a('view', Url::to(['/contact/view', 'id' => $user->id])) ?>
+                                <?= Html::a(isset($user->username) ? '@' . $user->username : '#' . $user->id, Url::toRoute(['contact/view-user', 'id' => $user->id])) ?>
                             </td>
                         </tr>
-                        <?php if ($user->email) : ?>
-                        <tr>
-                            <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?></th>
-                            <td class="align-middle">
-                                <?= Html::mailto($user->email, $user->email) ?>
-                            </td>
-                        </tr>
+                        <?php if ($userEmail = $user->email) : ?>
+                            <tr>
+                                <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?></th>
+                                <td class="align-middle">
+                                    <?= Html::mailto($userEmail->email, $userEmail->email) ?>
+                                </td>
+                            </tr>
                         <?php endif; ?>
                         <?php if ($user->botUser && $user->botUser->provider_user_name) : ?>
                             <tr>
                                 <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?></th>
                                 <td class="align-middle">
-                                    <?= Html::a(
-                                        '@' . $user->botUser->provider_user_name,
-                                        'https://t.me/' . $user->botUser->provider_user_name
-                                    ) ?>
+                                    <?= Html::a('@' . $user->botUser->provider_user_name, 'https://t.me/' . $user->botUser->provider_user_name) ?>
                                 </td>
                             </tr>
                         <?php endif; ?>

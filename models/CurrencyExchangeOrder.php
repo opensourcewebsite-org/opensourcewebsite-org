@@ -343,9 +343,11 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     {
         return $this
             ->getMatches()
-            ->joinWith('user u')
-            ->orderBy(['u.rating' => SORT_DESC])
-            ->addOrderBy(['u.created_at' => SORT_ASC]);
+            ->joinWith('user')
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
     }
 
     /**

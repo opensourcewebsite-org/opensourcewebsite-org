@@ -37,8 +37,10 @@ class CeMatchController extends Controller implements CronChainedInterface
             ->andWhere([CurrencyExchangeOrder::tableName() . '.status' => CurrencyExchangeOrder::STATUS_ON])
             ->joinWith('globalUser')
             ->andWhere(['>=', 'user.last_activity_at', time() - CurrencyExchangeOrder::LIVE_DAYS * 24 * 60 * 60])
-            ->orderBy(['user.rating' => SORT_DESC])
-            ->addOrderBy(['user.created_at' => SORT_ASC]);
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
 
         foreach ($orderQuery->all() as $order) {
             try {

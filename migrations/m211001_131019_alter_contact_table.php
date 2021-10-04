@@ -13,7 +13,7 @@ class m211001_131019_alter_contact_table extends Migration
     public function safeUp()
     {
         $this->update(
-            'contact',
+            '{{%contact}}',
             ['vote_delegation_priority' => 0],
             ['vote_delegation_priority' => null]
         );

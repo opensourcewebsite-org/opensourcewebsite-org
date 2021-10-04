@@ -52,8 +52,10 @@ class UsersController extends Controller
             ->where([
                 'status' => User::STATUS_ACTIVE,
             ])
-            ->orderBy(['rating' => SORT_DESC])
-            ->addOrderBy(['created_at' => SORT_ASC]);
+            ->orderBy([
+                'rating' => SORT_DESC,
+                'created_at' => SORT_ASC,
+            ]);
 
         $usersCount = $query->count();
 
