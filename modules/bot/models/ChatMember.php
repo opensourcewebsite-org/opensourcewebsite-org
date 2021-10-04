@@ -78,4 +78,9 @@ class ChatMember extends ActiveRecord
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id']);
     }
+
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
 }

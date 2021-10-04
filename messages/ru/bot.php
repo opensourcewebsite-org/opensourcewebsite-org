@@ -175,6 +175,7 @@ return [
     'to ban users' => 'банить пользователей',
     'Select a feature to manage the group' => 'Выберите функцию для управления группой',
     'Administrators who can manage the group' => 'Администраторы, которые могут управлять этой группой',
+    'Administrators' => 'Администраторы',
     'Add phrase' => 'Добавить фразу',
     'Main menu' => 'В главное меню',
     'Message Filter' => 'Фильтр сообщений',

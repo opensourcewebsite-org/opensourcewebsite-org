@@ -35,4 +35,5 @@ class Emoji
     public const CONTRIBUTE = '👨‍🚀';
     public const DEVELOPMENT = '🏗';
     public const WARNING = '⚠️';
+    public const CROWN = '👑';
 }

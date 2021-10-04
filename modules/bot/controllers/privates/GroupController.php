@@ -93,7 +93,9 @@ class GroupController extends Controller
             $chat = Chat::findOne($chatId);
 
             if (!isset($chat)) {
-                return [];
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
             }
 
             $telegramUser = $this->getTelegramUser();
@@ -104,7 +106,9 @@ class GroupController extends Controller
             ]);
 
             if (!isset($chatMember)) {
-                return [];
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
             }
 
             // TODO refactoring, для того чтобы ограничить доступ к настройкам группы
@@ -249,7 +253,9 @@ class GroupController extends Controller
             $chat = Chat::findOne($chatId);
 
             if (!isset($chat)) {
-                return [];
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
             }
 
             $telegramUser = $this->getTelegramUser();
@@ -260,7 +266,9 @@ class GroupController extends Controller
             ]);
 
             if (!isset($chatMember) || !$chatMember->isCreator()) {
-                return [];
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
             }
 
             $query = $chat->getAdministrators();
@@ -297,7 +305,7 @@ class GroupController extends Controller
                             'chatId' => $chatId,
                             'administratorId' => $botUser->id,
                         ]),
-                        'text' => ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . $botUser->getFullName() . ($botUser->provider_user_name ? ' @' . $botUser->provider_user_name : ''),
+                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $botUser->getFullName() . ($botUser->provider_user_name ? ' @' . $botUser->provider_user_name : ''),
                     ];
                 }
 
@@ -338,7 +346,9 @@ class GroupController extends Controller
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $telegramUser = $this->getTelegramUser();
@@ -348,8 +358,11 @@ class GroupController extends Controller
             'user_id' => $telegramUser->id,
         ]);
 
-        if (!isset($chatMember) || !$chatMember->isCreator()) {
-            return [];
+        // creator cannot be deactivated
+        if (!isset($chatMember) || !$chatMember->isCreator() || ($chatMember->getUserId() == $administratorId)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $administratorChatMember = ChatMember::findOne([
@@ -358,7 +371,9 @@ class GroupController extends Controller
         ]);
 
         if (!isset($administratorChatMember)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         if ($administratorChatMember->isActiveAdministrator()) {
