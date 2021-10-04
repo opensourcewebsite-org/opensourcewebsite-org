@@ -71,7 +71,7 @@ class ResetPasswordForm extends Model
 
                 $user->save();
 
-                return Yii::$app->user->login($user, 3600 * 24 * 30);
+                return Yii::$app->user->login($user, 30 * 24 * 60 * 60);
             }
         }
 

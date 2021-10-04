@@ -48,21 +48,30 @@ class DefaultController extends Controller
     /**
      * Store Referrer ID in Cookies for future user
      *
-     * @param $id
+     * @param int|string|null $id
      *
      * @return Response
      */
-    public function actionInvite($id)
+    public function actionInvite($id = null)
     {
         /** @var User $user */
-        if (Yii::$app->user->isGuest) {
+        if (Yii::$app->user->isGuest && $id) {
             $referrer = ReferrerHelper::getReferrerFromCookie();
-            if ($user = User::findOne($id)) {
+
+            $user = User::find()
+                ->andWhere([
+                    'OR',
+                    ['id' => $id],
+                    ['username' => $id],
+                ])
+                ->one();
+
+            if ($user) {
                 if ($referrer === null) {
-                    // first time
+                    // add referrer for first time
                     ReferrerHelper::addReferrer($user);
-                } elseif ($referrer->value != $id) {
-                    // change refferer
+                } elseif ($referrer->value != $user->id) {
+                    // change referrer
                     ReferrerHelper::changeReferrer($user);
                 }
             }

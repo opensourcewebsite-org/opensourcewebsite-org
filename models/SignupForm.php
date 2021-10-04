@@ -86,7 +86,7 @@ class SignupForm extends Model
             $user->referrer_id = $referrerID;
         }
 
-        return $user->save() ? Yii::$app->user->login($user, 3600 * 24 * 30) : null;
+        return $user->save() ? Yii::$app->user->login($user, 30 * 24 * 60 * 60) : null;
     }
 
     public function factoryUser(): User

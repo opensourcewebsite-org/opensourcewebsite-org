@@ -615,10 +615,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getActiveRating()
     {
-        $daysActiveRating = intval(Yii::$app->settings->days_count_to_calculate_active_rating);
+        $daysActiveRating = Yii::$app->settings->days_count_to_calculate_active_rating;
 
         $activeRating = Rating::find()
-            ->where(['>', 'created_at', time() - 3600 * 24 * $daysActiveRating])
+            ->where(['>', 'created_at', time() - 24 * 60 * 60 * $daysActiveRating])
             ->andWhere(['user_id' => $this->id])
             ->sum('amount');
 
