@@ -125,7 +125,7 @@ class JobMatchController extends Controller implements CronChainedInterface
             ->orderBy([
                 'user.rating' => SORT_DESC,
                 'user.created_at' => SORT_ASC,
-            ]);
+            ])
             ->all();
     }
 
