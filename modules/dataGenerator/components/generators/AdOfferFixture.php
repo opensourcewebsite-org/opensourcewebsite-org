@@ -26,10 +26,11 @@ class AdOfferFixture extends ARGenerator
 
     protected function factoryModel(): ?ActiveRecord
     {
-        $user = $this->findUser();
+        if (!$user = $this->getRandomUser()) {
+            return null;
+        }
 
         if (!($currency = $this->getRandomCurrency())) {
-            $this->printNoCurrencyError();
             return null;
         }
 

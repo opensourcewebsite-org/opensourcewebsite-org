@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
 use app\widgets\buttons\EditButton;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 
@@ -16,94 +18,98 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'),
 $this->params['breadcrumbs'][] = '#' . $model->id;
 
 ?>
+<div class="index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex p-0">
+                    <ul class="nav nav-pills ml-auto p-2">
+                        <li class="nav-item align-self-center mr-3">
+                            <div class="input-group-prepend">
+                                <div class="dropdown">
+                                    <a class="btn <?= $model->isActive() ? 'btn-primary' : 'btn-default' ?> dropdown-toggle"
+                                       href="#" role="button"
+                                       id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                                       aria-expanded="false">
+                                        <?= $model->isActive() ?
+                                            Yii::t('app', 'Active') :
+                                            Yii::t('app', 'Inactive') ?>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <h6 class="dropdown-header"><?= $model->getAttributeLabel('Status') ?></h6>
 
-    <div class="currency-exchange-order-view">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex p-0">
-                        <ul class="nav nav-pills ml-auto p-2">
-                            <li class="nav-item align-self-center mr-3">
-                                <div class="input-group-prepend">
-                                    <div class="dropdown">
-                                        <a class="btn <?= $model->isActive() ? 'btn-primary' : 'btn-default' ?> dropdown-toggle"
-                                           href="#" role="button"
-                                           id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                                           aria-expanded="false">
-                                            <?= $model->isActive() ?
-                                                Yii::t('app', 'Active') :
-                                                Yii::t('app', 'Inactive') ?>
+                                        <a class="dropdown-item status-update <?= $model->isActive() ? 'active' : '' ?>"
+                                           href="#"
+                                           data-value="<?= CurrencyExchangeOrder::STATUS_ON ?>">
+                                            <?= Yii::t('app', 'Active') ?>
                                         </a>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                            <h6 class="dropdown-header"><?= $model->getAttributeLabel('Status') ?></h6>
 
-                                            <a class="dropdown-item status-update <?= $model->isActive() ? 'active' : '' ?>"
-                                               href="#"
-                                               data-value="<?= CurrencyExchangeOrder::STATUS_ON ?>">
-                                                <?= Yii::t('app', 'Active') ?>
-                                            </a>
-
-                                            <a class="dropdown-item status-update <?= !$model->isActive() ? 'active' : '' ?>"
-                                               href="#"
-                                               data-value="<?= CurrencyExchangeOrder::STATUS_OFF ?>">
-                                                <?= Yii::t('app', 'Inactive') ?>
-                                            </a>
-                                        </div>
+                                        <a class="dropdown-item status-update <?= !$model->isActive() ? 'active' : '' ?>"
+                                           href="#"
+                                           data-value="<?= CurrencyExchangeOrder::STATUS_OFF ?>">
+                                            <?= Yii::t('app', 'Inactive') ?>
+                                        </a>
                                     </div>
-                            </li>
-                            <li class="nav-item align-self-center mr-3">
-                                <?= EditButton::widget([
-                                    'url' => ['currency-exchange-order/update', 'id' => $model->id],
-                                    'options' => [
-                                        'title' => 'Edit Currency Exchange Order',
-                                    ]
-                                ]); ?>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <?= DetailView::widget([
-                                'model' => $model,
-                                'attributes' => [
-                                    'id',
-                                    [
-                                        'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
-                                        'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
-                                    ],
-                                    [
-                                        'label' => Yii::t('app', 'Exchange rate'),
-                                        'value' => Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : ''),
-                                    ],
-                                    [
-                                        'label' => Yii::t('app', 'Limits'),
-                                        'value' => $model->getFormatLimits(),
-                                    ],
-                                    [
-                                        'attribute' => 'label',
-                                        'visible' => (bool)$model->label,
-                                    ],
-                                    [
-                                        'label' => Yii::t('app', 'Offers'),
-                                        'visible' => $model->getMatchesOrderedByUserRating()->count(),
-                                        'format' => 'raw',
-                                        'value' => function () use ($model) {
-                                            return $model->getMatchesOrderedByUserRating()->count() ?
-                                                Html::a(
-                                                    $model->getMatchesOrderedByUserRating()->count(),
-                                                    Url::to(['show-matches', 'id' => $model->id]),
-                                                ) : '';
-                                        },
-                                    ],
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item align-self-center mr-3">
+                            <?= EditButton::widget([
+                                'url' => ['currency-exchange-order/update', 'id' => $model->id],
+                                'options' => [
+                                    'title' => 'Edit Currency Exchange Order',
                                 ]
-                            ]) ?>
-                        </div>
+                            ]); ?>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <?= DetailView::widget([
+                            'model' => $model,
+                            'attributes' => [
+                                'id',
+                                [
+                                    'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
+                                    'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Exchange rate'),
+                                    'value' => function ($model) {
+                                        return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ' ' . $model->getFeeBadge() : '');
+                                    },
+                                    'format' => 'html',
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Limits'),
+                                    'value' => $model->getFormatLimits(),
+                                ],
+                                [
+                                    'attribute' => 'label',
+                                    'visible' => (bool)$model->label,
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Offers'),
+                                    'visible' => $model->getMatchesCount(),
+                                    'format' => 'raw',
+                                    'value' => function () use ($model) {
+                                        return $model->getMatchesCount() ?
+                                            Html::a(
+                                                $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
+                                                Url::to(['show-matches', 'id' => $model->id]),
+                                            ) : '';
+                                    },
+                                ],
+                            ]
+                        ]) ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -149,6 +155,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
+</div>
+
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -194,7 +203,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
             </div>
         </div>
     </div>
-
+</div>
 <?php
 $statusActiveUrl = Yii::$app->urlManager->createUrl(['currency-exchange-order/set-active?id=' . $model->id]);
 $statusInactiveUrl = Yii::$app->urlManager->createUrl(['currency-exchange-order/set-inactive?id=' . $model->id]);
@@ -203,25 +212,27 @@ $script = <<<JS
 
 $('.status-update').on("click", function(event) {
     const status = $(this).data('value');
-    const statusActiveUrl = '{$statusActiveUrl}';
-    const statusInactiveUrl = '{$statusInactiveUrl}';
-    const url = (parseInt(status) === 1) ? statusActiveUrl : statusInactiveUrl;
+    const active_url = '{$statusActiveUrl}';
+    const inactive_url = '{$statusInactiveUrl}';
+    const url = (parseInt(status) === 1) ? active_url : inactive_url;
 
-        $.post(url, {'status': status}, function(result) {
+        $.post(url, {}, function(result) {
             if (result === true) {
                 location.reload();
             }
             else {
+
                 $('#main-modal-header').text('Warning!');
 
-                result.map(function(line) { $('#main-modal-body').append('<p>' + line + '</p>') })
+                for (const [, errorMsg] of Object.entries(result)) {
+                    $('#main-modal-body').append('<p>' + errorMsg + '</p>');
+                }
 
                 $('#main-modal').show();
                 $('.close').on('click', function() {
                     $("#main-modal-body").html("");
                     $('#main-modal').hide();
                 });
-                // alert('Sorry, there was an error while trying to change status');
             }
         });
 

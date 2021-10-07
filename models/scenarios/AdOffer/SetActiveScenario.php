@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\AdOffer;
@@ -31,15 +32,11 @@ final class SetActiveScenario
         return $this->errors;
     }
 
-    public function getModel(): AdOffer
-    {
-        return $this->model;
-    }
-
     private function validateLocation(): bool
     {
         if (!($this->model->location_lon && $this->model->location_lat)) {
             $this->errors['location'] = Yii::t('app', 'Location should be set');
+
             return false;
         }
 

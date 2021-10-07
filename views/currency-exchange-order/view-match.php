@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use app\helpers\LatLonHelper;
 use app\models\CurrencyExchangeOrder;
 use app\widgets\ContactWidget\ContactWidget;
 use yii\web\View;
 use yii\widgets\DetailView;
+use app\components\helpers\Html;
 
 /**
  * @var View $this
@@ -43,94 +46,104 @@ if ($orderModel->buying_location && $matchOrderModel->selling_location) {
 
 $model = $matchOrderModel;
 ?>
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <?= DetailView::widget([
-                        'model' => $model,
-                        'attributes' => [
-                            'id',
-                            [
-                                'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
-                                'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
-                            ],
-                            [
-                                'label' => Yii::t('app', 'Exchange rate'),
-                                'value' => Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : ''),
-                            ],
-                            [
-                                'label' => Yii::t('app', 'Limits'),
-                                'value' => $model->getFormatLimits(),
-                            ],
-                        ]
-                    ]) ?>
+<div class="index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <?= DetailView::widget([
+                            'model' => $model,
+                            'attributes' => [
+                                'id',
+                                [
+                                    'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
+                                    'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Exchange rate'),
+                                    'value' => function ($model) {
+                                        return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ' ' . $model->getFeeBadge(false) : '');
+                                    },
+                                    'format' => 'html',
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Limits'),
+                                    'value' => $model->getFormatLimits(),
+                                ],
+                            ]
+                        ]) ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-condensed table-hover" style="margin-bottom: 0;">
-                        <tbody>
-                        <?php if ($matchOrderModel->selling_cash_on) : ?>
-                            <tr>
-                                <td>
-                                    <?= Yii::t('app', 'Cash') ?>
-                                    <?php if ($sellingDistance): ?>
-                                        ( <?= Yii::t('app', 'Distance'); ?>: <?= $sellingDistance ?> <?= Yii::t('app', 'km'); ?> )
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                        <?php foreach ($matchOrderModel->getSellingPaymentMethods()->asArray()->all() as $method) : ?>
-                            <tr>
-                                <td><?= $method['name'] ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
+<div class="index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                            <tbody>
+                            <?php if ($matchOrderModel->selling_cash_on) : ?>
+                                <tr>
+                                    <td>
+                                        <?= Yii::t('app', 'Cash') ?>
+                                        <?php if ($sellingDistance): ?>
+                                            ( <?= Yii::t('app', 'Distance'); ?>: <?= $sellingDistance ?> <?= Yii::t('app', 'km'); ?> )
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                            <?php foreach ($matchOrderModel->getSellingPaymentMethods()->asArray()->all() as $method) : ?>
+                                <tr>
+                                    <td><?= $method['name'] ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-condensed table-hover">
-                        <tbody>
-                        <?php if ($matchOrderModel->selling_cash_on): ?>
-                            <tr>
-                                <td>
-                                    <?= Yii::t('app', 'Cash') ?>
-                                    <?php if ($buyingDistance): ?>
-                                        ( <?= Yii::t('app', 'Distance'); ?>: <?= $buyingDistance ?> <?= Yii::t('app', 'km'); ?> )
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                        <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method) : ?>
-                            <tr>
-                                <td><?= $method['name'] ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
+
+<div class="index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-hover">
+                            <tbody>
+                            <?php if ($matchOrderModel->selling_cash_on): ?>
+                                <tr>
+                                    <td>
+                                        <?= Yii::t('app', 'Cash') ?>
+                                        <?php if ($buyingDistance): ?>
+                                            ( <?= Yii::t('app', 'Distance'); ?>: <?= $buyingDistance ?> <?= Yii::t('app', 'km'); ?> )
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                            <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method) : ?>
+                                <tr>
+                                    <td><?= $method['name'] ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

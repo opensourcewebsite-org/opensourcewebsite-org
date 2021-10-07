@@ -28,15 +28,17 @@ class CronController extends Controller
     public const POSTFIX = 'Controller';
 
     protected static array $map = [
-        'AdMatch',
-        'JobMatch',
-        'BotCommand',
+        'TelegramBot',
+        'AdOfferMatch',
+        'AdSearchMatch',
+        'VacancyMatch',
+        'ResumeMatch',
+        'CurrencyExchangeOrderMatch',
         'Debt',
         //'CurrencyRatesParser',
         'UaLawmakingParser',
         //'WikipediaParser',
         //'WikinewsParser',
-        'CeMatch',
         'StellarCroupier',
     ];
 

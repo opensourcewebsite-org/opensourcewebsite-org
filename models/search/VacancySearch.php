@@ -10,47 +10,30 @@ use yii\data\ActiveDataProvider;
 
 class VacancySearch extends Vacancy
 {
+    public int $status = self::STATUS_ON;
+
     public function rules(): array
     {
         return [
-            [
-                [
-                    'user_id',
-                    'company_id',
-                    'currency_id',
-                    'status',
-                    'gender_id',
-                    'created_at',
-                    'processed_at',
-                ],
-                'integer',
-            ],
-            [
-                'max_hourly_rate',
-                'string',
-            ],
+            ['status', 'in', 'range' => [self::STATUS_ON, self::STATUS_OFF]],
             [
                 [
                     'name',
+                    'max_hourly_rate',
+                    'currency_id',
+                    'remote_on',
+                    'gender_id',
+                    'company_id',
                 ],
-                'string',
-                'max' => 255,
-            ],
-            [
-                [
-                    'requirements',
-                    'conditions',
-                    'responsibilities',
-                ],
-                'string',
-                'max' => 10000,
+                'safe',
             ],
         ];
     }
 
     public function search(array $params): ActiveDataProvider
     {
-        $query = Vacancy::find()->where(['user_id' => Yii::$app->user->getIdentity()->getId()]);
+        $query = Vacancy::find()
+            ->userOwner();
 
         $dataProvider = new ActiveDataProvider(['query' => $query]);
 
@@ -64,11 +47,8 @@ class VacancySearch extends Vacancy
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['status' => $this->status])
             ->andFilterWhere(['remote_on' => $this->remote_on])
-            ->andFilterWhere(['like','requirements', $this->requirements])
             ->andFilterWhere(['max_hourly_rate' => $this->max_hourly_rate])
             ->andFilterWhere(['currency_id' => $this->currency_id])
-            ->andFilterWhere(['like', 'conditions', $this->conditions])
-            ->andFilterWhere(['like', 'responsibilities', $this->responsibilities])
             ->andFilterWhere(['gender_id' => $this->gender_id])
             ->andFilterWhere(['company_id' => $this->company_id]);
 

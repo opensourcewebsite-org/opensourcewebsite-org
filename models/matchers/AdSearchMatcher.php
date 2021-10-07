@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\matchers;
@@ -24,17 +25,16 @@ class AdSearchMatcher
     public function match(): int
     {
         $this->linker->unlinkMatches();
+        $matchesQuery = $this->prepareMainQuery();
 
-        $adOfferQuery = $this->prepareMainQuery();
+        $matchesQueryNoKeywords = clone $matchesQuery;
 
-        $adOfferQueryNoKeywords = clone $adOfferQuery;
-
-        $adOfferQueryNoKeywords = $adOfferQueryNoKeywords
+        $matchesQueryNoKeywords = $matchesQueryNoKeywords
             ->andWhere(['not in', $this->comparingTable . '.id', AdOfferKeyword::find()->select('ad_offer_id')]);
 
-        $adOfferQueryKeywords = clone $adOfferQuery;
+        $matchesQueryKeywords = clone $matchesQuery;
 
-        $adOfferQueryKeywords = $adOfferQueryKeywords
+        $matchesQueryKeywords = $matchesQueryKeywords
             ->joinWith(
                 [
                     'keywords' => function ($query) {
@@ -47,8 +47,8 @@ class AdSearchMatcher
             ->groupBy(AdOffer::tableName() . '.id');
 
         if ($this->model->getKeywords()->count() > 0) {
-            $keywordsMatches = $adOfferQueryKeywords->all();
-            $noKeywordsMatches = $adOfferQueryNoKeywords->all();
+            $keywordsMatches = $matchesQueryKeywords->all();
+            $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
             $matchedCount = count($keywordsMatches);
 
@@ -56,8 +56,8 @@ class AdSearchMatcher
             $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkMatches($noKeywordsMatches);
         } else {
-            $keywordsMatches = $adOfferQueryKeywords->all();
-            $noKeywordsMatches = $adOfferQueryNoKeywords->all();
+            $keywordsMatches = $matchesQueryKeywords->all();
+            $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
             $matchedCount = count($noKeywordsMatches);
 
@@ -72,10 +72,8 @@ class AdSearchMatcher
     private function prepareMainQuery(): ActiveQuery
     {
         return AdOffer::find()
-            ->where(['!=', $this->comparingTable . '.user_id', $this->model->user_id])
-            ->andWhere([$this->comparingTable . '.status' => AdOffer::STATUS_ON])
-            ->joinWith('user')
-            ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
+            ->excludeUserId($this->model->user_id)
+            ->live()
             ->andWhere([$this->comparingTable . '.section' => $this->model->section])
             ->andWhere(
                 "ST_Distance_Sphere(

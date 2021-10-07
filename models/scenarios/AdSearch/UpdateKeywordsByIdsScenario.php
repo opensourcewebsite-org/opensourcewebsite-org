@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\AdSearch;
@@ -18,7 +19,6 @@ class UpdateKeywordsByIdsScenario
 
     public function run()
     {
-
         $currentKeywordsIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
         $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);
         $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
@@ -27,7 +27,7 @@ class UpdateKeywordsByIdsScenario
             $this->model->trigger(AdSearch::EVENT_KEYWORDS_UPDATED);
         }
 
-        foreach($toAddIds as $id) {
+        foreach ($toAddIds as $id) {
             (new AdSearchKeyword(['ad_search_id' => $this->model->id, 'ad_keyword_id' => $id]))->save();
         }
 

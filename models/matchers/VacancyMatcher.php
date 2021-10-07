@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\matchers;
@@ -32,23 +33,23 @@ final class VacancyMatcher
     {
         $this->linker->unlinkMatches();
 
-        $resumesQuery = $this->applyKeywordsCondition(
+        $matchesQuery = $this->applyKeywordsCondition(
             $this->buildLocationAndRadiusCondition(
                 $this->applyGenderCondition(
-                    $this->prepareInitialMatchResumesQuery()
+                    $this->prepareMainQuery()
                 )
             )
         );
 
         if ($this->model->max_hourly_rate) {
-            $resumesQueryRateQuery = clone $resumesQuery;
-            $resumesQueryNoRateQuery = clone $resumesQuery;
+            $matchesQueryRateQuery = clone $matchesQuery;
+            $matchesQueryNoRateQuery = clone $matchesQuery;
 
-            $resumesQueryRateQuery->andWhere($this->buildRateAndCurrencyDirectMatchCondition());
-            $resumesQueryNoRateQuery->andWhere($this->buildRateAndCurrencyNotMatchCondition());
+            $matchesQueryRateQuery->andWhere($this->buildRateAndCurrencyDirectMatchCondition());
+            $matchesQueryNoRateQuery->andWhere($this->buildRateAndCurrencyNotMatchCondition());
 
-            $rateMatches = $resumesQueryRateQuery->all();
-            $rateNotMachResumes = $resumesQueryNoRateQuery->all();
+            $rateMatches = $matchesQueryRateQuery->all();
+            $rateNotMachResumes = $matchesQueryNoRateQuery->all();
 
             $matchesCount = count($rateMatches);
 
@@ -57,7 +58,7 @@ final class VacancyMatcher
 
             $this->linker->linkCounterMatches($rateNotMachResumes);
         } else {
-            $matches = $resumesQuery->all();
+            $matches = $matchesQuery->all();
             $matchesCount = count($matches);
 
             $this->linker->linkMatches($matches);
@@ -66,14 +67,12 @@ final class VacancyMatcher
         return $matchesCount;
     }
 
-    public function prepareInitialMatchResumesQuery(): ResumeQuery
+    public function prepareMainQuery(): ResumeQuery
     {
         return Resume::find()
+            ->excludeUserId($this->model->user_id)
             ->live()
             ->andWhere($this->buildUserLanguagesMatchExpression($this->model->languagesWithLevels))
-            ->andWhere([
-                '!=', "{$this->comparingTable}.user_id", $this->model->user_id,
-            ])
             ->groupBy("{$this->comparingTable}.id");
     }
 

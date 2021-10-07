@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
@@ -8,7 +9,7 @@ use app\models\search\ResumeSearch;
 use app\widgets\Alert;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
@@ -23,9 +24,9 @@ use yii\grid\GridView;
 $this->title = Yii::t('app', 'Resumes');
 $this->params['breadcrumbs'][] = $this->title;
 
-$displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
+$displayActiveTab = $searchModel->status === ResumeSearch::STATUS_ON;
 ?>
-<div class="resume-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -40,8 +41,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                         'ResumeSearch[status]' => ResumeSearch::STATUS_ON,
                                     ],
     [
-                                            'class' => 'nav-link show ' .
-                                                ($displayActiveOrders ? 'active' : ''),
+                                            'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : ''),
                                     ]
 );
                                 ?>
@@ -51,8 +51,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                     Yii::t('app', 'Inactive'),
                                     ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
                                     [
-                                        'class' => 'nav-link show ' .
-                                            ($displayActiveOrders ? '' : 'active')
+                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : ''),
                                     ]
                                 );
                                 ?>
@@ -68,7 +67,7 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                                     'style' => [
                                         'float' => 'right',
                                     ],
-                                ]
+                                ],
                             ]); ?>
                         </div>
                     </div>
@@ -80,7 +79,10 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'name',
                                 'enableSorting' => false,
@@ -94,15 +96,16 @@ $displayActiveOrders = $searchModel->status === ResumeSearch::STATUS_ON;
                             ],
                             [
                                 'label' => Yii::t('app', 'Offers'),
-                                'enableSorting' => false,
-                                'format' => 'raw',
                                 'value' => function (Resume $model) {
-                                    return $model->getMatches()->count() ?
+                                    return $model->getMatchesCount() ?
                                         Html::a(
-                                            $model->getMatches()->count(),
+                                            $model->getMatchesCount(),
                                             Url::to(['/vacancy/show-matches', 'resumeId' => $model->id]),
                                         ) : '';
-                                }
+                                },
+                                'format' => 'raw',
+                                'enableSorting' => false,
+                                'visible' => $displayActiveTab,
                             ],
                             [
                                 'class' => ActionColumn::class,

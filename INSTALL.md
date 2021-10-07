@@ -145,15 +145,15 @@ Also, you can use [Localtunnel](https://localtunnel.me/) to receive Telegram web
 - In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `telegramProxy` in `params.php`.
 - Create a new record in `bot` table in MySQL database, with `status` = 0, or use console command:
 ```
-php yii bot-command/add [BOT TOKEN]
+php yii telegram-bot/add [BOT TOKEN]
 ```
 
 Enable Telegram webhooks for all bots with `status` = 0:
 ```
-php yii bot-command/enable-all
+php yii telegram-bot/enable-all
 ```
 
 Disable Telegram webhooks for all bots with `status` = 1:
 ```
-php yii bot-command/disable-all
+php yii telegram-bot/disable-all
 ```

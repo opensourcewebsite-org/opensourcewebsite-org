@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
 use app\models\Resume;
 use app\widgets\ContactWidget\ContactWidget;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
@@ -22,7 +23,7 @@ $this->params['breadcrumbs'][] = ['label' => '#' . $vacancyId, 'url' => ['/vacan
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Resumes'), 'url' => ['/resume/show-matches', 'vacancyId' => $vacancyId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 ?>
-<div class="resume-view">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -67,4 +68,5 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         </div>
     </div>
 </div>
+
 <?= ContactWidget::widget(['user' => $model->user])?>

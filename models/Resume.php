@@ -10,7 +10,6 @@ use app\models\matchers\ModelLinker;
 use app\models\scenarios\Resume\UpdateScenario;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use app\models\User as GlobalUser;
 use app\models\queries\ResumeQuery;
 use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
@@ -272,20 +271,21 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
         return $this->user->getLanguages();
     }
 
-    public function getGlobalUser(): ActiveQuery
-    {
-        return $this->getUser();
-    }
-
     public function getUser(): ActiveQuery
     {
-        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     public function getMatches(): ActiveQuery
     {
         return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
             ->viaTable('{{%job_resume_match}}', ['resume_id' => 'id']);
+    }
+
+    public function getMatchesCount()
+    {
+        return $this->hasMany(JobResumeMatch::class, ['resume_id' => 'id'])
+            ->count();
     }
 
     public function getCounterMatches(): ActiveQuery
@@ -301,7 +301,7 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
 
     public function beforeSave($insert)
     {
-        if ((new UpdateScenario($this))->run()) {
+        if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }
 

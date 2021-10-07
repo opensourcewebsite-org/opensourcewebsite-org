@@ -100,7 +100,7 @@ class UserController extends Controller
         exit;
     }
 
-    public function actionAccount()
+    public function actionDashboard()
     {
         $activeRating = $this->user->getActiveRating();
         $rating = $this->user->getRating();
@@ -115,6 +115,15 @@ class UserController extends Controller
                 'totalRating' => $totalRating,
                 'percent' => $percent,
             ],
+        ];
+
+        return $this->render('dashboard', $params);
+    }
+
+    public function actionAccount()
+    {
+        $params = [
+            'model' => $this->user,
         ];
 
         return $this->render('account', $params);

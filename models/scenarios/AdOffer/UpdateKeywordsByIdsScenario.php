@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\AdOffer;
@@ -26,7 +27,7 @@ class UpdateKeywordsByIdsScenario
             $this->model->trigger(AdOffer::EVENT_KEYWORDS_UPDATED);
         }
 
-        foreach($toAddIds as $id) {
+        foreach ($toAddIds as $id) {
             (new AdOfferKeyword(['ad_offer_id' => $this->model->id, 'ad_keyword_id' => $id]))->save();
         }
 

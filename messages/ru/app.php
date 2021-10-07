@@ -77,4 +77,5 @@ return [
     'Please help to test all functions of this' => 'Пожалуйста помогите протестировать все функции',
     'All data of debts will be deleted after starting this feature in operating mode' => 'Все данные о долгах будут удалены после запуска этого функционала в рабочий режим',
     'Partners' => 'Партнеры',
+    'New matches' => 'Новые совпадения',
 ];

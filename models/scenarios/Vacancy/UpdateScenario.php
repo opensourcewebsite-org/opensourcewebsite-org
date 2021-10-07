@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\Vacancy;
@@ -27,7 +28,7 @@ class UpdateScenario
             $this->model->isAttributeChanged('gender_id') ||
             $this->model->isAttributeChanged('location_lat') ||
             $this->model->isAttributeChanged('location_lon')
-        ){
+        ) {
             $this->linker->unlinkMatches();
 
             return true;

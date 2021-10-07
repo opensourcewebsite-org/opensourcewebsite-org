@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\models\search\VacancySearch;
 use app\models\Vacancy;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
@@ -22,9 +24,8 @@ $this->title = Yii::t('app', "Matched Vacancies");
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' =>['/resume/index']];
 $this->params['breadcrumbs'][] = ['label' => "#{$resumeId}", 'url' =>['/resume/view', 'id' => $resumeId]];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="vacancy-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -34,14 +35,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'name',
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'max_hourly_rate',
-                                'value' => function($model) {
+                                'value' => function ($model) {
                                     return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
                                 'enableSorting' => false,

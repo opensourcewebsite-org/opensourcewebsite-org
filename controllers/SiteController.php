@@ -97,14 +97,14 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['/account']);
+            return $this->redirect(['/dashboard']);
         }
 
         $model = new LoginForm();
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
             if ($model->load($postData) && $model->login()) {
-                return $this->redirect(['/account']);
+                return $this->redirect(['/dashboard']);
             }
         }
 
@@ -135,14 +135,14 @@ class SiteController extends Controller
     public function actionSignup()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['/account']);
+            return $this->redirect(['/dashboard']);
         }
 
         $model = new SignupForm();
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
             if ($model->load($postData) && $model->signup()) {
-                return $this->redirect(['/account']);
+                return $this->redirect(['/dashboard']);
             }
         }
 
@@ -159,7 +159,7 @@ class SiteController extends Controller
     public function actionRequestResetPassword()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['/account']);
+            return $this->redirect(['/dashboard']);
         }
 
         $model = new RequestResetPasswordForm();
@@ -282,7 +282,7 @@ class SiteController extends Controller
     public function actionResetPassword(int $id, int $time, string $hash)
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['/account']);
+            return $this->redirect(['/dashboard']);
         }
 
         /* @var $user User */
@@ -295,7 +295,7 @@ class SiteController extends Controller
                 if ($model->resetPassword($id, $time, $hash)) {
                     Yii::$app->session->setFlash('success', 'Your new password has been successfully saved.');
 
-                    return $this->redirect(['/account']);
+                    return $this->redirect(['/dashboard']);
                 } else {
                     Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
 

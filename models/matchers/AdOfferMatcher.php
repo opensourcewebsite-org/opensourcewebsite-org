@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\matchers;
@@ -17,24 +18,21 @@ class AdOfferMatcher
     public function __construct(AdOffer $model)
     {
         $this->model = $model;
-
         $this->linker = new ModelLinker($this->model);
-
         $this->comparingTable = AdSearch::tableName();
     }
 
     public function match(): int
     {
         $this->linker->unlinkMatches();
+        $matchesQuery = $this->prepareMainQuery();
 
-        $adSearchQuery = $this->prepareMainSearchQuery();
-
-        $adSearchQueryNoKeywords = clone $adSearchQuery;
-        $adSearchQueryNoKeywords = $adSearchQueryNoKeywords
+        $matchesQueryNoKeywords = clone $matchesQuery;
+        $matchesQueryNoKeywords = $matchesQueryNoKeywords
             ->andWhere(['not in', "{$this->comparingTable}.id", AdSearchKeyword::find()->select('ad_search_id')]);
 
-        $adSearchQueryKeywords = clone $adSearchQuery;
-        $adSearchQueryKeywords = $adSearchQueryKeywords
+        $matchesQueryKeywords = clone $matchesQuery;
+        $matchesQueryKeywords = $matchesQueryKeywords
             ->joinWith(['keywords' => function ($query) {
                 $query
                     ->joinWith('adOffers')
@@ -43,8 +41,8 @@ class AdOfferMatcher
             ->groupBy(AdSearch::tableName() . '.id');
 
         if ($this->model->getKeywords()->count() > 0) {
-            $keywordsMatches = $adSearchQueryKeywords->all();
-            $noKeywordsMatches = $adSearchQueryNoKeywords->all();
+            $keywordsMatches = $matchesQueryKeywords->all();
+            $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
             $matchedCount = count($keywordsMatches);
 
@@ -52,8 +50,8 @@ class AdOfferMatcher
             $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);
         } else {
-            $keywordsMatches = $adSearchQueryKeywords->all();
-            $noKeywordsMatches = $adSearchQueryNoKeywords->all();
+            $keywordsMatches = $matchesQueryKeywords->all();
+            $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
             $matchedCount = count($noKeywordsMatches);
 
@@ -66,13 +64,11 @@ class AdOfferMatcher
         return $matchedCount;
     }
 
-    private function prepareMainSearchQuery(): ActiveQuery
+    private function prepareMainQuery(): ActiveQuery
     {
         return AdSearch::find()
-            ->where(['!=', "{$this->comparingTable}.user_id", $this->model->user_id])
-            ->andWhere(["{$this->comparingTable}.status" => AdSearch::STATUS_ON])
-            ->joinWith('user')
-            ->andWhere(['>=', 'user.last_activity_at', time() - AdSearch::LIVE_DAYS * 24 * 60 * 60])
+            ->excludeUserId($this->model->user_id)
+            ->live()
             ->andWhere(["{$this->comparingTable}.section" => $this->model->section])
             ->andWhere("ST_Distance_Sphere(
                     POINT({$this->model->location_lon}, {$this->model->location_lat}),

@@ -170,7 +170,7 @@ return [
     'Telegram groups' => 'Телеграм группы',
     'To start managing your group follow these steps' => 'Чтобы начать управлять вашей группой, выполните следующие действия',
     'Add the bot to your group as administrator' => 'Добавьте этого бота в вашу группу как администратора',
-    'Turn on permissions for the bot' => 'Включите разрешения для этого бота',
+    'Turn on the folowing permissions for the bot' => 'Включите следующие разрешения для этого бота',
     'to delete messages' => 'удалять сообщения',
     'to ban users' => 'банить пользователей',
     'Select a feature to manage the group' => 'Выберите функцию для управления группой',

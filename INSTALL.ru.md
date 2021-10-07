@@ -146,15 +146,15 @@ ngrok - это инструмент, который сделает ваше ло
 - Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `telegramProxy` в `params.php`.
 - Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду:
 ```
-php yii bot-command/add [ТОКЕН БОТА]
+php yii telegram-bot/add [ТОКЕН БОТА]
 ```
 
 Включить Telegram webhooks для всех ботов с `status` = 0:
 ```
-php yii bot-command/enable-all
+php yii telegram-bot/enable-all
 ```
 
 Отключить Telegram webhooks для всех ботов с `status` = 1:
 ```
-php yii bot-command/disable-all
+php yii telegram-bot/disable-all
 ```

@@ -14,11 +14,11 @@ use yii\console\Exception;
 use app\models\UaLawmakingVoting;
 
 /**
- * Class BotCommandController
+ * Class TelegramBotController
  *
  * @package app\commands
  */
-class BotCommandController extends Controller implements CronChainedInterface
+class TelegramBotController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 

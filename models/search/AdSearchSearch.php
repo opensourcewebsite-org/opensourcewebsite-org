@@ -10,14 +10,16 @@ use yii\data\ActiveDataProvider;
 
 class AdSearchSearch extends AdSearch
 {
+    public int $status = self::STATUS_ON;
+
     public function rules(): array
     {
         return [
+            ['status', 'in', 'range' => [self::STATUS_ON, self::STATUS_OFF]],
             [
                 [
                     'id',
                     'currency_id',
-                    'status',
                 ],
                 'integer',
             ],
@@ -29,7 +31,8 @@ class AdSearchSearch extends AdSearch
 
     public function search(array $params): ActiveDataProvider
     {
-        $query = AdSearch::find()->where(['user_id' => Yii::$app->user->getIdentity()->getId()]);
+        $query = AdSearch::find()
+            ->userOwner();
 
         $dataProvider = new ActiveDataProvider(['query' => $query]);
 
@@ -40,8 +43,7 @@ class AdSearchSearch extends AdSearch
             return $dataProvider;
         }
 
-        $query
-            ->andFilterWhere(['like', 'title', $this->title])
+        $query->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['status' => $this->status])
             ->andFilterWhere(['max_price' => $this->max_price])
             ->andFilterWhere(['currency_id' => $this->currency_id]);

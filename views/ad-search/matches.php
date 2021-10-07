@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 use app\models\AdSearch;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\grid\GridView;
@@ -19,9 +20,8 @@ $this->title = Yii::t('app', 'Matched Searches');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' =>['/ad-offer/index']];
 $this->params['breadcrumbs'][] = ['label' => "#{$adOfferId}", 'url' =>['/ad-offer/view', 'id' => $adOfferId]];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="ad-search-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -31,11 +31,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'sectionName',
                                 'label' => Yii::t('app', 'Section'),
-                                'value' => function($model) {
+                                'value' => function ($model) {
                                     return $model->sectionName;
                                 },
                                 'enableSorting' => false,
@@ -55,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url, $model) use($adOfferId) {
+                                    'view' => function ($url, $model) use ($adOfferId) {
                                         $url = Url::to(['/ad-search/view-match', 'adSearchId' => $model->id, 'adOfferId' => $adOfferId]);
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);

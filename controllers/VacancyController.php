@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\controllers;
@@ -50,7 +51,6 @@ class VacancyController extends Controller
 
     public function actionIndex(): string
     {
-
         $searchModel = new VacancySearch(['status' => Vacancy::STATUS_ON]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -72,7 +72,6 @@ class VacancyController extends Controller
         $model->remote_on = WebVacancy::REMOTE_ON;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
             (new UpdateKeywordsByIdsScenario($model))->run();
 
             if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
@@ -85,7 +84,7 @@ class VacancyController extends Controller
         return $this->render('create', [
             'model' => $model,
             'currencies' => Currency::find()->all(),
-            'companies' => $model->globalUser->getCompanies()->all(),
+            'companies' => $model->user->getCompanies()->all(),
             'languageWithLevelsForm' => $languageWithLevelsForm
         ]);
     }
@@ -98,7 +97,6 @@ class VacancyController extends Controller
         $languageWithLevelsForm->setSelectedLanguages($model->languagesWithLevels);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
             (new UpdateKeywordsByIdsScenario($model))->run();
 
             if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
@@ -111,7 +109,7 @@ class VacancyController extends Controller
         return $this->render('update', [
             'model' => $model,
             'currencies' => Currency::find()->all(),
-            'companies' => $model->globalUser->getCompanies()->all(),
+            'companies' => $model->user->getCompanies()->all(),
             'languageWithLevelsForm' => $languageWithLevelsForm
         ]);
     }
@@ -223,7 +221,7 @@ class VacancyController extends Controller
         /** @var WebVacancy $model */
         if ($model = WebVacancy::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }
@@ -236,7 +234,7 @@ class VacancyController extends Controller
         /** @var Resume $model */
         if ($model = Resume::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }

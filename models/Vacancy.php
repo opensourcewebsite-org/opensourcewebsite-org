@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -12,7 +13,6 @@ use app\models\scenarios\Vacancy\UpdateScenario;
 use app\modules\bot\components\helpers\LocationParser;
 use Yii;
 use app\models\queries\VacancyQuery;
-use app\models\User as GlobalUser;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -65,15 +65,15 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
     public const REMOTE_OFF = 0;
     public const REMOTE_ON = 1;
 
-    public const EVENT_KEYWORDS_CHANGED = 'keywordsChanged';
-    public const EVENT_LANGUAGES_CHANGED = 'languagesChanged';
+    public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
+    public const EVENT_LANGUAGES_UPDATED = 'languagesUpdated';
 
     public $keywordsFromForm = [];
 
     public function init()
     {
-        $this->on(self::EVENT_KEYWORDS_CHANGED, [$this, 'clearMatches']);
-        $this->on(self::EVENT_LANGUAGES_CHANGED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_LANGUAGES_UPDATED, [$this, 'clearMatches']);
         $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
 
         parent::init();
@@ -280,6 +280,12 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             ->viaTable('{{%job_vacancy_match}}', ['vacancy_id' => 'id']);
     }
 
+    public function getMatchesCount()
+    {
+        return $this->hasMany(JobVacancyMatch::class, ['vacancy_id' => 'id'])
+            ->count();
+    }
+
     public function getCounterMatches(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['id' => 'resume_id'])
@@ -291,14 +297,9 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
     }
 
-    public function getGlobalUser(): ActiveQuery
-    {
-        return $this->getUser();
-    }
-
     public function getUser(): ActiveQuery
     {
-        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     public function getKeywords(): ActiveQuery
@@ -313,14 +314,9 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         (new ModelLinker($this))->clearMatches();
     }
 
-    public function notPossibleToChangeStatus(): array
-    {
-        return [];
-    }
-
     public function beforeSave($insert)
     {
-        if ((new UpdateScenario($this))->run()) {
+        if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }
 

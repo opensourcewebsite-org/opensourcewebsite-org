@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\AdOffer;
@@ -34,5 +35,4 @@ class UpdateScenario
 
         return false;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\Vacancy;
@@ -8,18 +9,19 @@ use app\models\Vacancy;
 
 final class SetActiveScenario
 {
-    private Vacancy $vacancy;
+    private Vacancy $model;
     private array $errors = [];
 
-    public function __construct(Vacancy $vacancy)
+    public function __construct(Vacancy $model)
     {
-        $this->vacancy = $vacancy;
+        $this->model = $model;
     }
 
     public function run(): bool
     {
         if ($this->validateLanguages() && $this->validateLocation()) {
-            $this->vacancy->setActive();
+            $this->model->setActive();
+
             return true;
         }
 
@@ -31,15 +33,11 @@ final class SetActiveScenario
         return $this->errors;
     }
 
-    public function getVacancy(): Vacancy
-    {
-        return $this->vacancy;
-    }
-
     private function validateLanguages(): bool
     {
-        if (!$this->vacancy->getLanguagesWithLevels()->count()) {
+        if (!$this->model->getLanguagesWithLevels()->count()) {
             $this->errors['languages'] = Yii::t('app', 'You must have at least one language for Vacancy');
+
             return false;
         }
 
@@ -48,9 +46,10 @@ final class SetActiveScenario
 
     private function validateLocation(): bool
     {
-        if (!$this->vacancy->isRemote()) {
-            if (!($this->vacancy->location_lon && $this->vacancy->location_lat)) {
+        if (!$this->model->isRemote()) {
+            if (!($this->model->location_lon && $this->model->location_lat)) {
                 $this->errors['location'] = Yii::t('app', 'Location should be set');
+
                 return false;
             }
         }

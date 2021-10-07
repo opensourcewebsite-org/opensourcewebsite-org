@@ -25,58 +25,58 @@ $this->title = Yii::t('app', 'Account');
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                <tr>
-                                    <th class="align-middle">ID</th>
-                                    <td class="align-middle">#<?= $model->id ?></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle"><?= Yii::t('user', 'Username'); ?></th>
-                                    <td class="align-middle"><span id="username"><?= $model->username ? '@' . $model->username : ''; ?></span></td>
-                                    <td>
-                                        <?= EditButton::widget([
-                                            'url' => '/user/change-username',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle"><?= Yii::t('user', 'Rank'); ?></th>
-                                    <td class="align-middle"><b><?= $model->getRank() ?></b> <?= Yii::t('app', 'of'); ?> <?= User::getTotalRank(); ?></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle"><?= Yii::t('user', 'Real confirmations'); ?></th>
-                                    <td class="align-middle"><?= $model->getRealConfirmations() ?></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle"><?= Yii::t('user', 'Voting Power'); ?></th>
-                                    <td class="align-middle"><b><?= $overallRating['percent'] ?>%</b> <?= Yii::t('app', 'of'); ?> 100%</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle">
-                                    <?php
-                                        $string = Yii::t('user', 'Rating');
+                                    <tr>
+                                        <th class="align-middle">ID</th>
+                                        <td class="align-middle">#<?= $model->id ?></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle"><?= Yii::t('user', 'Username'); ?></th>
+                                        <td class="align-middle"><span id="username"><?= $model->username ? '@' . $model->username : ''; ?></span></td>
+                                        <td>
+                                            <?= EditButton::widget([
+                                                'url' => '/user/change-username',
+                                                'options' => [
+                                                    'style' => 'float: right',
+                                                ]
+                                            ]); ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle"><?= Yii::t('user', 'Rank'); ?></th>
+                                        <td class="align-middle"><b><?= $model->getRank() ?></b> <?= Yii::t('app', 'of'); ?> <?= User::getTotalRank(); ?></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle"><?= Yii::t('user', 'Voting Power'); ?></th>
+                                        <td class="align-middle"><b><?= $model->getRatingPercent() ?> %</b> <?= Yii::t('app', 'of'); ?> 100%</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle"><?= Yii::t('user', 'Real confirmations'); ?></th>
+                                        <td class="align-middle"><?= $model->getRealConfirmations() ?></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle">
+                                        <?php
+                                            $string = Yii::t('user', 'Rating');
 
-                                        if ($model->ratings) {
-                                            echo Html::a($string, ['user/rating']);
-                                        } else {
-                                            echo $string;
-                                        }
-                                    ?>
-                                    </th>
-                                    <td class="align-middle"><b><?= $overallRating['rating'] ?></b> <?= Yii::t('app', 'of'); ?> <?= $overallRating['totalRating'] ?></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle"><?= Yii::t('user', 'Active Rating'); ?></th>
-                                    <td class="align-middle"><b><?= $model->activeRating ?></b>&nbsp;(<?= Yii::t('bot', 'in the last {0,number} days', Yii::$app->settings->days_count_to_calculate_active_rating); ?>)</td>
-                                    <td></td>
-                                </tr>
+                                            if ($model->ratings) {
+                                                echo Html::a($string, ['user/rating']);
+                                            } else {
+                                                echo $string;
+                                            }
+                                        ?>
+                                        </th>
+                                        <td class="align-middle"><b><?= $model->getRating() ?></b> <?= Yii::t('app', 'of'); ?> <?= User::getTotalRating(); ?></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle"><?= Yii::t('user', 'Active Rating'); ?></th>
+                                        <td class="align-middle"><b><?= $model->getActiveRating() ?></b>&nbsp;(<?= Yii::t('bot', 'in the last {0,number} days', Yii::$app->settings->days_count_to_calculate_active_rating); ?>)</td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

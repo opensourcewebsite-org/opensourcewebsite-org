@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use app\models\Currency;
 use app\widgets\buttons\AddButton;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
 use app\models\CurrencyExchangeOrder;
+use app\models\search\CurrencyExchangeOrderSearch;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -15,57 +18,48 @@ use yii\helpers\Url;
 $this->title = Yii::t('app', 'Currency Exchange');
 $this->params['breadcrumbs'][] = $this->title;
 
-$displayActiveOrders = (int)Yii::$app->request->get('status', CurrencyExchangeOrder::STATUS_ON) === CurrencyExchangeOrder::STATUS_ON;
-
-$offersCol = $displayActiveOrders ?
-    [
-        'label' => Yii::t('app', 'Offers'),
-        'value' => function ($model) {
-            return  $model->getMatches()->exists() ?
-                Html::a($model->getMatches()->count(), Url::to(['show-matches', 'id' => $model->id])) :
-                '';
-        },
-        'format' => 'raw',
-        'enableSorting' => false,
-    ] : [];
+$displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS_ON;
 ?>
-<div class="currency-exchange-order-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item">
-                            <?= Html::a(
+                    <div class="col-sm-6">
+                        <ul class="nav nav-pills ml-auto p-2">
+                            <li class="nav-item">
+                                <?= Html::a(
     Yii::t('app', 'Active'),
-    ['/currency-exchange-order', 'status' => CurrencyExchangeOrder::STATUS_ON],
+    ['/currency-exchange-order', 'CurrencyExchangeOrderSearch[status]' => CurrencyExchangeOrderSearch::STATUS_ON],
     [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? 'active' : '')
-                                ]
+                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')
+                                    ]
 );
-                            ?>
-                        </li>
-                        <li class="nav-item">
-                            <?= Html::a(
-                                Yii::t('app', 'Inactive'),
-                                ['/currency-exchange-order', 'status' => CurrencyExchangeOrder::STATUS_OFF],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        (!$displayActiveOrders ? 'active' : '')
-                                ]
-                            );
-                            ?>
-                        </li>
-                        <li class="nav-item align-self-center mr-4">
-                            <?= AddButton::widget([
-                                'url' => ['currency-exchange-order/create'],
-                                'options' => [
-                                    'title' => 'New Order',
-                                ]
-                            ]); ?>
-                        </li>
-                    </ul>
+                                ?>
+                            </li>
+                            <li class="nav-item">
+                                <?= Html::a(
+                                    Yii::t('app', 'Inactive'),
+                                    ['/currency-exchange-order', 'CurrencyExchangeOrderSearch[status]' => CurrencyExchangeOrderSearch::STATUS_OFF],
+                                    [
+                                        'class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : ''),
+                                    ]
+                                );
+                                ?>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <?= AddButton::widget([
+                            'url' => ['currency-exchange-order/create'],
+                            'options' => [
+                                'title' => 'New Order',
+                                'style' => [
+                                    'float' => 'right',
+                                ],
+                            ]
+                        ]); ?>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
@@ -73,7 +67,10 @@ $offersCol = $displayActiveOrders ?
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
@@ -87,8 +84,9 @@ $offersCol = $displayActiveOrders ?
                             [
                                 'label' => Yii::t('app', 'Exchange rate'),
                                 'value' => function ($model) {
-                                    return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : '');
+                                    return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ' ' . $model->getFeeBadge() : '');
                                 },
+                                'format' => 'html',
                                 'enableSorting' => false,
                             ],
                             [
@@ -102,7 +100,19 @@ $offersCol = $displayActiveOrders ?
                                 'attribute' => 'label',
                                 'enableSorting' => false,
                             ],
-                            $offersCol,
+                            [
+                                'label' => Yii::t('app', 'Offers'),
+                                'value' => function ($model) {
+                                    return $model->getMatchesCount() ?
+                                        Html::a(
+                                            $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
+                                            Url::to(['show-matches', 'id' => $model->id])
+                                        ) : '';
+                                },
+                                'format' => 'raw',
+                                'enableSorting' => false,
+                                'visible' => $displayActiveTab,
+                            ],
                             [
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',

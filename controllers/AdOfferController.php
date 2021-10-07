@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\controllers;
@@ -158,7 +159,7 @@ class AdOfferController extends Controller
         /** @var AdOffer $model */
         if ($model = AdOffer::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }
@@ -171,7 +172,7 @@ class AdOfferController extends Controller
         /** @var AdSearch $model */
         if ($model = AdSearch::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }

@@ -232,10 +232,6 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
-    public function getGlobalUser(): ActiveQuery
-    {
-        return $this->getUser();
-    }
 
     public function getCurrency(): ActiveQuery
     {
@@ -253,63 +249,16 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
             ->viaTable('{{%ad_search_match}}', ['ad_search_id' => 'id']);
     }
 
+    public function getMatchesCount()
+    {
+        return $this->hasMany(AdSearchMatch::class, ['ad_search_id' => 'id'])
+            ->count();
+    }
+
     public function getCounterMatches(): ActiveQuery
     {
         return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
             ->viaTable('{{%ad_offer_match}}', ['ad_search_id' => 'id']);
-    }
-
-    public function updateMatches()
-    {
-        $this->unlinkAll('matches', true);
-        $this->unlinkAll('counterMatches', true);
-
-        $adOfferQuery = AdOffer::find()
-            ->where(['!=', AdOffer::tableName() . '.user_id', $this->user_id])
-            ->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
-            ->joinWith('user')
-            ->andWhere(['>=', 'user.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60])
-            ->andWhere([AdOffer::tableName() . '.section' => $this->section])
-            ->andWhere(
-                "ST_Distance_Sphere(POINT($this->location_lon, $this->location_lat), POINT(ad_offer.location_lon, ad_offer.location_lat)) <= 1000 * (ad_offer.delivery_radius + $this->pickup_radius)"
-            );
-
-        $adOfferQueryNoKeywords = clone $adOfferQuery;
-        $adOfferQueryNoKeywords = $adOfferQueryNoKeywords
-            ->andWhere(['not in', AdOffer::tableName() . '.id', AdOfferKeyword::find()->select('ad_offer_id')]);
-
-        $adOfferQueryKeywords = clone $adOfferQuery;
-        $adOfferQueryKeywords = $adOfferQueryKeywords
-            ->joinWith(
-                [
-                    'keywords' => function ($query) {
-                        $query
-                            ->joinWith('adSearches')
-                            ->andWhere([AdSearch::tableName() . '.id' => $this->id]);
-                    },
-                ]
-            )
-            ->groupBy(AdOffer::tableName() . '.id');
-
-        if ($this->getKeywords()->count() > 0) {
-            foreach ($adOfferQueryKeywords->all() as $adOffer) {
-                $this->link('matches', $adOffer);
-                $this->link('counterMatches', $adOffer);
-            }
-
-            foreach ($adOfferQueryNoKeywords->all() as $adOffer) {
-                $this->link('matches', $adOffer);
-            }
-        } else {
-            foreach ($adOfferQueryKeywords->all() as $adOffer) {
-                $this->link('counterMatches', $adOffer);
-            }
-
-            foreach ($adOfferQueryNoKeywords->all() as $adOffer) {
-                $this->link('matches', $adOffer);
-                $this->link('counterMatches', $adOffer);
-            }
-        }
     }
 
     public function clearMatches()
@@ -319,7 +268,7 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
 
     public function beforeSave($insert)
     {
-        if ((new UpdateScenario($this))->run()) {
+        if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }
 

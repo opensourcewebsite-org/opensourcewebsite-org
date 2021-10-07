@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use app\components\helpers\ArrayHelper;
 use app\models\Currency;
 use app\models\search\VacancySearch;
 use app\models\Vacancy;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
@@ -21,42 +23,50 @@ use yii\grid\GridView;
 $this->title = Yii::t('app', 'Vacancies');
 $this->params['breadcrumbs'][] = $this->title;
 
-$displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
-
+$displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
 ?>
-<div class="vacancy-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex p-0">
-                    <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item mx-1">
-                            <?= Html::a(Yii::t('app', 'Active'),
-                                ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_ON],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? 'active' : '')
-                                ]);
-                            ?>
-                        </li>
-                        <li class="nav-item  mx-1">
-                            <?= Html::a(Yii::t('app', 'Inactive'),
-                                ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_OFF],
-                                [
-                                    'class' => 'nav-link show ' .
-                                        ($displayActiveOrders ? '' : 'active')
-                                ]);
-                            ?>
-                        </li>
-                        <li class="nav-item align-self-center mr-4  mx-1">
+                    <div class="col-sm-6">
+                        <ul class="nav nav-pills ml-auto p-2">
+                            <li class="nav-item">
+                                <?= Html::a(
+    Yii::t('app', 'Active'),
+    ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_ON],
+    [
+                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')
+                                    ]
+);
+                                ?>
+                            </li>
+                            <li class="nav-item">
+                                <?= Html::a(
+                                    Yii::t('app', 'Inactive'),
+                                    ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_OFF],
+                                    [
+                                        'class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : ''),
+                                    ]
+                                );
+                                ?>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="right-buttons float-right">
                             <?= AddButton::widget([
                                 'url' => ['create'],
                                 'options' => [
                                     'title' => 'New Vacancy',
-                                ]
+                                    'style' => [
+                                        'float' => 'right',
+                                    ],
+                                ],
                             ]); ?>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
@@ -65,29 +75,33 @@ $displayActiveOrders = $searchModel->status === VacancySearch::STATUS_ON;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'name',
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'max_hourly_rate',
-                                'value' => function($model) {
+                                'value' => function ($model) {
                                     return $model->max_hourly_rate ? $model->max_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
                                 'enableSorting' => false,
                             ],
                             [
                                 'label' => Yii::t('app', 'Offers'),
-                                'enableSorting' => false,
-                                'format' => 'raw',
-                                'content' => function (Vacancy $model){
-                                    return $model->getMatches()->count() ?
+                                'content' => function (Vacancy $model) {
+                                    return $model->getMatchesCount() ?
                                         Html::a(
-                                            $model->getMatches()->count(),
-                                            Url::to(['/resume/show-matches', 'vacancyId' => $model->id]),
+                                            $model->getMatchesCount(),
+                                            Url::to(['/resume/show-matches', 'vacancyId' => $model->id])
                                         ) : '';
-                                }
+                                },
+                                'format' => 'raw',
+                                'enableSorting' => false,
+                                'visible' => $displayActiveTab,
                             ],
                             [
                                 'class' => ActionColumn::class,

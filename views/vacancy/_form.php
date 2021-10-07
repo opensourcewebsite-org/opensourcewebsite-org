@@ -32,128 +32,127 @@ $showLocation = $model->location || $model->isNewRecord;
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 $iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
+
+$form = ActiveForm::begin(['id' => 'form']);
 ?>
-    <div class="vacancy-form">
-        <?php $form = ActiveForm::begin(['id' => 'webvacancy-form']); ?>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'name')->textInput() ?>
-                            </div>
+<div class="form">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'name')->textInput() ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'requirements')->textarea() ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'requirements')->textarea() ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'conditions')->textarea() ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'conditions')->textarea() ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'responsibilities')->textarea() ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'responsibilities')->textarea() ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
-                                <?= $form->field($model, 'keywordsFromForm')->widget(JobKeywordsSelect::class) ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?php $model->keywordsFromForm = $model->getKeywordsFromForm() ?>
+                            <?= $form->field($model, 'keywordsFromForm')->widget(JobKeywordsSelect::class) ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'max_hourly_rate')
-                                ->textInput([
-                                    'placeholder' => '∞',
-                                ])
-                                ->label($model->getAttributeLabel('max_hourly_rate') . $labelOptional); ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'max_hourly_rate')
+                            ->textInput([
+                                'placeholder' => '∞',
+                            ])
+                            ->label($model->getAttributeLabel('max_hourly_rate') . $labelOptional); ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'currency_id')->widget(CurrencySelect::class); ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'currency_id')->widget(CurrencySelect::class); ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'remote_on')->checkbox(['autocomplete' => 'off']) ?>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="offline-work-checkbox">
-                                        <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> autocomplete="off" />
-                                        <?= Yii::t('app', 'Offline work') ?>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>">
-                            <div class="col">
-                                <?= $form->field($model, 'location')
-                                    ->widget(LocationPickerWidget::class)
-                                    ->label($iconPrivate . $model->getAttributeLabel('location'))
-                                ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'gender_id')->dropDownList(
-                                    ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
-                                    ['prompt' => Yii::t('app', 'All')]
-                                ) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= LanguagesWithLevelSelect::widget([
-                                    'model' => $languageWithLevelsForm,
-                                    'form' => $form,
-                                    'languages' => ArrayHelper::map(Language::find()->asArray()->all(), 'id', 'name_ascii'),
-                                    'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
-                                ]) ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <?= $form->field($model, 'company_id')->widget(
-                                    CompanySelectCreatable::class,
-                                    [
-                                        'companies' => ArrayHelper::map($companies, 'id', 'name'),
-                                    ]
-                                ) ?>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="offline-work-checkbox">
+                                    <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> autocomplete="off" />
+                                    <?= Yii::t('app', 'Offline work') ?>
+                                </label>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <?= SubmitButton::widget() ?>
-
-                        <?php $cancelUrl = $model->isNewRecord ? Url::to('/vacancy/index') : Url::to(['/vacancy/view', 'id' => $model->id])?>
-                        <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-
-                        <?php if (!$model->isNewRecord): ?>
-                            <?= DeleteButton::widget([
-                                'url' => ['delete', 'id' => $model->id],
-                                'options' => [
-                                    'data' => [
-                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                                        'method' => 'post'
-                                    ]
+                    <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>">
+                        <div class="col">
+                            <?= $form->field($model, 'location')
+                                ->widget(LocationPickerWidget::class)
+                                ->label($iconPrivate . $model->getAttributeLabel('location'))
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'gender_id')->dropDownList(
+                                ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
+                                ['prompt' => Yii::t('app', 'All')]
+                            ) ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= LanguagesWithLevelSelect::widget([
+                                'model' => $languageWithLevelsForm,
+                                'form' => $form,
+                                'languages' => ArrayHelper::map(Language::find()->asArray()->all(), 'id', 'name_ascii'),
+                                'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
+                            ]) ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'company_id')->widget(
+                                CompanySelectCreatable::class,
+                                [
+                                    'companies' => ArrayHelper::map($companies, 'id', 'name'),
                                 ]
-                            ]); ?>
-                        <?php endif; ?>
+                            ) ?>
+                        </div>
                     </div>
+                </div>
+                <div class="card-footer">
+                    <?= SubmitButton::widget() ?>
+                    <?php $cancelUrl = $model->isNewRecord ? Url::to('/vacancy/index') : Url::to(['/vacancy/view', 'id' => $model->id])?>
+                    <?= CancelButton::widget(['url' => $cancelUrl]); ?>
+                    <?php if (!$model->isNewRecord): ?>
+                        <?= DeleteButton::widget([
+                            'url' => ['delete', 'id' => $model->id],
+                            'options' => [
+                                'data' => [
+                                    'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                                    'method' => 'post'
+                                ]
+                            ]
+                        ]); ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-        <?php ActiveForm::end(); ?>
     </div>
+</div>
+<?php ActiveForm::end(); ?>
 <?php
 $js = <<<JS
 $('#offline-work-checkbox').on('change', function () {

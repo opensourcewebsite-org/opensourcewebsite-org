@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
@@ -8,7 +9,7 @@ use app\models\search\ResumeSearch;
 use app\widgets\Alert;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use app\widgets\buttons\AddButton;
@@ -24,9 +25,8 @@ $this->title = Yii::t('app', 'Matched Resumes');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' =>['/vacancy/index']];
 $this->params['breadcrumbs'][] = ['label' => "#{$vacancyId}", 'url' =>['/vacancy/view', 'id' => $vacancyId]];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="resume-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -36,14 +36,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'name',
                                 'enableSorting' => false,
                             ],
                             [
                                 'attribute' => 'min_hourly_rate',
-                                'value' => function($model) {
+                                'value' => function ($model) {
                                     return $model->min_hourly_rate ? $model->min_hourly_rate . ' ' . $model->currency->code : '∞';
                                 },
                                 'enableSorting' => false,
@@ -52,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url, Resume $model) use($vacancyId) {
+                                    'view' => function ($url, Resume $model) use ($vacancyId) {
                                         $url = Url::to(['/resume/view-match', 'vacancyId' => $vacancyId, 'resumeId' => $model->id]);
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
                                         return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);

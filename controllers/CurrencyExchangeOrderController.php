@@ -7,6 +7,7 @@ use app\models\events\ViewedByUserEvent;
 use Yii;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrderMatch;
+use app\models\search\CurrencyExchangeOrderSearch;
 use app\models\FormModels\CurrencyExchange\OrderPaymentMethods;
 use app\services\CurrencyExchangeService;
 use app\models\CurrencyExchangeOrder;
@@ -16,8 +17,9 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use \app\models\PaymentMethod;
+use app\models\PaymentMethod;
 use yii\web\Response;
+use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
 
 /**
  * CurrencyExchangeOrderController implements the CRUD actions for CurrencyExchangeOrder model.
@@ -59,21 +61,13 @@ class CurrencyExchangeOrderController extends Controller
         $this->service = new CurrencyExchangeService();
     }
 
-    /**
-     * Lists all CurrencyExchangeOrder models.
-     * @param int $status
-     * @return mixed
-     */
-    public function actionIndex(int $status = CurrencyExchangeOrder::STATUS_ON)
+    public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => CurrencyExchangeOrder::find()
-                ->where(['status' => $status])
-                ->andWhere(['user_id' => Yii::$app->user->identity->id])
-                ->orderBy(['id' => SORT_ASC]),
-        ]);
+        $searchModel = new CurrencyExchangeOrderSearch(['status' => CurrencyExchangeOrder::STATUS_ON]);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -173,24 +167,26 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionSetActive(int $id)
     {
-        $order = $this->findModelByIdAndCurrentUser($id);
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModelByIdAndCurrentUser($id);
 
-        if (!$order->isActive()) {
-            if ($notFilledFields = $order->notPossibleToChangeStatus()) {
-                return $notFilledFields;
-            }
-            $order->setActive()->save();
+        $this->response->format = Response::FORMAT_JSON;
+
+        $scenario = new SetActiveScenario($model);
+        if ($scenario->run()) {
+            $model->save();
+            return true;
         }
-        return true;
+        Yii::warning($scenario->getErrors());
+        return $scenario->getErrors();
     }
 
     public function actionSetInactive(int $id): bool
     {
-        $order = $this->findModelByIdAndCurrentUser($id);
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModelByIdAndCurrentUser($id);
 
-        $order->setInactive()->save();
+        $this->response->format = Response::FORMAT_JSON;
+
+        $model->setInactive()->save();
 
         return true;
     }
@@ -234,7 +230,7 @@ class CurrencyExchangeOrderController extends Controller
             ->where(['order_id' => $order_id, 'match_order_id' => $match_order_id])
             ->one();
 
-        $matchModel->trigger(
+        $matchModel->matchOrder->trigger(
             ViewedByUserInterface::EVENT_VIEWED_BY_USER,
             new ViewedByUserEvent(['user' => Yii::$app->user->identity])
         );
@@ -251,7 +247,7 @@ class CurrencyExchangeOrderController extends Controller
         /** @var CurrencyExchangeOrder $model */
         if ($model = CurrencyExchangeOrder::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }
@@ -264,5 +260,14 @@ class CurrencyExchangeOrderController extends Controller
         return PaymentMethod::find()->joinWith('currencies')
             ->where(['currency.id' => $currency_id])
             ->all();
+    }
+
+    public function findMatchedModelByIdAndSourceModel(int $id, Vacancy $vacancy)
+    {
+        if ($resume = $vacancy->getMatches()->where(['id' => $id])->one()) {
+            return $resume;
+        }
+
+        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

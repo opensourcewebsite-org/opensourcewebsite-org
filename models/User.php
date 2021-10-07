@@ -930,4 +930,23 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
     }
+
+    public function getCurrencyExchangeOrderMatchesCount()
+    {
+        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
+            ->viaTable(CurrencyExchangeOrder::tableName(), ['user_id' => 'id'])
+            ->andWhere([
+                'not in',
+                CurrencyExchangeOrderMatch::tableName() . '.match_order_id',
+                CurrencyExchangeOrderResponse::find()
+                    ->select('order_id')
+                    ->andWhere([
+                        'user_id' => $this->id,
+                    ])
+                    ->andWhere([
+                        'is not', 'viewed_at', null,
+                    ]),
+            ])
+            ->count();
+    }
 }

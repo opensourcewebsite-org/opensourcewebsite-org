@@ -4,7 +4,6 @@ namespace app\models;
 
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
-use app\models\User as GlobalUser;
 use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
@@ -16,6 +15,10 @@ use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\web\JsExpression;
+use app\models\queries\CurrencyExchangeOrderQuery;
+use app\models\matchers\ModelLinker;
+use app\components\helpers\Html;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateScenario;
 
 /**
  * This is the model class for table "currency_exchange_order".
@@ -61,6 +64,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function init()
     {
         $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
+
         parent::init();
     }
 
@@ -215,6 +219,11 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         ];
     }
 
+    public static function find(): CurrencyExchangeOrderQuery
+    {
+        return new CurrencyExchangeOrderQuery(get_called_class());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -249,7 +258,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function attributeHints()
     {
         return [
-            'fee' => Yii::t('app', 'Fee is zero by default and can be positive (you get) or negative (you give)') . '. ' . Yii::t('app', 'Fee is added to the cross rate') . '. ' . Yii::t('app', 'Cross rate is the current international exchange rate') . '.',
+            'fee' => Yii::t('app', Yii::t('app', 'Cross rate is the current international exchange rate') . '. ' . Yii::t('app', 'Fee is added to the cross rate') . '. ' . 'Fee is zero by default and can be positive (you get fee) or negative (you give fee)') . '.',
         ];
     }
 
@@ -335,6 +344,41 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->viaTable('{{%currency_exchange_order_match}}', ['order_id' => 'id']);
     }
 
+    public function getMatchesCount()
+    {
+        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
+            ->count();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    // TODO new matches
+    public function getNewMatches(): ActiveQuery
+    {
+        return $this->hasMany(self::class, ['id' => 'match_order_id'])
+            ->viaTable('{{%currency_exchange_order_match}}', ['order_id' => 'id']);
+    }
+
+    public function getNewMatchesCount()
+    {
+        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
+            ->andWhere([
+                'not in',
+                'match_order_id',
+                CurrencyExchangeOrderResponse::find()
+                    ->select('order_id')
+                    ->andWhere([
+                        'user_id' => Yii::$app->user->id,
+                    ])
+                    ->andWhere([
+                        'is not', 'viewed_at', null,
+                    ]),
+            ])
+            ->count();
+    }
+
     /**
      * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
@@ -358,71 +402,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     {
         return $this->hasMany(self::class, ['id' => 'order_id'])
             ->viaTable('{{%currency_exchange_order_match}}', ['match_order_id' => 'id']);
-    }
-
-    public function updateMatches()
-    {
-        $this->unlinkAll('matches', true);
-        $this->unlinkAll('counterMatches', true);
-
-        $tblName = static::tableName();
-
-        $matchesQuery = static::find()
-            ->where(['!=', "$tblName.user_id", $this->user_id])
-            ->andWhere(["$tblName.status" => static::STATUS_ON])
-            ->andWhere(["$tblName.buying_currency_id" => $this->selling_currency_id])
-            ->andWhere(["$tblName.selling_currency_id" => $this->buying_currency_id]);
-
-        $buyingMethodsIds = ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
-        $sellingMethodsIds = ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
-
-        $matchesQuery
-            ->joinWith('sellingPaymentMethods sm')
-            ->joinWith('buyingPaymentMethods bm');
-
-        if ($this->selling_cash_on && $this->selling_location_lat && $this->selling_location_lon) {
-            $matchesQuery->andWhere(
-                ['or',
-                    ['and',
-                        ['buying_cash_on' => true],
-                        "ST_Distance_Sphere(POINT($this->selling_location_lon, $this->selling_location_lat),"
-                        ."POINT($tblName.buying_location_lon, $tblName.buying_location_lat)) <= 1000 * ($tblName.buying_delivery_radius + ".($this->selling_delivery_radius ?: 0).')'
-                    ],
-                    ['in', 'sm.id', $buyingMethodsIds]
-                ]
-            );
-        } else {
-            $matchesQuery->andWhere(['in', 'sm.id', $buyingMethodsIds]);
-        }
-
-        if ($this->buying_cash_on && $this->buying_location_lat && $this->buying_location_lon) {
-            $matchesQuery->andWhere(
-                ['or',
-                    ['and',
-                        ['selling_cash_on' => true],
-                        "ST_Distance_Sphere(
-                            POINT($this->buying_location_lon, $this->buying_location_lat),
-                            POINT($tblName.selling_location_lon, $tblName.selling_location_lat)
-                        ) <= 1000 * ($tblName.selling_delivery_radius + ".($this->buying_delivery_radius ?: 0).')'
-                    ],
-                    ['in', 'bm.id', $sellingMethodsIds]
-                ]
-            );
-        } else {
-            $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
-        }
-
-        $matchesQuery->andWhere(['<=', 'fee', (-1 * (float)$this->fee)]);
-
-        foreach ($matchesQuery->all() as $matchedOrder) {
-            $this->link('matches', $matchedOrder);
-            $this->link('counterMatches', $matchedOrder);
-        }
-    }
-
-    public function getGlobalUser()
-    {
-        return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
     /**
@@ -477,72 +456,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function clearMatches()
     {
-        if ($this->processed_at !== null) {
-            $this->unlinkAll('matches', true);
-            $this->unlinkAll('counterMatches', true);
-
-            $this->setAttributes([
-                'processed_at' => null,
-            ]);
-
-            $this->save();
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function afterSave($insert, $changedAttributes)
-    {
-        $clearMatches = false;
-
-        if (isset($changedAttributes['status'])) {
-            if ($this->status == self::STATUS_OFF) {
-                $clearMatches = true;
-            }
-        }
-
-        if ((isset($changedAttributes['selling_cash_on']) && ((bool)$this->selling_cash_on !== (bool)$changedAttributes['selling_cash_on'])) ||
-            (isset($changedAttributes['buying_cash_on']) && ((bool)$this->buying_cash_on !== (bool)$changedAttributes['buying_cash_on']))) {
-            $clearMatches = true;
-        }
-
-        if (isset($changedAttributes['fee']) && ($this->fee !== $changedAttributes['fee'])) {
-            $clearMatches = true;
-            Yii::warning('fee');
-        }
-
-        if (isset($changedAttributes['selling_currency_min_amount'])
-            || isset($changedAttributes['selling_currency_max_amount'])) {
-            $clearMatches = true;
-            Yii::warning('selling_currency_min_amount selling_currency_max_amount');
-        }
-
-        if ($clearMatches) {
-            $this->clearMatches();
-        }
-
-        parent::afterSave($insert, $changedAttributes);
-    }
-
-    public function notPossibleToChangeStatus(): array
-    {
-        $notFilledFields = [];
-
-        if (!$this->selling_cash_on && !$this->sellingPaymentMethods) {
-            $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Sell');
-        }
-
-        if (!$this->buying_cash_on && !$this->buyingPaymentMethods) {
-            $notFilledFields[] = Yii::t('app', 'Need to specify at least one Payment Method for Buy');
-        }
-
-        return $notFilledFields;
+        (new ModelLinker($this))->clearMatches();
     }
 
     public function getSellingCurrencyMinAmount(): string
@@ -611,5 +527,32 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         }
 
         return '∞';
+    }
+
+    public function getFeeBadge($direction = true)
+    {
+        if ($this->fee != 0) {
+            $classes = [
+                0 => 'success',
+                1 => 'danger',
+            ];
+
+            if (!$direction) {
+                $classes = array_reverse($classes);
+            }
+
+            $class = ($this->fee > 0 ? $classes[0] : ($this->fee < 0 ? $classes[1] : ''));
+
+            return Html::badge($class, ($this->fee > 0 ? '+' : '') . (float)$this->fee . '%');
+        }
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!$insert && (new UpdateScenario($this))->run()) {
+            $this->processed_at = null;
+        }
+
+        return parent::beforeSave($insert);
     }
 }

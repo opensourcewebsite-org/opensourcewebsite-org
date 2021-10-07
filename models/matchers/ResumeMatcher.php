@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\matchers;
@@ -28,15 +29,15 @@ final class ResumeMatcher
     public function match(): int
     {
         $this->linker->unlinkMatches();
-        $vacanciesQuery = $this->prepareInitialMatchedVacanciesQuery();
+        $matchesQuery = $this->prepareMainQuery();
 
         if ($this->model->min_hourly_rate) {
-            $vacanciesQueryRateQuery = $this->applyRateCondition($vacanciesQuery);
+            $matchesQueryRateQuery = $this->applyRateCondition($matchesQuery);
 
-            $vacanciesQueryNoRateQuery = $this->applyNoRateCondition($vacanciesQuery);
+            $matchesQueryNoRateQuery = $this->applyNoRateCondition($matchesQuery);
 
-            $rateMatches = $vacanciesQueryRateQuery->all();
-            $noRateMatches = $vacanciesQueryNoRateQuery->all();
+            $rateMatches = $matchesQueryRateQuery->all();
+            $noRateMatches = $matchesQueryNoRateQuery->all();
 
             $matchesCount = count($rateMatches);
 
@@ -45,7 +46,7 @@ final class ResumeMatcher
 
             $this->linker->linkCounterMatches($noRateMatches);
         } else {
-            $matches = $vacanciesQuery->all();
+            $matches = $matchesQuery->all();
             $matchesCount = count($matches);
 
             $this->linker->linkMatches($matches);
@@ -73,15 +74,13 @@ final class ResumeMatcher
         );
     }
 
-    private function prepareInitialMatchedVacanciesQuery(): VacancyQuery
+    private function prepareMainQuery(): VacancyQuery
     {
         return Vacancy::find()
+            ->excludeUserId($this->model->user_id)
             ->live()
             ->andWhere($this->buildVacancyLanguagesCondition())
-            ->andWhere($this->buildLocationRadiusCondition())
-            ->andWhere([
-                '!=', "{$this->comparingTable}.user_id", $this->model->user_id,
-            ]);
+            ->andWhere($this->buildLocationRadiusCondition());
     }
 
     /**

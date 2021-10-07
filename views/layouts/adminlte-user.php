@@ -118,6 +118,14 @@ AdminLteUserAsset::register($this);
                     ]) : '<i class="fas fa-user"></i>',
                     'items' => [
                         [
+                            'label' => Yii::t('app', 'Dashboard'),
+                            'url' => ['/dashboard'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/dashboard') ? 'active' : ''),
+                            ]
+                        ],
+                        [
                             'label' => Yii::t('app', 'Account'),
                             'url' => ['/account'],
                             'linkOptions' => [
@@ -190,12 +198,12 @@ $leftMenuItems = [
     //    'route' => '/wikinews-pages/index',
     //],
     [
-        'title' => 'Currency Exchange',
+        'title' => Yii::t('app', 'Currency Exchange'),
         'url' => 'currency-exchange-order',
         'route' => '/currency-exchange-order',
     ],
     [
-        'title' => 'Ads',
+        'title' => Yii::t('app', 'Ads'),
         'urls' => [
             'ad-offer',
             'ad-search'
@@ -210,11 +218,11 @@ $leftMenuItems = [
                 'title' => Yii::t('app', 'Searches'),
                 'url' => 'ad-search',
                 'route' => '/ad-search',
-            ]
-        ]
+            ],
+        ],
     ],
     [
-        'title' => 'Jobs',
+        'title' => Yii::t('app', 'Jobs'),
         'urls' => [
             'company-user',
             'resume',
@@ -222,21 +230,21 @@ $leftMenuItems = [
         ],
         'items' => [
             [
-                'title' => Yii::t('app', 'Companies'),
-                'url' => 'company-user',
-                'route' => '/company-user'
+                'title' => Yii::t('app', 'Vacancies'),
+                'url' => 'vacancy',
+                'route' => '/vacancy'
             ],
             [
-                'title' => 'Resumes',
+                'title' => Yii::t('app', 'Resumes'),
                 'url' => 'resume',
                 'route' => '/resume'
             ],
             [
-                'title' => 'Vacancies',
-                'url' => 'vacancy',
-                'route' => '/vacancy'
-            ]
-        ]
+                'title' => Yii::t('app', 'Companies'),
+                'url' => 'company-user',
+                'route' => '/company-user'
+            ],
+        ],
     ],
     [
         'title' => 'Dating',
@@ -258,12 +266,12 @@ $leftMenuItems = [
         'icon' => 'fas fa-users',
     ],
     [
-        'title' => 'Website settings',
+        'title' => Yii::t('app', 'Website settings'),
         'url' => 'setting',
         'route' => '/setting',
     ],
     [
-        'title' => 'Issues',
+        'title' => Yii::t('app', 'Issues'),
         'url' => 'issue',
         'route' => '/issue',
     ],
@@ -272,12 +280,12 @@ $leftMenuItems = [
         'icon' => 'far fa-chart-bar',
     ],
     [
-        'title' => 'Users',
+        'title' => Yii::t('app', 'Users'),
         'url' => 'users',
         'route' => '/users',
     ],
     [
-        'title' => 'Statistics',
+        'title' => Yii::t('app', 'Statistics'),
         'url' => 'statistics',
         'route' => '/statistics',
     ],
@@ -310,7 +318,7 @@ $leftMenuItems = [
         'icon' => 'fas fa-tools',
     ],
     [
-        'title' => 'Getting started',
+        'title' => Yii::t('app', 'Getting started'),
         'icon' => 'fab fa-github',
         'href' => ExternalLink::getGithubContributionLink(),
     ],
@@ -330,7 +338,7 @@ $leftMenuItems = [
         'route' => '/moqup/design-list',
     ],
     [
-        'title' => 'Models',
+        'title' => Yii::t('app', 'Models'),
         'urls' => [
             'data/country',
             'data/currency',
@@ -341,44 +349,44 @@ $leftMenuItems = [
         ],
         'items' => [
             [
-                'title' => 'Countries',
+                'title' => Yii::t('app', 'Countries'),
                 'url' => 'data/country',
                 'route' => '/data/country',
             ],
             [
-                'title' => 'Currencies',
+                'title' => Yii::t('app', 'Currencies'),
                 'url' => 'data/currency',
                 'route' => '/data/currency',
             ],
             [
-                'title' => 'Genders',
+                'title' => Yii::t('app', 'Genders'),
                 'url' => 'data/gender',
                 'route' => 'data/gender',
             ],
             [
-                'title' => 'Languages',
+                'title' => Yii::t('app', 'Languages'),
                 'url' => 'data/language',
                 'route' => '/data/language',
             ],
             [
-                'title' => 'Payment methods',
+                'title' => Yii::t('app', 'Payment methods'),
                 'url' => 'data/payment-method',
                 'route' => '/data/payment-method',
             ],
             [
-                'title' => 'Genders',
+                'title' => Yii::t('app', 'Genders'),
                 'url' => 'data/gender',
                 'route' => '/data/gender',
             ],
             [
-                'title' => 'Sexualities',
+                'title' => Yii::t('app', 'Sexualities'),
                 'url' => 'data/sexuality',
                 'route' => '/data/sexuality',
             ],
         ],
     ],
     [
-        'title' => 'Design System',
+        'title' => Yii::t('app', 'Design System'),
         'urls' => [
             'examples/dashboard',
             'examples/widgets',
@@ -548,7 +556,7 @@ $leftMenuItems = [
         'icon' => 'fas fa-donate',
     ],
     [
-        'title' => 'Getting started',
+        'title' => Yii::t('app', 'Getting started'),
         'icon' => 'fab fa-github',
         'href' => ExternalLink::getGithubDonationLink(),
     ],

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\Resume;
@@ -26,7 +27,7 @@ class UpdateKeywordsByIdsScenario
             $this->model->trigger(Resume::EVENT_KEYWORDS_UPDATED);
         }
 
-        foreach($toAddIds as $id) {
+        foreach ($toAddIds as $id) {
             (new JobResumeKeyword(['resume_id' => $this->model->id, 'job_keyword_id' => $id]))->save();
         }
 

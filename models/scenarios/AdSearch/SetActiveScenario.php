@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\AdSearch;
@@ -20,6 +21,7 @@ final class SetActiveScenario
     {
         if ($this->validateLocation()) {
             $this->model->setActive();
+
             return true;
         }
 
@@ -31,15 +33,11 @@ final class SetActiveScenario
         return $this->errors;
     }
 
-    public function getModel(): AdSearch
-    {
-        return $this->model;
-    }
-
     private function validateLocation(): bool
     {
         if (!($this->model->location_lon && $this->model->location_lat)) {
             $this->errors['location'] = Yii::t('app', 'Location should be set');
+
             return false;
         }
 

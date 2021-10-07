@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\Vacancy;
@@ -24,10 +25,10 @@ class UpdateKeywordsByIdsScenario
         $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
 
         if ($toAddIds || $toDeleteIds) {
-            $this->model->trigger(Vacancy::EVENT_KEYWORDS_CHANGED);
+            $this->model->trigger(Vacancy::EVENT_KEYWORDS_UPDATED);
         }
 
-        foreach($toAddIds as $id) {
+        foreach ($toAddIds as $id) {
             (new JobVacancyKeyword(['vacancy_id' => $this->model->id, 'job_keyword_id' => $id]))->save();
         }
 

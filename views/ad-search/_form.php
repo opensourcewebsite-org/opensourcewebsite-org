@@ -22,9 +22,10 @@ use yii\widgets\ActiveForm;
 $showLocation = $model->location || $model->isNewRecord;
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
 $iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
+
+$form = ActiveForm::begin(['id' => 'form']);
 ?>
-<div class="resume-form">
-    <?php $form = ActiveForm::begin(['id' => 'ad-offer-form']); ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -83,10 +84,8 @@ $iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') 
                 </div>
                 <div class="card-footer">
                     <?= SubmitButton::widget() ?>
-
                     <?php $cancelUrl = $model->isNewRecord ? Url::to('/ad-search/index') : Url::to(['/ad-search/view', 'id' => $model->id])?>
                     <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-
                     <?php if (!$model->isNewRecord): ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id],
@@ -102,5 +101,5 @@ $iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') 
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

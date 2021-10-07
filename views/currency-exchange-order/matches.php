@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use app\models\Currency;
 use app\widgets\buttons\AddButton;
-use yii\helpers\Html;
+use app\components\helpers\Html;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
 use app\models\CurrencyExchangeOrder;
@@ -16,10 +18,8 @@ $this->title = Yii::t('app', 'Offers');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
-
 ?>
-
-<div class="currency-exchange-order-matches">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -29,7 +29,10 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
@@ -43,8 +46,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                             [
                                 'label' => Yii::t('app', 'Exchange rate'),
                                 'value' => function ($model) {
-                                    return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ($model->fee > 0 ? ' +' : ' ') . (float)$model->fee . ' %' : '');
+                                    return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ' ' . $model->getFeeBadge(false) : '');
                                 },
+                                'format' => 'html',
                                 'enableSorting' => false,
                             ],
                             [

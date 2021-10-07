@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\Resume;
@@ -8,18 +9,19 @@ use app\models\Resume;
 
 final class SetActiveScenario
 {
-    private Resume $resume;
+    private Resume $model;
     private array $errors = [];
 
-    public function __construct(Resume $resume)
+    public function __construct(Resume $model)
     {
-        $this->resume = $resume;
+        $this->model = $model;
     }
 
     public function run(): bool
     {
         if ($this->validateLanguages() && $this->validateLocation() && $this->validateRadius()) {
-            $this->resume->setActive();
+            $this->model->setActive();
+
             return true;
         }
 
@@ -31,15 +33,11 @@ final class SetActiveScenario
         return $this->errors;
     }
 
-    public function getResume(): Resume
-    {
-        return $this->resume;
-    }
-
     private function validateLanguages(): bool
     {
-        if (!$this->resume->getLanguages()->count()) {
+        if (!$this->model->getLanguages()->count()) {
             $this->errors['languages'] = Yii::t('app', 'You must have at least one language set in your profile');
+
             return false;
         }
 
@@ -48,9 +46,10 @@ final class SetActiveScenario
 
     private function validateLocation(): bool
     {
-        if (!$this->resume->isRemote()) {
-            if (!($this->resume->location_lon && $this->resume->location_lat)) {
+        if (!$this->model->isRemote()) {
+            if (!($this->model->location_lon && $this->model->location_lat)) {
                 $this->errors['location'] = Yii::t('app', 'Location should be set');
+
                 return false;
             }
         }
@@ -60,9 +59,10 @@ final class SetActiveScenario
 
     private function validateRadius(): bool
     {
-        if (!$this->resume->isRemote()) {
-            if (!$this->resume->search_radius) {
+        if (!$this->model->isRemote()) {
+            if (!$this->model->search_radius) {
                 $this->errors['location'] = Yii::t('app', 'Search Radius should be set');
+
                 return false;
             }
         }

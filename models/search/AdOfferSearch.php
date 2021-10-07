@@ -10,14 +10,16 @@ use yii\data\ActiveDataProvider;
 
 class AdOfferSearch extends AdOffer
 {
+    public int $status = self::STATUS_ON;
+
     public function rules(): array
     {
         return [
+            ['status', 'in', 'range' => [self::STATUS_ON, self::STATUS_OFF]],
             [
                 [
                     'id',
                     'currency_id',
-                    'status',
                 ],
                 'integer',
             ],
@@ -29,7 +31,8 @@ class AdOfferSearch extends AdOffer
 
     public function search(array $params): ActiveDataProvider
     {
-        $query = AdOffer::find()->where(['user_id' => Yii::$app->user->getIdentity()->getId()]);
+        $query = AdOffer::find()
+            ->userOwner();
 
         $dataProvider = new ActiveDataProvider(['query' => $query]);
 

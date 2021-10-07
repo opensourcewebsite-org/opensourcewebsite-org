@@ -241,11 +241,6 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    public function getGlobalUser(): ActiveQuery
-    {
-        return $this->getUser();
-    }
-
     public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
@@ -260,6 +255,12 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
     {
         return $this->hasMany(AdSearch::class, ['id' => 'ad_search_id'])
             ->viaTable('{{%ad_offer_match}}', ['ad_offer_id' => 'id']);
+    }
+
+    public function getMatchesCount()
+    {
+        return $this->hasMany(AdOfferMatch::class, ['ad_offer_id' => 'id'])
+            ->count();
     }
 
     public function getCounterMatches(): ActiveQuery

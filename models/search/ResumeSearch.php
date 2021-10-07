@@ -10,19 +10,28 @@ use Yii;
 
 class ResumeSearch extends Resume
 {
-    public int $status = Resume::STATUS_ON;
+    public int $status = self::STATUS_ON;
 
     public function rules(): array
     {
         return [
-            ['status', 'in', 'range' => [Resume::STATUS_ON, Resume::STATUS_OFF]],
-            [['name', 'min_hourly_rate', 'currency_id'], 'safe'],
+            ['status', 'in', 'range' => [self::STATUS_ON, self::STATUS_OFF]],
+            [
+                [
+                    'name',
+                    'min_hourly_rate',
+                    'currency_id',
+                    'remote_on',
+                ],
+                'safe',
+            ],
         ];
     }
 
     public function search(array $params): ActiveDataProvider
     {
-        $query = Resume::find()->where(['user_id' => Yii::$app->user->identity->id]);
+        $query = Resume::find()
+            ->userOwner();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query
@@ -36,10 +45,11 @@ class ResumeSearch extends Resume
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['status' => $this->status]);
-        $query->andFilterWhere(['like','name',$this->name]);
-        $query->andFilterWhere(['min_hourly_rate' => $this->min_hourly_rate]);
-        $query->andFilterWhere(['currency_id' => $this->currency_id]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['status' => $this->status])
+            ->andFilterWhere(['remote_on' => $this->remote_on])
+            ->andFilterWhere(['min_hourly_rate' => $this->min_hourly_rate])
+            ->andFilterWhere(['currency_id' => $this->currency_id]);
 
         return $dataProvider;
     }

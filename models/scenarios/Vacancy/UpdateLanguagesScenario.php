@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\Vacancy;
@@ -36,7 +37,7 @@ class UpdateLanguagesScenario
         }
 
         if ($toAdd || $toDelete || $toChange) {
-            $this->model->trigger(Vacancy::EVENT_LANGUAGES_CHANGED);
+            $this->model->trigger(Vacancy::EVENT_LANGUAGES_UPDATED);
         }
 
         if ($toDelete) {

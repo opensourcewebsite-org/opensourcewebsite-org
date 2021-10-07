@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\controllers;
@@ -179,7 +180,7 @@ class ResumeController extends Controller
         /** @var WebResume $model */
         if ($model = WebResume::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }
@@ -192,7 +193,7 @@ class ResumeController extends Controller
         /** @var WebVacancy $model */
         if ($model = WebVacancy::find()
             ->where(['id' => $id])
-            ->andWhere(['user_id' => Yii::$app->user->identity->id])
+            ->userOwner()
             ->one()) {
             return $model;
         }

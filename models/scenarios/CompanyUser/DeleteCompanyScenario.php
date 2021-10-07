@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models\scenarios\CompanyUser;
@@ -12,7 +13,8 @@ class DeleteCompanyScenario
     private Company $companyModel;
     private array $errors = [];
 
-    public function __construct(Company $companyModel) {
+    public function __construct(Company $companyModel)
+    {
         $this->companyModel = $companyModel;
     }
 
@@ -22,6 +24,7 @@ class DeleteCompanyScenario
 
         if ($numOfVacanciesOfCompany > 0) {
             $this->errors[] = "Can't delete company, because Company have open Vacancies. Delete Vacancies first!";
+
             return false;
         }
 
@@ -34,7 +37,7 @@ class DeleteCompanyScenario
 
     public function getFirstError(): string
     {
-        if ($ret = reset($this->errors)){
+        if ($ret = reset($this->errors)) {
             return $ret;
         }
 
