@@ -99,6 +99,61 @@ class Setting extends ActiveRecord
             'default' => 1,
             'more' => 0,
         ],
+        'company_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_vacancy_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_vacancy_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 2,
+            'more' => 0,
+        ],
+        'active_resume_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_resume_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 2,
+            'more' => 0,
+        ],
+        'active_currency_exchange_order_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_currency_exchange_order_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 2,
+            'more' => 0,
+        ],
+        'active_ad_offer_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_ad_offer_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 2,
+            'more' => 0,
+        ],
+        'active_ad_search_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_ad_search_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 2,
+            'more' => 0,
+        ],
     ];
 
     /**
@@ -266,5 +321,10 @@ class Setting extends ActiveRecord
     public function getDefault($name)
     {
         return self::$settings[$name]['default'] ?? null;
+    }
+
+    public function getMin($name)
+    {
+        return self::$settings[$name]['min'] ?? null;
     }
 }

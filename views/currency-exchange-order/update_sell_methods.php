@@ -15,7 +15,6 @@ use app\widgets\buttons\SaveButton;
  */
 
 $this->title = Yii::t('app', 'Update Currency Exchange Order Payment Sell Methods');
-
 ?>
 <div class="modal-header">
     <h4 class="modal-title"><?= $this->title ?></h4>
@@ -38,7 +37,7 @@ $this->title = Yii::t('app', 'Update Currency Exchange Order Payment Sell Method
                     'theme' => Select2::THEME_DEFAULT,
                     'data' => ArrayHelper::map($paymentsSellTypes, 'id', 'name'),
                     'options' => [
-                        'placeholder' => Yii::t('app','Select Payment Method...'),
+                        'placeholder' => Yii::t('app', 'Select Payment Method...'),
                         'multiple' => true,
                     ],
                     'pluginOptions' => [

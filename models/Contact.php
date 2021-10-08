@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use voskobovich\linker\LinkerBehavior;
-use voskobovich\linker\updaters\ManyToManyUpdater;
 use Yii;
 use app\interfaces\UserRelation\ByOwnerInterface;
 use app\interfaces\UserRelation\ByOwnerTrait;
@@ -60,25 +58,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     public $userIdOrName;
 
-    public function behaviors()
-    {
-        return ArrayHelper::merge(parent::behaviors(), [
-            [
-                /*
-                 * This behavior makes it easy to maintain many-to-many and one-to-many relations
-                 */
-                'class' => LinkerBehavior::class,
-                'relations' => [
-                    'contact_group_ids' => [
-                        'groups',
-                        'updater' => [
-                            'class' => ManyToManyUpdater::class,
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-    }
+    public $groupIds = [];
 
     /**
      * {@inheritdoc}
@@ -110,7 +90,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             ['userIdOrName', 'validateUserExists'],
             ['link_user_id', 'validateLinkUserAndOwnerNotSame'],
             ['link_user_id', 'validateLinkUsedIdUnique'],
-            [['contact_group_ids'], 'each', 'rule' => ['integer']],
             ['name', 'required',
                 'when' => static function (self $model) {
                     return empty($model->userIdOrName);
@@ -121,6 +100,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 'message' => $this->getAttributeLabel('name') . ' cannot be blank if ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
             ],
             [['name'], 'string', 'max' => 255],
+            [['name'], 'default'],
             [
                 'debt_redistribution_priority',
                 'integer',
@@ -148,6 +128,17 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 }
             ],
             [['is_real', 'relation'], 'default', 'value' => 0],
+            [
+                'groupIds', 'filter', 'filter' => function ($val) {
+                    if ($val === '') {
+                        return [];
+                    }
+                    return $val;
+                }
+            ],
+            [
+                'groupIds', 'each', 'rule' => ['integer'],
+            ],
         ];
     }
 
@@ -166,6 +157,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'relation' => Yii::t('app', 'Relation'),
             'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
+            'groupIds' => Yii::t('app', 'Groups'),
         ];
     }
 
@@ -442,6 +434,11 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
                     ->viaTable('contact_has_group', ['contact_id' => 'id'])
                     ->orderBy('name');
+    }
+
+    public function getGroupIds(): array
+    {
+        return ArrayHelper::getColumn($this->getGroups()->asArray()->all(), 'id');
     }
 
     public function getLinkUserId()

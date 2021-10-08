@@ -8,9 +8,7 @@ use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
 use Yii;
 use app\models\Resume;
-use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
-use app\models\scenarios\Vacancy\UpdateLanguagesScenario;
 use app\models\Currency;
 use app\models\scenarios\Vacancy\SetActiveScenario;
 use app\models\User;
@@ -23,6 +21,9 @@ use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use app\models\VacancyLanguage;
+use app\models\Language;
+use app\models\LanguageLevel;
 
 class VacancyController extends Controller
 {
@@ -68,15 +69,10 @@ class VacancyController extends Controller
         $model = new WebVacancy();
         $model->user_id = $user->id;
         $model->currency_id = $user->currency_id;
-        $languageWithLevelsForm = new LanguageWithLevelsForm(['required' => true]);
         $model->remote_on = WebVacancy::REMOTE_ON;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
-
-            if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
-                (new UpdateLanguagesScenario($model, $languageWithLevelsForm))->run();
-            }
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -85,7 +81,6 @@ class VacancyController extends Controller
             'model' => $model,
             'currencies' => Currency::find()->all(),
             'companies' => $model->user->getCompanies()->all(),
-            'languageWithLevelsForm' => $languageWithLevelsForm
         ]);
     }
 
@@ -93,15 +88,8 @@ class VacancyController extends Controller
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
-        $languageWithLevelsForm = new LanguageWithLevelsForm();
-        $languageWithLevelsForm->setSelectedLanguages($model->languagesWithLevels);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
-
-            if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
-                (new UpdateLanguagesScenario($model, $languageWithLevelsForm))->run();
-            }
 
             return $this->redirect(['view', 'id' => $id]);
         }
@@ -110,7 +98,6 @@ class VacancyController extends Controller
             'model' => $model,
             'currencies' => Currency::find()->all(),
             'companies' => $model->user->getCompanies()->all(),
-            'languageWithLevelsForm' => $languageWithLevelsForm
         ]);
     }
 
@@ -163,25 +150,137 @@ class VacancyController extends Controller
 
     public function actionViewLocation(int $id): string
     {
-        return $this->renderAjax('view_location_map_modal', ['model' => $this->findModel($id)]);
+        return $this->renderAjax('modals/view-location', ['model' => $this->findModel($id)]);
     }
 
-    public function actionUpdateLanguages(int $id)
+    public function actionChangeLanguage(int $id, int $vacancyId)
     {
-        $vacancy = $this->findModelByIdAndCurrentUser($id);
+        $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
 
-        $languageWithLevelsForm = new LanguageWithLevelsForm();
-        $languageWithLevelsForm->setSelectedLanguages($vacancy->languagesWithLevels);
+        $languages = array_map(function ($language) {
+            return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
+        }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
-        if ($languageWithLevelsForm->load(Yii::$app->request->post())) {
-            (new UpdateLanguagesScenario($vacancy, $languageWithLevelsForm))->run();
+        $languageLevels = array_map(function ($languageLevel) {
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('user', $languageLevel->description);
+        }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
 
-            return $this->redirect(['view', 'id' => $id]);
+        $vacancyLanguage = VacancyLanguage::find()
+            ->where([
+                'id' => $id,
+                'vacancy_id' => $vacancy->id,
+            ])->one();
+
+        if ($vacancyLanguage && Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
+            $vacancyLanguage->setAttributes([
+                'language_level_id' => $postData['level'],
+            ]);
+
+            if ($vacancyLanguage->save()) {
+                $vacancy->trigger(Vacancy::EVENT_LANGUAGES_UPDATED);
+
+                return $this->redirect([
+                    'view',
+                    'id' => $vacancy->id,
+                ]);
+            }
         }
 
-        return $this->renderAjax('update_languages', [
-            'model' => $languageWithLevelsForm
-        ]);
+        $renderParams = [
+            'vacancy' => $vacancy,
+            'languages' => $languages,
+            'languageLevels' => $languageLevels,
+            'vacancyLanguage' => $vacancyLanguage,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/change-language', $renderParams);
+        } else {
+            return $this->render('modals/change-language', $renderParams);
+        }
+    }
+
+    public function actionAddLanguage(int $vacancyId)
+    {
+        $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
+
+        $languages = array_map(function ($language) {
+            return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
+        }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        $languageLevels = array_map(function ($languageLevel) {
+            return (isset($languageLevel->code) ? strtoupper($languageLevel->code) . ' - ' : '') . Yii::t('user', $languageLevel->description);
+        }, LanguageLevel::find()->indexBy('id')->orderBy('code ASC')->all());
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
+            $vacancyLanguage = VacancyLanguage::find()
+                ->where([
+                    'vacancy_id' => $vacancy->id,
+                    'language_id' => $postData['language'],
+                ])
+                ->one();
+
+            $vacancyLanguage = $vacancyLanguage ?? new VacancyLanguage();
+
+            $vacancyLanguage->setAttributes([
+                'vacancy_id' => $vacancy->id,
+                'language_id' => $postData['language'],
+                'language_level_id' => $postData['level']
+            ]);
+
+            if ($vacancyLanguage->save()) {
+                $vacancy->trigger(Vacancy::EVENT_LANGUAGES_UPDATED);
+
+                return $this->redirect([
+                    'view',
+                    'id' => $vacancy->id,
+                ]);
+            }
+        }
+
+        $renderParams = [
+            'vacancy' => $vacancy,
+            'languages' => $languages,
+            'languageLevels' => $languageLevels,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/add-language', $renderParams);
+        } else {
+            return $this->render('modals/add-language', $renderParams);
+        }
+    }
+
+    public function actionDeleteLanguage()
+    {
+        if (Yii::$app->request->isPost) {
+            $id = (int)Yii::$app->request->post('id');
+            $vacancyId = (int)Yii::$app->request->post('vacancyId');
+
+            $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
+
+            if ($vacancy) {
+                $vacancyLanguage = VacancyLanguage::find()
+                    ->where([
+                        'id' => $id,
+                        'vacancy_id' => $vacancy->id,
+                    ])
+                ->one();
+
+                if ($vacancyLanguage) {
+                    $vacancyLanguage->delete();
+
+                    $vacancy->trigger(Vacancy::EVENT_LANGUAGES_UPDATED);
+                }
+
+                return $this->redirect([
+                    'vacancy/view',
+                    'id' => $vacancy->id,
+                ]);
+            }
+        }
+
+        return $this->redirect('/vacancy');
     }
 
     public function actionShowMatches(int $resumeId): string

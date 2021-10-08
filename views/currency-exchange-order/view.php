@@ -71,7 +71,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'id',
                                 [
                                     'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
-                                    'value' => $model->sellingCurrency->code . ' / ' . $model->buyingCurrency->code,
+                                    'value' => $model->getTitle(),
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Exchange rate'),

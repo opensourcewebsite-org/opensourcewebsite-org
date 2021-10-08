@@ -76,6 +76,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                 ->textInput([
                                     'maxlength' => true,
                                     'placeholder' => 0  . ', ' . Yii::t('app', 'No pickup'),
+                                    'value' => 'value' => ($model->pickup_radius ?: ''),
                                 ])
                                 ->label($iconPrivate . $model->getAttributeLabel('pickup_radius') . ', km' . $labelOptional)
                             ?>

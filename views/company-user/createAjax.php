@@ -12,7 +12,6 @@ use yii\web\View;
  */
 
 $this->title = Yii::t('app', 'Create Company');
-
 ?>
 
 <?= $this->render('_form', $_params_) ?>

@@ -16,7 +16,7 @@ use yii\helpers\Url;
 
 $this->title = Yii::t('app', 'Offers');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
 ?>
 <div class="index">
@@ -36,10 +36,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                             [
                                 'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
-                                    $sellCurrency = Currency::findOne($model->selling_currency_id);
-                                    $buyCurrency = Currency::findOne($model->buying_currency_id);
-
-                                    return $sellCurrency->code . ' / ' . $buyCurrency->code;
+                                    return $model->getTitle();
                                 },
                                 'enableSorting' => false,
                             ],

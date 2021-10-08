@@ -19,7 +19,7 @@ class CancelButton extends LinkButton
         $this->defaultOptions['title'] = Yii::t('app', 'Cancel');
 
         if ($this->text == null) {
-            $this->text = 'Cancel';
+            $this->text = Yii::t('app', 'Cancel');
         }
     }
 

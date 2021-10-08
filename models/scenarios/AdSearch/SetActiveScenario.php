@@ -36,7 +36,7 @@ final class SetActiveScenario
     private function validateLocation(): bool
     {
         if (!($this->model->location_lon && $this->model->location_lat)) {
-            $this->errors['location'] = Yii::t('app', 'Location should be set');
+            $this->errors['location'] = Yii::t('app', 'Location should be set') . '.';
 
             return false;
         }

@@ -19,24 +19,30 @@ class UpdateKeywordsByIdsScenario
 
     public function run()
     {
-        $currentKeywordsIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
+        $currentIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
 
-        $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);
-        $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
+        $toDeleteIds = array_diff($currentIds, $this->model->keywordsFromForm);
+        $toAddIds = array_diff($this->model->keywordsFromForm, $currentIds);
 
         if ($toAddIds || $toDeleteIds) {
             $this->model->trigger(Vacancy::EVENT_KEYWORDS_UPDATED);
         }
 
         foreach ($toAddIds as $id) {
-            (new JobVacancyKeyword(['vacancy_id' => $this->model->id, 'job_keyword_id' => $id]))->save();
+            (new JobVacancyKeyword([
+                'vacancy_id' => $this->model->id,
+                'job_keyword_id' => $id,
+                ])
+            )
+            ->save();
         }
 
-        $vacancyKeywords = JobVacancyKeyword::find()->where(['vacancy_id' => $this->model->id])->andWhere(['in', 'job_keyword_id', $toDeleteIds])->all();
-
-        /** @var JobVacancyKeyword $vacancyKeyword */
-        foreach ($vacancyKeywords as $vacancyKeyword) {
-            $vacancyKeyword->delete();
+        if ($toDeleteIds) {
+            JobVacancyKeyword::deleteAll([
+                'and',
+                ['vacancy_id' => $this->model->id],
+                ['in', 'job_keyword_id', $toDeleteIds],
+            ]);
         }
     }
 }

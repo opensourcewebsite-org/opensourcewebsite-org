@@ -24,11 +24,9 @@ class UserFixture extends ARGenerator
     {
         $modelForm = $modelForm ?? new SignupForm();
 
-        //I decided not to use Generator::unique() modifier on email generator. Because:
-        //  1. Module dataGenerator designed to run continuously. So we should optimize memory, not CPU.
-        //  2. SignupForm::validate() will check is email unique anyway.
-        $modelForm->email = $this->faker->email;
-        $modelForm->password = $modelForm->email;
+        $modelForm->username = $this->faker->userName;
+        $modelForm->password = $modelForm->username;
+        $modelForm->password_repeat = $modelForm->password;
 
         if ($modelForm->validate()) {
             return $modelForm->factoryUser();
@@ -36,7 +34,7 @@ class UserFixture extends ARGenerator
 
         $errors = $modelForm->errors;
 
-        unset($errors['email']);
+        unset($errors['username']);
 
         if (!empty($errors)) {
             //error either in changed  password rules, or new required fields were added

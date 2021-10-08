@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use app\models\AdOffer;
@@ -15,10 +16,7 @@ use app\models\Currency;
 $this->title = Yii::t('app', 'Create Offer');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="ad-offer-create">
-
     <?= $this->render('_form', $_params_); ?>
-
 </div>

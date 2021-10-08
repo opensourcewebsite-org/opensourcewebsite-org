@@ -113,16 +113,6 @@ $form = ActiveForm::begin(['id' => 'form']);
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= LanguagesWithLevelSelect::widget([
-                                'model' => $languageWithLevelsForm,
-                                'form' => $form,
-                                'languages' => ArrayHelper::map(Language::find()->asArray()->all(), 'id', 'name_ascii'),
-                                'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
-                            ]) ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
                             <?= $form->field($model, 'company_id')->widget(
                                 CompanySelectCreatable::class,
                                 [

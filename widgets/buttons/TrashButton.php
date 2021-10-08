@@ -17,9 +17,10 @@ class TrashButton extends PjaxButton
         parent::init();
 
         $this->confirm = true;
-        $this->text = Html::icon('trash');
         $this->defaultOptions['title'] = Yii::t('app', 'Delete');
         $this->defaultOptions['confirmMessage'] = 'Are you sure you want to delete this item?';
+
+        $this->text = Html::icon('trash');
     }
 
     public function run()

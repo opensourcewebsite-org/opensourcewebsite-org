@@ -51,7 +51,7 @@ $displayActiveTab = $searchModel->status === ResumeSearch::STATUS_ON;
                                     Yii::t('app', 'Inactive'),
                                     ['/resume/index', 'ResumeSearch[status]' => ResumeSearch::STATUS_OFF],
                                     [
-                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : ''),
+                                        'class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : ''),
                                     ]
                                 );
                                 ?>

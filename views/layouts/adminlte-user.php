@@ -257,6 +257,25 @@ $leftMenuItems = [
         'route' => '/ua-lawmaking',
     ],
     [
+        'title' => 'Stellar',
+        'urls' => [
+            'stellar/deposit-income',
+            'stellar/fortune-game',
+        ],
+        'items' => [
+            [
+                'title' => Yii::t('bot', 'Deposit Income'),
+                'url' => 'stellar/deposit-income',
+                'route' => '/stellar/deposit-income'
+            ],
+            [
+                'title' => Yii::t('bot', 'Fortune Game'),
+                'url' => 'stellar/fortune-game',
+                'route' => '/stellar/fortune-game'
+            ],
+        ],
+    ],
+    [
         'title' => Yii::t('app', 'Telegram Bot'),
         'icon' => 'fab fa-telegram',
         'href' => ExternalLink::getBotLink(),

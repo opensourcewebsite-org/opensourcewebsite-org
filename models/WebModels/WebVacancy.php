@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace app\models\WebModels;
 
 use Yii;
@@ -9,18 +11,19 @@ use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
 use yii\web\JsExpression;
 
-class WebVacancy extends Vacancy {
-
+class WebVacancy extends Vacancy
+{
     public function rules(): array
     {
         $mainValidators = parent::rules();
+
         $webSpecificValidators = [
             [
                 'location',
                 'required',
                 'when' => function ($model) {
                     /** @var self $model */
-                    if ( !$model->remote_on ) {
+                    if (!$model->remote_on) {
                         return true;
                     }
                     return false;
@@ -33,7 +36,7 @@ class WebVacancy extends Vacancy {
             ],
             [
                 'location',
-                function($attribute) {
+                function ($attribute) {
                     [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
                     if (!(new LocationLatValidator())->validateLat($lat) ||
                         !(new LocationLonValidator())->validateLon($lon)
@@ -43,6 +46,7 @@ class WebVacancy extends Vacancy {
                 }
             ],
         ];
+
         return array_merge($mainValidators, $webSpecificValidators);
     }
 }

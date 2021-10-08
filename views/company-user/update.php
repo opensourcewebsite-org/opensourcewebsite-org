@@ -13,7 +13,6 @@ $this->title = Yii::t('app', 'Update Company') . ' #' . $model->id;;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Companies'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
-
 ?>
 <div class="company-update">
     <?= $this->render('_form', $_params_); ?>

@@ -36,7 +36,8 @@ final class SetActiveScenario
     private function validateSellingPaymentMethods(): bool
     {
         if (!$this->model->selling_cash_on && !$this->model->sellingPaymentMethods) {
-            $this->errors['sellingPaymentMethods'] = Yii::t('app', 'At least one selling payment method should be set');
+            $this->errors['sellingPaymentMethods'] = Yii::t('app', 'At least one selling payment method should be set') . '.';
+
 
             return false;
         }
@@ -47,7 +48,7 @@ final class SetActiveScenario
     private function validateBuyingPaymentMethods(): bool
     {
         if (!$this->model->buying_cash_on && !$this->model->buyingPaymentMethods) {
-            $this->errors['buyingPaymentMethods'] = Yii::t('app', 'At least one buying payment method should be set');
+            $this->errors['buyingPaymentMethods'] = Yii::t('app', 'At least one buying payment method should be set') . '.';
 
             return false;
         }

@@ -74,10 +74,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                             [
                                 'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
-                                    $sellCurrency = Currency::findOne($model->selling_currency_id);
-                                    $buyCurrency = Currency::findOne($model->buying_currency_id);
-
-                                    return $sellCurrency->code . ' / ' . $buyCurrency->code;
+                                    return $model->getTitle();
                                 },
                                 'enableSorting' => false,
                             ],

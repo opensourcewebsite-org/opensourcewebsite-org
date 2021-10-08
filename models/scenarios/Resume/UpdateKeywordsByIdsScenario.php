@@ -19,23 +19,29 @@ class UpdateKeywordsByIdsScenario
 
     public function run()
     {
-        $currentKeywordsIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
-        $toDeleteIds = array_diff($currentKeywordsIds, $this->model->keywordsFromForm);
-        $toAddIds = array_diff($this->model->keywordsFromForm, $currentKeywordsIds);
+        $currentIds = ArrayHelper::getColumn($this->model->getKeywords()->asArray()->all(), 'id');
+        $toDeleteIds = array_diff($currentIds, $this->model->keywordsFromForm);
+        $toAddIds = array_diff($this->model->keywordsFromForm, $currentIds);
 
         if ($toDeleteIds || $toAddIds) {
             $this->model->trigger(Resume::EVENT_KEYWORDS_UPDATED);
         }
 
         foreach ($toAddIds as $id) {
-            (new JobResumeKeyword(['resume_id' => $this->model->id, 'job_keyword_id' => $id]))->save();
+            (new JobResumeKeyword([
+                'resume_id' => $this->model->id,
+                'job_keyword_id' => $id,
+                ])
+            )
+            ->save();
         }
 
-        $resumeKeywords = JobResumeKeyword::find()->where(['resume_id' => $this->model->id])->andWhere(['in', 'job_keyword_id', $toDeleteIds])->all();
-
-        /** @var JobResumeKeyword $resumeKeyword */
-        foreach ($resumeKeywords as $resumeKeyword) {
-            $resumeKeyword->delete();
+        if ($toDeleteIds) {
+            JobResumeKeyword::deleteAll([
+                'and',
+                ['resume_id' => $this->model->id],
+                ['in', 'job_keyword_id', $toDeleteIds],
+            ]);
         }
     }
 }

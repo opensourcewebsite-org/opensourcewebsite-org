@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace app\controllers;
 
 use app\models\JobKeyword;
@@ -9,8 +11,8 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
 
-class JobKeywordController extends Controller {
-
+class JobKeywordController extends Controller
+{
     public function behaviors(): array
     {
         return [
@@ -35,6 +37,7 @@ class JobKeywordController extends Controller {
     public function actionCreateAjax(): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
+
         $model = new JobKeyword();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

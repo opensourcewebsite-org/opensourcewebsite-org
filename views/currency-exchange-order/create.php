@@ -11,10 +11,7 @@ use app\models\PaymentMethod;
 $this->title = Yii::t('app', 'Create Order');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="currency-exchange-order-create">
-
     <?= $this->render('_form', $_params_); ?>
-
 </div>

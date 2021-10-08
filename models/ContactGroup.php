@@ -4,7 +4,6 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use Yii;
-use yii2tech\ar\position\PositionBehavior;
 
 class ContactGroup extends ActiveRecord
 {
@@ -20,15 +19,6 @@ class ContactGroup extends ActiveRecord
             [['name'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique', 'filter' => ['user_id' => Yii::$app->user->identity->id]],
-        ];
-    }
-
-    public function behaviors()
-    {
-        return [
-            [
-                'class' => PositionBehavior::class,
-            ]
         ];
     }
 

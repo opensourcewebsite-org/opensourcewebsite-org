@@ -17,7 +17,7 @@ use app\models\User;
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
 
-$this->title = $contact->getContactName();
+$this->title = !$contact->isNewRecord ? $contact->getContactName() : $user->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index']];
 ?>
 <?php if ($user) : ?>
@@ -80,7 +80,11 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                         'label' => Yii::t('app', 'Debt Redistribution'),
                                         'class' => 'btn btn-light',
                                     ],
-                                    'url' => Url::to(['/debt-redistribution', 'contactId' => $contact->id]),
+                                    'url' => Url::to([
+                                        '/debt-redistribution',
+                                        'contactId' => $contact->id,
+                                        'linkUserId' => $user ? $user->id : null,
+                                    ]),
                                     'ajaxSubmit' => false,
                                     'events' => [
                                         ModalAjax::EVENT_MODAL_SHOW_COMPLETE => new JsExpression('
@@ -104,6 +108,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                 'url' => [
                                     'contact/update',
                                     'id' => $contact->id,
+                                    'linkUserId' => $user ? $user->id : null,
                                 ],
                             ]); ?>
                         </li>
@@ -117,15 +122,9 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                 <tr>
                                     <th class="align-middle">Groups</th>
                                     <td class="align-middle">
-                                        <?php
-                                        $groups = '';
-
-                                        foreach ($contact->getGroups()->each() as $group) {
-                                            $groups .= Html::tag('span', $group->name, ['class' => 'badge badge-primary']) . '&nbsp';
-                                        }
-
-                                        echo $groups;
-                                        ?>
+                                        <?php foreach ($contact->getGroups()->each() as $group) : ?>
+                                            <?= Html::badge('primary', $group->name) . '&nbsp'; ?>
+                                        <?php endforeach; ?>
                                     </td>
                                     <td>
                                         <?= ModalAjax::widget([
@@ -142,6 +141,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                             'url' => [
                                                 '/contact/update-groups',
                                                 'id' => $contact->id,
+                                                'linkUserId' => $user ? $user->id : null,
                                             ],
                                         ]) ?>
                                     </td>

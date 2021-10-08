@@ -12,7 +12,6 @@ use yii\web\View;
  */
 
 $this->title = Yii::t('app', 'Update Company') . " {$companyModel->name}";
-
 ?>
 
 <?= $this->render('_form', $_params_) ?>

@@ -1,8 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
-use app\models\Resume;
 use yii\web\View;
+use app\models\CurrencyExchangeOrder;
 use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
@@ -13,10 +14,10 @@ use dosamigos\leaflet\widgets\Map;
 /**
  * @var $this View
  * @var $type string
- * @var $model Resume
+ * @var $model CurrencyExchangeOrder
  */
-$this->title = Yii::t('app', 'Location of Resume: ' . $model->id);
 
+$this->title = Yii::t('app', 'Location');
 ?>
 <div class="modal-header">
     <h4 class="modal-title"><?= $this->title ?></h4>
@@ -25,20 +26,21 @@ $this->title = Yii::t('app', 'Location of Resume: ' . $model->id);
 <div class="modal-body">
 
     <?php
-
-    $center = new LatLng(['lat' => $model->location_lat ?: 51.508, 'lng' => $model->location_lon ?: -0.11]);
-
+    if ($type === 'sell') {
+        $center = new LatLng(['lat' => $model->selling_location_lat ?: 51.508, 'lng' => $model->selling_location_lon ?: -0.11]);
+    } else {
+        $center = new LatLng(['lat' => $model->buying_location_lat ?: 51.508, 'lng' => $model->buying_location_lon ?: -0.11]);
+    }
     $marker = new Marker([
         'latLng' => $center,
         'clientOptions' => [
             'draggable' => true,
         ],
         'clientEvents' => [
-            'dragend' => new JsExpression("
-                            function(e) {
-                              var marker = e.target;
-                              position = marker.getLatLng();
-                          }")
+            'dragend' => 'function(e) {
+                                var marker = e.target;
+                                position = marker.getLatLng();
+                            }'
         ],
     ]);
 
@@ -56,12 +58,12 @@ $this->title = Yii::t('app', 'Location of Resume: ' . $model->id);
         'center' => $center,
         'clientEvents' => [
             'load' => new JsExpression("
-                                    function (e) {
-                                        setTimeout(function() {
-                                            e.sourceTarget.invalidateSize();
-                                        }, 1);
-                                    }
-                                ")
+                                function (e) {
+                                    setTimeout(function() {
+                                        e.sourceTarget.invalidateSize();
+                                    }, 1);
+                                }
+                            ")
         ]
     ]);
 

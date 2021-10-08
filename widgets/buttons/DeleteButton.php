@@ -21,7 +21,7 @@ class DeleteButton extends PjaxButton
         $this->defaultOptions['class'] = 'btn btn-danger float-right';
 
         if ($this->text == null) {
-            $this->text = 'Delete';
+            $this->text = Yii::t('app', 'Delete');
         }
     }
 

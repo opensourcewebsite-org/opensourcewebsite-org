@@ -215,12 +215,7 @@ $this->title = Yii::t('app', 'Account');
                                 <tbody>
                                 <?php
                                 array_map(function ($language) {
-                                    $languageName = Language::findOne($language->language_id)->name;
-                                    $languageName = Yii::t('app', $languageName);
-                                    $languageLevel = LanguageLevel::findOne($language->language_level_id)->description;
-                                    $languageLevel = Yii::t('user', $languageLevel);
-
-                                    echo  '<tr><td>' . $languageName . ' - ' . $languageLevel . '</td><td>';
+                                    echo '<tr><td>' . $language->getLabel() . '</td><td>';
                                     echo ModalAjax::widget([
                                         'id' => 'change-language' . $language->language_id,
                                         'header' => Yii::t('user', 'Edit language'),
@@ -234,7 +229,7 @@ $this->title = Yii::t('app', 'Account');
                                         ],
                                         'url' => Url::to([
                                             'user/change-language',
-                                            'id' => $language->language_id]),
+                                            'id' => $language->id]),
                                     ]);
                                     echo '</td></tr>';
                                 }, $model->languages); ?>

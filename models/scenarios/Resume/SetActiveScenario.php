@@ -36,7 +36,7 @@ final class SetActiveScenario
     private function validateLanguages(): bool
     {
         if (!$this->model->getLanguages()->count()) {
-            $this->errors['languages'] = Yii::t('app', 'You must have at least one language set in your profile');
+            $this->errors['languages'] = Yii::t('app', 'At least one language should be set in your account') . '.';
 
             return false;
         }
@@ -48,7 +48,7 @@ final class SetActiveScenario
     {
         if (!$this->model->isRemote()) {
             if (!($this->model->location_lon && $this->model->location_lat)) {
-                $this->errors['location'] = Yii::t('app', 'Location should be set');
+                $this->errors['location'] = Yii::t('app', 'Location should be set when Offline work is active') . '.';
 
                 return false;
             }
@@ -61,7 +61,7 @@ final class SetActiveScenario
     {
         if (!$this->model->isRemote()) {
             if (!$this->model->search_radius) {
-                $this->errors['location'] = Yii::t('app', 'Search Radius should be set');
+                $this->errors['location'] = Yii::t('app', 'Search Radius should be set when Location is active') . '.';
 
                 return false;
             }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use app\models\AdSearch;
@@ -16,10 +17,7 @@ $this->title = Yii::t('app', 'Update Search') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
-
 ?>
 <div class="ad-search-update">
-
     <?= $this->render('_form', $_params_); ?>
-
 </div>

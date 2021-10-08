@@ -18,7 +18,7 @@ class SendButton extends PjaxButton
         $this->defaultOptions['title'] = Yii::t('app', 'Send');
 
         if ($this->text == null) {
-            $this->text = 'Send';
+            $this->text = Yii::t('app', 'Send');
         }
     }
 

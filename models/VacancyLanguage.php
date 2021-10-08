@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\models;
 
 use Yii;
@@ -29,6 +28,13 @@ class VacancyLanguage extends ActiveRecord
         return '{{%vacancy_language}}';
     }
 
+    public function rules(): array
+    {
+        return [
+            [['vacancy_id', 'language_id', 'language_level_id'], 'safe'],
+        ];
+    }
+
     public function getLevel(): ActiveQuery
     {
         return $this->hasOne(LanguageLevel::class, ['id' => 'language_level_id']);
@@ -41,6 +47,6 @@ class VacancyLanguage extends ActiveRecord
 
     public function getLabel(): string
     {
-        return $this->language->name . ' - ' . Yii::t('app', $this->level->description);
+        return Yii::t('app', $this->language->name) . ' - ' . Yii::t('app', $this->level->description);
     }
 }

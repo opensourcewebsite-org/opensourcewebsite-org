@@ -12,6 +12,7 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+
 $form = ActiveForm::begin();
 ?>
 <div class="form">

@@ -201,7 +201,6 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             'location' => Yii::t('app', 'Location'),
             'created_at' => Yii::t('app', 'created_at'),
             'processed_at' => Yii::t('app', 'processed_at'),
-
         ];
     }
 

@@ -11,7 +11,6 @@ $this->title = Yii::t('app', 'Update Order') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
-
 ?>
 <div class="currency-exchange-order-update">
     <?= $this->render('_form', $_params_); ?>

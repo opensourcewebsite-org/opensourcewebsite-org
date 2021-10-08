@@ -127,7 +127,7 @@ class AdOfferController extends Controller
 
     public function actionViewLocation(int $id): string
     {
-        return $this->renderAjax('view_location_map_modal', ['model' => AdOffer::findOne($id)]);
+        return $this->renderAjax('modals/view-location', ['model' => AdOffer::findOne($id)]);
     }
 
     public function actionShowMatches(int $adSearchId): string

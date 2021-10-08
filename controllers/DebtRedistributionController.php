@@ -73,12 +73,12 @@ class DebtRedistributionController extends Controller
     }
 
     /**
-     * @param int|Contact $contactId
-     *
+     * @param int|Contact|null $contactId
+     * @param int|null $linkUserId
      * @return string
      * @throws NotFoundHttpException
      */
-    public function actionIndex($contactId)
+    public function actionIndex($contactId = null, $linkUserId = null)
     {
         if ($contactId instanceof Contact) {
             $contact = $contactId;

@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-use app\models\Vacancy;
+use app\models\AdSearch;
 use yii\web\View;
 use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\layers\Marker;
@@ -11,12 +12,11 @@ use yii\web\JsExpression;
 use dosamigos\leaflet\widgets\Map;
 
 /**
- * @var $this View
- * @var $type string
- * @var $model Vacancy
+ * @var View $this
+ * @var AdSearch $model
  */
-$this->title = Yii::t('app', 'Location of Vacancy: ' . $model->id);
 
+$this->title = Yii::t('app', 'Location');
 ?>
 <div class="modal-header">
     <h4 class="modal-title"><?= $this->title ?></h4>

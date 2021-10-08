@@ -21,7 +21,7 @@ ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= Yii::t('app', $languageName); ?>
+                            <?= Yii::t('app', $userLanguage->language->name); ?>
                         </div>
                     </div>
                     <div class="row">
@@ -29,10 +29,10 @@ ActiveForm::begin();
                             <label><?= Yii::t('app', 'Level'); ?></label>
                                 <?= Select2::widget([
                                     'name' => 'level',
-                                    'data' => $languagesLevel,
-                                    'value' => $userLanguageRecord->language_level_id,
+                                    'data' => $languageLevels,
+                                    'value' => $userLanguage->language_level_id,
                                     'options' => [
-                                        'id' => 'langLevel' . $userLanguageRecord->language_id,
+                                        'id' => 'langLevel' . $userLanguage->language_id,
                                     ],
                                 ]); ?>
                         </div>
@@ -48,7 +48,7 @@ ActiveForm::begin();
                         ],
                         'options' => [
                             'data-params' => [
-                                'id' => $userLanguageRecord->id,
+                                'id' => $userLanguage->id,
                             ],
                         ],
                     ]); ?>

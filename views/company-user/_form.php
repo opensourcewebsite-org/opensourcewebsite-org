@@ -13,40 +13,47 @@ use app\widgets\buttons\CancelButton;
  * @var Company $model
  */
 
+$labelOptional = ' (' . Yii::t('app', 'optional') . ')';
+
+$form = ActiveForm::begin(['id' => 'form']);
 ?>
-<div class="resume-form">
-    <?php $form = ActiveForm::begin(['id' => 'create-company-form']) ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'name')->textInput() ?>
+                            <?= $form->field($model, 'name')
+                                ->textInput(); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'url')->textInput() ?>
+                            <?= $form->field($model, 'url')
+                                ->textInput()
+                                ->label($model->getAttributeLabel('url') . $labelOptional); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'address')->textInput() ?>
+                            <?= $form->field($model, 'address')
+                                ->textInput()
+                                ->label($model->getAttributeLabel('address') . $labelOptional); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'description')->textarea() ?>
+                            <?= $form->field($model, 'description')
+                                ->textarea()
+                                ->label($model->getAttributeLabel('description') . $labelOptional); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <?= SaveButton::widget(); ?>
-
                     <?php $cancelUrl = $model->isNewRecord ? Url::to('/company-user/index') : Url::to(['/company-user/view', 'id' => $model->id]) ?>
                     <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-
                     <?php if (!$model->isNewRecord): ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id],
@@ -62,5 +69,5 @@ use app\widgets\buttons\CancelButton;
             </div>
         </div>
     </div>
-    <?php ActiveForm::end() ?>
 </div>
+<?php ActiveForm::end() ?>

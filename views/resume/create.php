@@ -14,13 +14,10 @@ use app\models\Currency;
 $this->title = Yii::t('app', 'Create Resume');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="resume-create">
-
     <?= $this->render('_form', [
         'model' => $model,
         'currencies' => $currencies,
     ]); ?>
-
 </div>

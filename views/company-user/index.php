@@ -19,9 +19,8 @@ use yii\grid\GridView;
 
 $this->title = Yii::t('app', 'Companies');
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="currency-exchange-order-index">
+<div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -44,15 +43,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'summary' => false,
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
-                            'id',
+                            [
+                                'attribute' => 'id',
+                                'enableSorting' => false,
+                            ],
                             [
                                 'attribute' => 'name',
                                 'enableSorting' => false,
                             ],
                             [
-                                'label' => Yii::t('app','Vacancies'),
+                                'label' => Yii::t('app', 'Vacancies'),
                                 'content' => function (Company $model) {
-                                    if ( ($vacanciesCount = $model->getVacancies()->count()) > 0) {
+                                    if (($vacanciesCount = $model->getVacancies()->count()) > 0) {
                                         return Html::a(
                                             (string)$vacanciesCount,
                                             Url::to([

@@ -76,6 +76,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                 ->textInput([
                                     'maxlength' => true,
                                     'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
+                                    'value' => ($model->delivery_radius ?: ''),
                                 ])
                                 ->label($iconPrivate . $model->getAttributeLabel('delivery_radius') . ', km' . $labelOptional)
                             ?>

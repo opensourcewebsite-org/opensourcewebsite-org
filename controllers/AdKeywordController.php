@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\controllers;
@@ -37,6 +38,7 @@ class AdKeywordController extends Controller
     public function actionCreateAjax(): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
+
         $model = new AdKeyword();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

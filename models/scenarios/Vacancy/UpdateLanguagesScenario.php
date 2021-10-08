@@ -9,6 +9,7 @@ use app\models\FormModels\LanguageWithLevelsForm;
 use app\models\Vacancy;
 use app\models\VacancyLanguage;
 
+// TODO remove old code
 class UpdateLanguagesScenario
 {
     private LanguageWithLevelsForm $form;

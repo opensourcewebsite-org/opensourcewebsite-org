@@ -9,6 +9,9 @@ use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
 use app\widgets\buttons\EditButton;
+use app\models\Language;
+use app\models\LanguageLevel;
+use app\widgets\ModalAjax;
 
 /* @var $this View */
 /* @var $model Vacancy */
@@ -135,6 +138,67 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
     </div>
 </div>
 
+<div class="languages-index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('user', 'Languages'); ?></h3>
+                    <div class="card-tools">
+                        <?= ModalAjax::widget([
+                            'id' => 'add-language',
+                            'header' => Yii::t('user', 'Add language'),
+                            'toggleButton' => [
+                                'label' => Html::icon('add'),
+                                'class' => 'btn btn-outline-success',
+                                'style' =>  [
+                                    'float' => 'right',
+                                ],
+                            ],
+                            'url' => Url::to([
+                                'vacancy/add-language',
+                                'vacancyId' => $model->id,
+                            ]),
+                        ]);?>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <div id="w0" class="grid-view">
+                            <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                                <tbody>
+                                <?php
+                                array_map(function ($vacancyLanguage) {
+                                    echo '<tr><td>' . $vacancyLanguage->getLabel() . '</td><td>';
+                                    echo ModalAjax::widget([
+                                        'id' => 'change-language' . $vacancyLanguage->language_id,
+                                        'header' => Yii::t('user', 'Edit language'),
+                                        'toggleButton' => [
+                                            'label' => Html::icon('edit'),
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'class' => 'btn btn-light edit-btn',
+                                            'style' =>  [
+                                                'float' => 'right',
+                                            ],
+                                        ],
+                                        'url' => Url::to([
+                                            'vacancy/change-language',
+                                            'id' => $vacancyLanguage->id,
+                                            'vacancyId' => $vacancyLanguage->vacancy_id,
+                                        ]),
+                                    ]);
+                                    echo '</td></tr>';
+                                }, $model->languagesWithLevels); ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php if ($model->company_id): ?>
     <div class="index">
         <div class="row">
@@ -155,47 +219,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'description:ntext',
                                 ]
                             ]) ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
-
-<?php if ($model->languagesWithLevels): ?>
-    <div class="index">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><?= Yii::t('app', 'Languages') ?></h3>
-                        <div class="card-tools">
-                            <?= EditButton::widget([
-                                'url' => ['vacancy/update-languages', 'id' => $model->id],
-                                'ajax' => true,
-                                'options' => [
-                                    'title' => 'Update Languages',
-                                ]
-                            ]); ?>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered detail-view mb-0">
-                                <tbody>
-                                    <?php foreach ($model->languagesWithLevels as $languagesWithLevel): ?>
-                                        <tr>
-                                            <td>
-                                                <strong><?= $languagesWithLevel->language->name ?></strong>
-                                            </td>
-                                            <td>
-                                                <?= $languagesWithLevel->level->description ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

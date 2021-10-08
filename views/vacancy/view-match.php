@@ -87,34 +87,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
     </div>
 </div>
 
-<?php if ($model->company_id): ?>
-    <div class="index">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><?= Yii::t('app', 'Company') ?></h3>
-                        </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <?= DetailView::widget([
-                                'model' => $model->company,
-                                'attributes' => [
-                                    'id',
-                                    'name',
-                                    'url:url',
-                                    'address',
-                                    'description:ntext',
-                                ]
-                            ]) ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
-
 <?php if ($model->languagesWithLevels): ?>
     <div class="index">
         <div class="row">
@@ -139,6 +111,34 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($model->company_id): ?>
+    <div class="index">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><?= Yii::t('app', 'Company') ?></h3>
+                        </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <?= DetailView::widget([
+                                'model' => $model->company,
+                                'attributes' => [
+                                    'id',
+                                    'name',
+                                    'url:url',
+                                    'address',
+                                    'description:ntext',
+                                ]
+                            ]) ?>
                         </div>
                     </div>
                 </div>

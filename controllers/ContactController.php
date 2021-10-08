@@ -11,6 +11,8 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
+use app\models\scenarios\Contact\UpdateGroupsByIdsScenario;
+use yii\web\Response;
 
 class ContactController extends Controller
 {
@@ -130,7 +132,6 @@ class ContactController extends Controller
                     $contact = new Contact();
                     $contact->user_id = $this->user->id;
                     $contact->link_user_id = $user->id;
-                    $contact->save(false);
                 }
 
                 return $this->render('view', [
@@ -166,18 +167,18 @@ class ContactController extends Controller
 
     public function actionCreateGroup()
     {
-        $group = new ContactGroup();
+        $model = new ContactGroup();
 
-        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $group->load($postData)) {
-            $group->user_id = $this->user->id;
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+            $model->user_id = $this->user->id;
 
-            if ($group->save()) {
+            if ($model->save()) {
                 return $this->redirect(['contact/group']);
             }
         }
 
         $renderParams = [
-            'model' => $group,
+            'model' => $model,
         ];
 
         if (Yii::$app->request->isAjax) {
@@ -185,6 +186,23 @@ class ContactController extends Controller
         } else {
             return $this->render('group/create', $renderParams);
         }
+    }
+
+    public function actionCreateGroupAjax(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new ContactGroup();
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+            $model->user_id = $this->user->id;
+
+            if ($model->save()) {
+                return ['success' => true, 'id' => $model->id, 'name' => $model->name];
+            }
+        }
+
+        return ['success' => false];
     }
 
     public function actionDeleteGroup(int $id)
@@ -229,7 +247,7 @@ class ContactController extends Controller
         }
     }
 
-    public function actionUpdateGroups(int $id = null, int $link_user_id = null)
+    public function actionUpdateGroups(int $id = null, int $linkUserId = null)
     {
         $contact = Contact::findOne([
             'id' => $id,
@@ -237,14 +255,32 @@ class ContactController extends Controller
         ]);
 
         if (!$contact) {
-            return $this->redirect(['index']);
+            $linkUser = User::findOne($linkUserId);
+
+            if (!$linkUser) {
+                return $this->redirect(['index']);
+            }
+
+            $contact = Contact::findOne([
+                'link_user_id' => $linkUser->id,
+                'user_id' => $this->user->id,
+            ]);
+
+            if (!$contact) {
+                $contact = new Contact();
+                $contact->user_id = $this->user->id;
+                $contact->link_user_id = $linkUser->id;
+                $contact->save(false);
+            }
         }
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $contact->load($postData)) {
-            if ($contact->validate(['contact_group_ids']) && $contact->save()) {
+            if ($contact->validate(['groupIds'])) {
+                (new UpdateGroupsByIdsScenario($contact))->run();
+
                 return $this->redirect([
                     'view',
-                    'id' => $id,
+                    'id' => $contact->id,
                 ]);
             }
         }
@@ -288,13 +324,38 @@ class ContactController extends Controller
     /**
      * Updates an existing Contact model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
+     * @param int|null $id
+     * @param int|null $linkUserId
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate(int $id)
+    public function actionUpdate(int $id = null, int $linkUserId = null)
     {
-        $model = $this->findModel($id);
+        $model = Contact::findOne([
+            'id' => $id,
+            'user_id' => $this->user->id,
+        ]);
+
+        if (!$model) {
+            $linkUser = User::findOne($linkUserId);
+
+            if (!$linkUser) {
+                return $this->redirect(['index']);
+            }
+
+            $model = Contact::findOne([
+                'link_user_id' => $linkUser->id,
+                'user_id' => $this->user->id,
+            ]);
+
+            if (!$model) {
+                $model = new Contact();
+                $model->user_id = $this->user->id;
+                $model->link_user_id = $linkUser->id;
+                $model->save(false);
+            }
+        }
+
         $model->userIdOrName = $model->getUserIdOrName();
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
@@ -347,7 +408,7 @@ class ContactController extends Controller
         $model = Contact::find()
             ->andWhere([
                 'id' => $id,
-                ])
+            ])
             ->userOwner()
             ->one();
 

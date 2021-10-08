@@ -409,7 +409,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public function getTitle()
     {
-        return $this->sellingCurrency->code.'/'.$this->buyingCurrency->code;
+        return $this->sellingCurrency->code.' / '.$this->buyingCurrency->code;
     }
 
     /**
@@ -417,7 +417,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public function getInverseTitle()
     {
-        return $this->buyingCurrency->code.'/'.$this->sellingCurrency->code;
+        return $this->buyingCurrency->code.' / '.$this->sellingCurrency->code;
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use app\models\AdSearch;
@@ -15,10 +16,7 @@ use app\models\Currency;
 $this->title = Yii::t('app', 'Create Search');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="ad-search-create">
-
     <?= $this->render('_form', $_params_); ?>
-
 </div>
