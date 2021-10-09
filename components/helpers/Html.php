@@ -21,6 +21,10 @@ class Html extends \yii\helpers\Html
         'trash' => [
             'class' => 'far fa-trash-alt',
         ],
+        'eye' => [
+            'class' => 'fa fa-eye',
+            'title' => 'View',
+        ],
     ];
 
     // https://getbootstrap.com/docs/4.6/components/badge/#contextual-variations

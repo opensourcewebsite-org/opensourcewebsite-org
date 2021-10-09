@@ -9,14 +9,11 @@ use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
 use app\models\User;
 use app\helpers\LatLonHelper;
-use app\services\CurrencyExchangeService;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
 class CurrencyExchangeOrderFixture extends ARGenerator
 {
-    private CurrencyExchangeService $service;
-
     /**
      * @throws ARGeneratorException
      */
@@ -25,8 +22,6 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         if (!Currency::find()->exists()) {
             throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
         }
-
-        $this->service = new CurrencyExchangeService();
 
         parent::init();
     }
@@ -110,7 +105,9 @@ class CurrencyExchangeOrderFixture extends ARGenerator
             throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
-        $this->service->updatePaymentMethods($model, $orderSellingPaymentMethodsIds, $orderBuyingPaymentMethodsIds);
+        // TODO refactoring old code
+        $this->service->updateSellingPaymentMethods($model, $orderSellingPaymentMethodsIds);
+        $this->service->updateBuyingPaymentMethods($model, $orderBuyingPaymentMethodsIds);
 
         return $model;
     }

@@ -93,6 +93,7 @@ class ContactGroupSelect extends Widget
     {
         return [
             'tags' => true,
+            'allowClear' => true,
             'createTag' => new JsExpression("function(tag) {
                             return {
                                 id: tag.term,

@@ -9,6 +9,7 @@ use yii\helpers\ArrayHelper;
 use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
+use app\widgets\ModalAjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CurrencyExchangeOrder */
@@ -116,11 +117,22 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                 <div class="card-header">
                     <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
                     <div class="card-tools">
-                        <a class="edit-btn modal-btn-ajax"
-                           href="/currency-exchange-order/update-sell-methods/<?= $model->id ?>"
-                           title="Edit" style="float: right">
-                            <i class="fas fa-edit"></i>
-                        </a>
+                        <?= ModalAjax::widget([
+                            'id' => 'update-selling-payment-methods',
+                            'header' => Yii::t('app', 'Update selling payment methods'),
+                            'toggleButton' => [
+                                'label' => Html::icon('edit'),
+                                'title' => Yii::t('app', 'Edit'),
+                                'class' => 'btn btn-light edit-btn',
+                                'style' => [
+                                    'float' => 'right',
+                                ],
+                            ],
+                            'url' => Url::to([
+                                'currency-exchange-order/update-selling-payment-methods',
+                                'id' => $model->id,
+                            ]),
+                        ]);?>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -164,11 +176,22 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                 <div class="card-header">
                     <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
                     <div class="card-tools">
-                        <a class="edit-btn modal-btn-ajax"
-                           href="/currency-exchange-order/update-buy-methods/<?= $model->id ?>"
-                           title="Edit" style="float: right">
-                            <i class="fas fa-edit"></i>
-                        </a>
+                            <?= ModalAjax::widget([
+                                'id' => 'update-buying-payment-methods',
+                                'header' => Yii::t('app', 'Update buying payment methods'),
+                                'toggleButton' => [
+                                    'label' => Html::icon('edit'),
+                                    'title' => Yii::t('app', 'Edit'),
+                                    'class' => 'btn btn-light edit-btn',
+                                    'style' => [
+                                        'float' => 'right',
+                                    ],
+                                ],
+                                'url' => Url::to([
+                                    'currency-exchange-order/update-buying-payment-methods',
+                                    'id' => $model->id,
+                                ]),
+                            ]);?>
                     </div>
                 </div>
                 <div class="card-body p-0">

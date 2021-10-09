@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace app\models\scenarios\Vacancy;
 
 use app\components\helpers\ArrayHelper;
-use app\models\FormModels\LanguageWithLevelsForm;
+use app\models\forms\LanguageWithLevelsForm;
 use app\models\Vacancy;
 use app\models\VacancyLanguage;
 

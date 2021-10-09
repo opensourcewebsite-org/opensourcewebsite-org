@@ -3,7 +3,7 @@
 use app\components\helpers\ArrayHelper;
 use app\models\Company;
 use app\models\Currency;
-use app\models\FormModels\LanguageWithLevelsForm;
+use app\models\forms\LanguageWithLevelsForm;
 use app\models\Gender;
 use app\models\Language;
 use app\models\LanguageLevel;

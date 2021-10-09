@@ -61,6 +61,7 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
         $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
+
         parent::init();
     }
 

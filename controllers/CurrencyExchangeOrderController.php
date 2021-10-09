@@ -8,8 +8,6 @@ use Yii;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\search\CurrencyExchangeOrderSearch;
-use app\models\FormModels\CurrencyExchange\OrderPaymentMethods;
-use app\services\CurrencyExchangeService;
 use app\models\CurrencyExchangeOrder;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -20,14 +18,14 @@ use yii\filters\VerbFilter;
 use app\models\PaymentMethod;
 use yii\web\Response;
 use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateBuyingPaymentMethodsByIdsScenario;
 
 /**
  * CurrencyExchangeOrderController implements the CRUD actions for CurrencyExchangeOrder model.
  */
 class CurrencyExchangeOrderController extends Controller
 {
-    protected CurrencyExchangeService $service;
-
     /**
      * {@inheritdoc}
      */
@@ -52,13 +50,6 @@ class CurrencyExchangeOrderController extends Controller
                 ],
             ],
         ];
-    }
-
-    public function __construct($id, $module, $config = [])
-    {
-        parent::__construct($id, $module, $config);
-
-        $this->service = new CurrencyExchangeService();
     }
 
     public function actionIndex()
@@ -126,38 +117,56 @@ class CurrencyExchangeOrderController extends Controller
         ]);
     }
 
-    public function actionUpdateSellMethods($id)
+    public function actionUpdateSellingPaymentMethods(int $id)
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
-        $formModel = new OrderPaymentMethods(['order' => $model]);
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+            if ($model->validate(['sellingPaymentMethodIds'])) {
+                (new UpdateSellingPaymentMethodsByIdsScenario($model))->run();
 
-        if ($formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
-            $this->service->updatePaymentMethods($model, $formModel->sellingPaymentMethods, []);
-            return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect([
+                    'view',
+                    'id' => $model->id,
+                ]);
+            }
         }
 
-        return $this->renderAjax('update_sell_methods', [
-            'model' => $formModel,
-            'paymentsSellTypes' => $this->getPaymentMethodsForCurrency($model->selling_currency_id)
-        ]);
+        $renderParams = [
+            'model' => $model,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/update-selling-methods', $renderParams);
+        } else {
+            return $this->render('modals/update-selling-methods', $renderParams);
+        }
     }
 
-    public function actionUpdateBuyMethods($id)
+    public function actionUpdateBuyingPaymentMethods(int $id)
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
-        $formModel = new OrderPaymentMethods(['order' => $model]);
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
+            if ($model->validate(['buyingPaymentMethodIds'])) {
+                (new UpdateBuyingPaymentMethodsByIdsScenario($model))->run();
 
-        if ($formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
-            $this->service->updatePaymentMethods($model, [], $formModel->buyingPaymentMethods);
-            return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect([
+                    'view',
+                    'id' => $model->id,
+                ]);
+            }
         }
 
-        return $this->renderAjax('update_buy_methods', [
-            'model' => $formModel,
-            'paymentsBuyTypes' => $this->getPaymentMethodsForCurrency($model->buying_currency_id),
-        ]);
+        $renderParams = [
+            'model' => $model,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/update-buying-methods', $renderParams);
+        } else {
+            return $this->render('modals/update-buying-methods', $renderParams);
+        }
     }
 
     /**
@@ -200,12 +209,12 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionViewOrderSellingLocation(int $id): string
     {
-        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'sell']);
+        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id), 'type' => 'sell']);
     }
 
     public function actionViewOrderBuyingLocation(int $id): string
     {
-        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id),'type' => 'buy']);
+        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id), 'type' => 'buy']);
     }
 
     public function actionShowMatches(int $id): string
@@ -215,9 +224,11 @@ class CurrencyExchangeOrderController extends Controller
             $dataProvider = new ActiveDataProvider([
                 'query' => $model->getMatchesOrderedByUserRating(),
             ]);
-            $dataProvider->pagination->pageSize = 15;
 
-            return $this->render('matches', ['dataProvider' => $dataProvider, 'model' => $model]);
+            return $this->render('matches', [
+                'dataProvider' => $dataProvider,
+                'model' => $model,
+            ]);
         }
         throw new NotFoundHttpException('Currently no matched Offers found.');
     }
@@ -236,7 +247,10 @@ class CurrencyExchangeOrderController extends Controller
         );
 
         if ($matchModel) {
-            return $this->render('view-match', ['orderModel' => $matchModel->order, 'matchOrderModel' => $matchModel->matchOrder]);
+            return $this->render('view-match', [
+                'orderModel' => $matchModel->order,
+                'matchOrderModel' => $matchModel->matchOrder,
+            ]);
         }
 
         throw new NotFoundHttpException('No offer found with current orders combination!');
@@ -253,13 +267,6 @@ class CurrencyExchangeOrderController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    private function getPaymentMethodsForCurrency(int $currency_id): array
-    {
-        return PaymentMethod::find()->joinWith('currencies')
-            ->where(['currency.id' => $currency_id])
-            ->all();
     }
 
     public function findMatchedModelByIdAndSourceModel(int $id, Vacancy $vacancy)

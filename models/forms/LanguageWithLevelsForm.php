@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace app\models\FormModels;
+namespace app\models\forms;
 
 use app\models\VacancyLanguage;
 use yii\base\Model;

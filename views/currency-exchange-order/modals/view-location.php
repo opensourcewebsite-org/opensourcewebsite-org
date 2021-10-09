@@ -24,58 +24,57 @@ $this->title = Yii::t('app', 'Location');
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 </div>
 <div class="modal-body">
-
     <?php
-    if ($type === 'sell') {
-        $center = new LatLng(['lat' => $model->selling_location_lat ?: 51.508, 'lng' => $model->selling_location_lon ?: -0.11]);
-    } else {
-        $center = new LatLng(['lat' => $model->buying_location_lat ?: 51.508, 'lng' => $model->buying_location_lon ?: -0.11]);
-    }
-    $marker = new Marker([
-        'latLng' => $center,
-        'clientOptions' => [
-            'draggable' => true,
-        ],
-        'clientEvents' => [
-            'dragend' => 'function(e) {
-                                var marker = e.target;
-                                position = marker.getLatLng();
-                            }'
-        ],
-    ]);
+        if ($type === 'sell') {
+            $center = new LatLng(['lat' => $model->selling_location_lat ?: 51.508, 'lng' => $model->selling_location_lon ?: -0.11]);
+        } else {
+            $center = new LatLng(['lat' => $model->buying_location_lat ?: 51.508, 'lng' => $model->buying_location_lon ?: -0.11]);
+        }
 
-    $tileLayer = new TileLayer([
-        'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        'clientOptions' => [
-            'attribution' => 'Tiles Courtesy of <a href="//www.mapquest.com/" target="_blank">MapQuest</a> ' .
-                '<img src="//developer.mapquest.com/content/osm/mq_logo.png">, ' .
-                'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-            'subdomains' => ['1', '2', '3', '4'],
-        ],
-    ]);
+        $marker = new Marker([
+            'latLng' => $center,
+            'clientOptions' => [
+                'draggable' => true,
+            ],
+            'clientEvents' => [
+                'dragend' => 'function(e) {
+                                    var marker = e.target;
+                                    position = marker.getLatLng();
+                                }'
+            ],
+        ]);
 
-    $leaflet = new LeafLet([
-        'center' => $center,
-        'clientEvents' => [
-            'load' => new JsExpression("
-                                function (e) {
-                                    setTimeout(function() {
-                                        e.sourceTarget.invalidateSize();
-                                    }, 1);
-                                }
-                            ")
-        ]
-    ]);
+        $tileLayer = new TileLayer([
+            'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            'clientOptions' => [
+                'attribution' => 'Tiles Courtesy of <a href="//www.mapquest.com/" target="_blank">MapQuest</a> ' .
+                    '<img src="//developer.mapquest.com/content/osm/mq_logo.png">, ' .
+                    'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                'subdomains' => ['1', '2', '3', '4'],
+            ],
+        ]);
 
-    $leaflet->addLayer($marker)->addLayer($tileLayer);
+        $leaflet = new LeafLet([
+            'center' => $center,
+            'clientEvents' => [
+                'load' => new JsExpression("
+                                    function (e) {
+                                        setTimeout(function() {
+                                            e.sourceTarget.invalidateSize();
+                                        }, 1);
+                                    }
+                                ")
+            ]
+        ]);
 
-    echo Map::widget([
-        'leafLet' => $leaflet,
-        'options' => [
-            'id' => 'leaflet',
-            'style' => 'height:500px',
-        ],
-    ]);
+        $leaflet->addLayer($marker)->addLayer($tileLayer);
+
+        echo Map::widget([
+            'leafLet' => $leaflet,
+            'options' => [
+                'id' => 'leaflet',
+                'style' => 'height:500px',
+            ],
+        ]);
     ?>
-
 </div>

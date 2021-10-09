@@ -2,7 +2,7 @@
 
 use yii\bootstrap4\ActiveForm;
 use yii\web\View;
-use app\models\FormModels\LanguageWithLevelsForm;
+use app\models\forms\LanguageWithLevelsForm;
 
 /**
  * @var View $this

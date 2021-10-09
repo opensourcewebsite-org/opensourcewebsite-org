@@ -59,11 +59,10 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url, $offer_order) use ($model) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
+                                    'view' => function ($url, $matchOrder) use ($model) {
                                         return Html::a(
-                                            $icon,
-                                            Url::to(['view-match', 'order_id' => $model->id, 'match_order_id' => $offer_order->id]),
+                                            ($matchOrder->isNewMatch() ? Html::badge('info', 'new') : Html::icon('eye')),
+                                            Url::to(['view-match', 'order_id' => $model->id, 'match_order_id' => $matchOrder->id]),
                                             ['class' => 'btn btn-outline-primary']
                                         );
                                     },

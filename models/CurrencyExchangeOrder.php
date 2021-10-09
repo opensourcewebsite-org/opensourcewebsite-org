@@ -19,6 +19,7 @@ use app\models\queries\CurrencyExchangeOrderQuery;
 use app\models\matchers\ModelLinker;
 use app\components\helpers\Html;
 use app\models\scenarios\CurrencyExchangeOrder\UpdateScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
 
 /**
  * This is the model class for table "currency_exchange_order".
@@ -61,8 +62,16 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public const CASH_OFF = 0;
     public const CASH_ON = 1;
 
+    public const EVENT_SELLING_PAYMENT_METHODS_UPDATED = 'sellingPaymentMethodsUpdated';
+    public const EVENT_BUYING_PAYMENT_METHODS_UPDATED = 'buyingPaymentMethodsUpdated';
+
+    public $sellingPaymentMethodIds = [];
+    public $buyingPaymentMethodIds = [];
+
     public function init()
     {
+        $this->on(self::EVENT_SELLING_PAYMENT_METHODS_UPDATED, [$this, 'clearMatches']);
+        $this->on(self::EVENT_BUYING_PAYMENT_METHODS_UPDATED, [$this, 'clearMatches']);
         $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
 
         parent::init();
@@ -215,7 +224,30 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     }"
                 ),
                 'compareAttribute' => 'selling_currency_min_amount', 'operator' => '>=', 'type' => 'number'
-            ]
+            ],
+            [
+                ['sellingPaymentMethodIds', 'buyingPaymentMethodIds'],
+                'filter', 'filter' => function ($val) {
+                    if ($val === '') {
+                        return [];
+                    }
+                    return $val;
+                }
+            ],
+            [
+                ['sellingPaymentMethodIds', 'buyingPaymentMethodIds'], 'each', 'rule' => ['integer'],
+            ],
+            // [
+            //     'buyingPaymentMethodIds', 'filter', 'filter' => function ($val) {
+            //         if ($val === '') {
+            //             return [];
+            //         }
+            //         return $val;
+            //     }
+            // ],
+            // [
+            //     'buyingPaymentMethodIds', 'each', 'rule' => ['integer'],
+            // ],
         ];
     }
 
@@ -249,6 +281,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'selling_cash_on' => Yii::t('bot', 'Cash'),
             'buying_cash_on' => Yii::t('bot', 'Cash'),
             'label' => Yii::t('app', 'Label'),
+            'sellingPaymentMethodIds' => Yii::t('app', 'Selling payment methods'),
+            'buyingPaymentMethodIds' => Yii::t('app', 'Buying payment methods'),
         ];
     }
 
@@ -319,7 +353,10 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function getSellingPaymentMethods(): ActiveQuery
     {
         return $this->hasMany(PaymentMethod::class, ['id' => 'payment_method_id'])
-            ->viaTable('{{%currency_exchange_order_selling_payment_method}}', ['order_id' => 'id']);
+            ->viaTable('{{%currency_exchange_order_selling_payment_method}}', ['order_id' => 'id'])
+            ->orderBy([
+                'name' => SORT_ASC,
+            ]);
     }
 
     /**
@@ -331,7 +368,10 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function getBuyingPaymentMethods(): ActiveQuery
     {
         return $this->hasMany(PaymentMethod::class, ['id' => 'payment_method_id'])
-            ->viaTable('{{%currency_exchange_order_buying_payment_method}}', ['order_id' => 'id']);
+            ->viaTable('{{%currency_exchange_order_buying_payment_method}}', ['order_id' => 'id'])
+            ->orderBy([
+                'name' => SORT_ASC,
+            ]);
     }
 
     /**
@@ -377,6 +417,19 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     ]),
             ])
             ->count();
+    }
+
+    public function isNewMatch()
+    {
+        return !(bool)CurrencyExchangeOrderResponse::find()
+            ->andWhere([
+                'user_id' => Yii::$app->user->id,
+                'order_id' => $this->id,
+            ])
+            ->andWhere([
+                'is not', 'viewed_at', null,
+            ])
+            ->one();
     }
 
     /**
@@ -498,20 +551,14 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         return false;
     }
 
-    public function getCurrentSellingPaymentMethodsIds(): array
+    public function getSellingPaymentMethodIds(): array
     {
-        return array_map(
-            'intval',
-            ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id')
-        );
+        return ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
     }
 
-    public function getCurrentBuyingPaymentMethodsIds(): array
+    public function getBuyingPaymentMethodIds(): array
     {
-        return array_map(
-            'intval',
-            ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id')
-        );
+        return ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
     }
 
     public function getFormatLimits(): string

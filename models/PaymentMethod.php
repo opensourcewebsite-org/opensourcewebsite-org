@@ -33,7 +33,7 @@ class PaymentMethod extends ActiveRecord
      */
     public static function tableName(): string
     {
-        return 'payment_method';
+        return '{{%payment_method}}';
     }
 
     /**

@@ -18,7 +18,7 @@ class PaymentMethodCurrency extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'payment_method_currency';
+        return '{{%payment_method_currency}}';
     }
 
     /**
