@@ -101,9 +101,11 @@ $model = $matchOrderModel;
                                     </td>
                                 </tr>
                             <?php endif; ?>
-                            <?php foreach ($matchOrderModel->getSellingPaymentMethods()->asArray()->all() as $method) : ?>
+                            <?php foreach ($matchOrderModel->sellingPaymentMethods as $method) : ?>
                                 <tr>
-                                    <td><?= $method['name'] ?></td>
+                                    <td>
+                                        <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -136,9 +138,11 @@ $model = $matchOrderModel;
                                     </td>
                                 </tr>
                             <?php endif; ?>
-                            <?php foreach ($matchOrderModel->getBuyingPaymentMethods()->asArray()->all() as $method) : ?>
+                            <?php foreach ($matchOrderModel->buyingPaymentMethods as $method) : ?>
                                 <tr>
-                                    <td><?= $method['name'] ?></td>
+                                    <td>
+                                        <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>

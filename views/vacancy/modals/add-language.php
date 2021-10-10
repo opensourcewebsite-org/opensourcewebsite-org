@@ -5,7 +5,8 @@ use app\widgets\buttons\CancelButton;
 use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
 
-ActiveForm::begin(); ?>
+ActiveForm::begin();
+?>
 <div class="form">
     <div class="row">
         <div class="col-12">

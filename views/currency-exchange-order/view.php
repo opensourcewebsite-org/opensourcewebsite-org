@@ -155,7 +155,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     <?php /** @var PaymentMethod $method */ ?>
                                     <tr>
                                         <td>
-                                            <?= $method->name ?>
+                                            <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -214,7 +214,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     <?php /** @var PaymentMethod $method */ ?>
                                     <tr>
                                         <td>
-                                            <?= $method->name ?>
+                                            <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
