@@ -42,19 +42,20 @@ class StellarController extends Controller
                                 $signerPublicKeys[] = $signer['key'];
                             }
                         }
+
+                        $verifiedUsers = $chat->getHumanUsers()
+                            ->leftJoin(UserStellar::tableName(), UserStellar::tableName() . '.user_id = ' . BotUser::tableName() .'.user_id')
+                            ->andWhere([
+                                'not', ['confirmed_at' => null],
+                            ])
+                            ->andWhere([
+                                'in',
+                                'public_key',
+                                $signerPublicKeys,
+                            ])
+                            ->all();
                     }
                 }
-                $verifiedUsers = $chat->getHumanUsers()
-                    ->leftJoin(UserStellar::tableName(), UserStellar::tableName() . '.user_id = ' . BotUser::tableName() .'.user_id')
-                    ->andWhere([
-                        'not', ['confirmed_at' => null],
-                    ])
-                    ->andWhere([
-                        'in',
-                        'public_key',
-                        $signerPublicKeys,
-                    ])
-                    ->all();
             } else {
                 // TODO for verified holders
             }
