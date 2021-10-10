@@ -25,7 +25,7 @@ class BotChatGreeting extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_chat_greeting';
+        return '{{%bot_chat_greeting}}';
     }
 
     /**

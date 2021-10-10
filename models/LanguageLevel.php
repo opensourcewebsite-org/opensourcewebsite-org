@@ -34,6 +34,6 @@ class LanguageLevel extends ActiveRecord
 
     public function getLabel(): string
     {
-        return (isset($this->code) ? $this->code . ' - ' : '') . Yii::t('app', $this->description);
+        return (isset($this->code) ? $this->code . ' - ' : '') . Yii::t('user', $this->description);
     }
 }

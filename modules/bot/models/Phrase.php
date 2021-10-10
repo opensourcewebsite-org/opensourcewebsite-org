@@ -11,7 +11,7 @@ class Phrase extends ActiveRecord
 
     public static function tableName()
     {
-        return 'bot_phrase';
+        return '{{%bot_phrase}}';
     }
 
     public function rules()

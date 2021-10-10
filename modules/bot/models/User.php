@@ -35,7 +35,7 @@ class User extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_user';
+        return '{{%bot_user}}';
     }
 
     public static function createUser(&$updateUser)

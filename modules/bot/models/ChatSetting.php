@@ -65,7 +65,7 @@ class ChatSetting extends ActiveRecord
 
     public static function tableName()
     {
-        return 'bot_chat_setting';
+        return '{{%bot_chat_setting}}';
     }
 
     public function rules()

@@ -47,6 +47,6 @@ class VacancyLanguage extends ActiveRecord
 
     public function getLabel(): string
     {
-        return Yii::t('app', $this->language->name) . ' - ' . Yii::t('app', $this->level->description);
+        return $this->language->name . ' - ' . Yii::t('user', $this->level->description);
     }
 }

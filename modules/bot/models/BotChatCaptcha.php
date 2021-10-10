@@ -25,7 +25,7 @@ class BotChatCaptcha extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_chat_captcha';
+        return '{{%bot_chat_captcha}}';
     }
 
     /**

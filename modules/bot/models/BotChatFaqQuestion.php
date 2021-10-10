@@ -23,7 +23,7 @@ class BotChatFaqQuestion extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_chat_faq_question';
+        return '{{%bot_chat_faq_question}}';
     }
 
     /**

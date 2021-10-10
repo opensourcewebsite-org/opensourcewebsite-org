@@ -17,7 +17,7 @@ class Chat extends ActiveRecord
 
     public static function tableName()
     {
-        return 'bot_chat';
+        return '{{%bot_chat}}';
     }
 
     public function rules()
@@ -179,6 +179,20 @@ class Chat extends ActiveRecord
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
             ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+    }
+
+    public function getHumanUsers()
+    {
+        return $this->hasMany(User::class, ['id' => 'user_id'])
+            ->where([
+                'is_bot' => 0,
+            ])
+            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+    }
+
+    public function getChatMembers()
+    {
+        return $this->hasMany(ChatMember::class, ['chat_id' => 'id']);
     }
 
     public function getChatMemberByUser($user)

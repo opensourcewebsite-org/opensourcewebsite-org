@@ -16,15 +16,15 @@ use Yii;
  */
 class Bot extends \yii\db\ActiveRecord
 {
-    const BOT_STATUS_DISABLED = 0;
-    const BOT_STATUS_ENABLED = 1;
+    public const BOT_STATUS_DISABLED = 0;
+    public const BOT_STATUS_ENABLED = 1;
 
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'bot';
+        return '{{%bot}}';
     }
 
     /**

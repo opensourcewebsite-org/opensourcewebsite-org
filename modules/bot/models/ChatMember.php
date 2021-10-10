@@ -28,7 +28,7 @@ class ChatMember extends ActiveRecord
 
     public static function tableName()
     {
-        return 'bot_chat_member';
+        return '{{%bot_chat_member}}';
     }
 
     public function rules()

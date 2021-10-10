@@ -32,6 +32,6 @@ class UserLanguage extends ActiveRecord
 
     public function getLabel()
     {
-        return $this->language->name . ' - ' . Yii::t('app', $this->level->description);
+        return $this->language->name . ' - ' . Yii::t('user', $this->level->description);
     }
 }
