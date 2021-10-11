@@ -255,6 +255,63 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
             ->count();
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    // TODO new matches
+    public function getNewMatches(): ActiveQuery
+    {
+        return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
+            ->viaTable('{{%ad_search_match}}', ['ad_search_id' => 'id']);
+    }
+
+    public function getNewMatchesCount()
+    {
+        return $this->hasMany(AdSearchMatch::class, ['ad_search_id' => 'id'])
+            ->andWhere([
+                'not in',
+                'ad_offer_id',
+                AdOfferResponse::find()
+                    ->select('ad_offer_id')
+                    ->andWhere([
+                        'user_id' => Yii::$app->user->id,
+                    ])
+                    ->andWhere([
+                        'is not', 'viewed_at', null,
+                    ]),
+            ])
+            ->count();
+    }
+
+    public function isNewMatch()
+    {
+        return !(bool)AdSearchResponse::find()
+            ->andWhere([
+                'user_id' => Yii::$app->user->id,
+                'ad_search_id' => $this->id,
+            ])
+            ->andWhere([
+                'is not', 'viewed_at', null,
+            ])
+            ->one();
+    }
+
+    /**
+     * @return ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getMatchesOrderedByUserRating(): ActiveQuery
+    {
+        return $this
+            ->getMatches()
+            ->joinWith('user')
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
+    }
+
     public function getCounterMatches(): ActiveQuery
     {
         return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])

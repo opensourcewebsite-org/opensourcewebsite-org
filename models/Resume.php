@@ -288,6 +288,63 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
             ->count();
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    // TODO new matches
+    public function getNewMatches(): ActiveQuery
+    {
+        return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])
+            ->viaTable('{{%job_resume_match}}', ['resume_id' => 'id']);
+    }
+
+    public function getNewMatchesCount()
+    {
+        return $this->hasMany(JobResumeMatch::class, ['resume_id' => 'id'])
+            ->andWhere([
+                'not in',
+                'vacancy_id',
+                JobVacancyResponse::find()
+                    ->select('vacancy_id')
+                    ->andWhere([
+                        'user_id' => Yii::$app->user->id,
+                    ])
+                    ->andWhere([
+                        'is not', 'viewed_at', null,
+                    ]),
+            ])
+            ->count();
+    }
+
+    public function isNewMatch()
+    {
+        return !(bool)JobResumeResponse::find()
+            ->andWhere([
+                'user_id' => Yii::$app->user->id,
+                'resume_id' => $this->id,
+            ])
+            ->andWhere([
+                'is not', 'viewed_at', null,
+            ])
+            ->one();
+    }
+
+    /**
+     * @return ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getMatchesOrderedByUserRating(): ActiveQuery
+    {
+        return $this
+            ->getMatches()
+            ->joinWith('user')
+            ->orderBy([
+                'user.rating' => SORT_DESC,
+                'user.created_at' => SORT_ASC,
+            ]);
+    }
+
     public function getCounterMatches(): ActiveQuery
     {
         return $this->hasMany(Vacancy::class, ['id' => 'vacancy_id'])

@@ -22,7 +22,7 @@ use yii\grid\GridView;
 
 $this->title = Yii::t('app', "Matched Vacancies");
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' =>['/resume/index']];
-$this->params['breadcrumbs'][] = ['label' => "#{$resumeId}", 'url' =>['/resume/view', 'id' => $resumeId]];
+$this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['/resume/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="index">
@@ -54,10 +54,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url, $model) use ($resumeId) {
-                                        $url = Url::to(['view-match', 'vacancyId' => $model->id, 'resumeId' => $resumeId]);
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                    'view' => function ($url, Vacancy $matchModel) use ($model) {
+                                        return Html::a(
+                                            $matchModel->isNewMatch() ? Html::badge('info', 'new') : Html::icon('eye'),
+                                            Url::to(['view-match', 'resumeId' => $model->id, 'vacancyId' => $matchModel->id]),
+                                            ['class' => 'btn btn-outline-primary']
+                                        );
                                     },
                                 ],
                             ],

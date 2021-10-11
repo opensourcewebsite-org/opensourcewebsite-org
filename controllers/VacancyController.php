@@ -285,11 +285,20 @@ class VacancyController extends Controller
 
     public function actionShowMatches(int $resumeId): string
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => $this->findResumeByIdAndCurrentUser($resumeId)->getMatches()
-        ]);
+        $model = $this->findResumeByIdAndCurrentUser($resumeId);
 
-        return $this->render('matches', ['dataProvider' => $dataProvider, 'resumeId' => $resumeId]);
+        if ($model->getMatchesOrderedByUserRating()->exists()) {
+            $dataProvider = new ActiveDataProvider([
+                'query' => $model->getMatchesOrderedByUserRating(),
+            ]);
+
+            return $this->render('matches', [
+                'dataProvider' => $dataProvider,
+                'model' => $model,
+            ]);
+        }
+
+        throw new NotFoundHttpException('Currently no matched Offers found.');
     }
 
     public function actionViewMatch(int $resumeId, int $vacancyId): string

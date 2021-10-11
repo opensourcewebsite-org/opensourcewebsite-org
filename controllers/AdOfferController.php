@@ -132,11 +132,20 @@ class AdOfferController extends Controller
 
     public function actionShowMatches(int $adSearchId): string
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => $this->findAdSearchByIdAndCurrentUser($adSearchId)->getMatches()
-        ]);
+        $model = $this->findAdSearchByIdAndCurrentUser($adSearchId);
 
-        return $this->render('matches', ['adSearchId' => $adSearchId, 'dataProvider' => $dataProvider]);
+        if ($model->getMatchesOrderedByUserRating()->exists()) {
+            $dataProvider = new ActiveDataProvider([
+                'query' => $model->getMatchesOrderedByUserRating(),
+            ]);
+
+            return $this->render('matches', [
+                'dataProvider' => $dataProvider,
+                'model' => $model,
+            ]);
+        }
+
+        throw new NotFoundHttpException('Currently no matched Offers found.');
     }
 
     public function actionViewMatch(int $adSearchId, int $adOfferId): string

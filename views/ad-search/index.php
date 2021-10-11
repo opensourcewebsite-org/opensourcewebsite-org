@@ -99,7 +99,7 @@ $displayActiveTab = (int)$searchModel->status === AdSearch::STATUS_ON;
                                 'value' => function (AdSearch $model) {
                                     return $model->getMatchesCount() ?
                                         Html::a(
-                                            $model->getMatchesCount(),
+                                            $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
                                             Url::to(['/ad-offer/show-matches', 'adSearchId' => $model->id])
                                         ) : '';
                                 },
@@ -112,8 +112,7 @@ $displayActiveTab = (int)$searchModel->status === AdSearch::STATUS_ON;
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                        return Html::a(Html::icon('eye'), $url, ['class' => 'btn btn-outline-primary']);
                                     },
 
                                 ],

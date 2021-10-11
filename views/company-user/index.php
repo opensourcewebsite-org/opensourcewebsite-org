@@ -71,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'buttons' => [
                                     'view' => function ($url) {
                                         $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary']);
                                     },
                                 ]
                             ],

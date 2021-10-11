@@ -42,7 +42,7 @@ if ($parent) {
     $this->registerJs('
         $(\'#comment' . $item->id . '\').on(\'click\', \'#dropbtn' . $item->id . '\', function() {
             $(\'#comment' . $item->id . '\').on(\'pjax:end\', function(event) {
-                $(\'#comment' . $item->id . '\').remove(); 
+                $(\'#comment' . $item->id . '\').remove();
             });
         });
     ');
@@ -50,7 +50,7 @@ if ($parent) {
 
 echo Html::tag(
     'a',
-    '<i class="fas fa-trash mx-1"></i>',
+    '<i class="fas fa-trash"></i>',
     [
         'href' => \yii\helpers\Url::to([
             '/comment/default/delete',

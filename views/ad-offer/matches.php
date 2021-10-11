@@ -21,7 +21,7 @@ use app\models\AdOffer;
 
 $this->title = Yii::t('app', 'Matched Offers');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' =>['/ad-search/index']];
-$this->params['breadcrumbs'][] = ['label' => "#{$adSearchId}", 'url' =>['/ad-search/view', 'id' => $adSearchId]];
+$this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['/ad-search/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="index">
@@ -61,10 +61,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url, $model) use ($adSearchId) {
-                                        $url = Url::to(['/ad-offer/view-match', 'adSearchId' => $adSearchId, 'adOfferId' => $model->id,]);
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                    'view' => function ($url, AdOffer $matchModel) use ($model) {
+                                        return Html::a(
+                                            $matchModel->isNewMatch() ? Html::badge('info', 'new') : Html::icon('eye'),
+                                            Url::to(['/ad-offer/view-match', 'adSearchId' => $model->id, 'adOfferId' => $matchModel->id]),
+                                            ['class' => 'btn btn-outline-primary']
+                                        );
                                     },
 
                                 ],

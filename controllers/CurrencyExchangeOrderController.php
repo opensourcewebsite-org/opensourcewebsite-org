@@ -220,6 +220,7 @@ class CurrencyExchangeOrderController extends Controller
     public function actionShowMatches(int $id): string
     {
         $model = $this->findModelByIdAndCurrentUser($id);
+
         if ($model->getMatchesOrderedByUserRating()->exists()) {
             $dataProvider = new ActiveDataProvider([
                 'query' => $model->getMatchesOrderedByUserRating(),
@@ -230,6 +231,7 @@ class CurrencyExchangeOrderController extends Controller
                 'model' => $model,
             ]);
         }
+
         throw new NotFoundHttpException('Currently no matched Offers found.');
     }
 

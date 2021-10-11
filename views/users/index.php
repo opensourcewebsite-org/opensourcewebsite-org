@@ -1,6 +1,6 @@
-
 <?php
-use yii\helpers\Html;
+
+use app\components\helpers\Html;
 use yii\grid\GridView;
 use yii\web\View;
 use yii\data\ArrayDataProvider;
@@ -14,7 +14,7 @@ use yii\helpers\Url;
  * @var $dataProvider ArrayDataProvider
  */
 
- $this->title = Yii::t('app', 'Users') . ': ' . $usersCount;
+$this->title = Yii::t('app', 'Users') . ': ' . $usersCount;
 ?>
 <div class="users">
     <div class="row">
@@ -49,12 +49,10 @@ use yii\helpers\Url;
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url, $model) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-
                                         return Html::a(
-                                            $icon,
+                                            Html::icon('eye'),
                                             Url::toRoute(['contact/view-user', 'id' => $model->id]),
-                                            ['class' => 'btn btn-outline-primary mx-1']
+                                            ['class' => 'btn btn-outline-primary']
                                         );
                                     },
                                 ],

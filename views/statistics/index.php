@@ -1,5 +1,5 @@
-
 <?php
+
 use yii\helpers\Html;
 use app\models\UserStatistic;
 use yii\grid\GridView;
@@ -12,12 +12,13 @@ use yii\data\ArrayDataProvider;
  * @var $usersCount int
  * @var $dataProvider ArrayDataProvider
  */
+
 ?>
 <div class="info-box">
     <span class="info-box-icon bg-info"><i class="fa fa-users"></i></span>
     <div class="info-box-content">
         <span class="info-box-text">Registered Users</span>
-        <span class="info-box-number"><?php echo $usersCount; ?></span>
+        <span class="info-box-number"><?= $usersCount ?></span>
     </div>
 </div>
 <?php Pjax::begin([

@@ -153,11 +153,20 @@ class ResumeController extends Controller
 
     public function actionShowMatches(int $vacancyId): string
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => $this->findVacancyByIdAndCurrentUser($vacancyId)->getMatches()
-        ]);
+        $model = $this->findVacancyByIdAndCurrentUser($vacancyId);
 
-        return $this->render('matches', ['vacancyId' => $vacancyId, 'dataProvider' => $dataProvider]);
+        if ($model->getMatchesOrderedByUserRating()->exists()) {
+            $dataProvider = new ActiveDataProvider([
+                'query' => $model->getMatchesOrderedByUserRating(),
+            ]);
+
+            return $this->render('matches', [
+                'dataProvider' => $dataProvider,
+                'model' => $model,
+            ]);
+        }
+
+        throw new NotFoundHttpException('Currently no matched Offers found.');
     }
 
     public function actionViewMatch(int $vacancyId, int $resumeId): string

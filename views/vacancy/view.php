@@ -124,7 +124,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'value' => function () use ($model) {
                                         return $model->getMatchesCount() ?
                                             Html::a(
-                                                $model->getMatchesCount(),
+                                                $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
                                                 Url::to(['/resume/show-matches', 'vacancyId' => $model->id]),
                                             ) : '';
                                     },

@@ -41,7 +41,7 @@ if (Yii::$app->user->id == $item->user_id) {
             'span',
             Html::tag(
                 'a',
-                '<i class="fas fa-edit mx-1"></i>',
+                '<i class="fas fa-edit"></i>',
                 [
                     'href'        => '',
                     'data-toggle' => 'modal',

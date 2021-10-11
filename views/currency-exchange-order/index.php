@@ -115,8 +115,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary',]);
+                                        return Html::a(Html::icon('eye'), $url, ['class' => 'btn btn-outline-primary']);
                                     },
                                 ],
                             ],

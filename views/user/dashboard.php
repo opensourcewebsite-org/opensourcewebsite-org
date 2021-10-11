@@ -17,6 +17,10 @@ use app\models\User;
 $this->title = Yii::t('app', 'Dashboard');
 
 $currencyExchangeOrderMatchesCount = $model->getCurrencyExchangeOrderMatchesCount();
+$adOfferMatchesCount = $model->getAdOfferMatchesCount();
+$adSearchMatchesCount = $model->getAdSearchMatchesCount();
+$vacancyMatchesCount = $model->getVacancyMatchesCount();
+$resumeMatchesCount = $model->getResumeMatchesCount();
 ?>
 <div class="account-index">
     <div class="row">
@@ -52,7 +56,11 @@ $currencyExchangeOrderMatchesCount = $model->getCurrencyExchangeOrderMatchesCoun
     </div>
 </div>
 
-<?php if ($currencyExchangeOrderMatchesCount) : ?>
+<?php if ($currencyExchangeOrderMatchesCount
+    || $adOfferMatchesCount
+    || $adSearchMatchesCount
+    || $vacancyMatchesCount
+    || $resumeMatchesCount) : ?>
 <div class="index">
     <div class="row">
         <div class="col-12">
@@ -66,20 +74,39 @@ $currencyExchangeOrderMatchesCount = $model->getCurrencyExchangeOrderMatchesCoun
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
                                     <?php if ($currencyExchangeOrderMatchesCount) : ?>
-                                        <tr><td><?= Html::a(Yii::t('app', 'Currency Exchange') . ' - ' . Yii::t('app', 'Orders') . ': ' . $currencyExchangeOrderMatchesCount, Url::toRoute(['currency-exchange-order/index'])) ?></td></tr>
+                                        <tr>
+                                            <td>
+                                                <?= Html::a(Yii::t('app', 'Currency Exchange') . ' - ' . Yii::t('app', 'Orders') . ': ' . $currencyExchangeOrderMatchesCount, Url::toRoute(['currency-exchange-order/index'])) ?>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
-                                    <?php //TODO show new matches?>
-                                    <?php if (false) : ?>
-                                        <tr><td><?= Html::a(Yii::t('app', 'Ads') . ' - ' . Yii::t('app', 'Offers') . ': ' . '10', Url::toRoute(['ad-offer/index'])) ?></td></tr>
+                                    <?php if ($adOfferMatchesCount) : ?>
+                                        <tr>
+                                            <td>
+                                                <?= Html::a(Yii::t('app', 'Ads') . ' - ' . Yii::t('app', 'Searches') . ': ' . $adOfferMatchesCount, Url::toRoute(['ad-offer/index'])) ?>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
-                                    <?php if (false) : ?>
-                                        <tr><td><?= Html::a(Yii::t('app', 'Ads') . ' - ' . Yii::t('app', 'Searches') . ': ' . '10', Url::toRoute(['ad-search/index'])) ?></td></tr>
+                                    <?php if ($adSearchMatchesCount) : ?>
+                                        <tr>
+                                            <td>
+                                                <?= Html::a(Yii::t('app', 'Ads') . ' - ' . Yii::t('app', 'Offers') . ': ' . $adSearchMatchesCount, Url::toRoute(['ad-search/index'])) ?>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
-                                    <?php if (false) : ?>
-                                        <tr><td><?= Html::a(Yii::t('app', 'Jobs') . ' - ' . Yii::t('app', 'Vacancies') . ': ' . '10', Url::toRoute(['vacancy/index'])) ?></td></tr>
+                                    <?php if ($vacancyMatchesCount) : ?>
+                                        <tr>
+                                            <td>
+                                                <?= Html::a(Yii::t('app', 'Jobs') . ' - ' . Yii::t('app', 'Resumes') . ': ' . $vacancyMatchesCount, Url::toRoute(['vacancy/index'])) ?>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
-                                    <?php if (false) : ?>
-                                        <tr><td><?= Html::a(Yii::t('app', 'Jobs') . ' - ' . Yii::t('app', 'Resumes') . ': ' . '10', Url::toRoute(['resume/index'])) ?></td></tr>
+                                    <?php if ($resumeMatchesCount) : ?>
+                                        <tr>
+                                            <td>
+                                                <?= Html::a(Yii::t('app', 'Jobs') . ' - ' . Yii::t('app', 'Vacancies') . ': ' . $resumeMatchesCount, Url::toRoute(['resume/index'])) ?>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>

@@ -18,7 +18,7 @@ use yii\grid\GridView;
 
 $this->title = Yii::t('app', 'Matched Searches');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Offers'), 'url' =>['/ad-offer/index']];
-$this->params['breadcrumbs'][] = ['label' => "#{$adOfferId}", 'url' =>['/ad-offer/view', 'id' => $adOfferId]];
+$this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['/ad-offer/view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="index">
@@ -58,10 +58,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => ActionColumn::class,
                                 'template' => '{view}',
                                 'buttons' => [
-                                    'view' => function ($url, $model) use ($adOfferId) {
-                                        $url = Url::to(['/ad-search/view-match', 'adSearchId' => $model->id, 'adOfferId' => $adOfferId]);
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                    'view' => function ($url, AdSearch $matchModel) use ($model) {
+                                        return Html::a(
+                                            $matchModel->isNewMatch() ? Html::badge('info', 'new') : Html::icon('eye'),
+                                            Url::to(['/ad-search/view-match', 'adOfferId' => $model->id, 'adSearchId' => $matchModel->id]),
+                                            ['class' => 'btn btn-outline-primary']
+                                        );
                                     },
 
                                 ],

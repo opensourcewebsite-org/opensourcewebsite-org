@@ -95,7 +95,7 @@ $displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
                                 'content' => function (Vacancy $model) {
                                     return $model->getMatchesCount() ?
                                         Html::a(
-                                            $model->getMatchesCount(),
+                                            $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
                                             Url::to(['/resume/show-matches', 'vacancyId' => $model->id])
                                         ) : '';
                                 },
@@ -108,8 +108,7 @@ $displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary mx-1']);
+                                        return Html::a(Html::icon('eye'), $url, ['class' => 'btn btn-outline-primary']);
                                     },
                                 ],
                             ],
