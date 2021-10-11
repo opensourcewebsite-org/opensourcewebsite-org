@@ -31,7 +31,7 @@ class StellarController extends Controller
 
             if ($isModeSigners) {
                 $signerPublicKeys = [];
-                //$signerPublicKeys[] = 'GA5Q2PZWIHSCOHNIGJN4BX5P42B4EMGTYAS3XCMAHEHCFFKCQQ3ZX34A';
+
                 if ($stellarServer = new StellarServer()) {
                     if ($account = $stellarServer->getAccount($chat->stellar_issuer)) {
                         $signers = $account->getSigners();

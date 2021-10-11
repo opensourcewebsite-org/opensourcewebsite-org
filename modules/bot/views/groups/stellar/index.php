@@ -2,28 +2,23 @@
 
 use app\modules\bot\components\helpers\ExternalLink;
 
+$assetLink = ExternalLink::getStellarExpertAssetFullLink($chat->stellar_asset, $chat->stellar_issuer, $chat->stellar_asset);
 ?>
-<?= Yii::t('bot', 'This group for') ?>: <?= $isModeSigners ? Yii::t('bot', 'Signers') : Yii::t('bot', 'Holders') ?><br/>
 <?php if ($chat->stellar_asset && $chat->stellar_issuer) : ?>
-<br/>
-<?= Yii::t('bot', 'Asset') ?>: <?= ExternalLink::getStellarExpertAssetFullLink($chat->stellar_asset, $chat->stellar_issuer) ?><br/>
+<?= $isModeSigners ? Yii::t('bot', 'This group is for {0} signers', $assetLink) : Yii::t('bot', 'This group is for {0} holders', $assetLink); ?>.<br/>
 <?php endif; ?>
 <?php if (!$isModeSigners && $chat->stellar_threshold) : ?>
 <br/>
 <?= Yii::t('bot', 'Threshold for holders') ?>: <?= $chat->stellar_threshold . ' ' . $chat->stellar_asset?><br/>
 <?php endif; ?>
 <?php if ($verifiedUsers) : ?>
+<br/>
 <?php if ($isModeSigners) : ?>
-<br/>
 <?= Yii::t('bot', 'Verified signers') ?>:<br/>
-<?php foreach ($verifiedUsers as $user) : ?>
-  • <?= $user->getFullLink(); ?><br/>
-<?php endforeach; ?>
-<?php elseif (false) : ?>
-<br/>
+<?php else : ?>
 <?= Yii::t('bot', 'Verified holders') ?>:<br/>
+<?php endif; ?>
 <?php foreach ($verifiedUsers as $user) : ?>
   • <?= $user->getFullLink(); ?><br/>
 <?php endforeach; ?>
-<?php endif; ?>
 <?php endif; ?>
