@@ -74,10 +74,14 @@ class PaymentMethodSelect extends Widget
                             'currency_id' => $this->currencyId,
                         ]),
                 ])
-                ->orderBy(['name' => SORT_ASC]);
+                ->orderBy([
+                    'name' => SORT_ASC,
+                ]);
         } else {
             $query = PaymentMethod::find()
-                ->orderBy(['name' => SORT_ASC]);
+                ->orderBy([
+                    'name' => SORT_ASC,
+                ]);
         }
 
         return ArrayHelper::map($query->asArray()->all(), 'id', 'name');

@@ -55,7 +55,6 @@ class AdOfferMatcher
 
             $matchedCount = count($noKeywordsMatches);
 
-
             $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkMatches($noKeywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);

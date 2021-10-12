@@ -14,8 +14,8 @@ use app\widgets\buttons\SelectButton;
 /* @var $searchModel app\models\IssueSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Website setting') . ': ' . $setting->key;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Website settings'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Setting') . ': ' . $setting->key;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Settings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . ($setting->id ?? ' NEW');
 ?>
  <section class="content">

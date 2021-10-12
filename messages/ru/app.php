@@ -79,4 +79,6 @@ return [
     'All data of debts will be deleted after starting this feature in operating mode' => 'Все данные о долгах будут удалены после запуска этого функционала в рабочий режим',
     'Partners' => 'Партнеры',
     'New matches' => 'Новые совпадения',
+    'With your Rating of {0}, you have reached the maximum number of active objects' => 'С вашим рейтингом {0}, вы достигли максимального количества активных обьектов',
+    'To activate this object please increase your Rating to at least {0}' => 'Для того чтобы активировать этот обьект, пожалуйста, повысьте ваш рейтинг как минимум до {0}',
 ];

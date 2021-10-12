@@ -6,10 +6,14 @@ namespace app\models\scenarios\Vacancy;
 
 use Yii;
 use app\models\Vacancy;
+use app\models\scenarios\traits\ValidateRatingTrait;
 
 final class SetActiveScenario
 {
+    use ValidateRatingTrait;
+
     private Vacancy $model;
+    private $modelClass = 'Vacancy';
     private array $errors = [];
 
     public function __construct(Vacancy $model)
@@ -19,7 +23,7 @@ final class SetActiveScenario
 
     public function run(): bool
     {
-        if ($this->validateLanguages() && $this->validateLocation()) {
+        if ($this->validateRating() && $this->validateLanguages() && $this->validateLocation()) {
             $this->model->setActive();
 
             return true;

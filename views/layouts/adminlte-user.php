@@ -285,7 +285,7 @@ $leftMenuItems = [
         'icon' => 'fas fa-users',
     ],
     [
-        'title' => Yii::t('app', 'Website settings'),
+        'title' => Yii::t('app', 'Settings'),
         'url' => 'setting',
         'route' => '/setting',
     ],

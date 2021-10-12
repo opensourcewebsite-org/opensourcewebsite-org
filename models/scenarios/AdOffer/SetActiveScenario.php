@@ -6,10 +6,14 @@ namespace app\models\scenarios\AdOffer;
 
 use Yii;
 use app\models\AdOffer;
+use app\models\scenarios\traits\ValidateRatingTrait;
 
 final class SetActiveScenario
 {
+    use ValidateRatingTrait;
+
     private AdOffer $model;
+    private $modelClass = 'AdOffer';
     private array $errors = [];
 
     public function __construct(AdOffer $model)
@@ -19,8 +23,9 @@ final class SetActiveScenario
 
     public function run(): bool
     {
-        if ($this->validateLocation()) {
+        if ($this->validateRating() && $this->validateLocation()) {
             $this->model->setActive();
+
             return true;
         }
 

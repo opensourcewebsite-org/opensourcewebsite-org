@@ -6,10 +6,14 @@ namespace app\models\scenarios\CurrencyExchangeOrder;
 
 use Yii;
 use app\models\CurrencyExchangeOrder;
+use app\models\scenarios\traits\ValidateRatingTrait;
 
 final class SetActiveScenario
 {
+    use ValidateRatingTrait;
+
     private CurrencyExchangeOrder $model;
+    private $modelClass = 'CurrencyExchangeOrder';
     private array $errors = [];
 
     public function __construct(CurrencyExchangeOrder $model)
@@ -19,7 +23,7 @@ final class SetActiveScenario
 
     public function run(): bool
     {
-        if ($this->validateSellingPaymentMethods() && $this->validateBuyingPaymentMethods()) {
+        if ($this->validateRating() && $this->validateSellingPaymentMethods() && $this->validateBuyingPaymentMethods()) {
             $this->model->setActive();
 
             return true;

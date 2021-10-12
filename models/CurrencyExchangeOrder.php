@@ -353,10 +353,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function getSellingPaymentMethods(): ActiveQuery
     {
         return $this->hasMany(PaymentMethod::class, ['id' => 'payment_method_id'])
-            ->viaTable('{{%currency_exchange_order_selling_payment_method}}', ['order_id' => 'id'])
-            ->orderBy([
-                'name' => SORT_ASC,
-            ]);
+            ->viaTable('{{%currency_exchange_order_selling_payment_method}}', ['order_id' => 'id']);
     }
 
     /**
@@ -368,10 +365,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function getBuyingPaymentMethods(): ActiveQuery
     {
         return $this->hasMany(PaymentMethod::class, ['id' => 'payment_method_id'])
-            ->viaTable('{{%currency_exchange_order_buying_payment_method}}', ['order_id' => 'id'])
-            ->orderBy([
-                'name' => SORT_ASC,
-            ]);
+            ->viaTable('{{%currency_exchange_order_buying_payment_method}}', ['order_id' => 'id']);
     }
 
     /**

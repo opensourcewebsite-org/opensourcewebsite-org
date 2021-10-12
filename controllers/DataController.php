@@ -113,7 +113,12 @@ class DataController extends Controller
 
     public function actionPaymentMethod()
     {
-        $paymentMethod = PaymentMethod::find();
+        $paymentMethod = PaymentMethod::find()
+            ->orderBy([
+                'type' => SORT_ASC,
+                'name' => SORT_ASC,
+            ]);
+
         $countQuery = clone $paymentMethod;
         $pages = new Pagination(['totalCount' => $countQuery->count()]);
         $models = $paymentMethod->offset($pages->offset)

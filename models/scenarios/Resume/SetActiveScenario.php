@@ -6,10 +6,14 @@ namespace app\models\scenarios\Resume;
 
 use Yii;
 use app\models\Resume;
+use app\models\scenarios\traits\ValidateRatingTrait;
 
 final class SetActiveScenario
 {
+    use ValidateRatingTrait;
+
     private Resume $model;
+    private $modelClass = 'Resume';
     private array $errors = [];
 
     public function __construct(Resume $model)
@@ -19,7 +23,7 @@ final class SetActiveScenario
 
     public function run(): bool
     {
-        if ($this->validateLanguages() && $this->validateLocation() && $this->validateRadius()) {
+        if ($this->validateRating() && $this->validateLanguages() && $this->validateLocation() && $this->validateRadius()) {
             $this->model->setActive();
 
             return true;

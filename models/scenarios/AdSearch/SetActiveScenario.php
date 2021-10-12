@@ -6,10 +6,14 @@ namespace app\models\scenarios\AdSearch;
 
 use Yii;
 use app\models\AdSearch;
+use app\models\scenarios\traits\ValidateRatingTrait;
 
 final class SetActiveScenario
 {
+    use ValidateRatingTrait;
+
     private AdSearch $model;
+    private $modelClass = 'AdSearch';
     private array $errors = [];
 
     public function __construct(AdSearch $model)
@@ -19,7 +23,7 @@ final class SetActiveScenario
 
     public function run(): bool
     {
-        if ($this->validateLocation()) {
+        if ($this->validateRating() && $this->validateLocation()) {
             $this->model->setActive();
 
             return true;

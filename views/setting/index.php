@@ -7,9 +7,8 @@ use app\components\Converter;
 use yii\widgets\LinkPager;
 use yii\grid\GridView;
 
-$this->title = Yii::t('app', 'Website settings');
+$this->title = Yii::t('app', 'Settings');
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="issue-index">
     <div class="row">
