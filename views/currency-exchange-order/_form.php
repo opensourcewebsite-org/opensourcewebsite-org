@@ -16,6 +16,7 @@ use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use dosamigos\leaflet\LeafLet;
 use app\assets\LeafletLocateControlAsset;
+use app\widgets\CurrencySelect\CurrencySelect;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
@@ -35,22 +36,34 @@ $form = ActiveForm::begin(['id' => 'form']);
             <div class="card">
                 <div class="card-body">
                     <?php if ($model->isNewRecord): ?>
-                        <?= $this->render('__sell_buy_currency_fields', [
-                                'form' => $form,
-                                'model' => $model,
-                        ]) ?>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'selling_currency_id')->widget(CurrencySelect::class); ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'buying_currency_id')->widget(CurrencySelect::class); ?>
+                            </div>
+                        </div>
                     <?php else: ?>
                         <div class="row">
                             <div class="col d-flex">
-                                <p><?= $model->getAttributeLabel('selling_currency_id') ?>:</p>&nbsp;
-                                <strong><?= $model->sellingCurrency->code ?> - <?= $model->sellingCurrency->name ?></strong>
-                            </div>
-                            <div class="col d-flex">
-                                <p><?= $model->getAttributeLabel('buying_currency_id') ?>:</p>&nbsp;
-                                <strong><?= $model->buyingCurrency->code ?> - <?= $model->buyingCurrency->name ?></strong>
+                                <strong><?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy') ?></strong>: <?= $model->getTitle() ?>
                             </div>
                         </div>
+                        <hr/>
                     <?php endif; ?>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'label')
+                                ->textInput([
+                                    'maxlength' => true,
+                                ])
+                                ->label($iconPrivate . $model->getAttributeLabel('label') . $labelOptional); ?>
+                        </div>
+                    </div>
+                    <hr/>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'fee')
@@ -81,16 +94,6 @@ $form = ActiveForm::begin(['id' => 'form']);
                                     'placeholder' => '∞',
                                 ])
                                 ->label($model->getAttributeLabel('selling_currency_max_amount') . $labelOptional); ?>
-                        </div>
-                    </div>
-                    <hr/>
-                    <div class="row">
-                        <div class="col">
-                            <?= $form->field($model, 'label')
-                                ->textInput([
-                                    'maxlength' => true,
-                                ])
-                                ->label($iconPrivate . $model->getAttributeLabel('label') . $labelOptional); ?>
                         </div>
                     </div>
                     <hr/>

@@ -74,8 +74,9 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                             [
                                 'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
                                 'value' => function ($model) {
-                                    return $model->getTitle();
+                                    return $model->getTitle() . ($model->label ? '<br/><i>' . $model->label . '</i>' : '');
                                 },
+                                'format' => 'html',
                                 'enableSorting' => false,
                             ],
                             [
@@ -91,10 +92,6 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                                 'value' => function ($model) {
                                     return $model->getFormatLimits();
                                 },
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'attribute' => 'label',
                                 'enableSorting' => false,
                             ],
                             [

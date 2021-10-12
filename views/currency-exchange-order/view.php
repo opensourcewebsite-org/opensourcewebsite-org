@@ -72,7 +72,8 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 'id',
                                 [
                                     'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
-                                    'value' => $model->getTitle(),
+                                    'value' => $model->getTitle() . ($model->label ? '<br/><i>' . $model->label . '</i>' : ''),
+                                    'format' => 'html',
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Exchange rate'),
@@ -84,10 +85,6 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 [
                                     'label' => Yii::t('app', 'Limits'),
                                     'value' => $model->getFormatLimits(),
-                                ],
-                                [
-                                    'attribute' => 'label',
-                                    'visible' => (bool)$model->label,
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Offers'),
