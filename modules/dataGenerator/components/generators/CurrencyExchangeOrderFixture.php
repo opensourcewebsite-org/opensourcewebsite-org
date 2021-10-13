@@ -11,103 +11,79 @@ use app\models\User;
 use app\helpers\LatLonHelper;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
+use app\models\matchers\ModelLinker;
 
 class CurrencyExchangeOrderFixture extends ARGenerator
 {
-    /**
-     * @throws ARGeneratorException
-     */
-    public function init()
-    {
-        if (!Currency::find()->exists()) {
-            throw new ARGeneratorException('Impossible to create ' . static::classNameModel() . ' - there are no Currency in DB!');
-        }
-
-        parent::init();
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
         if (!$user = $this->getRandomUser()) {
             return null;
         }
 
-        [$sellCurrencyId, $buyCurrencyId] = $this->getRandCurrenciesPair();
-
-        if (!$sellCurrencyId || !$buyCurrencyId) {
+        if (!$currencies = $this->getRandomCurrencies(2)) {
             return null;
         }
 
+        $sellingCurrency = $currencies[0];
+        $buyingCurrency = $currencies[1];
+
+        $sellingCashOn = $this->faker->boolean();
+        $buyingCashOn = $this->faker->boolean();
+
         $londonCenter = [51.509865, -0.118092];
-        [$orderSellingLat, $orderSellingLon] = LatLonHelper::generateRandomPoint($londonCenter, 100);
-        [$orderBuyingLat, $orderBuyingLon] = LatLonHelper::generateRandomPoint($londonCenter, 200);
+        [$sellingLocationLat, $sellingLocationLon] = LatLonHelper::generateRandomPoint($londonCenter, 100);
+        [$buyingLocationLat, $buyingLocationLon] = LatLonHelper::generateRandomPoint($londonCenter, 200);
 
-        $crossRateOn = (int)$this->faker->boolean();
-        $sellingCashOn = (int)$this->faker->boolean();
-        $buyingCashOn = (int)$this->faker->boolean();
-
-        $sellingPaymentMethodsIds = $this->getPaymentMethodsIds($sellCurrencyId);
-        $buyingPaymentMethodsIds = $this->getPaymentMethodsIds($buyCurrencyId);
-
-        if ($sellingPaymentMethodsIds) {
-            $orderSellingPaymentMethodsIds = $this->faker->randomElements(
-                $sellingPaymentMethodsIds,
-                $this->faker->numberBetween(1, count($sellingPaymentMethodsIds))
-            );
-        } else {
-            $orderSellingPaymentMethodsIds = [];
-            $sellingCashOn = CurrencyExchangeOrder::CASH_ON;
-        }
-
-        if ($buyingPaymentMethodsIds) {
-            $orderBuyingPaymentMethodsIds = $this->faker->randomElements(
-                $buyingPaymentMethodsIds,
-                $this->faker->numberBetween(1, count($buyingPaymentMethodsIds))
-            );
-        } else {
-            $orderBuyingPaymentMethodsIds = [];
-            $buyingCashOn = CurrencyExchangeOrder::CASH_ON;
-        }
-
-        // TODO add negative value too
-        $fee = $this->faker->boolean() ? null :
+        $fee = $this->faker->boolean() ?
             $this->faker->valid(static function ($v) {
                 return (bool)$v;
-            })->randomFloat(2, -20, 20);
+            })->randomFloat(2, -20, 20)
+            : null;
 
         $min_amount = $this->faker->boolean() ? $min_amount = $this->faker->randomNumber(2) : null;
         $max_amount = $this->faker->boolean() ?
             (isset($min_amount) ?
-                $min_amount + $this->faker->randomNumber(2) :
-                $this->faker->randomNumber(2))
+                $min_amount + $this->faker->randomNumber(2)
+                : $this->faker->randomNumber(2))
             : null;
 
         $model = new CurrencyExchangeOrder([
             'user_id' => $user->id,
-            'selling_currency_id' => $sellCurrencyId,
-            'buying_currency_id' => $buyCurrencyId,
+            'selling_currency_id' => $sellingCurrency->id,
+            'buying_currency_id' => $buyingCurrency->id,
             'fee' => $fee,
             'selling_currency_min_amount' => $min_amount,
             'selling_currency_max_amount' => $max_amount,
             'status' => CurrencyExchangeOrder::STATUS_ON,
             'selling_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
             'buying_delivery_radius' => $this->faker->boolean() ? $this->faker->randomNumber(3) : null,
-            'selling_location_lat' => $orderSellingLat,
-            'selling_location_lon' => $orderSellingLon,
-            'buying_location_lat' => $orderBuyingLat,
-            'buying_location_lon' => $orderBuyingLon,
+            'selling_location_lat' => $sellingCashOn ? $sellingLocationLat : null,
+            'selling_location_lon' => $sellingCashOn ? $sellingLocationLon : null,
+            'buying_location_lat' => $buyingCashOn ? $buyingLocationLat : null,
+            'buying_location_lon' => $buyingCashOn ? $buyingLocationLon : null,
             'selling_cash_on' => $sellingCashOn,
             'buying_cash_on' => $buyingCashOn,
-            'label' => $this->faker->boolean() ? $this->faker->sentence() : null,
+            'selling_currency_label' => $this->faker->boolean() ? $this->faker->sentence() : null,
+            'buying_currency_label' => $this->faker->boolean() ? $this->faker->sentence() : null,
         ]);
 
         if (!$model->save()) {
+            var_dump($model->getErrors());
             throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
-        // TODO refactoring old code
-        $this->service->updateSellingPaymentMethods($model, $orderSellingPaymentMethodsIds);
-        $this->service->updateBuyingPaymentMethods($model, $orderBuyingPaymentMethodsIds);
+        if (!$sellingCashOn || $this->faker->boolean()) {
+            if ($sellingPaymentMethods = $this->getPaymentMethodsByCurrencyId($sellingCurrency->id)) {
+                (new ModelLinker($model))->linkAll('sellingPaymentMethods', $sellingPaymentMethods);
+            }
+        }
+
+        if (!$buyingCashOn || $this->faker->boolean()) {
+            if ($buyingPaymentMethods = $this->getPaymentMethodsByCurrencyId($buyingCurrency->id)) {
+                (new ModelLinker($model))->linkAll('buyingPaymentMethods', $buyingPaymentMethods);
+            }
+        }
 
         return $model;
     }
@@ -124,41 +100,12 @@ class CurrencyExchangeOrderFixture extends ARGenerator
      * @param int $currencyId
      * @return int[] array
      */
-    private function getPaymentMethodsIds(int $currencyId): array
+    private function getPaymentMethodsByCurrencyId(int $currencyId): array
     {
-        return array_map(
-            'intval',
-            ArrayHelper::getColumn(
-                PaymentMethod::find()->joinWith('currencies c')
-                    ->where(['c.id' => $currencyId])
-                    ->select('{{%payment_method}}.id')
-                    ->limit(8)
-                    ->asArray()
-                    ->all(),
-                'id'
-            )
-        );
-    }
-
-    /**
-     * @return int[]
-     */
-    private function getRandCurrenciesPair(): array
-    {
-        $currenciesPairIds = Currency::find()
-            ->select('id')
-            ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
-            ->orderByRandAlt(2)
-            ->asArray()
+        return PaymentMethod::find()
+            ->joinWith('currencies c')
+            ->where(['c.id' => $currencyId])
+            ->limit($this->faker->numberBetween(1, 4))
             ->all();
-
-        if (!$currenciesPairIds || count($currenciesPairIds) !== 2) {
-            $message = "\n" . self::classNameModel() . ': creation skipped. There is no Currencies.' . "\n";
-            Yii::$app->controller->stdout($message, Console::BG_GREY);
-
-            return [];
-        }
-
-        return [$currenciesPairIds[0]['id'], $currenciesPairIds[1]['id']];
     }
 }

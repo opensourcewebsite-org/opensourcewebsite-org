@@ -71,8 +71,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             'attributes' => [
                                 'id',
                                 [
-                                    'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
-                                    'value' => $model->getTitle() . ($model->label ? '<br/><i>' . $model->label . '</i>' : ''),
+                                    'label' => Yii::t('app', 'Sell'),
+                                    'value' => $model->sellingCurrency->code . ($model->selling_currency_label ? '<br/><i>' . $model->selling_currency_label . '</i>' : ''),
+                                    'format' => 'html',
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Buy'),
+                                    'value' => $model->buyingCurrency->code . ($model->buying_currency_label ? '<br/><i>' . $model->buying_currency_label . '</i>' : ''),
                                     'format' => 'html',
                                 ],
                                 [

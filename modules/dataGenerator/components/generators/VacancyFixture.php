@@ -65,7 +65,7 @@ class VacancyFixture extends ARGenerator
             throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
-        if ($this->faker->boolean() && $keywords = $this->getRandomKeywords()) {
+        if ($this->faker->boolean() && ($keywords = $this->getRandomKeywords())) {
             (new ModelLinker($model))->linkAll('keywords', $keywords);
         }
 
@@ -85,10 +85,10 @@ class VacancyFixture extends ARGenerator
      */
     public function getRandomKeywords(): array
     {
-        $numOfKeywords = $this->faker->randomNumber(1);
+        $keywordsCount = $this->faker->randomNumber(1);
 
         return JobKeyword::find()
-            ->orderByRandAlt($numOfKeywords)
+            ->orderByRandAlt($keywordsCount)
             ->all();
     }
 

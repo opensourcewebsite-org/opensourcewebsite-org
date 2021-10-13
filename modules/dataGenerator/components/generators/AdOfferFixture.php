@@ -59,7 +59,7 @@ class AdOfferFixture extends ARGenerator
             throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }
 
-        if ($this->faker->boolean() && $keywords = $this->getRandomKeywords()) {
+        if ($this->faker->boolean() && ($keywords = $this->getRandomKeywords())) {
             (new ModelLinker($model))->linkAll('keywords', $keywords);
         }
 
@@ -75,14 +75,14 @@ class AdOfferFixture extends ARGenerator
     }
 
     /**
-     * @return array<JobKeyword>
+     * @return array<AdKeyword>
      */
     public function getRandomKeywords(): array
     {
-        $numOfKeywords = $this->faker->randomNumber(1);
+        $keywordsCount = $this->faker->randomNumber(1);
 
         return AdKeyword::find()
-            ->orderByRandAlt($numOfKeywords)
+            ->orderByRandAlt($keywordsCount)
             ->all();
     }
 }

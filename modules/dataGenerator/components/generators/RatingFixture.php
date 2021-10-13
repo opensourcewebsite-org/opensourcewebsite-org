@@ -28,6 +28,7 @@ class RatingFixture extends ARGenerator
             Rating::TEAM,
             Rating::DONATE,
         ]);
+
         $amount = $this->faker->numberBetween(1, 9);
 
         $user->addRating($type, $amount);

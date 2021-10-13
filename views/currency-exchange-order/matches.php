@@ -34,9 +34,16 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                 'enableSorting' => false,
                             ],
                             [
-                                'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
+                                'label' => Yii::t('app', 'Sell'),
                                 'value' => function ($model) {
-                                    return $model->getTitle();
+                                    return $model->sellingCurrency->code;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'label' => Yii::t('app', 'Buy'),
+                                'value' => function ($model) {
+                                    return $model->buyingCurrency->code;
                                 },
                                 'enableSorting' => false,
                             ],

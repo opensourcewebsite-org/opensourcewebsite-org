@@ -41,6 +41,25 @@ $form = ActiveForm::begin(['id' => 'form']);
                                 <?= $form->field($model, 'selling_currency_id')->widget(CurrencySelect::class); ?>
                             </div>
                         </div>
+                    <?php else: ?>
+                            <div class="row">
+                                <div class="col d-flex">
+                                    <strong><?= Yii::t('app', 'Sell') ?></strong>: <?= $model->sellingCurrency->code ?>
+                                </div>
+                            </div>
+                            <br/>
+                    <?php endif; ?>
+                        <div class="row">
+                            <div class="col">
+                                <?= $form->field($model, 'selling_currency_label')
+                                    ->textInput([
+                                        'maxlength' => true,
+                                    ])
+                                    ->label($iconPrivate . $model->getAttributeLabel('selling_currency_label') . $labelOptional); ?>
+                            </div>
+                        </div>
+                        <hr/>
+                    <?php if ($model->isNewRecord): ?>
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'buying_currency_id')->widget(CurrencySelect::class); ?>
@@ -49,18 +68,18 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <?php else: ?>
                         <div class="row">
                             <div class="col d-flex">
-                                <strong><?= Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy') ?></strong>: <?= $model->getTitle() ?>
+                                <strong><?= Yii::t('app', 'Buy') ?></strong>: <?= $model->buyingCurrency->code ?>
                             </div>
                         </div>
-                        <hr/>
+                        <br/>
                     <?php endif; ?>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'label')
+                            <?= $form->field($model, 'buying_currency_label')
                                 ->textInput([
                                     'maxlength' => true,
                                 ])
-                                ->label($iconPrivate . $model->getAttributeLabel('label') . $labelOptional); ?>
+                                ->label($iconPrivate . $model->getAttributeLabel('buying_currency_label') . $labelOptional); ?>
                         </div>
                     </div>
                     <hr/>

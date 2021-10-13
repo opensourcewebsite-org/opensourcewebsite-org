@@ -18,7 +18,8 @@ class CurrencyExchangeOrderSearch extends CurrencyExchangeOrder
             ['status', 'in', 'range' => [self::STATUS_ON, self::STATUS_OFF]],
             [
                 [
-                    'label',
+                    'selling_currency_label',
+                    'buying_currency_label',
                     'fee',
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
@@ -44,7 +45,8 @@ class CurrencyExchangeOrderSearch extends CurrencyExchangeOrder
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['like', 'label', $this->label])
+        $query->andFilterWhere(['like', 'selling_currency_label', $this->selling_currency_label])
+            ->andFilterWhere(['like', 'buying_currency_label', $this->buying_currency_label])
             ->andFilterWhere(['status' => $this->status])
             ->andFilterWhere(['fee' => $this->fee])
             ->andFilterWhere(['selling_currency_min_amount' => $this->selling_currency_min_amount])

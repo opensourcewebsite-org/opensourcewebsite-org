@@ -99,6 +99,8 @@ abstract class ARGenerator extends Fixture
         if (!$user) {
             $message = "\n" . self::classNameModel() . ': creation skipped. There is no Users.' . "\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
+
+            return false;
         }
 
         return $user;
@@ -116,8 +118,29 @@ abstract class ARGenerator extends Fixture
         if (!$currency) {
             $message = "\n" . self::classNameModel() . ': creation skipped. There is no Currencies.' . "\n";
             Yii::$app->controller->stdout($message, Console::BG_GREY);
+
+            return false;
         }
 
         return $currency;
+    }
+
+    protected function getRandomCurrencies($limit = 2): ?array
+    {
+        /** @var Currency|null $currency */
+        $currencies = Currency::find()
+            ->select('id')
+            ->where(['in', 'code', ['USD', 'EUR', 'RUB']])
+            ->orderByRandAlt($limit)
+            ->all();
+
+        if (count($currencies) != $limit) {
+            $message = "\n" . self::classNameModel() . ': creation skipped. There is no Currencies.' . "\n";
+            Yii::$app->controller->stdout($message, Console::BG_GREY);
+
+            return false;
+        }
+
+        return $currencies;
     }
 }

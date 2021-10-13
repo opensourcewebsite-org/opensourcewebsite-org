@@ -57,8 +57,12 @@ $model = $matchOrderModel;
                             'attributes' => [
                                 'id',
                                 [
-                                    'label' => Yii::t('app', 'Sell') . ' / ' . Yii::t('app', 'Buy'),
-                                    'value' => $model->getTitle(),
+                                    'label' => Yii::t('app', 'Sell'),
+                                    'value' => $model->sellingCurrency->code,
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Buy'),
+                                    'value' => $model->buyingCurrency->code,
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Exchange rate'),

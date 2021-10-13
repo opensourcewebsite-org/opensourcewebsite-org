@@ -42,7 +42,8 @@ use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsS
  * @property int|null $processed_at
  * @property int $selling_cash_on
  * @property int $buying_cash_on
- * @property string $label
+ * @property string $selling_currency_label
+ * @property string $buying_currency_label
  *
  * @property User $user
  * @property CurrencyExchangeOrderBuyingPaymentMethod[] $currencyExchangeOrderBuyingPaymentMethods
@@ -116,10 +117,15 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'buying_delivery_radius',
                     'created_at',
                     'processed_at',
+                ],
+                'integer',
+            ],
+            [
+                [
                     'selling_cash_on',
                     'buying_cash_on',
                 ],
-                'integer',
+                'boolean',
             ],
             [
                 ['selling_delivery_radius', 'buying_delivery_radius'],
@@ -173,7 +179,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 [
                     'selling_location',
                     'buying_location',
-                    'label',
+                    'selling_currency_label',
+                    'buying_currency_label',
                 ],
                 'string',
                 'max' => 255,
@@ -280,7 +287,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'processed_at' => 'Processed At',
             'selling_cash_on' => Yii::t('bot', 'Cash'),
             'buying_cash_on' => Yii::t('bot', 'Cash'),
-            'label' => Yii::t('app', 'Label'),
+            'selling_currency_label' => Yii::t('app', 'Label'),
+            'buying_currency_label' => Yii::t('app', 'Label'),
             'sellingPaymentMethodIds' => Yii::t('app', 'Selling payment methods'),
             'buyingPaymentMethodIds' => Yii::t('app', 'Buying payment methods'),
         ];
