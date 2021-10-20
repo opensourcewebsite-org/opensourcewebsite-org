@@ -76,6 +76,7 @@ trait SelectForUpdateTrait
             $query = static::find();
 
             $traits = class_uses($query);
+
             if (!isset($traits[SelfSearchTrait::class])) {
                 throw new InvalidCallException($query::className() . ' require to use trait ' . SelfSearchTrait::class);
             }
@@ -101,6 +102,7 @@ trait SelectForUpdateTrait
             $handler = static function () {
                 static::clearFoundForUpdate();
             };
+
             static::getDb()->on(Connection::EVENT_COMMIT_TRANSACTION, $handler);
             static::getDb()->on(Connection::EVENT_ROLLBACK_TRANSACTION, $handler);
         }
@@ -110,7 +112,7 @@ trait SelectForUpdateTrait
         $this->foundForUpdateKey = $key;
     }
 
-    private function isFoundForUpdate(): bool
+    public function isFoundForUpdate(): bool
     {
         return isset(static::$foundForUpdate[$this->foundForUpdateKey]);
     }

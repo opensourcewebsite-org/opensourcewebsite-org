@@ -15,6 +15,9 @@ class ContactWidget extends Widget
 
     public function run(): string
     {
-        return $this->render('view', ['user' => $this->user, 'options' => $this->options]);
+        return $this->render('view', [
+            'user' => $this->user,
+            'options' => $this->options,
+        ]);
     }
 }

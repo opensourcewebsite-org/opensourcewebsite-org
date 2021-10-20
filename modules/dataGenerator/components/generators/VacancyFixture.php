@@ -12,29 +12,24 @@ use app\models\matchers\ModelLinker;
 use app\models\User;
 use app\models\Vacancy;
 use app\helpers\LatLonHelper;
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
 class VacancyFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
         if (!$user = $this->getRandomUser()) {
             return null;
         }
 
-        if (!($currency = $this->getRandomCurrency())) {
+        if (!$currency = $this->getRandomCurrency()) {
             return null;
         }
 
-        $gender = $this->getRandomGender();
+        if (!$gender = $this->getRandomGender()) {
+            return null;
+        }
 
         $model = new Vacancy();
 
@@ -61,23 +56,13 @@ class VacancyFixture extends ARGenerator
             $model->location_lon = $location[1];
         }
 
-        if (!$model->save()) {
-            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
-        }
-
-        if ($this->faker->boolean() && ($keywords = $this->getRandomKeywords())) {
-            (new ModelLinker($model))->linkAll('keywords', $keywords);
+        if ($this->save($model)) {
+            if ($this->faker->boolean() && ($keywords = $this->getRandomKeywords())) {
+                (new ModelLinker($model))->linkAll('keywords', $keywords);
+            }
         }
 
         return $model;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ?ActiveRecord
-    {
-        return $this->factoryModel();
     }
 
     /**
@@ -90,16 +75,5 @@ class VacancyFixture extends ARGenerator
         return JobKeyword::find()
             ->orderByRandAlt($keywordsCount)
             ->all();
-    }
-
-    private function getRandomGender(): ?Gender
-    {
-        /** @var Gender|null $gender */
-        $gender = Gender::find()
-            ->select('id')
-            ->orderByRandAlt(1)
-            ->one();
-
-        return $gender;
     }
 }

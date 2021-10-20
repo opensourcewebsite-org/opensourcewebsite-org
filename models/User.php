@@ -38,8 +38,8 @@ use yii\db\Query;
  * @property Company[] $companies
  * @property null|\app\modules\bot\models\User $botUser
  * @property Contact $contact
- * @property Contact[] $contactsFromMe
- * @property Contact[] $contactsToMe
+ * @property Contact[] $contacts
+ * @property Contact[] $counterContacts
  * @property UserLanguage[] $languages
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -161,6 +161,7 @@ class User extends ActiveRecord implements IdentityInterface
             'rating' => Yii::t('app', 'Social Rating'),
             'username' => Yii::t('app', 'Username'),
             'name' => Yii::t('app', 'Name'),
+            'currency_id' => Yii::t('app', 'Currency'),
         ];
     }
 
@@ -632,19 +633,27 @@ class User extends ActiveRecord implements IdentityInterface
                'ROW_NUMBER() OVER(ORDER BY rating DESC, created_at ASC) `rank`',
                'id',
            ])
-           ->from(self::tableName());
+           ->from(self::tableName())
+           ->andWhere([
+               'status' => self::STATUS_ACTIVE,
+           ]);
 
         $query = (new Query())
             ->select([
                 'rank',
             ])
-            ->from(['ranks' => $subQuery])
-            ->where(['id' => $this->id]);
+            ->from([
+                'ranks' => $subQuery,
+            ])
+            ->andWhere([
+                'id' => $this->id,
+            ]);
 
         $rank = $query->scalar();
 
         return $rank ?: 0;
     }
+
     // TODO сохранять ли дефолт
     public function updateRating()
     {
@@ -708,26 +717,21 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
-        //TODO [ref] it is very bad way. NEVER set default conditions for whole app.
-        //  there are exist very-very rare cases, when it is really necessary to do.
-        //  Why: this condition useful, only when user with role 'User' is logged on.
-        //       but what if user with role 'Admin' is logged on?
-        //       Btw in console app `Yii::$app->user` is not exist at all!
     }
 
-    public function getContactsFromMe(): ContactQuery
+    public function getContacts(): ContactQuery
     {
         return $this->hasMany(Contact::class, ['user_id' => 'id']);
     }
 
-    public function getContactsToMe(): ContactQuery
+    public function getCounterContacts(): ContactQuery
     {
         return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
     public function getRealConfirmations()
     {
-        return $this->getContactsToMe()
+        return $this->getCounterContacts()
             ->where([
                 'is_real' => 1,
             ])
@@ -736,7 +740,11 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getDisplayName()
     {
-        return $this->contact->getContactName();
+        if ($this->contact) {
+            return $this->contact->getContactName();
+        } else {
+            return !empty($this->username) ? '@' . $this->username : '#' . $this->id;
+        }
     }
 
     /**
@@ -987,5 +995,69 @@ class User extends ActiveRecord implements IdentityInterface
     public function getStellar()
     {
         return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
+    }
+
+    public function getPendingDebts()
+    {
+        $query = Debt::find()
+            ->andWhere([
+                'or',
+                ['from_user_id' => $this->id],
+                ['to_user_id' => $this->id],
+            ])
+            ->andWhere([
+                'status' => Debt::STATUS_PENDING,
+            ])
+            ->orderBy([
+                'created_at' => SORT_DESC,
+            ]);
+
+        $query->multiple = true;
+
+        return $query;
+    }
+
+    public function getDepositDebtBalance(int $currencyId, int $counterUserId = null)
+    {
+        $query = DebtBalance::find()
+            ->andWhere([
+                'to_user_id' => $this->id,
+                'currency_id' => $currencyId,
+            ])
+            ->andWhere(['>', 'amount', 0]);
+
+        if ($counterUserId) {
+            $query->andWhere([
+                'from_user_id' => $counterUserId,
+            ]);
+
+            $amount = $query->select('amount')->scalar();
+        } else {
+            $amount = $query->sum('amount');
+        }
+
+        return $amount;
+    }
+
+    public function getCreditDebtBalance(int $currencyId, int $counterUserId = null)
+    {
+        $query = DebtBalance::find()
+            ->andWhere([
+                'from_user_id' => $this->id,
+                'currency_id' => $currencyId,
+            ])
+            ->andWhere(['>', 'amount', 0]);
+
+        if ($counterUserId) {
+            $query->andWhere([
+                'to_user_id' => $counterUserId,
+            ]);
+
+            $amount = $query->select('amount')->scalar();
+        } else {
+            $amount = $query->sum('amount');
+        }
+
+        return $amount;
     }
 }

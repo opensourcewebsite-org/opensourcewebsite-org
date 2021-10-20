@@ -4,8 +4,8 @@ use app\models\Currency;
 use app\models\Resume;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
-use app\widgets\CurrencySelect\CurrencySelect;
-use app\widgets\JobKeywordsSelect\JobKeywordsSelect;
+use app\widgets\selects\CurrencySelect;
+use app\widgets\selects\JobKeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
 use yii\helpers\Url;
@@ -61,6 +61,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'min_hourly_rate')
                                 ->textInput([
+                                    'autocomplete' => 'off',
                                     'placeholder' => '∞',
                                 ])
                                 ->label($model->getAttributeLabel('min_hourly_rate') . $labelOptional); ?>
@@ -107,7 +108,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <?= SubmitButton::widget() ?>
                     <?php $cancelUrl = $model->isNewRecord ? Url::to('/resume/index') : Url::to(['/resume/view', 'id' => $model->id])?>
                     <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-                    <?php if (!$model->isNewRecord): ?>
+                    <?php if (!$model->isNewRecord) : ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id],
                             'options' => [

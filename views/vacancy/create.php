@@ -13,7 +13,6 @@ use app\models\Currency;
  * @var array $_params_
  */
 
-
 $this->title = Yii::t('app', 'Create Vacancy');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;

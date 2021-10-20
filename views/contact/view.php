@@ -13,6 +13,9 @@ use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 use app\models\User;
+use yii\grid\ActionColumn;
+use app\widgets\buttons\AddButton;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
@@ -69,37 +72,6 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <ul class="nav nav-pills ml-auto p-2">
-                        <?php if ($contact->canHaveDebtRedistribution()) { ?>
-                            <li class="nav-item align-self-center mr-4">
-                                <?= ModalAjax::widget([
-                                    'id' => 'modal-debt-redistribution-table',
-                                    //`overflow-y` fix scroll after closing of sub-modal
-                                    'options' => ['style' => 'overflow-y:scroll;'],
-                                    'header'=> Yii::t('app', 'Debt Redistribution'),
-                                    'toggleButton' => [
-                                        'label' => Yii::t('app', 'Debt Redistribution'),
-                                        'class' => 'btn btn-light',
-                                    ],
-                                    'url' => Url::to([
-                                        '/debt-redistribution',
-                                        'contactId' => $contact->id,
-                                        'linkUserId' => $user ? $user->id : null,
-                                    ]),
-                                    'ajaxSubmit' => false,
-                                    'events' => [
-                                        ModalAjax::EVENT_MODAL_SHOW_COMPLETE => new JsExpression('
-                                        function(event, xhr, textStatus) {
-                                            if (xhr.status >= 400) {
-                                                jQuery(this).modal("toggle");
-                                                osw_alertOnAjaxError(xhr, textStatus);
-                                            }
-                                        }
-                                    '),
-                                    ],
-                                ]);
-                                ?>
-                            </li>
-                        <?php } ?>
                         <li class="nav-item align-self-center mr-3">
                             <?= EditButton::widget([
                                 'options' => [
@@ -120,7 +92,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
                                 <tr>
-                                    <th class="align-middle">Groups</th>
+                                    <th class="align-middle"><?= Yii::t('app', 'Groups') ?></th>
                                     <td class="align-middle">
                                         <?php foreach ($contact->getGroups()->each() as $group) : ?>
                                             <?= Html::badge('primary', $group->name) . '&nbsp'; ?>
@@ -176,24 +148,96 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
     </div>
 </div>
 
-<?php
-$this->registerJs(<<<JS
-/**
- * @param jqXHR
- * @param {?string} textStatus
- * @param {?string} errorThrown
- */
-function osw_alertOnAjaxError(jqXHR, textStatus, errorThrown) {
-    let errTitle = textStatus ? textStatus : jqXHR.statusText;
-    if (errorThrown) {
-        errTitle += "\\n" + errorThrown;
-    }
-    errTitle += "\\nReload page, please.";
-    if (!jqXHR.responseJSON && jqXHR.responseText) {
-        errTitle += "\\n\\n" + jqXHR.responseText;
-    }
-    alert(errTitle);
-    console.log(errTitle, jqXHR.responseJSON ? jqXHR.responseJSON : jqXHR.responseText);
-}
-JS
-, View::POS_END);
+<?php if ($contact->isUser() && $contact->hasDebtTransferPriority()) : ?>
+<div class="debt-limits-index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('app', 'Debt transfer limits'); ?></h3>
+                    <div class="card-tools">
+                        <?= ModalAjax::widget([
+                            'id' => 'add-debt-transfer-limit',
+                            'header' => Yii::t('app', 'Add debt transfer limit'),
+                            'toggleButton' => [
+                                'label' => Html::icon('add'),
+                                'title' => Yii::t('app', 'Add'),
+                                'class' => 'btn btn-outline-success',
+                                'style' =>  [
+                                    'float' => 'right',
+                                ],
+                            ],
+                            'url' => Url::to([
+                                'contact/add-debt-transfer-limit',
+                                'linkUserId' => $contact->link_user_id,
+                            ]),
+                        ]);?>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <?= GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        //'filterModel' => $searchModel,
+                        'summary' => false,
+                        'tableOptions' => ['class' => 'table table-hover'],
+                        'columns' => [
+                            [
+                                'attribute' => 'currency_id',
+                                'value' => function ($model) {
+                                    return $model->currency->code;
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'attribute' => 'max_amount',
+                                'value' => function ($model) {
+                                    return $model->max_amount ?? '∞';
+                                },
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'value' => function ($model) {
+                                    return ModalAjax::widget([
+                                        'id' => 'change-debt-transfer-limit-' . $model->id,
+                                        'header' => Yii::t('app', 'Edit debt transfer limit'),
+                                        'toggleButton' => [
+                                            'label' => Html::icon('edit'),
+                                            'title' => Yii::t('app', 'Edit'),
+                                            'class' => 'btn btn-light edit-btn',
+                                            'style' =>  [
+                                                'float' => 'right',
+                                            ],
+                                        ],
+                                        'url' => Url::to([
+                                            'contact/change-debt-transfer-limit',
+                                            'id' => $model->id,
+                                        ]),
+                                    ]);
+                                },
+                                'format' => 'raw',
+                            ],
+                        ],
+                        'layout' => $dataProvider->getCount() ? "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>" : '',
+                        'pager' => [
+                            'options' => [
+                                'class' => 'pagination float-right',
+                            ],
+                            'linkContainerOptions' => [
+                                'class' => 'page-item',
+                            ],
+                            'linkOptions' => [
+                                'class' => 'page-link',
+                            ],
+                            'maxButtonCount' => 5,
+                            'disabledListItemSubTagOptions' => [
+                                'tag' => 'a',
+                                'class' => 'page-link',
+                            ],
+                        ],
+                    ]); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>

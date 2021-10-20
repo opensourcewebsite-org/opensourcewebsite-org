@@ -10,7 +10,6 @@ use yii\web\View;
  * @var array $_params_
  */
 
-
 $this->title = Yii::t('app', 'Update Vacancy') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Vacancies'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view', 'id' => $model->id]];

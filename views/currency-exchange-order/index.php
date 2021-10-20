@@ -53,7 +53,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                         <?= AddButton::widget([
                             'url' => ['currency-exchange-order/create'],
                             'options' => [
-                                'title' => 'New Order',
+                                'title' => Yii::t('app', 'New Order'),
                                 'style' => [
                                     'float' => 'right',
                                 ],

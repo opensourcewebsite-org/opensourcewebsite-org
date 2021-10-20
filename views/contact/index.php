@@ -11,7 +11,6 @@ use yii\grid\ActionColumn;
 /* @var $view int */
 
 $this->title = Yii::t('app', 'Contacts');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="contact-index">
     <div class="row">
@@ -40,8 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             [
                                 'label' => Yii::t('app', 'Name'),
-                                'value' => function (Contact $data) {
-                                    return Html::a($data->getContactName(), ['/contact/view', 'id' => $data->id]);
+                                'value' => function (Contact $model) {
+                                    return Html::a($model->getContactName(), ['contact/view', 'id' => $model->id]);
                                 },
                                 'enableSorting' => false,
                                 'format' => 'html',

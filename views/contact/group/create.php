@@ -7,7 +7,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 $form = ActiveForm::begin([
-        'enableAjaxValidation' => true,
+    'enableAjaxValidation' => true,
 ]);
 ?>
 <div class="form">

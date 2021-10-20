@@ -21,14 +21,6 @@ trait FloatAttributeTrait
         return self::getTableSchema()->getColumn($name)->scale;
     }
 
-    public function getFloatRuleFilter(): callable
-    {
-        return function($attribute) {
-            $value = round($this->getAttribute($attribute), $this->getAttributeFloatScale($attribute));
-            $this->setAttribute($attribute, $value);
-        };
-    }
-
     private function isAttributeFloatChanged($name): bool
     {
         return !Number::isFloatEqual(

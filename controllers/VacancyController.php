@@ -17,7 +17,7 @@ use app\models\WebModels\WebVacancy;
 use app\models\search\VacancySearch;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
-use yii\web\Controller;
+use app\components\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -79,7 +79,6 @@ class VacancyController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'currencies' => Currency::find()->all(),
             'companies' => $model->user->getCompanies()->all(),
         ]);
     }
@@ -96,7 +95,6 @@ class VacancyController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'currencies' => Currency::find()->all(),
             'companies' => $model->user->getCompanies()->all(),
         ]);
     }
@@ -158,7 +156,7 @@ class VacancyController extends Controller
         $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
 
         $languages = array_map(function ($language) {
-            return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
+            return strtoupper($language->code) . ' - ' . $language->name;
         }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $languageLevels = array_map(function ($languageLevel) {
@@ -205,7 +203,7 @@ class VacancyController extends Controller
         $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
 
         $languages = array_map(function ($language) {
-            return strtoupper($language->code) . ' - ' . Yii::t('app', $language->name);
+            return strtoupper($language->code) . ' - ' . $language->name;
         }, Language::find()->indexBy('id')->orderBy('code ASC')->all());
 
         $languageLevels = array_map(function ($languageLevel) {

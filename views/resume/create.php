@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use yii\web\View;
@@ -16,8 +17,5 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => 
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="resume-create">
-    <?= $this->render('_form', [
-        'model' => $model,
-        'currencies' => $currencies,
-    ]); ?>
+    <?= $this->render('_form', $_params_); ?>
 </div>

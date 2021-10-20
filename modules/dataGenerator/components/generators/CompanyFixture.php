@@ -9,12 +9,10 @@ use app\models\Company;
 use app\models\CompanyUser;
 use app\models\Currency;
 use app\models\User;
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
 
-class CompanyUserFixture extends ARGenerator
+class CompanyFixture extends ARGenerator
 {
     protected function factoryModel(): ?ActiveRecord
     {
@@ -29,21 +27,10 @@ class CompanyUserFixture extends ARGenerator
             'description' => $this->faker->realText(),
         ]);
 
-        if (!$model->save()) {
-            var_dump($model->errors);
-            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
+        if ($this->save($model)) {
+            $model->link('users', $user, ['user_role' => CompanyUser::ROLE_OWNER]);
         }
 
-        $model->link('users', $user, ['user_role' => CompanyUser::ROLE_OWNER]);
-
         return $model;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ?ActiveRecord
-    {
-        return $this->factoryModel();
     }
 }

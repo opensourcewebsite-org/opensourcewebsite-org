@@ -3,7 +3,7 @@
 namespace tests\models;
 
 use Yii;
-use app\models\LoginForm;
+use app\models\forms\LoginForm;
 use app\tests\fixtures\CssFixture;
 use app\tests\fixtures\MoqupFixture;
 use app\tests\fixtures\UserFixture;

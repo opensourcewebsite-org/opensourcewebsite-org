@@ -16,18 +16,13 @@ use yii\helpers\Console;
 
 class ResumeFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
         if (!$user = $this->getRandomUser()) {
             return null;
         }
 
-        if (!($currency = $this->getRandomCurrency())) {
+        if (!$currency = $this->getRandomCurrency()) {
             return null;
         }
 
@@ -56,23 +51,13 @@ class ResumeFixture extends ARGenerator
             $model->search_radius = $this->faker->randomNumber(3);
         }
 
-        if (!$model->save()) {
-            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
-        }
-
-        if ($this->faker->boolean() && ($keywords = $this->getRandomKeywords())) {
-            (new ModelLinker($model))->linkAll('keywords', $keywords);
+        if ($this->save($model)) {
+            if ($this->faker->boolean() && ($keywords = $this->getRandomKeywords())) {
+                (new ModelLinker($model))->linkAll('keywords', $keywords);
+            }
         }
 
         return $model;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ?ActiveRecord
-    {
-        return $this->factoryModel();
     }
 
     /**

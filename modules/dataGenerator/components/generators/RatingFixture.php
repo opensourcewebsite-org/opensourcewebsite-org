@@ -13,11 +13,6 @@ use yii\helpers\Console;
 
 class RatingFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
         if (!$user = $this->getRandomUser()) {
@@ -34,13 +29,5 @@ class RatingFixture extends ARGenerator
         $user->addRating($type, $amount);
 
         return $user;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ?ActiveRecord
-    {
-        return $this->factoryModel();
     }
 }

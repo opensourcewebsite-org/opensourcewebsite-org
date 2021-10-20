@@ -2,14 +2,10 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
-use app\models\Contact;
-use app\modules\dataGenerator\models\Currency;
 use app\models\DebtRedistribution;
-use app\models\queries\DebtRedistributionQuery;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
-use yii\helpers\VarDumper;
 
 class DebtRedistributionFixture extends ARGenerator
 {
@@ -20,73 +16,34 @@ class DebtRedistributionFixture extends ARGenerator
      */
     protected function factoryModel(): ?ActiveRecord
     {
-        $contact = $this->findContact();
-
-        if (!$contact) {
+        if (!$users = $this->getRandomUsers(2)) {
             return null;
         }
 
-        //var_dump($contact); die();
+        if (!$currency = $this->getRandomCurrency()) {
+            return null;
+        }
 
-        $model = new DebtRedistribution();
-
-        $model->setUsers($contact);
-        $model->currency_id = $this->findCurrency($contact);
-        $model->max_amount = $this->faker->optional()->randomFloat();
-
-        return $model;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     * @throws \yii\db\Exception
-     */
-    private function findContact(): ?Contact
-    {
-        $currencyQty = Currency::find()->count();
-
-        /** @var Contact $contact pair of users, who can has additional DebtRedistribution */
-        $contact = Contact::find()
-            ->select('contact.user_id, contact.link_user_id, COUNT(debt_redistribution.currency_id) AS n_currency')
-            ->joinWith('debtRedistributions')
-            ->groupBy('contact.user_id, contact.link_user_id')
-            ->having('n_currency < :currencyQty', [':currencyQty' => $currencyQty])
-            ->orderBy('n_currency')
-            ->limit(1)
+        $model = DebtRedistribution::find()
+            ->where([
+                'user_id' => $users[0]->id,
+                'link_user_id' => $users[1]->id,
+                'currency_id' => $currency->id,
+            ])
             ->one();
 
-        if (!$contact) {
-            $message = "\n" . self::classNameModel() . ': creation skipped. Either no Contact exists, or all Contacts have full set of DebtRedistributions.' . "\n";
-            Yii::$app->controller->stdout($message, Console::BG_GREY);
+        if (!$model) {
+            $model = new DebtRedistribution();
 
-            return null;
+            $model->user_id = $users[0]->id;
+            $model->link_user_id = $users[1]->id;
+            $model->currency_id = $currency->id;
         }
 
-        return $contact;
-    }
+        $model->max_amount = $this->faker->optional()->numberBetween(0, 1000);
 
-    /**
-     * @throws ARGeneratorException
-     */
-    private function findCurrency(Contact $contact)
-    {
-        /** @var int $currencyId Currency, that was not used in DebtRedistributions yet */
-        $currencyId = Currency::find()
-            ->select('currency.id')
-            ->joinWith([
-                'debtRedistributions' => static function (DebtRedistributionQuery $query) use ($contact) {
-                    $query->usersByModelSource($contact, 'andOnCondition');
-                },
-            ])
-            ->andWhere('debt_redistribution.id IS NULL')
-            ->limit(1)
-            ->scalar();
+        $this->save($model);
 
-        if (!$currencyId) {
-            $message = 'Expected to find $currencyId. $contact=' . VarDumper::dumpAsString($contact->attributes);
-            throw new ARGeneratorException($message);
-        }
-
-        return $currencyId;
+        return $model;
     }
 }

@@ -54,7 +54,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <?= SaveButton::widget(); ?>
                     <?php $cancelUrl = $model->isNewRecord ? Url::to('/company-user/index') : Url::to(['/company-user/view', 'id' => $model->id]) ?>
                     <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-                    <?php if (!$model->isNewRecord): ?>
+                    <?php if (!$model->isNewRecord) : ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id],
                             'options' => [

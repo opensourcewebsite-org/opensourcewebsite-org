@@ -41,7 +41,7 @@ class SupportGroupCommand extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                'class'              => TimestampBehavior::className(),
+                'class' => TimestampBehavior::className(),
                 'createdAtAttribute' => false,
             ],
         ];

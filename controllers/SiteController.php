@@ -5,11 +5,11 @@ namespace app\controllers;
 use Yii;
 use app\models\Contact;
 use app\models\Gender;
-use app\models\LoginForm;
+use app\models\forms\LoginForm;
 use app\models\RequestResetPasswordForm;
 use app\models\Rating;
 use app\models\ResetPasswordForm;
-use app\models\SignupForm;
+use app\models\forms\SignupForm;
 use app\models\User;
 use app\models\UserEmail;
 use app\models\Currency;
@@ -215,8 +215,8 @@ class SiteController extends Controller
 
     private function mergeAccounts($user, $userToMerge)
     {
-        $connection = Yii::$app->db;
-        $transaction = $connection->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
+
         try {
             BotUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\CompanyUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");

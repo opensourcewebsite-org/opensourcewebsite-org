@@ -2,7 +2,7 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
-use app\models\SignupForm;
+use app\models\forms\SignupForm;
 use app\models\User;
 use Faker\Provider\Internet;
 use yii\db\ActiveRecord;
@@ -41,7 +41,7 @@ class UserFixture extends ARGenerator
             throw new ARGeneratorException($modelForm);
         }
 
-        //invalid email. regenerate it
+        //invalid username. regenerate it
         return $this->factoryModel($modelForm);
     }
 }

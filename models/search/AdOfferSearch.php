@@ -16,16 +16,9 @@ class AdOfferSearch extends AdOffer
     {
         return [
             ['status', 'in', 'range' => [self::STATUS_ON, self::STATUS_OFF]],
-            [
-                [
-                    'id',
-                    'currency_id',
-                ],
-                'integer',
-            ],
+            [['id', 'currency_id'], 'integer'],
             ['title', 'string'],
             ['price', 'double'],
-
         ];
     }
 

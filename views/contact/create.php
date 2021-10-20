@@ -10,7 +10,5 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="contact-create">
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]); ?>
+    <?= $this->render('_form', $_params_); ?>
 </div>

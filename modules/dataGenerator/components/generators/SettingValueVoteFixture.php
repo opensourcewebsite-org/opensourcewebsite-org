@@ -15,11 +15,6 @@ use yii\helpers\Console;
 
 class SettingValueVoteFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
         if ($user = $this->getRandomUser()) {
@@ -32,19 +27,7 @@ class SettingValueVoteFixture extends ARGenerator
 
         $settingValueVote = $settingValue->setVoteByUserId($user->id);
 
-        // if (!$model->save()) {
-        //     throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
-        // }
-
         return $settingValueVote;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ?ActiveRecord
-    {
-        return $this->factoryModel();
     }
 
     private function getRandomSettingValue(): ?SettingValue

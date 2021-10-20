@@ -6,7 +6,7 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
-use app\widgets\PaymentMethodSelect\PaymentMethodSelect;
+use app\widgets\selects\PaymentMethodSelect;
 
 /**
  * @var $this View

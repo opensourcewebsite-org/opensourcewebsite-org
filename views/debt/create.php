@@ -8,14 +8,7 @@ use yii\helpers\Html;
 $this->title = Yii::t('app', 'Create Debt');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Debts'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="debt-create">
-
-    <?= $this->render('_form', [
-        'model' => $model,
-        'user' => $user,
-        'currency' => $currency,
-    ]); ?>
-
+    <?= $this->render('_form', $_params_); ?>
 </div>

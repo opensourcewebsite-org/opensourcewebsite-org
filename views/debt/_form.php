@@ -9,65 +9,61 @@ use kartik\date\DatePicker;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use janisto\timepicker\TimePicker;
+use app\widgets\selects\CurrencySelect;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Debt */
 /* @var $form yii\widgets\ActiveForm */
 
+$form = ActiveForm::begin();
 ?>
-
-<div class="debt-form">
-    <?php $form = ActiveForm::begin(); ?>
+<div class="form">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'user')->widget(Select2::class, [
-                                'data' => ArrayHelper::map($user, 'id', 'displayName'),
-                                'options' => [
-                                    'prompt' => '',
-                                ],
-                            ]); ?>
+                            <?= $form->field($model, 'direction')->radioList(Debt::DIRECTION_LABELS); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'currency_id')->widget(Select2::class, [
-                                'data' => ArrayHelper::map($currency, 'id', 'code'),
-                                'options' => [
-                                    'prompt' => '',
-                                ],
-                            ]); ?>
+                            <?= $form->field($model, 'counter_user_id')->widget(Select2::class, [
+                                    'data' => ArrayHelper::map($users, 'id', 'displayName'),
+                                    'options' => [
+                                        'prompt' => 'Select...',
+                                    ],
+                                ]); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'amount', [
-									'inputOptions' => [
-										'autocomplete' => 'off'
-									]
-								])->textInput(); ?>
+                            <?= $form->field($model, 'amount')
+                                ->textInput([
+                                    'autocomplete' => 'off',
+                                ]); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'direction')->dropDownList([
-                                Debt::DIRECTION_DEPOSIT => 'My Deposit',
-                                Debt::DIRECTION_CREDIT => 'My Credit',
-                            ]); ?>
+                            <?= $form->field($model, 'currency_id')->widget(CurrencySelect::class); ?>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <?= SaveButton::widget(); ?>
+                    <?= SaveButton::widget([
+                        'text' => Yii::t('app', 'Add'),
+                        'options' => [
+                            'title' => Yii::t('app', 'Add'),
+                        ],
+                    ]); ?>
                     <?= CancelButton::widget([
-                        'url' => ['/debt']
+                        'url' => ['/debt'],
                     ]); ?>
                 </div>
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

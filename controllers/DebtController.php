@@ -5,18 +5,18 @@ namespace app\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use app\models\Debt;
+use app\models\DebtBalance;
+use app\models\forms\CreateDebtForm;
 use app\models\User;
-use yii\web\Controller;
+use app\components\Controller;
 use app\models\Currency;
 use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-
 class DebtController extends Controller
 {
-
     public function behaviors(): array
     {
         return [
@@ -40,115 +40,177 @@ class DebtController extends Controller
 
     public function actionIndex(): string
     {
-
-        $userId = Yii::$app->user->id;
-        $query = Debt::find()->andWhere(['to_user_id' => $userId, 'status' => Debt::STATUS_PENDING]);
+        $query = $this->user->getPendingDebts();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-        return $this->render('new', [
-            'direction' => Debt::DIRECTION_DEPOSIT,
+        return $this->render('pending', [
             'dataProvider' => $dataProvider,
+            'user' => $this->user,
         ]);
     }
 
-    public function actionCurrent(): string
+    public function actionDeposit(): string
     {
-        $userId = Yii::$app->user->id;
-        $debtData = Debt::find()
-            ->select([
-                'currency_id',
-                'depositPendingAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), amount, 0)',
-                'creditPendingAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_PENDING . '), amount, 0)',
-                'depositConfirmedAmount' => 'IF((to_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), amount, 0)',
-                'creditConfirmedAmount' => 'IF((from_user_id = ' . $userId . ') && (status = ' . Debt::STATUS_CONFIRM . '), amount, 0)',
-            ])
+        $query = Currency::find()
+            ->joinWith('debtBalances')
             ->andWhere([
-                'OR',
-                ['from_user_id' => $userId],
-                ['to_user_id' => $userId]
+                DebtBalance::tableName() . '.to_user_id' => $this->user->id,
+            ])
+            ->andWhere(['>', DebtBalance::tableName() . '.amount', 0])
+            ->orderBy([
+                Currency::tableName() . '.code' => SORT_ASC,
             ]);
-        $dataProvider = new ActiveDataProvider([
-            'query' => Debt::find()
-                ->from(['debtData' => $debtData])
-                ->select([
-                    'currency_id',
-                    'depositPending' => 'SUM(debtData.depositPendingAmount)',
-                    'creditPending' => 'SUM(debtData.creditPendingAmount)',
-                    'depositConfirmed' => 'SUM(debtData.depositConfirmedAmount)',
-                    'creditConfirmed' => 'SUM(debtData.creditConfirmedAmount)',
-                ])
-                ->groupBy(['currency_id']),
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    public function actionHistory()
-    {
-        // $userId = Yii::$app->user->id;
-        // $query = ...
-        // $dataProvider = new ActiveDataProvider([
-        //     'query' => $query,
-        // ]);
-        // return $this->render('view', [
-        //     'direction' => $direction,
-        //     'currencyId' => $currencyId,
-        //     'dataProvider' => $dataProvider,
-        // ]);
-    }
-
-    public function actionView($direction, $currencyId): string
-    {
-        $userId = Yii::$app->user->id;
-        $query = Debt::find()
-            ->select(['*', 'SUM(amount) totalAmount'])
-            ->andWhere(['currency_id' => $currencyId]);
-        if ((int) $direction === Debt::DIRECTION_DEPOSIT) {
-            $query->andWhere(['to_user_id' => $userId])->groupBy('from_user_id');
-        } else {
-            $query->andWhere(['from_user_id' => $userId])->groupBy('to_user_id');
-        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-        return $this->render('view', [
-            'direction' => $direction,
-            'currencyId' => $currencyId,
+        return $this->render('deposit', [
             'dataProvider' => $dataProvider,
+            'user' => $this->user,
         ]);
     }
 
-    public function actionViewDebtsByUser(int $userId, int $currencyId, int $direction)
+    public function actionCurrencyDeposit($currencyId): string
     {
-        $userDirection = ['to_user_id' => null, 'from_user_id' => null];
-
-        if ($direction == Debt::DIRECTION_DEPOSIT) {
-            $userDirection['to_user_id'] = Yii::$app->user->id;
-            $userDirection['from_user_id'] = $userId;
-        } else {
-            $userDirection['from_user_id'] = Yii::$app->user->id;
-            $userDirection['to_user_id'] = $userId;
-        }
-
-        $query = Debt::find()
-        ->where(array_merge(['currency_id' => $currencyId], $userDirection));
+        $query = User::find()
+            ->andWhere([
+                'in',
+                'id',
+                DebtBalance::find()
+                    ->select('from_user_id')
+                    ->andWhere([
+                        'to_user_id' => $this->user->id,
+                        'currency_id' => $currencyId,
+                    ])
+                    ->andWhere(['>', 'amount', 0])
+            ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-        return $this->render('view-user', [
-            'direction' => $direction,
-            'currencyId' => $currencyId,
+        return $this->render('currency-deposit', [
             'dataProvider' => $dataProvider,
-            'userId' => $userId
+            'user' => $this->user,
+            'currency' => Currency::findOne($currencyId),
+        ]);
+    }
+
+    public function actionCurrencyUserDeposit($currencyId, $counterUserId): string
+    {
+        $query = Debt::find()
+            ->andWhere([
+                'from_user_id' => [
+                    $this->user->id,
+                    $counterUserId,
+                ],
+                'to_user_id' => [
+                    $this->user->id,
+                    $counterUserId,
+                ],
+                'currency_id' => $currencyId,
+            ])
+            ->orderBy([
+                'created_at' => SORT_DESC,
+            ]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('currency-user-deposit', [
+            'dataProvider' => $dataProvider,
+            'user' => $this->user,
+            'currency' => Currency::findOne($currencyId),
+        ]);
+    }
+
+    public function actionCredit(): string
+    {
+        $query = Currency::find()
+            ->joinWith('debtBalances')
+            ->andWhere([
+                DebtBalance::tableName() . '.from_user_id' => $this->user->id,
+            ])
+            ->andWhere(['>', DebtBalance::tableName() . '.amount', 0])
+            ->orderBy([
+                Currency::tableName() . '.code' => SORT_ASC,
+            ]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('credit', [
+            'dataProvider' => $dataProvider,
+            'user' => $this->user,
+        ]);
+    }
+
+    public function actionCurrencyCredit($currencyId): string
+    {
+        $query = User::find()
+            ->andWhere([
+                'in',
+                'id',
+                DebtBalance::find()
+                    ->select('to_user_id')
+                    ->andWhere([
+                        'from_user_id' => $this->user->id,
+                        'currency_id' => $currencyId,
+                    ])
+                    ->andWhere(['>', 'amount', 0])
+            ]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('currency-credit', [
+            'dataProvider' => $dataProvider,
+            'user' => $this->user,
+            'currency' => Currency::findOne($currencyId),
+        ]);
+    }
+
+    public function actionCurrencyUserCredit($currencyId, $counterUserId): string
+    {
+        $query = Debt::find()
+            ->andWhere([
+                'from_user_id' => [
+                    $this->user->id,
+                    $counterUserId,
+                ],
+                'to_user_id' => [
+                    $this->user->id,
+                    $counterUserId,
+                ],
+                'currency_id' => $currencyId,
+            ])
+            ->orderBy([
+                'created_at' => SORT_DESC,
+            ]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('currency-user-credit', [
+            'dataProvider' => $dataProvider,
+            'user' => $this->user,
+            'currency' => Currency::findOne($currencyId),
+        ]);
+    }
+
+    public function actionArchive()
+    {
+        // TODO add data
+        return $this->render('archive', [
+            'user' => $this->user,
         ]);
     }
 
@@ -157,54 +219,71 @@ class DebtController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Debt();
-        $model->scenario = Debt::SCENARIO_FORM;
+        $formModel = new CreateDebtForm();
+        $formModel->currency_id = $this->user->currency_id;
 
-        $user = User::find()
-            ->joinWith('contact')
+        $users = User::find()
             ->active()
-            ->andWhere(['NOT', ['link_user_id' => null]])
+            ->joinWith('contact')
+            ->andWhere([
+                'not',
+                ['link_user_id' => null],
+            ])
             ->all();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->status = ($model->direction == Debt::DIRECTION_DEPOSIT ? Debt::STATUS_PENDING : Debt::STATUS_CONFIRM);
+        if (Yii::$app->request->isPost && $formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
+            $model = new Debt();
+
+            $model->setAttributes([
+                'from_user_id' => $formModel->direction == Debt::DIRECTION_DEPOSIT ? $formModel->counter_user_id : $this->user->id,
+                'to_user_id' => $formModel->direction == Debt::DIRECTION_DEPOSIT ? $this->user->id : $formModel->counter_user_id,
+                'amount' => $formModel->amount,
+                'currency_id' => $formModel->currency_id,
+                'status' => $formModel->direction == Debt::DIRECTION_DEPOSIT ? Debt::STATUS_PENDING : Debt::STATUS_CONFIRM,
+            ]);
+
             if ($model->save()) {
-                return $this->redirect(['view', 'direction' => $model->direction, 'currencyId' => $model->currency_id]);
+                return $this->redirect([
+                    'currency-user-' . ($formModel->direction == Debt::DIRECTION_DEPOSIT ? 'deposit' : 'credit'),
+                    'counterUserId' => $formModel->counter_user_id,
+                    'currencyId' => $model->currency_id,
+                ]);
             }
         }
 
         return $this->render('create', [
-            'model' => $model,
-            'user' => $user,
-            'currency' => Currency::find()->all(),
+            'model' => $formModel,
+            'users' => $users,
         ]);
     }
 
-    protected function findModel(int $id): Debt
+    public function actionConfirm(int $id): Response
     {
-        if ($model = Debt::findOne($id)) {
-            return $model;
+        $model = Debt::findOne($id);
+
+        if (!$model) {
+            throw new NotFoundHttpException();
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        if ($model->canConfirm()) {
+            $model->confirm();
+        }
+
+        return $this->redirect(['index']);
     }
 
-    public function actionConfirm(int $id, int $direction, int $currencyId): Response
+    public function actionCancel(int $id): Response
     {
-        $model = $this->findModel($id);
-        $model->status = Debt::STATUS_CONFIRM;
-        $model->save();
+        $model = Debt::findOne($id);
 
-        return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
-    }
+        if (!$model) {
+            throw new NotFoundHttpException();
+        }
 
-    public function actionCancel(int $id, int $direction, int $currencyId): Response
-    {
-        $model = $this->findModel($id);
-        if ($model->canCancelDebt()) {
+        if ($model->canCancel()) {
             $model->delete();
         }
 
-        return $this->redirect(['view', 'direction' => $direction, 'currencyId' => $currencyId]);
+        return $this->redirect(['index']);
     }
 }

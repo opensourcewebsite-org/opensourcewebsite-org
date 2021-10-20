@@ -16,7 +16,7 @@ use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use dosamigos\leaflet\LeafLet;
 use app\assets\LeafletLocateControlAsset;
-use app\widgets\CurrencySelect\CurrencySelect;
+use app\widgets\selects\CurrencySelect;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
@@ -87,6 +87,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'fee')
                                 ->textInput([
+                                    'autocomplete' => 'off',
                                     'maxlength' => true,
                                     'placeholder' => 0 . ', ' . Yii::t('app', 'Cross Rate'),
                                     'value' => ($model->fee != 0 ? $model->fee : ''),
@@ -99,6 +100,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'selling_currency_min_amount')
                                 ->textInput([
+                                    'autocomplete' => 'off',
                                     'maxlength' => true,
                                     'placeholder' => '∞',
                                 ])
@@ -109,6 +111,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'selling_currency_max_amount')
                                 ->textInput([
+                                    'autocomplete' => 'off',
                                     'maxlength' => true,
                                     'placeholder' => '∞',
                                 ])
@@ -215,7 +218,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <?= SaveButton::widget(); ?>
                     <?php $cancelUrl = $model->isNewRecord ? Url::to('/currency-exchange-order/index') : Url::to(['/currency-exchange-order/view', 'id' => $model->id])?>
                     <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-                    <?php if (!$model->isNewRecord): ?>
+                    <?php if (!$model->isNewRecord) : ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id],
                             'options' => [

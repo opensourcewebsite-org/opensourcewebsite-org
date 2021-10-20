@@ -3,7 +3,6 @@
 namespace app\components\debt;
 
 use app\components\helpers\ArrayHelper;
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Contact;
 use app\models\Debt;
@@ -85,7 +84,6 @@ class Redistribution extends Component
     private function tryRedistribute(DebtBalance $debtBalance, $contactChainMembers, $amountToRedistribute, int $level = 1): bool
     {
         $contactChainMembersMiddle = [];
-        $scale = DebtHelper::getFloatScale();
 
         foreach ($contactChainMembers as $contactChainMember) {
             //список отправителей
@@ -94,7 +92,7 @@ class Redistribution extends Component
             $ownLimitsChecked = false;
             foreach ($contactsReceiver as $contactReceiver) {
                 if ($level===1 && !$ownLimitsChecked && $this->applyOwnLimits($debtBalance, $contactReceiver, $amountToRedistribute)) {
-                    if (Number::isFloatEqual($amountToRedistribute, 0, $scale)) {
+                    if (Number::isFloatEqual($amountToRedistribute, 0, 2)) {
                         return true;
                     }
                     //Script may reach this IF only when $level==1 and only once.
@@ -110,7 +108,7 @@ class Redistribution extends Component
                 /** @var null|string $amountToRedistribute */
                 $amountToRedistribute = Yii::$app->db->transaction($function, Transaction::READ_COMMITTED);
 
-                if (!Number::isFloatEqual($amountToRedistribute, 0, $scale)) {
+                if (!Number::isFloatEqual($amountToRedistribute, 0, 2)) {
                     continue; //if desired amount was redistributed only partially - try to search additional chain
                 }
 
@@ -137,8 +135,7 @@ class Redistribution extends Component
         DebtBalance $debtBalance,
         Contact $contact,
         int $level
-    ): array
-    {
+    ): array {
         if ($level === 1) {
             //exclude $debtBalance->toContact
             $excludeLinkUID = [$debtBalance->from_user_id];
@@ -166,10 +163,9 @@ class Redistribution extends Component
         }
 
         $debtRedistribution = $debtBalance->toDebtRedistribution;
-        $scale = DebtHelper::getFloatScale();
 
         //проверяет, превышен ли лимит
-        $isLimitGreaterE = Number::isFloatGreaterE($debtRedistribution->max_amount, $amount, $scale);
+        $isLimitGreaterE = Number::isFloatGreaterE($debtRedistribution->max_amount, $amount, 2);
 
         //если лимит не превышен или сумма безгранична
         if ($isLimitGreaterE || $debtRedistribution->isMaxAmountAny()) {
@@ -178,7 +174,7 @@ class Redistribution extends Component
         } else {
             //лимит превышен, вычитаем сумму от макс. суммы
             //we should redistribute only part of debt: amount above limit (max_amount)
-            $amount = Number::floatSub($amount, $debtRedistribution->max_amount, $scale);
+            $amount = Number::floatSub($amount, $debtRedistribution->max_amount, 2);
         }
 
         return true;
@@ -203,8 +199,10 @@ class Redistribution extends Component
         return function () use (&$debtBalance, $contactCircled, $amountWanted): ?string {
             $contacts = $this->listChainMembers($contactCircled);
             $debtRedistributions = ArrayHelper::getColumn($contacts, 'debtRedistributionByDebtorCustom');
-            $debtBalances = ArrayHelper::getColumn($debtRedistributions, 'debtBalanceDirectionBack');
-            $debtBalances = array_filter($debtBalances, static function ($item) { return (bool)$item; });
+            $debtBalances = ArrayHelper::getColumn($debtRedistributions, 'counterDebtBalance');
+            $debtBalances = array_filter($debtBalances, static function ($item) {
+                return (bool)$item;
+            });
 
             try {
                 $debtBalance = $this->lockDebtBalance($debtBalance);
@@ -237,7 +235,7 @@ class Redistribution extends Component
             $message .= ' Count of Users=' . ($count + 1);
             $this->log($message);
 
-            return Number::floatSub($amountWanted, $amountPossible, DebtHelper::getFloatScale());
+            return Number::floatSub($amountWanted, $amountPossible, 2);
         };
     }
 
@@ -311,7 +309,9 @@ class Redistribution extends Component
         $attributes[] = 'max_amount';
         $query = DebtRedistribution::find()
             ->models($debtRedistributions, 'IN', $attributes)
-            ->indexBy(static function (DebtRedistribution $model) { return self::stringifyUniqueKey($model); });
+            ->indexBy(static function (DebtRedistribution $model) {
+                return self::stringifyUniqueKey($model);
+            });
         $debtRedistributionsFresh = DebtRedistribution::findAllForUpdate($query);
         if (count($debtRedistributionsFresh) !== count($debtRedistributions)) {
             throw new OutdatedObjectException();
@@ -332,7 +332,9 @@ class Redistribution extends Component
         $attributes[] = 'amount';
         $query = DebtBalance::find()
             ->models($debtBalances, 'IN', $attributes)
-            ->indexBy(static function (DebtBalance $model) { return self::stringifyUniqueKey($model); });
+            ->indexBy(static function (DebtBalance $model) {
+                return self::stringifyUniqueKey($model);
+            });
         $debtBalancesFresh = DebtBalance::findAllForUpdate($query);
         if (count($debtBalancesFresh) !== count($debtBalances)) {
             throw new OutdatedObjectException();
@@ -352,18 +354,17 @@ class Redistribution extends Component
     private function calcAmountToRedistribute($debtRedistributions, $debtBalances, $amountWanted)
     {
         $maxAmount = $amountWanted;
-        $scale = DebtHelper::getFloatScale();
 
         foreach ($debtRedistributions as $uniqueKey => $debtRedistribution) {
             if ($debtRedistribution->isMaxAmountAny()) {
                 continue;
             }
             $balanceAmount = $debtBalances[$uniqueKey]->amount ?? 0;
-            $limit = Number::floatSub($debtRedistribution->max_amount, $balanceAmount, $scale);
-            if (Number::isFloatLower($limit, 0, $scale)) {
+            $limit = Number::floatSub($debtRedistribution->max_amount, $balanceAmount, 2);
+            if (Number::isFloatLower($limit, 0, 2)) {
                 throw new OutdatedObjectException();
             }
-            if (Number::isFloatLower($limit, $maxAmount, $scale)) {
+            if (Number::isFloatLower($limit, $maxAmount, 2)) {
                 $maxAmount = $limit;
             }
         }

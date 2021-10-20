@@ -14,16 +14,14 @@ $form = ActiveForm::begin();
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit sexuality'); ?>
+                        <?= Yii::t('app', 'Change sexuality'); ?>
                     </h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
                             <?= $form->field($user, 'sexuality_id')
-                                ->widget(
-                                    Select2::class,
-                                    [
+                                ->widget(Select2::class, [
                                     'name' => 'change-sexuality',
                                     'value' => Yii::$app->user->identity->sexuality ?? '',
                                     'data' => $sexualities,
@@ -31,8 +29,8 @@ $form = ActiveForm::begin();
                                         'id' => 'sexuality-value',
                                         'prompt' => '',
                                     ],
-                                ]
-                                )->label(Yii::t('app', 'Sexuality')); ?>
+                                ])
+                                ->label(false); ?>
                         </div>
                     </div>
                 </div>

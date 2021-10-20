@@ -23,7 +23,7 @@ use InvalidArgumentException;
  */
 class Number
 {
-    public static function isFloatEqual(?string $leftFloat, ?string $rightFloat, int $scale): bool
+    public static function isFloatEqual(?string $leftFloat, ?string $rightFloat, int $scale = 2): bool
     {
         return 0 === bccomp($leftFloat, $rightFloat, $scale);
     }
@@ -31,7 +31,7 @@ class Number
     /**
      * @return bool is leftFloat greater
      */
-    public static function isFloatGreater(?string $leftFloat, ?string $rightFloat, int $scale): bool
+    public static function isFloatGreater(?string $leftFloat, ?string $rightFloat, int $scale = 2): bool
     {
         return 1 === bccomp($leftFloat, $rightFloat, $scale);
     }
@@ -39,7 +39,7 @@ class Number
     /**
      * @return bool is leftFloat lower
      */
-    public static function isFloatLower(?string $leftFloat, ?string $rightFloat, int $scale): bool
+    public static function isFloatLower(?string $leftFloat, ?string $rightFloat, int $scale = 2): bool
     {
         return -1 === bccomp($leftFloat, $rightFloat, $scale);
     }
@@ -47,7 +47,7 @@ class Number
     /**
      * @see isFloatGreater
      */
-    public static function isFloatGreaterE(?string $leftFloat, ?string $rightFloat, int $scale): bool
+    public static function isFloatGreaterE(?string $leftFloat, ?string $rightFloat, int $scale = 2): bool
     {
         return self::isFloatGreater($leftFloat, $rightFloat, $scale)
             || self::isFloatEqual($leftFloat, $rightFloat, $scale);
@@ -56,18 +56,18 @@ class Number
     /**
      * @see isFloatLower
      */
-    public static function isFloatLowerE(?string $leftFloat, ?string $rightFloat, int $scale): bool
+    public static function isFloatLowerE(?string $leftFloat, ?string $rightFloat, int $scale = 2): bool
     {
         return self::isFloatLower($leftFloat, $rightFloat, $scale)
             || self::isFloatEqual($leftFloat, $rightFloat, $scale);
     }
 
-    public static function floatSub(?string $leftFloat, ?string $rightFloat, int $scale): string
+    public static function floatSub(?string $leftFloat, ?string $rightFloat, int $scale = 2): string
     {
         return bcsub($leftFloat, $rightFloat, $scale);
     }
 
-    public static function floatAdd(?string $leftFloat, ?string $rightFloat, int $scale): string
+    public static function floatAdd(?string $leftFloat, ?string $rightFloat, int $scale = 2): string
     {
         return bcadd($leftFloat, $rightFloat, $scale);
     }

@@ -5,8 +5,8 @@ use app\models\AdSection;
 use app\models\Currency;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
-use app\widgets\CurrencySelect\CurrencySelect;
-use app\widgets\AdKeywordsSelect\AdKeywordsSelect;
+use app\widgets\selects\CurrencySelect;
+use app\widgets\selects\AdKeywordsSelect;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
 use yii\helpers\Url;
@@ -47,7 +47,10 @@ $form = ActiveForm::begin(['id' => 'form']);
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'price')->textInput() ?>
+                            <?= $form->field($model, 'price')
+                                ->textInput([
+                                    'autocomplete' => 'off',
+                                ]) ?>
                         </div>
                     </div>
                     <div class="row">
@@ -87,7 +90,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <?= SubmitButton::widget() ?>
                     <?php $cancelUrl = $model->isNewRecord ? Url::to('/ad-offer/index') : Url::to(['/ad-offer/view', 'id' => $model->id])?>
                     <?= CancelButton::widget(['url' => $cancelUrl]); ?>
-                    <?php if (!$model->isNewRecord): ?>
+                    <?php if (!$model->isNewRecord) : ?>
                         <?= DeleteButton::widget([
                             'url' => ['delete', 'id' => $model->id],
                             'options' => [

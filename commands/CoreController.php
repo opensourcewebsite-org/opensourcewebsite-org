@@ -6,6 +6,11 @@ use Yii;
 use yii\console\Controller;
 use app\models\Rating;
 use app\models\User;
+use app\models\Debt;
+use app\models\DebtBalance;
+use yii\helpers\VarDumper;
+use yii\db\Query;
+use app\helpers\Number;
 
 /**
  * Class CoreController
@@ -16,12 +21,14 @@ class CoreController extends Controller
 {
     public function actionIndex()
     {
-        $this->actionCheckRating();
+        $this->actionCheckUserRatings();
+        $this->actionCheckDebtBalances();
+        $this->actionCheckDebtUniqueGroups();
     }
 
-    public function actionCheckRating()
+    public function actionCheckUserRatings()
     {
-        echo 'Checking: Ratings.' . "\n";
+        echo 'CHECKING: Data collision between `rating` and `user` tables.' . "\n";
 
         $totalRatingByRatings = Rating::getTotalRating();
         $totalRatingByUsers = User::getTotalRating();
@@ -29,8 +36,8 @@ class CoreController extends Controller
         $usersDefaultRating = $usersCount * Rating::DEFAULT;
 
         if (($totalRatingByRatings + $usersDefaultRating) != $totalRatingByUsers) {
-            echo 'Total Rating By Rating table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' != Total Rating By User table ' . $totalRatingByUsers . "\n";
-            echo 'Updating user ratings.' . "\n";
+            echo 'ALERT: Total Rating by `rating` table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' != Total Rating by `user` table ' . $totalRatingByUsers . "\n";
+            echo 'Updating: `user.rating`.' . "\n";
 
             $users = User::find()
                 ->all();
@@ -39,16 +46,194 @@ class CoreController extends Controller
                 $user->updateRating();
             }
 
-            echo 'Updated user ratings.' . "\n";
+            echo 'Updated: `user.rating`.' . "\n";
 
             $totalRatingByRatings = Rating::getTotalRating();
             $totalRatingByUsers = User::getTotalRating();
             $usersCount = User::find()->count();
             $usersDefaultRating = $usersCount * Rating::DEFAULT;
 
-            echo 'Total Rating By Rating table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' != Total Rating By User table ' . $totalRatingByUsers . "\n";
+            if (($totalRatingByRatings + $usersDefaultRating) == $totalRatingByUsers) {
+                echo 'Fixed: Total Rating by `rating` table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' == Total Rating by `user` table ' . $totalRatingByUsers . "\n";
+            } else {
+                echo 'ERROR: Failed to fix.' . "\n";
+            }
         }
 
-        echo 'Checked: Ratings.' . "\n";
+        echo 'FINISHED: ' . $this->action->id . "\n";
+    }
+
+    /**
+     * Check that there are no data collision between DB tables `debt` and `debt_balance`.
+     * Should be valid next formula: `debt_balance.amount = sumOfAllDebt(Credits) - sumOfAllDebt(Deposits)`
+     *
+     * @throws \yii\db\Exception
+     */
+    public function actionCheckDebtBalances()
+    {
+        echo 'CHECKING: DebtBalances. Data collision between `debt` and `debt_balance` tables.' . "\n";
+
+        $query = (new Query())
+            ->select([
+               'd1.currency_id',
+               'd1.from_user_id',
+               'd1.to_user_id',
+               'amount_sum' => 'SUM(d1.amount)',
+            ])
+            ->from(['d1' => Debt::tableName()])
+            ->andWhere([
+                'd1.status' => Debt::STATUS_CONFIRM,
+            ])
+            ->groupBy([
+               'd1.currency_id',
+               'd1.from_user_id',
+               'd1.to_user_id',
+            ]);
+
+        $data = [];
+        $rows = $query->all();
+
+        foreach ($rows as $key => $row) {
+            if ($row['from_user_id'] < $row['to_user_id']) {
+                $data[$row['currency_id']][$row['from_user_id']][$row['to_user_id']]['credit'] = $row['amount_sum'];
+            } else {
+                $data[$row['currency_id']][$row['to_user_id']][$row['from_user_id']]['deposit'] = $row['amount_sum'];
+            }
+        }
+
+        if (empty($data)) {
+            return null;
+        }
+
+        foreach ($data as $currency_id => $users) {
+            foreach ($users as $from_user_id => $debts) {
+                foreach ($debts as $to_user_id => $debtSummary) {
+                    $debtSummary['credit'] = $debtSummary['credit'] ?? 0;
+                    $debtSummary['deposit'] = $debtSummary['deposit'] ?? 0;
+
+                    $amountSumDiff = Number::floatSub($debtSummary['credit'], $debtSummary['deposit']);
+
+                    $debtBalance = DebtBalance::find()
+                        ->andWhere([
+                            'from_user_id' => $from_user_id,
+                            'to_user_id' => $to_user_id,
+                            'currency_id' => $currency_id,
+                        ])
+                        ->one();
+
+                    if (!$debtBalance) {
+                        $debtBalance = new DebtBalance();
+
+                        $debtBalance->setAttributes([
+                            'from_user_id' => $from_user_id,
+                            'to_user_id' => $to_user_id,
+                            'amount' => $amountSumDiff,
+                            'currency_id' => $currency_id,
+                        ]);
+
+                        echo 'ALERT: DebtBalance not found. Users IDs: ' . $debtBalance->from_user_id . ' > ' . $debtBalance->to_user_id . '. Amount: ' . $debtBalance->amount . ' ' . $debtBalance->currency->code . "\n";
+
+                        if ($debtBalance->save()) {
+                            echo 'Created: DebtBalance.' . "\n";
+                        } else {
+                            echo 'ERROR: Failed to create a DebtBalance.' . "\n";
+                        }
+                    } elseif (!Number::isFloatEqual($debtBalance->amount, $amountSumDiff)) {
+                        echo 'ALERT: DebtBalance amount: ' . $debtBalance->amount . ' != Debt sum: ' . $amountSumDiff . ' ' . $debtBalance->currency->code . '. Users IDs: ' . $debtBalance->from_user_id . ' > ' . $debtBalance->to_user_id . "\n";
+
+                        Yii::$app->db->beginTransaction();
+
+                        if (!$debtBalance->isFoundForUpdate()) {
+                            $debtBalance = DebtBalance::findOneForUpdate($debtBalance);
+                        }
+
+                        $debtBalance->amount = $amountSumDiff;
+
+                        if ($debtBalance->save()) {
+                            Yii::$app->db->getTransaction()->commit();
+
+                            echo 'Fixed: DebtBalance.' . "\n";
+                        } else {
+                            Yii::$app->db->getTransaction()->rollBack();
+
+                            echo 'ERROR: Failed to fix a DebtBalance.' . "\n";
+                        }
+                    }
+
+                    $counterDebtBalance = DebtBalance::find()
+                        ->andWhere([
+                            'from_user_id' => $to_user_id,
+                            'to_user_id' => $from_user_id,
+                            'currency_id' => $currency_id,
+                        ])
+                        ->one();
+
+                    if (!$counterDebtBalance) {
+                        $counterDebtBalance = new DebtBalance();
+
+                        $counterDebtBalance->setAttributes([
+                            'from_user_id' => $to_user_id,
+                            'to_user_id' => $from_user_id,
+                            'amount' => -$amountSumDiff,
+                            'currency_id' => $currency_id,
+                        ]);
+
+                        echo 'ALERT: counter DebtBalance not found. Users IDs: ' . $counterDebtBalance->from_user_id . ' > ' . $counterDebtBalance->to_user_id . '. Amount: ' . $counterDebtBalance->amount . ' ' . $counterDebtBalance->currency->code . "\n";
+
+                        if ($counterDebtBalance->save()) {
+                            echo 'Created: counter DebtBalance.' . "\n";
+                        } else {
+                            echo 'ERROR: Failed to create a counter DebtBalance.' . "\n";
+                        }
+                    } elseif (!Number::isFloatEqual($counterDebtBalance->amount, -$amountSumDiff)) {
+                        echo 'ALERT: counter DebtBalance amount: ' . $counterDebtBalance->amount . ' != Debt sum: ' . -$amountSumDiff . ' ' . $counterDebtBalance->currency->code . '. Users IDs: ' . $counterDebtBalance->from_user_id . ' > ' . $counterDebtBalance->to_user_id . "\n";
+
+                        Yii::$app->db->beginTransaction();
+
+                        if (!$counterDebtBalance->isFoundForUpdate()) {
+                            $counterDebtBalance = DebtBalance::findOneForUpdate($counterDebtBalance);
+                        }
+
+                        $counterDebtBalance->amount = -$amountSumDiff;
+
+                        if ($counterDebtBalance->save()) {
+                            Yii::$app->db->getTransaction()->commit();
+
+                            echo 'Fixed: counter DebtBalance.' . "\n";
+                        } else {
+                            Yii::$app->db->getTransaction()->rollBack();
+
+                            echo 'ERROR: Failed to fix a counter DebtBalance.' . "\n";
+                        }
+                    }
+                }
+            }
+        }
+
+        echo 'FINISHED: ' . $this->action->id . "\n";
+    }
+
+    public function actionCheckDebtUniqueGroups()
+    {
+        echo 'CHECKING: Debt. Duplicated users in same generated group of debts.' . "\n";
+
+        $query = (new Query())
+            ->select([
+               'd1.id',
+            ])
+            ->from(['d1' => Debt::tableName()])
+            ->leftJoin(['d2' => Debt::tableName()], 'd1.from_user_id IN (d2.from_user_id, d2.to_user_id)
+                           AND d1.to_user_id IN (d2.from_user_id, d2.to_user_id)
+                           AND d1.id <> d2.id
+                           AND d1.`group` = d2.`group`')
+            ->andWhere([
+                'not', ['d1.group' => null],
+            ]);
+
+        if ($errors = $query->column()) {
+            echo 'ALERT: found ' . count($errors) . ' invalid debts! Their IDs:' . "\n" . VarDumper::dumpAsString($errors) . "\n";
+        }
+
+        echo 'FINISHED: ' . $this->action->id . "\n";
     }
 }

@@ -16,7 +16,7 @@ use Yii;
 use app\models\AdSearch;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use yii\web\Controller;
+use app\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
@@ -63,7 +63,9 @@ class AdSearchController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', ['model' => $model, 'currencies' => Currency::find()->all()]);
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     public function actionUpdate(int $id)
@@ -76,7 +78,9 @@ class AdSearchController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', ['model' => $model, 'currencies' => Currency::find()->all()]);
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     public function actionView(int $id): string

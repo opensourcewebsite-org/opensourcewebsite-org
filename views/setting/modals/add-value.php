@@ -16,8 +16,9 @@ $form = ActiveForm::begin([
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($settingValue, 'value')->textInput()->label(false); ?>
-                            <?= Html::hiddenInput('setting_key', $setting_key); ?>
+                            <?= $form->field($model, 'value')
+                                ->textInput()
+                                ->label(false); ?>
                         </div>
                     </div>
                 </div>

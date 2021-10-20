@@ -6,7 +6,6 @@ use Yii;
 use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
-use app\components\debt\BalanceChecker;
 use app\components\debt\Redistribution;
 use app\components\debt\Reduction;
 use app\models\Debt;
@@ -14,7 +13,6 @@ use yii\base\Exception;
 use yii\base\InvalidArgumentException;
 use yii\db\Transaction;
 use yii\helpers\Console;
-use yii\helpers\VarDumper;
 
 /**
  * Class DebtController
@@ -52,41 +50,6 @@ class DebtController extends Controller implements CronChainedInterface
     }
 
     /**
-     * Check that there are no data collision between DB tables `debt` and `debt_balance`.
-     * Should be valid next formula: `debt_balance.amount = sumOfAllDebt(Credits) - sumOfAllDebt(Deposits)`
-     *
-     * @throws \yii\db\Exception
-     */
-    public function actionCheckBalance()
-    {
-        //in this action no sense to disable log.
-        $this->log = true;
-
-        $this->output("Check #1. Data collision between DB tables `debt` and `debt_balance`:");
-        $errors = (new BalanceChecker)->run();
-
-        if (null === $errors) {
-            $this->output('There are no appropriate rows in DB table `debt`. Nothing to analyze.', [Console::BG_GREY]);
-        } elseif (empty($errors)) {
-            $this->output('SUCCESS: no bugs found.', [Console::FG_GREEN]);
-        } else {
-            $count = count($errors);
-            $message = "ERROR: found $count data collisions!\n" . VarDumper::dumpAsString($errors);
-            $this->output($message, [Console::FG_RED]);
-        }
-
-        $this->output("\n\nCheck #2. Duplicated users in same generated group of debts:");
-        $invalidDebts = BalanceChecker::checkDebtReductionUniqueGroup();
-        if (empty($invalidDebts)) {
-            $this->output('SUCCESS: no bugs found.', [Console::FG_GREEN]);
-        } else {
-            $count = count($invalidDebts);
-            $message = "ERROR: found $count invalid debts! Their ID:\n" . VarDumper::dumpAsString($invalidDebts);
-            $this->output($message, [Console::FG_RED]);
-        }
-    }
-
-    /**
      * Есть два сценария тестирования скриптов, в зависимости от цели:
      *
      * 1. **Производительность**
@@ -121,7 +84,7 @@ class DebtController extends Controller implements CronChainedInterface
      *
      * **Проверить целостность БД**:
      *     (что данные в таблицах `debt` & `debt_balance` синхронизированы)
-     *     `yii debt/check-balance`
+     *     `yii core/check-debt-balances`
      *
      * @throws \Throwable
      */

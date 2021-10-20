@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
@@ -10,7 +9,6 @@ use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtQuery;
 use app\models\traits\FloatAttributeTrait;
-use app\models\traits\RelationToDebtBalanceTrait;
 use Yii;
 use yii\base\InvalidCallException;
 use yii\db\ActiveRecord;
@@ -35,39 +33,37 @@ use yii\behaviors\TimestampBehavior;
  * @property User        $toUser
  * @property User        $fromUser
  * @property Currency    $currency
- * @property DebtBalance $debtBalanceDirectionSame
- * @property DebtBalance $debtBalanceDirectionBack
+ * @property DebtBalance $debtBalance
+ * @property DebtBalance $counterDebtBalance
  */
 class Debt extends ActiveRecord implements ByDebtInterface
 {
     use ByDebtTrait;
     use FloatAttributeTrait;
-    use RelationToDebtBalanceTrait;
 
     public const STATUS_PENDING = 0;
     public const STATUS_CONFIRM = 1;
 
     public const DIRECTION_DEPOSIT = 1;
-    public const DIRECTION_CREDIT  = 2;
+    public const DIRECTION_CREDIT = 2;
 
-    public const SCENARIO_FORM = 'form';
-
-    public const EVENT_AFTER_CONFIRMATION = 'after_confirmation';
-
-    public $user;
-    public $direction;
     public $depositPending;
     public $creditPending;
     public $depositConfirmed;
     public $creditConfirmed;
     public $totalAmount;
 
+    public const DIRECTION_LABELS = [
+        self::DIRECTION_DEPOSIT => 'My deposit',
+        self::DIRECTION_CREDIT => 'My credit',
+    ];
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'debt';
+        return '{{%debt}}';
     }
 
     /**
@@ -76,19 +72,15 @@ class Debt extends ActiveRecord implements ByDebtInterface
     public function rules()
     {
         return [
-            [['currency_id', 'amount'], 'required'],
-            //TODO [ref] These fields ('user', 'direction', and other public fields in this class)
-            //       we need only on frontend form.
-            //       For this purpose you should create DebtForm model with all these fields and their rules.
-            //       Why: in all other places, except page /debt/create, we DON'T need these rules and fields
-            //            (e.g. in console app)
-            [['user', 'direction'], 'required', 'on' => self::SCENARIO_FORM],
-            [['from_user_id', 'to_user_id', 'currency_id', 'status'], 'integer'],
-
-            ['amount', 'number', 'min' => 0],
-            ['amount', $this->getFloatRuleFilter()],
-
-            [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+            [['from_user_id', 'to_user_id', 'currency_id', 'amount'], 'required'],
+            [['from_user_id', 'to_user_id', 'currency_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            ['status', 'in', 'range' => [self::STATUS_PENDING, self::STATUS_CONFIRM]],
+            [
+                'amount',
+                'double',
+                'min' => 0.01,
+                'max' => 9999999999999.99,
+            ],
         ];
     }
 
@@ -97,14 +89,14 @@ class Debt extends ActiveRecord implements ByDebtInterface
         return [
             'id' => 'ID',
             'from_user_id' => 'From User',
-            'to_user_id' => 'User',
-            'currency_id' => 'Currency',
-            'amount' => 'Amount',
-            'status' => 'Status',
-            'created_at' => 'Created At',
-            'created_by' => 'Created By',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
+            'to_user_id' => Yii::t('app', 'User'),
+            'currency_id' => Yii::t('app', 'Currency'),
+            'amount' => Yii::t('app', 'Amount'),
+            'status' => Yii::t('app', 'Status'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'created_by' => Yii::t('app', 'Created By'),
+            'updated_at' => Yii::t('app', 'Updated At'),
+            'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
 
@@ -125,6 +117,14 @@ class Debt extends ActiveRecord implements ByDebtInterface
     }
 
     /**
+     * @return DebtQuery
+     */
+    public static function find()
+    {
+        return new DebtQuery(get_called_class());
+    }
+
+    /**
      * @return \yii\db\ActiveQuery|CurrencyQuery
      */
     public function getCurrency()
@@ -132,100 +132,60 @@ class Debt extends ActiveRecord implements ByDebtInterface
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery|DebtBalanceQuery
-     */
-    public function getDebtBalanceDirectionSame()
+    public function getCounterUserDisplayName()
     {
-        return $this->hasOne(DebtBalance::class, [
-            'currency_id'  => 'currency_id',
-            'from_user_id' => 'from_user_id',
-            'to_user_id'   => 'to_user_id',
-        ]);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery|DebtBalanceQuery
-     */
-    public function getDebtBalanceDirectionBack()
-    {
-        return $this->hasOne(DebtBalance::class, [
-            'currency_id' => 'currency_id',
-            'from_user_id' => 'to_user_id',
-            'to_user_id' => 'from_user_id',
-        ]);
-    }
-
-    public function getUserDisplayName($direction)
-    {
-        $id = $this->fromUser->id;
-        $name = User::findOne($id)->name ? User::findOne($id)->name . '(#' . $id . ')' : '#' . $id;
-        if (!empty($this->fromUser->contact)) {
-            $name = $this->fromUser->getDisplayName();
+        if ($this->from_user_id == Yii::$app->user->id) {
+            return $this->toUser->getDisplayName();
+        } elseif ($this->to_user_id == Yii::$app->user->id) {
+            return $this->fromUser->getDisplayName();
         }
 
-        if ((int) $direction === self::DIRECTION_CREDIT) {
-            $id = $this->toUser->id;
-            $name = User::findOne($id)->name ? User::findOne($id)->name . '(#' . $id . ')' : '#' . $id;
-            if (!empty($this->toUser->contact)) {
-                $name = $this->toUser->getDisplayName();
-            }
-        }
-
-        return $name;
+        return '';
     }
 
-    public function canConfirmDebt($direction)
+    public function getCounterUserId()
     {
-        $canConfirmDebt = $this->isStatusPending() && ((int) $this->created_by !== (int) $this->from_user_id);
-        if ((int) $direction === self::DIRECTION_DEPOSIT) {
-            $canConfirmDebt = $this->isStatusPending() && ((int) $this->created_by !== (int) $this->to_user_id);
+        if ($this->from_user_id == Yii::$app->user->id) {
+            return $this->to_user_id;
+        } elseif ($this->to_user_id == Yii::$app->user->id) {
+            return $this->from_user_id;
         }
 
-        return $canConfirmDebt;
+        return '';
     }
 
-    public function canCancelDebt()
+    public function canConfirm()
     {
-        return ($this->isStatusPending() && (((int) $this->from_user_id === Yii::$app->user->id) || ((int) $this->to_user_id === Yii::$app->user->id)));
+        return ($this->isStatusPending()
+            && (((int)$this->from_user_id == Yii::$app->user->id) && ($this->from_user_id != $this->created_by)));
+    }
+
+    public function confirm()
+    {
+        $this->status = self::STATUS_CONFIRM;
+        $this->save();
+    }
+
+    public function canCancel()
+    {
+        return ($this->isStatusPending()
+            && (((int)$this->from_user_id == Yii::$app->user->id) || ((int)$this->to_user_id == Yii::$app->user->id)));
+    }
+
+    public function getDirection()
+    {
+        return (int)$this->from_user_id == Yii::$app->user->id ? self::DIRECTION_CREDIT
+            : ((int)$this->to_user_id == Yii::$app->user->id ? self::DIRECTION_DEPOSIT : false);
     }
 
     public function isStatusPending()
     {
-        return (int)$this->status === Debt::STATUS_PENDING;
+        return $this->status == self::STATUS_PENDING;
     }
 
     public function isStatusConfirm()
     {
-        return !$this->isStatusPending();
-    }
-
-    public function setUsersFromContact($contactUserId, $contactLinkedUserId)
-    {
-        if ($this->isStatusPending()) {
-            $this->from_user_id = $contactLinkedUserId;
-            $this->to_user_id   = $contactUserId;
-        } else {
-            $this->from_user_id = $contactUserId;
-            $this->to_user_id   = $contactLinkedUserId;
-        }
-    }
-
-    /*
-    Return count of debts with pending status
-    */
-    public static function countStatusPending()
-    {
-        return Debt::find()->where(['status' => static::STATUS_PENDING])->count();
-    }
-
-    public function beforeSave($insert)
-    {
-        if ($this->scenario === self::SCENARIO_FORM) {
-            $this->setUsersFromContact(Yii::$app->user->id, $this->user);
-        }
-
-        return parent::beforeSave($insert);
+        return $this->status == self::STATUS_CONFIRM;
     }
 
     /**
@@ -238,12 +198,12 @@ class Debt extends ActiveRecord implements ByDebtInterface
      */
     public static function factoryBySource($source, string $amount, float $group): self
     {
-        if (Number::isFloatEqual($amount, 0, DebtHelper::getFloatScale())) {
+        if (Number::isFloatEqual($amount, 0, 2)) {
             throw new InvalidCallException('Argument $amount cannot be empty. $amount = ' . var_export($amount, true));
         }
 
         $debt = new Debt();
-        $isAmountPositive = Number::isFloatGreater($amount, 0, DebtHelper::getFloatScale());
+        $isAmountPositive = Number::isFloatGreater($amount, 0, 2);
 
         if ($source instanceof DebtRedistribution) {
             $debtorUID = ($isAmountPositive) ? $source->linkedUID() : $source->ownerUID();
@@ -266,18 +226,52 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
         return $debt;
     }
+    // TODO remove old code
+    public function populateDebtBalance(DebtBalance $balance): void
+    {
+        if ($this->isDebtBalanceHasSameDirection($balance)) {
+            $this->populateRelation('debtBalance', $balance);
+        } else {
+            $this->populateRelation('counterDebtBalance', $balance);
+        }
+    }
+
+    /**
+     * Is Debt's direction (Credit|Deposit) == DebtBalance's direction
+     *
+     * @param DebtBalance $balance
+     *
+     * @return bool
+     */
+    public function isDebtBalanceHasSameDirection(DebtBalance $balance): bool
+    {
+        foreach ($this->getDebtBalance()->link as $attributeBalance => $attributeDebt) {
+            if ((string)$balance->getAttribute($attributeBalance) !== (string)$this->getAttribute($attributeDebt)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public static function mapStatus()
     {
         return [self::STATUS_PENDING, self::STATUS_CONFIRM];
     }
 
-    public function transactions()
+    public static function mapDirection()
     {
-        return [
-            self::SCENARIO_DEFAULT => self::OP_ALL,
-            self::SCENARIO_FORM    => self::OP_ALL,
-        ];
+        return [self::DIRECTION_DEPOSIT, self::DIRECTION_CREDIT];
+    }
+
+    public function beforeSave($insert)
+    {
+        if (($insert || (isset($changedAttributes['status']) && (int)$changedAttributes['status'] !== (int)$this->status))
+             && $this->isStatusConfirm()) {
+            Yii::$app->db->beginTransaction();
+        }
+
+        return parent::beforeSave($insert);
     }
 
     /**
@@ -287,16 +281,76 @@ class Debt extends ActiveRecord implements ByDebtInterface
      */
     public function afterSave($insert, $changedAttributes)
     {
-        $this->triggerAfterAffectBalance($insert, $changedAttributes);
+        if (($insert || (isset($changedAttributes['status']) && (int)$changedAttributes['status'] !== (int)$this->status))
+            && $this->isStatusConfirm()) {
+            if ($this->debtBalance) {
+                if ($this->debtBalance->isFoundForUpdate()) {
+                    $debtBalance = $this->debtBalance;
+                } else {
+                    $debtBalance = DebtBalance::findOneForUpdate($this->debtBalance);
+                }
+            }
+
+            if ($this->counterDebtBalance) {
+                if ($this->counterDebtBalance->isFoundForUpdate()) {
+                    $counterDebtBalance = $this->counterDebtBalance;
+                } else {
+                    $counterDebtBalance = DebtBalance::findOneForUpdate($this->counterDebtBalance);
+                }
+            }
+
+            if (isset($debtBalance)) {
+                $debtBalance->amount = Number::floatAdd($debtBalance->amount, $this->amount);
+            } else {
+                $debtBalance = new DebtBalance();
+
+                $debtBalance->setAttributes([
+                    'from_user_id' => $this->from_user_id,
+                    'to_user_id' => $this->to_user_id,
+                    'amount' => $this->amount,
+                    'currency_id' => $this->currency_id,
+                ]);
+            }
+
+            if (isset($counterDebtBalance)) {
+                $counterDebtBalance->amount = Number::floatSub($counterDebtBalance->amount, $this->amount);
+            } else {
+                $counterDebtBalance = new DebtBalance();
+
+                $counterDebtBalance->setAttributes([
+                    'from_user_id' => $this->to_user_id,
+                    'to_user_id' => $this->from_user_id,
+                    'amount' => -$this->amount,
+                    'currency_id' => $this->currency_id,
+                ]);
+            }
+
+            if ($debtBalance->save() && $counterDebtBalance->save()) {
+                Yii::$app->db->getTransaction()->commit();
+            } else {
+                Yii::$app->db->getTransaction()->rollBack();
+            }
+        }
+
         parent::afterSave($insert, $changedAttributes);
     }
 
-    /**
-     * @return DebtQuery
-     */
-    public static function find()
+    public function getDebtBalance()
     {
-        return new DebtQuery(get_called_class());
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id' => 'currency_id',
+            'from_user_id' => 'from_user_id',
+            'to_user_id' => 'to_user_id',
+        ]);
+    }
+
+    public function getCounterDebtBalance()
+    {
+        return $this->hasOne(DebtBalance::className(), [
+            'currency_id' => 'currency_id',
+            'from_user_id' => 'to_user_id',
+            'to_user_id' => 'from_user_id',
+        ]);
     }
 
     /**
@@ -318,37 +372,5 @@ class Debt extends ActiveRecord implements ByDebtInterface
     public static function generateGroup(): float
     {
         return microtime(true);
-    }
-
-    public function isAttributeChanged($name, $identical = true)
-    {
-        if (!parent::isAttributeChanged($name, $identical)) {
-            return false;
-        }
-
-        if (!$identical && self::isAttributeFloat($name)) {
-            return $this->isAttributeFloatChanged($name);
-        }
-
-        return true;
-    }
-
-    /**
-     * @throws \Throwable
-     */
-    private function triggerAfterAffectBalance(bool $insert, array $changedAttributes): void
-    {
-        if ($insert) {
-            $isStatusChanged = true;
-        } elseif (!isset($changedAttributes['status'])) {
-            $isStatusChanged = false;
-        } else {
-            $isStatusChanged = (int)$changedAttributes['status'] !== (int)$this->status;
-        }
-
-        if ($isStatusChanged && $this->isStatusConfirm()) {
-            DebtBalance::onDebtConfirmation($this);
-            $this->trigger(self::EVENT_AFTER_CONFIRMATION);
-        }
     }
 }

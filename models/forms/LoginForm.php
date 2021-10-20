@@ -1,9 +1,12 @@
 <?php
 
-namespace app\models;
+declare(strict_types=1);
+
+namespace app\models\forms;
 
 use Yii;
 use yii\base\Model;
+use app\models\User;
 
 /**
  * Login form
@@ -54,10 +57,6 @@ class LoginForm extends Model
      */
     public function validatePassword($attribute, $params)
     {
-        if ($this->hasErrors()) {
-            return false;
-        }
-
         $user = $this->getUser();
 
         if (!$user || !$user->validatePassword($this->password)) {

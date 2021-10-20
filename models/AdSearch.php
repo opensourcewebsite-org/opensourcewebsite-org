@@ -16,6 +16,8 @@ use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
+use yii\web\JsExpression;
 
 /**
  * Class AdSearch
@@ -132,6 +134,14 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
                 'double',
                 'min' => 0,
                 'max' => 9999999999999.99,
+            ],
+            [
+                'currency_id', 'required', 'when' => function (self $model) {
+                    return $model->max_price != '';
+                },
+                'whenClient' => new JsExpression("function () {
+                       return $('#".Html::getInputId($this, 'max_price')."').val() != '';
+                }"),
             ],
             [
                 'keywordsFromForm', 'filter', 'filter' => function ($val) {

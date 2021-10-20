@@ -14,11 +14,6 @@ use yii\helpers\Console;
 
 class SettingValueFixture extends ARGenerator
 {
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-    }
-
     protected function factoryModel(): ?ActiveRecord
     {
         if (!($setting = $this->getRandomSetting())) {
@@ -30,19 +25,7 @@ class SettingValueFixture extends ARGenerator
         $model->setting_id = $setting->id;
         $model->value = $this->faker->unique()->randomNumber(2);
 
-        if (!$model->save()) {
-            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
-        }
-
         return $model;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ActiveRecord
-    {
-        return $this->factoryModel();
     }
 
     private function getRandomSetting(): ?Setting

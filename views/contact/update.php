@@ -11,7 +11,5 @@ $this->params['breadcrumbs'][] = ['label' => $model->getContactName(), 'url' => 
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="contact-update">
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]); ?>
+    <?= $this->render('_form', $_params_); ?>
 </div>

@@ -18,6 +18,8 @@ use yii\behaviors\TimestampBehavior;
 use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use yii\helpers\Html;
+use yii\web\JsExpression;
 
 /**
  * Class AdOffer
@@ -136,6 +138,14 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
                 'double',
                 'min' => 0,
                 'max' => 9999999999999.99,
+            ],
+            [
+                'currency_id', 'required', 'when' => function (self $model) {
+                    return $model->price != '';
+                },
+                'whenClient' => new JsExpression("function () {
+                       return $('#".Html::getInputId($this, 'price')."').val() != '';
+                }"),
             ],
             [
                 'keywordsFromForm', 'filter', 'filter' => function ($val) {

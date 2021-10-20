@@ -1,6 +1,5 @@
 <?php
 
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Contact;
 use app\models\DebtRedistribution;
@@ -39,10 +38,6 @@ class RedistributionTargetBalanceHasOwnRedistributionConfigCest
     {
         $this->common->_after();
     }
-
-
-
-
 
     /**
      * @throws Throwable
@@ -94,8 +89,7 @@ class RedistributionTargetBalanceHasOwnRedistributionConfigCest
         }
         $this->createRedistributionConfigOwnToTargetBalance($I, 1, $limitOwn = 123.45, false);
 
-        $scale = DebtHelper::getFloatScale();
-        $targetAmountToAdd = $example[0] ?: Number::floatSub($this->common->getTargetAmount(), $limitOwn, $scale);
+        $targetAmountToAdd = $example[0] ?: Number::floatSub($this->common->getTargetAmount(), $limitOwn, 2);
 
         $this->common->testDefault($I, 1, -$targetAmountToAdd);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $targetAmountToAdd);
@@ -130,7 +124,6 @@ class RedistributionTargetBalanceHasOwnRedistributionConfigCest
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->getTargetAmount());
     }
 
-
     /**
      * @throws Throwable
      * @throws \yii\db\Exception
@@ -145,12 +138,6 @@ class RedistributionTargetBalanceHasOwnRedistributionConfigCest
         $this->common->testDefault($I);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$this->common->getTargetAmount());
     }
-
-
-
-
-
-
 
     private function createRedistributionConfigOwnToTargetBalance(FunctionalTester $I, int $priority, $limit, bool $denySamePriorityChain = true): void
     {

@@ -75,7 +75,8 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'link_user_id', 'is_real', 'relation'], 'integer'],
+            [['user_id', 'link_user_id', 'is_real'], 'integer'],
+            [['relation'], 'integer', 'min' => 0, 'max' => 2],
             ['userIdOrName', 'string'],
             ['userIdOrName', 'trim'],
             [['userIdOrName'], 'required',
@@ -102,31 +103,25 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             [['name'], 'string', 'max' => 255],
             [['name'], 'default'],
             [
-                'debt_redistribution_priority',
-                'integer',
-                'min' => self::DEBT_REDISTRIBUTION_PRIORITY_DENY,
-                'max' => self::DEBT_REDISTRIBUTION_PRIORITY_MAX,
-            ],
-            [
-                'debt_redistribution_priority',
-                'filter',
-                'filter' => static function ($v) {
-                    return ((int)$v) ?: self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
-                },
-            ],
-            [
-                'vote_delegation_priority',
+                [
+                    'vote_delegation_priority',
+                    'debt_redistribution_priority',
+                ],
                 'integer',
                 'min' => 0,
                 'max' => 255,
             ],
             [
-                'vote_delegation_priority',
+                [
+                    'vote_delegation_priority',
+                    'debt_redistribution_priority',
+                ],
                 'filter',
                 'filter' => static function ($v) {
                     return ((int)$v) ?: 0;
-                }
+                },
             ],
+            ['is_real', 'boolean'],
             [['is_real', 'relation'], 'default', 'value' => 0],
             [
                 'groupIds', 'filter', 'filter' => function ($val) {
@@ -155,8 +150,8 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'userIdOrName' => 'User ID / ' . Yii::t('user', 'Username'),
             'is_real' => Yii::t('app', 'Real confirmation'),
             'relation' => Yii::t('app', 'Relation'),
-            'vote_delegation_priority' => Yii::t('app', 'Vote Delegation Priority'),
-            'debt_redistribution_priority' => Yii::t('app', 'Debt Redistribution Priority'),
+            'vote_delegation_priority' => Yii::t('app', 'Vote delegation priority'),
+            'debt_redistribution_priority' => Yii::t('app', 'Debt transfer priority'),
             'groupIds' => Yii::t('app', 'Groups'),
         ];
     }
@@ -245,8 +240,8 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function getDebtRedistributions()
     {
         return $this->hasMany(DebtRedistribution::className(), [
-            'user_id' => DebtRedistribution::getOwnerAttribute(),
-            'link_user_id' => DebtRedistribution::getLinkedAttribute(),
+            'user_id' => 'user_id',
+            'link_user_id' => 'link_user_id',
         ]);
     }
 
@@ -258,8 +253,8 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public function getDebtRedistributionByDebtorCustom()
     {
         return $this->hasOne(DebtRedistribution::className(), [
-            'user_id' => DebtRedistribution::getOwnerAttribute(),
-            'link_user_id' => DebtRedistribution::getLinkedAttribute(),
+            'user_id' => 'user_id',
+            'link_user_id' => 'link_user_id',
         ]);
     }
 
@@ -304,11 +299,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return $contactName;
     }
 
-    public function canHaveDebtRedistribution(): bool
-    {
-        return !$this->isNonUser();
-    }
-
     public function isUser(): bool
     {
         return (bool)$this->link_user_id;
@@ -316,12 +306,12 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     public function isNonUser(): bool
     {
-        return !$this->link_user_id;
+        return !$this->isUser();
     }
 
-    public function isDebtRedistributionPriorityDeny(): bool
+    public function hasDebtTransferPriority(): bool
     {
-        return (int)$this->debt_redistribution_priority === self::DEBT_REDISTRIBUTION_PRIORITY_DENY;
+        return (bool)$this->debt_redistribution_priority;
     }
 
     public static function find()
@@ -351,11 +341,12 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         $user = User::find()
             ->andWhere([
-                'OR',
+                'or',
                 ['id' => $idOrName],
                 ['username' => $this->idOrName]
             ])
             ->one();
+
         if ((!empty($user->contact)) && (((int) $user->contact->id !== (int) $this->id))) {
             $contact = $user->contact;
             $contact->link_user_id = null;

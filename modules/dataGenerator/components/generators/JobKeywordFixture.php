@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace app\modules\dataGenerator\components\generators;
 
 use app\models\JobKeyword;
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use yii\db\ActiveRecord;
 
 class JobKeywordFixture extends ARGenerator
@@ -17,18 +15,10 @@ class JobKeywordFixture extends ARGenerator
             'keyword' => $this->faker->word(),
         ]);
 
-        if (!$model->save()) {
-            throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
+        if (!$model->validate('keyword')) {
+            return $this->factoryModel();
         }
 
         return $model;
-    }
-
-    /**
-     * @throws ARGeneratorException
-     */
-    public function load(): ?ActiveRecord
-    {
-        return $this->factoryModel();
     }
 }

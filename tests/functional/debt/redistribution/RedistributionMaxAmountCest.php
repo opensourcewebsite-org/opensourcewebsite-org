@@ -1,6 +1,5 @@
 <?php
 
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\DebtRedistribution;
 use Codeception\Configuration;
@@ -53,7 +52,6 @@ class RedistributionMaxAmountCest
     {
         $this->validateLimitsSumNotGreaterTargetAmount($example);
 
-        $scale = DebtHelper::getFloatScale();
         $chain1BalanceAmount = $this->common->balanceBefore[Common::CHAIN_1]->amount;
         $limit1 = rand(1, floor($chain1BalanceAmount));//any value when (contactLimit <= contactBalance) - will deny
         $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, $limit1);
@@ -68,7 +66,7 @@ class RedistributionMaxAmountCest
 
         $this->common->testDefault($I, 2);
 
-        $changedChain255 = Number::floatSub($this->common->getTargetAmount(), $lowestLimit, $scale);
+        $changedChain255 = Number::floatSub($this->common->getTargetAmount(), $lowestLimit, 2);
 
         $this->common->expectBalanceNotChangedByKey($I, Common::CHAIN_1);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$lowestLimit);
@@ -85,7 +83,7 @@ class RedistributionMaxAmountCest
     {
         //behavior of delete & DebtRedistribution::MAX_AMOUNT_DENY is the same
         $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, DebtRedistribution::MAX_AMOUNT_DENY);
-        $this->common->getFixtureDebtRedistribution($I, Common::CHAIN_2,false)->delete();
+        $this->common->getFixtureDebtRedistribution($I, Common::CHAIN_2, false)->delete();
 
         $this->common->testDefault($I, 1);
 
@@ -113,9 +111,8 @@ class RedistributionMaxAmountCest
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $example[0]);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$example[1]);
 
-        $scale = DebtHelper::getFloatScale();
-        $expectBalanceToAdd = Number::floatSub($this->common->getTargetAmount(), $example[0], $scale);
-        $expectBalanceToAdd = Number::floatSub($expectBalanceToAdd, $example[1], $scale);
+        $expectBalanceToAdd = Number::floatSub($this->common->getTargetAmount(), $example[0], 2);
+        $expectBalanceToAdd = Number::floatSub($expectBalanceToAdd, $example[1], 2);
 
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_255, $expectBalanceToAdd);
     }
@@ -128,14 +125,13 @@ class RedistributionMaxAmountCest
      */
     public function testCaseWhenLimitGreaterThanTargetAmount(FunctionalTester $I): void
     {
-        $scale = DebtHelper::getFloatScale();
-        $limitGreater = Number::floatAdd($this->common->getTargetAmount(), 1000, $scale);
+        $limitGreater = Number::floatAdd($this->common->getTargetAmount(), 1000, 2);
         $this->common->setMaxAmountLimit($I, Common::CHAIN_1, true, $limit1Relative = 123.45, true);
         $this->common->setMaxAmountLimit($I, Common::CHAIN_2, true, $limitGreater);
 
         $this->common->testDefault($I, 2);
 
-        $expectBalanceToAdd = Number::floatSub($this->common->getTargetAmount(), $limit1Relative, $scale);
+        $expectBalanceToAdd = Number::floatSub($this->common->getTargetAmount(), $limit1Relative, 2);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_1, $limit1Relative);
         $this->common->expectBalanceChangedByKey($I, Common::CHAIN_2, -$expectBalanceToAdd);
     }
@@ -145,15 +141,14 @@ class RedistributionMaxAmountCest
 
     private function validateLimitsSumNotGreaterTargetAmount($example): void
     {
-        $scale = DebtHelper::getFloatScale();
         $targetAmount = $this->common->getTargetAmount();
 
         $sum = 0;
         foreach ($example as $v) {
-            $sum = Number::floatAdd($sum, $v, $scale);
+            $sum = Number::floatAdd($sum, $v, 2);
         }
 
-        if (Number::isFloatGreater($sum, $targetAmount, $scale)) {
+        if (Number::isFloatGreater($sum, $targetAmount, 2)) {
             $message = "This test require: (target_amount > sum_of_example_values)\n";
             $message .= "Current: target_amount = $targetAmount; sum_of_example_values = $sum\n";
             $message .= "Solutions:\n";

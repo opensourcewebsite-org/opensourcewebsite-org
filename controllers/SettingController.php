@@ -10,7 +10,7 @@ use app\models\search\SettingValueSearch;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
-use yii\web\Controller;
+use app\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
@@ -109,15 +109,14 @@ class SettingController extends Controller
      *
      * @return string|void
      */
-    public function actionAddValue($setting_key)
+    public function actionAddValue(string $settingKey)
     {
         if (Yii::$app->request->isPost) {
-            $setting_key = Yii::$app->request->post('setting_key');
             $value = Yii::$app->request->post('SettingValue')['value'];
 
             $setting = Setting::find()
                 ->where([
-                    'key' => $setting_key,
+                    'key' => $settingKey,
                 ])
                 ->one();
 
@@ -135,7 +134,7 @@ class SettingController extends Controller
                     $setting = new Setting();
 
                     $setting->setAttributes([
-                        'key' => $setting_key,
+                        'key' => $settingKey,
                         'updated_at' => time(),
                     ]);
 
@@ -153,6 +152,7 @@ class SettingController extends Controller
                     'value' => $value,
                 ]);
 
+                // TODO refactoring and remove ActiveForm::validate()
                 if (!$settingValue->save()) {
                     Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -166,7 +166,7 @@ class SettingController extends Controller
 
                 return $this->redirect([
                     'setting/view',
-                    'key' => $setting_key,
+                    'key' => $settingKey,
                 ]);
             }
         }
@@ -174,8 +174,7 @@ class SettingController extends Controller
         $settingValue = new SettingValue();
 
         $renderParams = [
-            'setting_key' => $setting_key,
-            'settingValue' => $settingValue,
+            'model' => $settingValue,
         ];
 
         if (Yii::$app->request->isAjax) {

@@ -25,9 +25,9 @@ class DefaultController extends FixtureController
     /**
      * @var int seconds between model generation
      */
-    public $interval       = 2;
-    public $interactive    = false;
-    public $namespace      = 'app\modules\dataGenerator\components\generators';
+    public $interval = 2;
+    public $interactive = false;
+    public $namespace = 'app\modules\dataGenerator\components\generators';
     public $globalFixtures = [];
 
     public function options($actionID)
@@ -84,12 +84,14 @@ class DefaultController extends FixtureController
     public function loadFixtures($fixtures = null)
     {
         static $isFirst = true;
+
         if ($isFirst) {
             $isFirst = false;
             $this->output("\n[PROCESS] Loading fixtures:", [Console::FG_YELLOW, Console::BOLD]);
         }
 
         $while = $this->limit ?: true;
+
         while ($while) {
             /** @var ARGenerator $fixtureRand */
             $fixtureRand = ARGenerator::getFaker()->randomElement($fixtures);

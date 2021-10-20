@@ -1,10 +1,13 @@
 <?php
 
-namespace app\models;
+declare(strict_types=1);
+
+namespace app\models\forms;
 
 use app\components\helpers\ReferrerHelper;
 use yii\base\Model;
 use Yii;
+use app\models\User;
 
 /**
  * Signup form
@@ -52,10 +55,6 @@ class SignupForm extends Model
 
     public function validateUsername($attribute, $params)
     {
-        if ($this->hasErrors()) {
-            return false;
-        }
-
         $user = new User();
         $user->username = $this->username;
 

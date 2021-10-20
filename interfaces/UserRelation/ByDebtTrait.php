@@ -176,7 +176,7 @@ trait ByDebtTrait
 
     public function factoryContact(bool $directionFrom): Contact
     {
-        $contact = new Contact;
+        $contact = new Contact();
 
         if ($directionFrom) {
             $contact->ownerUID($this->debtorUID());

@@ -17,25 +17,23 @@ $form = ActiveForm::begin();
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit timezone'); ?>
+                        <?= Yii::t('app', 'Change timezone'); ?>
                     </h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
                             <?= $form->field($user, 'timezone')
-                                ->widget(
-                                    Select2::class,
-                                    [
-                                        'name' => 'change-timezone',
-                                        'value' => Yii::$app->user->identity->timezone,
-                                        'data' => $timezones,
-                                        'options' => [
-                                            'id' => 'timezone-value',
-                                            'prompt' => '',
-                                        ],
-                                    ]
-                                )->label(Yii::t('app', 'Timezone')); ?>
+                                ->widget(Select2::class, [
+                                    'name' => 'change-timezone',
+                                    'value' => Yii::$app->user->identity->timezone,
+                                    'data' => $timezones,
+                                    'options' => [
+                                        'id' => 'timezone-value',
+                                        'prompt' => '',
+                                    ],
+                                ])
+                                ->label(false); ?>
                         </div>
                     </div>
                 </div>

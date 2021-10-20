@@ -84,23 +84,8 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
     public function rules(): array
     {
         return [
-            [
-                [
-                    'user_id',
-                    'name',
-                ],
-                'required',
-            ],
-            [
-                [
-                    'user_id',
-                    'currency_id',
-                    'status',
-                    'created_at',
-                    'processed_at',
-                ],
-                'integer',
-            ],
+            [['user_id', 'name'], 'required'],
+            [['user_id', 'currency_id', 'status', 'created_at', 'processed_at'], 'integer'],
             [
                 'search_radius',
                 RadiusValidator::class,

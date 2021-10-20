@@ -60,7 +60,7 @@ trait SelfSearchTrait
         foreach ($paramsNull as $modelCondition) {
             $conditionAnd = ['AND'];
             foreach ($modelCondition as $attribute => $value) {
-                $conditionAnd[] = ($value === NULL) ? "$attribute IS NULL" : [$attribute => $value];
+                $conditionAnd[] = ($value === null) ? "$attribute IS NULL" : [$attribute => $value];
             }
             $conditionOr[] = $conditionAnd;
         }

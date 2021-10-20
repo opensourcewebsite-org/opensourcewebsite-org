@@ -50,7 +50,7 @@ class ContactQuery extends ActiveQuery
                 'id' => $contactId,
             ])
             ->userOwner()
-            ->nonUser();
+            ->user();
     }
 
     public function withDebtRedistributionByCurrency($currencyId, $joinType = 'LEFT JOIN'): self
@@ -79,7 +79,7 @@ class ContactQuery extends ActiveQuery
 
         $query = $this->andWhere('contact.debt_redistribution_priority <> ' . Contact::DEBT_REDISTRIBUTION_PRIORITY_DENY)
             ->withDebtRedistributionByCurrency($debtBalance->currency_id, 'INNER JOIN')
-            ->joinWith('debtRedistributionByDebtorCustom.debtBalanceDirectionBack')
+            ->joinWith('debtRedistributionByDebtorCustom.counterDebtBalance')
             ->andWhere("($maxAmountIsAny) OR ($balanceIsNotExist) OR ($maxAmountIsGreater)");
 
         if ($level === 1 && $debtBalance->hasRedistributionConfig()) {

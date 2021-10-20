@@ -22,8 +22,11 @@ $form = ActiveForm::begin();
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($user, 'username')->textInput(['value' =>
-                                Yii::$app->user->identity->username])->label($user->getAttributeLabel('username') . $labelOptional); ?>
+                            <?= $form->field($user, 'username')
+                                ->textInput([
+                                    'value' => Yii::$app->user->identity->username,
+                                ])
+                                ->label($user->getAttributeLabel('username') . $labelOptional); ?>
                         </div>
                     </div>
                 </div>

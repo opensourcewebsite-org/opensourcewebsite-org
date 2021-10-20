@@ -14,8 +14,5 @@ $this->params['breadcrumbs'][] = ['label' => '#' . $model->id, 'url' => ['view',
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="resume-update">
-    <?= $this->render('_form', [
-        'model' => $model,
-        'currencies' => $currencies,
-    ]); ?>
+    <?= $this->render('_form', $_params_); ?>
 </div>

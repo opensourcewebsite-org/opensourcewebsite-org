@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace app\widgets\PaymentMethodSelect;
+namespace app\widgets\selects;
 
 use app\components\helpers\ArrayHelper;
-use app\models\PaymentMethod;
-use app\models\PaymentMethodCurrency;
+use app\models\ContactGroup;
 use app\widgets\base\Widget;
 use kartik\select2\Select2;
 use yii\base\Model;
@@ -14,7 +13,7 @@ use yii\web\JsExpression;
 use yii\helpers\Url;
 use Yii;
 
-class PaymentMethodSelect extends Widget
+class ContactGroupSelect extends Widget
 {
     private array $defaultOptions = [
         'class' => 'form-control',
@@ -23,8 +22,6 @@ class PaymentMethodSelect extends Widget
     ];
 
     private array $pluginOptions = [];
-
-    public $currencyId = null;
 
     public function init()
     {
@@ -35,11 +32,13 @@ class PaymentMethodSelect extends Widget
 
     public function run(): string
     {
+        $this->registerJs();
+
         if ($this->hasModel()) {
             return Select2::widget([
                 'model' => $this->model,
                 'attribute' => $this->attribute,
-                'data' => $this->getData(),
+                'data' => $this->getGroups(),
                 'showToggleAll' => false,
                 'options' => array_merge($this->defaultOptions, $this->options),
                 'pluginOptions' => $this->pluginOptions,
@@ -47,7 +46,7 @@ class PaymentMethodSelect extends Widget
         } else {
             return Select2::widget([
                 'name' => $this->name,
-                'data' => $this->getData(),
+                'data' => $this->getGroups(),
                 'showToggleAll' => false,
                 'value' => $this->value,
                 'options' => array_merge($this->defaultOptions, $this->options),
@@ -61,30 +60,33 @@ class PaymentMethodSelect extends Widget
         return $this->model instanceof Model && $this->attribute !== null;
     }
 
-    private function getData(): array
+    private function registerJs()
     {
-        if ($this->currencyId) {
-            $query = PaymentMethod::find()
-                ->andWhere([
-                    'in',
-                    'id',
-                    PaymentMethodCurrency::find()
-                        ->select('payment_method_id')
-                        ->andWhere([
-                            'currency_id' => $this->currencyId,
-                        ]),
-                ])
-                ->orderBy([
-                    'name' => SORT_ASC,
-                ]);
-        } else {
-            $query = PaymentMethod::find()
-                ->orderBy([
-                    'name' => SORT_ASC,
-                ]);
-        }
+        $createUrl = Url::to('/contact/create-group-ajax');
 
-        return ArrayHelper::map($query->asArray()->all(), 'id', 'name');
+        $this->getView()->registerJs(new JsExpression("
+            $('#{$this->getId()}').on('select2:select', function(e){
+                if (e.params.data.newTag) {
+                    const name = e.params.data.text;
+                    $.post('{$createUrl}', {'ContactGroup[name]': name}, function(res) {
+                       const currentData = $(e.target).val();
+
+                       let newData = currentData.filter( (el) => el !== name );
+                       newData.push(res.id);
+
+                       $(e.target).find('option[value=\"'+name+'\"]').remove();
+                       $(e.target).append(new Option(name, res.id, true, true));
+                       $(e.target).val(newData).trigger('change');
+                    });
+                }
+            });
+        "));
+    }
+
+
+    private function getGroups(): array
+    {
+        return ArrayHelper::map(Yii::$app->user->identity->getContactGroups()->asArray()->all(), 'id', 'name');
     }
 
     private function preparePluginOptions(): array
@@ -101,12 +103,5 @@ class PaymentMethodSelect extends Widget
                         }
                     "),
         ];
-    }
-
-    private function getPaymentMethodsForCurrencyId(int $currencyId): array
-    {
-        return PaymentMethod::find()->joinWith('currencies')
-            ->where(['currency.id' => $currencyId])
-            ->all();
     }
 }

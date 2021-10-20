@@ -30,32 +30,19 @@ $this->title = Yii::t('app', 'Users') . ': ' . $usersCount;
                         'columns' => [
                             [
                                 'label' => Yii::t('app', 'Rank'),
-                                'enableSorting' => false,
-                                'format' => 'raw',
                                 'content' => function (User $model) {
                                     return $model->getRank();
-                                }
-                            ],
-                            [
-                                'attribute' => 'id',
+                                },
                                 'enableSorting' => false,
+                                'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'username',
+                                'label' => Yii::t('app', 'User'),
+                                'content' => function (User $model) {
+                                    return Html::a($model->getDisplayName(), ['contact/view-user', 'id' => $model->id]);
+                                },
+                                'format' => 'html',
                                 'enableSorting' => false,
-                            ],
-                            [
-                                'class' => ActionColumn::class,
-                                'template' => '{view}',
-                                'buttons' => [
-                                    'view' => function ($url, $model) {
-                                        return Html::a(
-                                            Html::icon('eye'),
-                                            Url::toRoute(['contact/view-user', 'id' => $model->id]),
-                                            ['class' => 'btn btn-outline-primary']
-                                        );
-                                    },
-                                ],
                             ],
                         ],
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",

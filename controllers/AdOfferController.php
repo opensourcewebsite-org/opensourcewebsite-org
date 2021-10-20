@@ -16,7 +16,7 @@ use app\models\AdOffer;
 use app\models\search\AdOfferSearch;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use yii\web\Controller;
+use app\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
@@ -66,7 +66,9 @@ class AdOfferController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', ['model' => $model, 'currencies' => Currency::find()->all()]);
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -84,7 +86,9 @@ class AdOfferController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', ['model' => $model, 'currencies' => Currency::find()->all()]);
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**

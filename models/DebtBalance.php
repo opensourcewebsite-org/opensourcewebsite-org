@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByDebtTrait;
@@ -17,9 +16,6 @@ use yii\base\NotSupportedException;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "debt_balance".
- * on {@see Debt::EVENT_AFTER_CONFIRMATION} - script automatically recalculate balance amount between these two users
- *
  * You can validate DB for data collisions - {@see \app\commands\DebtController::actionCheckBalance()}
  *
  * @property int $currency_id
@@ -49,15 +45,12 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     use SelectForUpdateTrait;
     use FloatAttributeTrait;
 
-    /** @var bool {@see DebtBalance::requireAllowExecute()} */
-    private static $allowExecute = false;
-
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'debt_balance';
+        return '{{%debt_balance}}';
     }
 
     /**
@@ -66,7 +59,14 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     public function rules()
     {
         return [
-            ['amount', $this->getFloatRuleFilter()],
+            [['from_user_id', 'to_user_id', 'currency_id', 'amount'], 'required'],
+            [['from_user_id', 'to_user_id', 'currency_id'], 'integer'],
+            [
+                'amount',
+                'double',
+                'min' => -9999999999999.99,
+                'max' => 9999999999999.99,
+            ],
         ];
     }
 
@@ -78,10 +78,19 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         return [
             'currency_id'  => 'Currency ID',
             'from_user_id' => 'From User ID',
-            'to_user_id'   => 'To User ID',
-            'amount'       => 'Amount',
+            'to_user_id' => 'To User ID',
+            'amount' => 'Amount',
             'reduction_try_at' => 'Reduction Try At',
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return DebtBalanceQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new DebtBalanceQuery(get_called_class());
     }
 
     /**
@@ -117,20 +126,11 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
 
     /**
      * {@inheritdoc}
-     * @return DebtBalanceQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new DebtBalanceQuery(get_called_class());
-    }
-
-    /**
-     * {@inheritdoc}
      * @throws NotSupportedException
      */
     public static function updateAll($attributes, $condition = '', $params = [])
     {
-        self::requireAllowExecute();
+        self::requireTransaction();
 
         return parent::updateAll($attributes, $condition, $params);
     }
@@ -141,35 +141,37 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
      */
     public static function deleteAll($condition = null, $params = [])
     {
-        self::requireAllowExecute();
+        self::requireTransaction();
 
         return parent::deleteAll($condition, $params);
     }
 
     public function update($runValidation = true, $attributeNames = null)
     {
-        $scale = DebtHelper::getFloatScale();
-        if (Number::isFloatEqual(0, $this->amount, $scale)) {
+        if (Number::isFloatEqual(0, $this->amount)) {
             return (bool)$this->delete();
         }
+
+        self::requireTransaction();
 
         return parent::update($runValidation, $attributeNames);
     }
 
     public function insert($runValidation = true, $attributes = null)
     {
-        $scale = DebtHelper::getFloatScale();
-        if (Number::isFloatEqual(0, $this->amount, $scale)) {
+        if (Number::isFloatEqual(0, $this->amount)) {
             return true;
         }
-        self::requireAllowExecute();
 
         return parent::insert($runValidation, $attributes);
     }
 
     public function beforeSave($insert)
     {
-        $this->updateProcessedAt();
+        if (!$insert && ($this->getOldAttribute('amount') > 0) && ($this->amount <= 0)) {
+            $this->reduction_try_at = null;
+            $this->redistribute_try_at = null;
+        }
 
         return parent::beforeSave($insert);
     }
@@ -190,35 +192,6 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
     }
 
     /**
-     * @throws \Throwable
-     */
-    public static function onDebtConfirmation(Debt $debt): self
-    {
-        if (!$debt->isStatusConfirm()) {
-            throw new InvalidCallException('Method require `Debt::isStatusConfirm() === TRUE`');
-        }
-
-        if ($debt->isDebtBalancePopulated() && $debt->getDebtBalance()->isFoundForUpdate()) {
-            $debtBalance = $debt->getDebtBalance();
-        } else {
-            //`FOR UPDATE` - necessary to avoid conflict. Because we can't just set `amount = amount + :debtAmount`.
-            // We need possibility to switch values of `from_user_id` & `to_user_id`. And possibility to delete row.
-            $query = DebtBalance::find()->debt($debt);
-            $debtBalance = DebtBalance::findOneForUpdate($query);
-        }
-
-        if ($debtBalance) {
-            $debtBalance->changeAmount($debt);
-        } else {
-            $debtBalance = self::factory($debt);
-        }
-
-        $debtBalance->saveCore();
-
-        return $debtBalance;
-    }
-
-    /**
      * @throws Exception
      */
     public static function setReductionTryAt(self $balance): ?self
@@ -230,110 +203,9 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
         }
 
         $balance->reduction_try_at = time();
-        $balance->saveCore();
+        $balance->save();
 
         return $balance;
-    }
-
-    public function isDirectionChanged(): bool
-    {
-        // we can check `to_user_id` as well here. Or both attributes. Result will be the same.
-        return $this->isAttributeChanged('from_user_id', false);
-    }
-
-    public function isAttributeChanged($name, $identical = true)
-    {
-        if (!parent::isAttributeChanged($name, $identical)) {
-            return false;
-        }
-
-        if (!$identical && self::isAttributeFloat($name)) {
-            return $this->isAttributeFloatChanged($name);
-        }
-
-        return true;
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function saveCore(): void
-    {
-        self::$allowExecute = true;
-        $res = $this->save();
-        self::$allowExecute = false;
-
-        if (!$res) {
-            $message = "Unexpected error occurred: Fail to save DebtBalance.\n";
-            $message .= 'DebtBalance::$errors = ' . print_r($this->errors, true);
-            throw new Exception($message);
-        }
-    }
-
-    private function updateProcessedAt(): void
-    {
-        $isAmountBecomeNotZero = $this->isAttributeChanged('amount', false) && !$this->getOldAttribute('amount');
-
-        if ($isAmountBecomeNotZero || $this->isDirectionChanged()) {
-            $this->reduction_try_at = null;
-            $this->redistribute_try_at = null;
-        }
-
-        // Else: leave `reduction_try_at` as is.
-    }
-
-    private static function factory(Debt $debt): self
-    {
-        $model = new self();
-
-        $model->currency_id  = $debt->currency_id;
-        $model->from_user_id = $debt->from_user_id;
-        $model->to_user_id   = $debt->to_user_id;
-        $model->amount       = $debt->amount;
-
-        return $model;
-    }
-
-    private function changeAmount(Debt $debt): void
-    {
-        $scale = DebtHelper::getFloatScale();
-        $amountAdd = $debt->isDebtBalanceHasSameDirection($this) ? $debt->amount : -$debt->amount;
-        $newAmount = Number::floatAdd($this->amount, $amountAdd, $scale);
-
-        if ($newAmount < 0) {
-            //debt_balance.amount is always > 0. Switch users to change direction.
-            $fromUID = $this->from_user_id;
-            $toUID   = $this->to_user_id;
-
-            $this->from_user_id = $toUID;
-            $this->to_user_id   = $fromUID;
-
-            $newAmount = abs($newAmount);
-        }
-
-        $this->amount = $newAmount;
-    }
-
-    /**
-     * @throws NotSupportedException
-     */
-    private static function requireAllowExecute(): void
-    {
-        if (self::$allowExecute) {
-            self::requireTransaction();
-            return;
-        }
-
-        $message = "Any change of this table requires `SELECT FOR UPDATE` to be done before it.\n";
-        $message .= " To ensure it, was restricted access to all execute methods (save(), delete(), updateAll(), etc.).\n";
-        $message .= " The app design expect only 2 reasons to save|delete balance:\n";
-        $message .= "     `Debt::EVENT_AFTER_CONFIRMATION`  &  `\app\components\debt\Reduction::cantReduceBalance()`.\n";
-        $message .= "---\n";
-        $message .= "If you REALLY need new way to do it - create new method in `DebtBalance`\n";
-        $message .= " and before any change call `SELECT FOR UPDATE` for rows, you want to insert|update|delete.\n";
-        $message .= " You should never allow to call any execute method as public - to avoid bugs in future development.\n";
-
-        throw new NotSupportedException($message);
     }
 
     public function hasRedistributionConfig(): bool
@@ -344,5 +216,14 @@ class DebtBalance extends ActiveRecord implements ByDebtInterface
             $this->toDebtRedistribution &&
             !$this->toDebtRedistribution->isMaxAmountDeny()
         );
+    }
+
+    public function getCounterDebtBalance()
+    {
+        return $this->hasOne(self::className(), [
+            'currency_id' => 'currency_id',
+            'from_user_id' => 'to_user_id',
+            'to_user_id' => 'from_user_id',
+        ]);
     }
 }

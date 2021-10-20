@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = '#' . ($setting->id ?? ' NEW');
                             ],
                             'url' => Url::to([
                                 'setting/add-value',
-                                'setting_key' => $setting->key ?? null,
+                                'settingKey' => $setting->key ?? null,
                             ]),
                         ]);?>
                     </div>

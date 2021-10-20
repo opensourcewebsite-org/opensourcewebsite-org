@@ -3,9 +3,9 @@
 namespace tests\models;
 
 use Yii;
-use app\models\LoginForm;
+use app\models\forms\LoginForm;
 use app\models\Rating;
-use app\models\SignupForm;
+use app\models\forms\SignupForm;
 use app\models\User;
 use Codeception\Test\Unit;
 

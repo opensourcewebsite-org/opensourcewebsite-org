@@ -3,7 +3,6 @@
 namespace app\models;
 
 use app\components\debt\Redistribution;
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByOwnerInterface;
@@ -13,10 +12,10 @@ use app\models\queries\CurrencyQuery;
 use app\models\queries\DebtBalanceQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\traits\FloatAttributeTrait;
-use app\models\traits\RelationToDebtBalanceTrait;
 use app\models\traits\SelectForUpdateTrait;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use Yii;
 
 /**
  * This is the model class for table "debt_redistribution".
@@ -33,15 +32,14 @@ use yii\db\ActiveRecord;
  *
  * @property Currency $currency
  * @property Contact $contact
- * @property DebtBalance $debtBalanceDirectionBack
- * @property DebtBalance $debtBalanceDirectionSame
+ * @property DebtBalance $debtBalance
+ * @property DebtBalance $counterDebtBalance
  */
 class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDebtInterface
 {
     use ByOwnerTrait;
     use SelectForUpdateTrait;
     use FloatAttributeTrait;
-    use RelationToDebtBalanceTrait;
 
     /** @var null no limit - allow any amount. */
     public const MAX_AMOUNT_ANY  = null;
@@ -50,18 +48,19 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
 
     public static function tableName(): string
     {
-        return 'debt_redistribution';
+        return '{{%debt_redistribution}}';
     }
 
     public function rules(): array
     {
         return [
-            ['currency_id', 'required'],
-
-            ['max_amount', 'number', 'min' => 0],
-            ['max_amount', $this->fnFormatMaxAmount(), 'skipOnEmpty' => false],
-            ['max_amount', $this->getFloatRuleFilter()],
-
+            [['currency_id', 'user_id', 'link_user_id'], 'required'],
+            [
+                'max_amount',
+                'double',
+                'min' => 0,
+                'max' => 9999999999999.99,
+            ],
             'unique' => [['user_id', 'link_user_id', 'currency_id'], 'unique', 'targetAttribute' => ['user_id', 'link_user_id', 'currency_id']],
             ['currency_id', 'exist', 'targetRelation' => 'currency'],
         ];
@@ -70,11 +69,11 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
     public function attributeLabels(): array
     {
         return [
-            'id'           => 'ID',
-            'user_id'      => 'User ID',
+            'id' => 'ID',
+            'user_id' => 'User ID',
             'link_user_id' => 'Link User ID',
-            'currency_id'  => 'Currency',
-            'max_amount'   => 'Max Amount',
+            'currency_id' => Yii::t('app', 'Currency'),
+            'max_amount' => Yii::t('app', 'Max. amount'),
         ];
     }
 
@@ -105,24 +104,24 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
     /**
      * @return DebtBalanceQuery|ActiveQuery
      */
-    public function getDebtBalanceDirectionBack()
+    public function getDebtBalance()
     {
         return $this->hasOne(DebtBalance::class, [
             'currency_id' => 'currency_id',
-            DebtBalance::getDebtReceiverAttribute() => self::getOwnerAttribute(),
-            DebtBalance::getDebtorAttribute() => self::getLinkedAttribute(),
+            'from_user_id' => 'user_id',
+            'to_user_id' => 'link_user_id',
         ]);
     }
 
     /**
      * @return DebtBalanceQuery|ActiveQuery
      */
-    public function getDebtBalanceDirectionSame()
+    public function getCounterDebtBalance()
     {
         return $this->hasOne(DebtBalance::class, [
             'currency_id' => 'currency_id',
-            DebtBalance::getDebtorAttribute() => self::getOwnerAttribute(),
-            DebtBalance::getDebtReceiverAttribute() => self::getLinkedAttribute(),
+            'from_user_id' => 'link_user_id',
+            'to_user_id' => 'user_id',
         ]);
     }
 
@@ -133,16 +132,7 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
 
     public function isMaxAmountDeny(): bool
     {
-        $scale = DebtHelper::getFloatScale();
-
-        return !$this->isMaxAmountAny() && Number::isFloatEqual(self::MAX_AMOUNT_DENY, $this->max_amount, $scale);
-    }
-
-    private function fnFormatMaxAmount(): callable
-    {
-        return function () {
-            $this->max_amount = ($this->max_amount === '') ? null : $this->max_amount;
-        };
+        return !$this->isMaxAmountAny() && Number::isFloatEqual(self::MAX_AMOUNT_DENY, $this->max_amount, 2);
     }
 
     public function debtorUID($value = null)

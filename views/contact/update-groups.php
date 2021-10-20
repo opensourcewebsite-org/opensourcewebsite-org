@@ -5,7 +5,7 @@ use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
 use kartik\select2\Select2;
 use yii\widgets\ActiveForm;
-use app\widgets\ContactGroupSelect\ContactGroupSelect;
+use app\widgets\selects\ContactGroupSelect;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
@@ -22,7 +22,8 @@ $form = ActiveForm::begin([
                     <div class="row">
                         <div class="col">
                             <?php $model->groupIds = $model->getGroupIds() ?>
-                            <?= $form->field($model, 'groupIds')->widget(ContactGroupSelect::class) ?>
+                            <?= $form->field($model, 'groupIds')
+                                ->widget(ContactGroupSelect::class); ?>
                         </div>
                     </div>
                 </div>

@@ -52,7 +52,7 @@ $form = ActiveForm::begin();
                             <?= $form->field($model, 'vote_delegation_priority')
                                 ->textInput([
                                     'type' => 'number',
-                                    'placeholder' => Yii::t('app', 'Deny'),
+                                    'placeholder' => '0, ' . Yii::t('app', 'Deny'),
                                     'value' => ($model->vote_delegation_priority ?: ''),
                                 ])
                                 ->label($model->getAttributeLabel('vote_delegation_priority') . $labelOptional); ?>
@@ -63,7 +63,7 @@ $form = ActiveForm::begin();
                             <?= $form->field($model, 'debt_redistribution_priority')
                                 ->textInput([
                                     'type' => 'number',
-                                    'placeholder' => Yii::t('app', 'Deny'),
+                                    'placeholder' => '0, ' . Yii::t('app', 'Deny'),
                                     'value' => ($model->debt_redistribution_priority ?: ''),
                                 ])
                                 ->label($model->getAttributeLabel('debt_redistribution_priority') . $labelOptional); ?>
@@ -89,45 +89,3 @@ $form = ActiveForm::begin();
     </div>
 </div>
 <?php ActiveForm::end(); ?>
-<?php
-
-$urlRedirect = Yii::$app->urlManager->createUrl(['/contact']);
-$jsMessages = [
-    'delete-confirm' => Yii::t('app', 'Are you sure you want to delete this contact') . '?',
-    'delete-error'   => Yii::t('app', 'Sorry, there was an error while trying to delete the contact') . '.',
-    'save-warn-debt' => Yii::t('app', "WARNING!\\n You have changed User.\\n All Debt Redistribution settings related to User \\\"{user}\\\" will be deleted!"),
-];
-
-$this->registerJs(
-    <<<JS
-$("#delete-contact").on("click", function(event) {
-    event.preventDefault();
-    var url = $(this).attr("href");
-
-    if (confirm("{$jsMessages['delete-confirm']}")) {
-        $.post(url, {}, function(result) {
-            if (result == "1") {
-                location.href = "$urlRedirect";
-            } else {
-                alert("{$jsMessages['delete-error']}");
-            }
-        });
-    }
-
-    return false;
-});
-
-$('#$form->id').on('beforeSubmit', warnOnDeleteDebtRedistributionSettings);
-
-function warnOnDeleteDebtRedistributionSettings() {
-    let inputUser = $('#contact-useridorname');
-    let newUser = inputUser.val() + '';
-    let oldUser = inputUser.attr('data-old-value') + '';
-    if (!oldUser || oldUser === 'undefined' || oldUser === newUser) {
-        return true;
-    }
-
-    return confirm("{$jsMessages['save-warn-debt']}".replace('{user}', oldUser));
-}
-JS
-);

@@ -7,7 +7,6 @@ use yii\db\Migration;
  */
 class m190706_130630_create_debt_table extends Migration
 {
-
     /**
      * {@inheritdoc}
      */

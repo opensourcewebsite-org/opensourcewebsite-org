@@ -12,15 +12,14 @@ $currency = Currency::findOne($currencyId);
 $this->title = Yii::t('app', $currency->code);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Debts'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $currencyId;
-
 ?>
 <div class="debt-view">
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills ml-auto p-2">
                 <li class="nav-item">
-                    <?= Html::a(Yii::t('app', 'My Deposits'), ['view-user', 
-                    'direction'  => Debt::DIRECTION_DEPOSIT, 
+                    <?= Html::a(Yii::t('app', 'My Deposits'), ['view-user',
+                    'direction'  => Debt::DIRECTION_DEPOSIT,
                     'currencyId' => $currencyId,
                     'userId'     => $userId,
                 ], [
@@ -28,8 +27,8 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                     ]); ?>
                 </li>
                 <li class="nav-item">
-                    <?= Html::a(Yii::t('app', 'My Credits'), ['view-user', 
-                    'direction'  => Debt::DIRECTION_CREDIT, 
+                    <?= Html::a(Yii::t('app', 'My Credits'), ['view-user',
+                    'direction'  => Debt::DIRECTION_CREDIT,
                     'currencyId' => $currencyId,
                     'userId'     => $userId,
                 ], [
@@ -46,8 +45,8 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                 'columns' => [
                     [
                         'label' => 'User',
-                        'value' => function ($data) use ($direction) {
-                            return $data->getUserDisplayName($direction);
+                        'value' => function ($data) {
+                            return $data->getUserDisplayName();
                         },
                         'format' => 'html',
                     ],
@@ -79,18 +78,18 @@ $this->params['breadcrumbs'][] = '#' . $currencyId;
                         'template' => '{confirm} {cancel}',
                         'buttons' => [
                             'confirm' => function ($url, $data) use ($direction, $currencyId) {
-                                return Html::a('Confirm', ['debt/confirm', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-success']);
+                                return Html::a(Yii::t('app', 'Confirm'), ['debt/confirm', 'id' => $data->id], ['class' => 'btn btn-outline-success']);
                             },
                             'cancel' => function ($url, $data) use ($direction, $currencyId) {
-                                return Html::a('Cancel', ['debt/cancel', 'id' => $data->id, 'direction' => $direction, 'currencyId' => $currencyId], ['class' => 'btn btn-outline-danger']);
+                                return Html::a(Yii::t('app', 'Cancel'), ['debt/cancel', 'id' => $data->id], ['class' => 'btn btn-outline-danger']);
                             },
                         ],
                         'visibleButtons' => [
-                            'confirm' => function ($data) use ($direction) {
-                                return $data->canConfirmDebt($direction);
+                            'confirm' => function ($data) {
+                                return $data->canConfirm();
                             },
                             'cancel' => function ($data) {
-                                return $data->canCancelDebt();
+                                return $data->canCancel();
                             },
                         ],
                     ],

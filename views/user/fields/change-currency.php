@@ -2,7 +2,7 @@
 
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
-use app\widgets\CurrencySelect\CurrencySelect;
+use app\widgets\selects\CurrencySelect;
 use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -15,7 +15,7 @@ $form = ActiveForm::begin();
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit currency'); ?>
+                        <?= Yii::t('app', 'Change currency'); ?>
                     </h3>
                 </div>
                 <div class="card-body">
@@ -23,7 +23,7 @@ $form = ActiveForm::begin();
                         <div class="col">
                             <?= $form->field($user, 'currency_id')
                                 ->widget(CurrencySelect::class)
-                                ->label(Yii::t('app', 'Currency')); ?>
+                                ->label(false); ?>
                         </div>
                     </div>
                 </div>
@@ -36,5 +36,5 @@ $form = ActiveForm::begin();
             </div>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
 </div>
+<?php ActiveForm::end(); ?>

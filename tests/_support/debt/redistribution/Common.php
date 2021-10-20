@@ -2,9 +2,8 @@
 
 namespace Helper\debt\redistribution;
 
-use app\components\debt\BalanceChecker;
+use app\components\debt\DebtBalanceChecker;
 use app\components\debt\Redistribution;
-use app\components\helpers\DebtHelper;
 use app\helpers\Number;
 use app\models\Contact;
 use app\models\Debt;
@@ -79,15 +78,6 @@ class Common
         }
     }
 
-    /**
-     * @throws \yii\db\Exception
-     */
-    public function _after()
-    {
-        $errors = (new BalanceChecker)->run();
-        expect('BalanceChecker found no bugs in DB', $errors)->equals([]);
-    }
-
     public function expectBalanceBecomeZero(?DebtBalance $debtBalance)
     {
         $test = 'Target DebtBalance was redistributed completely';
@@ -132,7 +122,7 @@ class Common
 
     public function findBalanceByChainMember(FunctionalTester $I, int $chainPriority, bool $isMemberFirst): ?DebtBalance
     {
-        $debtBalance = $this->getFixtureDebtRedistribution($I, $chainPriority, $isMemberFirst)->debtBalanceDirectionBack;
+        $debtBalance = $this->getFixtureDebtRedistribution($I, $chainPriority, $isMemberFirst)->counterDebtBalance;
         return ($debtBalance && $debtBalance->refresh()) ? clone $debtBalance : null;
     }
 
@@ -160,9 +150,8 @@ class Common
     {
         expect("DebtBalance should still exist. Chain: {{ $chainKey }}", $balanceNow)->notEmpty();
 
-        $scale = DebtHelper::getFloatScale();
         /** @noinspection NullPointerExceptionInspection */
-        $isEqual = Number::isFloatEqual($balanceBefore->amount, $balanceNow->amount, $scale);
+        $isEqual = Number::isFloatEqual($balanceBefore->amount, $balanceNow->amount, 2);
 
         expect("DebtBalance was NOT redistributed. And was not changed. Chain: {{ $chainKey }}", $isEqual)->true();
     }
@@ -190,10 +179,9 @@ class Common
     {
         expect("DebtBalance should exist. Chain: {{ $chainInfo }}", $balance)->notEmpty();
 
-        $scale = DebtHelper::getFloatScale();
-        $expectBalance = Number::floatAdd($amountWas, $amountToAdd, $scale);
+        $expectBalance = Number::floatAdd($amountWas, $amountToAdd, 2);
         /** @noinspection NullPointerExceptionInspection */
-        $isEqual = Number::isFloatEqual($expectBalance, $balance->amount, $scale);
+        $isEqual = Number::isFloatEqual($expectBalance, $balance->amount, 2);
 
         $text = "DebtBalance was: {{ $amountWas }}. Should be added: {{ $amountToAdd }}.";
         /** @noinspection NullPointerExceptionInspection */
@@ -228,8 +216,8 @@ class Common
     public function setMaxAmountLimit(FunctionalTester $I, int $chainPriority, bool $isMemberFirst, $maxAmount, bool $calculateRelative = false): void
     {
         $model = $this->getFixtureDebtRedistribution($I, $chainPriority, $isMemberFirst);
-        if ($calculateRelative && $maxAmount && $model->debtBalanceDirectionBack) {
-            $maxAmount = Number::floatAdd($maxAmount, $model->debtBalanceDirectionBack->amount, DebtHelper::getFloatScale());
+        if ($calculateRelative && $maxAmount && $model->counterDebtBalance) {
+            $maxAmount = Number::floatAdd($maxAmount, $model->counterDebtBalance->amount);
         }
         $model->max_amount = $maxAmount;
         $model->save();

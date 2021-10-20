@@ -20,16 +20,15 @@ $form = ActiveForm::begin();
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <?= Html::label(Yii::t('app', 'Birthday'), 'birthday-value'); ?>
                             <?= DatePicker::widget([
-                                'model'         => $user,
-                                'name'          => 'birthday',
-                                'id'            => 'birthday-value',
-                                'value'         => Yii::$app->formatter->asDate($user->birthday),
+                                'model' => $user,
+                                'name' => 'birthday',
+                                'id' => 'birthday-value',
+                                'value' => Yii::$app->formatter->asDate($user->birthday),
                                 'convertFormat' => true,
                                 'pluginOptions' => [
-                                    'autoclose'   => true,
-                                    'format'      => Yii::$app->formatter->dateFormat,
+                                    'autoclose' => true,
+                                    'format' => Yii::$app->formatter->dateFormat,
                                 ],
                             ]); ?>
                         </div>

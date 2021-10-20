@@ -14,7 +14,7 @@ $form = ActiveForm::begin();
             <div class="card">
                 <div class="card-header d-flex p-0">
                     <h3 class="card-title p-3">
-                        <?= Yii::t('app', 'Edit email'); ?>
+                        <?= Yii::t('app', 'Change email'); ?>
                     </h3>
                 </div>
                 <div class="card-body">
@@ -24,7 +24,7 @@ $form = ActiveForm::begin();
                                 ->input('email', [
                                     'value' => $userEmail ? $userEmail->email : '',
                                 ])
-                                ->label(Yii::t('app', 'Email'));
+                                ->label(false);
                             ?>
                         </div>
                     </div>

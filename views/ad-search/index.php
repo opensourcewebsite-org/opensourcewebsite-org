@@ -57,11 +57,11 @@ $displayActiveTab = (int)$searchModel->status === AdSearch::STATUS_ON;
                         <?= AddButton::widget([
                             'url' => ['create'],
                             'options' => [
-                                'title' => 'New Search',
+                                'title' => Yii::t('app', 'New Search'),
                                 'style' => [
                                     'float' => 'right',
                                 ],
-                            ]
+                            ],
                         ]); ?>
                     </div>
                 </div>

@@ -13,6 +13,9 @@ use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use app\models\scenarios\Contact\UpdateGroupsByIdsScenario;
 use yii\web\Response;
+use app\models\DebtRedistribution;
+use app\models\search\DebtRedistributionSearch;
+use yii\widgets\ActiveForm;
 
 class ContactController extends Controller
 {
@@ -100,7 +103,11 @@ class ContactController extends Controller
     {
         $contact = $this->findModel($id);
 
+        $searchModel  = new DebtRedistributionSearch();
+        $dataProvider = $searchModel->search($contact, Yii::$app->request->queryParams);
+
         return $this->render('view', [
+            'dataProvider' => $dataProvider,
             'contact' => $contact,
             'user' => $contact->linkedUser,
         ]);
@@ -134,7 +141,11 @@ class ContactController extends Controller
                     $contact->link_user_id = $user->id;
                 }
 
+                $searchModel  = new DebtRedistributionSearch();
+                $dataProvider = $searchModel->search($contact, Yii::$app->request->queryParams);
+
                 return $this->render('view', [
+                    'dataProvider' => $dataProvider,
                     'contact' => $contact,
                     'user' => $user,
                 ]);
@@ -142,6 +153,117 @@ class ContactController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionAddDebtTransferLimit(int $linkUserId)
+    {
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
+            $debtRedistribution = DebtRedistribution::find()
+                ->where([
+                    'user_id' => $this->user->id,
+                    'link_user_id' => $linkUserId,
+                    'currency_id' => $postData['DebtRedistribution']['currency_id'],
+                ])
+                ->one();
+
+            $debtRedistribution = $debtRedistribution ?? new DebtRedistribution();
+
+            $debtRedistribution->setAttributes([
+                'user_id' => $this->user->id,
+                'link_user_id' => $linkUserId,
+                'currency_id' => $postData['DebtRedistribution']['currency_id'],
+                'max_amount' => $postData['DebtRedistribution']['max_amount'],
+            ]);
+
+            if ($debtRedistribution->save()) {
+                return $this->redirect([
+                    'view-user',
+                    'id' => $debtRedistribution->link_user_id,
+                ]);
+            }
+        } else {
+            $debtRedistribution = new DebtRedistribution();
+        }
+
+        $renderParams = [
+            'model' => $debtRedistribution,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/add-debt-transfer-limit', $renderParams);
+        } else {
+            return $this->render('modals/add-debt-transfer-limit', $renderParams);
+        }
+    }
+
+    public function actionChangeDebtTransferLimit(int $id)
+    {
+        $debtRedistribution = DebtRedistribution::find()
+            ->where([
+                'id' => $id,
+                'user_id' => $this->user->id,
+            ])
+            ->one();
+
+        if ($debtRedistribution) {
+        }
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
+            $debtRedistribution->setAttributes([
+                'max_amount' => $postData['DebtRedistribution']['max_amount'],
+            ]);
+
+            if ($debtRedistribution->save()) {
+                return $this->redirect([
+                    'view-user',
+                    'id' => $debtRedistribution->link_user_id,
+                ]);
+            }
+        }
+
+        $renderParams = [
+            'user' => $this->user,
+            'model' => $debtRedistribution,
+        ];
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderAjax('modals/change-debt-transfer-limit', $renderParams);
+        } else {
+            return $this->render('modals/change-debt-transfer-limit', $renderParams);
+        }
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return mixed
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function actionDeleteDebtTransferLimit(int $id)
+    {
+        $debtRedistribution = DebtRedistribution::find()
+            ->where([
+                'id' => $id,
+                'user_id' => $this->user->id,
+            ])
+            ->one();
+
+        if ($debtRedistribution) {
+            $linkUserId = $debtRedistribution->link_user_id;
+
+            $debtRedistribution->delete();
+        }
+
+        if (isset($linkUserId)) {
+            return $this->redirect([
+                'view-user',
+                'id' => $linkUserId,
+            ]);
+        } else {
+            return $this->redirect(['index']);
+        }
     }
 
     /*
@@ -388,12 +510,6 @@ class ContactController extends Controller
         }
 
         return $this->redirect(['index']);
-    }
-
-    public function getContactGroups()
-    {
-        return $this->hasMany(ContactGroup::class, ['id' => 'group_id'])
-                    ->viaTable('contact_has_group', ['contact_id' => 'id']);
     }
 
     /**

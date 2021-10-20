@@ -5,7 +5,7 @@
 
 /* @var $model SignupForm */
 
-use app\models\SignupForm;
+use app\models\forms\SignupForm;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 use yii\captcha\Captcha;

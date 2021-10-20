@@ -60,7 +60,7 @@ class BotChatCaptcha extends ActiveRecord
             [
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'sent_at',
-                'updatedAtAttribute' => false
+                'updatedAtAttribute' => false,
             ],
         ];
     }
