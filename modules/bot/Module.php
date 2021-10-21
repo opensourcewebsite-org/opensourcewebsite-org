@@ -82,21 +82,21 @@ class Module extends \yii\base\Module
      */
     private function initFromUpdate()
     {
-        if (isset($this->getUpdate()->chat)) {
-            if (isset($this->getUpdate()->from)) {
+        if ($this->getUpdate()->getChat()) {
+            if ($this->getUpdate()->getFrom()) {
                 $isNewUser = false;
 
                 $botUser = BotUser::findOne([
-                    'provider_user_id' => $this->getUpdate()->from->getId(),
+                    'provider_user_id' => $this->getUpdate()->getFrom()->getId(),
                 ]);
 
                 if (!isset($botUser)) {
-                    $botUser = BotUser::createUser($this->getUpdate()->from);
+                    $botUser = BotUser::createUser($this->getUpdate()->getFrom());
 
                     $isNewUser = true;
                 }
                 // Update telegram user information
-                $botUser->updateInfo($this->getUpdate()->from);
+                $botUser->updateInfo($this->getUpdate()->getFrom());
                 // Set user language for bot answers
                 Yii::$app->language = $botUser->language->code;
 
@@ -106,7 +106,7 @@ class Module extends \yii\base\Module
             }
 
             $chat = Chat::findOne([
-                'chat_id' => $this->getUpdate()->chat->getId(),
+                'chat_id' => $this->getUpdate()->getChat()->getId(),
                 'bot_id' => $this->getBot()->id,
             ]);
 
@@ -115,7 +115,7 @@ class Module extends \yii\base\Module
             if (!isset($chat)) {
                 $chat = new Chat();
                 $chat->setAttributes([
-                    'chat_id' => $this->getUpdate()->chat->getId(),
+                    'chat_id' => $this->getUpdate()->getChat()->getId(),
                     'bot_id' => $this->getBot()->id,
                 ]);
 
@@ -123,11 +123,11 @@ class Module extends \yii\base\Module
             }
             // Update chat information
             $chat->setAttributes([
-                'type' => $this->getUpdate()->chat->getType(),
-                'title' => $this->getUpdate()->chat->getTitle(),
-                'username' => $this->getUpdate()->chat->getUsername(),
-                'first_name' => $this->getUpdate()->chat->getFirstName(),
-                'last_name' => $this->getUpdate()->chat->getLastName(),
+                'type' => $this->getUpdate()->getChat()->getType(),
+                'title' => $this->getUpdate()->getChat()->getTitle(),
+                'username' => $this->getUpdate()->getChat()->getUsername(),
+                'first_name' => $this->getUpdate()->getChat()->getFirstName(),
+                'last_name' => $this->getUpdate()->getChat()->getLastName(),
             ]);
 
             if (!$chat->save()) {
@@ -140,7 +140,7 @@ class Module extends \yii\base\Module
 
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
-                $administrators = $this->getBotApi()->getChatAdministrators($this->getUpdate()->getChat()->getId());
+                $administrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
 
                 foreach ($administrators as $administrator) {
                     $administratorBotUser = BotUser::findOne([
@@ -181,9 +181,9 @@ class Module extends \yii\base\Module
                     $user->name = $botUser->getFullName();
 
                     if ($isNewUser) {
-                        if ($chat->isPrivate() && (isset($this->getUpdate()->requestMessage))) {
+                        if ($chat->isPrivate() && $this->getUpdate()->getRequestMessage()) {
                             $matches = [];
-                            if (preg_match('/\/start (\d+)/', $this->getUpdate()->requestMessage->getText(), $matches)) {
+                            if (preg_match('/\/start (\d+)/', $this->getUpdate()->getRequestMessage()->getText(), $matches)) {
                                 $user->referrer_id = $matches[1];
                             }
                         }

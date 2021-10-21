@@ -9,11 +9,11 @@ use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class GroupJoinCaptchaController
+ * Class ChannelMarketplaceController
  *
  * @package app\modules\bot\controllers\privates
  */
-class GroupJoinCaptchaController extends Controller
+class ChannelMarketplaceController extends Controller
 {
     /**
      * @return array
@@ -21,17 +21,16 @@ class GroupJoinCaptchaController extends Controller
     public function actionIndex($chatId = null)
     {
         $chat = Chat::findOne($chatId);
-        $telegramUser = $this->getTelegramUser();
 
         if (!isset($chat)) {
             return [];
         }
 
-        $statusOn = ($chat->join_captcha_status == ChatSetting::STATUS_ON);
+        $statusOn = ($chat->marketplace_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat', 'telegramUser')),
+                $this->render('index', compact('chat')),
                 [
                     [
                         [
@@ -43,7 +42,7 @@ class GroupJoinCaptchaController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => GroupController::createRoute('view', [
+                            'callback_data' => ChannelController::createRoute('view', [
                                 'chatId' => $chatId,
                             ]),
                             'text' => Emoji::BACK,
@@ -53,6 +52,9 @@ class GroupJoinCaptchaController extends Controller
                             'text' => Emoji::MENU,
                         ],
                     ]
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();
@@ -66,10 +68,10 @@ class GroupJoinCaptchaController extends Controller
             return [];
         }
 
-        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
-            $chat->join_captcha_status = ChatSetting::STATUS_OFF;
+        if ($chat->marketplace_status == ChatSetting::STATUS_ON) {
+            $chat->marketplace_status = ChatSetting::STATUS_OFF;
         } else {
-            $chat->join_captcha_status = ChatSetting::STATUS_ON;
+            $chat->marketplace_status = ChatSetting::STATUS_ON;
         }
 
         return $this->actionIndex($chatId);

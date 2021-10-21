@@ -10,6 +10,7 @@ $config = [
         'commandRouteResolver' => [
             'class' => PrivateRouteResolver::class,
             'rules' => [
+                '/start( <start:.+>)?' => 'start/index',
                 '/hello' => 'start/index',
                 '/sos' => 'start/index',
                 '/my_rank' => 'my-rating/index',

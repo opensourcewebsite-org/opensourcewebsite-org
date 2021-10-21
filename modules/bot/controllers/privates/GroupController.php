@@ -12,6 +12,7 @@ use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
 use yii\helpers\ArrayHelper;
+use app\modules\bot\components\helpers\ExternalLink;
 
 /**
  * Class GroupController
@@ -68,9 +69,15 @@ class GroupController extends Controller
             }
         }
 
-        $buttons[][] = [
-            'callback_data' => MenuController::createRoute(),
-            'text' => Emoji::MENU,
+        $buttons[] = [
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+            [
+                'url' => ExternalLink::getBotToAddGroupLink(),
+                'text' => Emoji::ADD,
+            ],
         ];
 
         return $this->getResponseBuilder()

@@ -60,7 +60,7 @@ class CoreController extends Controller
             }
         }
 
-        echo 'FINISHED: ' . $this->action->id . "\n";
+        echo 'FINISHED: ' . $this->route . "\n";
     }
 
     /**
@@ -210,7 +210,7 @@ class CoreController extends Controller
             }
         }
 
-        echo 'FINISHED: ' . $this->action->id . "\n";
+        echo 'FINISHED: ' . $this->route . "\n";
     }
 
     public function actionCheckDebtUniqueGroups()
@@ -234,6 +234,6 @@ class CoreController extends Controller
             echo 'ALERT: found ' . count($errors) . ' invalid debts! Their IDs:' . "\n" . VarDumper::dumpAsString($errors) . "\n";
         }
 
-        echo 'FINISHED: ' . $this->action->id . "\n";
+        echo 'FINISHED: ' . $this->route . "\n";
     }
 }

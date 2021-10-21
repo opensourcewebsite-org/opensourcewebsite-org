@@ -31,6 +31,12 @@ class HelloController extends Controller
                     ],
                     [
                         [
+                            'url' => ExternalLink::getBotToAddGroupLink(),
+                            'text' => Yii::t('bot', 'Add the bot to your group'),
+                        ],
+                    ],
+                    [
+                        [
                             'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
                             'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
                         ],

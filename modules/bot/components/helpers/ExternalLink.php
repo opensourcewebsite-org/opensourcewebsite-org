@@ -23,6 +23,22 @@ class ExternalLink
     /**
      * {@inheritdoc}
      */
+    public static function getBotToAddGroupLink()
+    {
+        return self::getBotLink() . '/startgroup=true';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getBotGroupGuestLink($chatId)
+    {
+        return self::getBotLink() . '?start=' . $chatId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function getStellarExpertAccountFullLink($publicKey, $name = null)
     {
         return '<a href="https://stellar.expert/explorer/public/account/' . $publicKey . '">' . ($name ?: $publicKey) . '</a>';

@@ -34,7 +34,7 @@ class Update extends \TelegramBot\Api\Types\Update
      */
     public $requestMessage;
 
-    static protected $map = [
+    protected static $map = [
         'update_id' => true,
         'message' => Message::class,
         'edited_message' => Message::class,
@@ -90,5 +90,9 @@ class Update extends \TelegramBot\Api\Types\Update
     public function getFrom()
     {
         return $this->from;
+    }
+    public function getRequestMessage()
+    {
+        return $this->requestMessage;
     }
 }

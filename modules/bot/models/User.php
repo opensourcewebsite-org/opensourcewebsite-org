@@ -38,7 +38,7 @@ class User extends ActiveRecord
         return '{{%bot_user}}';
     }
 
-    public static function createUser(&$updateUser)
+    public static function createUser($updateUser)
     {
         $language = Language::findOne([
             'code' => $updateUser->getLanguageCode(),
@@ -204,7 +204,7 @@ class User extends ActiveRecord
         return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
     }
 
-    public function updateInfo(&$updateUser)
+    public function updateInfo($updateUser)
     {
         $this->setAttributes([
             'provider_user_name' => $updateUser->getUsername(),

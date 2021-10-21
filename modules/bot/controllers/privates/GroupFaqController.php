@@ -55,35 +55,38 @@ class GroupFaqController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('index', compact('chat')),
                 [
+                    [
                         [
-                            [
-                                'callback_data' => self::createRoute('set-status', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
-                            ],
+                            'callback_data' => self::createRoute('set-status', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('word-list', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Questions'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupController::createRoute('view', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Emoji::BACK,
                         ],
                         [
-                            [
-                                'callback_data' => self::createRoute('word-list', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Yii::t('bot', 'Questions'),
-                            ],
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
                         ],
-                        [
-                            [
-                                'callback_data' => GroupController::createRoute('view', [
-                                    'chatId' => $chatId,
-                                ]),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                        ]
                     ]
+                ],
+                [
+                    'disablePreview' => true,
+                ]
             )
             ->build();
     }

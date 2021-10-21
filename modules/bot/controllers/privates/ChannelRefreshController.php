@@ -11,11 +11,11 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
- * Class GroupRefreshController
+ * Class ChannelpRefreshController
  *
  * @package app\modules\bot\controllers\privates
  */
-class GroupRefreshController extends Controller
+class ChannelRefreshController extends Controller
 {
     /**
      * @param string|int|null $chatId
@@ -33,13 +33,13 @@ class GroupRefreshController extends Controller
         }
 
         if (!isset($chatId)) {
-            return $this->run('group/index');
+            return $this->run('channel/index');
         }
 
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat)) {
-            return $this->run('group/index');
+            return $this->run('channel/index');
         }
 
         try {
@@ -54,11 +54,11 @@ class GroupRefreshController extends Controller
             Yii::warning($e);
 
             if (in_array($e->getCode(), [400, 403])) {
-                // group has been removed in Telegram or bot is not the chat member => remove chat from db
+                // channel has been removed in Telegram or bot is not the chat member => remove chat from db
 
                 removeFromDb($chat);
 
-                return $this->run('group/index');
+                return $this->run('channel/index');
             }
 
             throw $e;
@@ -71,7 +71,7 @@ class GroupRefreshController extends Controller
                 removeFromDb($chat);
             }
 
-            return $this->run('group/index');
+            return $this->run('channel/index');
         }
 
         $curAdministratorsIds = array_map(fn ($a) => $a->provider_user_id, $chat->getAdministrators()->all());

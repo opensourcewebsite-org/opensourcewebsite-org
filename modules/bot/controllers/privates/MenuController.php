@@ -39,13 +39,19 @@ class MenuController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute(),
-                            'text' => Yii::t('bot', 'Telegram groups'),
+                            'text' => Emoji::MANAGE . ' ' . Yii::t('bot', 'Telegram groups'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ChannelController::createRoute(),
+                            'text' => Emoji::MANAGE . ' ' . Yii::t('bot', 'Telegram channels'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => ServicesController::createRoute(),
-                            'text' => '🏗 ' . Yii::t('bot', 'Development'),
+                            'text' => Emoji::DEVELOPMENT . ' ' . Yii::t('bot', 'Development'),
                         ],
                     ],
                     [

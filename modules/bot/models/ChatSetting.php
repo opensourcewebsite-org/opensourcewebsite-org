@@ -61,6 +61,9 @@ class ChatSetting extends ActiveRecord
             'default' => 1,
         ],
         'stellar_invite_link' => [],
+        'marketplace_status' => [
+            'default' => self::STATUS_OFF,
+        ],
     ];
 
     public static function tableName()

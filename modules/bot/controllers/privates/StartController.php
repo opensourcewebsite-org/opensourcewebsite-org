@@ -6,6 +6,7 @@ use Yii;
 use app\modules\bot\components\Controller;
 use app\models\Language;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\Chat;
 
 /**
  * Class StartController
@@ -17,9 +18,32 @@ class StartController extends Controller
     /**
      * @return array
      */
-    public function actionIndex()
+    public function actionIndex($start = null)
     {
+        if (!empty($start) && ($start < 0)) {
+            $chat = Chat::find()
+                ->where([
+                    'chat_id' => $start,
+                ])
+                ->one();
+
+            if (isset($chat)) {
+                if ($chat->isGroup()) {
+                    return $this->run('group-guest/index', [
+                        'chatId' => $chat->id,
+                    ]);
+                }
+
+                if ($chat->isChannel()) {
+                    return $this->run('channel-guest/index', [
+                        'chatId' => $chat->id,
+                    ]);
+                }
+            }
+        }
+
         $this->getState()->setName(self::createRoute('search'));
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
