@@ -25,7 +25,7 @@ class ExternalLink
      */
     public static function getBotToAddGroupLink()
     {
-        return self::getBotLink() . '/startgroup=true';
+        return self::getBotLink() . '?startgroup=true';
     }
 
     /**
