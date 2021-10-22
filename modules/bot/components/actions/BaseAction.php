@@ -14,8 +14,7 @@ abstract class BaseAction extends Action
             'update' => true,
             'delete' => true,
         ],
-        'backRouteController' => null,
-        'backRouteAction' => 'index',
+        'listBackRoute' => null,
     ];
 
     public $wordModelClass;
