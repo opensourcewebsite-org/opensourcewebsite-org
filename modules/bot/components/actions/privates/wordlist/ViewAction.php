@@ -46,12 +46,14 @@ class ViewAction extends BaseAction
                     'phraseId' => $phraseId,
                 ]),
                 'text' => Emoji::EDIT,
+                'visible' => $this->options['actions']['update'],
             ],
             [
                 'callback_data' => $this->createRoute($this->deleteActionId, [
                     'phraseId' => $phraseId,
                 ]),
                 'text' => Emoji::DELETE,
+                'visible' => $this->options['actions']['delete'],
             ],
         ];
 

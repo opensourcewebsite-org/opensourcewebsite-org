@@ -27,17 +27,17 @@ class ListAction extends BaseAction
 
         $phraseQuery = $this->wordModelClass::find()
             ->where(array_merge($this->modelAttributes, [
-                'chat_id' => $chatId
+                'chat_id' => $chatId,
             ]))
             ->orderBy(['text' => SORT_ASC]);
 
         $pagination = new Pagination([
-                'totalCount' => $phraseQuery->count(),
-                'pageSize' => $this->pageWordsCount,
-                'params' => [
-                    'page' => $page,
-                ],
-            ]);
+            'totalCount' => $phraseQuery->count(),
+            'pageSize' => $this->pageWordsCount,
+            'params' => [
+                'page' => $page,
+            ],
+        ]);
 
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
@@ -57,11 +57,11 @@ class ListAction extends BaseAction
         if ($phrases) {
             foreach ($phrases as $phrase) {
                 $buttons[][] = [
-                        'callback_data' => $this->createRoute($this->viewActionId, [
-                            'phraseId' => $phrase->id,
-                        ]),
-                        'text' => $phrase->text
-                    ];
+                    'callback_data' => $this->createRoute($this->viewActionId, [
+                        'phraseId' => $phrase->id,
+                    ]),
+                    'text' => $phrase->text
+                ];
             }
 
             if ($paginationButtons) {
@@ -70,23 +70,26 @@ class ListAction extends BaseAction
         }
 
         $buttons[] = [
-                [
-                    'callback_data' => $this->createRoute('index', [
-                        'chatId' => $chatId,
-                    ]),
-                    'text' => Emoji::BACK,
-                ],
-                [
-                    'callback_data' => $this->createRoute($this->enterActionId, [
-                        'chatId' => $chatId,
-                    ]),
-                    'text' => Emoji::ADD,
-                ],
-            ];
+            [
+                'callback_data' => $this->createRoute($this->options['listBackRoute'], [
+                    'chatId' => $chatId,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => $this->createRoute($this->enterActionId, [
+                    'chatId' => $chatId,
+                ]),
+                'text' => Emoji::ADD,
+                'visible' => $this->options['actions']['insert'],
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render($this->id, compact('chat')),
+                $this->render($this->id, [
+                    'chat' => $chat,
+                ]),
                 $buttons
             )
             ->build();

@@ -20,7 +20,7 @@ class GroupGuestController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($chatId = null)
+    public function actionView($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -32,10 +32,19 @@ class GroupGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', [
+                $this->render('view', [
                     'chat' => $chat,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => GroupGuestFaqController::createRoute('word-list', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'FAQ'),
+                            'visible' => (bool)($chat->faq_status == ChatSetting::STATUS_ON),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => MenuController::createRoute(),

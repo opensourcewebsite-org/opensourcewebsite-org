@@ -63,12 +63,14 @@ class WordlistComponent extends \yii\base\Component
     public $actionGroupName;
     public $short = false;
     public $buttons = [];
+    public $options = [];
 
     public function actions()
     {
         if (!isset($this->wordModelClass)) {
             throw new InvalidConfigException('Class ' . self::class . ' require `wordModelClass` property to be set');
         }
+
         $prefix = isset($this->actionGroupName) ? $this->actionGroupName . '-' : '';
 
         $listActionId = $prefix . ($this->short ? 'w-l' : 'word-list');
@@ -89,6 +91,7 @@ class WordlistComponent extends \yii\base\Component
                 'viewActionId' => $viewActionId,
                 'enterActionId' => $enterActionId,
                 'modelAttributes' => $this->modelAttributes,
+                'options' => $this->options,
             ],
             //просмотр фразы
             $viewActionId => [
@@ -98,6 +101,7 @@ class WordlistComponent extends \yii\base\Component
                 'changeActionId' => $changeActionId,
                 'deleteActionId' => $deleteActionId,
                 'buttons' => $this->buttons,
+                'options' => $this->options,
             ],
             //форма ввода новой фразы
             $enterActionId => [
@@ -105,6 +109,7 @@ class WordlistComponent extends \yii\base\Component
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
                 'insertActionId' => $insertActionId,
+                'options' => $this->options,
             ],
             //сохранение новой фразы
             $insertActionId => [
@@ -112,6 +117,7 @@ class WordlistComponent extends \yii\base\Component
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
                 'modelAttributes' => $this->modelAttributes,
+                'options' => $this->options,
             ],
             //форма ввода фразы для изменения
             $changeActionId => [
@@ -119,18 +125,21 @@ class WordlistComponent extends \yii\base\Component
                 'wordModelClass' => $this->wordModelClass,
                 'updateActionId' => $updateActionId,
                 'viewActionId' => $viewActionId,
+                'options' => $this->options,
             ],
             //сохранение фразы после изменения
             $updateActionId => [
                 'class' => UpdateAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
+                'options' => $this->options,
             ],
             //удаление фразы
             $deleteActionId => [
                 'class' => DeleteAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
+                'options' => $this->options,
             ],
             //форма ввода фразы для изменения поля
             $changeFieldActionId => [
@@ -138,6 +147,7 @@ class WordlistComponent extends \yii\base\Component
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
                 'buttons' => $this->buttons,
+                'options' => $this->options,
             ],
             //сохранение фразы после изменения поля
             $updateFieldActionId => [
@@ -145,6 +155,7 @@ class WordlistComponent extends \yii\base\Component
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
                 'buttons' => $this->buttons,
+                'options' => $this->options,
             ],
         ];
     }

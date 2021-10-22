@@ -455,4 +455,5 @@ return [
     'allows members to post ads to the channel' => 'позволяет участникам размещать объявления в этом канале',
     'Add the bot to your group' => 'Добавить бота в вашу группу',
     'Invite members to use this feature via the link' => 'Пригласите участников использовать эту функцию по ссылке',
+    'The bot will send this link to the group as a response to the message «faq»' => 'Бот отправит эту ссылку в группу в ответ на сообщение «faq»',
 ];

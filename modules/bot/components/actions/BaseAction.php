@@ -8,6 +8,16 @@ use app\modules\bot\components\api\Types\Update;
 
 abstract class BaseAction extends Action
 {
+    private array $defaultOptions = [
+        'actions' => [
+            'insert' => true,
+            'update' => true,
+            'delete' => true,
+        ],
+        'backRouteController' => null,
+        'backRouteAction' => 'index',
+    ];
+
     public $wordModelClass;
     public $modelAttributes = [];
     public $listActionId = 'w-l';
@@ -20,6 +30,14 @@ abstract class BaseAction extends Action
     public $changeFieldActionId = 'w-c-f';
     public $updateFieldActionId = 'w-u-f';
     public $buttons = [];
+    public $options = [];
+
+    public function init()
+    {
+        $this->options = array_merge($this->defaultOptions, $this->options);
+
+        parent::init();
+    }
 
     /**
      * @return \app\modules\bot\models\UserState
@@ -64,10 +82,20 @@ abstract class BaseAction extends Action
         return $this->controller->module->getBotUser();
     }
 
-    public function createRoute(string $actionName = 'index', array $params = [])
+    public function createRoute($actionName = 'index', array $params = [])
     {
-        $controllerClass = $this->controller->className();
+        if (is_array($actionName)) {
+            if (isset($actionName['controller'])) {
+                $controllerClass = $actionName['controller'];
+            }
 
-        return $controllerClass::createRoute($actionName, $params);
+            if (isset($actionName['action'])) {
+                $actionName = $actionName['action'];
+            } else {
+                $actionName = 'index';
+            }
+        }
+
+        return ($controllerClass ?? $this->controller->className())::createRoute($actionName, $params);
     }
 }

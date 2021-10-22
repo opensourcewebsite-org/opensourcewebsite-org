@@ -45,7 +45,7 @@ class MessageController extends Controller
 
                 // Forward to captcha if a new member
                 if (!isset($botCaptcha)) {
-                    $this->run('join-captcha/show-captcha');
+                    return $this->run('join-captcha/show-captcha');
                 }
             }
         }
@@ -97,10 +97,14 @@ class MessageController extends Controller
 
         if (!$deleteMessage) {
             if ($chat->faq_status == ChatSetting::STATUS_ON) {
-                if ($this->getMessage()->getText() !== null) {
+                if (($text = $this->getMessage()->getText()) !== null) {
+                    if (strtolower($text) == 'faq') {
+                        return $this->run('faq/show-chat-link');
+                    }
+
                     $question = $chat->getQuestionPhrases()
                         ->where([
-                            'text' => $this->getMessage()->getText(),
+                            'text' => $text,
                         ])
                         ->andWhere([
                             'not', ['answer' => null],
@@ -108,7 +112,7 @@ class MessageController extends Controller
                         ->one();
 
                     if (isset($question)) {
-                        $this->run('faq/show-answer', [
+                        return $this->run('faq/show-answer', [
                                 'questionId' => $question->id,
                             ]);
                     }

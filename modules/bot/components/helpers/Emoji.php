@@ -36,5 +36,6 @@ class Emoji
     public const DEVELOPMENT = '🏗';
     public const WARNING = '⚠️';
     public const CROWN = '👑';
-    public const MANAGE = '🛠';
+    public const MANAGE = '⚙️';
+    public const MANAGE2 = '🛠';
 }

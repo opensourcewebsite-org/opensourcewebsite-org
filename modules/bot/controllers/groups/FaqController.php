@@ -56,4 +56,27 @@ class FaqController extends Controller
 
         return [];
     }
+
+    public function actionShowChatLink()
+    {
+        $chat = $this->getTelegramChat();
+
+        if ($chat->faq_status == ChatSetting::STATUS_ON) {
+            return $this->getResponseBuilder()
+                ->sendMessage(
+                    $this->render('show-chat-link', [
+                        'chat' => $chat,
+                    ]),
+                    [],
+                    [
+                        'disablePreview' => true,
+                        'disableNotification' => true,
+                        'replyToMessageId' => $this->getMessage()->getMessageId(),
+                    ]
+                )
+                ->send();
+        }
+
+        return [];
+    }
 }

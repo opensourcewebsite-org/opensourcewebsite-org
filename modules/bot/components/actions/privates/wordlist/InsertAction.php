@@ -11,15 +11,16 @@ class InsertAction extends BaseAction
     {
         $text = $this->getUpdate()->getMessage()->getText();
         $rows = explode(PHP_EOL, $text);
+
         foreach ($rows as $row) {
             if ($row) {
                 if (!$this->wordModelClass::find()->where(array_merge($this->modelAttributes, ['chat_id' => $chatId, 'text' => $row]))->exists()) {
                     $phrase = new $this->wordModelClass();
                     $phrase->setAttributes(array_merge($this->modelAttributes, [
-                                        'chat_id' => $chatId,
-                                        'text' => $row,
-                                        'updated_by' => $this->getTelegramUser()->id,
-                                    ]));
+                        'chat_id' => $chatId,
+                        'text' => $row,
+                        'updated_by' => $this->getTelegramUser()->id,
+                    ]));
 
                     $phrase->save();
                 }

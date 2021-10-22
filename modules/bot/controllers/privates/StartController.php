@@ -29,13 +29,13 @@ class StartController extends Controller
 
             if (isset($chat)) {
                 if ($chat->isGroup()) {
-                    return $this->run('group-guest/index', [
+                    return $this->run('group-guest/view', [
                         'chatId' => $chat->id,
                     ]);
                 }
 
                 if ($chat->isChannel()) {
-                    return $this->run('channel-guest/index', [
+                    return $this->run('channel-guest/view', [
                         'chatId' => $chat->id,
                     ]);
                 }
