@@ -6,8 +6,6 @@ use Yii;
 use app\modules\bot\components\Controller;
 use app\models\Currency;
 use app\models\Language;
-use app\components\helpers\TimeHelper;
-use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
@@ -26,24 +24,8 @@ class MyProfileController extends Controller
         $user = $this->getUser();
 
         $params = [
-            'id' => $user->id,
-            'firstName' => $telegramUser->provider_user_first_name,
-            'lastName' => $telegramUser->provider_user_last_name,
-            'username' => $telegramUser->provider_user_name,
-            'gender' => isset($user->gender) ? $user->gender->name : null,
-            'sexuality' => isset($user->sexuality) ? $user->sexuality->name : null,
-            'birthday' => $user->birthday,
-            'currency' => isset($user->currency) ? "{$user->currency->name} ({$user->currency->code})" : null,
-            'timezone' => TimeHelper::getNameByOffset($user->timezone),
-            'languages' => array_map(function ($userLanguage) {
-                return $userLanguage->getLabel();
-            }, $user->languages),
-            'citizenships' => array_map(function ($citizenship) {
-                return $citizenship->country->name;
-            }, $user->citizenships),
-            'location_lat' => $telegramUser->location_lat,
-            'location_lon' => $telegramUser->location_lon,
-            'locationLink' => ExternalLink::getOSMLink($telegramUser->location_lat, $telegramUser->location_lon),
+            'telegramUser' => $telegramUser,
+            'user' => $user,
         ];
 
         return $this->getResponseBuilder()

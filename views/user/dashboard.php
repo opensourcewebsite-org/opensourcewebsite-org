@@ -21,6 +21,8 @@ $adOfferMatchesCount = $model->getAdOfferMatchesCount();
 $adSearchMatchesCount = $model->getAdSearchMatchesCount();
 $vacancyMatchesCount = $model->getVacancyMatchesCount();
 $resumeMatchesCount = $model->getResumeMatchesCount();
+
+$pendingDebtsCount = $model->getPendingDebts()->count();
 ?>
 <div class="account-index">
     <div class="row">
@@ -117,4 +119,30 @@ $resumeMatchesCount = $model->getResumeMatchesCount();
         </div>
     </div>
 </div>
+<?php endif; ?>
+
+<?php if ($pendingDebtsCount) : ?>
+    <div class="index">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <div class="grid-view">
+                                <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <?= Html::a(Yii::t('app', 'Pending debts') . ': ' . $pendingDebtsCount, Url::toRoute(['debt/index'])) ?>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php endif; ?>

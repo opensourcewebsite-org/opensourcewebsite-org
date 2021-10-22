@@ -4,7 +4,7 @@ use app\components\helpers\Html;
 
 // TODO add link to user website profile
 ?>
-<b><?= $user->getDisplayName() ?></b><br/>
+<b><?= Yii::t('bot', 'Profile') ?> <?= $user->getDisplayName() ?></b><br/>
 <br/>
 User ID: <?= $user->id; ?><br/>
 <?php if ($user->username) : ?>

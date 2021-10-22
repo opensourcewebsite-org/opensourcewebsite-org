@@ -26,6 +26,7 @@ class MyCurrencyController extends Controller
 
         if ($currencyCode) {
             $currency = Currency::findOne(['code' => $currencyCode]);
+
             if ($currency) {
                 $user->currency_id = $currency->id;
                 $user->save();
@@ -39,8 +40,7 @@ class MyCurrencyController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'currencyCode' => $user->currency->code,
-                    'currencyName' => $user->currency->name,
+                    'currency' => $user->currency,
                 ]),
                 [
                     [
@@ -103,7 +103,7 @@ class MyCurrencyController extends Controller
                     'callback_data' => self::createRoute('index', [
                         'currencyCode' => $currency->code,
                     ]),
-                    'text' => strtoupper($currency->code) . ' - ' . $currency->name,
+                    'text' => $currency->code . ' - ' . $currency->name,
                 ];
             }
 

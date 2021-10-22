@@ -273,10 +273,7 @@ $this->title = Yii::t('app', 'Account');
                                 <tbody>
                                 <?php
                                 array_map(function ($citizenship) {
-                                    $citizenshipName = Country::findOne($citizenship->country_id)->name;
-                                    $citizenshipName = Yii::t('user', $citizenshipName);
-
-                                    echo '<tr><td>' . $citizenshipName . '</td><td>';
+                                    echo '<tr><td>' . Yii::t('user', $citizenship->country->name) . '</td><td>';
                                     echo TrashButton::widget([
                                         'url' => [
                                             '/user/delete-citizenship',

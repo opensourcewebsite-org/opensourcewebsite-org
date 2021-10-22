@@ -1,45 +1,51 @@
-<b><?= Yii::t('bot', 'Your Profile') ?> #<?= $id ?></b><br/>
+<?php
+
+use app\components\helpers\TimeHelper;
+use app\modules\bot\components\helpers\ExternalLink;
+
+?>
+<b><?= Yii::t('bot', 'Your Profile') ?> #<?= $user->id ?></b><br/>
 <br/>
-<?php if (isset($firstName)) : ?>
-<?= Yii::t('bot', 'First Name') . ': ' . $firstName; ?><br/>
+<?php if ($telegramUser->provider_user_first_name) : ?>
+<?= Yii::t('bot', 'First Name') . ': ' . $telegramUser->provider_user_first_name; ?><br/>
 <?php endif; ?>
-<?php if (isset($lastName)) : ?>
-<?= Yii::t('bot', 'Last Name') . ': ' . $lastName; ?><br/>
+<?php if ($telegramUser->provider_user_last_name) : ?>
+<?= Yii::t('bot', 'Last Name') . ': ' . $telegramUser->provider_user_last_name; ?><br/>
 <?php endif; ?>
-<?php if (isset($username)) : ?>
-<?= Yii::t('bot', 'Telegram') . ': @' . $username; ?><br/>
+<?php if ($telegramUser->provider_user_name) : ?>
+<?= Yii::t('bot', 'Telegram') . ': @' . $telegramUser->provider_user_name; ?><br/>
 <?php endif; ?>
 <br/>
-<?php if (isset($birthday)) : ?>
-<?= Yii::t('bot', 'Birthday') . ': ' . $birthday; ?><br/>
+<?php if ($user->birthday) : ?>
+<?= Yii::t('bot', 'Birthday') . ': ' . $user->birthday; ?><br/>
 <?php endif; ?>
-<?php if (isset($gender)) : ?>
-<?= Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $gender); ?><br/>
+<?php if ($user->gender) : ?>
+<?= Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $user->gender->name); ?><br/>
 <?php endif; ?>
-<?php if (isset($sexuality)) : ?>
-<?= Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $sexuality); ?><br/>
+<?php if ($user->sexuality) : ?>
+<?= Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $user->sexuality->name); ?><br/>
 <?php endif; ?>
-<?php if (!empty($languages)) : ?>
+<?php if ($user->languages) : ?>
 <br/>
 <?=  Yii::t('bot', 'Languages') ?>:<br/>
-<?php foreach ($languages as $language) : ?>
-    <?= $language ?><br/>
+<?php foreach ($user->languages as $language) : ?>
+  • <?= $language->getLabel(); ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
-<?php if (!empty($citizenships)) : ?>
+<?php if ($user->citizenships) : ?>
 <br/>
 <?= Yii::t('bot', 'Citizenships') ?>:<br/>
-<?php foreach ($citizenships as $citizenship) : ?>
-    <?= $citizenship ?><br/>
+<?php foreach ($user->citizenships as $citizenship) : ?>
+  • <?= Yii::t('user', $citizenship->country->name); ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
 <br/>
-<?php if ($location_lat && $location_lon) : ?>
-<?= Yii::t('bot', 'Location') ?>: <a href = "<?= $locationLink ?>"><?= $location_lat ?> <?= $location_lon ?></a><br/>
+<?php if ($telegramUser->location) : ?>
+<?= Yii::t('bot', 'Location') ?>: <a href="<?= ExternalLink::getOSMLink($telegramUser->location_lat, $telegramUser->location_lon) ?>"><?= $telegramUser->location ?></a><br/>
 <?php endif; ?>
-<?php if (isset($timezone)) : ?>
-<?= Yii::t('bot', 'Timezone') . ': ' . $timezone; ?><br/>
+<?php if ($user->timezone) : ?>
+<?= Yii::t('bot', 'Timezone') . ': ' . TimeHelper::getNameByOffset($user->timezone); ?><br/>
 <?php endif; ?>
-<?php if (isset($currency)) : ?>
-<?= Yii::t('bot', 'Currency') . ': ' .  $currency; ?><br/>
+<?php if ($user->currency) : ?>
+<?= Yii::t('bot', 'Currency') . ': ' .  $user->currency->code . ' - ' . $user->currency->name; ?><br/>
 <?php endif; ?>

@@ -241,4 +241,11 @@ class User extends ActiveRecord
     {
         return $this->provider_user_name;
     }
+
+    public function getLocation(): string
+    {
+        return ($this->location_lat && $this->location_lon) ?
+            implode(',', [$this->location_lat, $this->location_lon]) :
+            '';
+    }
 }
