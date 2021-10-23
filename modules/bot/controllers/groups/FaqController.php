@@ -16,6 +16,11 @@ use app\modules\bot\models\BotChatFaqQuestion;
  */
 class FaqController extends Controller
 {
+    public function actionIndex()
+    {
+        return $this->runAction('show-chat-link');
+    }
+
     /**
      * Action shows answer
      *
