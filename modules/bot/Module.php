@@ -91,16 +91,36 @@ class Module extends \yii\base\Module
                 ]);
 
                 if (!isset($botUser)) {
+                    // Create bot user
                     $botUser = BotUser::createUser($this->getUpdate()->getFrom());
 
                     $isNewUser = true;
                 }
+
                 // Update telegram user information
                 $botUser->updateInfo($this->getUpdate()->getFrom());
+
                 // Set user language for bot answers
                 Yii::$app->language = $botUser->language->code;
 
                 if (!$botUser->save()) {
+                    return false;
+                }
+            }
+
+            // create a bot user for new forward from
+            if ($this->getUpdate()->getRequestMessage() && ($providerForwardFrom = $this->getUpdate()->getRequestMessage()->getForwardFrom())) {
+                $forwardBotUser = BotUser::findOne([
+                    'provider_user_id' => $providerForwardFrom->getId(),
+                ]);
+
+                if (!isset($forwardBotUser)) {
+                    $forwardBotUser = BotUser::createUser($providerForwardFrom);
+                }
+
+                $forwardBotUser->updateInfo($providerForwardFrom);
+
+                if (!$forwardBotUser->save()) {
                     return false;
                 }
             }

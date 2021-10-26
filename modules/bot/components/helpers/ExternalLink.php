@@ -2,6 +2,8 @@
 
 namespace app\modules\bot\components\helpers;
 
+use Yii;
+
 class ExternalLink
 {
     /**
@@ -17,6 +19,10 @@ class ExternalLink
      */
     public static function getBotLink()
     {
+        if (($module = Yii::$app->getModule('bot')) && ($bot = $module->getBot())) {
+            return 'https://t.me/' . $bot->getName();
+        }
+
         return 'https://t.me/opensourcewebsite_bot';
     }
 

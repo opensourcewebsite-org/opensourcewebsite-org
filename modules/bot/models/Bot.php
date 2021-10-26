@@ -130,4 +130,9 @@ class Bot extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Chat::className(), ['bot_id' => 'id']);
     }
+
+    public function getName()
+    {
+        return $this->name;
+    }
 }

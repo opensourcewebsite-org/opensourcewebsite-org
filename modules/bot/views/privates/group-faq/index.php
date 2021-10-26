@@ -9,4 +9,4 @@ use app\modules\bot\components\helpers\ExternalLink;
 <br/>
 <?= Yii::t('bot', 'Invite members to use this feature via the link'); ?>: <?= ExternalLink::getBotGroupGuestLink($chat->getChatId()); ?><br/>
 <br/>
-<?= Yii::t('bot', 'The bot will send this link to the group as a response to the message «faq»'); ?>.
+<?= Yii::t('bot', 'The bot will send this link to the group as a response to the message «/faq»'); ?>.
