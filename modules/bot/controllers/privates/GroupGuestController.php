@@ -42,7 +42,7 @@ class GroupGuestController extends Controller
                                 'chatId' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'FAQ'),
-                            'visible' => (bool)($chat->faq_status == ChatSetting::STATUS_ON),
+                            'visible' => ($chat->faq_status == ChatSetting::STATUS_ON),
                         ],
                     ],
                     [

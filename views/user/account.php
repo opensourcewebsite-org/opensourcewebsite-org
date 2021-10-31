@@ -11,6 +11,8 @@ use app\widgets\buttons\EditButton;
 use app\components\helpers\Html;
 use app\components\helpers\ExternalLink;
 use app\models\User;
+use app\models\StellarOperator;
+use app\widgets\buttons\SelectButton;
 
 /* @var $this yii\web\View */
 
@@ -38,7 +40,7 @@ $this->title = Yii::t('app', 'Account');
                                                 'url' => '/user/change-username',
                                                 'options' => [
                                                     'style' => 'float: right',
-                                                ]
+                                                ],
                                             ]); ?>
                                         </td>
                                     </tr>
@@ -164,11 +166,29 @@ $this->title = Yii::t('app', 'Account');
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Currency'); ?></th>
                                     <td class="align-middle" id="currency">
-                                        <?= $model->currency ? ($model->currency->code . ' - ' . $model->currency->name) : ''?>
+                                        <?= $model->currency ? ($model->currency->code . ' - ' . $model->currency->name) : '' ?>
                                     </td>
                                     <td>
                                         <?= EditButton::widget([
                                             'url' => '/user/change-currency',
+                                            'options' => [
+                                                'style' => 'float: right',
+                                            ]
+                                        ]); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="align-middle"><?= Yii::t('user', 'Location'); ?></th>
+                                    <td class="align-middle" id="currency">
+                                        <?= $model->location ? Html::a(
+                                            $model->location,
+                                            Url::to(['/user/view-location']),
+                                            ['class' => 'modal-btn-ajax']
+                                        ) : '' ?>
+                                    </td>
+                                    <td>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-location',
                                             'options' => [
                                                 'style' => 'float: right',
                                             ]
@@ -311,10 +331,60 @@ $this->title = Yii::t('app', 'Account');
                                 <tbody>
                                 <tr>
                                     <th class="align-middle">Email</th>
-                                    <td class="align-middle" id="email"><?= ($userEmail = $model->email) ? $userEmail->email . ' ' . (!$userEmail->isConfirmed() ? '<b>(not confirmed)</b>' : '') : '' ?></td>
+                                    <td class="align-middle">
+                                        <?php if ($userEmail = $model->email) : ?>
+                                            <?= (!$userEmail->isConfirmed() ? Html::badge('warning', Yii::t('app', 'not confirmed')) . ' ' : '') . $userEmail->email ?>
+                                            <?php if (!$userEmail->isConfirmed()) : ?>
+                                            <br/><br/>
+                                            <?= Html::icon('warning') ?> <?= Yii::t('bot', 'Confirm your Email') ?>.<br/>
+                                            <br/>
+                                            <?= Yii::t('bot', 'An email with a confirmation link was sent to your email address') ?>. <?= Yii::t('bot', 'In order to complete the process, please click the confirmation link') ?>.<br/>
+                                            <br/>
+                                            <?= Yii::t('bot', 'If you do not receive a confirmation email, please check your spam folder') ?>.
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <?= EditButton::widget([
                                             'url' => '/user/change-email',
+                                            'options' => [
+                                                'style' => 'float: right',
+                                            ],
+                                        ]); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="align-middle">Stelar</th>
+                                    <td class="align-middle">
+                                        <?php if (($userStellar = $model->stellar) && !$userStellar->isExpired()) : ?>
+                                            <?= (!$userStellar->isConfirmed() ? Html::badge('warning', Yii::t('app', 'not confirmed')) . ' ' : '') . Html::a($userStellar->getPublicKey(), ExternalLink::getStellarExpertAccountLink($userStellar->getPublicKey())) ?>
+                                            <?php if (!$userStellar->isConfirmed()) : ?>
+                                            <br/><br/>
+                                            <?= Html::icon('warning') ?> <?= Yii::t('bot', 'Confirm your Stellar account') ?> (<?= Yii::t('bot', 'added {0}', Yii::$app->formatter->asRelativeTime($userStellar->created_at)) ?>).<br/>
+                                            <?php if (StellarOperator::getDistributorPublicKey()) : ?>
+                                            <br/>
+                                            <?= Yii::t('bot', 'In the next {0,number} minutes, send any amount of XLM to OSW account {1} and then click the "CONFIRM" button', [$userStellar->getTimeLimit(), Html::a(StellarOperator::getDistributorPublicKey(), ExternalLink::getStellarExpertAccountLink(StellarOperator::getDistributorPublicKey()))]) ?>.<br/>
+                                            <br/>
+                                            <?= SelectButton::widget([
+                                                'text' => Yii::t('app', 'Confirm'),
+                                                'options' => [
+                                                    'title' => Yii::t('app', 'Confirm'),
+                                                    'style' => '',
+                                                    'class' => 'btn btn-outline-success',
+                                                    // 'data-toggle' => 'modal',
+                                                    // 'data-target' => '#main-modal',
+                                                ],
+                                                'url' => [
+                                                    'user/confirm-stellar',
+                                                ],
+                                            ]); ?>
+                                            <?php endif; ?>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?= EditButton::widget([
+                                            'url' => '/user/change-stellar',
                                             'options' => [
                                                 'style' => 'float: right',
                                             ],
@@ -325,13 +395,6 @@ $this->title = Yii::t('app', 'Account');
                                     <tr>
                                         <th class="align-middle">Telegram</th>
                                         <td class="align-middle"><?= Html::a('@' . $telegramUsername, ExternalLink::getTelegramAccountLink($telegramUsername)); ?></td>
-                                        <td></td>
-                                    </tr>
-                                <?php endif; ?>
-                                <?php if ($stellar = $model->stellar) : ?>
-                                    <tr>
-                                        <th class="align-middle">Stelar</th>
-                                        <td class="align-middle"><?= Html::a($stellar->getPublicKey(), ExternalLink::getStellarExpertAccountLink($stellar->getPublicKey())) . (!$stellar->isConfirmed() ? ' (' . Yii::t('bot', 'added {0}', Yii::$app->formatter->asRelativeTime($stellar->created_at)) . ')' : ''); ?></td>
                                         <td></td>
                                     </tr>
                                 <?php endif; ?>

@@ -55,10 +55,7 @@ class UserStellar extends \yii\db\ActiveRecord
                 'string',
                 'length' => 56,
             ],
-            [
-                'public_key',
-                StellarPublicKeyValidator::class,
-            ],
+            ['public_key', StellarPublicKeyValidator::class],
         ];
     }
 
@@ -70,9 +67,9 @@ class UserStellar extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'public_key' => 'Public Key',
-            'created_at' => 'Created At',
-            'confirmed_at' => 'Confirmed At',
+            'public_key' => Yii::t('app', 'Public Key'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'confirmed_at' => Yii::t('app', 'Confirmed At'),
         ];
     }
 
@@ -81,7 +78,7 @@ class UserStellar extends \yii\db\ActiveRecord
      */
     public function getPublicKey(): string
     {
-        return $this->public_key;
+        return $this->public_key ?? '';
     }
 
     /**
@@ -106,5 +103,29 @@ class UserStellar extends \yii\db\ActiveRecord
     public function getTimeLimit(): int
     {
         return (int)(self::CONFIRM_REQUEST_LIFETIME / 60);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function confirm()
+    {
+        // reset all other confirmations
+        self::updateAll(
+            [
+                'confirmed_at' => null,
+            ],
+            [
+                'public_key' => $this->public_key,
+            ]
+        );
+
+        $this->confirmed_at = time();
+
+        if ($this->save()) {
+            return true;
+        }
+
+        return false;
     }
 }

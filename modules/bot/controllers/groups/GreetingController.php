@@ -9,6 +9,7 @@ use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
+use app\modules\bot\components\helpers\ExternalLink;
 
 /**
  * Class GreetingController
@@ -47,7 +48,15 @@ class GreetingController extends Controller
                             'user' => $telegramUser,
                             'message' => $chat->greeting_message,
                         ]),
-                        [],
+                        [
+                            [
+                                [
+                                    'url' => ExternalLink::getBotGroupGuestLink($chat->getChatId()),
+                                    'text' => Yii::t('bot', 'FAQ'),
+                                    'visible' => $chat->faq_status == ChatSetting::STATUS_ON,
+                                ],
+                            ],
+                        ],
                         [
                             'disablePreview' => true,
                             'disableNotification' => true,
@@ -64,7 +73,7 @@ class GreetingController extends Controller
 
                     $greeting->save();
 
-                    // remove all active previous greetings
+                    // remove other active greetings
                     $this->deletePreviousGreetings($greeting);
                 }
             }

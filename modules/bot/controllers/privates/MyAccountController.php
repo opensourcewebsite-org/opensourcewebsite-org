@@ -46,12 +46,6 @@ class MyAccountController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyLocationController::createRoute(),
-                            'text' => Yii::t('bot', 'Location'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MyProfileController::createRoute(),
                             'text' => Yii::t('bot', 'Profile'),
                         ],

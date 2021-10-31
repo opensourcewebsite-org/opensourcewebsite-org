@@ -123,7 +123,7 @@ class StellarOperator extends StellarServer
         $transactionResults = [];
 
         foreach (array_chunk($payments, self::TRANSACTION_LIMIT) as $paymentGroup) {
-            $transaction = $this->buildTransaction();
+            $transaction = $this->buildTransaction(self::getDistributorPublicKey());
 
             foreach ($paymentGroup as $payment) {
                 $transaction = $transaction->addOperation($payment);
@@ -250,7 +250,7 @@ class StellarOperator extends StellarServer
         }
 
         $this
-            ->buildTransaction()
+            ->buildTransaction(self::getDistributorPublicKey())
             ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
             ->submit(self::getOperatorPrivateKey());
     }
@@ -284,15 +284,6 @@ class StellarOperator extends StellarServer
             ['between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()],
             ['processed_at' => null],
         ]);
-    }
-
-    /**
-     * @param $accountId string|\ZuluCrypto\StellarSdk\Keypair|null
-     * @return \ZuluCrypto\StellarSdk\Transaction\TransactionBuilder
-     */
-    public function buildTransaction($accountId = null): TransactionBuilder
-    {
-        return parent::buildTransaction($accountId ?: self::getDistributorPublicKey());
     }
 
     /**

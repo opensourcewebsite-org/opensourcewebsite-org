@@ -34,6 +34,7 @@ use yii\db\Query;
  * @property integer $currency_id
  * @property integer $sexuality_id
  * @property bool $gender
+ * @property bool $basic_income_on
  *
  * @property Company[] $companies
  * @property null|\app\modules\bot\models\User $botUser
@@ -79,6 +80,8 @@ class User extends ActiveRecord implements IdentityInterface
             [['gender_id', 'sexuality_id', 'currency_id', 'rating'], 'integer'],
             [['created_at', 'updated_at', 'last_activity_at'], 'integer'],
             [['created_at', 'updated_at', 'last_activity_at'], 'default', 'value' => time()],
+            ['basic_income_on', 'boolean'],
+            ['basic_income_on', 'default', 'value' => 1],
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
@@ -110,7 +113,6 @@ class User extends ActiveRecord implements IdentityInterface
             ['name', 'trim'],
             [['name'], 'string', 'length' => [1, 255]],
             ['name', 'validateNameString'],
-            ['rating', 'integer'],
             ['rating', 'default', 'value' => Rating::DEFAULT],
         ];
     }
@@ -213,6 +215,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function isEmailConfirmed()
     {
         return $this->email && $this->email->isConfirmed();
+    }
+
+    public function isStellarConfirmed()
+    {
+        return $this->stellar && $this->stellar->isConfirmed();
     }
 
     // Compatible with IdentityInterface
@@ -341,7 +348,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Confirm email.
+     * Confirm email
      *
      * @param int $id user id
      * @param int $time
@@ -1059,5 +1066,32 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return $amount;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserLocation()
+    {
+        return $this->hasOne(UserLocation::class, ['user_id' => 'id']);
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->userLocation ? $this->userLocation->location : null;
+    }
+
+    public function isBasicIncomeOn()
+    {
+        return (bool)$this->basic_income_on;
+    }
+
+    public function getBasicIncomeVotesCount()
+    {
+        return $this->getCounterContacts()
+                ->where([
+                    'is_basic_income_candidate' => 1,
+                ])
+                ->count();
     }
 }

@@ -50,7 +50,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return \app\modules\bot\models\User
      */
-    protected function getTelegramUser()
+    public function getTelegramUser()
     {
         return $this->module->getBotUser();
     }
@@ -58,7 +58,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return Chat
      */
-    protected function getTelegramChat()
+    public function getTelegramChat()
     {
         return $this->module->getChat();
     }
@@ -66,7 +66,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return User
      */
-    protected function getUser()
+    public function getUser()
     {
         return $this->module->user;
     }
@@ -74,7 +74,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return Update
      */
-    protected function getUpdate()
+    public function getUpdate()
     {
         return $this->module->getUpdate();
     }
@@ -82,7 +82,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return ResponseBuilder
      */
-    protected function getResponseBuilder()
+    public function getResponseBuilder()
     {
         return new ResponseBuilder();
     }
@@ -91,7 +91,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return TelegramBot\Api\Types\Message
      */
-    protected function getMessage()
+    public function getMessage()
     {
         return $this->update->requestMessage;
     }
@@ -99,7 +99,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return UserState
      */
-    protected function getState()
+    public function getState()
     {
         return $this->module->getBotUserState();
     }
@@ -107,7 +107,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return Bot
      */
-    protected function getBot()
+    public function getBot()
     {
         return $this->module->getBot();
     }
@@ -115,7 +115,7 @@ class Controller extends \yii\web\Controller
     /**
      * @return \app\modules\bot\components\api\BotApi
      */
-    protected function getBotApi()
+    public function getBotApi()
     {
         return $this->module->getBotApi();
     }

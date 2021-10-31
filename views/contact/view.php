@@ -119,13 +119,18 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= Yii::t('app', 'Identification'); ?></th>
+                                    <th class="align-middle"><?= $contact->getAttributeLabel('is_real'); ?></th>
                                     <td class="align-middle"><?= $contact->getIsRealBadge(); ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= $contact->getAttributeLabel('relation'); ?></th>
                                     <td class="align-middle"><?= $contact->getRelationBadge(); ?></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th class="align-middle"><?= $contact->getAttributeLabel('is_basic_income_candidate'); ?></th>
+                                    <td class="align-middle"><?= Contact::IS_BASIC_INCOME_CANDIDATE_LABELS[$contact->is_basic_income_candidate]; ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>

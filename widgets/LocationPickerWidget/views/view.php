@@ -8,11 +8,8 @@ use yii\helpers\Html;
 /** @var string $attribute */
 /** @var string $id */
 ?>
-
     <div class="input-group d-flex mb-3 align-items-start">
-
         <?= Html::activeInput('text', $model, $attribute, ['class' => 'form-control flex-grow-1']) ?>
-
         <span class="input-group-append">
         <button type="button" class="btn btn-info btn-flat map-btn"
                 data-toggle="modal" data-target="#<?=$id?>-modal">
@@ -24,26 +21,17 @@ use yii\helpers\Html;
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"><?= Yii::t('app', 'Location') ?></h4>
+                    <h4 class="modal-title"><?= Yii::t('app', 'Location') ?>: <span id="<?=$id?>-current-position-span"></span></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-
                     <div id="<?=$id?>-map-container" style="height: 500px;"></div>
-
-                    <div class="current-position-div">
-                        <p>
-                            Position: <span id="<?=$id?>-current-position-span"></span>
-                        </p>
-                    </div>
                 </div>
-                <div class="modal-footer justify-content-between">
+                <div class="modal-footer">
+                    <button id="<?=$id?>-location-save-changes" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="<?=$id?>-location-save-changes" type="button" class="btn btn-primary" data-dismiss="modal">Save
-                        changes
-                    </button>
                 </div>
             </div>
         </div>

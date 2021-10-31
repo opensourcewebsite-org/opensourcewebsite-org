@@ -111,16 +111,21 @@ $requirements = [
         'by' => '<a href="http://www.yiiframework.com/doc-2.0/yii-captcha-captcha.html">Captcha</a>',
         'memo' => $imagickMemo,
     ],
-    // JSON
     [
         'name' => 'JSON extension',
         'mandatory' => true,
         'condition' => extension_loaded('json'),
         'by' => '<a href="https://www.php.net/manual/en/book.json.php">JSON extension</a>'
     ],
-    // PHP ini :
+    [
+        'name' => 'BCMath extension',
+        'mandatory' => true,
+        'condition' => extension_loaded('bcmath'),
+        'by' => '<a href="https://www.php.net/manual/en/book.bc.php">BCMath extension</a>'
+    ],
+    // PHP ini:
     'phpExposePhp' => [
-        'name' => 'Expose PHP',
+        'name' => 'Expose PHP disabled',
         'mandatory' => false,
         'condition' => $requirementsChecker->checkPhpIniOff("expose_php"),
         'by' => 'Security reasons',

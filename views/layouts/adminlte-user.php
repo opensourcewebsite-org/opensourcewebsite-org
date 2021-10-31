@@ -52,6 +52,7 @@ AdminLteUserAsset::register($this);
         'id' => 'main-modal-xl',
         'size' => Modal::SIZE_EXTRA_LARGE,
         'options' => ['class' => 'card-primary', 'tabindex' => false],
+        'bodyOptions' => ['id' => 'main-modal-xl-body'],
     ]);
     Modal::end(); ?>
     <div class="wrapper">
@@ -59,7 +60,7 @@ AdminLteUserAsset::register($this);
         NavBar::begin([
             'renderInnerContainer' => false,
             'options' => [
-                    'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
+                'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
             ],
         ]);
 
@@ -259,10 +260,16 @@ $leftMenuItems = [
     [
         'title' => 'Stellar',
         'urls' => [
+            'stellar/basic-income',
             'stellar/deposit-income',
             'stellar/fortune-game',
         ],
         'items' => [
+            [
+                'title' => Yii::t('bot', 'Basic Income'),
+                'url' => 'stellar-basic-income',
+                'route' => '/stellar-basic-income'
+            ],
             [
                 'title' => Yii::t('bot', 'Deposit Income'),
                 'url' => 'stellar/deposit-income',

@@ -62,9 +62,7 @@ class MyEmailController extends Controller
     {
         $this->getState()->setName(self::createRoute('update'));
 
-        $userEmail = $this->user->email;
-
-        if (!$userEmail) {
+        if (!$userEmail = $this->user->email) {
             $userEmail = new UserEmail();
             $userEmail->user_id = $this->user->id;
         }
@@ -102,8 +100,6 @@ class MyEmailController extends Controller
 
     public function actionDelete(): array
     {
-        $user = $this->getUser();
-
         if ($userEmail = $this->user->email) {
             $userEmail->delete();
             unset($this->user->email);

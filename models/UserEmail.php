@@ -55,7 +55,7 @@ class UserEmail extends \yii\db\ActiveRecord
      */
     public function getEmail(): string
     {
-        return $this->email;
+        return $this->email ?? '';
     }
 
     /**
@@ -71,7 +71,7 @@ class UserEmail extends \yii\db\ActiveRecord
      */
     public function confirm()
     {
-        // reset all confirmations for this email
+        // reset all other confirmations
         self::updateAll(
             [
                 'confirmed_at' => null,

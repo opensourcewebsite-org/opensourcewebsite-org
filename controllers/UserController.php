@@ -18,12 +18,15 @@ use app\models\UserLanguage;
 use app\models\UserStatistic;
 use app\models\User;
 use app\models\UserEmail;
+use app\models\UserLocation;
+use app\models\UserStellar;
 use app\models\UserMoqupFollow;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use app\components\Converter;
+use app\models\StellarServer;
 
 class UserController extends Controller
 {
@@ -191,9 +194,7 @@ class UserController extends Controller
 
     public function actionChangeEmail()
     {
-        $userEmail = $this->user->email;
-
-        if (!$userEmail) {
+        if (!$userEmail = $this->user->email) {
             $userEmail = new UserEmail();
             $userEmail->user_id = $this->user->id;
         }
@@ -207,6 +208,7 @@ class UserController extends Controller
 
             if ($userEmail->isNewRecord || ($userEmail->email != $email)) {
                 $userEmail->email = $email;
+                $userEmail->confirmed_at = null;
             }
 
             if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
@@ -259,6 +261,43 @@ class UserController extends Controller
             if ($userEmail = $this->user->email) {
                 $userEmail->delete();
                 unset($this->user->email);
+            }
+        }
+
+        $this->redirect('/account');
+    }
+
+    public function actionChangeLocation()
+    {
+        if (!$userLocation = $this->user->userLocation) {
+            $userLocation = new UserLocation();
+            $userLocation->user_id = $this->user->id;
+        }
+
+        $renderParams = [
+            'userLocation' => $userLocation,
+        ];
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserLocation'))) {
+            $location = $postData['location'];
+
+            if ($userLocation->isNewRecord || ($userLocation->location != $location)) {
+                $userLocation->location = $location;
+            }
+
+            if ($userLocation->getDirtyAttributes() && $userLocation->save()) {
+                return $this->redirect('/account');
+            }
+        }
+
+        return $this->render('fields/change-location', $renderParams);
+    }
+
+    public function actionDeleteLocation()
+    {
+        if (Yii::$app->request->isPost) {
+            if ($userLocation = $this->user->userLocation) {
+                $userLocation->delete();
             }
         }
 
@@ -576,6 +615,77 @@ class UserController extends Controller
 
             if ($citizenship) {
                 $citizenship->delete();
+            }
+        }
+
+        return $this->redirect('/account');
+    }
+
+    public function actionViewLocation(): string
+    {
+        return $this->renderAjax('modals/view-location', ['model' => $this->user->userLocation]);
+    }
+
+    public function actionChangeStellar()
+    {
+        if (!$userStellar = $this->user->stellar) {
+            $userStellar = new UserStellar();
+            $userStellar->user_id = $this->user->id;
+        }
+
+        $renderParams = [
+            'userStellar' => $userStellar,
+        ];
+
+        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserStellar'))) {
+            $publicKey = $postData['public_key'];
+
+            if ($userStellar->isNewRecord || ($userStellar->public_key != $publicKey)) {
+                $userStellar->public_key = $publicKey;
+                $userStellar->created_at = time();
+                $userStellar->confirmed_at = null;
+            }
+
+            if ($userStellar->getDirtyAttributes() && $userStellar->save()) {
+                return $this->redirect('/account');
+            }
+        }
+
+        return $this->render('fields/change-stellar', $renderParams);
+    }
+
+    public function actionDeleteStellar()
+    {
+        if (Yii::$app->request->isPost) {
+            if ($userStellar = $this->user->stellar) {
+                $userStellar->delete();
+            }
+        }
+
+        $this->redirect('/account');
+    }
+
+    public function actionConfirmStellar()
+    {
+        if (($userStellar = $this->user->stellar) && !$userStellar->isConfirmed()) {
+            if ($stellarServer = new StellarServer()) {
+                if (!$stellarServer->accountExists($userStellar->getPublicKey())) {
+                    return $this->renderAjax('modals/stellar-alert-account-not-found');
+                }
+
+
+                $userSentTransaction = $stellarServer->operationExists(
+                    $userStellar->getPublicKey(),
+                    StellarServer::getDistributorPublicKey(),
+                    $userStellar->created_at,
+                    $userStellar->created_at + UserStellar::CONFIRM_REQUEST_LIFETIME
+                );
+
+                if (!$userSentTransaction) {
+                    return $this->renderAjax('modals/stellar-alert-transaction-not-found');
+                }
+
+                $userStellar->confirm();
             }
         }
 

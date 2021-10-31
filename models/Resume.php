@@ -86,31 +86,12 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
         return [
             [['user_id', 'name'], 'required'],
             [['user_id', 'currency_id', 'status', 'created_at', 'processed_at'], 'integer'],
-            [
-                'search_radius',
-                RadiusValidator::class,
-            ],
-            [
-                'location_lat',
-                LocationLatValidator::class,
-            ],
-            [
-                'location_lon',
-                LocationLonValidator::class,
-            ],
-            [
-                [
-                    'location_lat',
-                    'location_lon',
-                ],
-                'double',
-            ],
-            [
-                'location', 'string'
-            ],
-            [
-                'remote_on', 'boolean'
-            ],
+            ['search_radius', RadiusValidator::class],
+            ['location_lat', LocationLatValidator::class],
+            ['location_lon', LocationLonValidator::class],
+            [['location_lat', 'location_lon'], 'double'],
+            ['location', 'string'],
+            ['remote_on', 'boolean'],
             [
                 'min_hourly_rate',
                 'double',
@@ -140,9 +121,7 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
                     return $val;
                 }
             ],
-            [
-                'keywordsFromForm', 'each', 'rule' => ['integer']
-            ],
+            ['keywordsFromForm', 'each', 'rule' => ['integer']],
             [
                 [
                     'experiences',
@@ -174,11 +153,11 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
             'experiences' => Yii::t('app', 'Experiences'),
             'expectations' => Yii::t('app', 'Expectations'),
             'skills' => Yii::t('app', 'Skills'),
-            'location_lat' => Yii::t('app', 'location_lat'),
-            'location_lon' => Yii::t('app', 'location_lon'),
+            'location_lat' => Yii::t('app', 'Location Lat'),
+            'location_lon' => Yii::t('app', 'Location Lon'),
             'location' => Yii::t('app', 'Location'),
-            'created_at' => Yii::t('app', 'created_at'),
-            'processed_at' => Yii::t('app', 'processed_at'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'processed_at' => Yii::t('app', 'Processed At'),
         ];
     }
 
@@ -197,6 +176,7 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
         [$lat, $lon] = (new LocationParser($location))->parse();
         $this->location_lat = $lat;
         $this->location_lon = $lon;
+
         return $this;
     }
 

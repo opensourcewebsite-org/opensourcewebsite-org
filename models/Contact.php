@@ -56,6 +56,11 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         1 => 'Real',
     ];
 
+    public const IS_BASIC_INCOME_CANDIDATE_LABELS = [
+        0 => 'No',
+        1 => 'Yes',
+    ];
+
     public $userIdOrName;
 
     public $groupIds = [];
@@ -75,7 +80,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'link_user_id', 'is_real'], 'integer'],
+            [['user_id', 'link_user_id', 'relation'], 'integer'],
             [['relation'], 'integer', 'min' => 0, 'max' => 2],
             ['userIdOrName', 'string'],
             ['userIdOrName', 'trim'],
@@ -122,7 +127,8 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 },
             ],
             ['is_real', 'boolean'],
-            [['is_real', 'relation'], 'default', 'value' => 0],
+            ['is_basic_income_candidate', 'boolean'],
+            [['is_real', 'relation', 'is_basic_income_candidate'], 'default', 'value' => 0],
             [
                 'groupIds', 'filter', 'filter' => function ($val) {
                     if ($val === '') {
@@ -147,9 +153,10 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'user_id' => 'User ID',
             'link_user_id' => 'Link User ID',
             'name' => Yii::t('user', 'Name'),
-            'userIdOrName' => 'User ID / ' . Yii::t('user', 'Username'),
-            'is_real' => Yii::t('app', 'Real confirmation'),
+            'userIdOrName' => 'User ID / Username',
+            'is_real' => Yii::t('app', 'Personal identification'),
             'relation' => Yii::t('app', 'Relation'),
+            'is_basic_income_candidate' => Yii::t('app', 'Basic income candidate'),
             'vote_delegation_priority' => Yii::t('app', 'Vote delegation priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt transfer priority'),
             'groupIds' => Yii::t('app', 'Groups'),
@@ -169,8 +176,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 'It has no affect, if field ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
             ]),
             'userIdOrName' => Yii::t('app', 'To associate this contact with another user') . '.',
-            'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a fake or a bot') . '.' ,
+            'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a virtual one (fake or bot)') . '.',
             'relation' => Yii::t('app', 'To see social recommendations in the profiles of other users') . '.',
+            'is_basic_income_candidate' => Yii::t('app', 'To confirm that this person meets the requirements to earn a weekly basic income') . '.',
         ];
     }
 

@@ -52,47 +52,8 @@ class GroupGuestFaqController extends Controller
             return [];
         }
 
-        $this->getState()->setName(null);
-
-        $statusOn = ($chat->faq_status == ChatSetting::STATUS_ON);
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
-                            ]),
-                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('word-list', [
-                                'chatId' => $chatId,
-                            ]),
-                            'text' => Yii::t('bot', 'Questions'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => GroupGuestController::createRoute('view', [
-                                'chatId' => $chatId,
-                            ]),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ]
-                ],
-                [
-                    'disablePreview' => true,
-                ]
-            )
-            ->build();
+        return $this->run('group-guest/view', [
+            'chatId' => $chat->id,
+        ]);
     }
 }

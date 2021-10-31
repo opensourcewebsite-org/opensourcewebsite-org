@@ -5,14 +5,13 @@ use app\modules\bot\components\helpers\ExternalLink;
 use app\models\StellarCroupier;
 
 $stellarCroupier = new StellarCroupier();
-
 ?>
 <b><?= Yii::t('bot', 'Fortune Game') ?></b><br/>
 <br/>
 <?php if (StellarCroupier::getCroupierPublicKey()) : ?>
 <?= Yii::t('bot', 'Try your luck at blockchain based fortune game with transparent open source winning algorithms') ?>. <?= Yii::t('bot', 'When you win, your prize will be instantly and automatically sent to your Stellar account') ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'Prize Fund') ?>: <?= $stellarCroupier->getPrizeBalance() ?> XLM<br/>
+<?= Yii::t('bot', 'Prize Fund') ?>: <?= $stellarCroupier->getAvailableBalance() ?> XLM<br/>
 <br/>
 <?= Yii::t('bot', 'Every bet has a chance to win a prize that significantly exceeds the bet') ?>:<br/>
   • x2<br/>
@@ -30,6 +29,4 @@ $stellarCroupier = new StellarCroupier();
   • <?= Yii::t('bot', 'and even') ?> x1 000 000 !!!<br/>
 <br/>
 <?= Yii::t('bot', 'To start playing, send any amount of XLM to OSW account {0} as a bet', ExternalLink::getStellarExpertAccountFullLink(StellarCroupier::getCroupierPublicKey())) ?>. <?= Yii::t('bot', 'Minimum bet is {0} XLM', StellarCroupier::BET_MINIMUM_AMOUNT) ?>. <?= Yii::t('bot', 'Unlimited attempts to win') ?>. <?= Yii::t('bot', 'Go ahead') ?>!<br/>
-<br/>
 <?php endif; ?>
-<i><?= Yii::t('bot', 'If you have any suggestions, questions or feedback, please contact our team') ?>.</i>

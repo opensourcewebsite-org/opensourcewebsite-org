@@ -39,11 +39,14 @@ class LocationParser
         $coords = explode(self::MAIN_DELIMITER, $text);
 
         $coords = array_map('trim', $coords);
+
         if (count($coords) === 2) {
-            $coords = array_map( function($item) {
-                return preg_replace("|[^0-9\.]|", "$2", $item);
+            $coords = array_map(
+                function ($item) {
+                    return preg_replace("|[^0-9\.]|", "$2", $item);
                 },
-                $coords);
+                $coords
+            );
 
             if (is_numeric($coords[0]) && is_numeric($coords[1])) {
                 $latitude = $coords[0];
@@ -58,6 +61,7 @@ class LocationParser
     {
         $clone = clone $this;
         $this->locationStr = $str;
+
         return $clone;
     }
 }

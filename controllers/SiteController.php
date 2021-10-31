@@ -215,6 +215,7 @@ class SiteController extends Controller
 
     private function mergeAccounts($user, $userToMerge)
     {
+        // TODO from new user id to old user id
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
@@ -233,14 +234,17 @@ class SiteController extends Controller
             \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
             \app\models\UserLanguage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\UserCitizenship::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+            // TODO recalculate user.rating
             \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\Contact::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\Contact::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
             \app\models\Debt::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
             \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+            // TODO recalculate DebtBalance
             \app\models\DebtBalance::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
             \app\models\DebtBalance::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+            // TODO save only unique settings
             \app\models\DebtRedistribution::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
             \app\models\DebtRedistribution::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
             \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");

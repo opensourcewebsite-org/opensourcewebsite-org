@@ -69,7 +69,7 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
 
     public static function tableName(): string
     {
-        return 'ad_offer';
+        return '{{%ad_offer}}';
     }
 
     public function markViewedByUser(ViewedByUserEvent $event)
@@ -82,15 +82,8 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
     public function rules(): array
     {
         return [
-            [
-                [
-                    'user_id',
-                    'section',
-                    'title',
-                    'location',
-                ],
-                'required',
-            ],
+            [['user_id', 'section', 'title', 'location'], 'required'],
+            [['user_id', 'currency_id', 'delivery_radius', 'section', 'status', 'created_at', 'processed_at'], 'integer'],
             [
                 'title',
                 'string',
@@ -101,38 +94,15 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
                 'string',
                 'max' => 10000,
             ],
-            [
-                'delivery_radius',
-                RadiusValidator::class,
-            ],
+            ['delivery_radius', RadiusValidator::class],
             [
                 'delivery_radius',
                 'default',
                 'value' => 0,
             ],
-            [
-                'location_lat',
-                LocationLatValidator::class,
-            ],
-            [
-                'location_lon',
-                LocationLonValidator::class,
-            ],
-            [
-                'location', 'string'
-            ],
-            [
-                [
-                    'user_id',
-                    'currency_id',
-                    'delivery_radius',
-                    'section',
-                    'status',
-                    'created_at',
-                    'processed_at',
-                ],
-                'integer',
-            ],
+            ['location_lat', LocationLatValidator::class],
+            ['location_lon', LocationLonValidator::class],
+            ['location', 'string'],
             [
                 'price',
                 'double',
@@ -155,9 +125,7 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface
                     return $val;
                 }
             ],
-            [
-                'keywordsFromForm', 'each', 'rule' => ['integer']
-            ],
+            ['keywordsFromForm', 'each', 'rule' => ['integer']],
         ];
     }
 

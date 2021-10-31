@@ -52,6 +52,12 @@ class MyStellarController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('basic-income'),
+                            'text' => Yii::t('bot', 'Basic Income'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('deposit-income'),
                             'text' => Yii::t('bot', 'Deposit Income'),
                         ],
@@ -156,17 +162,15 @@ class MyStellarController extends Controller
     {
         $user = $this->getUser();
 
-        if (!isset($user->stellar) || $user->stellar->isConfirmed()) {
+        if (!($userStellar = $user->stellar) || $userStellar->isConfirmed()) {
             return $this->actionIndex();
         }
-
-        $userStellar = $user->stellar;
 
         if ($stellarServer = new StellarServer()) {
             if (!$stellarServer->accountExists($userStellar->getPublicKey())) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
-                        $this->render('alert-account-doesnt-exist'),
+                        $this->render('alert-account-not-found'),
                         true
                     )
                     ->build();
@@ -188,8 +192,7 @@ class MyStellarController extends Controller
                     ->build();
             }
 
-            $userStellar->confirmed_at = time();
-            $userStellar->save();
+            $userStellar->confirm();
             unset($user->stellar);
         }
 
@@ -210,7 +213,7 @@ class MyStellarController extends Controller
             if (!$account = $stellarServer->getAccount($userStellar->getPublicKey())) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
-                        $this->render('alert-account-doesnt-exist'),
+                        $this->render('alert-account-not-found'),
                         true
                     )
                     ->build();
@@ -299,6 +302,57 @@ class MyStellarController extends Controller
         }
 
         return $this->actionIndex();
+    }
+
+    public function actionBasicIncome(): array
+    {
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('basic-income', [
+                    'user' => $this->user,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-basic-income-status'),
+                            'text' => $this->user->isBasicIncomeOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/commands/StellarGiverController.php',
+                            'text' => Yii::t('bot', 'Source Code'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyStellarController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    public function actionSetBasicIncomeStatus()
+    {
+        if ($this->user->basic_income_on) {
+            $this->user->basic_income_on = 0;
+        } else {
+            $this->user->basic_income_on = 1;
+        }
+
+        $this->user->save();
+
+        return $this->actionBasicIncome();
     }
 
     public function actionDepositIncome(): array

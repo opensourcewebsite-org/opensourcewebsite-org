@@ -34,8 +34,32 @@ class MyProfileController extends Controller
                 [
                     [
                         [
+                            'callback_data' => MyLocationController::createRoute(),
+                            'text' => Yii::t('bot', 'Location'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyTimezoneController::createRoute(),
                             'text' => Yii::t('bot', 'Timezone'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyCurrencyController::createRoute(),
+                            'text' => Yii::t('bot', 'Currency'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyLanguagesController::createRoute(),
+                            'text' => Yii::t('bot', 'Languages'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyCitizenshipsController::createRoute(),
+                            'text' => Yii::t('bot', 'Citizenships'),
                         ],
                     ],
                     [
@@ -54,24 +78,6 @@ class MyProfileController extends Controller
                         [
                             'callback_data' => MySexualityController::createRoute(),
                             'text' => Yii::t('bot', 'Sexuality'),
-                        ],
-                    ],
-                    [
-                        [
-                            'text' => Yii::t('bot', 'Languages'),
-                            'callback_data' => MyLanguagesController::createRoute(),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyCitizenshipsController::createRoute(),
-                            'text' => Yii::t('bot', 'Citizenships'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyCurrencyController::createRoute(),
-                            'text' => Yii::t('bot', 'Currency'),
                         ],
                     ],
                     [

@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use app\models\Language;
 use app\models\User as GlobalUser;
+use app\models\UserLocation;
 
 /**
  * This is the model class for table "bot_user".
@@ -16,9 +17,6 @@ use app\models\User as GlobalUser;
  * @property bool $provider_user_blocked
  * @property string $provider_user_first_name
  * @property string $provider_user_last_name
- * @property string $location_lat
- * @property string $location_lon
- * @property int $location_at
  * @property string $language_code
  * @property int $user_id
  * @property string $currency_code
@@ -68,30 +66,8 @@ class User extends ActiveRecord
     public function rules()
     {
         return [
-            [
-                [
-                    'provider_user_id',
-                ],
-                'required',
-            ],
-            [
-                [
-                    'user_id',
-                    'provider_user_id',
-                    'provider_user_blocked',
-                    'location_at',
-                    'language_id',
-                    'is_bot',
-                ],
-                'integer',
-            ],
-            [
-                [
-                    'location_lat',
-                    'location_lon',
-                ],
-                'number'
-            ],
+            [['provider_user_id'], 'required'],
+            [['user_id', 'provider_user_id', 'provider_user_blocked', 'language_id', 'is_bot'], 'integer'],
             [
                 [
                     'provider_user_name',
@@ -116,9 +92,6 @@ class User extends ActiveRecord
             'provider_user_blocked' => 'Provider User Blocked',
             'provider_user_first_name' => 'First name',
             'provider_user_last_name' => 'Last name',
-            'location_lat' => 'Location Lat',
-            'location_lon' => 'Location Lon',
-            'location_at' => 'Location',
         ];
     }
 
@@ -242,10 +215,16 @@ class User extends ActiveRecord
         return $this->provider_user_name;
     }
 
-    public function getLocation(): string
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserLocation()
     {
-        return ($this->location_lat && $this->location_lon) ?
-            implode(',', [$this->location_lat, $this->location_lon]) :
-            '';
+        return $this->hasOne(UserLocation::class, ['user_id' => 'user_id']);
+    }
+
+    public function getUserId()
+    {
+        return $this->user_id;
     }
 }

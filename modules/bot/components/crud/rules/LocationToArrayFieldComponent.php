@@ -3,6 +3,7 @@
 namespace app\modules\bot\components\crud\rules;
 
 use app\modules\bot\components\helpers\LocationParser;
+use Yii;
 
 /**
  * Class LocationToArrayFieldComponent
@@ -11,10 +12,8 @@ use app\modules\bot\components\helpers\LocationParser;
  */
 class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldInterface
 {
-    const MAIN_DELIMITER = '|';
-
     /** @var string[] */
-    public $delimiters = [' ', ';', "\n"];
+    public $delimiters = [' ', ', ', ',', ';', "\n"];
 
     /** @inheritDoc */
     public function prepare($text)
@@ -24,6 +23,7 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
 
         if (!$text) {
             $message = $this->getUpdate()->getMessage();
+
             if ($message && ($location = $message->getLocation())) {
                 $latitude = $location->getLatitude();
                 $longitude = $location->getLongitude();

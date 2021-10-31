@@ -33,8 +33,8 @@ $this->title = Yii::t('app', 'Users') . ': ' . $usersCount;
                                 'content' => function (User $model) {
                                     return $model->getRank();
                                 },
-                                'enableSorting' => false,
                                 'format' => 'raw',
+                                'enableSorting' => false,
                             ],
                             [
                                 'label' => Yii::t('app', 'User'),

@@ -39,12 +39,17 @@ $form = ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'is_real')->checkbox(); ?>
+                            <?= $form->field($model, 'is_real')->radioList(Contact::IS_REAL_LABELS); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'relation')->dropDownList(Contact::RELATION_LABELS); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'is_basic_income_candidate')->radioList(Contact::IS_BASIC_INCOME_CANDIDATE_LABELS); ?>
                         </div>
                     </div>
                     <div class="row">

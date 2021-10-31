@@ -58,6 +58,16 @@ class StellarServer extends Server
         return Yii::$app->params['stellar']['croupier_private_key'] ?? null;
     }
 
+    public static function getGiverPublicKey(): ?string
+    {
+        return Yii::$app->params['stellar']['giver_public_key'] ?? null;
+    }
+
+    public static function getGiverPrivateKey(): ?string
+    {
+        return Yii::$app->params['stellar']['giver_private_key'] ?? null;
+    }
+
     public function isTestnet(): bool
     {
         return $this->isTestnet;

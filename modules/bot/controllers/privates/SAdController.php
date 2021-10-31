@@ -19,32 +19,32 @@ class SAdController extends Controller
         $buttons = [
             [
                 [
-                    'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
-                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::BUY_SELL),
-                ],
-                [
                     'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
                     'text' => Emoji::AD_OFFER . ' ' . AdSection::getAdOfferName(AdSection::BUY_SELL),
                 ],
+                [
+                    'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::BUY_SELL]),
+                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::BUY_SELL),
+                ],
             ],
             [
-                [
-                    'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::RENT]),
-                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::RENT),
-                ],
                 [
                     'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::RENT]),
                     'text' => Emoji::AD_OFFER . ' ' . AdSection::getAdOfferName(AdSection::RENT),
                 ],
+                [
+                    'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::RENT]),
+                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::RENT),
+                ],
             ],
             [
                 [
-                    'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::SERVICES]),
-                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::SERVICES),
-                ],
-                [
                     'callback_data' => SAdOfferController::createRoute('index', ['adSection' => AdSection::SERVICES]),
                     'text' => Emoji::AD_OFFER . ' ' . AdSection::getAdOfferName(AdSection::SERVICES),
+                ],
+                [
+                    'callback_data' => SAdSearchController::createRoute('index', ['adSection' => AdSection::SERVICES]),
+                    'text' => Emoji::AD_SEARCH . ' ' . AdSection::getAdSearchName(AdSection::SERVICES),
                 ],
             ],
             [

@@ -10,30 +10,30 @@ class StellarCroupier extends StellarServer
     private const PRIZE_MEMO_TEXT = 'x%d Winner Prize';
 
     public const BET_MINIMUM_AMOUNT = 0.001; // XLM
-    // minimum croupier balance that is reserved for account staying active
-    public const BALANCE_RESERVE_AMOUNT = 5; // XLM
-    // croupier balance percent reserved, so any prize won't exceed (100 - self::PRIZE_RESERVE_PERCENT) % of the balance
+    // minimum balance that is reserved for account staying active
+    public const BALANCE_RESERVE_AMOUNT = 10; // XLM
+    // balance percent reserved, so any prize won't exceed (100 - self::PRIZE_RESERVE_PERCENT) % of the balance
     public const PRIZE_RESERVE_PERCENT = 20; // %
     // percentage return to player (% RTP), the expected percentage of wagers that a game will return to the player in the long run
     public const PRIZE_RETURN_PERCENT = 95; // %
     // list of prizes, any prize is the player's bet multiplied by one of winner rate
     public const WINNER_RATES = [2, 3, 4, 5, 10, 20, 50, 100, 500, 1000, 10000, 100000, 1000000];
 
-    private ?Account $croupierAccount = null;
-    private ?float $croupierBalance = null;
+    private ?Account $account = null;
+    private ?float $balance = null;
 
     /**
      * @return float
      * @throws \ErrorException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      */
-    public function getCroupierBalance(): float
+    public function getBalance(): float
     {
-        if (!isset($this->croupierBalance)) {
-            $this->reloadCroupierAccount();
+        if (!isset($this->balance)) {
+            $this->reloadAccount();
         }
 
-        return $this->croupierBalance;
+        return $this->balance;
     }
 
     /**
@@ -41,13 +41,23 @@ class StellarCroupier extends StellarServer
      * @throws \ErrorException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      */
-    public function getCroupierAccount(): Account
+    public function getAccount($accountId = null): Account
     {
-        if (!isset($this->croupierAccount)) {
-            $this->reloadCroupierAccount();
+        if (!isset($this->account)) {
+            $this->reloadAccount();
         }
 
-        return $this->croupierAccount;
+        return $this->account;
+    }
+
+    /**
+     * @throws \ErrorException
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     */
+    private function reloadAccount()
+    {
+        $this->account = parent::getAccount(self::getCroupierPublicKey());
+        $this->balance = $this->account->getNativeBalance();
     }
 
     /**
@@ -75,10 +85,11 @@ class StellarCroupier extends StellarServer
     {
         $sinceCursor = StellarCroupierData::getLastPagingToken();
         $limit = 200;
-        $payments = $this->getCroupierAccount()->getPayments($sinceCursor, $limit);
+        $payments = $this->getAccount()->getPayments($sinceCursor, $limit);
 
         $wins = [];
         $betsCount = 0;
+
         foreach ($payments as $payment) {
             $pagingToken = $payment->getPagingToken();
 
@@ -89,11 +100,13 @@ class StellarCroupier extends StellarServer
 
                 if ($result = $this->prizeAmount($betAmount)) {
                     $this->sendPrize($playerPublicKey, $result['prize_amount'], $result['winner_rate']);
+
                     $wins[] = [
                         'prize_amount' => $result['prize_amount'],
                         'winner_rate' => $result['winner_rate'],
                     ];
                 }
+
                 $betsCount++;
             }
 
@@ -104,16 +117,6 @@ class StellarCroupier extends StellarServer
             'bets_count' => $betsCount,
             'wins' => $wins,
         ];
-    }
-
-    /**
-     * @throws \ErrorException
-     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
-     */
-    private function reloadCroupierAccount()
-    {
-        $this->croupierAccount = $this->getAccount(self::getCroupierPublicKey());
-        $this->croupierBalance = $this->croupierAccount->getNativeBalance();
     }
 
     /**
@@ -131,7 +134,7 @@ class StellarCroupier extends StellarServer
             ->setTextMemo(sprintf(self::PRIZE_MEMO_TEXT, $winnerRate))
             ->submit(self::getCroupierPrivateKey());
 
-        $this->croupierBalance = $this->getCroupierBalance() - ($amount + $response->getResult()->getFeeCharged()->getScaledValue());
+        $this->croupierBalance = $this->getBalance() - ($amount + $response->getResult()->getFeeCharged()->getScaledValue());
     }
 
     /**
@@ -169,7 +172,7 @@ class StellarCroupier extends StellarServer
 
         if (!$this->isTestnet()) {
             $prizeAmount = $betAmount * $winnerRate;
-            $prizeAmount = min($prizeAmount, $this->getPrizeBalance());
+            $prizeAmount = min($prizeAmount, $this->getAvailableBalance());
 
             if ($prizeAmount < 0.001) {
                 return [];
@@ -196,12 +199,12 @@ class StellarCroupier extends StellarServer
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      * @throws \ErrorException
      */
-    public function getPrizeBalance(): float
+    public function getAvailableBalance(): float
     {
-        $balance = $this->getCroupierBalance() - self::BALANCE_RESERVE_AMOUNT;
+        $balance = $this->getBalance() - self::BALANCE_RESERVE_AMOUNT;
         $balance *= (1 - (self::PRIZE_RESERVE_PERCENT / 100));
 
-        if ($balance < 0.001) {
+        if ($balance < self::BET_MINIMUM_AMOUNT) {
             $balance = 0;
         }
 

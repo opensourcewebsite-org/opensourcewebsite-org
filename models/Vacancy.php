@@ -99,39 +99,13 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
     public function rules(): array
     {
         return [
-            [
-                [
-                    'user_id',
-                    'name',
-                    'requirements',
-                    'conditions',
-                    'responsibilities',
-                ],
-                'required',
-            ],
-            [
-                [
-                    'user_id',
-                    'company_id',
-                    'currency_id',
-                    'status',
-                    'gender_id',
-                    'created_at',
-                    'processed_at',
-                ],
-                'integer',
-            ],
-            [
-                'remote_on', 'boolean'
-            ],
-            [
-                'location_lat',
-                LocationLatValidator::class,
-            ],
-            [
-                'location_lon',
-                LocationLonValidator::class,
-            ],
+            [['user_id', 'name', 'requirements', 'conditions', 'responsibilities'], 'required'],
+            [['user_id', 'company_id', 'currency_id', 'status', 'gender_id', 'created_at', 'processed_at'], 'integer'],
+            ['remote_on', 'boolean'],
+            ['location_lat', LocationLatValidator::class],
+            ['location_lon', LocationLonValidator::class],
+            [['location_lat', 'location_lon'], 'double'],
+            ['location', 'string'],
             [
                 'max_hourly_rate',
                 'double',
@@ -154,9 +128,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
                     return $val;
                 }
             ],
-            [
-                'keywordsFromForm', 'each', 'rule' => ['integer']
-            ],
+            ['keywordsFromForm', 'each', 'rule' => ['integer']],
             [
                 [
                     'name',
@@ -219,6 +191,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         [$lat, $lon] = (new LocationParser($location))->parse();
         $this->location_lat = $lat;
         $this->location_lon = $lon;
+
         return $this;
     }
 

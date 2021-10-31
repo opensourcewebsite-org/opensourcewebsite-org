@@ -46,7 +46,6 @@ $this->title = Yii::t('app', 'Contacts');
                                 'format' => 'html',
                             ],
                             [
-                                'label' => Yii::t('app', 'Identification'),
                                 'attribute' => 'is_real',
                                 'value' => static function (Contact $model) {
                                     return $model->getIsRealBadge();

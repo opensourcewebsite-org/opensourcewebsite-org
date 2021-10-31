@@ -50,6 +50,10 @@ class Chat extends ActiveRecord
             return $this->getAttribute($name);
         }
 
+        if ($this->hasMethod('get' . ucfirst($name))) {
+            return $this->{'get' . ucfirst($name)}();
+        }
+
         if (isset($this->settings[$name]) || array_key_exists($name, $this->settings)) {
             return $this->settings[$name]->value;
         }
@@ -86,6 +90,10 @@ class Chat extends ActiveRecord
     {
         if ($this->hasAttribute($name)) {
             return $this->setAttribute($name, $value);
+        }
+
+        if ($this->hasMethod('set' . ucfirst($name))) {
+            return $this->{'set' . ucfirst($name)}($value);
         }
 
         $chatSetting = $this->getSettings()

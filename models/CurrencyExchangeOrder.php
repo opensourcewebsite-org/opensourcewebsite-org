@@ -99,46 +99,12 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function rules(): array
     {
         return [
-            [
-                [
-                    'user_id',
-                    'selling_currency_id',
-                    'buying_currency_id',
-                ],
-                'required',
-            ],
-            [
-                [
-                    'user_id',
-                    'selling_currency_id',
-                    'buying_currency_id',
-                    'status',
-                    'selling_delivery_radius',
-                    'buying_delivery_radius',
-                    'created_at',
-                    'processed_at',
-                ],
-                'integer',
-            ],
-            [
-                [
-                    'selling_cash_on',
-                    'buying_cash_on',
-                ],
-                'boolean',
-            ],
-            [
-                ['selling_delivery_radius', 'buying_delivery_radius'],
-                RadiusValidator::class,
-            ],
-            [
-                ['selling_location_lat', 'buying_location_lat'],
-                LocationLatValidator::class,
-            ],
-            [
-                ['selling_location_lon', 'buying_location_lat'],
-                LocationLonValidator::class,
-            ],
+            [['user_id', 'selling_currency_id', 'buying_currency_id'], 'required'],
+            [['user_id', 'selling_currency_id', 'buying_currency_id', 'status', 'selling_delivery_radius', 'buying_delivery_radius', 'created_at', 'processed_at'], 'integer'],
+            [['selling_cash_on', 'buying_cash_on'], 'boolean'],
+            [['selling_delivery_radius', 'buying_delivery_radius'], RadiusValidator::class],
+            [['selling_location_lat', 'buying_location_lat'], LocationLatValidator::class],
+            [['selling_location_lon', 'buying_location_lat'], LocationLonValidator::class],
             ['selling_location', 'required', 'when' => function ($model) {
                 if ($model->selling_cash_on && ! $model->selling_location) {
                     return true;
@@ -241,9 +207,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     return $val;
                 }
             ],
-            [
-                ['sellingPaymentMethodIds', 'buyingPaymentMethodIds'], 'each', 'rule' => ['integer'],
-            ],
+            [['sellingPaymentMethodIds', 'buyingPaymentMethodIds'], 'each', 'rule' => ['integer']],
             // [
             //     'buyingPaymentMethodIds', 'filter', 'filter' => function ($val) {
             //         if ($val === '') {

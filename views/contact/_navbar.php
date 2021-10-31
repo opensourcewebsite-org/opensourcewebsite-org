@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use app\models\Contact;
 
 ?>
 <ul class="nav nav-pills ml-auto p-2">

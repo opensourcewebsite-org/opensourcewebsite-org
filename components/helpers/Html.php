@@ -25,6 +25,9 @@ class Html extends \yii\helpers\Html
             'class' => 'fa fa-eye',
             'title' => 'View',
         ],
+        'warning' => [
+            'class' => 'fas fa-exclamation-triangle',
+        ],
     ];
 
     // https://getbootstrap.com/docs/4.6/components/badge/#contextual-variations

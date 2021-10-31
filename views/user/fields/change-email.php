@@ -38,7 +38,7 @@ $form = ActiveForm::begin();
                         'url' => [
                             '/user/delete-email',
                         ],
-                        'visible' => Yii::$app->user->identity->email,
+                        'visible' => !$userEmail->isNewRecord,
                     ]); ?>
                 </div>
             </div>

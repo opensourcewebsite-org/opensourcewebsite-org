@@ -18,6 +18,8 @@ class MenuController extends Controller
      */
     public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),

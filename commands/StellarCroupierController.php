@@ -5,6 +5,7 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\StellarCroupier;
+use app\models\StellarOperator;
 use yii\console\Controller;
 
 /**
@@ -31,7 +32,7 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
      * @throws \ErrorException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    public function actionGenerateBets(string $sourcePublicKey, string $sourcePrivateKey, float $amount = null, int $betCount = null)
+    public function actionGenerateBets(string $sourcePublicKey = null, string $sourcePrivateKey = null, float $amount = null, int $betCount = null)
     {
         $stellarServer = new StellarCroupier();
 
@@ -51,9 +52,15 @@ class StellarCroupierController extends Controller implements CronChainedInterfa
             $amount = max($amount, StellarCroupier::BET_MINIMUM_AMOUNT);
         }
 
+        if (!$sourcePublicKey || !$sourcePrivateKey) {
+            $sourcePublicKey = StellarOperator::getOperatorPublicKey();
+            $sourcePrivateKey = StellarOperator::getOperatorPrivateKey();
+        }
+
         for ($betNumber = 1; $betNumber <= $betCount; $betNumber++) {
             $request = $stellarServer->buildTransaction($sourcePublicKey);
             $operationCount = rand(1, 3);
+
             for ($operationNumber = 1; $operationNumber <= $operationCount; $operationNumber++) {
                 $request = $request->addLumenPayment(StellarCroupier::getCroupierPublicKey(), $amount);
             }

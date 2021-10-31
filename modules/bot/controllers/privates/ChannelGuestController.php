@@ -20,7 +20,7 @@ class ChannelGuestController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($chatId = null)
+    public function actionView($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -32,10 +32,19 @@ class ChannelGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', [
+                $this->render('view', [
                     'chat' => $chat,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => ChannelGuestMarketplaceController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Marketplace'),
+                            'visible' => ($chat->marketplace_status == ChatSetting::STATUS_ON),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => MenuController::createRoute(),

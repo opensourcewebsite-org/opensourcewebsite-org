@@ -65,7 +65,7 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
 
     public static function tableName(): string
     {
-        return 'ad_search';
+        return '{{%ad_search}}';
     }
 
     public function markViewedByUser(ViewedByUserEvent $event)
@@ -78,35 +78,17 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
     public function rules(): array
     {
         return [
-            [
-                [
-                    'title',
-                    'location',
-                    'location_lat',
-                    'location_lon',
-                ],
-                'required',
-            ],
-            [
-                'pickup_radius',
-                RadiusValidator::class,
-            ],
+            [['title', 'location', 'location_lat', 'location_lon'], 'required'],
+            [['user_id', 'section', 'currency_id', 'pickup_radius', 'status', 'created_at', 'processed_at'], 'integer'],
+            ['pickup_radius', RadiusValidator::class],
             [
                 'pickup_radius',
                 'default',
                 'value' => 0,
             ],
-            [
-                'location_lat',
-                LocationLatValidator::class,
-            ],
-            [
-                'location_lon',
-                LocationLonValidator::class,
-            ],
-            [
-                'location', 'string'
-            ],
+            ['location_lat', LocationLatValidator::class],
+            ['location_lon', LocationLonValidator::class],
+            ['location', 'string'],
             [
                 'title',
                 'string',
@@ -116,18 +98,6 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
                 'description',
                 'string',
                 'max' => 10000,
-            ],
-            [
-                [
-                    'user_id',
-                    'section',
-                    'currency_id',
-                    'pickup_radius',
-                    'status',
-                    'created_at',
-                    'processed_at',
-                ],
-                'integer',
             ],
             [
                 'max_price',
@@ -151,9 +121,7 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface
                     return $val;
                 }
             ],
-            [
-                'keywordsFromForm', 'each', 'rule' => ['integer']
-            ],
+            ['keywordsFromForm', 'each', 'rule' => ['integer']],
         ];
     }
 

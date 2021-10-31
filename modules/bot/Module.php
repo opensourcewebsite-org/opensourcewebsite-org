@@ -104,6 +104,8 @@ class Module extends \yii\base\Module
                 Yii::$app->language = $botUser->language->code;
 
                 if (!$botUser->save()) {
+                    Yii::warning($botUser->getErrors());
+
                     return false;
                 }
             }
@@ -121,6 +123,8 @@ class Module extends \yii\base\Module
                 $forwardBotUser->updateInfo($providerForwardFrom);
 
                 if (!$forwardBotUser->save()) {
+                    Yii::warning($forwardBotUser->getErrors());
+
                     return false;
                 }
             }

@@ -25,7 +25,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
     public function actionIndex()
     {
         $this->removeUnverifiedUsers();
-        $this->removeGreetings();
+        //$this->removeGreetings();
         $this->sendMessagesToUaLawmakingChannel();
     }
 

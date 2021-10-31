@@ -40,8 +40,8 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endforeach; ?>
 <?php endif; ?>
 <br/>
-<?php if ($telegramUser->location) : ?>
-<?= Yii::t('bot', 'Location') ?>: <a href="<?= ExternalLink::getOSMLink($telegramUser->location_lat, $telegramUser->location_lon) ?>"><?= $telegramUser->location ?></a><br/>
+<?php if ($userLocation = $telegramUser->userLocation) : ?>
+<?= Yii::t('bot', 'Location') ?>: <a href="<?= ExternalLink::getOSMLink($userLocation->location_lat, $userLocation->location_lon) ?>"><?= $userLocation->location ?></a><br/>
 <?php endif; ?>
 <?php if ($user->timezone) : ?>
 <?= Yii::t('bot', 'Timezone') . ': ' . TimeHelper::getNameByOffset($user->timezone); ?><br/>
