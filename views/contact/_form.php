@@ -44,7 +44,7 @@ $form = ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'relation')->dropDownList(Contact::RELATION_LABELS); ?>
+                            <?= $form->field($model, 'relation')->radioList(Contact::RELATION_LABELS); ?>
                         </div>
                     </div>
                     <div class="row">

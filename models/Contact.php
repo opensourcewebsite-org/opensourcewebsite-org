@@ -155,7 +155,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'name' => Yii::t('user', 'Name'),
             'userIdOrName' => 'User ID / Username',
             'is_real' => Yii::t('app', 'Personal identification'),
-            'relation' => Yii::t('app', 'Relation'),
+            'relation' => Yii::t('app', 'Personal relation'),
             'is_basic_income_candidate' => Yii::t('app', 'Basic income candidate'),
             'vote_delegation_priority' => Yii::t('app', 'Vote delegation priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt transfer priority'),
@@ -176,7 +176,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 'It has no affect, if field ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
             ]),
             'userIdOrName' => Yii::t('app', 'To associate this contact with another user') . '.',
-            'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a virtual one (fake or bot)') . '.',
+            'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a virtual account (fake or bot)') . '.',
             'relation' => Yii::t('app', 'To see social recommendations in the profiles of other users') . '.',
             'is_basic_income_candidate' => Yii::t('app', 'To confirm that this person meets the requirements to earn a weekly basic income') . '.',
         ];
@@ -476,5 +476,10 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         ];
 
         return Html::badge($classes[(int)$this->is_real], self::IS_REAL_LABELS[(int)$this->is_real]);
+    }
+
+    public function getIsBasicincomeCandidateLabel()
+    {
+        return Yii::t('app', self::IS_BASIC_INCOME_CANDIDATE_LABELS[(int)$this->is_basic_income_candidate]);
     }
 }
