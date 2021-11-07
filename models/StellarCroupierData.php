@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;s
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "stellar_croupier".
