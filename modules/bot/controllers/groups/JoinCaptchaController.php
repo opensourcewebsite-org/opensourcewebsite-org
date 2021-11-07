@@ -30,17 +30,16 @@ class JoinCaptchaController extends Controller
      */
     public function actionShowCaptcha()
     {
+        $telegramUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
-        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
-            $telegramUser = $this->getTelegramUser();
-
+        if (($chat->join_captcha_status == ChatSetting::STATUS_ON) && !$telegramUser->captcha_confirmed_at) {
             $chatMember = ChatMember::findOne([
                 'chat_id' => $chat->id,
                 'user_id' => $telegramUser->id,
             ]);
 
-            if (($chatMember->role == self::ROLE_UNVERIFIED)) {
+            if ($chatMember->role == self::ROLE_UNVERIFIED) {
                 $buttons = [
                     [
                         'callback_data' => self::createRoute('pass-captcha', [
@@ -124,8 +123,6 @@ class JoinCaptchaController extends Controller
                 ->one();
 
             if (isset($botCaptcha)) {
-                $captchaMessageId = $botCaptcha->captcha_message_id;
-
                 switch ($choice) {
                     case self::PASS:
                         $chatMember = ChatMember::findOne([
@@ -136,7 +133,7 @@ class JoinCaptchaController extends Controller
                         if ($chatMember->role == self::ROLE_UNVERIFIED) {
                             // Remove captcha message
 
-                            $this->getBotApi()->deleteMessage($chat->chat_id, $captchaMessageId);
+                            $this->getBotApi()->deleteMessage($chat->chat_id, $botCaptcha->captcha_message_id);
 
                             // Delete record about captcha
                             $botCaptcha->delete();
@@ -144,6 +141,9 @@ class JoinCaptchaController extends Controller
                             // Set role = 1 in bot_chat_member table
                             $chatMember->role = self::ROLE_VERIFIED;
                             $chatMember->save();
+
+                            $telegramUser->captcha_confirmed_at = time();
+                            $telegramUser->save(false);
                         } else {
                             return false;
                         }
@@ -160,11 +160,14 @@ class JoinCaptchaController extends Controller
                         $this->getBotApi()
                             ->deleteMessage(
                                 $chat->chat_id,
-                                $captchaMessageId
+                                $botCaptcha->captcha_message_id
                             );
 
                         // Delete record about captcha
                         $botCaptcha->delete();
+
+                        $telegramUser->captcha_confirmed_at = null;
+                        $telegramUser->save(false);
                         break;
                     default:
                         return false;

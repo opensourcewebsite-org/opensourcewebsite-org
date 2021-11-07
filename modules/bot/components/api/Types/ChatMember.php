@@ -24,7 +24,7 @@ class ChatMember extends \TelegramBot\Api\Types\ChatMember
         'can_send_media_messages' => true,
         'can_send_other_messages' => true,
         'can_add_web_page_previews' => true,
-        'is_member' => true
+        'is_member' => true,
     ];
 
     /**

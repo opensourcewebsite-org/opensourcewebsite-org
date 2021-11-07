@@ -169,6 +169,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                         } catch (\Exception $e) {
                             echo 'ERROR: BotChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
                         }
+
                         $updatesCount++;
                     }
                 }
@@ -212,6 +213,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                         } catch (\Exception $e) {
                             echo 'ERROR: BotChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
+
                         $updatesCount++;
                     }
                 }

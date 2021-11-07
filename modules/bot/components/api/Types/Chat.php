@@ -12,7 +12,7 @@ class Chat extends \TelegramBot\Api\Types\Chat
      *
      * @var array
      */
-    static protected $map = [
+    protected static $map = [
         'id' => true,
         'type' => true,
         'title' => true,
@@ -29,7 +29,7 @@ class Chat extends \TelegramBot\Api\Types\Chat
         'sticker_set_name' => true,
         'can_set_sticker_set' => true,
         'linked_chat_id' => true,
-        'location' => ChatLocation::class
+        'location' => ChatLocation::class,
     ];
 
     public function isPrivate()

@@ -24,13 +24,18 @@ class MessageController extends Controller
         $telegramUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
-        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
+        if (($chat->join_captcha_status == ChatSetting::STATUS_ON) && !$telegramUser->captcha_confirmed_at) {
             $chatMember = ChatMember::findOne([
                 'chat_id' => $chat->id,
                 'user_id' => $telegramUser->id,
             ]);
 
-            if (($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdministrator()) {
+            if (!$telegramUser->captcha_confirmed_at && ($chatMember->role != JoinCaptchaController::ROLE_UNVERIFIED)) {
+                $telegramUser->captcha_confirmed_at = time();
+                $telegramUser->save(false);
+            }
+
+            if (!$telegramUser->captcha_confirmed_at && ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdministrator()) {
                 $this->getBotApi()->deleteMessage(
                     $chat->chat_id,
                     $this->getUpdate()->getMessage()->getMessageId()

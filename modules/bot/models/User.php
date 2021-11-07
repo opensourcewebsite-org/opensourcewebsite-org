@@ -23,6 +23,7 @@ use app\models\UserLocation;
  * @property string $state
  * @property int $language_id
  * @property bool $is_bot
+ * @property int $captcha_confirmed_at
  */
 class User extends ActiveRecord
 {
@@ -67,7 +68,7 @@ class User extends ActiveRecord
     {
         return [
             [['provider_user_id'], 'required'],
-            [['user_id', 'provider_user_id', 'provider_user_blocked', 'language_id', 'is_bot'], 'integer'],
+            [['user_id', 'provider_user_id', 'provider_user_blocked', 'language_id', 'is_bot', 'captcha_confirmed_at'], 'integer'],
             [
                 [
                     'provider_user_name',
