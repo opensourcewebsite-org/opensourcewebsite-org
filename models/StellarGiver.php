@@ -19,6 +19,8 @@ class StellarGiver extends StellarServer
     public const BALANCE_RESERVE_AMOUNT = 10; // XLM
     // % of the balance which is paid as weekly basic income to participants
     public const WEEKLY_PAYMENT_PERCENT = 2; // %
+    // the count of votes of other participants to become a participant
+    public const PARTICIPANT_MINIMUM_VOTES = 5;
 
     private ?Account $account = null;
     private ?float $balance = null;
@@ -84,21 +86,26 @@ class StellarGiver extends StellarServer
      * @throws \ErrorException
      * @throws \Exception
      */
-    public function getNextPaymentDate(): DateTime
+    public function getNextPaymentDate(): string
     {
-        $paymentDate = $this->getAccountDataByKey(self::getGiverPublicKey(), 'next_payment_date');
-
         $today = new DateTime('today');
         $nextWeekDay = new DateTime('next ' . self::INCOME_WEEK_DAY);
         $needToSet = false;
 
+        if (!$paymentDate = StellarGiverData::getNextPaymentDate()) {
+            $paymentDate = $this->getAccountDataByKey(self::getGiverPublicKey(), 'next_payment_date');
+
+            if ($paymentDate) {
+                StellarGiverData::setNextPaymentDate($paymentDate);
+            }
+        }
+
         if (!$paymentDate) {
-            $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today : $nextWeekDay;
+            $paymentDate = ($today->format('l') === self::INCOME_WEEK_DAY) ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
             $needToSet = true;
         } else {
-            $paymentDate = DateTime::createFromFormat('Y-m-d|', $paymentDate);
-            if ($paymentDate < $today) {
-                $paymentDate = $nextWeekDay;
+            if (DateTime::createFromFormat('Y-m-d|', $paymentDate) < $today) {
+                $paymentDate = $nextWeekDay->format('Y-m-d');
                 $needToSet = true;
             }
         }
@@ -120,7 +127,7 @@ class StellarGiver extends StellarServer
     {
         $date = $date ?? new DateTime('today');
 
-        return $this->getNextPaymentDate() == $date;
+        return DateTime::createFromFormat('Y-m-d|', $this->getNextPaymentDate()) == $date;
     }
 
     /**
@@ -129,36 +136,57 @@ class StellarGiver extends StellarServer
      * @throws \Exception
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    public function setNextPaymentDate(?DateTime $nextPaymentDate = null): void
+    public function setNextPaymentDate(?string $nextPaymentDate = null): void
     {
         if (!$nextPaymentDate) {
             $nextPaymentDate = new DateTime('next ' . self::INCOME_WEEK_DAY);
+            $nextPaymentDate = $nextPaymentDate->format('Y-m-d');
         }
 
         $this
             ->buildTransaction(self::getGiverPublicKey())
-            ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
+            ->setAccountData('next_payment_date', $nextPaymentDate)
             ->submit(self::getGiverPrivateKey());
+
+        StellarGiverData::setNextPaymentDate($nextPaymentDate);
     }
 
-    public function getConfirmedUsers()
+    public static function getParticipantsQuery()
     {
-        // TODO
-        return;
+        return User::find()
+            ->where([
+                'status' => User::STATUS_ACTIVE,
+                'basic_income_on' => 1,
+            ])
+            ->andWhere([
+                'not',
+                ['basic_income_activated_at' => null],
+            ])
+            ->joinWith('stellar')
+            ->andWhere([
+                'not',
+                [UserStellar::tableName() . '.confirmed_at' => null],
+            ])
+            ->orderBy([
+                'rating' => SORT_DESC,
+                'created_at' => SORT_ASC,
+            ]);
     }
 
-    public function getConfirmedUsersCount()
+    public function getParticipants()
     {
-        // TODO
-        return 0;
+        return self::getParticipantsQuery()->all();
+    }
 
-        return $this->getConfirmedUsers()->count();
+    public function getParticipantsCount()
+    {
+        return self::getParticipantsQuery()->count();
     }
 
     public function getPaymentAmount()
     {
-        if ($this->getConfirmedUsersCount() && $this->getAvailableBalance()) {
-            $paymentAmount = floor(($this->getAvailableBalance() / $this->getConfirmedUsersCount()) * 10000) / 10000;
+        if ($this->getParticipantsCount() && $this->getAvailableBalance()) {
+            $paymentAmount = floor(($this->getAvailableBalance() / $this->getParticipantsCount()) * 10000) / 10000;
 
             if ($paymentAmount >= self::PAYMENT_MINIMUM_AMOUNT) {
                 return $paymentAmount;

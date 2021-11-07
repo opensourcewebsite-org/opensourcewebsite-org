@@ -130,7 +130,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= $contact->getAttributeLabel('is_basic_income_candidate'); ?></th>
-                                    <td class="align-middle"><?= $contact->getIsBasicincomeCandidateLabel(); ?></td>
+                                    <td class="align-middle"><?= $contact->getIsBasicIncomeCandidateLabel(); ?></td>
                                     <td></td>
                                 </tr>
                                 <tr>

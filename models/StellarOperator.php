@@ -198,21 +198,27 @@ class StellarOperator extends StellarServer
      * @throws \ErrorException
      * @throws \Exception
      */
-    public function getNextPaymentDate(): DateTime
+    public function getNextPaymentDate(): string
     {
-        $paymentDate = $this->getAccountDataByKey(self::getDistributorPublicKey(), 'next_payment_date');
-
         $today = new DateTime('today');
         $nextWeekDay = new DateTime('next ' . self::INCOME_WEEK_DAY);
         $needToSet = false;
 
+        if (!$paymentDate = StellarDistributorData::getNextPaymentDate()) {
+            $paymentDate = $this->getAccountDataByKey(self::getDistributorPublicKey(), 'next_payment_date');
+
+
+            if ($paymentDate) {
+                StellarDistributorData::setNextPaymentDate($paymentDate);
+            }
+        }
+
         if (!$paymentDate) {
-            $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today : $nextWeekDay;
+            $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
             $needToSet = true;
         } else {
-            $paymentDate = DateTime::createFromFormat('Y-m-d|', $paymentDate);
-            if ($paymentDate < $today) {
-                $paymentDate = $nextWeekDay;
+            if (DateTime::createFromFormat('Y-m-d|', $paymentDate) < $today) {
+                $paymentDate = $nextWeekDay->format('Y-m-d');
                 $needToSet = true;
             }
         }
@@ -232,9 +238,11 @@ class StellarOperator extends StellarServer
      */
     public function isPaymentDate(?DateTime $date = null): bool
     {
-        $date = $date ?? new DateTime('today');
+        if (!$date) {
+            $date = new DateTime('today');
+        }
 
-        return $this->getNextPaymentDate() == $date;
+        return DateTime::createFromFormat('Y-m-d|', $this->getNextPaymentDate()) == $date;
     }
 
     /**
@@ -243,16 +251,19 @@ class StellarOperator extends StellarServer
      * @throws \Exception
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException
      */
-    public function setNextPaymentDate(?DateTime $nextPaymentDate = null): void
+    public function setNextPaymentDate(?string $nextPaymentDate = null): void
     {
         if (!$nextPaymentDate) {
             $nextPaymentDate = new DateTime('next ' . self::INCOME_WEEK_DAY);
+            $nextPaymentDate = $nextPaymentDate->format('Y-m-d');
         }
 
         $this
             ->buildTransaction(self::getDistributorPublicKey())
-            ->setAccountData('next_payment_date', $nextPaymentDate->format('Y-m-d'))
+            ->setAccountData('next_payment_date', $nextPaymentDate)
             ->submit(self::getOperatorPrivateKey());
+
+        StellarDistributorData::setNextPaymentDate($nextPaymentDate);
     }
 
     public static function incomesSentAlready(string $assetCode, DateTime $date): bool

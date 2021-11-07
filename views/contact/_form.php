@@ -39,17 +39,17 @@ $form = ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'is_real')->radioList(Contact::IS_REAL_LABELS); ?>
+                            <?= $form->field($model, 'is_real')->radioList(Contact::getIsRealLabels()); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'relation')->radioList(Contact::RELATION_LABELS); ?>
+                            <?= $form->field($model, 'relation')->radioList(Contact::getRelationLabels()); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'is_basic_income_candidate')->radioList(Contact::IS_BASIC_INCOME_CANDIDATE_LABELS); ?>
+                            <?= $form->field($model, 'is_basic_income_candidate')->radioList(Contact::getIsBasicIncomeCandidateLabels()); ?>
                         </div>
                     </div>
                     <div class="row">

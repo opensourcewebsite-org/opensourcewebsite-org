@@ -6,6 +6,7 @@ use app\components\helpers\Html;
 use yii\grid\GridView;
 use yii\web\View;
 use app\models\User;
+use yii\helpers\Url;
 
 /**
  * @var View $this
@@ -49,9 +50,12 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Basic income'), 'url
                                 'enableSorting' => false,
                             ],
                             [
-                                'label' => Yii::t('app', 'Votes'),
+                                'label' => Yii::t('app', 'Positive votes'),
                                 'content' => function (User $model) {
-                                    return $model->getBasicIncomeVotesCount();
+                                    return ($model->getBasicIncomePositiveVotesCount() ?
+                                        Html::a($model->getBasicIncomePositiveVotesCount(), Url::to(['/stellar-basic-income/user-view', 'userId' => $model->id]))
+                                        : '0')
+                                        . ($model->getBasicIncomeVoteByUserId() ? ' ' . ($model->getBasicIncomeVoteByUserId() == 1 ? Html::badge('success', Yii::t('app', 'Your positive vote')) : Html::badge('danger', Yii::t('app', 'Your negative vote'))) : '');
                                 },
                                 'format' => 'raw',
                                 'enableSorting' => false,

@@ -12,18 +12,21 @@ use yii\helpers\Url;
  * @var View $this
  */
 
-$this->title = Yii::t('app', 'Participants')  . ': ' . $usersCount;
+$this->title = ($user->isBasicIncomeParticipant() ? Yii::t('app', 'Participant') : Yii::t('app', 'Candidate')) . ': ' . $user->getDisplayName();
 $this->params['breadcrumbs'][] = 'Stellar';
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Basic income'), 'url' => ['index']];
+if ($user->isBasicIncomeParticipant()) {
+    $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Participants'), 'url' => ['participant']];
+} else {
+    $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Candidates'), 'url' => ['candidate']];
+}
 ?>
 <div class="index">
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex p-0">
-                    <div class="col-sm-12">
-                        <?= $this->render('_navbar'); ?>
-                    </div>
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('app', 'Positive votes'); ?>: <?= $user->getBasicIncomePositiveVotesCount() ?></h3>
                 </div>
                 <div class="card-body p-0">
                     <?= GridView::widget([
@@ -47,17 +50,6 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Basic income'), 'url
                                     return Html::a($model->getDisplayName(), ['contact/view-user', 'id' => $model->id]);
                                 },
                                 'format' => 'html',
-                                'enableSorting' => false,
-                            ],
-                            [
-                                'label' => Yii::t('app', 'Positive votes'),
-                                'content' => function (User $model) {
-                                    return ($model->getBasicIncomePositiveVotesCount() ?
-                                        Html::a($model->getBasicIncomePositiveVotesCount(), Url::to(['/stellar-basic-income/user-view', 'userId' => $model->id]))
-                                        : '0')
-                                        . ($model->getBasicIncomeVoteByUserId() ? ' ' . ($model->getBasicIncomeVoteByUserId() == 1 ? Html::badge('success', Yii::t('app', 'Your positive vote')) : Html::badge('danger', Yii::t('app', 'Your negative vote'))) : '');
-                                },
-                                'format' => 'raw',
                                 'enableSorting' => false,
                             ],
                         ],

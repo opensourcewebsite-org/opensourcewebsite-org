@@ -154,6 +154,11 @@ class Setting extends ActiveRecord
             'default' => 2,
             'more' => 0,
         ],
+        'basic_income_min_rating_value_to_activate' => [
+            'type' => 'integer',
+            'default' => 1000,
+            'min' => 1,
+        ],
     ];
 
     /**
@@ -263,12 +268,15 @@ class Setting extends ActiveRecord
     {
         $values = $this->getSettingValuesByDefault();
         $votes = 0;
+
         foreach ($values as $value) {
             $votes += $value->getVotesPercent();
         }
+
         if ($format) {
             $votes = Converter::formatNumber($votes);
         }
+
         return $votes;
     }
 
@@ -281,6 +289,7 @@ class Setting extends ActiveRecord
     public function getVotesCount($format = true)
     {
         $remainingVotes = 100 - $this->getTotalVotesPercent(false);
+
         if ($format) {
             $remainingVotes = Converter::formatNumber($remainingVotes);
         }

@@ -10,6 +10,8 @@ use yii\web\Response;
 use yii\data\ActiveDataProvider;
 use app\models\User;
 use app\models\UserStellar;
+use app\models\Contact;
+use app\models\StellarGiver;
 
 class StellarBasicIncomeController extends Controller
 {
@@ -85,7 +87,16 @@ class StellarBasicIncomeController extends Controller
 
     public function actionParticipant()
     {
-        return $this->render('participant');
+        $query = StellarGiver::getParticipantsQuery();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('participant', [
+            'usersCount' => $query->count(),
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     public function actionCandidate()
@@ -94,6 +105,7 @@ class StellarBasicIncomeController extends Controller
             ->where([
                 'status' => User::STATUS_ACTIVE,
                 'basic_income_on' => 1,
+                'basic_income_activated_at' => null,
             ])
             ->joinWith('stellar')
             ->andWhere([
@@ -113,6 +125,49 @@ class StellarBasicIncomeController extends Controller
 
         return $this->render('candidate', [
             'usersCount' => $usersCount,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionUserView($userId)
+    {
+        $user = User::find()
+            ->where([
+                User::tableName() . '.id' => $userId,
+                'status' => User::STATUS_ACTIVE,
+                'basic_income_on' => 1,
+            ])
+            ->joinWith('stellar')
+            ->andWhere([
+                'not',
+                [UserStellar::tableName() . '.confirmed_at' => null],
+            ])
+            ->one();
+
+        if (!$user) {
+            return $this->run('stellar-basic-income/candidate');
+        }
+
+        $query = User::find()
+            ->where([
+                'status' => User::STATUS_ACTIVE,
+            ])
+            ->joinWith('contacts')
+            ->andWhere([
+                Contact::tableName() . '.link_user_id' => $userId,
+                'is_basic_income_candidate' => 1,
+            ])
+            ->orderBy([
+                'rating' => SORT_DESC,
+                'created_at' => SORT_ASC,
+            ]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        return $this->render('user-view', [
+            'user' => $user,
             'dataProvider' => $dataProvider,
         ]);
     }

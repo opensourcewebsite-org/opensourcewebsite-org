@@ -68,6 +68,9 @@ $config = [
                 ],
             ],
         ],
+        'settings' => [
+            'class' => 'app\components\Setting',
+        ],
     ],
     'timeZone' => 'UTC',
     'params' => $params,

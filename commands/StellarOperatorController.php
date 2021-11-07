@@ -19,15 +19,15 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
 
     public function actionIndex()
     {
-        $this->sendDepositProfits();
+        $this->sendDepositIncomes();
     }
 
-    protected function sendDepositProfits()
+    protected function sendDepositIncomes()
     {
-        if ($stellarServer = new StellarOperator()) {
+        if ($stellarOperator = new StellarOperator()) {
             $today = new DateTime('today');
 
-            if (!$stellarServer->isPaymentDate($today)) {
+            if (!$stellarOperator->isPaymentDate($today)) {
                 return;
             }
 
@@ -37,11 +37,11 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
                     StellarOperator::deleteIncomesDataFromDatabase($assetCode, $today);
 
                     // Collect and save all asset holders
-                    $stellarServer->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
+                    $stellarOperator->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
                 }
 
                 // Send incomes to asset holders
-                $report = $stellarServer->sendIncomeToAssetHolders($assetCode, $today);
+                $report = $stellarOperator->sendIncomeToAssetHolders($assetCode, $today);
 
                 // Report about how much value were sent with which result code
                 foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
@@ -51,9 +51,9 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
                 }
             }
 
-            $stellarServer->setNextPaymentDate();
-            $nextPaymentDate = $stellarServer->getNextPaymentDate()->format('Y-m-d');
-            $this->output('Next Payment Date: ' . $nextPaymentDate);
+            $stellarOperator->setNextPaymentDate();
+
+            $this->output('Next Payment Date: ' . $stellarOperator->getNextPaymentDate());
         }
     }
 }

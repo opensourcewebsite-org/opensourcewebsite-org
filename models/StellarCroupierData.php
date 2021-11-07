@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
+use yii\db\ActiveRecord;s
 
 /**
  * This is the model class for table "stellar_croupier".
@@ -50,10 +50,11 @@ class StellarCroupierData extends ActiveRecord
         return self::findOne(['key' => 'last_paging_token'])->value ?? null;
     }
 
-    public static function setLastPagingToken(string $lastPagingToken)
+    public static function setLastPagingToken(string $value)
     {
-        $croupierData = StellarCroupierData::findOne(['key' => 'last_paging_token']) ?? new StellarCroupierData(['key' => 'last_paging_token']);
-        $croupierData->value = $lastPagingToken;
-        $croupierData->save();
+        $model = StellarCroupierData::findOne(['key' => 'last_paging_token']) ?? new StellarCroupierData(['key' => 'last_paging_token']);
+
+        $model->value = $value;
+        $model->save();
     }
 }

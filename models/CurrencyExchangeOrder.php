@@ -264,7 +264,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function attributeHints()
     {
         return [
-            'fee' => Yii::t('app', Yii::t('app', 'Cross rate is the current international exchange rate') . '. ' . Yii::t('app', 'Fee is added to the cross rate') . '. ' . 'Fee is zero by default and can be positive (you get fee) or negative (you give fee)') . '.',
+            'fee' => Yii::t('app', 'Cross rate is the current international exchange rate') . '. ' . Yii::t('app', 'Fee is added to the cross rate') . '. ' . Yii::t('app', 'Fee is zero by default and can be positive (you get fee) or negative (you give fee)') . '.',
+            'selling_currency_min_amount' => Yii::t('app', 'Minimum amount limit of selling currency in one trade') .  '.',
+            'selling_currency_max_amount' => Yii::t('app', 'Maximum amount limit of selling currency in one trade') .  '.',
         ];
     }
 

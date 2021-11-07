@@ -266,7 +266,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
     public function beforeSave($insert)
     {
-        if (($insert || (isset($changedAttributes['status']) && (int)$changedAttributes['status'] !== (int)$this->status))
+        if (($insert || ($this->isAttributeChanged('status') && ($this->getOldAttribute('status') != (int)$this->status)))
              && $this->isStatusConfirm()) {
             Yii::$app->db->beginTransaction();
         }

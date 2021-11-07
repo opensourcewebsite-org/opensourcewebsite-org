@@ -5,6 +5,7 @@ namespace app\components;
 use yii\base\BaseObject;
 use app\models\Setting as SettingModel;
 
+// Use Yii::$app->settings->{SETTING_NAME}
 class Setting extends BaseObject
 {
     /**

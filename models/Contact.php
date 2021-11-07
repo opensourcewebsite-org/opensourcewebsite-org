@@ -45,22 +45,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     public const DEBT_REDISTRIBUTION_PRIORITY_DENY = 0;
     public const DEBT_REDISTRIBUTION_PRIORITY_MAX = 255;
 
-    public const RELATION_LABELS = [
-        0 => 'Neutral',
-        1 => 'Positive',
-        2 => 'Negative',
-    ];
-
-    public const IS_REAL_LABELS = [
-        0 => 'Virtual',
-        1 => 'Real',
-    ];
-
-    public const IS_BASIC_INCOME_CANDIDATE_LABELS = [
-        0 => 'No',
-        1 => 'Yes',
-    ];
-
     public $userIdOrName;
 
     public $groupIds = [];
@@ -80,7 +64,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'link_user_id', 'relation'], 'integer'],
+            [['user_id', 'link_user_id', 'relation', 'is_basic_income_candidate'], 'integer'],
             [['relation'], 'integer', 'min' => 0, 'max' => 2],
             ['userIdOrName', 'string'],
             ['userIdOrName', 'trim'],
@@ -127,7 +111,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 },
             ],
             ['is_real', 'boolean'],
-            ['is_basic_income_candidate', 'boolean'],
             [['is_real', 'relation', 'is_basic_income_candidate'], 'default', 'value' => 0],
             [
                 'groupIds', 'filter', 'filter' => function ($val) {
@@ -178,7 +161,11 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'userIdOrName' => Yii::t('app', 'To associate this contact with another user') . '.',
             'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a virtual account (fake or bot)') . '.',
             'relation' => Yii::t('app', 'To see social recommendations in the profiles of other users') . '.',
-            'is_basic_income_candidate' => Yii::t('app', 'To confirm that this person meets the requirements to earn a weekly basic income') . '.',
+            'is_basic_income_candidate' => Yii::t('app', 'To confirm that this person meets the requirements to earn a weekly basic income') . '.'
+            . Html::ul([
+                Yii::t('app', 'Yes - your vote supports this candidate, this is public information') . '.',
+                Yii::t('app', 'No - your vote rejects this candidate, this is private information') . '.',
+            ]),
         ];
     }
 
@@ -332,18 +319,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return [self::SCENARIO_DEFAULT => self::OP_DELETE | self::OP_UPDATE];
     }
 
-    /**
-     * @throws Exception
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    public function afterDelete()
-    {
-        $this->deleteDebtRedistributions($this->debtRedistributions);
-
-        parent::afterDelete();
-    }
-
     //some magic here, moved out from beforeSave
     public function setUserIdOrName($idOrName)
     {
@@ -362,60 +337,42 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         }
     }
 
-    /**
-     * @param bool $insert
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    public function beforeSave($insert)
+    public function beforeDelete()
     {
-        if (!parent::beforeSave($insert)) {
-            return false;
+        if ($this->isUser()
+            && $this->is_basic_income_candidate) {
+            $this->linkedUser->resetBasicIncomeProcessedAt();
         }
 
-        $this->deleteOldUserSettings();
-
-        return true;
+        return parent::beforeDelete();
     }
 
     /**
-     * @throws Exception
+     * {@inheritdoc}
+     *
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
      */
-    private function deleteOldUserSettings(): void
+    public function afterSave($insert, $changedAttributes)
     {
-        $oldId = $this->getOldAttribute('link_user_id');
-        if ($oldId && $this->isAttributeChanged('link_user_id')) {
-            $modelOld = clone $this;
-            $modelOld->link_user_id = $oldId;
+        if ($insert) {
+            if ($this->isUser()
+                && $this->is_basic_income_candidate) {
+                $this->linkedUser->resetBasicIncomeProcessedAt();
+            }
+        } else {
+            if ((isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id)) || (isset($changedAttributes['is_basic_income_candidate']) && ($changedAttributes['is_basic_income_candidate'] != $this->is_basic_income_candidate))) {
+                if (isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id) && $changedAttributes['link_user_id']) {
+                    $user = User::findOne($changedAttributes['link_user_id']);
+                    $user->resetBasicIncomeProcessedAt();
+                }
 
-            $models = DebtRedistribution::find()
-                ->usersByModelSource($modelOld)
-                ->all();
-            $this->deleteDebtRedistributions($models);
-        }
-    }
-
-    /**
-     * @param DebtRedistribution[] $models
-     * @throws Exception
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    private function deleteDebtRedistributions($models): void
-    {
-        foreach ($models as $model) {
-            if (!$model->delete()) {
-                throw new Exception(VarDumper::dumpAsString([
-                    'message'    => 'Fail to delete ' . $model::className(),
-                    'errors'     => $model->errors,
-                    'attributes' => $model->attributes,
-                ]));
+                if ($this->link_user_id) {
+                    $this->linkedUser->resetBasicIncomeProcessedAt();
+                }
             }
         }
+
+        parent::afterSave($insert, $changedAttributes);
     }
 
     public function getUserIdOrName()
@@ -465,7 +422,21 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             2 => 'danger',
         ];
 
-        return Html::badge($classes[(int)$this->relation], self::RELATION_LABELS[(int)$this->relation]);
+        return Html::badge($classes[(int)$this->relation], $this->getRelationLabel());
+    }
+
+    public function getRelationLabel(): string
+    {
+        return static::getRelationLabels()[(int)$this->relation];
+    }
+
+    public static function getRelationLabels(): array
+    {
+        return [
+            0 => Yii::t('app', 'Neutral'),
+            1 => Yii::t('app', 'Positive'),
+            2 => Yii::t('app', 'Negative'),
+        ];
     }
 
     public function getIsRealBadge()
@@ -475,11 +446,33 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             1 => 'primary',
         ];
 
-        return Html::badge($classes[(int)$this->is_real], self::IS_REAL_LABELS[(int)$this->is_real]);
+        return Html::badge($classes[(int)$this->is_real], $this->getIsRealLabel());
     }
 
-    public function getIsBasicincomeCandidateLabel()
+    public function getIsRealLabel(): string
     {
-        return Yii::t('app', self::IS_BASIC_INCOME_CANDIDATE_LABELS[(int)$this->is_basic_income_candidate]);
+        return static::getIsRealLabels()[(int)$this->is_real];
+    }
+
+    public static function getIsRealLabels(): array
+    {
+        return [
+            0 => Yii::t('app', 'Virtual'),
+            1 => Yii::t('app', 'Real'),
+        ];
+    }
+
+    public function getIsBasicIncomeCandidateLabel(): string
+    {
+        return static::getIsBasicIncomeCandidateLabels()[(int)$this->is_basic_income_candidate];
+    }
+
+    public static function getIsBasicIncomeCandidateLabels(): array
+    {
+        return [
+            0 => Yii::t('app', 'Unknown'),
+            1 => Yii::t('app', 'Yes'),
+            2 => Yii::t('app', 'No'),
+        ];
     }
 }
