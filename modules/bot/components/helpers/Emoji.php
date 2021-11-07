@@ -16,6 +16,7 @@ class Emoji
     public const REFRESH = '🔄';
     public const INACTIVE = '❌';
     public const STATUS_ON = '🟢';
+    public const STATUS_PENDING = '🟡';
     public const STATUS_OFF = '🔴';
     public const OFFERS = '🙋‍♂️';
     public const INFO = 'ℹ️';

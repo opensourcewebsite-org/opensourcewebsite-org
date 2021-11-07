@@ -28,6 +28,15 @@ class Html extends \yii\helpers\Html
         'warning' => [
             'class' => 'fas fa-exclamation-triangle',
         ],
+        'on' => [
+            'class' => 'fas fa-toggle-on',
+        ],
+        'pending' => [
+            'class' => 'fas fa-hourglass-half',
+        ],
+        'off' => [
+            'class' => 'fas fa-toggle-off',
+        ],
     ];
 
     // https://getbootstrap.com/docs/4.6/components/badge/#contextual-variations

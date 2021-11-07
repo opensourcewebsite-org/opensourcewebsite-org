@@ -1162,4 +1162,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return (bool)$this->basic_income_on && (bool)$this->basic_income_activated_at && (bool)($this->stellar && $this->stellar->confirmed_at);
     }
+
+    public function isBasicIncomeActivated()
+    {
+        return (bool)$this->basic_income_activated_at;
+    }
 }
