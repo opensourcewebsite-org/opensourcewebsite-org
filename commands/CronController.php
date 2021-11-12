@@ -35,10 +35,6 @@ class CronController extends Controller
         'ResumeMatch',
         'CurrencyExchangeOrderMatch',
         //'Debt',
-        //'CurrencyRatesParser',
-        'UaLawmakingParser',
-        //'WikipediaParser',
-        //'WikinewsParser',
         'StellarCroupier',
         'StellarGiver',
     ];

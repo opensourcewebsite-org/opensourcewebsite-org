@@ -11,7 +11,6 @@ use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\BotChatGreeting;
 use app\modules\bot\models\ChatSetting;
 use yii\console\Exception;
-use app\models\UaLawmakingVoting;
 
 /**
  * Class TelegramBotController
@@ -24,9 +23,8 @@ class TelegramBotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        $this->removeUnverifiedUsers();
-        //$this->removeGreetings();
-        $this->sendMessagesToUaLawmakingChannel();
+        $this->removeCaptchaMessages();
+        //$this->removeGreetingMessages();
     }
 
     /**
@@ -133,7 +131,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
         return false;
     }
 
-    public function removeUnverifiedUsers()
+    public function removeCaptchaMessages()
     {
         $updatesCount = 0;
 
@@ -183,7 +181,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
         return true;
     }
 
-    public function removeGreetings()
+    public function removeGreetingMessages()
     {
         $updatesCount = 0;
 
@@ -225,41 +223,5 @@ class TelegramBotController extends Controller implements CronChainedInterface
         }
 
         return true;
-    }
-
-    public function sendMessagesToUaLawmakingChannel()
-    {
-        $updatesCount = 0;
-
-        if (isset(Yii::$app->params['bot']['ua_lawmaking'])) {
-            $votings = UaLawmakingVoting::find()
-                ->where([
-                    'sent_at' => null,
-                ])
-                ->count();
-
-            if (!$votings) {
-                return false;
-            }
-
-            $bot = Bot::findOne([
-                'status' => Bot::BOT_STATUS_ENABLED,
-            ]);
-
-            if ($bot) {
-                $module = Yii::$app->getModule('bot');
-                $module->setBot($bot);
-                $module->setChatByChatId(Yii::$app->params['bot']['ua_lawmaking']['chat_id']);
-                if ($module->initFromConsole()) {
-                    $module->runAction('ua-lawmaking/show-new-voting');
-
-                    return true;
-                }
-            }
-        } else {
-            $this->debug('Missing params in config/params.php');
-        }
-
-        return false;
     }
 }
