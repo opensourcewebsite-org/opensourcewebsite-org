@@ -236,7 +236,6 @@ class GroupController extends Controller
                                         'chatId' => $chat->id,
                                     ]),
                                     'text' => Emoji::REFRESH,
-                                    'visible' => $chatMember->isCreator(),
                                 ],
                             ],
                         ]
