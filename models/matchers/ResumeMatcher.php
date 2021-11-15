@@ -31,47 +31,13 @@ final class ResumeMatcher
         $this->linker->unlinkMatches();
         $matchesQuery = $this->prepareMainQuery();
 
-        if ($this->model->min_hourly_rate) {
-            $matchesQueryRateQuery = $this->applyRateCondition($matchesQuery);
+        $matches = $matchesQuery->all();
+        $matchesCount = count($matches);
 
-            $matchesQueryNoRateQuery = $this->applyNoRateCondition($matchesQuery);
-
-            $rateMatches = $matchesQueryRateQuery->all();
-            $noRateMatches = $matchesQueryNoRateQuery->all();
-
-            $matchesCount = count($rateMatches);
-
-            $this->linker->linkMatches($rateMatches);
-            $this->linker->linkCounterMatches($rateMatches);
-
-            $this->linker->linkCounterMatches($noRateMatches);
-        } else {
-            $matches = $matchesQuery->all();
-            $matchesCount = count($matches);
-
-            $this->linker->linkMatches($matches);
-        }
+        $this->linker->linkMatches($matches);
+        $this->linker->linkCounterMatches($matches);
 
         return $matchesCount;
-    }
-
-    private function applyRateCondition(VacancyQuery $query): VacancyQuery
-    {
-        return (clone $query)->andWhere(new AndCondition([
-            ['IS NOT', "{$this->comparingTable}.max_hourly_rate", null],
-            ['>=', "{$this->comparingTable}.max_hourly_rate", $this->model->min_hourly_rate],
-            ["$this->comparingTable.currency_id" => $this->model->currency_id],
-        ]));
-    }
-
-    private function applyNoRateCondition(VacancyQuery $query): VacancyQuery
-    {
-        return (clone $query)->andWhere(
-            new AndCondition([
-                ['<', "{$this->comparingTable}.max_hourly_rate", $this->model->min_hourly_rate],
-                ['<>', "{$this->comparingTable}.currency_id", $this->model->currency_id],
-            ])
-        );
     }
 
     private function prepareMainQuery(): VacancyQuery

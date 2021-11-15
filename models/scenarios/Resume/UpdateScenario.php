@@ -22,11 +22,9 @@ class UpdateScenario
     {
         if ($this->model->isAttributeChanged('status') ||
             $this->model->isAttributeChanged('remote_on') ||
-            $this->model->isAttributeChanged('min_hourly_rate', false) ||
-            $this->model->isAttributeChanged('search_radius') ||
-            $this->model->isAttributeChanged('currency_id') ||
             $this->model->isAttributeChanged('location_lat') ||
-            $this->model->isAttributeChanged('location_lon')
+            $this->model->isAttributeChanged('location_lon') ||
+            $this->model->isAttributeChanged('search_radius')
         ) {
             $this->linker->unlinkMatches();
 

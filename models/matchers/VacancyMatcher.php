@@ -41,28 +41,11 @@ final class VacancyMatcher
             )
         );
 
-        if ($this->model->max_hourly_rate) {
-            $matchesQueryRateQuery = clone $matchesQuery;
-            $matchesQueryNoRateQuery = clone $matchesQuery;
+        $matches = $matchesQuery->all();
+        $matchesCount = count($matches);
 
-            $matchesQueryRateQuery->andWhere($this->buildRateAndCurrencyDirectMatchCondition());
-            $matchesQueryNoRateQuery->andWhere($this->buildRateAndCurrencyNotMatchCondition());
-
-            $rateMatches = $matchesQueryRateQuery->all();
-            $rateNotMachResumes = $matchesQueryNoRateQuery->all();
-
-            $matchesCount = count($rateMatches);
-
-            $this->linker->linkMatches($rateMatches);
-            $this->linker->linkCounterMatches($rateMatches);
-
-            $this->linker->linkCounterMatches($rateNotMachResumes);
-        } else {
-            $matches = $matchesQuery->all();
-            $matchesCount = count($matches);
-
-            $this->linker->linkMatches($matches);
-        }
+        $this->linker->linkMatches($matches);
+        $this->linker->linkCounterMatches($matches);
 
         return $matchesCount;
     }
@@ -121,6 +104,7 @@ final class VacancyMatcher
     private function applyKeywordsCondition(ResumeQuery $query): ResumeQuery
     {
         $newQuery = clone $query;
+
         if ($keywords = $this->model->keywords) {
             $keywordIds = ArrayHelper::getColumn($keywords, 'id');
             $newQuery->joinWith('keywords kw');
@@ -133,27 +117,11 @@ final class VacancyMatcher
     public function applyGenderCondition(ResumeQuery $query): ResumeQuery
     {
         $newQuery = clone $query;
+
         if ($this->model->gender_id) {
             $newQuery->andWhere(['user.gender_id' => $this->model->gender_id]);
         }
 
         return $newQuery;
-    }
-
-    private function buildRateAndCurrencyDirectMatchCondition(): AndCondition
-    {
-        return new AndCondition([
-            ['IS NOT', "{$this->comparingTable}.min_hourly_rate", null],
-            ['<=', "{$this->comparingTable}.min_hourly_rate", $this->model->max_hourly_rate],
-            ["{$this->comparingTable}.currency_id" => $this->model->currency_id],
-        ]);
-    }
-
-    private function buildRateAndCurrencyNotMatchCondition(): AndCondition
-    {
-        return new AndCondition([
-            ['>', "{$this->comparingTable}.min_hourly_rate", $this->model->max_hourly_rate],
-            ['<>', "{$this->comparingTable}.currency_id", $this->model->currency_id],
-        ]);
     }
 }

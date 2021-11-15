@@ -22,11 +22,9 @@ class UpdateScenario
     {
         if ($this->model->isAttributeChanged('status') ||
             $this->model->isAttributeChanged('section') ||
-            $this->model->isAttributeChanged('max_price', false) ||
-            $this->model->isAttributeChanged('pickup_radius') ||
-            $this->model->isAttributeChanged('currency_id') ||
             $this->model->isAttributeChanged('location_lat') ||
-            $this->model->isAttributeChanged('location_lon')
+            $this->model->isAttributeChanged('location_lon') ||
+            $this->model->isAttributeChanged('pickup_radius')
         ) {
             $this->linker->unlinkMatches();
 

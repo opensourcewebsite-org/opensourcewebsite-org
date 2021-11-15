@@ -20,11 +20,8 @@ class UpdateScenario
 
     public function run(): bool
     {
-        if ($this->model->isAttributeChanged('company_id') ||
-            $this->model->isAttributeChanged('status') ||
-            $this->model->isAttributeChanged('remote_on', false) ||
-            $this->model->isAttributeChanged('max_hourly_rate') ||
-            $this->model->isAttributeChanged('currency_id') ||
+        if ($this->model->isAttributeChanged('status') ||
+            $this->model->isAttributeChanged('remote_on') ||
             $this->model->isAttributeChanged('gender_id') ||
             $this->model->isAttributeChanged('location_lat') ||
             $this->model->isAttributeChanged('location_lon')
