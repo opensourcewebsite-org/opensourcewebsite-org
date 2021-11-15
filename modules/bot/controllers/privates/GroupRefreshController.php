@@ -62,10 +62,6 @@ class GroupRefreshController extends Controller
 
             throw $e;
         }
-        // user is not in Telegram admin list
-        if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
-            return $this->run('group/index');
-        }
 
         $outdatedAdministrators = $chat->getAdministrators()
             ->andWhere([
@@ -124,12 +120,16 @@ class GroupRefreshController extends Controller
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery(
-                $this->render('index'),
-                true
-            )
-            ->build();
+        // user is not in Telegram admin list
+        if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
+            return $this->run('group/index');
+        } else {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('index'),
+                    true
+                )
+                ->build();
+        }
     }
 }
