@@ -10,7 +10,7 @@ $stellarGiver = new StellarGiver();
 <b><?= Yii::t('bot', 'Basic Income') ?></b><br/>
 <br/>
 <?php if ($user->isBasicIncomeOn()) : ?>
-<?php if ($user->stellar->isConfirmed()) : ?>
+<?php if ($user->stellar && $user->stellar->isConfirmed()) : ?>
 <?php if ($user->isBasicIncomeActivated()) : ?>
 <?= Emoji::STATUS_ON ?> <?= Yii::t('bot', 'You are a participant of this program and receive a weekly basic income') ?>.<br/>
 <?php else : ?>

@@ -63,7 +63,7 @@ $stellarGiver = new StellarGiver();
                             <div class="card-body">
                                 <div>
                                     <?php if ($user->isBasicIncomeOn()) : ?>
-                                    <?php if ($user->stellar->isConfirmed()) : ?>
+                                    <?php if ($user->stellar && $user->stellar->isConfirmed()) : ?>
                                     <?php if ($user->isBasicIncomeActivated()) : ?>
                                     <?= Html::icon('on') ?> <?= Yii::t('bot', 'You are a participant of this program and receive a weekly basic income') ?>.
                                     <?php else : ?>
