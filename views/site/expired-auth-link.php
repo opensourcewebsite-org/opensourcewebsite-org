@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 
-$this->title = 'Reset password';
+$this->title = 'Login by auth link';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php $this->beginBlock('content-header-data'); ?>

@@ -22,14 +22,16 @@ class MyAccountController extends Controller
      */
     public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
                 [
                     [
                         [
-                            'callback_data' => MyStellarController::createRoute(),
-                            'text' => 'Stellar',
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Yii::t('bot', 'Profile'),
                         ],
                     ],
                     [
@@ -46,8 +48,14 @@ class MyAccountController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyProfileController::createRoute(),
-                            'text' => Yii::t('bot', 'Profile'),
+                            'callback_data' => MyStellarController::createRoute(),
+                            'text' => Yii::t('bot', 'Stellar account'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MyWebsiteAccountController::createRoute(),
+                            'text' => Yii::t('bot', 'Website account'),
                         ],
                     ],
                     [

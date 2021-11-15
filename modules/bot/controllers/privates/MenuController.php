@@ -22,7 +22,9 @@ class MenuController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index'),
+                $this->render('index', [
+                    'user' => $this->user,
+                ]),
                 [
                     [
                         [

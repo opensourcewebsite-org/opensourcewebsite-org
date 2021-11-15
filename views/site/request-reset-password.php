@@ -5,7 +5,6 @@
 
 /* @var $model PasswordResetRequestForm */
 
-use app\models\RequestResetPasswordForm;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 use yii\captcha\Captcha;

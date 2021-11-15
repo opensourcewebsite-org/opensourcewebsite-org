@@ -104,8 +104,23 @@ class SettingValueVote extends \yii\db\ActiveRecord
         return $this->rating;
     }
 
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $userId)
+    {
+        $this->user_id = $userId;
+    }
+
     public function getSettingValueId()
     {
         return $this->setting_value_id;
+    }
+
+    public function getSettingId()
+    {
+        return $this->setting_id;
     }
 }

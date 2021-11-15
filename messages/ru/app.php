@@ -110,4 +110,5 @@ return [
     'Candidates' => 'Кандидаты',
     'Candidate' => 'Кандидат',
     'Positive votes' => 'Положительные голоса',
+    'Merge accounts' => 'Обьединить аккаунты',
 ];

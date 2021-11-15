@@ -5,7 +5,6 @@
 
 /* @var $model ResetPasswordForm */
 
-use app\models\ResetPasswordForm;
 use yii\bootstrap4\ActiveForm;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;

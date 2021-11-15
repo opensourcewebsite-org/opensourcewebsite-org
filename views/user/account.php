@@ -55,11 +55,6 @@ $this->title = Yii::t('app', 'Account');
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <th class="align-middle"><?= Yii::t('user', 'Real confirmations'); ?></th>
-                                        <td class="align-middle"><?= $model->getRealConfirmations() ?></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
                                         <th class="align-middle">
                                         <?php
                                             $string = Yii::t('user', 'Rating');
@@ -77,6 +72,11 @@ $this->title = Yii::t('app', 'Account');
                                     <tr>
                                         <th class="align-middle"><?= Yii::t('user', 'Active Rating'); ?></th>
                                         <td class="align-middle"><b><?= $model->getActiveRating() ?></b>&nbsp;(<?= Yii::t('bot', 'in the last {0,number} days', Yii::$app->settings->days_count_to_calculate_active_rating); ?>)</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="align-middle"><?= Yii::t('user', 'Real confirmations'); ?></th>
+                                        <td class="align-middle"><?= $model->getRealConfirmations() ?></td>
                                         <td></td>
                                     </tr>
                                 </tbody>

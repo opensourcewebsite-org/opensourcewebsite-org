@@ -190,14 +190,16 @@ class Module extends \yii\base\Module
 
             if (isset($botUser)) {
                 if (!$chatMember = $chat->getChatMemberByUser($botUser)) {
-                    $chatMember = $this->getBotApi()->getChatMember(
+                    $telegramChatMember = $this->getBotApi()->getChatMember(
                         $chat->getChatId(),
                         $botUser->provider_user_id
                     );
 
-                    $chat->link('users', $botUser, [
-                        'status' => $chatMember->getStatus(),
-                    ]);
+                    if ($telegramChatMember) {
+                        $chat->link('users', $botUser, [
+                            'status' => $telegramChatMember->getStatus(),
+                        ]);
+                    }
                 }
 
                 if (!($user = $botUser->globalUser)) {
@@ -207,6 +209,7 @@ class Module extends \yii\base\Module
                     if ($isNewUser) {
                         if ($chat->isPrivate() && $this->getUpdate()->getRequestMessage()) {
                             $matches = [];
+
                             if (preg_match('/\/start (\d+)/', $this->getUpdate()->getRequestMessage()->getText(), $matches)) {
                                 $user->referrer_id = $matches[1];
                             }

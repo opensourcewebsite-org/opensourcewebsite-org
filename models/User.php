@@ -48,6 +48,7 @@ use yii\db\Query;
 class User extends ActiveRecord implements IdentityInterface
 {
     public const RESET_PASSWORD_REQUEST_LIFETIME = 24 * 60 * 60; // seconds
+    public const AUTH_LINK_LIFETIME = 5 * 60; // seconds
 
     public const STATUS_DELETED = 0;
     public const STATUS_PENDING = 5;
@@ -209,7 +210,16 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
+    // TODO remove old
     public function getEmail()
+    {
+        return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserEmail()
     {
         return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
     }
@@ -370,6 +380,15 @@ class User extends ActiveRecord implements IdentityInterface
 
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public function authByHash(int $time, string $hash)
+    {
+        if ($hash == md5($this->id . $this->auth_key . $time)) {
+            return true;
         }
 
         return false;
@@ -778,6 +797,19 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
+    public function getDebtRedistributions(): DebtRedistributionQuery
+    {
+        return $this->hasMany(DebtRedistribution::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSettingValueVotes()
+    {
+        return $this->hasMany(SettingValueVote::class, ['user_id' => 'id']);
+    }
+
     public function getRealConfirmations()
     {
         return $this->getCounterContacts()
@@ -1041,7 +1073,16 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
+    // TODO remove old
     public function getStellar()
+    {
+        return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserStellar()
     {
         return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
     }
@@ -1064,6 +1105,16 @@ class User extends ActiveRecord implements IdentityInterface
         $query->multiple = true;
 
         return $query;
+    }
+
+    public function getDepositDebts()
+    {
+        return $this->hasMany(Debt::class, ['to_user_id' => 'id']);
+    }
+
+    public function getCreditDebts()
+    {
+        return $this->hasMany(Debt::class, ['from_user_id' => 'id']);
     }
 
     public function getDepositDebtBalance(int $currencyId, int $counterUserId = null)
@@ -1166,5 +1217,23 @@ class User extends ActiveRecord implements IdentityInterface
     public function isBasicIncomeActivated()
     {
         return (bool)$this->basic_income_activated_at;
+    }
+
+    public function getAuthLinkTimeLimit()
+    {
+        return (int)(self::AUTH_LINK_LIFETIME / 60);
+    }
+
+    public function getAuthLink()
+    {
+        $time = time();
+        $link = Yii::$app->urlManager->createAbsoluteUrl([
+            'site/login-by-auth-link',
+            'id' => $this->id,
+            'time' => $time,
+            'hash' => md5($this->id . $this->auth_key . $time),
+        ]);
+
+        return $link;
     }
 }

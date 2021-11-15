@@ -14,7 +14,7 @@ $stellarGiver = new StellarGiver();
 <?php if ($user->isBasicIncomeActivated()) : ?>
 <?= Emoji::STATUS_ON ?> <?= Yii::t('bot', 'You are a participant of this program and receive a weekly basic income') ?>.<br/>
 <?php else : ?>
-<?= Emoji::STATUS_PENDING ?> <?= Yii::t('bot', 'You are a candidate of this program and your application is being processed') ?>.<br/>
+<?= Emoji::STATUS_PENDING ?> <?= Yii::t('bot', 'You are a candidate for this program and your application is pending review by other users') ?>.<br/>
 <?php endif; ?>
 <?php else : ?>
 <?= Emoji::WARNING ?> <?= Yii::t('bot', 'Confirm your Stellar account in order for your application to be processed') ?>.<br/>

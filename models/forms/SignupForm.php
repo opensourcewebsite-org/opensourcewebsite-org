@@ -71,6 +71,8 @@ class SignupForm extends Model
     public function signup()
     {
         if (!$this->validate()) {
+            $this->password = null;
+            $this->password_repeat = null;
             $this->captcha = null;
 
             return false;

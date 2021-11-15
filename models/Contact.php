@@ -360,7 +360,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 $this->linkedUser->resetBasicIncomeProcessedAt();
             }
         } else {
-            if ((isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id)) || (isset($changedAttributes['is_basic_income_candidate']) && ($changedAttributes['is_basic_income_candidate'] != $this->is_basic_income_candidate))) {
+            if ((isset($changedAttributes['user_id']) && ($changedAttributes['user_id'] != $this->user_id))
+                || (isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id))
+                || (isset($changedAttributes['is_basic_income_candidate']) && ($changedAttributes['is_basic_income_candidate'] != $this->is_basic_income_candidate))) {
                 if (isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id) && $changedAttributes['link_user_id']) {
                     $user = User::findOne($changedAttributes['link_user_id']);
                     $user->resetBasicIncomeProcessedAt();
@@ -397,9 +399,24 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return ArrayHelper::getColumn($this->getGroups()->asArray()->all(), 'id');
     }
 
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $userId)
+    {
+        $this->user_id = $userId;
+    }
+
     public function getLinkUserId()
     {
         return $this->link_user_id;
+    }
+
+    public function setLinkUserId(int $userId)
+    {
+        $this->link_user_id = $userId;
     }
 
     /**

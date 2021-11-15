@@ -4,17 +4,18 @@ namespace app\modules\bot\controllers\privates;
 
 use Yii;
 use app\modules\bot\components\Controller;
-use app\models\Rating;
-use app\models\User;
-use app\components\Converter;
+use app\models\Currency;
+use app\models\Language;
+use app\components\helpers\TimeHelper;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class MyRatingController
+ * Class MyWebsiteAccountController
  *
  * @package app\modules\bot\controllers\privates
  */
-class MyRatingController extends Controller
+class MyWebsiteAccountController extends Controller
 {
     /**
      * @return array
@@ -31,12 +32,8 @@ class MyRatingController extends Controller
                 [
                     [
                         [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                            'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
-                        ],
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
+                            'url' => $this->user->getAuthLink(),
+                            'text' => Yii::t('bot', 'Go to Website account'),
                         ],
                     ],
                     [
@@ -49,6 +46,9 @@ class MyRatingController extends Controller
                             'text' => Emoji::MENU,
                         ],
                     ],
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();

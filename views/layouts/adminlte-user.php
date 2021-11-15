@@ -143,6 +143,14 @@ AdminLteUserAsset::register($this);
                             ]
                         ],
                         [
+                            'label' => Yii::t('app', 'Merge accounts'),
+                            'url' => ['/merge-accounts'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'merge-accounts/index') ? 'active' : ''),
+                            ]
+                        ],
+                        [
                             'label' => Yii::t('app', 'Logout'),
                             'url' => ['site/logout'],
                             'linkOptions' => [
@@ -188,16 +196,6 @@ $leftMenuItems = [
         'url' => 'support-groups',
         'route' => '/support-groups',
     ],
-    //[
-    //    'title' => 'Wikipedia watchlists',
-    //    'url' => 'wikipedia-pages',
-    //    'route' => '/wikipedia-pages/index',
-    //],
-    //[
-    //    'title' => 'Wikinews pages',
-    //    'url' => 'wikinews-pages',
-    //    'route' => '/wikinews-pages/index',
-    //],
     [
         'title' => Yii::t('app', 'Currency Exchange'),
         'url' => 'currency-exchange-order',
@@ -251,11 +249,6 @@ $leftMenuItems = [
         'title' => 'Dating',
         'url' => 'dating',
         'route' => '/dating',
-    ],
-    [
-        'title' => 'Ua Lawmaking',
-        'url' => 'ua-lawmaking',
-        'route' => '/ua-lawmaking',
     ],
     [
         'title' => 'Stellar',

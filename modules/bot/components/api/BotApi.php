@@ -24,10 +24,16 @@ class BotApi extends \TelegramBot\Api\BotApi
      */
     public function getChatMember($chatId, $userId)
     {
-        return ChatMember::fromResponse($this->call('getChatMember', [
-            'chat_id' => $chatId,
-            'user_id' => $userId
-        ]));
+        try {
+            return ChatMember::fromResponse($this->call('getChatMember', [
+                'chat_id' => $chatId,
+                'user_id' => $userId
+            ]));
+        } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+
+        return false;
     }
 
     /**

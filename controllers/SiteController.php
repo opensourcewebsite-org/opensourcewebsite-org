@@ -6,16 +6,14 @@ use Yii;
 use app\models\Contact;
 use app\models\Gender;
 use app\models\forms\LoginForm;
-use app\models\RequestResetPasswordForm;
+use app\models\forms\RequestResetPasswordForm;
 use app\models\Rating;
-use app\models\ResetPasswordForm;
+use app\models\forms\ResetPasswordForm;
 use app\models\forms\SignupForm;
 use app\models\User;
 use app\models\UserEmail;
 use app\models\Currency;
 use app\models\Sexuality;
-use app\modules\bot\models\User as BotUser;
-use app\models\MergeAccountsRequest;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -108,11 +106,39 @@ class SiteController extends Controller
             }
         }
 
-        $model->password = '';
-
         return $this->render('login', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Login by auth link with hash.
+     *
+     * @param int $id user id
+     * @param int $time
+     * @param string $hash
+     *
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionLoginByAuthLink(int $id, int $time, string $hash)
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect(['/dashboard']);
+        }
+
+        // TODO add captcha
+        if ((($time + User::AUTH_LINK_LIFETIME) > time()) && ($user = User::findById($id))) {
+            if ($user->authByHash($time, $hash) && Yii::$app->user->login($user, 30 * 24 * 60 * 60)) {
+                return $this->redirect(['/dashboard']);
+            } else {
+                Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
+
+                return $this->redirect(['site/login']);
+            }
+        } else {
+            return $this->render('expired-auth-link');
+        }
     }
 
     /**
@@ -179,98 +205,6 @@ class SiteController extends Controller
         return $this->render('request-reset-password', [
             'model' => $model,
         ]);
-    }
-
-    public function actionMergeAccounts($token)
-    {
-        $mergeAccountsRequest = MergeAccountsRequest::findOne(['token' => $token]);
-        $user = null;
-        $userToMerge = null;
-        if ($mergeAccountsRequest) {
-            $user = User::findOne(['id' => $mergeAccountsRequest->user_id]);
-            $userToMerge = User::findOne(['id' => $mergeAccountsRequest->user_to_merge_id]);
-            if (Yii::$app->request->isPost) {
-                if ($this->mergeAccounts($user, $userToMerge)) {
-                    return $this->redirect(['site/login']);
-                } else {
-                    $mergeAccountsRequest->delete();
-                    unset($mergeAccountsRequest);
-                }
-            } else {
-                $created_at = $mergeAccountsRequest->created_at;
-
-                if ($created_at + User::PASSWORD_RESET_TOKEN_EXPIRE < time()) {
-                    $mergeAccountsRequest->delete();
-                    unset($mergeAccountsRequest);
-                }
-            }
-        }
-
-        return $this->render('mergeAccounts', [
-            'model' => $mergeAccountsRequest ?? null,
-            'user' => $user,
-            'userToMerge' => $userToMerge,
-        ]);
-    }
-
-    private function mergeAccounts($user, $userToMerge)
-    {
-        // TODO from new user id to old user id
-        $transaction = Yii::$app->db->beginTransaction();
-
-        try {
-            BotUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\CompanyUser::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\AdSearch::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\AdSearchResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\AdOffer::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\AdOfferResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\Resume::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\ResumeResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\Vacancy::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\VacancyResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\CurrencyExchangeOrder::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\CurrencyExchangeOrderResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\User::updateAll(['referrer_id' => $user->id], "referrer_id = {$userToMerge->id}");
-            \app\models\UserLanguage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserCitizenship::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            // TODO recalculate user.rating
-            \app\models\Rating::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\Contact::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\Contact::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
-            \app\models\Debt::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
-            \app\models\Debt::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
-            // TODO recalculate DebtBalance
-            \app\models\DebtBalance::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
-            \app\models\DebtBalance::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
-            // TODO save only unique settings
-            \app\models\DebtRedistribution::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\DebtRedistribution::updateAll(['link_user_id' => $user->id], "link_user_id = {$userToMerge->id}");
-            \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\modules\comment\models\IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\Moqup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\SettingValueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\SupportGroup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\SupportGroupBotClient::updateAll(['provider_bot_user_id' => $user->id], "provider_bot_user_id = {$userToMerge->id}");
-            \app\models\SupportGroupMember::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserIssueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserMoqupFollow::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserWikiPage::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserWikiToken::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserStellar::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            \app\models\UserEmail::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
-            $userToMerge->delete();
-
-            $transaction->commit();
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-
-            return false;
-        }
-
-        return true;
     }
 
     /**

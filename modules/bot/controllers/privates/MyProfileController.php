@@ -35,7 +35,7 @@ class MyProfileController extends Controller
                     [
                         [
                             'callback_data' => MyLocationController::createRoute(),
-                            'text' => Yii::t('bot', 'Location'),
+                            'text' => (!$user->userLocation ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
@@ -47,43 +47,43 @@ class MyProfileController extends Controller
                     [
                         [
                             'callback_data' => MyCurrencyController::createRoute(),
-                            'text' => Yii::t('bot', 'Currency'),
+                            'text' => (!$user->currency ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Currency'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyLanguagesController::createRoute(),
-                            'text' => Yii::t('bot', 'Languages'),
+                            'text' => (!$user->languages ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Languages'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyCitizenshipsController::createRoute(),
-                            'text' => Yii::t('bot', 'Citizenships'),
+                            'text' => (!$user->citizenships ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Citizenships'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyBirthdayController::createRoute(),
-                            'text' => Yii::t('bot', 'Birthday'),
+                            'text' => (!$user->birthday ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Birthday'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyGenderController::createRoute(),
-                            'text' => Yii::t('bot', 'Gender'),
+                            'text' => (!$user->gender ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Gender'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MySexualityController::createRoute(),
-                            'text' => Yii::t('bot', 'Sexuality'),
+                            'text' => (!$user->sexuality ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Sexuality'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyEmailController::createRoute(),
-                            'text' => Yii::t('bot', 'Email'),
+                            'text' => (!$user->userEmail || !$user->userEmail->isConfirmed() ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Email'),
                         ],
                     ],
                     [

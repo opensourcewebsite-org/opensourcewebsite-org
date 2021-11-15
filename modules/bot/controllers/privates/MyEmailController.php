@@ -8,7 +8,6 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
 use app\models\User;
 use app\models\UserEmail;
-use app\models\MergeAccountsRequest;
 
 /**
  * Class MyEmailController
