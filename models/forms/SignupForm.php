@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace app\models\forms;
 
+use Yii;
 use app\components\helpers\ReferrerHelper;
 use yii\base\Model;
-use Yii;
 use app\models\User;
 
 /**
