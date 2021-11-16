@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\components\Converter;
 use app\models\queries\ContactQuery;
+use app\models\queries\DebtRedistributionQuery;
 use app\models\queries\UserQuery;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;

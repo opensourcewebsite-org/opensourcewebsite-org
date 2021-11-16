@@ -34,7 +34,6 @@ class CronJobSearch extends CronJobLog
      */
     public function search($params)
     {
-
         $query = self::find()->with('cronJob');
 
         $dataProvider = new ActiveDataProvider([
@@ -45,7 +44,7 @@ class CronJobSearch extends CronJobLog
                 ],
             ],
             'pagination' => [
-                'pageSize' => 25,
+                'pageSize' => 20,
             ],
         ]);
 

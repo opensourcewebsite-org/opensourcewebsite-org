@@ -154,4 +154,41 @@ class DebtRedistribution extends ActiveRecord implements ByOwnerInterface, ByDeb
     {
         return self::getOwnerAttribute();
     }
+
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $userId)
+    {
+        $this->user_id = $userId;
+    }
+
+    public function getLinkUserId()
+    {
+        return $this->link_user_id;
+    }
+
+    public function setLinkUserId(int $userId)
+    {
+        $this->link_user_id = $userId;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLinkedUser()
+    {
+        if ($this->link_user_id) {
+            return $this->hasOne(User::class, ['id' => 'link_user_id']);
+        }
+
+        return false;
+    }
+
+    public function getCurrencyId()
+    {
+        return $this->currency_id;
+    }
 }

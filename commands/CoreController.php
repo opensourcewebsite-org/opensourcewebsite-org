@@ -28,7 +28,8 @@ class CoreController extends Controller
 
     public function actionCheckUserRatings()
     {
-        echo 'CHECKING: Data collision between `rating` and `user` tables.' . "\n";
+        echo 'START: ' . __METHOD__ . "\n";
+        echo 'CHECK: Data collision between `rating` and `user` tables.' . "\n";
 
         $totalRatingByRatings = Rating::getTotalRating();
         $totalRatingByUsers = User::getTotalRating();
@@ -37,7 +38,7 @@ class CoreController extends Controller
 
         if (($totalRatingByRatings + $usersDefaultRating) != $totalRatingByUsers) {
             echo 'ALERT: Total Rating by `rating` table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' != Total Rating by `user` table ' . $totalRatingByUsers . "\n";
-            echo 'Updating: `user.rating`.' . "\n";
+            echo 'UPDATING: `user.rating`.' . "\n";
 
             $users = User::find()
                 ->all();
@@ -46,7 +47,7 @@ class CoreController extends Controller
                 $user->updateRating();
             }
 
-            echo 'Updated: `user.rating`.' . "\n";
+            echo 'UPDATED: `user.rating`.' . "\n";
 
             $totalRatingByRatings = Rating::getTotalRating();
             $totalRatingByUsers = User::getTotalRating();
@@ -54,13 +55,13 @@ class CoreController extends Controller
             $usersDefaultRating = $usersCount * Rating::DEFAULT;
 
             if (($totalRatingByRatings + $usersDefaultRating) == $totalRatingByUsers) {
-                echo 'Fixed: Total Rating by `rating` table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' == Total Rating by `user` table ' . $totalRatingByUsers . "\n";
+                echo 'FIXED: Total Rating by `rating` table ' . $totalRatingByRatings . ' + Users Default Rating ' . $usersDefaultRating . ' == Total Rating by `user` table ' . $totalRatingByUsers . "\n";
             } else {
                 echo 'ERROR: Failed to fix.' . "\n";
             }
         }
 
-        echo 'FINISHED: ' . $this->route . "\n";
+        echo 'FINISH: ' . __METHOD__ .  "\n";
     }
 
     /**
@@ -71,7 +72,8 @@ class CoreController extends Controller
      */
     public function actionCheckDebtBalances()
     {
-        echo 'CHECKING: DebtBalances. Data collision between `debt` and `debt_balance` tables.' . "\n";
+        echo 'START: ' . __METHOD__ . "\n";
+        echo 'CHECK: Data collision between `debt` and `debt_balance` tables.' . "\n";
 
         $query = (new Query())
             ->select([
@@ -134,7 +136,7 @@ class CoreController extends Controller
                         echo 'ALERT: DebtBalance not found. Users IDs: ' . $debtBalance->from_user_id . ' > ' . $debtBalance->to_user_id . '. Amount: ' . $debtBalance->amount . ' ' . $debtBalance->currency->code . "\n";
 
                         if ($debtBalance->save()) {
-                            echo 'Created: DebtBalance.' . "\n";
+                            echo 'CREATED: DebtBalance.' . "\n";
                         } else {
                             echo 'ERROR: Failed to create a DebtBalance.' . "\n";
                         }
@@ -152,7 +154,7 @@ class CoreController extends Controller
                         if ($debtBalance->save()) {
                             Yii::$app->db->getTransaction()->commit();
 
-                            echo 'Fixed: DebtBalance.' . "\n";
+                            echo 'FIXED: DebtBalance.' . "\n";
                         } else {
                             Yii::$app->db->getTransaction()->rollBack();
 
@@ -181,7 +183,7 @@ class CoreController extends Controller
                         echo 'ALERT: counter DebtBalance not found. Users IDs: ' . $counterDebtBalance->from_user_id . ' > ' . $counterDebtBalance->to_user_id . '. Amount: ' . $counterDebtBalance->amount . ' ' . $counterDebtBalance->currency->code . "\n";
 
                         if ($counterDebtBalance->save()) {
-                            echo 'Created: counter DebtBalance.' . "\n";
+                            echo 'CREATED: counter DebtBalance.' . "\n";
                         } else {
                             echo 'ERROR: Failed to create a counter DebtBalance.' . "\n";
                         }
@@ -199,7 +201,7 @@ class CoreController extends Controller
                         if ($counterDebtBalance->save()) {
                             Yii::$app->db->getTransaction()->commit();
 
-                            echo 'Fixed: counter DebtBalance.' . "\n";
+                            echo 'FIXED: counter DebtBalance.' . "\n";
                         } else {
                             Yii::$app->db->getTransaction()->rollBack();
 
@@ -210,12 +212,13 @@ class CoreController extends Controller
             }
         }
 
-        echo 'FINISHED: ' . $this->route . "\n";
+        echo 'FINISH: ' . __METHOD__ . "\n";
     }
 
     public function actionCheckDebtUniqueGroups()
     {
-        echo 'CHECKING: Debt. Duplicated users in same generated group of debts.' . "\n";
+        echo 'START: ' . __METHOD__ . "\n";
+        echo 'CHECK: Duplicated users in same generated group of debts.' . "\n";
 
         $query = (new Query())
             ->select([
@@ -234,6 +237,6 @@ class CoreController extends Controller
             echo 'ALERT: found ' . count($errors) . ' invalid debts! Their IDs:' . "\n" . VarDumper::dumpAsString($errors) . "\n";
         }
 
-        echo 'FINISHED: ' . $this->route . "\n";
+        echo 'FINISH: ' . __METHOD__ . "\n";
     }
 }

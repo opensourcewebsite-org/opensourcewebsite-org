@@ -38,7 +38,7 @@ class GroupRefreshController extends Controller
 
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->run('group/index');
         }
 
@@ -54,7 +54,7 @@ class GroupRefreshController extends Controller
             Yii::warning($e);
 
             if (in_array($e->getCode(), [400, 403])) {
-                // group has been removed in Telegram or bot is not the chat member => remove chat from db
+                // chat has been removed in Telegram or bot is not the chat member => remove chat from db
                 removeFromDb($chat);
 
                 return $this->run('group/index');

@@ -256,39 +256,59 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
     public static function mapStatus()
     {
-        return [self::STATUS_PENDING, self::STATUS_CONFIRM];
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_CONFIRM,
+        ];
     }
 
     public static function mapDirection()
     {
-        return [self::DIRECTION_DEPOSIT, self::DIRECTION_CREDIT];
+        return [
+            self::DIRECTION_DEPOSIT,
+            self::DIRECTION_CREDIT,
+        ];
     }
 
-    public function beforeSave($insert)
+    public function save($runValidation = true, $attributeNames = null)
     {
-        if (($insert || ($this->isAttributeChanged('status') && ($this->getOldAttribute('status') != (int)$this->status)))
-             && $this->isStatusConfirm()) {
-            Yii::$app->db->beginTransaction();
+        $transaction = null;
+
+        if ($this->isStatusConfirm()
+            && ($this->isNewRecord
+                || ($this->isAttributeChanged('status') && ($this->getOldAttribute('status') != (int)$this->status))
+                || ($this->isAttributeChanged('from_user_id') && ($this->getOldAttribute('from_user_id') != (int)$this->from_user_id))
+                || ($this->isAttributeChanged('to_user_id') && ($this->getOldAttribute('to_user_id') != (int)$this->to_user_id)))) {
+            $transaction = Yii::$app->db->beginTransaction();
+
+            if (!$this->isNewRecord) {
+                $oldFromUserId = $this->getOldAttribute('from_user_id');
+                $oldToUserId = $this->getOldAttribute('to_user_id');
+            }
         }
 
-        return parent::beforeSave($insert);
-    }
+        if (!$result = parent::save($runValidation, $attributeNames)) {
+            return $result;
+        }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
-    public function afterSave($insert, $changedAttributes)
-    {
-        if (($insert || (isset($changedAttributes['status']) && (int)$changedAttributes['status'] !== (int)$this->status))
-            && $this->isStatusConfirm()) {
+        if ($transaction) {
             if ($this->debtBalance) {
                 if ($this->debtBalance->isFoundForUpdate()) {
                     $debtBalance = $this->debtBalance;
                 } else {
                     $debtBalance = DebtBalance::findOneForUpdate($this->debtBalance);
                 }
+
+                $debtBalance->amount = Number::floatAdd($debtBalance->amount, $this->amount);
+            } else {
+                $debtBalance = new DebtBalance();
+
+                $debtBalance->setAttributes([
+                    'from_user_id' => $this->from_user_id,
+                    'to_user_id' => $this->to_user_id,
+                    'currency_id' => $this->currency_id,
+                    'amount' => $this->amount,
+                ]);
             }
 
             if ($this->counterDebtBalance) {
@@ -297,22 +317,7 @@ class Debt extends ActiveRecord implements ByDebtInterface
                 } else {
                     $counterDebtBalance = DebtBalance::findOneForUpdate($this->counterDebtBalance);
                 }
-            }
 
-            if (isset($debtBalance)) {
-                $debtBalance->amount = Number::floatAdd($debtBalance->amount, $this->amount);
-            } else {
-                $debtBalance = new DebtBalance();
-
-                $debtBalance->setAttributes([
-                    'from_user_id' => $this->from_user_id,
-                    'to_user_id' => $this->to_user_id,
-                    'amount' => $this->amount,
-                    'currency_id' => $this->currency_id,
-                ]);
-            }
-
-            if (isset($counterDebtBalance)) {
                 $counterDebtBalance->amount = Number::floatSub($counterDebtBalance->amount, $this->amount);
             } else {
                 $counterDebtBalance = new DebtBalance();
@@ -320,19 +325,72 @@ class Debt extends ActiveRecord implements ByDebtInterface
                 $counterDebtBalance->setAttributes([
                     'from_user_id' => $this->to_user_id,
                     'to_user_id' => $this->from_user_id,
-                    'amount' => -$this->amount,
                     'currency_id' => $this->currency_id,
+                    'amount' => -$this->amount,
                 ]);
             }
 
-            if ($debtBalance->save() && $counterDebtBalance->save()) {
-                Yii::$app->db->getTransaction()->commit();
+            if (isset($oldFromUserId) && isset($oldFromUserId) && (($oldFromUserId != $this->from_user_id) || ($oldToUserId != $this->to_user_id))) {
+                $oldDebtBalance = DebtBalance::find()
+                    ->andWhere([
+                        'from_user_id' => $oldFromUserId,
+                        'to_user_id' => $oldToUserId,
+                        'currency_id' => $this->currency_id,
+                    ])
+                    ->one();
+
+                if ($oldDebtBalance) {
+                    $oldDebtBalance = DebtBalance::findOneForUpdate($oldDebtBalance);
+
+                    $oldDebtBalance->amount = Number::floatSub($oldDebtBalance->amount, $this->amount);
+                } else {
+                    $oldDebtBalance = new DebtBalance();
+
+                    $oldDebtBalance->setAttributes([
+                        'from_user_id' => $oldFromUserId,
+                        'to_user_id' => $oldToUserId,
+                        'currency_id' => $this->currency_id,
+                        'amount' => -$this->amount,
+                    ]);
+                }
+
+                $oldCounterDebtBalance = DebtBalance::find()
+                    ->andWhere([
+                        'from_user_id' => $oldToUserId,
+                        'to_user_id' => $oldFromUserId,
+                        'currency_id' => $this->currency_id,
+                    ])
+                    ->one();
+
+                if ($oldCounterDebtBalance) {
+                    $oldCounterDebtBalance = DebtBalance::findOneForUpdate($oldCounterDebtBalance);
+
+                    $oldCounterDebtBalance->amount = Number::floatAdd($oldCounterDebtBalance->amount, $this->amount);
+                } else {
+                    $oldCounterDebtBalance = new DebtBalance();
+
+                    $oldCounterDebtBalance->setAttributes([
+                        'from_user_id' => $oldToUserId,
+                        'to_user_id' => $oldFromUserId,
+                        'currency_id' => $this->currency_id,
+                        'amount' => $this->amount,
+                    ]);
+                }
+            }
+
+            if ($debtBalance->save()
+                && $counterDebtBalance->save()
+                && (!isset($oldDebtBalance) || $oldDebtBalance->save())
+                && (!isset($oldCounterDebtBalance) || $oldCounterDebtBalance->save())) {
+                $transaction->commit();
             } else {
-                Yii::$app->db->getTransaction()->rollBack();
+                $transaction->rollBack();
+
+                return false;
             }
         }
 
-        parent::afterSave($insert, $changedAttributes);
+        return true;
     }
 
     public function getDebtBalance()

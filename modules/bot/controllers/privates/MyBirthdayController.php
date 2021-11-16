@@ -21,20 +21,14 @@ class MyBirthdayController extends Controller
     {
         $user = $this->getUser();
 
-        if ($user->birthday) {
-            $birthday = $user->birthday;
-            try {
-                $birthday = (new \DateTime($birthday))->format(User::DATE_FORMAT);
-            } catch (\Exception $e) {
-            }
-        } else {
+        if (!$user->birthday) {
             return $this->actionUpdate();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'birthday' => $birthday,
+                    'birthday' => $user->birthday,
                 ]),
                 [
                     [

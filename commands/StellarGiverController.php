@@ -89,7 +89,7 @@ class StellarGiverController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Basic income participants/candidates processed: ' . $updatesCount);
+            $this->output('Basic income users processed: ' . $updatesCount);
         }
     }
 

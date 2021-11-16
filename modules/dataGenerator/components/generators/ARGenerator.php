@@ -49,7 +49,7 @@ abstract class ARGenerator extends Fixture
     public function save($model): ?ActiveRecord
     {
         if (!$model->save()) {
-            var_dump($model->errors);
+            var_dump($model->getErrors());
 
             throw new ARGeneratorException(static::classNameModel() . ': can\'t save.' . "\r\n");
         }

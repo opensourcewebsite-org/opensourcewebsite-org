@@ -24,21 +24,12 @@ class UserFixture extends ARGenerator
     {
         $modelForm = $modelForm ?? new SignupForm();
 
-        $modelForm->username = $this->faker->userName;
+        $modelForm->username = $this->faker->userName();
         $modelForm->password = $modelForm->username;
         $modelForm->password_repeat = $modelForm->password;
 
         if ($modelForm->validate()) {
             return $modelForm->factoryUser();
-        }
-
-        $errors = $modelForm->errors;
-
-        unset($errors['username']);
-
-        if (!empty($errors)) {
-            //error either in changed  password rules, or new required fields were added
-            throw new ARGeneratorException($modelForm);
         }
 
         //invalid username. regenerate it

@@ -62,7 +62,8 @@ class DebtController extends Controller
             ->andWhere(['>', DebtBalance::tableName() . '.amount', 0])
             ->orderBy([
                 Currency::tableName() . '.code' => SORT_ASC,
-            ]);
+            ])
+            ->groupBy(Currency::tableName() . '.id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -139,7 +140,8 @@ class DebtController extends Controller
             ->andWhere(['>', DebtBalance::tableName() . '.amount', 0])
             ->orderBy([
                 Currency::tableName() . '.code' => SORT_ASC,
-            ]);
+            ])
+            ->groupBy(Currency::tableName() . '.id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

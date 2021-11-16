@@ -38,14 +38,14 @@ class ChannelRefreshController extends Controller
 
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
+        if (!isset($chat) || !$chat->isChannel()) {
             return $this->run('channel/index');
         }
 
         try {
-            $this->getBotApi()->getChat($chat->chat_id);
-            $this->getBotApi()->getChatMember($chat->chat_id, explode(':', $this->getBot()->token)[0])->isActualChatMember();
-            $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->chat_id);
+            $this->getBotApi()->getChat($chat->getChatId());
+            $this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember();
+            $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
             $telegramAdministratorsIds = array_map(
                 fn ($a) => $a->getUser()->getId(),
                 $telegramAdministrators
@@ -54,8 +54,7 @@ class ChannelRefreshController extends Controller
             Yii::warning($e);
 
             if (in_array($e->getCode(), [400, 403])) {
-                // channel has been removed in Telegram or bot is not the chat member => remove chat from db
-
+                // chat has been removed in Telegram or bot is not the chat member => remove chat from db
                 removeFromDb($chat);
 
                 return $this->run('channel/index');
@@ -64,72 +63,73 @@ class ChannelRefreshController extends Controller
             throw $e;
         }
 
-        if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
-            // user is not in Telegram's admins list
-            if (empty($telegramAdministratorsIds)) {
-                // and no administrators left => remove chat from db
-                removeFromDb($chat);
-            }
-
-            return $this->run('channel/index');
-        }
-
-        $curAdministratorsIds = array_map(fn ($a) => $a->provider_user_id, $chat->getAdministrators()->all());
-
         $outdatedAdministrators = $chat->getAdministrators()
-            ->andWhere(['not', ['provider_user_id' => $telegramAdministratorsIds]])
+            ->andWhere([
+                'not',
+                ['provider_user_id' => $telegramAdministratorsIds],
+            ])
             ->all();
+
         foreach ($outdatedAdministrators as $outdatedAdministrator) {
             try {
                 $telegramChatMember = $this->getBotApi()->getChatMember(
-                    $chat->chat_id,
+                    $chat->getChatId(),
                     $outdatedAdministrator->provider_user_id
                 );
+
+                if ($telegramChatMember->isActualChatMember()) {
+                    $chatMember = ChatMember::findOne([
+                        'chat_id' => $chat->id,
+                        'user_id' => $outdatedAdministrator->id,
+                    ]);
+
+                    $chatMember->setAttributes([
+                        'status' => $telegramChatMember->getStatus(),
+                    ]);
+
+                    $chatMember->save();
+
+                    continue;
+                }
             } catch (\Exception $e) {
                 Yii::warning($e);
-
-                $chat->unlink('users', $outdatedAdministrator, true);
-
-                continue;
-            }
-
-            if ($telegramChatMember->isActualChatMember()) {
-                $chatMember = ChatMember::findOne([
-                    'chat_id' => $chat->id,
-                    'user_id' => $outdatedAdministrator->id,
-                ]);
-
-                $chatMember->setAttributes([
-                    'status' => $telegramChatMember->getStatus(),
-                ]);
-
-                $chatMember->save();
-
-                continue;
             }
 
             $chat->unlink('users', $outdatedAdministrator, true);
         }
 
-        $users = ArrayHelper::index(User::find(['provider_user_id' => $telegramAdministratorsIds])->all(), 'provider_user_id');
+        $currentAdministratorsIds = array_map(
+            fn ($a) => $a->provider_user_id,
+            $chat->getAdministrators()->all()
+        );
 
         foreach ($telegramAdministrators as $telegramAdministrator) {
-            $user = $users[$telegramAdministrator->getUser()->getId()];
-            if (!isset($user)) {
+            $user = User::find()
+                ->andWhere([
+                    'provider_user_id' => $telegramAdministrator->getUser()->getId(),
+                ])
+                ->one();
+
+            if (!$user) {
                 $user = User::createUser($telegramAdministrator->getUser());
                 $user->updateInfo($telegramAdministrator->getUser());
                 $user->save();
             }
-            if (!in_array($user->provider_user_id, $curAdministratorsIds)) {
+
+            if (!in_array($user->provider_user_id, $currentAdministratorsIds)) {
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
             }
         }
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery(
-                $this->render('index'),
-                true
-            )
-            ->build();
+        // user is not in Telegram admin list
+        if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
+            return $this->run('channel/index');
+        } else {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('index'),
+                    true
+                )
+                ->build();
+        }
     }
 }
