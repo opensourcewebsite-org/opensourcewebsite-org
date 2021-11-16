@@ -13,10 +13,7 @@ use app\components\helpers\Html;
 <b><?= Yii::t('user', 'Real confirmations') ?></b>: <?= $user->getRealConfirmations(); ?><br/>
 <br/>
 <?php endif; ?>
-<b><?= Yii::t('bot', 'Telegram') ?> User ID</b>: <?= $telegramUser->provider_user_id; ?><br/>
-<?php if ($telegramUser->provider_user_name) : ?>
-<b><?= Yii::t('bot', 'Telegram Username') ?></b>: @<?= $telegramUser->provider_user_name; ?><br/>
-<?php endif; ?>
+<b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $telegramUser->provider_user_id; ?><?= ($telegramUser->provider_user_name ? ' @' . $telegramUser->provider_user_name : '') ?><br/>
 <?php if ($telegramUser->provider_user_first_name) : ?>
 <b><?= Yii::t('bot', 'First Name') ?></b>: <?= $telegramUser->provider_user_first_name; ?><br/>
 <?php endif; ?>

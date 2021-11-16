@@ -1,1 +1,6 @@
-<b>OSW <?= Yii::t('bot', 'Rank') ?>:</b> <b><?= $ranking[0] ?></b> <?= Yii::t('bot', 'of') ?> <?= $ranking[1] ?><br/>
+<?php
+
+use app\models\User;
+
+?>
+<b>OSW <?= Yii::t('bot', 'Rank') ?>:</b> <b><?= $user->getRank() ?></b> <?= Yii::t('bot', 'of') ?> <?= User::getTotalRank(); ?><br/>
