@@ -128,7 +128,7 @@ class MergeAccountsController extends Controller
 
                 if (!$contactExists && ($contact->getLinkUserId() != $user->id)) {
                     $contact->setUserId($user->id);
-                    $contact->save();
+                    $contact->save(false);
                 } else {
                     $contact->delete();
                 }
@@ -145,7 +145,7 @@ class MergeAccountsController extends Controller
 
             if (!$contactExists && ($contact->getUserId() != $user->id)) {
                 $contact->setLinkUserId($user->id);
-                $contact->save();
+                $contact->save(false);
             } else {
                 $contact->delete();
             }
@@ -310,6 +310,11 @@ class MergeAccountsController extends Controller
                 } else {
                     \app\models\UserEmail::deleteAll("user_id = {$userToMerge->id}");
                 }
+            }
+
+            if (!$user->username && $userToMerge->username) {
+                $user->username = $userToMerge->username;
+                $user->save(false);
             }
 
             $userToMerge->delete();
