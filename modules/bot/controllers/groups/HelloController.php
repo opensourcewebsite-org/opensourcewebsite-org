@@ -21,6 +21,8 @@ class HelloController extends Controller
     public function actionIndex()
     {
         $commands = [
+            '/basic_income',
+            '/my_id',
             '/my_rank',
             '/my_stellar',
             '/my_fake_face',
