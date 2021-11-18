@@ -8,11 +8,11 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class MyBirthdayController
+ * Class MyUsernameController
  *
  * @package app\modules\bot\controllers\privates
  */
-class MyBirthdayController extends Controller
+class MyUsernameController extends Controller
 {
     /**
      * @return array
@@ -21,14 +21,14 @@ class MyBirthdayController extends Controller
     {
         $user = $this->getUser();
 
-        if (!$user->birthday) {
+        if (!$user->username) {
             return $this->actionUpdate();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'birthday' => $user->birthday,
+                    'user' => $user,
                 ]),
                 [
                     [
@@ -58,13 +58,12 @@ class MyBirthdayController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if ($this->validateDate($text, User::DATE_FORMAT)) {
-                    $user->birthday = Yii::$app->formatter->format($text, 'date');
-                    $user->save();
-
+                if (($user->username = $text) && $user->save()) {
                     $this->getState()->setName(null);
 
                     return $this->actionIndex();
+                } else {
+                    $user->refresh();
                 }
             }
         }
@@ -75,18 +74,12 @@ class MyBirthdayController extends Controller
                 [
                     [
                         [
-                            'callback_data' => ($user->birthday ? self::createRoute() : MyProfileController::createRoute()),
+                            'callback_data' => ($user->username ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],
                 ]
             )
             ->build();
-    }
-
-    private function validateDate($date, $format)
-    {
-        $d = \DateTime::createFromFormat($format, $date);
-        return $d && $d->format($format) === $date;
     }
 }

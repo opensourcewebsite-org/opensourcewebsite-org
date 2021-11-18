@@ -201,7 +201,6 @@ class GroupStellarController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                Yii::warning($text);
                 if ($text >= ChatSetting::STELLAR_THRESHOLD_MIN) {
                     $chat->stellar_threshold = $text;
 
