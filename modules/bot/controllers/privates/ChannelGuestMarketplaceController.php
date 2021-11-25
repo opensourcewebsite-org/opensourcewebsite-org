@@ -144,7 +144,9 @@ class ChannelGuestMarketplaceController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-text'),
+                $this->render('set-text', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [
