@@ -4,9 +4,9 @@
 ————<br/>
 <br/>
 <?= nl2br($messageMarkdown) ?><br/>
-<?php endif; ?>
 <br/>
 ————<br/>
+<?php endif; ?>
 <?php if ($chat->marketplace_text_hint) : ?>
 <br/>
 <?= nl2br($chat->marketplace_text_hint) ?><br/>

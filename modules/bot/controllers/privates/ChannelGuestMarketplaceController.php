@@ -156,6 +156,9 @@ class ChannelGuestMarketplaceController extends Controller
                             'text' => Emoji::BACK,
                         ],
                     ],
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();
