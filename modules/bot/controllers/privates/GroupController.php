@@ -71,6 +71,10 @@ class GroupController extends Controller
 
         $buttons[] = [
             [
+                'callback_data' => TelegramController::createRoute(),
+                'text' => Emoji::BACK,
+            ],
+            [
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
             ],
@@ -295,8 +299,9 @@ class GroupController extends Controller
                 ->limit($pagination->limit)
                 ->all();
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
                 return self::createRoute('index', [
+                    'chatId' => $chat->id,
                     'page' => $page,
                 ]);
             });
@@ -331,7 +336,7 @@ class GroupController extends Controller
                 [
                     'callback_data' => MenuController::createRoute(),
                     'text' => Emoji::MENU,
-                ]
+                ],
             ];
 
             return $this->getResponseBuilder()

@@ -1,10 +1,4 @@
-<?php
-
-/* @var $this yii\web\View */
-/* @var $messageMarkdown string */
-
-?>
-<b><?= Yii::t('bot', 'Send a message for the greeting') ?>:</b><br/>
+<b><?= Yii::t('bot', 'Send a text for the post') ?>:</b><br/>
 <?php if (isset($messageMarkdown) && $messageMarkdown) : ?>
 <br/>
 ————<br/>
@@ -13,5 +7,9 @@
 <?php endif; ?>
 <br/>
 ————<br/>
+<?php if ($chat->marketplace_text_hint) : ?>
+<br/>
+<?= nl2br($chat->marketplace_text_hint) ?><br/>
+<?php endif; ?>
 <br/>
 <?= $this->render('../formatting-options') ?>

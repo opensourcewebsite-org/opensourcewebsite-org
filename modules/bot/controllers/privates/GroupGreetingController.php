@@ -103,12 +103,8 @@ class GroupGreetingController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
-                $textLenght = mb_strlen($text, 'UTF-8');
-
-                if (($textLenght >= ChatSetting::GREETING_MESSAGE_LENGHT_MIN) && ($textLenght <= ChatSetting::GREETING_MESSAGE_LENGHT_MAX)) {
+                if ($chat->validateSettingValue('greeting_message', $text)) {
                     $chat->greeting_message = $text;
-
-                    $this->getState()->setName(null);
 
                     return $this->runAction('index', [
                          'chatId' => $chatId,
@@ -121,7 +117,9 @@ class GroupGreetingController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-message', ['messageMarkdown' => $messageMarkdown]),
+                $this->render('set-message', [
+                    'messageMarkdown' => $messageMarkdown,
+                ]),
                 [
                     [
                         [

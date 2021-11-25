@@ -257,6 +257,13 @@ class Module extends \yii\base\Module
             $state = null;
         }
 
+        if ($this->getChat()->isGroup()) {
+            // Telegram service user id, that also acts as sender of channel posts forwarded to discussion groups
+            if ($this->getUpdate()->getFrom()->getId() == 777000) {
+                return true;
+            }
+        }
+
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
 
         if (!$isStateRoute && $this->getChat()->isPrivate()) {

@@ -112,9 +112,23 @@ class Chat extends ActiveRecord
         }
 
         $chatSetting->value = $value;
+
         $chatSetting->save();
 
         $this->settings[$name] = &$chatSetting;
+    }
+
+    public function validateSettingValue(string $setting, $value)
+    {
+        $chatSetting = new ChatSetting();
+        $chatSetting->setting = $setting;
+        $chatSetting->value = $value;
+
+        if (!$chatSetting->validate('value')) {
+            return false;
+        }
+
+        return true;
     }
 
     public function isPrivate()

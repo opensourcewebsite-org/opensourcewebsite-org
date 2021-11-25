@@ -57,7 +57,12 @@ class SettingValue extends \yii\db\ActiveRecord
         ];
     }
 
-    public function validateValue()
+
+    /**
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validateValue($attribute, $params)
     {
         $rules = $this->getValidationRules();
 

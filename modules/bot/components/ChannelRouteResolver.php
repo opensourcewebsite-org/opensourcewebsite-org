@@ -32,14 +32,8 @@ class ChannelRouteResolver extends Component
 
         if ($callbackQuery = $update->getCallbackQuery()) {
             $commandText = $callbackQuery->getData();
-        } elseif ($requestMessage = $update->getMessage()) {
-            if ($requestMessage->getNewChatMembers()) {
-                $commandText = SystemMessageController::createRoute('new-chat-members');
-            } elseif ($requestMessage->getLeftChatMember()) {
-                $commandText = SystemMessageController::createRoute('left-chat-member');
-            }
         } else {
-            $requestMessage = $update->getChannelPost() ?? $update->getEditedChannelPost() ?? $update->getEditedMessage();
+            $requestMessage = $update->getRequestMessage();
         }
 
         if (isset($requestMessage) && !isset($commandText)) {

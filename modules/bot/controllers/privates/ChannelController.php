@@ -69,9 +69,15 @@ class ChannelController extends Controller
             }
         }
 
-        $buttons[][] = [
-            'callback_data' => MenuController::createRoute(),
-            'text' => Emoji::MENU,
+        $buttons[] = [
+            [
+                'callback_data' => TelegramController::createRoute(),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
         ];
 
         return $this->getResponseBuilder()

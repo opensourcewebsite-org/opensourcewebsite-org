@@ -3,8 +3,8 @@
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
+use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\helpers\MessageText;
-use TelegramBot\Api\BotApi;
 use TelegramBot\Api\HttpException;
 
 class EditMessageTextCommand extends MessageTextCommand

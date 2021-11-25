@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\components\response\commands;
 
-use TelegramBot\Api\BotApi;
+use app\modules\bot\components\api\BotApi;
 
 abstract class Command
 {

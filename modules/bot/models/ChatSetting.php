@@ -13,8 +13,6 @@ class ChatSetting extends ActiveRecord
     public const JOIN_CAPTCHA_MESSAGE_LIFETIME = 300; // seconds
 
     public const GREETING_MESSAGE_LIFETIME = 1800; // seconds
-    public const GREETING_MESSAGE_LENGHT_MIN = 1;
-    public const GREETING_MESSAGE_LENGHT_MAX = 10000;
 
     public const FILTER_MODE_BLACKLIST = 'blacklist';
     public const FILTER_MODE_WHITELIST = 'whitelist';
@@ -37,7 +35,11 @@ class ChatSetting extends ActiveRecord
             'default' => self::STATUS_OFF,
         ],
         'greeting_lifetime' => [],
-        'greeting_message' => [],
+        'greeting_message' => [
+            'type' => 'string',
+            'min' => 1,
+            'max' => 10000,
+        ],
         'filter_status' => [
             'default' => self::STATUS_OFF,
         ],
@@ -54,15 +56,23 @@ class ChatSetting extends ActiveRecord
             'default' => self::STELLAR_MODE_HOLDERS,
         ],
         'stellar_asset' => [],
-        'stellar_issuer' => [
-            'default' => self::STATUS_OFF,
-        ],
+        'stellar_issuer' => [],
         'stellar_threshold' => [
             'default' => 1,
         ],
         'stellar_invite_link' => [],
         'marketplace_status' => [
             'default' => self::STATUS_OFF,
+        ],
+        'marketplace_active_post_limit_per_member' => [
+            'default' => 1,
+            'min' => 1,
+            'max' => 1000,
+        ],
+        'marketplace_text_hint' => [
+            'type' => 'string',
+            'min' => 1,
+            'max' => 10000,
         ],
     ];
 
@@ -77,6 +87,8 @@ class ChatSetting extends ActiveRecord
             [['chat_id', 'updated_by', 'setting', 'value'], 'required'],
             [['chat_id', 'updated_by'], 'integer'],
             [['setting'], 'string'],
+            ['value', 'trim'],
+            ['value', 'validateValue'],
         ];
     }
 
@@ -125,6 +137,79 @@ class ChatSetting extends ActiveRecord
     public function getChat()
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id']);
+    }
+
+    public function getValidationRules()
+    {
+        return self::$settings[$this->setting] ?? null;
+    }
+
+    /**
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validateValue($attribute, $params)
+    {
+        $rules = $this->getValidationRules();
+
+        if ($rules) {
+            if (isset($rules['type'])) {
+                switch ($rules['type']) {
+                    case 'integer':
+                        $this->value = intval($this->value);
+                        if (!is_int($this->value)) {
+                            $this->addError('value', 'Value must be an integer.');
+                        }
+                    break;
+                    case 'float':
+                        $this->value = floatval($this->value);
+                        if (!is_float($this->value)) {
+                            $this->addError('value', 'Value must be a number.');
+                        }
+                    break;
+                }
+            }
+
+            if (isset($rules['min'])) {
+                if (isset($rules['type']) && ($rules['type'] == 'string')) {
+                    $lenght = mb_strlen($this->value, 'UTF-8');
+
+                    if ($lenght < $rules['min']) {
+                        $this->addError('value', 'Text lenght must be no less than ' . $rules['min'] . '.');
+                    }
+                } else {
+                    if ($this->value < $rules['min']) {
+                        $this->addError('value', 'Value must be no less than ' . $rules['min'] . '.');
+                    }
+                }
+            }
+
+            if (isset($rules['max'])) {
+                if (isset($rules['type']) && ($rules['type'] == 'string')) {
+                    $lenght = mb_strlen($this->value, 'UTF-8');
+
+                    if ($lenght > $rules['max']) {
+                        $this->addError('value', 'Text lenght must be no greater than ' . $rules['max'] . '.');
+                    }
+                } else {
+                    if ($this->value > $rules['max']) {
+                        $this->addError('value', 'Value must be no greater than ' . $rules['max'] . '.');
+                    }
+                }
+            }
+
+            if (isset($rules['less'])) {
+                if ($this->value >= $rules['less']) {
+                    $this->addError('value', 'Value must be less than ' . $rules['less'] . '.');
+                }
+            }
+
+            if (isset($rules['more'])) {
+                if ($this->value <= $rules['more']) {
+                    $this->addError('value', 'Value must be greater than ' . $rules['more'] . '.');
+                }
+            }
+        }
     }
 
     public function getDefault($name)

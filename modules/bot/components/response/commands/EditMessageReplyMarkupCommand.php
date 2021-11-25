@@ -3,7 +3,7 @@
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
-use TelegramBot\Api\BotApi;
+use app\modules\bot\components\api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\HttpException;
 
