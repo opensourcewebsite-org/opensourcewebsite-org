@@ -155,6 +155,10 @@ class StellarGiver extends StellarServer
                     }
                 }
             } catch (ServerException $e) {
+                if ($e->getCode() === 504) {
+                    return;
+                }
+
                 throw $e;
             }
         }
@@ -224,12 +228,12 @@ class StellarGiver extends StellarServer
             $nextPaymentDate = $nextPaymentDate->format('Y-m-d');
         }
 
+        StellarGiverData::setNextPaymentDate($nextPaymentDate);
+
         $this
             ->buildTransaction(self::getGiverPublicKey())
             ->setAccountData('next_payment_date', $nextPaymentDate)
             ->submit(self::getGiverPrivateKey());
-
-        StellarGiverData::setNextPaymentDate($nextPaymentDate);
     }
 
     public static function incomesSentAlready(DateTime $date): bool
