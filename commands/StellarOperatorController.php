@@ -19,10 +19,10 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
 
     public function actionIndex()
     {
-        $this->sendDepositIncomes();
+        $this->actionSendDepositIncomes();
     }
 
-    protected function sendDepositIncomes()
+    protected function actionSendDepositIncomes()
     {
         if ($stellarOperator = new StellarOperator()) {
             $today = new DateTime('today');
@@ -35,14 +35,11 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
                 if (!StellarOperator::incomesSentAlready($assetCode, $today)) {
                     // Delete all unfinished incomes data
                     StellarOperator::deleteIncomesDataFromDatabase($assetCode, $today);
-
-                    // Collect and save all asset holders
-                    $stellarOperator->fetchAndSaveAssetHolders($assetCode, $minimumBalance);
+                    // Collect and save recipients
+                    $stellarOperator->fetchAndSaveRecipients($assetCode, $minimumBalance);
                 }
-
-                // Send incomes to asset holders
-                $report = $stellarOperator->sendIncomeToAssetHolders($assetCode, $today);
-
+                // Send incomes to recipients
+                $report = $stellarOperator->sendIncomeToRecipients($assetCode, $today);
                 // Report about how much value were sent with which result code
                 foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
                     $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);

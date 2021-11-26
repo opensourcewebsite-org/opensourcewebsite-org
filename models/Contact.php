@@ -217,7 +217,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         $contactExists = Contact::find()
             ->andWhere([
                 'link_user_id' => $this->link_user_id,
-                'user_id' => Yii::$app->user->identity->id,
+                'user_id' => $this->user_id,
             ])
             ->andWhere([
                 'not', ['id' => $this->id],

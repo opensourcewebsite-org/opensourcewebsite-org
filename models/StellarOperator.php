@@ -63,7 +63,7 @@ class StellarOperator extends StellarServer
      * @throws \ErrorException
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
      */
-    public function fetchAndSaveAssetHolders(string $assetCode, float $minimumBalance): void
+    public function fetchAndSaveRecipients(string $assetCode, float $minimumBalance): void
     {
         while (true) {
             $asset = Asset::newCustomAsset($assetCode, self::getIssuerPublicKey());
@@ -82,6 +82,7 @@ class StellarOperator extends StellarServer
                 $income->income = $this->incomeWeekly($holder->getCustomAssetBalanceValue($asset));
                 $income->save();
             }
+
             return;
         }
     }
@@ -102,11 +103,11 @@ class StellarOperator extends StellarServer
      * <code>$resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]</code>
      * @throws \ErrorException
      */
-    public function sendIncomeToAssetHolders(string $assetCode, DateTime $date): array
+    public function sendIncomeToRecipients(string $assetCode, DateTime $date): array
     {
         MathSafety::require64Bit();
         // TODO refactoring for db query for big amount of holders and dont use one array
-        $destinations = self::getAssetHoldersFromDatabase($assetCode, $date);
+        $recipients = $this->getRecipients($assetCode, $date);
 
         $payments = array_map(
             fn ($d) => PaymentOp::newCustomPayment(
@@ -116,7 +117,7 @@ class StellarOperator extends StellarServer
                 self::getIssuerPublicKey(),
                 self::getDistributorPublicKey()
             ),
-            $destinations
+            $recipients
         );
 
         $operationResults = [];
@@ -129,8 +130,7 @@ class StellarOperator extends StellarServer
                 $transaction = $transaction->addOperation($payment);
             }
 
-            $transaction = $transaction
-                ->setTextMemo(self::INCOME_MEMO_TEXT);
+            $transaction = $transaction->setTextMemo(self::INCOME_MEMO_TEXT);
 
             $sleepDuration = 5; // seconds
             while (true) {
@@ -161,6 +161,7 @@ class StellarOperator extends StellarServer
                     if ($e->getCode() === 504) {
                         sleep($sleepDuration);
                         $sleepDuration += 5;
+
                         if ($sleepDuration >= 30) {
                             throw $e;
                         }
@@ -173,7 +174,8 @@ class StellarOperator extends StellarServer
         }
 
         $processed_at = time();
-        foreach (array_map(null, $destinations, $operationResults) as [$holder, $result]) {
+
+        foreach (array_map(null, $recipients, $operationResults) as [$holder, $result]) {
             $holder->processed_at = $processed_at;
             $holder->result_code = $result;
             $holder->save();
@@ -214,7 +216,7 @@ class StellarOperator extends StellarServer
         }
 
         if (!$paymentDate) {
-            $paymentDate = $today->format('l') === self::INCOME_WEEK_DAY ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
+            $paymentDate = $today->format('l') == self::INCOME_WEEK_DAY ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
             $needToSet = true;
         } else {
             if (DateTime::createFromFormat('Y-m-d|', $paymentDate) < $today) {
@@ -302,13 +304,13 @@ class StellarOperator extends StellarServer
      * @param \DateTime $date
      * @return UserStellarIncome[]
      */
-    private static function getAssetHoldersFromDatabase(string $assetCode, DateTime $date): array
+    public function getRecipients(string $assetCode, DateTime $date): array
     {
         $date->setTime(0, 0);
         $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
         return UserStellarIncome::find()
-            ->where([
+            ->andWhere([
                 'asset_code' => $assetCode,
                 'processed_at' => null,
             ])

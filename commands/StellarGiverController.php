@@ -11,6 +11,7 @@ use app\models\UserStellar;
 use app\models\Contact;
 use DateTime;
 use yii\console\Controller;
+use app\models\UserStellarBasicIncome;
 
 /**
  * Class StellarGiverController
@@ -24,7 +25,7 @@ class StellarGiverController extends Controller implements CronChainedInterface
     public function actionIndex()
     {
         $this->actionUpdateParticipants();
-        //$this->sendBasicIncomes();
+        $this->actionSendBasicIncomes();
     }
 
     public function actionUpdateParticipants()
@@ -93,8 +94,7 @@ class StellarGiverController extends Controller implements CronChainedInterface
         }
     }
 
-    // TODO send basic incomes to participants
-    public function sendBasicIncomes()
+    public function actionSendBasicIncomes()
     {
         if ($stellarGiver = new StellarGiver()) {
             $today = new DateTime('today');
@@ -102,6 +102,75 @@ class StellarGiverController extends Controller implements CronChainedInterface
             if (!$stellarGiver->isPaymentDate($today)) {
                 return;
             }
+
+            $processedAt = time();
+
+            if (!StellarGiver::incomesSentAlready($today)) {
+                // Delete all unfinished incomes data
+                StellarGiver::deleteIncomesDataFromDatabase($today);
+                // Collect and save recipients
+                $stellarGiver->fetchAndSaveRecipients();
+            }
+            // Send incomes to recipients
+            $stellarGiver->sendIncomeToRecipients($today);
+
+            $processedAccountsCount = UserStellarBasicIncome::find()
+                ->andWhere([
+                    '>=', 'processed_at', $processedAt,
+                ])
+                ->count();
+
+            if ($processedAccountsCount) {
+                $paidAccountsCount = UserStellarBasicIncome::find()
+                    ->andWhere([
+                        '>=', 'processed_at', $processedAt,
+                    ])
+                    ->andWhere([
+                        'result_code' => null,
+                    ])
+                    ->count();
+
+                if ($paidAccountsCount) {
+                    $paidIncomes = UserStellarBasicIncome::find()
+                        ->andWhere([
+                            '>=', 'processed_at', $processedAt,
+                        ])
+                        ->andWhere([
+                            'result_code' => null,
+                        ])
+                        ->sum('income');
+                }
+
+                $failedAccountsCount = UserStellarBasicIncome::find()
+                    ->andWhere([
+                        '>=', 'processed_at', $processedAt,
+                    ])
+                    ->andWhere([
+                        'not',
+                        ['result_code' => null],
+                    ])
+                    ->count();
+
+                $this->output('Accounts processed: ' . $processedAccountsCount . '.'
+                    . ($paidAccountsCount ? 'Accounts paid: ' . $paidAccountsCount . '.' : '')
+                    . (isset($paidIncomes) ? ' Paid: ' . $paidIncomes . ' XLM.' : '')
+                    . ($failedAccountsCount ? ' Accounts failed: ' . $failedAccountsCount . '.' : ''));
+            }
+
+            if (!$stellarGiver->getRecipients($today)) {
+                $stellarGiver->setNextPaymentDate();
+
+                $this->output('Next Payment Date: ' . $stellarGiver->getNextPaymentDate());
+            }
         }
+    }
+
+    public function actionClearProcessedAt()
+    {
+        Yii::$app->db->createCommand()
+            ->update('{{%user}}', [
+                'basic_income_processed_at' => null,
+            ])
+            ->execute();
     }
 }

@@ -6,6 +6,12 @@ use ZuluCrypto\StellarSdk\Model\Account;
 use ZuluCrypto\StellarSdk\Model\Payment;
 use DateInterval;
 use DateTime;
+use GuzzleHttp\Exception\ServerException;
+use ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException;
+use ZuluCrypto\StellarSdk\Transaction\TransactionBuilder;
+use ZuluCrypto\StellarSdk\Util\MathSafety;
+use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
+use function Functional\group;
 
 class StellarGiver extends StellarServer
 {
@@ -80,6 +86,81 @@ class StellarGiver extends StellarServer
     }
 
     /**
+     * @throws \ErrorException
+     * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
+     */
+    public function fetchAndSaveRecipients(): void
+    {
+        if ($paymentAmount = $this->getPaymentAmount()) {
+            foreach ($this->getParticipants() as $user) {
+                $income = new UserStellarBasicIncome();
+
+                $income->account_id = $user->userStellar->getPublicKey();
+                $income->income = $paymentAmount;
+                $income->save();
+            }
+        }
+    }
+
+    /**
+     * @param \DateTime $date used to fetch asset holders from database with this date.
+     * @return array with elements like
+     * <code>$resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]</code>
+     * @throws \ErrorException
+     */
+    public function sendIncomeToRecipients(DateTime $date): void
+    {
+        MathSafety::require64Bit();
+        // TODO refactoring for db query for big amount of holders and dont use one array
+        $recipients = $this->getRecipients($date);
+
+        $payments = array_map(
+            fn ($recipient) => PaymentOp::newNativePayment(
+                $recipient->account_id,
+                $recipient->income,
+                self::getGiverPublicKey()
+            ),
+            $recipients
+        );
+
+        foreach (array_chunk($recipients, self::TRANSACTION_LIMIT) as $recipientsGroup) {
+            $transaction = $this->buildTransaction(self::getGiverPublicKey());
+
+            foreach ($recipientsGroup as $recipient) {
+                $payment = PaymentOp::newNativePayment(
+                    $recipient->account_id,
+                    $recipient->income,
+                    self::getGiverPublicKey()
+                );
+
+                $transaction = $transaction->addOperation($payment);
+            }
+
+            $transaction = $transaction->setTextMemo(self::INCOME_MEMO_TEXT);
+            $processedAt = time();
+
+            try {
+                $response = $transaction->submit(self::getGiverPrivateKey());
+
+                foreach ($recipientsGroup as $recipient) {
+                    $recipient->processed_at = $processedAt;
+                    $recipient->save();
+                }
+            } catch (PostTransactionException $e) {
+                foreach (array_map(null, $recipientsGroup, $e->getResult()->getOperationResults()) as [$recipient, $operationResult]) {
+                    if ($operationResult->getErrorCode()) {
+                        $recipient->processed_at = $processedAt;
+                        $recipient->result_code = $operationResult->getErrorCode();
+                        $recipient->save();
+                    }
+                }
+            } catch (ServerException $e) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
      * Next payment date for participants. Accessed via data from stellar account.
      * @return \DateTime
      * @throws \ZuluCrypto\StellarSdk\Horizon\Exception\HorizonException
@@ -101,7 +182,7 @@ class StellarGiver extends StellarServer
         }
 
         if (!$paymentDate) {
-            $paymentDate = ($today->format('l') === self::INCOME_WEEK_DAY) ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
+            $paymentDate = ($today->format('l') == self::INCOME_WEEK_DAY) ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
             $needToSet = true;
         } else {
             if (DateTime::createFromFormat('Y-m-d|', $paymentDate) < $today) {
@@ -149,6 +230,52 @@ class StellarGiver extends StellarServer
             ->submit(self::getGiverPrivateKey());
 
         StellarGiverData::setNextPaymentDate($nextPaymentDate);
+    }
+
+    public static function incomesSentAlready(DateTime $date): bool
+    {
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
+
+        return UserStellarBasicIncome::find()
+            ->andWhere([
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
+            ])
+            ->andWhere([
+                'not', ['processed_at' => null],
+            ])
+            ->exists();
+    }
+
+    public static function deleteIncomesDataFromDatabase(DateTime $date): void
+    {
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
+
+        UserStellarBasicIncome::deleteAll([
+            'and',
+            ['between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()],
+            ['processed_at' => null],
+        ]);
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return UserStellarBasicIncome[]
+     */
+    public function getRecipients(DateTime $date): array
+    {
+        $date->setTime(0, 0);
+        $nextDay = (clone $date)->add(new DateInterval('P1D'));
+
+        return UserStellarBasicIncome::find()
+            ->andWhere([
+                'processed_at' => null,
+            ])
+            ->andWhere([
+                'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
+            ])
+            ->all();
     }
 
     public static function getParticipantsQuery()
