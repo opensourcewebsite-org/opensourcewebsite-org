@@ -139,6 +139,8 @@ class StellarGiverController extends Controller implements CronChainedInterface
                             'result_code' => null,
                         ])
                         ->sum('income');
+                } else {
+                    $paidIncomes = 0;
                 }
 
                 $failedAccountsCount = UserStellarBasicIncome::find()
@@ -152,8 +154,8 @@ class StellarGiverController extends Controller implements CronChainedInterface
                     ->count();
 
                 $this->output('Accounts processed: ' . $processedAccountsCount . '.'
-                    . ($paidAccountsCount ? 'Accounts paid: ' . $paidAccountsCount . '.' : '')
-                    . (isset($paidIncomes) ? ' Paid: ' . $paidIncomes . ' XLM.' : '')
+                    . ($paidAccountsCount ? ' Accounts paid: ' . $paidAccountsCount . '.' : '')
+                    . ($paidIncomes ? ' Paid: ' . $paidIncomes . ' XLM.' : '')
                     . ($failedAccountsCount ? ' Accounts failed: ' . $failedAccountsCount . '.' : ''));
             }
 

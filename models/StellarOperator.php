@@ -76,7 +76,7 @@ class StellarOperator extends StellarServer
                     continue 2; // goto `while (true) {` line
                 }
 
-                $income = new UserStellarIncome();
+                $income = new UserStellarDepositIncome();
                 $income->account_id = $holder->getAccountId();
                 $income->asset_code = $assetCode;
                 $income->income = $this->incomeWeekly($holder->getCustomAssetBalanceValue($asset));
@@ -103,94 +103,53 @@ class StellarOperator extends StellarServer
      * <code>$resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]</code>
      * @throws \ErrorException
      */
-    public function sendIncomeToRecipients(string $assetCode, DateTime $date): array
+    public function sendIncomeToRecipients(string $assetCode, DateTime $date): void
     {
         MathSafety::require64Bit();
         // TODO refactoring for db query for big amount of holders and dont use one array
-        $recipients = $this->getRecipients($assetCode, $date);
+        $recipients = $this->getRecipients($date, $assetCode);
 
-        $payments = array_map(
-            fn ($d) => PaymentOp::newCustomPayment(
-                $d->account_id,
-                $d->income,
-                $assetCode,
-                self::getIssuerPublicKey(),
-                self::getDistributorPublicKey()
-            ),
-            $recipients
-        );
-
-        $operationResults = [];
-        $transactionResults = [];
-
-        foreach (array_chunk($payments, self::TRANSACTION_LIMIT) as $paymentGroup) {
+        foreach (array_chunk($recipients, self::TRANSACTION_LIMIT) as $recipientsGroup) {
             $transaction = $this->buildTransaction(self::getDistributorPublicKey());
 
-            foreach ($paymentGroup as $payment) {
+            foreach ($recipientsGroup as $recipient) {
+                $payment = PaymentOp::newCustomPayment(
+                    $recipient->account_id,
+                    $recipient->income,
+                    $assetCode,
+                    self::getIssuerPublicKey(),
+                    self::getDistributorPublicKey()
+                );
+
                 $transaction = $transaction->addOperation($payment);
             }
 
             $transaction = $transaction->setTextMemo(self::INCOME_MEMO_TEXT);
+            $processedAt = time();
 
-            $sleepDuration = 5; // seconds
-            while (true) {
-                try {
-                    $response = $transaction->submit(self::getOperatorPrivateKey());
-                    $operationResults += array_map(
-                        fn ($r) => $r->getErrorCode(),
-                        $response->getResult()->getOperationResults()
-                    );
-                    $transactionResults[] = [
-                        'status' => $response->getResult()->getResultCode(),
-                        'accounts_count' => count($response->getResult()->getOperationResults()),
-                        'income_sent' => array_sum(
-                            array_map(fn (PaymentOp $p) => $p->getAmount()->getScaledValue(), $paymentGroup)
-                        ),
-                    ];
-                } catch (PostTransactionException $e) {
-                    $operationResults += array_map(
-                        fn ($r) => $r->getErrorCode(),
-                        $e->getResult()->getOperationResults()
-                    );
-                    $transactionResults[] = [
-                        'status' => $e->getResult()->getResultCode(),
-                        'accounts_count' => count($e->getResult()->getOperationResults()),
-                        'income_sent' => 0,
-                    ];
-                } catch (ServerException $e) {
-                    if ($e->getCode() === 504) {
-                        sleep($sleepDuration);
-                        $sleepDuration += 5;
+            try {
+                $response = $transaction->submit(self::getOperatorPrivateKey());
 
-                        if ($sleepDuration >= 30) {
-                            throw $e;
-                        }
-                        continue;
-                    }
-                    throw $e;
+                foreach ($recipientsGroup as $recipient) {
+                    $recipient->processed_at = $processedAt;
+                    $recipient->save();
                 }
-                break;
+            } catch (PostTransactionException $e) {
+                foreach (array_map(null, $recipientsGroup, $e->getResult()->getOperationResults()) as [$recipient, $operationResult]) {
+                    if ($operationResult->getErrorCode()) {
+                        $recipient->processed_at = $processedAt;
+                        $recipient->result_code = $operationResult->getErrorCode();
+                        $recipient->save();
+                    }
+                }
+            } catch (ServerException $e) {
+                if ($e->getCode() === 504) {
+                    return;
+                }
+
+                throw $e;
             }
         }
-
-        $processed_at = time();
-
-        foreach (array_map(null, $recipients, $operationResults) as [$holder, $result]) {
-            $holder->processed_at = $processed_at;
-            $holder->result_code = $result;
-            $holder->save();
-        }
-
-        return array_map(
-            fn ($ts) => array_reduce($ts, fn ($carry, $t) => [
-                'accounts_count' => $carry['accounts_count'] + $t['accounts_count'],
-                'income_sent' => $carry['income_sent'] + $t['income_sent'],
-            ], [
-                'accounts_count' => 0,
-                'income_sent' => 0,
-            ]),
-            group($transactionResults, fn ($t) => $t['status'])
-        );
     }
 
     /**
@@ -209,14 +168,13 @@ class StellarOperator extends StellarServer
         if (!$paymentDate = StellarDistributorData::getNextPaymentDate()) {
             $paymentDate = $this->getAccountDataByKey(self::getDistributorPublicKey(), 'next_payment_date');
 
-
             if ($paymentDate) {
                 StellarDistributorData::setNextPaymentDate($paymentDate);
             }
         }
 
         if (!$paymentDate) {
-            $paymentDate = $today->format('l') == self::INCOME_WEEK_DAY ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
+            $paymentDate = ($today->format('l') == self::INCOME_WEEK_DAY) ? $today->format('Y-m-d') : $nextWeekDay->format('Y-m-d');
             $needToSet = true;
         } else {
             if (DateTime::createFromFormat('Y-m-d|', $paymentDate) < $today) {
@@ -273,7 +231,7 @@ class StellarOperator extends StellarServer
         $date->setTime(0, 0);
         $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
-        return UserStellarIncome::find()
+        return UserStellarDepositIncome::find()
             ->where([
                 'asset_code' => $assetCode,
             ])
@@ -291,7 +249,7 @@ class StellarOperator extends StellarServer
         $date->setTime(0, 0);
         $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
-        UserStellarIncome::deleteAll([
+        UserStellarDepositIncome::deleteAll([
             'and',
             ['asset_code' => $assetCode],
             ['between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp()],
@@ -300,23 +258,29 @@ class StellarOperator extends StellarServer
     }
 
     /**
-     * @param string $assetCode
      * @param \DateTime $date
-     * @return UserStellarIncome[]
+     * @param string $assetCode
+     * @return UserStellarDepositIncome[]
      */
-    public function getRecipients(string $assetCode, DateTime $date): array
+    public function getRecipients(DateTime $date, string $assetCode = null): array
     {
         $date->setTime(0, 0);
         $nextDay = (clone $date)->add(new DateInterval('P1D'));
 
-        return UserStellarIncome::find()
+        $query = UserStellarDepositIncome::find()
             ->andWhere([
-                'asset_code' => $assetCode,
                 'processed_at' => null,
             ])
             ->andWhere([
                 'between', 'created_at', $date->getTimestamp(), $nextDay->getTimestamp(),
-            ])
-            ->all();
+            ]);
+
+        if ($assetCode) {
+            $query->andWhere([
+                'asset_code' => $assetCode,
+            ]);
+        }
+
+        return $query->all();
     }
 }

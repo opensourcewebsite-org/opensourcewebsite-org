@@ -7,6 +7,7 @@ use app\interfaces\CronChainedInterface;
 use app\models\StellarOperator;
 use DateTime;
 use yii\console\Controller;
+use app\models\UserStellarDepositIncome;
 
 /**
  * Class StellarOperatorController
@@ -22,7 +23,7 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
         $this->actionSendDepositIncomes();
     }
 
-    protected function actionSendDepositIncomes()
+    public function actionSendDepositIncomes()
     {
         if ($stellarOperator = new StellarOperator()) {
             $today = new DateTime('today');
@@ -30,6 +31,8 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
             if (!$stellarOperator->isPaymentDate($today)) {
                 return;
             }
+
+            $processedAt = time();
 
             foreach (StellarOperator::MINIMUM_BALANCES as $assetCode => $minimumBalance) {
                 if (!StellarOperator::incomesSentAlready($assetCode, $today)) {
@@ -39,18 +42,71 @@ class StellarOperatorController extends Controller implements CronChainedInterfa
                     $stellarOperator->fetchAndSaveRecipients($assetCode, $minimumBalance);
                 }
                 // Send incomes to recipients
-                $report = $stellarOperator->sendIncomeToRecipients($assetCode, $today);
-                // Report about how much value were sent with which result code
-                foreach ($report as $resultCode => ['accounts_count' => $accountsCount, 'income_sent' => $incomeSent]) {
-                    $resultCode = strtoupper(empty($resultCode) ? 'success' : $resultCode);
-                    $incomeSent = number_format($incomeSent, 2);
-                    $this->output($resultCode . '. Accounts processed: ' . $accountsCount . '. Paid: ' . $incomeSent . ' ' . $assetCode);
+                $stellarOperator->sendIncomeToRecipients($assetCode, $today);
+
+                $processedAccountsCount = UserStellarDepositIncome::find()
+                    ->andWhere([
+                        'asset_code' => $assetCode,
+                    ])
+                    ->andWhere([
+                        '>=', 'processed_at', $processedAt,
+                    ])
+                    ->count();
+
+                if ($processedAccountsCount) {
+                    $paidAccountsCount = UserStellarDepositIncome::find()
+                        ->andWhere([
+                            'asset_code' => $assetCode,
+                        ])
+                        ->andWhere([
+                            '>=', 'processed_at', $processedAt,
+                        ])
+                        ->andWhere([
+                            'result_code' => null,
+                        ])
+                        ->count();
+
+                    if ($paidAccountsCount) {
+                        $paidIncomes = UserStellarDepositIncome::find()
+                            ->andWhere([
+                                'asset_code' => $assetCode,
+                            ])
+                            ->andWhere([
+                                '>=', 'processed_at', $processedAt,
+                            ])
+                            ->andWhere([
+                                'result_code' => null,
+                            ])
+                            ->sum('income');
+                    } else {
+                        $paidIncomes = 0;
+                    }
+
+                    $failedAccountsCount = UserStellarDepositIncome::find()
+                        ->andWhere([
+                            'asset_code' => $assetCode,
+                        ])
+                        ->andWhere([
+                            '>=', 'processed_at', $processedAt,
+                        ])
+                        ->andWhere([
+                            'not',
+                            ['result_code' => null],
+                        ])
+                        ->count();
+
+                    $this->output('Accounts processed: ' . $processedAccountsCount . '.'
+                        . ($paidAccountsCount ? ' Accounts paid: ' . $paidAccountsCount . '.' : '')
+                        . ($paidIncomes ? ' Paid: ' . $paidIncomes . ' ' . $assetCode . '.' : '')
+                        . ($failedAccountsCount ? ' Accounts failed: ' . $failedAccountsCount . '.' : ''));
                 }
             }
 
-            $stellarOperator->setNextPaymentDate();
+            if (!$stellarOperator->getRecipients($today)) {
+                $stellarOperator->setNextPaymentDate();
 
-            $this->output('Next Payment Date: ' . $stellarOperator->getNextPaymentDate());
+                $this->output('Next Payment Date: ' . $stellarOperator->getNextPaymentDate());
+            }
         }
     }
 }

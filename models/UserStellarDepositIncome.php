@@ -15,7 +15,7 @@ use yii\db\ActiveRecord;
  * @property int|null $processed_at
  * @property string|null $result_code
  */
-class UserStellarIncome extends ActiveRecord
+class UserStellarDepositIncome extends ActiveRecord
 {
     /**
      * {@inheritdoc}

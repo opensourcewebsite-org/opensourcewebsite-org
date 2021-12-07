@@ -24,7 +24,7 @@ class StellarGiver extends StellarServer
     // minimum balance that is reserved for account staying active
     public const BALANCE_RESERVE_AMOUNT = 10; // XLM
     // % of the balance which is paid as weekly basic income to participants
-    public const WEEKLY_PAYMENT_PERCENT = 2; // %
+    public const WEEKLY_PAYMENT_PERCENT = 1; // %
     // the count of votes of other participants to become a participant
     public const PARTICIPANT_MINIMUM_VOTES = 5;
 
@@ -113,15 +113,6 @@ class StellarGiver extends StellarServer
         MathSafety::require64Bit();
         // TODO refactoring for db query for big amount of holders and dont use one array
         $recipients = $this->getRecipients($date);
-
-        $payments = array_map(
-            fn ($recipient) => PaymentOp::newNativePayment(
-                $recipient->account_id,
-                $recipient->income,
-                self::getGiverPublicKey()
-            ),
-            $recipients
-        );
 
         foreach (array_chunk($recipients, self::TRANSACTION_LIMIT) as $recipientsGroup) {
             $transaction = $this->buildTransaction(self::getGiverPublicKey());
