@@ -20,16 +20,6 @@ ORG_OFFICIAL_EMAIL="hello@opensourcewebsite.org"
 ORG_SUPPORT_EMAIL="hello@opensourcewebsite.org"
 
 [[CURRENCIES]]
-code="OSW"
-issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
-status="live"
-display_decimals=7
-anchor_asset_type="other"
-name="OSW Crypto Fund"
-desc="Cryptocurrency backed 1:1 to the share of OSW Crypto Fund."
-image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
-
-[[CURRENCIES]]
 code="USD"
 issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
 status="live"
