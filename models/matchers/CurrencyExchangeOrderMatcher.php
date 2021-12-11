@@ -69,8 +69,8 @@ final class CurrencyExchangeOrderMatcher
         } else {
             $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
         }
-
-        $matchesQuery->andWhere(['<=', 'fee', (-1 * (float)$this->model->fee)]);
+        // use fees in orders for match
+        //$matchesQuery->andWhere(['<=', 'fee', (-1 * (float)$this->model->fee)]);
 
         $matches = $matchesQuery->all();
         $matchesCount = count($matches);

@@ -23,7 +23,7 @@ class UpdateScenario
         if ($this->model->isAttributeChanged('status') ||
         $this->model->isAttributeChanged('selling_currency_id') ||
         $this->model->isAttributeChanged('buying_currency_id') ||
-        $this->model->isAttributeChanged('fee', false) ||
+        //$this->model->isAttributeChanged('fee', false) ||
         $this->model->isAttributeChanged('selling_currency_min_amount', false) ||
         $this->model->isAttributeChanged('selling_currency_max_amount', false) ||
         $this->model->isAttributeChanged('selling_cash_on') ||
