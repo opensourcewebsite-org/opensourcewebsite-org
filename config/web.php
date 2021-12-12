@@ -61,12 +61,13 @@ $config = [
                     ],
                 ],
                 'yii\web\JqueryAsset' => [
+                    'sourcePath' => null,  
                     'js' => [
                         '//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js',
                         '//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js',
                     ],
                     'jsOptions' => [
-                        'position' => View::POS_HEAD,
+                        'position' => View::POS_END,
                     ],
                 ],
                 'yii\jui\JuiAsset' => [

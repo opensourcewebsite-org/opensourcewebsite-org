@@ -1,6 +1,7 @@
 <?php
 
 use app\assets\widgets\ui\TimelineAsset;
+use yii\web\View;
 
 $this->registerAssetBundle(TimelineAsset::class);
 
@@ -159,7 +160,7 @@ $JS = <<<JS
     });
 JS;
 
-$this->registerJs($JS);
+$this->registerJs($JS, View::POS_END);
 ?>
 <!DOCTYPE html>
 <html>

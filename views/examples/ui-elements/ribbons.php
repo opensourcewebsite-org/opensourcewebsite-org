@@ -1,6 +1,7 @@
 <?php
 
 use app\assets\widgets\ui\RibbonsAsset;
+use yii\web\View;
 
 $this->registerAssetBundle(RibbonsAsset::class);
 
@@ -60,7 +61,7 @@ $JS = <<<JS
             onChange: function (obj) {
                 var t = '';
                 for (var prop in obj) {
-                    t += prop + ': ' + obj[prop] + ';;;;;;\r\n'
+                    t += prop + ': ' + obj[prop] + ''
                 }
                 $('#result').html(t)
             },
@@ -71,7 +72,7 @@ $JS = <<<JS
     })
 JS;
 
-$this->registerJs($JS);
+$this->registerJs($JS, View::POS_END);
 ?>
 <!DOCTYPE html>
 <html>
