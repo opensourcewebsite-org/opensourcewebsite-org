@@ -18,40 +18,40 @@ class TabsAsset extends AssetBundle
         'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700',
 
         'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css',
-        'plugins/fontawesome-free/css/all.min.css',
+        //'plugins/fontawesome-free/css/all.min.css',
 
         //ui sliders
-        'plugins/ion-rangeslider/css/ion.rangeSlider.min.css',
+        //'plugins/ion-rangeslider/css/ion.rangeSlider.min.css',
 
         //ui modals
-        'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css',
-        'plugins/toastr/toastr.min.css',
+        //'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css',
+        //'plugins/toastr/toastr.min.css',
 
         //forms advanced
-        'plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css',
-        'plugins/select2/css/select2.min.css',
-        'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css',
-        'plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css',
+        //'plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css',
+        //'plugins/select2/css/select2.min.css',
+        //'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css',
+        //'plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css',
 
         //trumbowyg
         'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.20.0/ui/trumbowyg.min.css',
 
         //tables data tables
-        'plugins/datatables-bs4/css/dataTables.bootstrap4.css',
+        //'plugins/datatables-bs4/css/dataTables.bootstrap4.css',
 
         //tables jsgrid
-        'plugins/jsgrid/jsgrid.min.css',
-        'plugins/jsgrid/jsgrid-theme.min.css',
+        //'plugins/jsgrid/jsgrid.min.css',
+        //'plugins/jsgrid/jsgrid-theme.min.css',
 
         //calendar
-        'plugins/fullcalendar/main.min.css',
-        'plugins/fullcalendar-interaction/main.min.css',
-        'plugins/fullcalendar-daygrid/main.min.css',
-        'plugins/fullcalendar-timegrid/main.min.css',
-        'plugins/fullcalendar-bootstrap/main.min.css',
+        //'plugins/fullcalendar/main.min.css',
+        //'plugins/fullcalendar-interaction/main.min.css',
+        //'plugins/fullcalendar-daygrid/main.min.css',
+        //'plugins/fullcalendar-timegrid/main.min.css',
+        //'plugins/fullcalendar-bootstrap/main.min.css',
 
         //gallery
-        'plugins/ekko-lightbox/ekko-lightbox.css',
+        //'plugins/ekko-lightbox/ekko-lightbox.css',
 
     ];
 
@@ -72,31 +72,31 @@ class TabsAsset extends AssetBundle
 //        'https://cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/maps/usa_states.min.js',
         //'https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js',
 
-        'plugins/jquery/jquery.min.js',
-        'plugins/jquery-ui/jquery-ui.min.js',
-        'plugins/bootstrap/js/bootstrap.bundle.min',
-        'plugins/chart.js/Chart.min.js',
-        'plugins/sparklines/sparkline.js',
-        'plugins/jqvmap/jquery.vmap.min.js ',
-        'plugins/jqvmap/maps/jquery.vmap.usa.js',
-        'plugins/jquery-knob/jquery.knob.min.js',
-        'plugins/moment/moment.min.js',
-        'plugins/daterangepicker/daterangepicker.js',
-        'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
-        'plugins/summernote/summernote-bs4.min.js',
-        'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js',
-        'plugins/jquery-mousewheel/jquery.mousewheel.js',
-        'plugins/raphael/raphael.min.js',
-        'plugins/jquery-mapael/jquery.mapael.min.js',
-        'plugins/jquery-mapael/maps/usa_states.min.js',
+        //'plugins/jquery/jquery.min.js',
+        //'plugins/jquery-ui/jquery-ui.min.js',
+        //'plugins/bootstrap/js/bootstrap.bundle.min',
+        //'plugins/chart.js/Chart.min.js',
+        //'plugins/sparklines/sparkline.js',
+        //'plugins/jqvmap/jquery.vmap.min.js ',
+        //'plugins/jqvmap/maps/jquery.vmap.usa.js',
+        //'plugins/jquery-knob/jquery.knob.min.js',
+        //'plugins/moment/moment.min.js',
+        //'plugins/daterangepicker/daterangepicker.js',
+        //'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
+        //'plugins/summernote/summernote-bs4.min.js',
+        //'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js',
+        //'plugins/jquery-mousewheel/jquery.mousewheel.js',
+        //'plugins/raphael/raphael.min.js',
+        //'plugins/jquery-mapael/jquery.mapael.min.js',
+        //'plugins/jquery-mapael/maps/usa_states.min.js',
 
         //chart float
-        'plugins/flot/jquery.flot.js',
-        'plugins/flot-old/jquery.flot.resize.min.js',
-        'plugins/flot-old/jquery.flot.pie.min.js',
+        //'plugins/flot/jquery.flot.js',
+        //'plugins/flot-old/jquery.flot.resize.min.js',
+        //'plugins/flot-old/jquery.flot.pie.min.js',
 
         //chart inline
-        'plugins/sparkline/jquery.sparkline.min.js',
+        //'plugins/sparkline/jquery.sparkline.min.js',
 
         //'dist/js/pages/dashboard.js',
         //'dist/js/pages/dashboard2.js',
@@ -104,44 +104,44 @@ class TabsAsset extends AssetBundle
         'dist/js/demo.js',
 
         //ui sliders
-        'plugins/ion-rangeslider/js/ion.rangeSlider.min.js',
-        'plugins/bootstrap-slider/bootstrap-slider.min.js',
+        //'plugins/ion-rangeslider/js/ion.rangeSlider.min.js',
+        //'plugins/bootstrap-slider/bootstrap-slider.min.js',
 
         //ui modals
-        'plugins/sweetalert2/sweetalert2.min.js',
-        'plugins/toastr/toastr.min.js',
+        //'plugins/sweetalert2/sweetalert2.min.js',
+        //'plugins/toastr/toastr.min.js',
 
         //forms general
-        'plugins/bs-custom-file-input/bs-custom-file-input.min.js',
+        //'plugins/bs-custom-file-input/bs-custom-file-input.min.js',
 
         //forms advanced
-        'plugins/select2/js/select2.full.min.js',
-        'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js',
-        'plugins/inputmask/min/jquery.inputmask.bundle.min.js',
-        'plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js',
-        'plugins/bootstrap-switch/js/bootstrap-switch.min.js',
+        //'plugins/select2/js/select2.full.min.js',
+        //'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js',
+        //'plugins/inputmask/min/jquery.inputmask.bundle.min.js',
+        //'plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js',
+        //'plugins/bootstrap-switch/js/bootstrap-switch.min.js',
 
         //editors Trumbowyg
         'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.20.0/trumbowyg.min.js',
 
         //tables data tables
-        'plugins/datatables/jquery.dataTables.js',
-        'plugins/datatables-bs4/js/dataTables.bootstrap4.js',
+        //'plugins/datatables/jquery.dataTables.js',
+        //'plugins/datatables-bs4/js/dataTables.bootstrap4.js',
 
         //tables jsgrid
-        'plugins/jsgrid/demos/db.js',
-        'plugins/jsgrid/jsgrid.min.js',
+        //'plugins/jsgrid/demos/db.js',
+        //'plugins/jsgrid/jsgrid.min.js',
 
         //calendar
-        'plugins/fullcalendar/main.min.js',
-        'plugins/fullcalendar-daygrid/main.min.js',
-        'plugins/fullcalendar-timegrid/main.min.js',
-        'plugins/fullcalendar-interaction/main.min.js',
-        'plugins/fullcalendar-bootstrap/main.min.js',
+        //'plugins/fullcalendar/main.min.js',
+        //'plugins/fullcalendar-daygrid/main.min.js',
+        //'plugins/fullcalendar-timegrid/main.min.js',
+        //'plugins/fullcalendar-interaction/main.min.js',
+        //'plugins/fullcalendar-bootstrap/main.min.js',
 
         //gallery
-        'plugins/ekko-lightbox/ekko-lightbox.min.js',
-        'plugins/filterizr/jquery.filterizr.min.js',
+        //'plugins/ekko-lightbox/ekko-lightbox.min.js',
+        //'plugins/filterizr/jquery.filterizr.min.js',
     ];
 
     public $depends = [

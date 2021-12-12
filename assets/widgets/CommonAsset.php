@@ -15,7 +15,7 @@ class CommonAsset extends AssetBundle
     ];
 
     public $js = [
-        'https://code.jquery.com/jquery-3.5.1.min.js',
+        //'https://code.jquery.com/jquery-3.5.1.min.js',
         'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js',
         'dist/js/demo.js',
     ];

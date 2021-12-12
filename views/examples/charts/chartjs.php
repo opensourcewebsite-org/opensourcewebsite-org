@@ -238,7 +238,7 @@ $this->registerJs($JS, View::POS_END);
                         </div>
                     </div>
                     <div class="card-body">
-                        <canvas id="donutChart" style="height:230px; min-height:230px"></canvas>
+                        <canvas id="donutChart" style="height:230px; min-height:230px; max-height:230px"></canvas>
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -258,7 +258,7 @@ $this->registerJs($JS, View::POS_END);
                         </div>
                     </div>
                     <div class="card-body">
-                        <canvas id="pieChart" style="height:230px; min-height:230px"></canvas>
+                        <canvas id="pieChart" style="height:230px; min-height:230px; max-height:230px"></canvas>
                     </div>
                     <!-- /.card-body -->
                 </div>
