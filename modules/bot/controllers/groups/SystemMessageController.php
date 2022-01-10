@@ -60,10 +60,13 @@ class SystemMessageController extends Controller
                         $telegramUser->provider_user_id
                     );
 
-                    $chat->link('users', $telegramUser, [
-                        'status' => $telegramChatMember->getStatus(),
-                        'role' => $role,
-                    ]);
+                    // TODO Error: Call to a member function getStatus() on bool in
+                    if ($telegramChatMember) {
+                        $chat->link('users', $telegramUser, [
+                            'status' => $telegramChatMember->getStatus(),
+                            'role' => $role,
+                        ]);
+                    }
                 } else {
                     $chatMember->setAttributes([
                          'role' => $role,

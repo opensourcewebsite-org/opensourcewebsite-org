@@ -92,7 +92,7 @@ class MessageController extends Controller
                 }
             }
 
-            if ($deleteMessage) {
+            if ($deleteMessage && $this->getUpdate()->getMessage()) {
                 $this->getBotApi()->deleteMessage(
                     $chat->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
