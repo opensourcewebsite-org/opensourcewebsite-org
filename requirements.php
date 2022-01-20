@@ -9,9 +9,9 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require __DIR__ . '/vendor/autoload.php';
-
 use Dotenv\Dotenv;
+
+require __DIR__ . '/vendor/autoload.php';
 
 if (file_exists('.env')) {
     $dotenv = new Dotenv(__DIR__);
