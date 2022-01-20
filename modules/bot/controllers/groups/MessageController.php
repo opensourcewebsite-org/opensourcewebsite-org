@@ -36,10 +36,12 @@ class MessageController extends Controller
             }
 
             if (!$telegramUser->captcha_confirmed_at && ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdministrator()) {
-                $this->getBotApi()->deleteMessage(
-                    $chat->chat_id,
-                    $this->getUpdate()->getMessage()->getMessageId()
-                );
+                if ($this->getUpdate()->getMessage()) {
+                    $this->getBotApi()->deleteMessage(
+                        $chat->chat_id,
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
 
                 $botCaptcha = BotChatCaptcha::find()
                     ->where([
