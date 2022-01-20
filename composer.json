@@ -71,6 +71,9 @@
         },
         "platform": {
             "php": "7.4"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
         }
     },
     "scripts": {
