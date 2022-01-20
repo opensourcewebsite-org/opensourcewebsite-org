@@ -23,7 +23,6 @@ enabled:
     - combine_nested_dirname
     - declare_strict_types
     - dir_constant
-    - final_static_access
     - fully_qualified_strict_types
     - function_to_constant
     - hash_to_slash_comment

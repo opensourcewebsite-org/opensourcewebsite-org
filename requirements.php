@@ -15,18 +15,18 @@ require __DIR__ . '/vendor/autoload.php';
 
 if (file_exists('.env')) {
     $dotenv = new Dotenv(__DIR__);
-    $dotenv->load();
 } elseif (file_exists('.env.test')) {
     $dotenv = new Dotenv(__DIR__, '.env.test');
-    $dotenv->load();
 } else {
-    exit;
+    exit();
 }
 
-defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV') ?: 'requirements');
+$dotenv->load();
+
+defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV', 'prod'));
 
 if (YII_ENV != 'dev') {
-    exit;
+    exit();
 }
 
 require_once __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
@@ -57,9 +57,13 @@ if (extension_loaded('gd')) {
 }
 
 $connection = new \yii\db\Connection([
-    'dsn' => 'mysql:host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_NAME'),
-    'username' => getenv('DB_USERNAME'),
-    'password' => getenv('DB_PASSWORD'),
+    'dsn' => 'mysql:host=' . getenv('DB_HOST', 'localhost') . ';port=' . getenv('DB_PORT', '3306') . ';dbname=' . getenv('DB_NAME', 'opensourcewebsite'),
+    'username' => getenv('DB_USERNAME', 'root'),
+    'password' => getenv('DB_PASSWORD', ''),
+    'charset' => getenv('DB_CHARSET', 'utf8mb4'),
+    'attributes' => [
+        PDO::ATTR_CASE => PDO::CASE_LOWER,
+    ],
 ]);
 
 switch ($connection->driverName) {
