@@ -82,16 +82,7 @@ class DataController extends Controller
             return $this->redirect(['currency']);
         }
 
-        $currencyRates = $model->getCurrencyRates();
-        $countQuery = clone $currencyRates;
-        $pages =  new Pagination(['totalCount' => $countQuery->count()]);
-        $currencyRatesModels = $currencyRates->offset($pages->offset)
-            ->limit($pages->limit)
-            ->all();
-
         return $this->render('currency-view', [
-            'currencyRates' => $currencyRatesModels,
-            'pages' => $pages,
             'model' => $model,
         ]);
     }

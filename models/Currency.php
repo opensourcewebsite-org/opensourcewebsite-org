@@ -77,9 +77,4 @@ class Currency extends ActiveRecord
     {
         return $this->code . ' - ' . $this->name;
     }
-
-    public function getCurrencyRates()
-    {
-        return $this->hasMany(CurrencyRate::className(), ['from_currency_id' => 'id']);
-    }
 }

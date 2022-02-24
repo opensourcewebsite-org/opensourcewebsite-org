@@ -104,7 +104,6 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             ['remote_on', 'boolean'],
             ['location_lat', LocationLatValidator::class],
             ['location_lon', LocationLonValidator::class],
-            [['location_lat', 'location_lon'], 'double'],
             ['location', 'string'],
             [
                 'max_hourly_rate',

@@ -139,7 +139,7 @@ class StellarGiver extends StellarServer
                 }
             } catch (PostTransactionException $e) {
                 foreach (array_map(null, $recipientsGroup, $e->getResult()->getOperationResults()) as [$recipient, $operationResult]) {
-                    if ($operationResult->getErrorCode()) {
+                    if ($operationResult && $operationResult->getErrorCode()) {
                         $recipient->processed_at = $processedAt;
                         $recipient->result_code = $operationResult->getErrorCode();
                         $recipient->save();

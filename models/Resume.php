@@ -89,7 +89,6 @@ class Resume extends ActiveRecord implements ViewedByUserInterface
             ['search_radius', RadiusValidator::class],
             ['location_lat', LocationLatValidator::class],
             ['location_lon', LocationLonValidator::class],
-            [['location_lat', 'location_lon'], 'double'],
             ['location', 'string'],
             ['remote_on', 'boolean'],
             [

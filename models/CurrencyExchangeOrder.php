@@ -104,7 +104,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             [['selling_cash_on', 'buying_cash_on'], 'boolean'],
             [['selling_delivery_radius', 'buying_delivery_radius'], RadiusValidator::class],
             [['selling_location_lat', 'buying_location_lat'], LocationLatValidator::class],
-            [['selling_location_lon', 'buying_location_lat'], LocationLonValidator::class],
+            [['selling_location_lon', 'buying_location_lon'], LocationLonValidator::class],
             ['selling_location', 'required', 'when' => function ($model) {
                 if ($model->selling_cash_on && ! $model->selling_location) {
                     return true;
@@ -130,7 +130,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             [
                 [
                     'selling_location',
-                    'buying_location'
+                    'buying_location',
                 ],
                 function ($attribute) {
                     [$lat, $lon] = (new LocationParser($this->$attribute))->parse();
@@ -498,16 +498,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         } else {
             return '∞';
         }
-    }
-
-    public function getSellingCrossRate()
-    {
-        return CurrencyRate::find()->where(['from_currency_id' => $this->selling_currency_id, 'to_currency_id' => $this->buying_currency_id])->one();
-    }
-
-    public function getBuyingCrossRate()
-    {
-        return CurrencyRate::find()->where(['from_currency_id' => $this->buying_currency_id, 'to_currency_id' => $this->selling_currency_id])->one();
     }
 
     public function hasAmount(): bool
