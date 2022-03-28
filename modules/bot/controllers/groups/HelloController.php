@@ -22,6 +22,7 @@ class HelloController extends Controller
     {
         $commands = [
             '/basic_income',
+            '/deposit_income',
             '/my_id',
             '/my_rank',
             '/my_stellar',
