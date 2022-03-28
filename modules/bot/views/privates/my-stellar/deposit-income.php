@@ -18,7 +18,7 @@ $assets = [
     ExternalLink::getStellarExpertAssetFullLink('UAH', StellarOperator::getIssuerPublicKey(), 'UAH'),
 ];
 ?>
-<?= Yii::t('bot', 'Start earning {0} weekly deposit income every Friday with OSW stablecoins, become the community ambassador and redeem the stablecoins with other users', '0.5%') ?>.<br/>
+<?= Yii::t('bot', 'Start earning {0}% weekly deposit income every Friday with OSW stablecoins, become the community ambassador and redeem the stablecoins with other users', StellarOperator::INTEREST_RATE_WEEKLY*100) ?>.<br/>
 <br/>
 <?= Yii::t('bot', 'Stablecoins') ?>: <?= implode(', ', $assets) ?><br/>
 <?php endif; ?>

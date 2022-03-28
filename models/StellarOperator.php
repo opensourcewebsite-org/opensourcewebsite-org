@@ -27,7 +27,7 @@ class StellarOperator extends StellarServer
         'UAH' => 1000,
     ];
 
-    public const INTEREST_RATE_WEEKLY = 0.5 / 100;
+    public const INTEREST_RATE_WEEKLY = 0.1 / 100;
 
     /**
      * @param string $assetCode
