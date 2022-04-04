@@ -64,23 +64,27 @@ class SystemMessageController extends Controller
 
                     // TODO Error: Call to a member function getStatus() on bool in
                     if ($telegramChatMember) {
-
                         $fromUserId = null;
+
                         if (!empty($this->getUpdate()->getFrom()) && !empty($this->getUpdate()->getFrom()->getId())) {
                             $fromUser = BotUser::findOne(['provider_user_id' => $this->getUpdate()->getFrom()->getId()]);
-                            if ($fromUser) $fromUserId = $fromUser->id;
+
+                            if ($fromUser) {
+                                $fromUserId = $fromUser->id;
+                            }
                         }
 
                         $chat->link('users', $telegramUser, [
                             'status' => $telegramChatMember->getStatus(),
                             'role' => $role,
-                            'invite_user_id' => $fromUserId
+                            'invite_user_id' => $fromUserId,
                         ]);
                     }
                 } else {
                     $chatMember->setAttributes([
                          'role' => $role,
                     ]);
+
                     $chatMember->save();
                 }
 

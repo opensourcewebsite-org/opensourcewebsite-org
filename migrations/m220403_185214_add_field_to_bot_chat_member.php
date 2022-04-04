@@ -13,7 +13,7 @@ class m220403_185214_add_field_to_bot_chat_member extends Migration
     public function safeUp()
     {
         //add column
-        $this->addColumn("{{%bot_chat_member}}", "invite_user_id", $this->integer()->unsigned()->after("user_id"));
+        $this->addColumn('{{%bot_chat_member}}', 'invite_user_id', $this->integer()->unsigned()->after('user_id'));
 
         // creates index for column `user_id`
         $this->createIndex(
@@ -25,9 +25,12 @@ class m220403_185214_add_field_to_bot_chat_member extends Migration
         //create foreign key
         $this->addForeignKey(
             'fk-bot_chat_member-invite_user_id',
-            '{{%bot_chat_member}}', 'invite_user_id',
-            '{{%bot_user}}', 'id',
-            'CASCADE', 'CASCADE'
+            '{{%bot_chat_member}}',
+            'invite_user_id',
+            '{{%bot_user}}',
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
     }
 
@@ -46,7 +49,7 @@ class m220403_185214_add_field_to_bot_chat_member extends Migration
         $this->dropIndex('idx-bot_chat_member-invite_user_id', '{{%bot_chat_member}}');
 
         //drop column
-        $this->dropColumn("{{%bot_chat_member}}", "invite_user_id");
+        $this->dropColumn('{{%bot_chat_member}}', 'invite_user_id');
     }
 
     /*
