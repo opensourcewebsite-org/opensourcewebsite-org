@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\groups;
 
+use TelegramBot\Api\Types\User;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\BotChatCaptcha;
@@ -11,6 +12,7 @@ use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\controllers\groups\JoinCaptchaController;
+use app\modules\bot\models\User as BotUser;
 
 /**
 * Class SystemMessageController
@@ -62,9 +64,17 @@ class SystemMessageController extends Controller
 
                     // TODO Error: Call to a member function getStatus() on bool in
                     if ($telegramChatMember) {
+
+                        $fromUserId = null;
+                        if (!empty($this->getUpdate()->getFrom()) && !empty($this->getUpdate()->getFrom()->getId())) {
+                            $fromUser = BotUser::findOne(['provider_user_id' => $this->getUpdate()->getFrom()->getId()]);
+                            if ($fromUser) $fromUserId = $fromUser->id;
+                        }
+
                         $chat->link('users', $telegramUser, [
                             'status' => $telegramChatMember->getStatus(),
                             'role' => $role,
+                            'invite_user_id' => $fromUserId
                         ]);
                     }
                 } else {
