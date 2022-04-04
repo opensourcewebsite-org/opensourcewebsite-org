@@ -300,7 +300,7 @@ class GroupController extends Controller
                 ->all();
 
             $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
-                return self::createRoute('index', [
+                return self::createRoute('administrators', [
                     'chatId' => $chat->id,
                     'page' => $page,
                 ]);

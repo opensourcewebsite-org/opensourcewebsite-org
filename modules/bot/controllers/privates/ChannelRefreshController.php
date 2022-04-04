@@ -77,7 +77,7 @@ class ChannelRefreshController extends Controller
                     $outdatedAdministrator->provider_user_id
                 );
 
-                if ($telegramChatMember->isActualChatMember()) {
+                if ($telegramChatMember && $telegramChatMember->isActualChatMember()) {
                     $chatMember = ChatMember::findOne([
                         'chat_id' => $chat->id,
                         'user_id' => $outdatedAdministrator->id,
