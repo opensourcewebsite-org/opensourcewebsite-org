@@ -121,7 +121,7 @@ class ContactController extends Controller
     public function actionViewUser($id = null)
     {
         if ($id) {
-            if ($id == $this->user->id) {
+            if (($id == $this->user->id) || ($id == $this->user->username)) {
                 return $this->run('user/account');
             }
 

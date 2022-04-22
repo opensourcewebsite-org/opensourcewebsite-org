@@ -34,12 +34,15 @@ class PrivateRouteResolver extends Component
             $commandText = $callbackQuery->getData();
         } elseif ($requestMessage = $update->getRequestMessage()) {
             if ($forwardFromUser = $requestMessage->getForwardFrom()) {
-                $route = 'user/index';
-                $params = [
-                    'providerUserId' => $forwardFromUser->getId(),
-                ];
+                // show user by forward message
+                $route = 'user/id';
             } else {
                 $commandText = $requestMessage->getText();
+
+                if (empty($state) && $commandText && ($commandText[0] == '@')) {
+                    // show user by telegram username
+                    $route = 'user/username';
+                }
             }
         }
 
