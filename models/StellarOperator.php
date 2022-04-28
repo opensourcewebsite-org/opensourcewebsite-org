@@ -218,12 +218,12 @@ class StellarOperator extends StellarServer
             $nextPaymentDate = $nextPaymentDate->format('Y-m-d');
         }
 
-        StellarDistributorData::setNextPaymentDate($nextPaymentDate);
-
         $this
             ->buildTransaction(self::getDistributorPublicKey())
             ->setAccountData('next_payment_date', $nextPaymentDate)
             ->submit(self::getOperatorPrivateKey());
+
+        StellarDistributorData::setNextPaymentDate($nextPaymentDate);
     }
 
     public static function incomesSentAlready(string $assetCode, DateTime $date): bool
