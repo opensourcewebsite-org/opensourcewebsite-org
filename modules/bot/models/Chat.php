@@ -229,6 +229,18 @@ class Chat extends ActiveRecord
     public function getAdministrators()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
+            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                ]);
+            });
+    }
+
+    public function getHumanAdministrators()
+    {
+        return $this->hasMany(User::class, ['id' => 'user_id'])
             ->where([
                 'is_bot' => 0,
             ])

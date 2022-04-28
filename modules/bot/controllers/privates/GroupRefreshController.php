@@ -45,7 +45,9 @@ class GroupRefreshController extends Controller
         try {
             $this->getBotApi()->getChat($chat->getChatId());
             $this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember();
+
             $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
+
             $telegramAdministratorsIds = array_map(
                 fn ($a) => $a->getUser()->getId(),
                 $telegramAdministrators
@@ -87,9 +89,14 @@ class GroupRefreshController extends Controller
                         'status' => $telegramChatMember->getStatus(),
                     ]);
 
-                    $chatMember->save();
+                    $chatMember->save(false);
 
                     continue;
+                } else {
+                    ChatMember::deleteAll([
+                        'chat_id' => $chat->id,
+                        'user_id' => $outdatedAdministrator->id,
+                    ]);
                 }
             } catch (\Exception $e) {
                 Yii::warning($e);
@@ -118,6 +125,17 @@ class GroupRefreshController extends Controller
 
             if (!in_array($user->provider_user_id, $currentAdministratorsIds)) {
                 $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
+            } else {
+                $chatMember = ChatMember::findOne([
+                    'chat_id' => $chat->id,
+                    'user_id' => $user->id,
+                ]);
+
+                $chatMember->setAttributes([
+                    'status' => $telegramAdministrator->getStatus(),
+                ]);
+
+                $chatMember->save(false);
             }
         }
         // user is not in Telegram admin list

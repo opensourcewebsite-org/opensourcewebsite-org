@@ -119,7 +119,7 @@ class ChannelController extends Controller
 
             // TODO refactoring, для того чтобы ограничить доступ к настройкам группы
             if ($this->getUpdate()->getCallbackQuery()) {
-                $admins = $chat->getAdministrators()->all();
+                $admins = $chat->getActiveAdministrators()->all();
 
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
@@ -207,7 +207,7 @@ class ChannelController extends Controller
                     ->build();
             }
 
-            $query = $chat->getAdministrators();
+            $query = $chat->getHumanAdministrators();
 
             $pagination = new Pagination([
                 'totalCount' => $query->count(),

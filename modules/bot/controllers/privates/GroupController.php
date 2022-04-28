@@ -282,7 +282,7 @@ class GroupController extends Controller
                     ->build();
             }
 
-            $query = $chat->getAdministrators();
+            $query = $chat->getHumanAdministrators();
 
             $pagination = new Pagination([
                 'totalCount' => $query->count(),

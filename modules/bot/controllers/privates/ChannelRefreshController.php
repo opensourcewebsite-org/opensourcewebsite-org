@@ -24,6 +24,7 @@ class ChannelRefreshController extends Controller
      */
     public function actionIndex($chatId = null): array
     {
+        // TODO copy new code from group refresh
         function removeFromDb(Chat &$chat)
         {
             $chat->unlinkAll('phrases', true);

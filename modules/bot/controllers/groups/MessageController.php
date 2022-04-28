@@ -24,18 +24,16 @@ class MessageController extends Controller
         $telegramUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
-        if (($chat->join_captcha_status == ChatSetting::STATUS_ON) && !$telegramUser->captcha_confirmed_at) {
-            $chatMember = ChatMember::findOne([
-                'chat_id' => $chat->id,
-                'user_id' => $telegramUser->id,
-            ]);
+        $chatMember = ChatMember::findOne([
+            'chat_id' => $chat->id,
+            'user_id' => $telegramUser->id,
+        ]);
 
-            if (!$telegramUser->captcha_confirmed_at && ($chatMember->role != JoinCaptchaController::ROLE_UNVERIFIED)) {
+        if (!$chatMember->isAdministrator() && ($chat->join_captcha_status == ChatSetting::STATUS_ON) && !$telegramUser->captcha_confirmed_at) {
+            if ($chatMember->role == JoinCaptchaController::ROLE_VERIFIED) {
                 $telegramUser->captcha_confirmed_at = time();
                 $telegramUser->save(false);
-            }
-
-            if (!$telegramUser->captcha_confirmed_at && ($chatMember->role == JoinCaptchaController::ROLE_UNVERIFIED) && !$chatMember->isAdministrator()) {
+            } else {
                 if ($this->getUpdate()->getMessage()) {
                     $this->getBotApi()->deleteMessage(
                         $chat->chat_id,
@@ -59,46 +57,38 @@ class MessageController extends Controller
 
         $deleteMessage = false;
 
-        if ($chat->filter_status == ChatSetting::STATUS_ON) {
+        if (!$chatMember->isAdministrator() && $chat->filter_status == ChatSetting::STATUS_ON) {
             if ($this->getMessage()->getText() !== null) {
-                $adminUser = $chat->getAdministrators()
-                    ->where([
-                        'id' => $telegramUser->user_id,
-                    ])
-                    ->one();
+                if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
+                    $phrases = $chat->getBlacklistPhrases()->all();
 
-                if (!isset($adminUser)) {
-                    if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
-                        $deleteMessage = false;
+                    foreach ($phrases as $phrase) {
+                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                            $deleteMessage = true;
 
-                        $phrases = $chat->getBlacklistPhrases()->all();
-
-                        foreach ($phrases as $phrase) {
-                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                                $deleteMessage = true;
-                                break;
-                            }
+                            break;
                         }
-                    } else {
-                        $deleteMessage = true;
+                    }
+                } else {
+                    $deleteMessage = true;
 
-                        $phrases = $chat->getWhitelistPhrases()->all();
+                    $phrases = $chat->getWhitelistPhrases()->all();
 
-                        foreach ($phrases as $phrase) {
-                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                                $deleteMessage = false;
-                                break;
-                            }
+                    foreach ($phrases as $phrase) {
+                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                            $deleteMessage = false;
+
+                            break;
                         }
                     }
                 }
-            }
 
-            if ($deleteMessage && $this->getUpdate()->getMessage()) {
-                $this->getBotApi()->deleteMessage(
-                    $chat->getChatId(),
-                    $this->getUpdate()->getMessage()->getMessageId()
-                );
+                if ($deleteMessage && $this->getUpdate()->getMessage()) {
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
             }
         }
 

@@ -93,6 +93,7 @@ class JoinCaptchaController extends Controller
                             'provider_user_id' => $telegramUser->provider_user_id,
                             'captcha_message_id' => $response->getMessageId(),
                         ]);
+
                         $botCaptcha->save();
                     }
                 }
@@ -140,7 +141,7 @@ class JoinCaptchaController extends Controller
 
                             // Set role = 1 in bot_chat_member table
                             $chatMember->role = self::ROLE_VERIFIED;
-                            $chatMember->save();
+                            $chatMember->save(false);
 
                             $telegramUser->captcha_confirmed_at = time();
                             $telegramUser->save(false);
