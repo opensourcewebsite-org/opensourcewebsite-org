@@ -17,7 +17,7 @@ class UserController extends Controller
     /**
      * @return array
      */
-    public function actionId()
+    public function actionMessage()
     {
         if ($forwardFromUser = $this->getMessage()->getForwardFrom()) {
             $providerUserId = $forwardFromUser->getId();
@@ -27,6 +27,24 @@ class UserController extends Controller
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
+        }
+
+        return $this->runAction('id', [
+            'id' => $providerUserId,
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function actionId($id = null)
+    {
+        if ($id) {
+            $providerUserId = $id;
+        } elseif ($text = $this->getMessage()->getText()) {
+            if (preg_match('/(?:^(?:[0-9]+))/i', $text, $matches)) {
+                $providerUserId = $matches[0];
+            }
         }
 
         $telegramUser = User::findOne([

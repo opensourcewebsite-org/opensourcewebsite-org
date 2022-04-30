@@ -35,13 +35,18 @@ class PrivateRouteResolver extends Component
         } elseif ($requestMessage = $update->getRequestMessage()) {
             if ($forwardFromUser = $requestMessage->getForwardFrom()) {
                 // show user by forward message
-                $route = 'user/id';
+                $route = 'user/message';
             } else {
                 $commandText = $requestMessage->getText();
 
-                if (empty($state) && $commandText && ($commandText[0] == '@')) {
-                    // show user by telegram username
-                    $route = 'user/username';
+                if (empty($state) && $commandText) {
+                    if ($commandText[0] == '@') {
+                        // show user by telegram username
+                        $route = 'user/username';
+                    } elseif ((int)$commandText[0] > 0) {
+                        // show user by telegram id
+                        $route = 'user/id';
+                    }
                 }
             }
         }
