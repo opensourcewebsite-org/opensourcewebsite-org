@@ -72,6 +72,12 @@ class UserController extends Controller
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
+                        [
+                            'callback_data' => self::createRoute('refresh', [
+                                'id' => $telegramUser->provider_user_id,
+                            ]),
+                            'text' => Emoji::REFRESH,
+                        ],
                     ],
                 ],
                 [
@@ -109,26 +115,56 @@ class UserController extends Controller
                 ->build();
         }
 
-        $params = [
-            'telegramUser' => $telegramUser,
-            'user' => $telegramUser->globalUser,
-        ];
+        return $this->runAction('id', [
+            'id' => $telegramUser->provider_user_id,
+        ]);
+    }
 
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('index', $params),
-                [
-                    [
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ],
-                ],
-                [
-                    'disablePreview' => true,
-                ]
-            )
-            ->build();
+    /**
+     * @return array
+     */
+    public function actionRefresh($id = null)
+    {
+        if (!$id) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $telegramUser = User::findOne([
+            'provider_user_id' => $id,
+            'is_bot' => 0,
+        ]);
+
+        if (!isset($telegramUser)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        foreach ($telegramUser->chatMembers as $chatMember) {
+            $botApiChatMember = $this->getBotApi()->getChatMember(
+                $chatMember->chat->getChatId(),
+                $telegramUser->provider_user_id
+            );
+
+            if ($botApiChatMember) {
+                $botApiUser = $botApiChatMember->getUser();
+
+                $telegramUser->setAttributes([
+                    'provider_user_name' => $botApiUser->getUsername(),
+                    'provider_user_first_name' => $botApiUser->getFirstName(),
+                    'provider_user_last_name' => $botApiUser->getLastName(),
+                ]);
+
+                $telegramUser->save(false);
+
+                break;
+            }
+        }
+
+        return $this->runAction('id', [
+            'id' => $id,
+        ]);
     }
 }
