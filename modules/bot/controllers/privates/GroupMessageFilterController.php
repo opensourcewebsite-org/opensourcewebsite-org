@@ -96,6 +96,30 @@ class GroupMessageFilterController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('set-remove-reply', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => ($chat->filter_remove_reply == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove reply'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-remove-username', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => ($chat->filter_remove_username == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove username'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-remove-emoji', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => ($chat->filter_remove_emoji == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove emoji'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => GroupController::createRoute('view', [
                                 'chatId' => $chatId,
                             ]),
@@ -141,6 +165,53 @@ class GroupMessageFilterController extends Controller
         } else {
             $chat->filter_mode = ChatSetting::FILTER_MODE_WHITELIST;
         }
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveReply($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
+            $chat->filter_remove_reply = ChatSetting::STATUS_OFF;
+        } else {
+            $chat->filter_remove_reply = ChatSetting::STATUS_ON;
+        }
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveUsername($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
+            $chat->filter_remove_username = ChatSetting::STATUS_OFF;
+        } else {
+            $chat->filter_remove_username = ChatSetting::STATUS_ON;
+        }
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveEmoji($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        //TODO add remove emoji
 
         return $this->actionIndex($chatId);
     }

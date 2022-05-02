@@ -46,6 +46,15 @@ class ChatSetting extends ActiveRecord
         'filter_mode' => [
             'default' => self::FILTER_MODE_BLACKLIST,
         ],
+        'filter_remove_reply' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_username' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_emoji' => [
+            'default' => self::STATUS_OFF,
+        ],
         'faq_status' => [
             'default' => self::STATUS_OFF,
         ],

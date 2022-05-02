@@ -46,11 +46,11 @@ class GroupRefreshController extends Controller
             $this->getBotApi()->getChat($chat->getChatId());
             $this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember();
 
-            $telegramAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
+            $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
 
-            $telegramAdministratorsIds = array_map(
+            $botApiAdministratorsIds = array_map(
                 fn ($a) => $a->getUser()->getId(),
-                $telegramAdministrators
+                $botApiAdministrators
             );
         } catch (\Exception $e) {
             Yii::warning($e);
@@ -68,25 +68,25 @@ class GroupRefreshController extends Controller
         $outdatedAdministrators = $chat->getAdministrators()
             ->andWhere([
                 'not',
-                ['provider_user_id' => $telegramAdministratorsIds],
+                ['provider_user_id' => $botApiAdministratorsIds],
             ])
             ->all();
 
         foreach ($outdatedAdministrators as $outdatedAdministrator) {
             try {
-                $telegramChatMember = $this->getBotApi()->getChatMember(
+                $botApiChatMember = $this->getBotApi()->getChatMember(
                     $chat->getChatId(),
                     $outdatedAdministrator->provider_user_id
                 );
 
-                if ($telegramChatMember && $telegramChatMember->isActualChatMember()) {
+                if ($botApiChatMember && $botApiChatMember->isActualChatMember()) {
                     $chatMember = ChatMember::findOne([
                         'chat_id' => $chat->id,
                         'user_id' => $outdatedAdministrator->id,
                     ]);
 
                     $chatMember->setAttributes([
-                        'status' => $telegramChatMember->getStatus(),
+                        'status' => $botApiChatMember->getStatus(),
                     ]);
 
                     $chatMember->save(false);
@@ -110,21 +110,21 @@ class GroupRefreshController extends Controller
             $chat->getAdministrators()->all()
         );
 
-        foreach ($telegramAdministrators as $telegramAdministrator) {
+        foreach ($botApiAdministrators as $botApiAdministrator) {
             $user = User::find()
                 ->andWhere([
-                    'provider_user_id' => $telegramAdministrator->getUser()->getId(),
+                    'provider_user_id' => $botApiAdministrator->getUser()->getId(),
                 ])
                 ->one();
 
             if (!$user) {
-                $user = User::createUser($telegramAdministrator->getUser());
-                $user->updateInfo($telegramAdministrator->getUser());
+                $user = User::createUser($botApiAdministrator->getUser());
+                $user->updateInfo($botApiAdministrator->getUser());
                 $user->save();
             }
 
             if (!in_array($user->provider_user_id, $currentAdministratorsIds)) {
-                $user->link('chats', $chat, ['status' => $telegramAdministrator->getStatus()]);
+                $user->link('chats', $chat, ['status' => $botApiAdministrator->getStatus()]);
             } else {
                 $chatMember = ChatMember::findOne([
                     'chat_id' => $chat->id,
@@ -132,14 +132,14 @@ class GroupRefreshController extends Controller
                 ]);
 
                 $chatMember->setAttributes([
-                    'status' => $telegramAdministrator->getStatus(),
+                    'status' => $botApiAdministrator->getStatus(),
                 ]);
 
                 $chatMember->save(false);
             }
         }
         // user is not in Telegram admin list
-        if (!in_array($this->getTelegramUser()->provider_user_id, $telegramAdministratorsIds)) {
+        if (!in_array($this->getTelegramUser()->provider_user_id, $botApiAdministratorsIds)) {
             return $this->run('group/index');
         } else {
             return $this->getResponseBuilder()

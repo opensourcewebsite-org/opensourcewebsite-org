@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\groups;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
+use app\modules\bot\models\User as BotUser;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\BotChatFaqAnswer;
@@ -59,26 +60,57 @@ class MessageController extends Controller
 
         if (!$chatMember->isAdministrator() && $chat->filter_status == ChatSetting::STATUS_ON) {
             if ($this->getMessage()->getText() !== null) {
-                if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
-                    $phrases = $chat->getBlacklistPhrases()->all();
+                if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
+                    $replyBotUser = BotUser::findOne([
+                        'provider_user_id' => $replyMessage->getFrom()->getId(),
+                    ]);
 
-                    foreach ($phrases as $phrase) {
-                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                    if ($replyBotUser) {
+                        $replyChatMember = ChatMember::findOne([
+                            'chat_id' => $chat->id,
+                            'user_id' => $replyBotUser->id,
+                        ]);
+                    }
+
+                    if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
+                        if (!isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
                             $deleteMessage = true;
-
-                            break;
                         }
                     }
-                } else {
-                    $deleteMessage = true;
+                }
 
-                    $phrases = $chat->getWhitelistPhrases()->all();
+                if (!$deleteMessage) {
+                    if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
+                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                            if (mb_stripos($this->getMessage()->getText(), '@') !== false) {
+                                $deleteMessage = true;
+                            }
+                        }
+                    }
+                }
 
-                    foreach ($phrases as $phrase) {
-                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                            $deleteMessage = false;
+                if (!$deleteMessage) {
+                    if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
+                        $phrases = $chat->getBlacklistPhrases()->all();
 
-                            break;
+                        foreach ($phrases as $phrase) {
+                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                $deleteMessage = true;
+
+                                break;
+                            }
+                        }
+                    } else {
+                        $deleteMessage = true;
+
+                        $phrases = $chat->getWhitelistPhrases()->all();
+
+                        foreach ($phrases as $phrase) {
+                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                $deleteMessage = false;
+
+                                break;
+                            }
                         }
                     }
                 }
