@@ -33,8 +33,7 @@ $form = ActiveForm::begin();
                             <?=$form->field($model, 'counter_user_id')->widget(Select2::class, [
                                 'options' => [
                                     'formatInputTooShort'=>'test',
-                                     'prompt' => 'Select...' ,
-                                     'placeholder' => 'Select resutls...'
+                                    'prompt' => 'Select...',
                                 ],
                                 'pluginOptions' => [
                                     'minimumInputLength' => 2,

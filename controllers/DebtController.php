@@ -222,7 +222,7 @@ class DebtController extends Controller
     /**
      * @return string|Response
      */
-    public function actionCreate(): string
+    public function actionCreate()
     {
         $formModel = new CreateDebtForm();
         $formModel->currency_id = $this->user->currency_id;
@@ -277,7 +277,13 @@ class DebtController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionAjaxUsers($q = null) {
+    /** 
+     * @param string $q
+     * @return array 
+    */
+    
+    public function actionAjaxUsers($q = null) 
+    {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
@@ -293,15 +299,12 @@ class DebtController extends Controller
         ->active()
         ->joinWith('contact')
         ->select (['user.id as id','user.username'])
-        ->andWhere([
-            'not',
-            ['link_user_id' => null],
-        ])
+        ->andWhere(['not',['link_user_id' => null]])
         ->andWhere(['like', 'user.username', $q]);
 
         $countUserQuery = clone $userQuery;
 
-        $pages = new Pagination(['pageSize'=>3, 'totalCount' => $countUserQuery->count()]);
+        $pages = new Pagination(['pageSize'=>5, 'totalCount' => $countUserQuery->count()]);
 
         $users = $userQuery->offset($pages->offset)
             ->limit($pages->limit)
