@@ -10,7 +10,8 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use janisto\timepicker\TimePicker;
 use app\widgets\selects\CurrencySelect;
-
+use yii\web\JsExpression;
+use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model app\models\Debt */
 /* @var $form yii\widgets\ActiveForm */
@@ -28,13 +29,26 @@ $form = ActiveForm::begin();
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col">
-                            <?= $form->field($model, 'counter_user_id')->widget(Select2::class, [
-                                    'data' => ArrayHelper::map($users, 'id', 'displayName'),
-                                    'options' => [
-                                        'prompt' => 'Select...',
+                        <div class="col">      
+                            <?=$form->field($model, 'counter_user_id')->widget(Select2::class, [
+                                'options' => [
+                                    'formatInputTooShort'=>'test',
+                                     'prompt' => 'Select...' ,
+                                     'placeholder' => 'Select resutls...'
+                                ],
+                                'pluginOptions' => [
+                                    'minimumInputLength' => 2,
+                                    'ajax' => [
+                                        'url' =>  Url::to(['ajax-users']),
+                                        'dataType' => 'json',
+                                        'data' => new JsExpression('function(params) { return {q:params.term,  page: params.page || 1 }; }')
                                     ],
-                                ]); ?>
+                                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                    'templateResult' => new JsExpression('function(user) { return user.username; }'),
+                                    'templateSelection' => new JsExpression('function (user) { return user.username; }'),
+                                ],
+                            ]);
+                            ?>
                         </div>
                     </div>
                     <div class="row">

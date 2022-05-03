@@ -14,9 +14,12 @@ use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\data\Pagination;
+use yii\helpers\ArrayHelper;
 
 class DebtController extends Controller
 {
+    
     public function behaviors(): array
     {
         return [
@@ -47,7 +50,7 @@ class DebtController extends Controller
         ]);
 
         return $this->render('pending', [
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider, 
             'user' => $this->user,
         ]);
     }
@@ -219,7 +222,7 @@ class DebtController extends Controller
     /**
      * @return string|Response
      */
-    public function actionCreate()
+    public function actionCreate(): string
     {
         $formModel = new CreateDebtForm();
         $formModel->currency_id = $this->user->currency_id;
@@ -272,6 +275,52 @@ class DebtController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionAjaxUsers($q = null) {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        
+        $out = ['results'=>[]];
+        
+        if (empty($q)) {
+            return $out;
+        };
+
+        $page = (int)Yii::$app->request->get('page');
+        
+        $userQuery = User::find()
+        ->active()
+        ->joinWith('contact')
+        ->select (['user.id as id','user.username'])
+        ->andWhere([
+            'not',
+            ['link_user_id' => null],
+        ])
+        ->andWhere(['like', 'user.username', $q]);
+
+        $countUserQuery = clone $userQuery;
+
+        $pages = new Pagination(['pageSize'=>3, 'totalCount' => $countUserQuery->count()]);
+
+        $users = $userQuery->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        if (!$users) {
+            return $out;
+        }
+
+        foreach($users as $user){
+            $out['results'][] = ['id' => $user->id, 'username' => $user->displayName];
+        }
+
+        if($page < $pages->pageCount){
+            $out['pagination']['more'] = true;
+        }
+
+        return $out; 
+
     }
 
     public function actionCancel(int $id): Response
