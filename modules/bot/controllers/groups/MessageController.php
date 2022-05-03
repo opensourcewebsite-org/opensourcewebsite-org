@@ -35,10 +35,10 @@ class MessageController extends Controller
                 $telegramUser->captcha_confirmed_at = time();
                 $telegramUser->save(false);
             } else {
-                if ($this->getUpdate()->getMessage()) {
+                if ($this->getMessage()) {
                     $this->getBotApi()->deleteMessage(
-                        $chat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
+                        $chat->getChatId(),
+                        $this->getMessage()->getMessageId()
                     );
                 }
 
@@ -115,10 +115,10 @@ class MessageController extends Controller
                     }
                 }
 
-                if ($deleteMessage && $this->getUpdate()->getMessage()) {
+                if ($deleteMessage && $this->getMessage()) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
-                        $this->getUpdate()->getMessage()->getMessageId()
+                        $this->getMessage()->getMessageId()
                     );
                 }
             }
