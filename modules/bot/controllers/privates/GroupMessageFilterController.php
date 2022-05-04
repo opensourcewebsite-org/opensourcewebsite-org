@@ -120,6 +120,14 @@ class GroupMessageFilterController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('set-remove-empty-line', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove empty line'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => GroupController::createRoute('view', [
                                 'chatId' => $chatId,
                             ]),
@@ -212,6 +220,23 @@ class GroupMessageFilterController extends Controller
         }
 
         //TODO add remove emoji
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveEmptyLine($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
+            $chat->filter_remove_empty_line = ChatSetting::STATUS_OFF;
+        } else {
+            $chat->filter_remove_empty_line = ChatSetting::STATUS_ON;
+        }
 
         return $this->actionIndex($chatId);
     }
