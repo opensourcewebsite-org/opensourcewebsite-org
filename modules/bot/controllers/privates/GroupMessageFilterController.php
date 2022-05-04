@@ -219,7 +219,13 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        //TODO add remove emoji
+        if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
+            $chat->filter_remove_emoji = ChatSetting::STATUS_OFF;
+        } else {
+            $chat->filter_remove_emoji = ChatSetting::STATUS_ON;
+        }
+
+        return $this->actionIndex($chatId);
 
         return $this->actionIndex($chatId);
     }

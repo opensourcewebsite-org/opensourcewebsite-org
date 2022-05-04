@@ -100,6 +100,16 @@ class MessageController extends Controller
                 }
 
                 if (!$deleteMessage) {
+                    if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
+                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                            if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
+                                $deleteMessage = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!$deleteMessage) {
                     if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
                         $phrases = $chat->getBlacklistPhrases()->all();
 
