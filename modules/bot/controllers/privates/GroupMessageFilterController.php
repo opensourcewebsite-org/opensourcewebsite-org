@@ -56,7 +56,6 @@ class GroupMessageFilterController extends Controller
         $this->getState()->setName(null);
 
         $statusOn = ($chat->filter_status == ChatSetting::STATUS_ON);
-        $isModeWhitelist = ($chat->filter_mode == ChatSetting::FILTER_MODE_WHITELIST);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -75,7 +74,7 @@ class GroupMessageFilterController extends Controller
                             'callback_data' => self::createRoute('set-mode', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Mode') . ': ' . ($isModeWhitelist ? Yii::t('bot', 'Whitelist') : Yii::t('bot', 'Blacklist')),
+                            'text' => Yii::t('bot', 'Mode') . ': ' . $chat->getFilterModeLabel(),
                         ],
                     ],
                     [
@@ -168,10 +167,19 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        if ($chat->filter_mode == ChatSetting::FILTER_MODE_WHITELIST) {
-            $chat->filter_mode = ChatSetting::FILTER_MODE_BLACKLIST;
-        } else {
-            $chat->filter_mode = ChatSetting::FILTER_MODE_WHITELIST;
+        switch ($chat->filter_mode) {
+            case ChatSetting::FILTER_MODE_OFF:
+                $chat->filter_mode = ChatSetting::FILTER_MODE_BLACKLIST;
+
+                break;
+            case ChatSetting::FILTER_MODE_BLACKLIST:
+                $chat->filter_mode = ChatSetting::FILTER_MODE_WHITELIST;
+
+                break;
+            case ChatSetting::FILTER_MODE_WHITELIST:
+                $chat->filter_mode = ChatSetting::FILTER_MODE_OFF;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

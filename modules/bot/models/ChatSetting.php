@@ -14,6 +14,7 @@ class ChatSetting extends ActiveRecord
 
     public const GREETING_MESSAGE_LIFETIME = 1800; // seconds
 
+    public const FILTER_MODE_OFF = 'off';
     public const FILTER_MODE_BLACKLIST = 'blacklist';
     public const FILTER_MODE_WHITELIST = 'whitelist';
 
@@ -44,7 +45,7 @@ class ChatSetting extends ActiveRecord
             'default' => self::STATUS_OFF,
         ],
         'filter_mode' => [
-            'default' => self::FILTER_MODE_BLACKLIST,
+            'default' => self::FILTER_MODE_OFF,
         ],
         'filter_remove_reply' => [
             'default' => self::STATUS_OFF,

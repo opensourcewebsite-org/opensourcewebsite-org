@@ -196,6 +196,7 @@ return [
     'Message Filter' => 'Фильтр сообщений',
     'filters messages in the group using a list of allowed phrases (Whitelist) or a list of forbidden phrases (Blacklist)' => 'фильтрует сообщения в группе, используя список разрешенных фраз (Белый список) или список запрещенных фраз (Черный список)',
     'All messages that do not meet the requirements will be deleted' => 'Все сообщения, не соответствующие требованиям, будут удалены',
+    'No list' => 'Нет списка',
     'Whitelist' => 'Белый список',
     'Blacklist' => 'Черный список',
     'Whitelist phrases' => 'Белый список фраз',

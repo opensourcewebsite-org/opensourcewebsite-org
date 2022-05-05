@@ -110,28 +110,36 @@ class MessageController extends Controller
                 }
 
                 if (!$deleteMessage) {
-                    if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
-                        $phrases = $chat->getBlacklistPhrases()->all();
+                    switch ($chat->filter_mode) {
+                        case ChatSetting::FILTER_MODE_OFF:
 
-                        foreach ($phrases as $phrase) {
-                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                                $deleteMessage = true;
+                            break;
+                        case ChatSetting::FILTER_MODE_BLACKLIST:
+                            $phrases = $chat->getBlacklistPhrases()->all();
 
-                                break;
+                            foreach ($phrases as $phrase) {
+                                if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                    $deleteMessage = true;
+
+                                    break;
+                                }
                             }
-                        }
-                    } else {
-                        $deleteMessage = true;
 
-                        $phrases = $chat->getWhitelistPhrases()->all();
+                            break;
+                        case ChatSetting::FILTER_MODE_WHITELIST:
+                            $deleteMessage = true;
 
-                        foreach ($phrases as $phrase) {
-                            if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                                $deleteMessage = false;
+                            $phrases = $chat->getWhitelistPhrases()->all();
 
-                                break;
+                            foreach ($phrases as $phrase) {
+                                if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                    $deleteMessage = false;
+
+                                    break;
+                                }
                             }
-                        }
+
+                            break;
                     }
                 }
 
