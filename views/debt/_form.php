@@ -4,7 +4,8 @@ use app\models\Debt;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
 use yii\helpers\Html;
-use kartik\select2\Select2;
+use app\widgets\selects\ContactSelect;
+//use kartik\select2\Select2;
 use kartik\date\DatePicker;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -30,23 +31,7 @@ $form = ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">      
-                            <?=$form->field($model, 'counter_user_id')->widget(Select2::class, [
-                                'options' => [
-                                    'formatInputTooShort'=>'test',
-                                    'prompt' => 'Select...',
-                                ],
-                                'pluginOptions' => [
-                                    'minimumInputLength' => 2,
-                                    'ajax' => [
-                                        'url' =>  Url::to(['ajax-users']),
-                                        'dataType' => 'json',
-                                        'data' => new JsExpression('function(params) { return {q:params.term,  page: params.page || 1 }; }')
-                                    ],
-                                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                                    'templateResult' => new JsExpression('function(user) { return user.username; }'),
-                                    'templateSelection' => new JsExpression('function (user) { return user.username; }'),
-                                ],
-                            ]);
+                            <?=$form->field($model, 'counter_user_id')->widget(ContactSelect::class, ['pluginOptions' => ['ajax' => ['url' => Url::to(['ajax-users'])]]]);
                             ?>
                         </div>
                     </div>
