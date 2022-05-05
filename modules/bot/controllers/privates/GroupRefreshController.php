@@ -123,14 +123,14 @@ class GroupRefreshController extends Controller
                 $user->save();
             }
 
-            if (!in_array($user->provider_user_id, $currentAdministratorsIds)) {
+            $chatMember = ChatMember::findOne([
+                'chat_id' => $chat->id,
+                'user_id' => $user->id,
+            ]);
+
+            if (!$chatMember) {
                 $user->link('chats', $chat, ['status' => $botApiAdministrator->getStatus()]);
             } else {
-                $chatMember = ChatMember::findOne([
-                    'chat_id' => $chat->id,
-                    'user_id' => $user->id,
-                ]);
-
                 $chatMember->setAttributes([
                     'status' => $botApiAdministrator->getStatus(),
                 ]);
