@@ -288,10 +288,6 @@ class DebtController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
         $out = ['results'=>[]];
-        
-        if (empty($q)) {
-            return $out;
-        };
 
         $page = (int)Yii::$app->request->get('page');
         
@@ -300,11 +296,16 @@ class DebtController extends Controller
         ->joinWith('contact')
         ->select (['user.id as id','user.username'])
         ->andWhere(['not',['link_user_id' => null]])
-        ->andWhere(['like', 'user.username', $q]);
+        ->orderBy([
+            'user.username' => SORT_ASC,
+        ]);
+        
+        if(!empty($q))
+            $userQuery->andWhere(['like', 'user.username', $q]);
 
         $countUserQuery = clone $userQuery;
 
-        $pages = new Pagination(['pageSize'=>5, 'totalCount' => $countUserQuery->count()]);
+        $pages = new Pagination(['pageSize'=>6, 'totalCount' => $countUserQuery->count()]);
 
         $users = $userQuery->offset($pages->offset)
             ->limit($pages->limit)
