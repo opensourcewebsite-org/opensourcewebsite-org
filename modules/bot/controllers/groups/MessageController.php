@@ -92,7 +92,11 @@ class MessageController extends Controller
                 if (!$deleteMessage) {
                     if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
                         if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                            if (preg_match('/(?:[\s]{2,})/i', $this->getMessage()->getText())) {
+                            if (preg_match('/(?:(\n\s))/i', $this->getMessage()->getText())) {
+                                // removes empty lines and indents, ignores spaces at the end of lines
+                                $deleteMessage = true;
+                            } elseif (preg_match('/(?:(( ){2,}\S))/i', $this->getMessage()->getText())) {
+                                // removes double spaces
                                 $deleteMessage = true;
                             }
                         }
