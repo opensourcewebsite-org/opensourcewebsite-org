@@ -102,7 +102,8 @@ class MessageController extends Controller
                 if (!$deleteMessage) {
                     if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
                         if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                            if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
+                            // https://unicode.org/emoji/charts/full-emoji-list.html
+                            if (preg_match('/(?:[\x{2000}-\x{27FF}\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
                                 $deleteMessage = true;
                             }
                         }
