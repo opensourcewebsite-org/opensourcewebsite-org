@@ -24,11 +24,6 @@ class ContactSelect extends Widget
     private function getDefaultPluginOptionsAjax (): array
     {
         return [
-            'minimumInputLength' => 2,
-            'ajax'=>[
-                'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term,  page: params.page || 1 }; }')
-            ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
             'templateResult' => new JsExpression('function(user) { return user.username; }'),
             'templateSelection' => new JsExpression('function (user) { return user.username; }'),
@@ -59,5 +54,8 @@ class ContactSelect extends Widget
             ]);
         }
     }
+
+
+  
 
 }

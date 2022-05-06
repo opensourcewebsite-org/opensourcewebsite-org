@@ -31,7 +31,11 @@ $form = ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">      
-                            <?=$form->field($model, 'counter_user_id')->widget(ContactSelect::class, ['pluginOptions' => ['ajax' => ['url' => Url::to(['ajax-users'])]]]);
+                            <?=$form->field($model, 'counter_user_id')->widget(ContactSelect::class, ['pluginOptions' => ['ajax' => [
+                                'url' => Url::to(['ajax-users']),
+                                'dataType' => 'json',
+                                'data' => new JsExpression('function(params) { return {q:params.term,  page: params.page || 1 }; }')
+                                ]]]);
                             ?>
                         </div>
                     </div>
