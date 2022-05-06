@@ -24,19 +24,33 @@ class ContactSelect extends Widget
     private function getDefaultPluginOptionsAjax (): array
     {
         return [
-            'minimumInputLength' => 2,
-            'ajax'=>[
-                'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term,  page: params.page || 1 }; }')
-            ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
             'templateResult' => new JsExpression('function(user) { return user.username; }'),
             'templateSelection' => new JsExpression('function (user) { return user.username; }'),
         ];
     }
 
+    private function registerJs(): void
+    {
+        $this->getView()->registerJs(new JsExpression("
+            $('#{$this->getId()}').on('select2:select', function (e) {
+                $('#{$this->getId()}').trigger('change.select2');
+            });
+        "));  
+    }
+
+    public function init()
+    {
+        parent::init();
+    }
+
     public function run(): string
     {
+
+        if(!empty($this->pluginOptions['ajax'])) {
+            $this->registerJs();
+        }
+
         if ($this->hasModel()) {
             return Select2::widget([
                 'model' => $this->model,
@@ -59,5 +73,4 @@ class ContactSelect extends Widget
             ]);
         }
     }
-
 }
