@@ -30,8 +30,27 @@ class ContactSelect extends Widget
         ];
     }
 
+    private function registerJs(): void
+    {
+        $this->getView()->registerJs(new JsExpression("
+            $('#{$this->getId()}').on('select2:select', function (e) {
+                $('#{$this->getId()}').trigger('change.select2');
+            });
+        "));  
+    }
+
+    public function init()
+    {
+        parent::init();
+    }
+
     public function run(): string
     {
+
+        if(!empty($this->pluginOptions['ajax'])) {
+            $this->registerJs();
+        }
+
         if ($this->hasModel()) {
             return Select2::widget([
                 'model' => $this->model,
