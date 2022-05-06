@@ -288,7 +288,7 @@ class DebtController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         
         $out = ['results'=>[]];
-   
+
         $page = (int)Yii::$app->request->get('page');
         
         $userQuery = User::find()

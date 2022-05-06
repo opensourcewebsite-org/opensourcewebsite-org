@@ -285,4 +285,18 @@ class Chat extends ActiveRecord
     {
         $this->chat_id = $chatId;
     }
+
+    public function getFilterModeLabel(): string
+    {
+        return static::getFilterModeLabels()[$this->filter_mode];
+    }
+
+    public static function getFilterModeLabels(): array
+    {
+        return [
+            ChatSetting::FILTER_MODE_OFF => Yii::t('bot', 'No list'),
+            ChatSetting::FILTER_MODE_BLACKLIST => Yii::t('bot', 'Blacklist'),
+            ChatSetting::FILTER_MODE_WHITELIST => Yii::t('bot', 'Whitelist'),
+        ];
+    }
 }

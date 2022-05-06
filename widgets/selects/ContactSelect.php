@@ -73,8 +73,4 @@ class ContactSelect extends Widget
             ]);
         }
     }
-
-
-  
-
 }

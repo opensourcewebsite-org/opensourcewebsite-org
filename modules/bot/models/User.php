@@ -224,6 +224,11 @@ class User extends ActiveRecord
         return $this->hasOne(UserLocation::class, ['user_id' => 'user_id']);
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getUserId()
     {
         return $this->user_id;
