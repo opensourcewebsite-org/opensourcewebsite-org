@@ -419,26 +419,8 @@ $leftMenuItems = [
         'items' => [
             [
                 'title' => 'Dashboard',
-                'urls' => [
-                    'examples/dashboard',
-                ],
-                'items' => [
-                    [
-                        'title' => 'Dashboard 1',
-                        'url' => 'examples/dashboard/1',
-                        'route' => '/examples/dashboard/1',
-                    ],
-                    [
-                        'title' => 'Dashboard 2',
-                        'url' => 'examples/dashboard/2',
-                        'route' => '/examples/dashboard/2',
-                    ],
-                    [
-                        'title' => 'Dashboard 3',
-                        'url' => 'examples/dashboard/3',
-                        'route' => '/examples/dashboard/3',
-                    ],
-                ],
+                'url' => 'examples/dashboard',
+                'route' => '/examples/dashboard',
             ],
             [
                 'title' => 'Widgets',
