@@ -232,3 +232,13 @@ a.desc:after {
     border: 0;
     border-bottom: 1px solid #eee;
 }
+
+.card-body.table-overflow {
+    overflow-x: auto;
+    padding-bottom: 21px !important;
+}
+
+.card-body.table-overflow .card-footer.clearfix {
+    position: absolute;
+    width: 100%;
+}
