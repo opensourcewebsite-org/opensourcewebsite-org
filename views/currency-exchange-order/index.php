@@ -61,7 +61,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                         ]); ?>
                     </div>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body p-0 table-overflow">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
                         'summary' => false,

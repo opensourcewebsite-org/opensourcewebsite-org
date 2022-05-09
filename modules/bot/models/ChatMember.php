@@ -55,7 +55,8 @@ class ChatMember extends ActiveRecord
 
     public function isAdministrator()
     {
-        return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR;
+        // 1087968824 - @GroupAnonymousBot user id in groups for anonymous admin
+        return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR || ($this->botUser->getProviderUserId() == 1087968824);
     }
 
     public function isActiveAdministrator()

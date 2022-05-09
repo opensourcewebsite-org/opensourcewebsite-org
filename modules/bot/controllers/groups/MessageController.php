@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\groups;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
+use app\modules\bot\models\User as BotUser;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\BotChatCaptcha;
 use app\modules\bot\models\BotChatFaqAnswer;
@@ -34,10 +35,10 @@ class MessageController extends Controller
                 $telegramUser->captcha_confirmed_at = time();
                 $telegramUser->save(false);
             } else {
-                if ($this->getUpdate()->getMessage()) {
+                if ($this->getMessage()) {
                     $this->getBotApi()->deleteMessage(
-                        $chat->chat_id,
-                        $this->getUpdate()->getMessage()->getMessageId()
+                        $chat->getChatId(),
+                        $this->getMessage()->getMessageId()
                     );
                 }
 
@@ -59,34 +60,99 @@ class MessageController extends Controller
 
         if (!$chatMember->isAdministrator() && $chat->filter_status == ChatSetting::STATUS_ON) {
             if ($this->getMessage()->getText() !== null) {
-                if ($chat->filter_mode == ChatSetting::FILTER_MODE_BLACKLIST) {
-                    $phrases = $chat->getBlacklistPhrases()->all();
+                if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
+                    $replyBotUser = BotUser::findOne([
+                        'provider_user_id' => $replyMessage->getFrom()->getId(),
+                    ]);
 
-                    foreach ($phrases as $phrase) {
-                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                            $deleteMessage = true;
-
-                            break;
-                        }
+                    if ($replyBotUser) {
+                        $replyChatMember = ChatMember::findOne([
+                            'chat_id' => $chat->id,
+                            'user_id' => $replyBotUser->id,
+                        ]);
                     }
-                } else {
-                    $deleteMessage = true;
 
-                    $phrases = $chat->getWhitelistPhrases()->all();
-
-                    foreach ($phrases as $phrase) {
-                        if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                            $deleteMessage = false;
-
-                            break;
+                    if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
+                        if (!isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                            $deleteMessage = true;
                         }
                     }
                 }
 
-                if ($deleteMessage && $this->getUpdate()->getMessage()) {
+                if (!$deleteMessage) {
+                    if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
+                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                            if (mb_stripos($this->getMessage()->getText(), '@') !== false) {
+                                $deleteMessage = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!$deleteMessage) {
+                    if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
+                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                            if (preg_match('/(?:(\n\s))/i', $this->getMessage()->getText())) {
+                                // removes empty lines and indents, ignores spaces at the end of lines
+                                $deleteMessage = true;
+                            } elseif (preg_match('/(?:(( ){2,}\S))/i', $this->getMessage()->getText())) {
+                                // removes double spaces
+                                $deleteMessage = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!$deleteMessage) {
+                    if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
+                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                            // https://unicode.org/emoji/charts/full-emoji-list.html
+                            // TODO remove more emoji
+                            if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
+                                $deleteMessage = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!$deleteMessage) {
+                    switch ($chat->filter_mode) {
+                        case ChatSetting::FILTER_MODE_OFF:
+
+                            break;
+                        case ChatSetting::FILTER_MODE_BLACKLIST:
+                            $phrases = $chat->getBlacklistPhrases()->all();
+
+                            foreach ($phrases as $phrase) {
+                                if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                    $deleteMessage = true;
+
+                                    break;
+                                }
+                            }
+
+                            break;
+                        case ChatSetting::FILTER_MODE_WHITELIST:
+                            $deleteMessage = true;
+
+                            $phrases = $chat->getWhitelistPhrases()->all();
+
+                            foreach ($phrases as $phrase) {
+                                if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                    $deleteMessage = false;
+
+                                    break;
+                                }
+                            }
+
+                            break;
+                    }
+                }
+
+                if ($deleteMessage && $this->getMessage()) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
-                        $this->getUpdate()->getMessage()->getMessageId()
+                        $this->getMessage()->getMessageId()
                     );
                 }
             }
