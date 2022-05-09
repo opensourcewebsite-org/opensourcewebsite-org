@@ -26,7 +26,7 @@ $displayActiveTab = $searchModel->status === AdOfferSearch::STATUS_ON;
 <div class="index">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card table-overflow">
                 <div class="card-header d-flex p-0">
                     <div class="col-sm-6">
                         <ul class="nav nav-pills ml-auto p-2">
