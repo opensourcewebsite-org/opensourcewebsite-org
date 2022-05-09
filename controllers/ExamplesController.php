@@ -26,9 +26,9 @@ class ExamplesController extends Controller
         ];
     }
 
-    public function actionDashboard($id): string
+    public function actionDashboard(): string
     {
-        return $this->render('dashboard/' . $id);
+        return $this->render('dashboard');
     }
 
     public function actionWidgets(): string
