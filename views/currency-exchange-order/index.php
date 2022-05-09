@@ -23,7 +23,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
 <div class="index">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card table-overflow">
                 <div class="card-header d-flex p-0">
                     <div class="col-sm-6">
                         <ul class="nav nav-pills ml-auto p-2">
@@ -61,7 +61,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                         ]); ?>
                     </div>
                 </div>
-                <div class="card-body p-0 table-overflow">
+                <div class="card-body p-0">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
                         'summary' => false,
