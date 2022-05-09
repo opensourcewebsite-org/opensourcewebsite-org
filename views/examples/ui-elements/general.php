@@ -714,10 +714,10 @@ $this->registerCss($CSS);
                                     <img class="d-block w-100" src="https://via.placeholder.com/900x500/39CCCC/ffffff&text=I+Love+Bootstrap" alt="First slide">
                                 </div>
                                 <div class="carousel-item">
-                                    <img class="d-block w-100" src="https://via.placeholder.com/900x500/39CCCC/ffffff&text=I+Love+Bootstrap" alt="Second slide">
+                                    <img class="d-block w-100" src="https://via.placeholder.com/900x500/3c8dbc/ffffff&text=I+Love+Bootstrap" alt="Second slide">
                                 </div>
                                 <div class="carousel-item">
-                                    <img class="d-block w-100" src="https://via.placeholder.com/900x500/39CCCC/ffffff&text=I+Love+Bootstrap" alt="Third slide">
+                                    <img class="d-block w-100" src="https://via.placeholder.com/900x500/f39c12/ffffff&text=I+Love+Bootstrap" alt="Third slide">
                                 </div>
                             </div>
                             <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
