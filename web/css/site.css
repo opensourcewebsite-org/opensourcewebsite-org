@@ -233,12 +233,20 @@ a.desc:after {
     border-bottom: 1px solid #eee;
 }
 
-.card-body.table-overflow {
+.table-overflow .card-body  {
     overflow-x: auto;
     padding-bottom: 21px !important;
 }
 
-.card-body.table-overflow .card-footer.clearfix {
+.table-overflow .card-body  .card-footer.clearfix {
     position: absolute;
     width: 100%;
+}
+
+.table-overflow .card-header .nav{
+    flex-wrap: nowrap;
+    align-items: center;
+}
+.table-overflow .card-header .btn-outline-success{
+    margin-top: 0.5rem;
 }
