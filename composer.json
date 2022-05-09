@@ -36,7 +36,7 @@
         "yiisoft/yii2-swiftmailer": "^2.0",
         "yiisoft/yii2-bootstrap4": "^2.0",
         "yiisoft/yii2-httpclient": "^2.0.0",
-        "almasaeed2010/adminlte": "^3.0",
+        "almasaeed2010/adminlte": "~3.2",
         "cebe/yii2-gravatar": "^1.1",
         "vlucas/phpdotenv": "^2.5",
         "brussens/yii2-maintenance-mode": "^0.2",
