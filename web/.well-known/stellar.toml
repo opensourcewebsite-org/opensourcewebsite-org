@@ -197,3 +197,107 @@ is_unlimited=true
 name="OSW Indonesian Rupiah"
 desc="Cryptocurrency backed 1:1 to the Indonesian Rupiah."
 image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="AUD"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="AUD"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Australian Dollar"
+desc="Cryptocurrency backed 1:1 to the Australian Dollar."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="NZD"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="NZD"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW New Zealand dollar"
+desc="Cryptocurrency backed 1:1 to the New Zealand dollar."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="JPY"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="JPY"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Japanese Yen"
+desc="Cryptocurrency backed 1:1 to the Japanese Yen."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="HKD"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="HKD"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Hong Kong Dollar"
+desc="Cryptocurrency backed 1:1 to the Hong Kong Dollar."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="CZK"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="CZK"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Czech Koruna"
+desc="Cryptocurrency backed 1:1 to the Czech Koruna."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="MXN"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="MXN"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Mexican Peso"
+desc="Cryptocurrency backed 1:1 to the Mexican Peso."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="CAD"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="CAD"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Canadian Dollar"
+desc="Cryptocurrency backed 1:1 to the Canadian Dollar."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
+
+[[CURRENCIES]]
+code="CHF"
+issuer="GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH"
+status="live"
+display_decimals=2
+anchor_asset_type="fiat"
+anchor_asset="CHF"
+is_asset_anchored=true
+is_unlimited=true
+name="OSW Swiss Franc"
+desc="Cryptocurrency backed 1:1 to the Swiss Franc."
+image="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
