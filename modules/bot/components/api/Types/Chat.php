@@ -2,8 +2,10 @@
 
 namespace app\modules\bot\components\api\Types;
 
+use app\modules\bot\models\Chat as ChatModel;
 use TelegramBot\Api\Types\ChatPhoto;
-use app\modules\bot\models\Chat as ActiveRecordChat;
+use TelegramBot\Api\Types\ChatPermissions;
+use TelegramBot\Api\Types\ChatLocation;
 
 class Chat extends \TelegramBot\Api\Types\Chat
 {
@@ -34,16 +36,16 @@ class Chat extends \TelegramBot\Api\Types\Chat
 
     public function isPrivate()
     {
-        return $this->getType() == ActiveRecordChat::TYPE_PRIVATE;
+        return $this->getType() == ChatModel::TYPE_PRIVATE;
     }
 
     public function isGroup()
     {
-        return $this->getType() == ActiveRecordChat::TYPE_GROUP || $this->getType() == ActiveRecordChat::TYPE_SUPERGROUP;
+        return $this->getType() == ChatModel::TYPE_GROUP || $this->getType() == ChatModel::TYPE_SUPERGROUP;
     }
 
     public function isChannel()
     {
-        return $this->getType() == ActiveRecordChat::TYPE_CHANNEL;
+        return $this->getType() == ChatModel::TYPE_CHANNEL;
     }
 }

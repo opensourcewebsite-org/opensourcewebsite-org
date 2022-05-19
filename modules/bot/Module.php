@@ -155,6 +155,8 @@ class Module extends \yii\base\Module
             ]);
 
             if (!$chat->save()) {
+                Yii::warning($chat->getErrors());
+
                 return false;
             }
 
@@ -164,15 +166,15 @@ class Module extends \yii\base\Module
 
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
-                $administrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
+                $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
 
-                foreach ($administrators as $administrator) {
+                foreach ($botApiAdministrators as $botApiAdministrator) {
                     $administratorBotUser = BotUser::findOne([
                         'provider_user_id' => $administrator->getUser()->getId(),
                     ]);
 
                     if (!isset($administratorBotUser)) {
-                        $administratorUpdateUser = $administrator->getUser();
+                        $administratorUpdateUser = $botApiAdministrator->getUser();
 
                         $administratorBotUser = BotUser::createUser($administratorUpdateUser);
 
@@ -182,8 +184,8 @@ class Module extends \yii\base\Module
                     }
 
                     $administratorBotUser->link('chats', $chat, [
-                        'status' => $administrator->getStatus(),
-                        'role' => $administrator->getStatus() == ChatMember::STATUS_CREATOR ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
+                        'status' => $botApiAdministrator->getStatus(),
+                        'role' => $botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
                     ]);
                 }
             }

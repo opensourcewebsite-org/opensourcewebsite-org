@@ -84,6 +84,11 @@ class Setting extends ActiveRecord
             'default' => 1,
             'more' => 0,
         ],
+        'bot_group_slow_mode_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
         'bot_group_filter_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,

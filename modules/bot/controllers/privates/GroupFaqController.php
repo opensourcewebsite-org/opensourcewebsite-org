@@ -43,13 +43,13 @@ class GroupFaqController extends Controller
     {
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(null);
-
-        $statusOn = ($chat->faq_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -60,7 +60,7 @@ class GroupFaqController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->faq_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [

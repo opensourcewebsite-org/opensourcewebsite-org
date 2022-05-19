@@ -22,11 +22,11 @@ class GroupJoinHiderController extends Controller
     {
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
-
-        $statusOn = ($chat->join_hider_status == ChatSetting::STATUS_ON);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -37,7 +37,7 @@ class GroupJoinHiderController extends Controller
                                 'callback_data' => self::createRoute('set-status', [
                                     'chatId' => $chatId,
                                 ]),
-                                'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                                'text' => $chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                             ],
                         ],
                         [

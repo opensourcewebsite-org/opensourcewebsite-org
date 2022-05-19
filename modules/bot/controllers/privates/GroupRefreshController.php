@@ -32,10 +32,6 @@ class GroupRefreshController extends Controller
             $chat->delete();
         }
 
-        if (!isset($chatId)) {
-            return $this->run('group/index');
-        }
-
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat) || !$chat->isGroup()) {
@@ -144,8 +140,7 @@ class GroupRefreshController extends Controller
         } else {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
-                    $this->render('index'),
-                    true
+                    $this->render('index')
                 )
                 ->build();
         }

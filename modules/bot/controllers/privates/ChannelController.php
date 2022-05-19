@@ -98,7 +98,7 @@ class ChannelController extends Controller
         if ($chatId) {
             $chat = Chat::findOne($chatId);
 
-            if (!isset($chat)) {
+            if (!isset($chat) || !$chat->isChannel()) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery()
                     ->build();
@@ -142,13 +142,7 @@ class ChannelController extends Controller
                                     'callback_data' => ChannelMarketplaceController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
-                                    'text' => call_user_func(
-                                        function () use ($chat) {
-                                            $statusOn = ($chat->marketplace_status == ChatSetting::STATUS_ON);
-
-                                            return ($statusOn ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace');
-                                        }
-                                    ),
+                                    'text' => ($chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
                                 ],
                             ],
                             [
@@ -188,7 +182,7 @@ class ChannelController extends Controller
         if ($chatId) {
             $chat = Chat::findOne($chatId);
 
-            if (!isset($chat)) {
+            if (!isset($chat) || !$chat->isChannel()) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery()
                     ->build();
@@ -281,7 +275,7 @@ class ChannelController extends Controller
 
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
+        if (!isset($chat) || !$chat->isChannel()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

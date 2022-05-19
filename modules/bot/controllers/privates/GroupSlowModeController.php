@@ -2,23 +2,24 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
+use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use Yii;
+use yii\data\Pagination;
+use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class GroupGreetingController
- *
- * @package app\modules\bot\controllers\privates
- */
-class GroupGreetingController extends Controller
+* Class GroupSlowModeController
+*
+* @package app\modules\bot\controllers\privates
+*/
+class GroupSlowModeController extends Controller
 {
     /**
-     * @return array
-     */
+    * @return array
+    */
     public function actionIndex($chatId = null)
     {
         $chat = Chat::findOne($chatId);
@@ -29,28 +30,26 @@ class GroupGreetingController extends Controller
                 ->build();
         }
 
-        $telegramUser = $this->getTelegramUser();
-
         $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat', 'telegramUser')),
+                $this->render('index', compact('chat')),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => $chat->greeting_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('set-message', [
+                            'callback_data' => self::createRoute('set-messages-limit', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Message'),
+                            'text' => Yii::t('bot', 'Messages limit'),
                         ],
                     ],
                     [
@@ -64,10 +63,7 @@ class GroupGreetingController extends Controller
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
-                    ],
-                ],
-                [
-                    'disablePreview' => true,
+                    ]
                 ]
             )
             ->build();
@@ -81,16 +77,16 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        if ($chat->greeting_status == ChatSetting::STATUS_ON) {
-            $chat->greeting_status = ChatSetting::STATUS_OFF;
+        if ($chat->slow_mode_status == ChatSetting::STATUS_ON) {
+            $chat->slow_mode_status = ChatSetting::STATUS_OFF;
         } else {
-            $chat->greeting_status = ChatSetting::STATUS_ON;
+            $chat->slow_mode_status = ChatSetting::STATUS_ON;
         }
 
         return $this->actionIndex($chatId);
     }
 
-    public function actionSetMessage($chatId = null)
+    public function actionSetMessagesLimit($chatId = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -98,29 +94,25 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        $this->getState()->setName(self::createRoute('set-message', [
-                'chatId' => $chatId,
-            ]));
+        $this->getState()->setName(self::createRoute('set-messages-limit', [
+            'chatId' => $chatId,
+        ]));
 
         if ($this->getUpdate()->getMessage()) {
-            if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
-                if ($chat->validateSettingValue('greeting_message', $text)) {
-                    $chat->greeting_message = $text;
+            if ($text = (int)$this->getUpdate()->getMessage()->getText()) {
+                if ($chat->validateSettingValue('slow_mode_messages_limit', $text)) {
+                    $chat->slow_mode_messages_limit = $text;
 
                     return $this->runAction('index', [
-                         'chatId' => $chatId,
-                     ]);
+                        'chatId' => $chatId,
+                    ]);
                 }
             }
         }
 
-        $messageMarkdown = MessageWithEntitiesConverter::fromHtml($chat->greeting_message ?? '');
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-message', [
-                    'messageMarkdown' => $messageMarkdown,
-                ]),
+                $this->render('set-messages-limit'),
                 [
                     [
                         [
@@ -130,9 +122,6 @@ class GroupGreetingController extends Controller
                             'text' => Emoji::BACK,
                         ],
                     ],
-                ],
-                [
-                    'disablePreview' => true,
                 ]
             )
             ->build();

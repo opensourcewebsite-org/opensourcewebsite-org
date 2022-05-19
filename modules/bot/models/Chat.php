@@ -26,6 +26,8 @@ class Chat extends ActiveRecord
             [['type', 'bot_id', 'chat_id'], 'required'],
             [['id', 'chat_id', 'bot_id'], 'integer'],
             [['type', 'title', 'username', 'first_name', 'last_name'], 'string'],
+            [['timezone'], 'default', 'value' => 0],
+            [['timezone'], 'integer', 'min' => -720, 'max' => 840],
         ];
     }
 

@@ -24,8 +24,10 @@ class GroupGuestController extends Controller
     {
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat) || (!$chat->isGroup())) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(null);

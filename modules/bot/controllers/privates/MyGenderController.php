@@ -26,6 +26,7 @@ class MyGenderController extends Controller
 
         if (isset($genderId)) {
             $gender = Gender::findOne($genderId);
+
             if (isset($gender)) {
                 $user->gender_id = $gender->id;
                 $user->save();

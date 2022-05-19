@@ -22,12 +22,15 @@ use TelegramBot\Api\Types\Dice;
 
 class Message extends \TelegramBot\Api\Types\Message
 {
+    // A message can only be deleted if it was sent less than 48 hours ago
+    public const DELETE_MESSAGE_LIFETIME = 2 * 24 * 60 * 60; // seconds
+
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = [
+    protected static $map = [
         'message_id' => true,
         'from' => User::class,
         'date' => true,
@@ -73,4 +76,12 @@ class Message extends \TelegramBot\Api\Types\Message
         'successful_payment' => SuccessfulPayment::class,
         'connected_website' => true,
     ];
+
+    /**
+    * @return bool
+    */
+    public function canDelete()
+    {
+        return $this->getDate() > (time() - self::DELETE_MESSAGE_LIFETIME);
+    }
 }

@@ -6,54 +6,36 @@ use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatSetting;
 use app\components\helpers\TimeHelper;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class MyTimezoneController
+ * Class GroupTimezoneController
  *
  * @package app\modules\bot\controllers\privates
  */
-class MyTimezoneController extends Controller
+class GroupTimezoneController extends Controller
 {
     /**
      * @return array
      */
-    public function actionIndex()
+    public function actionIndex($chatId = null)
     {
-        $this->getState()->setName(null);
-
-        $user = $this->getUser();
-
-        $timezones = TimeHelper::timezonesList();
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('index', [
-                    'timezone' => TimeHelper::getNameByOffset($user->timezone),
-                ]),
-                [
-                    [
-                        [
-                            'callback_data' => MyProfileController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('list'),
-                            'text' => Emoji::EDIT,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
+        return $this->actionList($chatId);
     }
 
-    public function actionList($page = 2)
+    public function actionList($chatId = null, $page = 2)
     {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(self::createRoute('input'));
 
         $timezones = TimeHelper::timezonesList();
@@ -70,8 +52,9 @@ class MyTimezoneController extends Controller
         $pagination->validatePage = true;
         $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
             return self::createRoute('list', [
+                'chatId' => $chatId,
                 'page' => $page,
             ]);
         });
@@ -82,6 +65,7 @@ class MyTimezoneController extends Controller
             $buttons[][] = [
                 'text' => $name,
                 'callback_data' => self::createRoute('select', [
+                    'chatId' => $chatId,
                     'timezone' => $timezone,
                 ]),
             ];
@@ -92,7 +76,9 @@ class MyTimezoneController extends Controller
         }
 
         $buttons[][] = [
-            'callback_data' => self::createRoute(),
+            'callback_data' => GroupController::createRoute('view', [
+                'chatId' => $chatId,
+            ]),
             'text' => Emoji::BACK,
         ];
 
@@ -104,18 +90,26 @@ class MyTimezoneController extends Controller
             ->build();
     }
 
-    public function actionSelect($timezone = null)
+    public function actionSelect($chatId = null, $timezone = null)
     {
-        if (!$timezone) {
-            return $this->actionList();
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        $user = $this->getUser();
+        if (!$timezone) {
+            return $this->actionList($chatId);
+        }
 
-        $user->timezone = $timezone;
+        $chat->timezone = $timezone;
 
-        if ($user->validate('timezone') && $user->save()) {
-            return $this->actionIndex();
+        if ($chat->validate('timezone') && $chat->save()) {
+            return $this->run('group/view', [
+                'chatId' => $chatId,
+            ]);
         }
 
         return $this->getResponseBuilder()

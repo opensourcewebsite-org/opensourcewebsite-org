@@ -58,102 +58,131 @@ class MessageController extends Controller
 
         $deleteMessage = false;
 
-        if (!$chatMember->isAdministrator() && $chat->filter_status == ChatSetting::STATUS_ON) {
-            if ($this->getMessage()->getText() !== null) {
-                if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
-                    $replyBotUser = BotUser::findOne([
-                        'provider_user_id' => $replyMessage->getFrom()->getId(),
-                    ]);
+        if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+            // TODO add new feature to delete messages
+        }
 
-                    if ($replyBotUser) {
-                        $replyChatMember = ChatMember::findOne([
-                            'chat_id' => $chat->id,
-                            'user_id' => $replyBotUser->id,
+        if (!$deleteMessage) {
+            if (($chat->filter_status == ChatSetting::STATUS_ON) && !$chatMember->isAdministrator()) {
+                if ($this->getMessage()->getText() !== null) {
+                    if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
+                        $replyBotUser = BotUser::findOne([
+                            'provider_user_id' => $replyMessage->getFrom()->getId(),
                         ]);
-                    }
 
-                    if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
-                        if (!isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                            $deleteMessage = true;
+                        if ($replyBotUser) {
+                            $replyChatMember = ChatMember::findOne([
+                                'chat_id' => $chat->id,
+                                'user_id' => $replyBotUser->id,
+                            ]);
                         }
-                    }
-                }
 
-                if (!$deleteMessage) {
-                    if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
-                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                            if (mb_stripos($this->getMessage()->getText(), '@') !== false) {
+                        if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
+                            if (!isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
                                 $deleteMessage = true;
+
+                                $telegramUser->sendMessage(
+                                    $this->render('/privates/warning-filter-remove-reply', [
+                                        'chat' => $chat,
+                                    ])
+                                );
                             }
                         }
                     }
-                }
 
-                if (!$deleteMessage) {
-                    if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
-                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                            if (preg_match('/(?:(\n\s))/i', $this->getMessage()->getText())) {
-                                // removes empty lines and indents, ignores spaces at the end of lines
-                                $deleteMessage = true;
-                            } elseif (preg_match('/(?:(( ){2,}\S))/i', $this->getMessage()->getText())) {
-                                // removes double spaces
-                                $deleteMessage = true;
-                            }
-                        }
-                    }
-                }
-
-                if (!$deleteMessage) {
-                    if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
-                        if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                            // https://unicode.org/emoji/charts/full-emoji-list.html
-                            // TODO remove more emoji
-                            if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
-                                $deleteMessage = true;
-                            }
-                        }
-                    }
-                }
-
-                if (!$deleteMessage) {
-                    switch ($chat->filter_mode) {
-                        case ChatSetting::FILTER_MODE_OFF:
-
-                            break;
-                        case ChatSetting::FILTER_MODE_BLACKLIST:
-                            $phrases = $chat->getBlacklistPhrases()->all();
-
-                            foreach ($phrases as $phrase) {
-                                if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                    if (!$deleteMessage) {
+                        if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
+                            if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                if (mb_stripos($this->getMessage()->getText(), '@') !== false) {
                                     $deleteMessage = true;
 
-                                    break;
+                                    $telegramUser->sendMessage(
+                                        $this->render('/privates/warning-filter-remove-username', [
+                                            'chat' => $chat,
+                                        ])
+                                    );
                                 }
                             }
-
-                            break;
-                        case ChatSetting::FILTER_MODE_WHITELIST:
-                            $deleteMessage = true;
-
-                            $phrases = $chat->getWhitelistPhrases()->all();
-
-                            foreach ($phrases as $phrase) {
-                                if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
-                                    $deleteMessage = false;
-
-                                    break;
-                                }
-                            }
-
-                            break;
+                        }
                     }
-                }
 
-                if ($deleteMessage && $this->getMessage()) {
-                    $this->getBotApi()->deleteMessage(
-                        $chat->getChatId(),
-                        $this->getMessage()->getMessageId()
-                    );
+                    if (!$deleteMessage) {
+                        if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
+                            if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                if (preg_match('/(?:(\n\s))/i', $this->getMessage()->getText())) {
+                                    // removes empty lines and indents, ignores spaces at the end of lines
+                                    $deleteMessage = true;
+
+                                    $telegramUser->sendMessage(
+                                        $this->render('/privates/warning-filter-remove-empty-line', [
+                                            'chat' => $chat,
+                                        ])
+                                    );
+                                } elseif (preg_match('/(?:(( ){2,}\S))/i', $this->getMessage()->getText())) {
+                                    // removes double spaces
+                                    $deleteMessage = true;
+
+                                    $telegramUser->sendMessage(
+                                        $this->render('/privates/warning-filter-remove-double-spaces', [
+                                            'chat' => $chat,
+                                        ])
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    if (!$deleteMessage) {
+                        if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
+                            if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                // https://unicode.org/emoji/charts/full-emoji-list.html
+                                // TODO remove more emoji
+                                if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
+                                    $deleteMessage = true;
+
+                                    $telegramUser->sendMessage(
+                                        $this->render('/privates/warning-filter-remove-emoji', [
+                                            'chat' => $chat,
+                                        ])
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    if (!$deleteMessage) {
+                        switch ($chat->filter_mode) {
+                            case ChatSetting::FILTER_MODE_OFF:
+
+                                break;
+                            case ChatSetting::FILTER_MODE_BLACKLIST:
+                                $phrases = $chat->getBlacklistPhrases()->all();
+
+                                foreach ($phrases as $phrase) {
+                                    if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                        $deleteMessage = true;
+
+                                        break;
+                                    }
+                                }
+
+                                break;
+                            case ChatSetting::FILTER_MODE_WHITELIST:
+                                $deleteMessage = true;
+
+                                $phrases = $chat->getWhitelistPhrases()->all();
+
+                                foreach ($phrases as $phrase) {
+                                    if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
+                                        $deleteMessage = false;
+
+                                        break;
+                                    }
+                                }
+
+                                break;
+                        }
+                    }
                 }
             }
         }
@@ -181,6 +210,13 @@ class MessageController extends Controller
                     }
                 }
             }
+        }
+
+        if ($deleteMessage && $this->getMessage()) {
+            $this->getBotApi()->deleteMessage(
+                $chat->getChatId(),
+                $this->getMessage()->getMessageId()
+            );
         }
 
         return [];

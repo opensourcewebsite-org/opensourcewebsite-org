@@ -7,6 +7,9 @@ use yii\db\ActiveRecord;
 use app\models\Language;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\controllers\privates\DeleteMessageController;
 
 /**
  * This is the model class for table "bot_user".
@@ -123,6 +126,16 @@ class User extends ActiveRecord
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
     }
 
+    // Get private chat
+    public function getChat()
+    {
+        return $this->hasOne(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'type' => Chat::TYPE_PRIVATE,
+            ])
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
+    }
+
     public function getChatMembers()
     {
         return $this->hasMany(ChatMember::class, ['user_id' => 'id']);
@@ -186,6 +199,7 @@ class User extends ActiveRecord
             'provider_user_last_name' => $updateUser->getLastName(),
             'is_bot' => (int)$updateUser->isBot(),
             // TODO only for private chat
+            // TODO update if blocked after bot sent a message
             'provider_user_blocked' => 0,
         ]);
     }
@@ -232,5 +246,55 @@ class User extends ActiveRecord
     public function getUserId()
     {
         return $this->user_id;
+    }
+
+    public function isBot()
+    {
+        return $this->is_bot;
+    }
+
+    /**
+     * @return ResponseBuilder
+     */
+    public function getResponseBuilder()
+    {
+        return new ResponseBuilder();
+    }
+
+    /**
+     * @param MessageText $messageText
+     * @param array|null $replyMarkup
+     * @param  array $optionalParams
+     *
+     * @return
+     */
+    public function sendMessage(
+        MessageText $messageText,
+        array $replyMarkup = null,
+        array $optionalParams = []
+    ) {
+        if (!$this->provider_user_blocked && $this->chat) {
+            if (!is_array($replyMarkup)) {
+                $replyMarkup = [
+                    [
+                        [
+                            'callback_data' => DeleteMessageController::createRoute(),
+                            'text' => 'OK',
+                        ],
+                    ],
+                ];
+            }
+
+            return $this->getResponseBuilder()
+                ->setChatId($this->chat->getChatId())
+                ->sendMessage(
+                    $messageText,
+                    $replyMarkup,
+                    $optionalParams
+                )
+                ->send();
+        }
+
+        return false;
     }
 }

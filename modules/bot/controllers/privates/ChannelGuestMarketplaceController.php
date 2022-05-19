@@ -28,7 +28,7 @@ class ChannelGuestMarketplaceController extends Controller
 
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat) || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if (!isset($chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

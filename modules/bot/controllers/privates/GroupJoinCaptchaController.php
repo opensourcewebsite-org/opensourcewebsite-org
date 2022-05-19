@@ -21,13 +21,14 @@ class GroupJoinCaptchaController extends Controller
     public function actionIndex($chatId = null)
     {
         $chat = Chat::findOne($chatId);
-        $telegramUser = $this->getTelegramUser();
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        $statusOn = ($chat->join_captcha_status == ChatSetting::STATUS_ON);
+        $telegramUser = $this->getTelegramUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -38,7 +39,7 @@ class GroupJoinCaptchaController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [

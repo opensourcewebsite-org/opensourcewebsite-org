@@ -24,7 +24,7 @@ class ChannelGuestController extends Controller
     {
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat) || (!$chat->isChannel())) {
+        if (!isset($chat) || !$chat->isChannel()) {
             return [];
         }
 

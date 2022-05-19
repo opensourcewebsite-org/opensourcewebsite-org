@@ -21,7 +21,6 @@ class ChatSetting extends ActiveRecord
     public const FAQ_ANSWER_LENGHT_MIN = 1;
     public const FAQ_ANSWER_LENGHT_MAX = 10000;
 
-    public const STELLAR_THRESHOLD_MIN = 0.00000001;
     public const STELLAR_MODE_HOLDERS = 1;
     public const STELLAR_MODE_SIGNERS = 2;
 
@@ -38,6 +37,15 @@ class ChatSetting extends ActiveRecord
         'greeting_lifetime' => [],
         'greeting_message' => [
             'type' => 'string',
+            'min' => 1,
+            'max' => 10000,
+        ],
+        'slow_mode_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'slow_mode_messages_limit' => [
+            'type' => 'integer',
+            'default' => 1,
             'min' => 1,
             'max' => 10000,
         ],
@@ -71,7 +79,9 @@ class ChatSetting extends ActiveRecord
         'stellar_asset' => [],
         'stellar_issuer' => [],
         'stellar_threshold' => [
+            'type' => 'float',
             'default' => 1,
+            'min' => 0.00000001,
         ],
         'stellar_invite_link' => [],
         'marketplace_status' => [

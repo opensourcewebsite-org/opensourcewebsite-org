@@ -145,13 +145,13 @@ class PaginationButtons
     {
         return new Pagination(
             [
-                'totalCount'    => $itemsCount,
-                'pageSize'      => $pageSize,
-                'params'        => [
+                'totalCount' => $itemsCount,
+                'pageSize' => $pageSize,
+                'params' => [
                     'page' => $page,
                 ],
                 'pageSizeParam' => false,
-                'validatePage'  => true,
+                'validatePage' => true,
             ]
         );
     }

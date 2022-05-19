@@ -113,6 +113,8 @@ class ChannelMarketplaceController extends Controller
                 if ($chat->validateSettingValue('marketplace_active_post_limit_per_member', $text)) {
                     $chat->marketplace_active_post_limit_per_member = $text;
 
+                    $this->getState()->setName(null);
+
                     return $this->runAction('index', [
                         'chatId' => $chatId,
                     ]);

@@ -17,15 +17,24 @@ use yii\data\Pagination;
 class LanguageController extends Controller
 {
     /**
-     * @param int $page
-     *
      * @return array
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(self::createRoute('search'));
+        return $this->actionList();
+    }
+
+    /**
+     * @param int $page
+     *
+     * @return array
+     */
+    public function actionList($page = 1)
+    {
+        $this->getState()->setName(self::createRoute('input'));
 
         $languageQuery = Language::find()->orderBy('code ASC');
+
         $pagination = new Pagination([
             'totalCount' => $languageQuery->count(),
             'pageSize' => 9,
@@ -36,63 +45,68 @@ class LanguageController extends Controller
             'validatePage' => true,
         ]);
 
+        $buttons = [];
+
         $languages = $languageQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
+        foreach ($languages as $language) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('select', [
+                    'languageCode' => $language->code,
+                ]),
+                'text' => strtoupper($language->code) . ' - ' . $language->name,
+            ];
+        }
+
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
+            return self::createRoute('list', [
                 'page' => $page,
             ]);
         });
 
-        $languageRows = array_map(function ($language) {
-            return [
-                [
-                    'callback_data' => self::createRoute('update', [
-                        'languageCode' => $language->code,
-                    ]),
-                    'text' => strtoupper($language->code) . ' - ' . $language->name,
-                ]
+        if ($paginationButtons) {
+            $buttons[] = $paginationButtons;
+        }
+
+        $buttons[][] = [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::BACK,
             ];
-        }, $languages);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
-                array_merge($languageRows, [$paginationButtons], [
-                    [
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ])
+                $this->render('list'),
+                $buttons
             )
             ->build();
     }
 
-    public function actionUpdate($languageCode)
+    public function actionSelect($languageCode = null)
     {
-        if ($languageCode) {
-            $language = Language::findOne(['code' => $languageCode]);
-            if ($language) {
-                $telegramUser = $this->getTelegramUser();
-                if ($telegramUser) {
-                    $telegramUser->language_id = $language->id;
-                    if ($telegramUser->save()) {
-                        Yii::$app->language = $language->code;
-                    }
-                }
+        if (!$languageCode) {
+            return $this->actionList();
+        }
+
+        $language = Language::findOne([
+            'code' => $languageCode,
+        ]);
+
+        if ($language) {
+            $telegramUser = $this->getTelegramUser();
+
+            $telegramUser->language_id = $language->id;
+
+            if ($telegramUser->save()) {
+                Yii::$app->language = $language->code;
             }
-        } else {
-            return $this->actionIndex();
         }
 
         return $this->run('start/index');
     }
 
-    public function actionSearch()
+    public function actionInput()
     {
         $text = $this->getUpdate()->getMessage()->getText();
 
@@ -108,7 +122,7 @@ class LanguageController extends Controller
         }
 
         if (isset($language)) {
-            return $this->actionUpdate($language->code);
+            return $this->actionSelect($language->code);
         }
     }
 }

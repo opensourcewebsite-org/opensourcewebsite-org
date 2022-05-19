@@ -12,6 +12,7 @@ use yii\db\ActiveRecord;
  * @property int $user_id
  * @property string $status
  * @property int $role
+ * @property int|null $last_message_at
  *
  */
 class ChatMember extends ActiveRecord
@@ -26,6 +27,8 @@ class ChatMember extends ActiveRecord
     public const ROLE_ADMINISTRATOR = 2;
     public const ROLE_MEMBER = 1;
 
+    public const ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID = 1087968824; // @GroupAnonymousBot user id in groups for anonymous admin
+
     public static function tableName()
     {
         return '{{%bot_chat_member}}';
@@ -35,7 +38,7 @@ class ChatMember extends ActiveRecord
     {
         return [
             [['chat_id', 'user_id', 'status', 'role'], 'required'],
-            [['id', 'chat_id', 'user_id', 'role'], 'integer'],
+            [['id', 'chat_id', 'user_id', 'role', 'last_message_at'], 'integer'],
             ['role', 'default', 'value' => 1],
             [['status'], 'string'],
         ];
@@ -55,8 +58,12 @@ class ChatMember extends ActiveRecord
 
     public function isAdministrator()
     {
-        // 1087968824 - @GroupAnonymousBot user id in groups for anonymous admin
-        return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR || ($this->botUser->getProviderUserId() == 1087968824);
+        return $this->status == self::STATUS_CREATOR || $this->status == self::STATUS_ADMINISTRATOR || ($this->isAnonymousAdministrator());
+    }
+
+    public function isAnonymousAdministrator()
+    {
+        return $this->botUser->getProviderUserId() == self::ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID;
     }
 
     public function isActiveAdministrator()

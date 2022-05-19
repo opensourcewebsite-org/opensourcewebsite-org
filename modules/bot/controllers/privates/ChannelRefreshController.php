@@ -33,10 +33,6 @@ class ChannelRefreshController extends Controller
             $chat->delete();
         }
 
-        if (!isset($chatId)) {
-            return $this->run('channel/index');
-        }
-
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat) || !$chat->isChannel()) {
@@ -128,7 +124,6 @@ class ChannelRefreshController extends Controller
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('index'),
-                    true
                 )
                 ->build();
         }
