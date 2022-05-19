@@ -25,13 +25,14 @@ class GroupStellarController extends Controller
     {
         $chat = Chat::findOne($chatId);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(null);
 
-        $statusOn = ($chat->stellar_status == ChatSetting::STATUS_ON);
         $isModeSigners = ($chat->stellar_mode == ChatSetting::STELLAR_MODE_SIGNERS);
 
         return $this->getResponseBuilder()
@@ -43,7 +44,7 @@ class GroupStellarController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->stellar_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -201,7 +202,7 @@ class GroupStellarController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if ($text >= ChatSetting::STELLAR_THRESHOLD_MIN) {
+                if ($chat->validateSettingValue('stellar_threshold', $text)) {
                     $chat->stellar_threshold = $text;
 
                     $this->getState()->setName(null);
