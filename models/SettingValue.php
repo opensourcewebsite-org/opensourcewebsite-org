@@ -2,8 +2,8 @@
 
 namespace app\models;
 
-use app\components\Converter;
 use Yii;
+use app\components\Converter;
 use app\models\queries\SettingValueQuery;
 
 /**

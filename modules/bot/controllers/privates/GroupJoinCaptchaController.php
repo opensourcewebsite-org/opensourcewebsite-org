@@ -67,10 +67,15 @@ class GroupJoinCaptchaController extends Controller
             return [];
         }
 
-        if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
-            $chat->join_captcha_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->join_captcha_status = ChatSetting::STATUS_ON;
+        switch ($chat->join_captcha_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->join_captcha_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->join_captcha_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

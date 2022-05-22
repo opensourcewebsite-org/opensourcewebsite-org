@@ -58,8 +58,18 @@ class MessageController extends Controller
 
         $deleteMessage = false;
 
-        if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && !$telegramUser->isBot() && !$chatMember->isCreator()) {
-            // TODO add new feature to delete messages
+        if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && $this->getMessage()->isNew() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+            if (!$chatMember->checkSlowMode()) {
+                $deleteMessage = true;
+
+                $telegramUser->sendMessage(
+                    $this->render('/privates/warning-slow-mode', [
+                        'chat' => $chat,
+                    ])
+                );
+            } else {
+                $isSlowModeOn = true;
+            }
         }
 
         if (!$deleteMessage) {
@@ -86,6 +96,14 @@ class MessageController extends Controller
                                         'chat' => $chat,
                                     ])
                                 );
+                            }
+                        }
+                    }
+
+                    if (!$deleteMessage) {
+                        if ($chat->filter_remove_channels == ChatSetting::STATUS_ON) {
+                            if ($chatMember->isAnonymousChannel()) {
+                                $deleteMessage = true;
                             }
                         }
                     }
@@ -153,7 +171,6 @@ class MessageController extends Controller
                     if (!$deleteMessage) {
                         switch ($chat->filter_mode) {
                             case ChatSetting::FILTER_MODE_OFF:
-
                                 break;
                             case ChatSetting::FILTER_MODE_BLACKLIST:
                                 $phrases = $chat->getBlacklistPhrases()->all();
@@ -161,6 +178,13 @@ class MessageController extends Controller
                                 foreach ($phrases as $phrase) {
                                     if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
                                         $deleteMessage = true;
+
+                                        $telegramUser->sendMessage(
+                                            $this->render('/privates/warning-filter-blacklist', [
+                                                'chat' => $chat,
+                                                'text' => $phrase->text,
+                                            ])
+                                        );
 
                                         break;
                                     }
@@ -212,11 +236,15 @@ class MessageController extends Controller
             }
         }
 
-        if ($deleteMessage && $this->getMessage()) {
-            $this->getBotApi()->deleteMessage(
-                $chat->getChatId(),
-                $this->getMessage()->getMessageId()
-            );
+        if ($deleteMessage) {
+            if ($this->getMessage()) {
+                $this->getBotApi()->deleteMessage(
+                    $chat->getChatId(),
+                    $this->getMessage()->getMessageId()
+                );
+            }
+        } elseif (isset($isSlowModeOn) && $isSlowModeOn) {
+            $chatMember->updateSlowMode($this->getMessage()->getDate());
         }
 
         return [];

@@ -127,6 +127,14 @@ class GroupMessageFilterController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('set-remove-channels', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => ($chat->filter_remove_channels == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove channels'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => GroupController::createRoute('view', [
                                 'chatId' => $chatId,
                             ]),
@@ -150,10 +158,15 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        if ($chat->filter_status == ChatSetting::STATUS_ON) {
-            $chat->filter_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->filter_status = ChatSetting::STATUS_ON;
+        switch ($chat->filter_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);
@@ -193,10 +206,15 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
-            $chat->filter_remove_reply = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->filter_remove_reply = ChatSetting::STATUS_ON;
+        switch ($chat->filter_remove_reply) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_reply = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_reply = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);
@@ -210,10 +228,15 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
-            $chat->filter_remove_username = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->filter_remove_username = ChatSetting::STATUS_ON;
+        switch ($chat->filter_remove_username) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_username = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_username = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);
@@ -227,13 +250,16 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
-            $chat->filter_remove_emoji = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->filter_remove_emoji = ChatSetting::STATUS_ON;
-        }
+        switch ($chat->filter_remove_emoji) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_emoji = ChatSetting::STATUS_OFF;
 
-        return $this->actionIndex($chatId);
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_emoji = ChatSetting::STATUS_ON;
+
+                break;
+        }
 
         return $this->actionIndex($chatId);
     }
@@ -246,10 +272,37 @@ class GroupMessageFilterController extends Controller
             return [];
         }
 
-        if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
-            $chat->filter_remove_empty_line = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->filter_remove_empty_line = ChatSetting::STATUS_ON;
+        switch ($chat->filter_remove_empty_line) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_empty_line = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_empty_line = ChatSetting::STATUS_ON;
+
+                break;
+        }
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveChannels($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        switch ($chat->filter_remove_channels) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_channels = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_channels = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

@@ -512,6 +512,9 @@ return [
     'Double spaces are present' => 'Присутствуют двойные пробелы',
     'Some @username is present' => 'Присутствует какой то @username',
     'Emoji are present' => 'Присутствуют эмодзи',
+    'Unallowed text elements are present' => 'Не разрешенные текстовые элементы присутствуют',
+    'You have reached the message limit for today' => 'Вы достигли лимита сообщений на сегодня',
+    'Try again tomorrow' => 'Повторите попытку завтра',
     'Can\'t delete this message automatically' => 'Невозможно удалить это сообщение автоматически',
     'Delete this message manually' => 'Удалите это сообщение вручную',
 ];

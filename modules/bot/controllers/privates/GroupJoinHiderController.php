@@ -65,10 +65,15 @@ class GroupJoinHiderController extends Controller
             return [];
         }
 
-        if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
-            $chat->join_hider_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->join_hider_status = ChatSetting::STATUS_ON;
+        switch ($chat->join_hider_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->join_hider_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->join_hider_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

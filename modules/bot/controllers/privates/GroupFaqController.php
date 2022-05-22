@@ -99,10 +99,15 @@ class GroupFaqController extends Controller
             return [];
         }
 
-        if ($chat->faq_status == ChatSetting::STATUS_ON) {
-            $chat->faq_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->faq_status = ChatSetting::STATUS_ON;
+        switch ($chat->faq_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->faq_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->faq_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

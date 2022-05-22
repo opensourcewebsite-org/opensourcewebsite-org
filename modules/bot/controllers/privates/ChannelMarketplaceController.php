@@ -87,10 +87,15 @@ class ChannelMarketplaceController extends Controller
             return [];
         }
 
-        if ($chat->marketplace_status == ChatSetting::STATUS_ON) {
-            $chat->marketplace_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->marketplace_status = ChatSetting::STATUS_ON;
+        switch ($chat->marketplace_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->marketplace_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->marketplace_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

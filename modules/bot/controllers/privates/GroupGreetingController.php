@@ -81,10 +81,15 @@ class GroupGreetingController extends Controller
             return [];
         }
 
-        if ($chat->greeting_status == ChatSetting::STATUS_ON) {
-            $chat->greeting_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->greeting_status = ChatSetting::STATUS_ON;
+        switch ($chat->greeting_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->greeting_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->greeting_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

@@ -84,4 +84,36 @@ class Message extends \TelegramBot\Api\Types\Message
     {
         return $this->getDate() > (time() - self::DELETE_MESSAGE_LIFETIME);
     }
+
+    /**
+    * @return bool
+    */
+    public function isNew()
+    {
+        return !$this->isEdit() && !$this->isForward() && !$this->isReply();
+    }
+
+    /**
+    * @return bool
+    */
+    public function isEdit()
+    {
+        return (bool)$this->getEditDate();
+    }
+
+    /**
+    * @return bool
+    */
+    public function isForward()
+    {
+        return (bool)$this->getForwardFrom();
+    }
+
+    /**
+    * @return bool
+    */
+    public function isReply()
+    {
+        return (bool)$this->getReplyToMessage();
+    }
 }

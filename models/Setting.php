@@ -2,8 +2,8 @@
 
 namespace app\models;
 
-use app\components\Converter;
 use Yii;
+use app\components\Converter;
 use yii\db\ActiveRecord;
 use app\models\queries\SettingQuery;
 
@@ -69,38 +69,73 @@ class Setting extends ActiveRecord
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_join_hider_quantity_value_per_one_rating' => [
+        'active_bot_group_join_hider_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_join_captcha_quantity_value_per_one_rating' => [
+        'active_bot_group_join_hider_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_join_captcha_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_greeting_quantity_value_per_one_rating' => [
+        'active_bot_group_join_captcha_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_greeting_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_slow_mode_quantity_value_per_one_rating' => [
+        'active_bot_group_greeting_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_slow_mode_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_filter_quantity_value_per_one_rating' => [
+        'active_bot_group_slow_mode_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_filter_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_faq_quantity_value_per_one_rating' => [
+        'active_bot_group_filter_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_faq_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'bot_group_stellar_quantity_value_per_one_rating' => [
+        'active_bot_group_faq_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_stellar_quantity_value_per_one_rating' => [
             'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_stellar_quantity_value_per_one_user' => [
+            'type' => 'integer',
             'default' => 1,
             'more' => 0,
         ],

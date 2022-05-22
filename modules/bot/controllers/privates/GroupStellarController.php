@@ -108,12 +108,15 @@ class GroupStellarController extends Controller
             return [];
         }
 
-        $this->getState()->setName(null);
+        switch ($chat->stellar_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->stellar_status = ChatSetting::STATUS_OFF;
 
-        if ($chat->stellar_status == ChatSetting::STATUS_ON) {
-            $chat->stellar_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->stellar_status = ChatSetting::STATUS_ON;
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->stellar_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);
@@ -127,10 +130,15 @@ class GroupStellarController extends Controller
             return [];
         }
 
-        if ($chat->stellar_mode == ChatSetting::STELLAR_MODE_SIGNERS) {
-            $chat->stellar_mode = ChatSetting::STELLAR_MODE_HOLDERS;
-        } else {
-            $chat->stellar_mode = ChatSetting::STELLAR_MODE_SIGNERS;
+        switch ($chat->stellar_mode) {
+            case ChatSetting::STELLAR_MODE_SIGNERS:
+                $chat->stellar_mode = ChatSetting::STELLAR_MODE_HOLDERS;
+
+                break;
+            case ChatSetting::STELLAR_MODE_HOLDERS:
+                $chat->stellar_mode = ChatSetting::STELLAR_MODE_SIGNERS;
+
+                break;
         }
 
         return $this->actionIndex($chatId);

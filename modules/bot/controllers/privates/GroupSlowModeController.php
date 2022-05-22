@@ -77,10 +77,15 @@ class GroupSlowModeController extends Controller
             return [];
         }
 
-        if ($chat->slow_mode_status == ChatSetting::STATUS_ON) {
-            $chat->slow_mode_status = ChatSetting::STATUS_OFF;
-        } else {
-            $chat->slow_mode_status = ChatSetting::STATUS_ON;
+        switch ($chat->slow_mode_status) {
+            case ChatSetting::STATUS_ON:
+                $chat->slow_mode_status = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->slow_mode_status = ChatSetting::STATUS_ON;
+
+                break;
         }
 
         return $this->actionIndex($chatId);
