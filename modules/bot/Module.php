@@ -170,7 +170,7 @@ class Module extends \yii\base\Module
 
                 foreach ($botApiAdministrators as $botApiAdministrator) {
                     $administratorBotUser = BotUser::findOne([
-                        'provider_user_id' => $administrator->getUser()->getId(),
+                        'provider_user_id' => $botApiAdministrator->getUser()->getId(),
                     ]);
 
                     if (!isset($administratorBotUser)) {
