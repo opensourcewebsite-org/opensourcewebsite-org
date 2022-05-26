@@ -39,4 +39,5 @@ class Emoji
     public const CROWN = '👑';
     public const MANAGE = '⚙️';
     public const MANAGE2 = '🛠';
+    public const SPEAKER = '🔈';
 }

@@ -5,10 +5,9 @@ namespace app\modules\bot\controllers\groups;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
-use app\modules\bot\models\User as BotUser;
+use app\modules\bot\models\User;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\BotChatCaptcha;
-use app\modules\bot\models\BotChatFaqAnswer;
+use app\modules\bot\models\ChatCaptcha;
 
 /**
  * Class MessageController
@@ -42,7 +41,7 @@ class MessageController extends Controller
                     );
                 }
 
-                $botCaptcha = BotChatCaptcha::find()
+                $botCaptcha = ChatCaptcha::find()
                     ->where([
                         'chat_id' => $chat->id,
                         'provider_user_id' => $telegramUser->provider_user_id,
@@ -76,14 +75,14 @@ class MessageController extends Controller
             if (($chat->filter_status == ChatSetting::STATUS_ON) && !$chatMember->isAdministrator()) {
                 if ($this->getMessage()->getText() !== null) {
                     if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
-                        $replyBotUser = BotUser::findOne([
+                        $replyUser = User::findOne([
                             'provider_user_id' => $replyMessage->getFrom()->getId(),
                         ]);
 
-                        if ($replyBotUser) {
+                        if ($replyUser) {
                             $replyChatMember = ChatMember::findOne([
                                 'chat_id' => $chat->id,
-                                'user_id' => $replyBotUser->id,
+                                'user_id' => $replyUser->id,
                             ]);
                         }
 

@@ -8,7 +8,7 @@ use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\BotChatFaqQuestion;
+use app\modules\bot\models\ChatFaqQuestion;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\Emoji;
 
@@ -25,7 +25,7 @@ class GroupGuestFaqController extends Controller
             parent::actions(),
             Yii::createObject([
                 'class' => WordlistComponent::class,
-                'wordModelClass' => BotChatFaqQuestion::class,
+                'wordModelClass' => ChatFaqQuestion::class,
                 'options' => [
                     'actions' => [
                         'insert' => false,

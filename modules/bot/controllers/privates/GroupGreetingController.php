@@ -87,7 +87,18 @@ class GroupGreetingController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->greeting_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                 if (!$chatMember->trySetChatSetting('greeting_status', ChatSetting::STATUS_ON)) {
+                     return $this->getResponseBuilder()
+                         ->answerCallbackQuery(
+                             $this->render('alert-status-on', [
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('greeting_status', ChatSetting::STATUS_ON),
+                             ]),
+                             true
+                         )
+                         ->build();
+                 }
 
                 break;
         }

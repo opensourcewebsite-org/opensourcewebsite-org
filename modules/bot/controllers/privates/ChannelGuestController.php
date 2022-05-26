@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use Yii;
 use yii\data\Pagination;
-use app\modules\bot\components\helpers\Emoji;
 
 /**
  * Class ChannelGuestController

@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\validators\StellarAssetValidator;
 use app\modules\bot\validators\StellarPublicKeyValidator;
+use Yii;
 use yii\validators\UrlValidator;
 
 /**
@@ -114,7 +114,18 @@ class GroupStellarController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->stellar_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                 if (!$chatMember->trySetChatSetting('stellar_status', ChatSetting::STATUS_ON)) {
+                     return $this->getResponseBuilder()
+                         ->answerCallbackQuery(
+                             $this->render('alert-status-on', [
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('stellar_status', ChatSetting::STATUS_ON),
+                             ]),
+                             true
+                         )
+                         ->build();
+                 }
 
                 break;
         }

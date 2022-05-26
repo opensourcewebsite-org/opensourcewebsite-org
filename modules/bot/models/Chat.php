@@ -5,6 +5,7 @@ namespace app\modules\bot\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use app\models\User as GlobalUser;
 
 class Chat extends ActiveRecord
 {
@@ -25,7 +26,7 @@ class Chat extends ActiveRecord
         return [
             [['type', 'bot_id', 'chat_id'], 'required'],
             [['id', 'chat_id', 'bot_id'], 'integer'],
-            [['type', 'title', 'username', 'first_name', 'last_name'], 'string'],
+            [['type', 'title', 'username', 'first_name', 'last_name', 'description'], 'string'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
         ];
@@ -171,7 +172,7 @@ class Chat extends ActiveRecord
 
     public function getQuestionPhrases()
     {
-        return $this->hasMany(BotChatFaqQuestion::class, ['chat_id' => 'id']);
+        return $this->hasMany(ChatFaqQuestion::class, ['chat_id' => 'id']);
     }
 
     public function getSettings()
@@ -300,5 +301,22 @@ class Chat extends ActiveRecord
             ChatSetting::FILTER_MODE_BLACKLIST => Yii::t('bot', 'Blacklist'),
             ChatSetting::FILTER_MODE_WHITELIST => Yii::t('bot', 'Whitelist'),
         ];
+    }
+
+    /**
+     * @param int|null $userId
+     *
+     * @return ChatMember
+     */
+    public function getChatMemberByUserId($userId = null)
+    {
+        if (!$userId) {
+            $userId = Yii::$app->getModule('bot')->getUser()->getId();
+        }
+
+        return ChatMember::findOne([
+            'chat_id' => $this->id,
+            'user_id' => $userId,
+        ]);
     }
 }

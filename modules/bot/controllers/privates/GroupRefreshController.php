@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
-use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -24,14 +24,6 @@ class GroupRefreshController extends Controller
      */
     public function actionIndex($chatId = null): array
     {
-        function removeFromDb(Chat &$chat)
-        {
-            $chat->unlinkAll('phrases', true);
-            $chat->unlinkAll('settings', true);
-            $chat->unlinkAll('users', true);
-            $chat->delete();
-        }
-
         $chat = Chat::findOne($chatId);
 
         if (!isset($chat) || !$chat->isGroup()) {
@@ -39,27 +31,49 @@ class GroupRefreshController extends Controller
         }
 
         try {
-            $this->getBotApi()->getChat($chat->getChatId());
-            $this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember();
-
-            $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
-
-            $botApiAdministratorsIds = array_map(
-                fn ($a) => $a->getUser()->getId(),
-                $botApiAdministrators
-            );
+            $botApiChat = $this->getBotApi()->getChat($chat->getChatId());
         } catch (\Exception $e) {
             Yii::warning($e);
 
             if (in_array($e->getCode(), [400, 403])) {
-                // chat has been removed in Telegram or bot is not the chat member => remove chat from db
-                removeFromDb($chat);
+                // Chat has been removed in Telegram => remove chat from db
+                $chat->delete();
 
                 return $this->run('group/index');
             }
 
             throw $e;
         }
+
+        if (!$this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember()) {
+            // Bot is not the chat member => remove chat from db
+            $chat->delete();
+
+            return $this->run('group/index');
+        }
+
+        // Update chat information
+        $chat->setAttributes([
+            'type' => $botApiChat->getType(),
+            'title' => $botApiChat->getTitle(),
+            'username' => $botApiChat->getUsername(),
+            'description' => $botApiChat->getDescription(),
+        ]);
+
+        if (!$chat->save()) {
+            Yii::warning($chat->getErrors());
+
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
+
+        $botApiAdministratorsIds = array_map(
+            fn ($a) => $a->getUser()->getId(),
+            $botApiAdministrators
+        );
 
         $outdatedAdministrators = $chat->getAdministrators()
             ->andWhere([

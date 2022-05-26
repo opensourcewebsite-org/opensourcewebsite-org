@@ -7,11 +7,11 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 
 /**
- * Class TelegramController
+ * Class TelegramAdminController
  *
  * @package app\modules\bot\controllers\privates
  */
-class TelegramController extends Controller
+class TelegramAdminController extends Controller
 {
     /**
      * @return array
@@ -26,13 +26,13 @@ class TelegramController extends Controller
                 [
                     [
                         [
-                            'callback_data' => PublicGroupController::createRoute(),
+                            'callback_data' => GroupController::createRoute(),
                             'text' => Yii::t('bot', 'Groups'),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => PublicChannelController::createRoute(),
+                            'callback_data' => ChannelController::createRoute(),
                             'text' => Yii::t('bot', 'Channels'),
                         ],
                     ],

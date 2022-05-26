@@ -3,7 +3,7 @@
 namespace app\modules\bot\components;
 
 use Yii;
-use app\models\User;
+use app\models\User as GlobalUser;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
@@ -52,11 +52,11 @@ class Controller extends \yii\web\Controller
      */
     public function getTelegramUser()
     {
-        return $this->module->getBotUser();
+        return $this->module->getUser();
     }
 
     /**
-     * @return Chat
+     * @return \app\modules\bot\models\Chat
      */
     public function getTelegramChat()
     {
@@ -64,11 +64,11 @@ class Controller extends \yii\web\Controller
     }
 
     /**
-     * @return User
+     * @return GlobalUser
      */
     public function getUser()
     {
-        return $this->module->user;
+        return $this->module->globalUser;
     }
 
     /**
@@ -97,15 +97,15 @@ class Controller extends \yii\web\Controller
     }
 
     /**
-     * @return UserState
+     * @return \app\modules\bot\models\UserState
      */
     public function getState()
     {
-        return $this->module->getBotUserState();
+        return $this->module->getUserState();
     }
 
     /**
-     * @return Bot
+     * @return \app\modules\bot\models\Bot
      */
     public function getBot()
     {

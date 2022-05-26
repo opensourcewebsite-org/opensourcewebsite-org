@@ -73,7 +73,18 @@ class GroupJoinCaptchaController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->join_captcha_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                 if (!$chatMember->trySetChatSetting('join_captcha_status', ChatSetting::STATUS_ON)) {
+                     return $this->getResponseBuilder()
+                         ->answerCallbackQuery(
+                             $this->render('alert-status-on', [
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('join_captcha_status', ChatSetting::STATUS_ON),
+                             ]),
+                             true
+                         )
+                         ->build();
+                 }
 
                 break;
         }

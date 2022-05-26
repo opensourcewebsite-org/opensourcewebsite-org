@@ -28,10 +28,7 @@ class m200308_141651_alter_column_telegram_user_id_in_bot_chat_member_table exte
      */
     public function safeDown()
     {
-        $this->dropForeignKey(
-            'fk-bot_chat_member-user_id',
-            '{{%bot_chat_member}}'
-        );
+        $this->dropForeignKey('fk-bot_chat_member-user_id', '{{%bot_chat_member}}');
 
         $this->renameColumn('{{%bot_chat_member}}', 'user_id', 'telegram_user_id');
     }

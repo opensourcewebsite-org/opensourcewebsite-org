@@ -126,6 +126,17 @@ class User extends ActiveRecord
             ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
     }
 
+    public function getGroups()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'or',
+                ['type' => Chat::TYPE_GROUP],
+                ['type' => Chat::TYPE_SUPERGROUP]
+            ])
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
+    }
+
     // Get private chat
     public function getChat()
     {
@@ -154,6 +165,24 @@ class User extends ActiveRecord
                     'or',
                     ['status' => ChatMember::STATUS_CREATOR],
                     ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                ]);
+            })
+            ->orderBy(['title' => SORT_ASC]);
+    }
+
+    public function getActiveAdministratedGroups()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'or',
+                ['type' => Chat::TYPE_GROUP],
+                ['type' => Chat::TYPE_SUPERGROUP],
+            ])
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
                 ])
                 ->andWhere([
                     'role' => ChatMember::ROLE_ADMINISTRATOR,
@@ -163,6 +192,22 @@ class User extends ActiveRecord
     }
 
     public function getAdministratedChannels()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'type' => Chat::TYPE_CHANNEL,
+            ])
+            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    'or',
+                    ['status' => ChatMember::STATUS_CREATOR],
+                    ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                ]);
+            })
+            ->orderBy(['title' => SORT_ASC]);
+    }
+
+    public function getActiveAdministratedChannels()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
             ->where([

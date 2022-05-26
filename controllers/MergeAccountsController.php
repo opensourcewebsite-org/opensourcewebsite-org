@@ -97,7 +97,7 @@ class MergeAccountsController extends Controller
         ], "user_id = {$userToMerge->id}");
         \app\models\CurrencyExchangeOrderResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
-        \app\modules\bot\models\BotChatMarketplacePost::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
+        \app\modules\bot\models\ChatMarketplacePost::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
         \app\modules\comment\models\MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
         \app\models\Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");

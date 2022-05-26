@@ -5,10 +5,9 @@ namespace app\modules\bot\controllers\groups;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\models\User;
 use app\models\UserStellar;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\User as BotUser;
+use app\modules\bot\models\User;
 use app\models\StellarServer;
 
 /**
@@ -44,7 +43,7 @@ class StellarController extends Controller
                         }
 
                         $verifiedUsers = $chat->getHumanUsers()
-                            ->leftJoin(UserStellar::tableName(), UserStellar::tableName() . '.user_id = ' . BotUser::tableName() .'.user_id')
+                            ->leftJoin(UserStellar::tableName(), UserStellar::tableName() . '.user_id = ' . User::tableName() .'.user_id')
                             ->andWhere([
                                 'not', ['confirmed_at' => null],
                             ])

@@ -7,7 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Phrase;
-use app\modules\bot\models\BotChatFaqQuestion;
+use app\modules\bot\models\ChatFaqQuestion;
 
 /**
  * Class FaqController
@@ -24,7 +24,7 @@ class FaqController extends Controller
     /**
      * Action shows answer
      *
-     * @param int $questionId BotChatFaqQuestion id
+     * @param int $questionId ChatFaqQuestion id
      *
      * @return array
      */

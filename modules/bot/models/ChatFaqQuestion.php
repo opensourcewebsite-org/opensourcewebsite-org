@@ -13,10 +13,10 @@ use Yii;
  * @property string $answer
  * @property int $updated_by
  *
- * @property BotChat $chat
- * @property BotUser $updatedBy
+ * @property Chat $chat
+ * @property User $updatedBy
  */
-class BotChatFaqQuestion extends \yii\db\ActiveRecord
+class ChatFaqQuestion extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

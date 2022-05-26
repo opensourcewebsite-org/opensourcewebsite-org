@@ -7,8 +7,8 @@ use yii\console\Controller;
 use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
 use app\modules\bot\models\Bot;
-use app\modules\bot\models\BotChatCaptcha;
-use app\modules\bot\models\BotChatGreeting;
+use app\modules\bot\models\ChatCaptcha;
+use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatSetting;
 use yii\console\Exception;
 
@@ -141,7 +141,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
 
         if ($bots) {
             foreach ($bots as $bot) {
-                $messagesToRemove = BotChatCaptcha::find()
+                $messagesToRemove = ChatCaptcha::find()
                     ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME])
                     ->joinWith('chat')
                     ->andWhere(['bot_chat.bot_id' => $bot->id])
@@ -151,7 +151,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                     $botApi = new \TelegramBot\Api\BotApi($bot->token);
 
                     foreach ($messagesToRemove as $record) {
-                        BotChatCaptcha::deleteAll([
+                        ChatCaptcha::deleteAll([
                             'chat_id' => $record->chat_id,
                             'provider_user_id' => $record->provider_user_id,
                         ]);
@@ -159,13 +159,13 @@ class TelegramBotController extends Controller implements CronChainedInterface
                         try {
                             $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
                         } catch (\Exception $e) {
-                            echo 'ERROR: BotChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
+                            echo 'ERROR: ChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
 
                         try {
                             $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
                         } catch (\Exception $e) {
-                            echo 'ERROR: BotChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
+                            echo 'ERROR: ChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
                         }
 
                         $updatesCount++;
@@ -191,7 +191,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
 
         if ($bots) {
             foreach ($bots as $bot) {
-                $messagesToRemove = BotChatGreeting::find()
+                $messagesToRemove = ChatGreeting::find()
                     ->where(['<', 'sent_at', time() - ChatSetting::GREETING_MESSAGE_LIFETIME])
                     ->joinWith('chat')
                     ->andWhere(['bot_chat.bot_id' => $bot->id])
@@ -201,7 +201,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                     $botApi = new \TelegramBot\Api\BotApi($bot->token);
 
                     foreach ($messagesToRemove as $record) {
-                        BotChatGreeting::deleteAll([
+                        ChatGreeting::deleteAll([
                             'chat_id' => $record->chat_id,
                             'provider_user_id' => $record->provider_user_id,
                         ]);
@@ -209,7 +209,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                         try {
                             $botApi->deleteMessage($record->chat->chat_id, $record->message_id);
                         } catch (\Exception $e) {
-                            echo 'ERROR: BotChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
+                            echo 'ERROR: ChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                         }
 
                         $updatesCount++;

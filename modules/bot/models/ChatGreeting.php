@@ -18,7 +18,7 @@ use yii\db\ActiveRecord;
  * @property Chat $chat
  * @property User $providerUser
  */
-class BotChatGreeting extends ActiveRecord
+class ChatGreeting extends ActiveRecord
 {
     /**
      * {@inheritdoc}

@@ -18,7 +18,7 @@ use yii\db\ActiveRecord;
  * @property Chat $chat
  * @property User $providerUser
  */
-class BotChatCaptcha extends ActiveRecord
+class ChatCaptcha extends ActiveRecord
 {
     /**
      * {@inheritdoc}

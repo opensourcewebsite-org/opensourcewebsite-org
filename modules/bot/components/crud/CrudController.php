@@ -29,12 +29,12 @@ use yii\web\BadRequestHttpException;
  */
 abstract class CrudController extends Controller
 {
-    const FIELD_NAME_RELATION = 'relationAttributeName';
-    const FIELD_NAME_MODEL_CLASS = 'modelClass';
-    const FIELD_NAME_ATTRIBUTE = 'attributeName';
-    const FIELD_EDITING_ATTRIBUTES = 'editingAttributes';
-    const FIELD_NAME_ID = 'id';
-    const VALUE_NO = 'NO';
+    public const FIELD_NAME_RELATION = 'relationAttributeName';
+    public const FIELD_NAME_MODEL_CLASS = 'modelClass';
+    public const FIELD_NAME_ATTRIBUTE = 'attributeName';
+    public const FIELD_EDITING_ATTRIBUTES = 'editingAttributes';
+    public const FIELD_NAME_ID = 'id';
+    public const VALUE_NO = 'NO';
 
     /** @var BackRouteService */
     public $backRoute;
@@ -68,12 +68,12 @@ abstract class CrudController extends Controller
     {
         $this->backRoute = Yii::createObject([
             'class' => BackRouteService::class,
-            'state' => $module->getBotUserState(),
+            'state' => $module->getUserState(),
             'controller' => $this,
         ]);
         $this->endRoute = Yii::createObject([
             'class' => EndRouteService::class,
-            'state' => $module->getBotUserState(),
+            'state' => $module->getUserState(),
             'controller' => $this,
         ]);
         $this->attributeButtons = Yii::createObject([
@@ -90,7 +90,7 @@ abstract class CrudController extends Controller
         ]);
         $this->field = Yii::createObject([
             'class' => IntermediateFieldService::class,
-            'state' => $module->getBotUserState(),
+            'state' => $module->getUserState(),
             'controller' => $this,
         ]);
 
@@ -945,7 +945,8 @@ abstract class CrudController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('view',
+                $this->render(
+                    'view',
                     $this->prepareViewParams($params, $this->rule)
                 ),
                 $buttons,
@@ -1253,12 +1254,12 @@ abstract class CrudController extends Controller
                 $primaryRelation, $secondaryRelation,
             ] = $this->modelRelation->getRelationAttributes($relation);
             $secondaryFieldData = null;
-            if (new $secondaryRelation[2] instanceof DynamicModel) {
+            if (new $secondaryRelation[2]() instanceof DynamicModel) {
                 $component = $this->createAttributeComponent($relation);
                 $secondaryFieldData = $component->prepare('');
             }
             /** @var ActiveRecord $relationModel */
-            $relationModel = new $relation['model'];
+            $relationModel = new $relation['model']();
             $relationModel->setAttributes([
                 $primaryRelation[0] => $model->id,
                 $secondaryRelation[0] => $secondaryFieldData,
@@ -1306,7 +1307,7 @@ abstract class CrudController extends Controller
                                 continue;
                             }
                             $useDynamicModel = false;
-                            if (new $secondaryRelation[2] instanceof DynamicModel) {
+                            if (new $secondaryRelation[2]() instanceof DynamicModel) {
                                 $useDynamicModel = true;
                                 if (!is_array($attributeValue)) {
                                     $text = $attributeValue;
@@ -1494,14 +1495,15 @@ abstract class CrudController extends Controller
         if (!$relationAttributeName && !$isAttributeRequired) {
             $buttonSkip = $config['buttonSkip'] ?? [];
             $isPrivateAttribute = $this->attributeButtons->isPrivateAttribute($attributeName, $rule);
-            $buttonSkip = ArrayHelper::merge([
+            $buttonSkip = ArrayHelper::merge(
+                [
                 'text' => Yii::t('bot', $isEdit ? 'NO' : 'SKIP'),
                 'callback_data' => self::createRoute($isPrivateAttribute ? 's-a' : 'en-a', [
                     'a' => $attributeName,
                     'text' => self::VALUE_NO,
                 ]),
             ],
-            $buttonSkip
+                $buttonSkip
             );
 
             $buttons[] = [$buttonSkip];
@@ -1755,8 +1757,7 @@ abstract class CrudController extends Controller
         string $modelName,
         string $attributeName,
         array $options
-    )
-    {
+    ) {
         $config = ArrayHelper::getValue($options, 'config', []);
         $rule = $this->getRule($modelName);
         Yii::warning('generatePublicResponse: ' . $modelName);

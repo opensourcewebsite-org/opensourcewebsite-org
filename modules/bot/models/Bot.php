@@ -135,4 +135,9 @@ class Bot extends \yii\db\ActiveRecord
     {
         return $this->name;
     }
+
+    public function getId()
+    {
+        return $this->id;
+    }
 }

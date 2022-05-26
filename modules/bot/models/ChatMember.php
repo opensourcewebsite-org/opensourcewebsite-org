@@ -33,6 +33,37 @@ class ChatMember extends ActiveRecord
     public const ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID = 1087968824; // @GroupAnonymousBot user id in groups for anonymous admin
     public const ANONYMOUS_CHANNEL_PROVIDER_USER_ID = 136817688; // @Channel_Bot user id in groups when message is sent on behalf of a channel
 
+    private array $settings = [
+        'join_hider_status' => [
+            'active_bot_group_join_hider_quantity_value_per_one_rating',
+            'active_bot_group_join_hider_min_quantity_value_per_one_user',
+        ],
+        'join_captcha_status' => [
+            'active_bot_group_join_captcha_quantity_value_per_one_rating',
+            'active_bot_group_join_captcha_min_quantity_value_per_one_user',
+        ],
+        'greeting_status' => [
+            'active_bot_group_greeting_quantity_value_per_one_rating',
+            'active_bot_group_greeting_min_quantity_value_per_one_user',
+        ],
+        'slow_mode_status' => [
+            'active_bot_group_slow_mode_quantity_value_per_one_rating',
+            'active_bot_group_slow_mode_min_quantity_value_per_one_user',
+        ],
+        'filter_status' => [
+            'active_bot_group_filter_quantity_value_per_one_rating',
+            'active_bot_group_filter_min_quantity_value_per_one_user',
+        ],
+        'faq_status' => [
+            'active_bot_group_faq_quantity_value_per_one_rating',
+            'active_bot_group_faq_min_quantity_value_per_one_user',
+        ],
+        'stellar_status' => [
+            'active_bot_group_stellar_quantity_value_per_one_rating',
+            'active_bot_group_stellar_min_quantity_value_per_one_user',
+        ],
+    ];
+
     public static function tableName()
     {
         return '{{%bot_chat_member}}';
@@ -68,12 +99,12 @@ class ChatMember extends ActiveRecord
 
     public function isAnonymousAdministrator()
     {
-        return $this->botUser->getProviderUserId() == self::ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID;
+        return $this->user->getProviderUserId() == self::ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID;
     }
 
     public function isAnonymousChannel()
     {
-        return $this->botUser->getProviderUserId() == self::ANONYMOUS_CHANNEL_PROVIDER_USER_ID;
+        return $this->user->getProviderUserId() == self::ANONYMOUS_CHANNEL_PROVIDER_USER_ID;
     }
 
     public function isActiveAdministrator()
@@ -84,7 +115,7 @@ class ChatMember extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getBotUser()
+    public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
@@ -157,5 +188,51 @@ class ChatMember extends ActiveRecord
         }
 
         return $this;
+    }
+
+    public function trySetChatSetting(string $setting, $value): bool
+    {
+        if (isset($this->settings[$setting])) {
+            if (Yii::$app->settings->{$this->settings[$setting][0]}) {
+                $activeModelsCount = $this->user->getAdministratedGroups()
+                    ->joinWith('settings')
+                    ->andWhere([
+                        'setting' => $setting,
+                        'value' => $value,
+                    ])
+                    ->count();
+
+                $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
+
+                if ($maxActiveModelsCount <= $activeModelsCount) {
+                    return false;
+                }
+            }
+        }
+
+        $this->chat->{$setting} = $value;
+
+        return true;
+    }
+
+    public function getRequiredRatingForChatSetting(string $setting, $value): int
+    {
+        if (isset($this->settings[$setting])) {
+            if (Yii::$app->settings->{$this->settings[$setting][0]}) {
+                $activeModelsCount = $this->user->getAdministratedGroups()
+                    ->joinWith('settings')
+                    ->andWhere([
+                        'setting' => $setting,
+                        'value' => $value,
+                    ])
+                    ->count();
+
+                $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
+
+                return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
+            }
+        }
+
+        return 1;
     }
 }

@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\groups;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\models\BotChatGreeting;
+use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
@@ -34,7 +34,7 @@ class GreetingController extends Controller
                 $telegramUser = $this->getTelegramUser();
             }
 
-            $hasGreeting = BotChatGreeting::find()
+            $hasGreeting = ChatGreeting::find()
                 ->where([
                     'chat_id' => $chat->id,
                     'provider_user_id' => $telegramUser->provider_user_id,
@@ -65,7 +65,7 @@ class GreetingController extends Controller
                     ->send();
 
                 if ($response) {
-                    $greeting = new BotChatGreeting([
+                    $greeting = new ChatGreeting([
                         'chat_id' => $chat->id,
                         'provider_user_id' => $telegramUser->provider_user_id,
                         'message_id' => $response->getMessageId(),
@@ -80,16 +80,16 @@ class GreetingController extends Controller
         }
     }
 
-    private function deletePreviousGreetings(BotChatGreeting $currentGreeting)
+    private function deletePreviousGreetings(ChatGreeting $currentGreeting)
     {
-        $prevGreetings = BotChatGreeting::find()
+        $prevGreetings = ChatGreeting::find()
             ->where([
                 'chat_id' => $currentGreeting->chat_id,
             ])
             ->andWhere(['!=', 'id', $currentGreeting->id])
             ->all();
 
-        /** @var BotChatGreeting $message */
+        /** @var ChatGreeting $message */
         foreach ($prevGreetings as $message) {
             $this->getBotApi()->deleteMessage($message->chat->chat_id, $message->message_id);
 

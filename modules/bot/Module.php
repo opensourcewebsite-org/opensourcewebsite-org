@@ -10,9 +10,9 @@ use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\UserState;
-use app\modules\bot\models\User as BotUser;
+use app\modules\bot\models\User;
 use yii\base\InvalidRouteException;
-use app\models\User;
+use app\models\User as GlobalUser;
 use app\models\Rating;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
@@ -33,11 +33,6 @@ class Module extends \yii\base\Module
     public $defaultControllerNamespace = null;
 
     public $defaultViewPath = null;
-
-    /**
-     * @var User
-     */
-    public $user;
 
     public function init()
     {
@@ -86,44 +81,42 @@ class Module extends \yii\base\Module
             if ($this->getUpdate()->getFrom()) {
                 $isNewUser = false;
 
-                $botUser = BotUser::findOne([
+                $user = User::findOne([
                     'provider_user_id' => $this->getUpdate()->getFrom()->getId(),
                 ]);
 
-                if (!isset($botUser)) {
+                if (!isset($user)) {
                     // Create bot user
-                    $botUser = BotUser::createUser($this->getUpdate()->getFrom());
+                    $user = User::createUser($this->getUpdate()->getFrom());
 
                     $isNewUser = true;
                 }
-
                 // Update telegram user information
-                $botUser->updateInfo($this->getUpdate()->getFrom());
-
+                $user->updateInfo($this->getUpdate()->getFrom());
                 // Set user language for bot answers
-                Yii::$app->language = $botUser->language->code;
+                Yii::$app->language = $user->language->code;
 
-                if (!$botUser->save()) {
-                    Yii::warning($botUser->getErrors());
+                if (!$user->save()) {
+                    Yii::warning($user->getErrors());
 
                     return false;
                 }
             }
 
-            // create a bot user for new forward from
+            // create a user for new forward from
             if ($this->getUpdate()->getRequestMessage() && ($providerForwardFrom = $this->getUpdate()->getRequestMessage()->getForwardFrom())) {
-                $forwardBotUser = BotUser::findOne([
+                $forwardUser = User::findOne([
                     'provider_user_id' => $providerForwardFrom->getId(),
                 ]);
 
-                if (!isset($forwardBotUser)) {
-                    $forwardBotUser = BotUser::createUser($providerForwardFrom);
+                if (!isset($forwardUser)) {
+                    $forwardUser = User::createUser($providerForwardFrom);
                 }
 
-                $forwardBotUser->updateInfo($providerForwardFrom);
+                $forwardUser->updateInfo($providerForwardFrom);
 
-                if (!$forwardBotUser->save()) {
-                    Yii::warning($forwardBotUser->getErrors());
+                if (!$forwardUser->save()) {
+                    Yii::warning($forwardUser->getErrors());
 
                     return false;
                 }
@@ -140,7 +133,7 @@ class Module extends \yii\base\Module
                 $chat = new Chat();
                 $chat->setAttributes([
                     'chat_id' => $this->getUpdate()->getChat()->getId(),
-                    'bot_id' => $this->getBot()->id,
+                    'bot_id' => $this->getBot()->getId(),
                 ]);
 
                 $isNewChat = true;
@@ -169,68 +162,68 @@ class Module extends \yii\base\Module
                 $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
 
                 foreach ($botApiAdministrators as $botApiAdministrator) {
-                    $administratorBotUser = BotUser::findOne([
+                    $administrator = User::findOne([
                         'provider_user_id' => $botApiAdministrator->getUser()->getId(),
                     ]);
 
-                    if (!isset($administratorBotUser)) {
-                        $administratorUpdateUser = $botApiAdministrator->getUser();
+                    if (!isset($administrator)) {
+                        $botApiUser = $botApiAdministrator->getUser();
 
-                        $administratorBotUser = BotUser::createUser($administratorUpdateUser);
+                        $administrator = User::createUser($botApiUser);
 
-                        // Update bot user information
-                        $administratorBotUser->updateInfo($administratorUpdateUser);
-                        $administratorBotUser->save();
+                        // Update user information
+                        $administrator->updateInfo($botApiUser);
+                        $administrator->save();
                     }
 
-                    $administratorBotUser->link('chats', $chat, [
+                    $administrator->link('chats', $chat, [
                         'status' => $botApiAdministrator->getStatus(),
                         'role' => $botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
                     ]);
                 }
             }
 
-            if (isset($botUser)) {
-                if (!$chatMember = $chat->getChatMemberByUser($botUser)) {
+            if (isset($user)) {
+                if (!$chatMember = $chat->getChatMemberByUser($user)) {
                     $telegramChatMember = $this->getBotApi()->getChatMember(
                         $chat->getChatId(),
-                        $botUser->provider_user_id
+                        $user->provider_user_id
                     );
 
                     if ($telegramChatMember) {
-                        $chat->link('users', $botUser, [
+                        $chat->link('users', $user, [
                             'status' => $telegramChatMember->getStatus(),
                         ]);
                     }
                 }
 
-                if (!($user = $botUser->globalUser)) {
-                    $user = User::createWithRandomPassword();
-                    $user->name = $botUser->getFullName();
+                if (!$globalUser = $user->globalUser) {
+                    $globalUser = GlobalUser::createWithRandomPassword();
+                    $globalUser->name = $user->getFullName();
 
                     if ($isNewUser) {
                         if ($chat->isPrivate() && $this->getUpdate()->getRequestMessage()) {
                             $matches = [];
 
                             if (preg_match('/\/start (\d+)/', $this->getUpdate()->getRequestMessage()->getText(), $matches)) {
-                                $user->referrer_id = $matches[1];
+                                $globalUser->referrer_id = $matches[1];
                             }
                         }
                     }
 
-                    $user->save();
+                    $globalUser->save();
 
-                    $botUser->user_id = $user->id;
-                    $botUser->save();
+                    $user->user_id = $globalUser->id;
+                    $user->save();
                 }
 
-                $this->user = $user;
-                $this->setBotUser($botUser);
-                $this->setBotUserState(UserState::fromUser($botUser));
+                $this->setGlobalUser($globalUser);
+                $this->setUser($user);
+                $this->setUserState(UserState::fromUser($user));
 
                 if ($chat->isPrivate()) {
-                    $this->user->updateLastActivity();
-                    $this->getUpdate()->setPrivateMessageFromState($this->getBotUserState());
+                    $globalUser->updateLastActivity();
+                    $this->getUpdate()->setPrivateMessageFromState($this->getUserState());
                 }
             }
 
@@ -247,7 +240,7 @@ class Module extends \yii\base\Module
     private function dispatchRoute()
     {
         if ($this->getChat()->isPrivate()) {
-            $state = $this->getBotUserState()->getName();
+            $state = $this->getUserState()->getName();
             // Delete all user messages in private chat
             if ($this->getUpdate()->getMessage()) {
                 $this->getBotApi()->deleteMessage(
@@ -269,7 +262,7 @@ class Module extends \yii\base\Module
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
 
         if (!$isStateRoute && $this->getChat()->isPrivate()) {
-            $this->getBotUserState()->setName($state);
+            $this->getUserState()->setName($state);
         }
 
         try {
@@ -295,8 +288,8 @@ class Module extends \yii\base\Module
             }
 
             if ($this->getChat()->isPrivate()) {
-                $this->getBotUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
-                $this->getBotUserState()->save($this->getBotUser());
+                $this->getUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
+                $this->getUserState()->save($this->getUser());
             }
         }
 
@@ -413,51 +406,75 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @return User|null
+     * @return GlobalUser|null
      */
-    public function getBotUser()
+    public function getGlobalUser()
     {
-        if (Yii::$container->hasSingleton('botUser')) {
-            return Yii::$container->get('botUser');
+        if (Yii::$container->hasSingleton('globalUser')) {
+            return Yii::$container->get('globalUser');
         }
 
         return null;
     }
 
     /**
-     * @param BotUser $botUser
+     * @param GlobalUser $globalUser
      *
-     * @return BotUser
+     * @return GlobalUser
      */
-    public function setBotUser(BotUser $botUser)
+    public function setGlobalUser(GlobalUser $globalUser)
     {
-        Yii::$container->setSingleton('botUser', $botUser);
+        Yii::$container->setSingleton('globalUser', $globalUser);
 
-        return $botUser;
+        return $globalUser;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getUser()
+    {
+        if (Yii::$container->hasSingleton('user')) {
+            return Yii::$container->get('user');
+        }
+
+        return null;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return User
+     */
+    public function setUser(User $user)
+    {
+        Yii::$container->setSingleton('user', $user);
+
+        return $user;
     }
 
     /**
      * @return UserState|null
      */
-    public function getBotUserState()
+    public function getUserState()
     {
-        if (Yii::$container->hasSingleton('botUserState')) {
-            return Yii::$container->get('botUserState');
+        if (Yii::$container->hasSingleton('userState')) {
+            return Yii::$container->get('userState');
         }
 
         return null;
     }
 
     /**
-     * @param UserState $botUserState
+     * @param UserState $userState
      *
      * @return UserState
      */
-    public function setBotUserState(UserState $botUserState)
+    public function setUserState(UserState $userState)
     {
-        Yii::$container->setSingleton('botUserState', $botUserState);
+        Yii::$container->setSingleton('userState', $userState);
 
-        return $botUserState;
+        return $userState;
     }
 
     /**

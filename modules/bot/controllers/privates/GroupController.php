@@ -29,7 +29,7 @@ class GroupController extends Controller
     {
         $this->getState()->setName(null);
 
-        $chatQuery = $this->getTelegramUser()->getAdministratedGroups();
+        $chatQuery = $this->getTelegramUser()->getActiveAdministratedGroups();
 
         $pagination = new Pagination([
             'totalCount' => $chatQuery->count(),
@@ -71,7 +71,7 @@ class GroupController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => TelegramController::createRoute(),
+                'callback_data' => TelegramAdminController::createRoute(),
                 'text' => Emoji::BACK,
             ],
             [
@@ -289,15 +289,15 @@ class GroupController extends Controller
             $buttons = [];
 
             if ($administrators) {
-                foreach ($administrators as $botUser) {
-                    $administratorChatMember = $chat->getChatMemberByUser($botUser);
+                foreach ($administrators as $administrator) {
+                    $administratorChatMember = $chat->getChatMemberByUser($administrator);
 
                     $buttons[][] = [
                         'callback_data' => self::createRoute('set-administrator', [
                             'chatId' => $chatId,
-                            'administratorId' => $botUser->id,
+                            'administratorId' => $administrator->id,
                         ]),
-                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $botUser->getFullName() . ($botUser->provider_user_name ? ' @' . $botUser->provider_user_name : ''),
+                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $administrator->getFullName() . ($administrator->provider_user_name ? ' @' . $administrator->provider_user_name : ''),
                     ];
                 }
 

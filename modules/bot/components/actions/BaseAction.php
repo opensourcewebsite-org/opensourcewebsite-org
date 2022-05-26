@@ -43,7 +43,7 @@ abstract class BaseAction extends Action
      */
     protected function getState()
     {
-        return $this->controller->module->getBotUserState();
+        return $this->controller->module->getUserState();
     }
 
     /**
@@ -78,7 +78,7 @@ abstract class BaseAction extends Action
      */
     protected function getTelegramUser()
     {
-        return $this->controller->module->getBotUser();
+        return $this->controller->module->getUser();
     }
 
     public function createRoute($actionName = 'index', array $params = [])

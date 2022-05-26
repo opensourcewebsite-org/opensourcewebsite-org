@@ -3,4 +3,4 @@
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<?= Emoji::MANAGE ?> <b><?= Yii::t('bot', 'Telegram Admin') ?></b>
+<?= Emoji::SPEAKER ?> <b><?= Yii::t('bot', 'Telegram Catalog') ?></b>

@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatSetting;
+use Yii;
 
 /**
  * Class ChannelMarketplaceController

@@ -5,7 +5,7 @@ namespace app\modules\bot\controllers\groups;
 use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\models\BotChatCaptcha;
+use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 
@@ -80,7 +80,7 @@ class JoinCaptchaController extends Controller
                     ->send();
 
                 if ($response) {
-                    $botCaptcha = BotChatCaptcha::find()
+                    $botCaptcha = ChatCaptcha::find()
                         ->where([
                             'chat_id' => $chat->id,
                             'provider_user_id' => $telegramUser->provider_user_id,
@@ -88,7 +88,7 @@ class JoinCaptchaController extends Controller
                         ->exists();
 
                     if (!$botCaptcha) {
-                        $botCaptcha = new BotChatCaptcha([
+                        $botCaptcha = new ChatCaptcha([
                             'chat_id' => $chat->id,
                             'provider_user_id' => $telegramUser->provider_user_id,
                             'captcha_message_id' => $response->getMessageId(),
@@ -116,7 +116,7 @@ class JoinCaptchaController extends Controller
             $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
 
-            $botCaptcha = BotChatCaptcha::find()
+            $botCaptcha = ChatCaptcha::find()
                 ->where([
                     'chat_id' => $chat->id,
                     'provider_user_id' => $telegramUser->provider_user_id,

@@ -8,9 +8,10 @@ use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\BotChatFaqQuestion;
+use app\modules\bot\models\ChatFaqQuestion;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\ChatMember;
 
 /**
  * Class GroupFaqController
@@ -25,7 +26,7 @@ class GroupFaqController extends Controller
             parent::actions(),
             Yii::createObject([
                 'class' => WordlistComponent::class,
-                'wordModelClass' => BotChatFaqQuestion::class,
+                'wordModelClass' => ChatFaqQuestion::class,
                 'buttons' => [
                     [
                         'field' => 'answer',
@@ -105,7 +106,18 @@ class GroupFaqController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->faq_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                 if (!$chatMember->trySetChatSetting('faq_status', ChatSetting::STATUS_ON)) {
+                     return $this->getResponseBuilder()
+                         ->answerCallbackQuery(
+                             $this->render('alert-status-on', [
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('faq_status', ChatSetting::STATUS_ON),
+                             ]),
+                             true
+                         )
+                         ->build();
+                 }
 
                 break;
         }

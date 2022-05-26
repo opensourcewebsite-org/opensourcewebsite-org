@@ -164,7 +164,18 @@ class GroupMessageFilterController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->filter_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                 if (!$chatMember->trySetChatSetting('filter_status', ChatSetting::STATUS_ON)) {
+                     return $this->getResponseBuilder()
+                         ->answerCallbackQuery(
+                             $this->render('alert-status-on', [
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('filter_status', ChatSetting::STATUS_ON),
+                             ]),
+                             true
+                         )
+                         ->build();
+                 }
 
                 break;
         }

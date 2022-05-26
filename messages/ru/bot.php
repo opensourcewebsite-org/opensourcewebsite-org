@@ -168,6 +168,7 @@ return [
     'Telegram channels' => 'Телеграм каналы',
     'Telegram channel management' => 'Управление телеграм каналами',
     'Telegram' => 'Телеграм',
+    'Telegram Catalog' => 'Телеграм Каталог',
     'Telegram Admin' => 'Телеграм Админ',
     'Channels' => 'Каналы',
     'To start managing your channel follow these steps' => 'Чтобы начать управлять вашим каналом, выполните следующие действия',
@@ -517,4 +518,5 @@ return [
     'Try again tomorrow' => 'Повторите попытку завтра',
     'Can\'t delete this message automatically' => 'Невозможно удалить это сообщение автоматически',
     'Delete this message manually' => 'Удалите это сообщение вручную',
+    'To activate this feature in the group please increase your Rating to at least {0}' => 'Чтобы активировать эту функцию в группе, пожалуйста, увеличьте ваш рейтинг как минимум до {0}',
 ];

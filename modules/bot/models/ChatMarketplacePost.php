@@ -19,7 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * @property Chat $chat
  * @property User $user
  */
-class BotChatMarketplacePost extends \yii\db\ActiveRecord
+class ChatMarketplacePost extends \yii\db\ActiveRecord
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;

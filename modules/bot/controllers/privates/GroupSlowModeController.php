@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
+use Yii;
 use yii\data\Pagination;
-use app\modules\bot\components\helpers\Emoji;
 
 /**
 * Class GroupSlowModeController
@@ -83,7 +83,18 @@ class GroupSlowModeController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->slow_mode_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                 if (!$chatMember->trySetChatSetting('slow_mode_status', ChatSetting::STATUS_ON)) {
+                     return $this->getResponseBuilder()
+                         ->answerCallbackQuery(
+                             $this->render('alert-status-on', [
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('slow_mode_status', ChatSetting::STATUS_ON),
+                             ]),
+                             true
+                         )
+                         ->build();
+                 }
 
                 break;
         }

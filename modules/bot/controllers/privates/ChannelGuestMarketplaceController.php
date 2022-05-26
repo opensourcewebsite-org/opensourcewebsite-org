@@ -7,7 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\models\BotChatMarketplacePost;
+use app\modules\bot\models\ChatMarketplacePost;
 use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
@@ -34,7 +34,7 @@ class ChannelGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        $query = BotChatMarketplacePost::find()
+        $query = ChatMarketplacePost::find()
             ->where([
                 'chat_id' => $chat->id,
                 'user_id' => $this->user->id,
@@ -131,7 +131,7 @@ class ChannelGuestMarketplaceController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
-                $post = new BotChatMarketplacePost();
+                $post = new ChatMarketplacePost();
                 $post->user_id = $this->user->id;
                 $post->chat_id = $chat->id;
                 $post->text = $text;
@@ -168,7 +168,7 @@ class ChannelGuestMarketplaceController extends Controller
     {
         $this->getState()->setName(null);
 
-        $post = BotChatMarketplacePost::find()
+        $post = ChatMarketplacePost::find()
             ->where([
                 'id' => $postId,
                 'user_id' => $this->user->id,
@@ -249,7 +249,7 @@ class ChannelGuestMarketplaceController extends Controller
     {
         $this->getState()->setName(null);
 
-        $post = BotChatMarketplacePost::find()
+        $post = ChatMarketplacePost::find()
             ->where([
                 'id' => $postId,
                 'user_id' => $this->user->id,
@@ -280,10 +280,10 @@ class ChannelGuestMarketplaceController extends Controller
                 $post->provider_message_id = null;
             }
         } else {
-            $activePostsCount = BotChatMarketplacePost::find()
+            $activePostsCount = ChatMarketplacePost::find()
                 ->where([
                     'user_id' => $this->user->id,
-                    'status' => BotChatMarketplacePost::STATUS_ON,
+                    'status' => ChatMarketplacePost::STATUS_ON,
                 ])
                 ->count();
 
@@ -340,7 +340,7 @@ class ChannelGuestMarketplaceController extends Controller
 
     public function actionSetTitle($postId = null)
     {
-        $post = BotChatMarketplacePost::find()
+        $post = ChatMarketplacePost::find()
             ->where([
                 'id' => $postId,
                 'user_id' => $this->user->id,
@@ -394,7 +394,7 @@ class ChannelGuestMarketplaceController extends Controller
 
     public function actionSetText($postId = null)
     {
-        $post = BotChatMarketplacePost::find()
+        $post = ChatMarketplacePost::find()
             ->where([
                 'id' => $postId,
                 'user_id' => $this->user->id,
@@ -471,7 +471,7 @@ class ChannelGuestMarketplaceController extends Controller
 
     public function actionDelete($postId = null): array
     {
-        $post = BotChatMarketplacePost::find()
+        $post = ChatMarketplacePost::find()
             ->where([
                 'id' => $postId,
                 'user_id' => $this->user->id,
