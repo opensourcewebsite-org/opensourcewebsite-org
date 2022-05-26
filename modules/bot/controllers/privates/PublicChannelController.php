@@ -53,8 +53,6 @@ class PublicChannelController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $chat = $chats[0];
-
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [
                 'page' => $page,
