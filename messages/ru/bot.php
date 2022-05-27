@@ -169,6 +169,7 @@ return [
     'Telegram channel management' => 'Управление телеграм каналами',
     'Telegram' => 'Телеграм',
     'Telegram Catalog' => 'Телеграм Каталог',
+    'To add your public group or public channel to the catalog, add the bot to your group or channel' => 'Чтобы добавить ваши публичную группу или публичный канал в каталог, добавьте этого бота в вашу группу или канал',
     'Telegram Admin' => 'Телеграм Админ',
     'Channels' => 'Каналы',
     'To start managing your channel follow these steps' => 'Чтобы начать управлять вашим каналом, выполните следующие действия',
