@@ -54,7 +54,7 @@ class LocationPickerWidget extends Widget
     public function registerClientScript()
     {
         $view = $this->getView();
-        LeafLetAsset::register($view);
+        LeafletAsset::register($view);
         LeafletLocateControlAsset::register($view);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace app\assets;
 
-use dosamigos\leaflet\LeafLetAsset as VendorLeafletAsset;
 use yii\web\AssetBundle;
 
 /**

@@ -17,6 +17,6 @@ class LeafletLocateControlAsset extends AssetBundle
     ];
 
     public $depends = [
-        LeafLetAsset::class,
+        LeafletAsset::class,
     ];
 }
