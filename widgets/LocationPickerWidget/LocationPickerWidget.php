@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace app\widgets\LocationPickerWidget;
 
+use app\assets\LeafletAsset;
 use app\assets\LeafletLocateControlAsset;
-use dosamigos\leaflet\LeafLetAsset;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\base\Widget;
