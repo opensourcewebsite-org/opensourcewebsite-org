@@ -2,8 +2,14 @@
 
 namespace app\models;
 
+use app\components\helpers\Html;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
+use app\models\interfaces\MatchesInterface;
+use app\models\matchers\ModelLinker;
+use app\models\queries\CurrencyExchangeOrderQuery;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
 use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
@@ -15,11 +21,6 @@ use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\web\JsExpression;
-use app\models\queries\CurrencyExchangeOrderQuery;
-use app\models\matchers\ModelLinker;
-use app\components\helpers\Html;
-use app\models\scenarios\CurrencyExchangeOrder\UpdateScenario;
-use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
 
 /**
  * This is the model class for table "currency_exchange_order".
@@ -28,7 +29,8 @@ use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsS
  * @property int $user_id
  * @property int $selling_currency_id
  * @property int $buying_currency_id
- * @property float|null $fee
+ * @property float|null $selling_rate
+ * @property float|null $buying_rate
  * @property float|null $selling_currency_min_amount
  * @property float|null $selling_currency_max_amount
  * @property int $status
@@ -53,12 +55,12 @@ use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsS
  * @property string $selling_location
  * @property string $buying_location
  */
-class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterface
+class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterface, MatchesInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 30;
+    public const LIVE_DAYS = 7;
 
     public const CASH_OFF = 0;
     public const CASH_ON = 1;
@@ -153,16 +155,21 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ],
             [
                 [
-                    'fee',
+                    'selling_rate',
+                    'buying_rate',
                 ],
-                'double',
-                'min' => -99.99999999,
-                'max' => 99.99999999,
+                'filter', 'filter' => function ($value) {
+                    return ($value != 0 ? $value : null);
+                },
             ],
             [
-                'fee',
-                'default',
-                'value' => 0,
+                [
+                    'selling_rate',
+                    'buying_rate',
+                ],
+                'double',
+                'min' => 0,
+                'max' => 99999999.99999999,
             ],
             [
                 [
@@ -193,10 +200,28 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 'whenClient' => new JsExpression(
                     "
                     function (attribute, value) {
-                        return $('#currencyexchangeorder-selling_currency_min_amount').val() != ''
+                        return $('#selling_currency_min_amount').val() != ''
                     }"
                 ),
                 'compareAttribute' => 'selling_currency_min_amount', 'operator' => '>=', 'type' => 'number'
+            ],
+            [
+                [
+                    'selling_cash_on',
+                    'buying_cash_on',
+                ],
+                'filter', 'filter' => function ($value) {
+                    return ($value ? intval($value) : 0);
+                },
+            ],
+            [
+                [
+                    'selling_delivery_radius',
+                    'buying_delivery_radius',
+                ],
+                'filter', 'filter' => function ($value) {
+                    return ($value ? intval($value) : null);
+                },
             ],
             [
                 ['sellingPaymentMethodIds', 'buyingPaymentMethodIds'],
@@ -204,6 +229,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     if ($val === '') {
                         return [];
                     }
+
                     return $val;
                 }
             ],
@@ -237,7 +263,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'user_id' => 'User ID',
             'selling_currency_id' => Yii::t('bot', 'Selling Currency'),
             'buying_currency_id' => Yii::t('bot', 'Buying Currency'),
-            'fee' => Yii::t('bot', 'Fee'),
+            'selling_rate' => Yii::t('bot', 'Exchange rate'),
+            'buying_rate' => Yii::t('bot', 'Inverse rate'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
             'selling_currency_max_amount' => Yii::t('bot', 'Max. amount'),
             'status' => Yii::t('bot', 'Status'),
@@ -264,7 +291,10 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function attributeHints()
     {
         return [
-            'fee' => Yii::t('app', 'Cross rate is the current international exchange rate') . '. ' . Yii::t('app', 'Fee is added to the cross rate') . '. ' . Yii::t('app', 'Fee is zero by default and can be positive (you get fee) or negative (you give fee)') . '.',
+            'selling_currency_label' => Yii::t('app', 'Used to privately display additional information in your order list') .  '.',
+            'buying_currency_label' => Yii::t('app', 'Used to privately display additional information in your order list') .  '.',
+            'selling_rate' => Yii::t('app', 'Minimum price limit of 1 unit of selling currency in terms of buying currency') .  '.',
+            'buying_rate' => Yii::t('app', 'Maximum price limit of 1 unit of buying currency in terms of selling currency') .  '.',
             'selling_currency_min_amount' => Yii::t('app', 'Minimum amount limit of selling currency in one trade') .  '.',
             'selling_currency_max_amount' => Yii::t('app', 'Maximum amount limit of selling currency in one trade') .  '.',
         ];
@@ -288,6 +318,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         [$lat, $lon] = (new LocationParser($location))->parse();
         $this->selling_location_lat = $lat;
         $this->selling_location_lon = $lon;
+
         return $this;
     }
 
@@ -303,6 +334,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         [$lat, $lon] = (new LocationParser($location))->parse();
         $this->buying_location_lat = $lat;
         $this->buying_location_lon = $lon;
+
         return $this;
     }
 
@@ -410,8 +442,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->getMatches()
             ->joinWith('user')
             ->orderBy([
-                'user.rating' => SORT_DESC,
-                'user.created_at' => SORT_ASC,
+                'buying_rate' => SORT_DESC,
+                '{{%user}}.rating' => SORT_DESC,
+                '{{%user}}.created_at' => SORT_ASC,
             ]);
     }
 
@@ -468,12 +501,14 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     public function setActive(): self
     {
         $this->status = static::STATUS_ON;
+
         return $this;
     }
 
     public function setInactive(): self
     {
         $this->status = static::STATUS_OFF;
+
         return $this;
     }
 
@@ -532,24 +567,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         }
 
         return '∞';
-    }
-
-    public function getFeeBadge($direction = true)
-    {
-        if ($this->fee != 0) {
-            $classes = [
-                0 => 'success',
-                1 => 'danger',
-            ];
-
-            if (!$direction) {
-                $classes = array_reverse($classes);
-            }
-
-            $class = ($this->fee > 0 ? $classes[0] : ($this->fee < 0 ? $classes[1] : ''));
-
-            return Html::badge($class, ($this->fee > 0 ? '+' : '') . (float)$this->fee . '%');
-        }
     }
 
     public function beforeSave($insert)

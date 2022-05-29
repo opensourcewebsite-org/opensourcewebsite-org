@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\components\Controller;
+use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
-use Yii;
-use app\models\Vacancy;
-use app\models\WebModels\WebVacancy;
-use app\models\Currency;
 use app\models\Resume;
-use app\models\scenarios\Resume\UpdateKeywordsByIdsScenario;
 use app\models\scenarios\Resume\SetActiveScenario;
+use app\models\scenarios\Resume\UpdateKeywordsByIdsScenario;
 use app\models\search\ResumeSearch;
 use app\models\User;
+use app\models\Vacancy;
 use app\models\WebModels\WebResume;
+use app\models\WebModels\WebVacancy;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use app\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\components\Controller;
 use app\models\AdOffer;
+use app\models\AdSearch;
 use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
@@ -13,10 +15,8 @@ use app\models\scenarios\AdSearch\UpdateKeywordsByIdsScenario;
 use app\models\search\AdSearchSearch;
 use app\models\User;
 use Yii;
-use app\models\AdSearch;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use app\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 

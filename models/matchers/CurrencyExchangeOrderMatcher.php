@@ -40,13 +40,13 @@ final class CurrencyExchangeOrderMatcher
             $matchesQuery->andWhere(
                 ['or',
                     ['and',
-                        ['buying_cash_on' => true],
+                        [$this->comparingTable . '.buying_cash_on' => CurrencyExchangeOrder::CASH_ON],
                         "ST_Distance_Sphere(
                             POINT({$this->model->selling_location_lon}, {$this->model->selling_location_lat}),
                             POINT({$this->comparingTable}.buying_location_lon, {$this->comparingTable}.buying_location_lat)
                             ) <= 1000 * ({$this->comparingTable}.buying_delivery_radius + " . ($this->model->selling_delivery_radius ?: 0) . ')'
                     ],
-                    ['in', 'sm.id', $buyingMethodsIds]
+                    ['in', 'sm.id', $buyingMethodsIds],
                 ]
             );
         } else {
@@ -57,26 +57,44 @@ final class CurrencyExchangeOrderMatcher
             $matchesQuery->andWhere(
                 ['or',
                     ['and',
-                        ['selling_cash_on' => true],
+                        [$this->comparingTable . '.selling_cash_on' => CurrencyExchangeOrder::CASH_ON],
                         "ST_Distance_Sphere(
                             POINT({$this->model->buying_location_lon}, {$this->model->buying_location_lat}),
                             POINT({$this->comparingTable}.selling_location_lon, {$this->comparingTable}.selling_location_lat)
                         ) <= 1000 * ({$this->comparingTable}.selling_delivery_radius + " . ($this->model->buying_delivery_radius ?: 0) . ')'
                     ],
-                    ['in', 'bm.id', $sellingMethodsIds]
+                    ['in', 'bm.id', $sellingMethodsIds],
                 ]
             );
         } else {
             $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
         }
-        // use fees in orders for match
-        //$matchesQuery->andWhere(['<=', 'fee', (-1 * (float)$this->model->fee)]);
+
+        $counterMatchesQuery = clone $matchesQuery;
+
+        if ($this->model->selling_rate) {
+            $matchesQuery
+                ->andWhere(['>=', "{$this->comparingTable}.buying_rate", $this->model->selling_rate]);
+
+            $counterMatchesQuery
+                ->andWhere([
+                    'or',
+                    ["{$this->comparingTable}.selling_rate" => null],
+                    ['>=', "{$this->comparingTable}.buying_rate", $this->model->selling_rate],
+                ]);
+        } else {
+            $matchesQuery->andWhere(["{$this->comparingTable}.selling_rate" => null]);
+            $counterMatchesQuery->andWhere(["{$this->comparingTable}.selling_rate" => null]);
+        }
 
         $matches = $matchesQuery->all();
+        $counterMatches = $counterMatchesQuery->all();
+
         $matchesCount = count($matches);
+        $counterMatchesCount = count($counterMatches);
 
         $this->linker->linkMatches($matches);
-        $this->linker->linkCounterMatches($matches);
+        $this->linker->linkCounterMatches($counterMatches);
 
         return $matchesCount;
     }

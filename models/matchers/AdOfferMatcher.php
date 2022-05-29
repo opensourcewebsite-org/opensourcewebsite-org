@@ -38,13 +38,13 @@ class AdOfferMatcher
                     ->joinWith('adOffers')
                     ->andWhere([AdOffer::tableName() . '.id' => $this->model->id]);
             }])
-            ->groupBy(AdSearch::tableName() . '.id');
+            ->groupBy($this->comparingTable . '.id');
 
         if ($this->model->getKeywords()->count() > 0) {
             $keywordsMatches = $matchesQueryKeywords->all();
             $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
-            $matchedCount = count($keywordsMatches);
+            $matchesCount = count($keywordsMatches);
 
             $this->linker->linkMatches($keywordsMatches);
             $this->linker->linkCounterMatches($keywordsMatches);
@@ -53,14 +53,14 @@ class AdOfferMatcher
             $keywordsMatches = $matchesQueryKeywords->all();
             $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
-            $matchedCount = count($noKeywordsMatches);
+            $matchesCount = count($noKeywordsMatches);
 
             $this->linker->linkCounterMatches($keywordsMatches);
             $this->linker->linkMatches($noKeywordsMatches);
             $this->linker->linkCounterMatches($noKeywordsMatches);
         }
 
-        return $matchedCount;
+        return $matchesCount;
     }
 
     private function prepareMainQuery(): ActiveQuery
@@ -71,7 +71,7 @@ class AdOfferMatcher
             ->andWhere(["{$this->comparingTable}.section" => $this->model->section])
             ->andWhere("ST_Distance_Sphere(
                     POINT({$this->model->location_lon}, {$this->model->location_lat}),
-                    POINT(ad_search.location_lon, ad_search.location_lat)
-                ) <= 1000 * (ad_search.pickup_radius + {$this->model->delivery_radius})");
+                    POINT({$this->comparingTable}.location_lon, {$this->comparingTable}.location_lat)
+                ) <= 1000 * ({$this->comparingTable}.pickup_radius + {$this->model->delivery_radius})");
     }
 }

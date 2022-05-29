@@ -50,7 +50,15 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                             [
                                 'label' => Yii::t('app', 'Exchange rate'),
                                 'value' => function ($model) {
-                                    return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ' ' . $model->getFeeBadge(false) : '');
+                                    return $model->selling_rate ?: '∞';
+                                },
+                                'format' => 'html',
+                                'enableSorting' => false,
+                            ],
+                            [
+                                'label' => Yii::t('app', 'Inverse rate'),
+                                'value' => function ($model) {
+                                    return $model->buying_rate ?: '∞';
                                 },
                                 'format' => 'html',
                                 'enableSorting' => false,

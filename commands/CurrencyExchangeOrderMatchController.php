@@ -2,15 +2,15 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
+use app\models\CurrencyExchangeOrder;
 use app\models\matchers\CurrencyExchangeOrderMatcher;
 use Yii;
 use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
-use app\commands\traits\ControllerLogTrait;
-use app\models\CurrencyExchangeOrder;
 use yii\console\Exception;
-use yii\db\ActiveRecord;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * Class CurrencyExchangeOrderMatchController

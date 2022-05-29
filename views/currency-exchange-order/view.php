@@ -83,7 +83,14 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 [
                                     'label' => Yii::t('app', 'Exchange rate'),
                                     'value' => function ($model) {
-                                        return Yii::t('app', 'Cross Rate') . ($model->fee != 0 ? ' ' . $model->getFeeBadge() : '');
+                                        return $model->selling_rate ?: '∞';
+                                    },
+                                    'format' => 'html',
+                                ],
+                                [
+                                    'label' => Yii::t('app', 'Inverse rate'),
+                                    'value' => function ($model) {
+                                        return $model->buying_rate ?: '∞';
                                     },
                                     'format' => 'html',
                                 ],

@@ -5,15 +5,16 @@ namespace app\models;
 use app\components\helpers\ArrayHelper;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
+use app\models\interfaces\MatchesInterface;
 use app\models\matchers\ModelLinker;
 use app\models\queries\AdSearchQuery;
 use app\models\scenarios\AdSearch\UpdateScenario;
 use app\modules\bot\components\helpers\LocationParser;
-use Yii;
-use yii\behaviors\TimestampBehavior;
-use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use app\modules\bot\validators\RadiusValidator;
+use Yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
@@ -44,12 +45,12 @@ use yii\web\JsExpression;
  * @property AdOffer[] $matches
  * @property AdOffer[] $counterMatches
  */
-class AdSearch extends ActiveRecord implements ViewedByUserInterface
+class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
 
-    public const LIVE_DAYS = 30;
+    public const LIVE_DAYS = 7;
 
     public const EVENT_KEYWORDS_UPDATED = 'keywordsUpdated';
 
