@@ -12,6 +12,6 @@ use yii\web\AssetBundle;
 class FlagIconCssAsset extends AssetBundle
 {
     public $css = [
-        '//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css',
+        '//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.4.4/css/flag-icon.min.css',
     ];
 }

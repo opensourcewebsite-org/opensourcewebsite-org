@@ -5,7 +5,6 @@ namespace app\assets;
 use dosamigos\leaflet\LeafLetAsset;
 use yii\web\AssetBundle;
 
-
 class LeafletLocateControlAsset extends AssetBundle
 {
     public $sourcePath = '@npm/leaflet.locatecontrol';

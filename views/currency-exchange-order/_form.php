@@ -1,6 +1,7 @@
 <?php
 
 use app\assets\LeafletLocateControlAsset;
+use app\components\helpers\Html;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
@@ -26,7 +27,6 @@ use yii\widgets\ActiveForm;
 LeafletLocateControlAsset::register($this);
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
-$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 
 $form = ActiveForm::begin(['id' => 'form']);
 ?>
@@ -55,7 +55,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                     ->textInput([
                                         'maxlength' => true,
                                     ])
-                                    ->label($iconPrivate . $model->getAttributeLabel('selling_currency_label') . $labelOptional); ?>
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_currency_label') . $labelOptional); ?>
                             </div>
                         </div>
                         <hr/>
@@ -79,7 +79,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                 ->textInput([
                                     'maxlength' => true,
                                 ])
-                                ->label($iconPrivate . $model->getAttributeLabel('buying_currency_label') . $labelOptional); ?>
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_currency_label') . $labelOptional); ?>
                         </div>
                     </div>
                     <hr/>
@@ -149,7 +149,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="col">
                                 <?= $form->field($model, 'selling_location')
                                     ->widget(LocationPickerWidget::class)
-                                    ->label($iconPrivate . $model->getAttributeLabel('selling_location'))
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_location'))
                                 ?>
                             </div>
                         </div>
@@ -160,7 +160,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                         'maxlength' => true,
                                         'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
                                     ])
-                                    ->label($iconPrivate . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
                                 ?>
                             </div>
                         </div>
@@ -184,7 +184,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="col">
                                 <?= $form->field($model, 'buying_location')
                                     ->widget(LocationPickerWidget::class)
-                                    ->label($iconPrivate . $model->getAttributeLabel('buying_location'))
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_location'))
                                 ?>
                             </div>
                         </div>
@@ -195,7 +195,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                         'maxlength' => true,
                                         'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
                                     ])
-                                    ->label($iconPrivate . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
                                 ?>
                             </div>
                         </div>
