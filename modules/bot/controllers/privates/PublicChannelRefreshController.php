@@ -56,7 +56,6 @@ class PublicChannelRefreshController extends Controller
                 'page' => $page,
             ]);
         }
-
         // Update chat information
         $chat->setAttributes([
             'type' => $botApiChat->getType(),

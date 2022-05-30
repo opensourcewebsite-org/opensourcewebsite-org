@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\models\Language;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use Yii;
 use yii\data\Pagination;
 
 /**
@@ -33,7 +33,10 @@ class LanguageController extends Controller
     {
         $this->getState()->setName(self::createRoute('input'));
 
-        $languageQuery = Language::find()->orderBy('code ASC');
+        $languageQuery = Language::find()
+            ->orderBy([
+                'code' => SORT_ASC,
+            ]);
 
         $pagination = new Pagination([
             'totalCount' => $languageQuery->count(),
@@ -94,11 +97,10 @@ class LanguageController extends Controller
         ]);
 
         if ($language) {
-            $telegramUser = $this->getTelegramUser();
+            $user = $this->getTelegramUser();
+            $user->language_id = $language->id;
 
-            $telegramUser->language_id = $language->id;
-
-            if ($telegramUser->save()) {
+            if ($user->save()) {
                 Yii::$app->language = $language->code;
             }
         }

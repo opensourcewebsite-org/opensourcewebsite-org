@@ -1,17 +1,20 @@
 <b><?= Yii::t('bot', 'Commands') ?></b><br/>
+<?php if (YII_ENV_DEV) : ?>
 <br/>
 /s_ad - <?= Yii::t('bot', 'Ads') ?>. <?= Yii::t('bot', 'Buying, selling, renting, services') ?>.<br/>
 /s_job - <?= Yii::t('bot', 'Jobs') ?>. <?= Yii::t('bot', 'Vacancies and resumes') ?>.<br/>
+<?php endif; ?>
 <br/>
-/group - <?= Yii::t('bot', 'Telegram group management') ?><br/>
-/channel - <?= Yii::t('bot', 'Telegram channel management') ?><br/>
+/telegram - <?= Yii::t('bot', 'Telegram catalog of public groups and channels') ?><br/>
+/telegram_admin - <?= Yii::t('bot', 'Telegram admin management of groups and channels') ?><br/>
 <br/>
 /my_account - <?= Yii::t('bot', 'Account') ?><br/>
-  • /my_stellar - <?= Yii::t('bot', 'Stellar') ?><br/>
   • /my_rating - <?= Yii::t('bot', 'Rating') ?><br/>
   • /my_referrals - <?= Yii::t('bot', 'Referrals') ?><br/>
-  • /my_location - <?= Yii::t('bot', 'Location') ?><br/>
+  • /my_stellar - <?= Yii::t('bot', 'Stellar account') ?><br/>
+  • /my_website_account - <?= Yii::t('bot', 'Website account') ?><br/>
   • /my_profile - <?= Yii::t('bot', 'Profile') ?><br/>
+    • /my_location - <?= Yii::t('bot', 'Location') ?><br/>
     • /my_timezone - <?= Yii::t('bot', 'Timezone') ?><br/>
     • /my_gender - <?= Yii::t('bot', 'Gender') ?><br/>
     • /my_sexuality - <?= Yii::t('bot', 'Sexuality') ?><br/>

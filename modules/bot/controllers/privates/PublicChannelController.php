@@ -29,6 +29,8 @@ class PublicChannelController extends Controller
     {
         $this->getState()->setName(null);
         // TODO order by rating
+        // '{{%user}}.rating' => SORT_DESC,
+        // '{{%user}}.created_at' => SORT_ASC,
         $chatQuery = Chat::find()
             ->where([
                 'type' => Chat::TYPE_CHANNEL,

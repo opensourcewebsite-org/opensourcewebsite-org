@@ -28,7 +28,9 @@ class PublicGroupController extends Controller
     public function actionIndex($page = 1)
     {
         $this->getState()->setName(null);
-        // TODO order by rating
+        // TODO order by user rating
+        // '{{%user}}.rating' => SORT_DESC,
+        // '{{%user}}.created_at' => SORT_ASC,
         $chatQuery = Chat::find()
             ->where([
                 'or',

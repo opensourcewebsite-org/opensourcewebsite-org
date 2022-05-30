@@ -2,9 +2,9 @@
 
 namespace app\modules\bot\models;
 
+use DateTime;
 use Yii;
 use yii\db\ActiveRecord;
-use DateTime;
 
 /**
  * This is the model class for table "bot_chat_member".
@@ -17,6 +17,7 @@ use DateTime;
  * @property int $slow_mode_messages
  * @property int|null $last_message_at
  *
+ * @package app\modules\bot\models
  */
 class ChatMember extends ActiveRecord
 {

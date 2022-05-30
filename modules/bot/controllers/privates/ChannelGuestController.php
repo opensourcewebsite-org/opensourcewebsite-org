@@ -51,6 +51,9 @@ class ChannelGuestController extends Controller
                             'text' => Emoji::MENU,
                         ],
                     ]
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();

@@ -4,6 +4,19 @@ namespace app\modules\bot\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "bot_phrase".
+ *
+ * @property int $id
+ * @property int $chat_id
+ * @property int $user_id
+ * @property string $status
+ * @property int $role
+ * @property int $slow_mode_messages
+ * @property int|null $last_message_at
+ *
+ * @package app\modules\bot\models
+ */
 class Phrase extends ActiveRecord
 {
     public const TYPE_WHITELIST = 'whitelist';

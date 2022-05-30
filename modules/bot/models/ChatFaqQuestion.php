@@ -3,6 +3,7 @@
 namespace app\modules\bot\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "bot_chat_faq_question".
@@ -15,8 +16,10 @@ use Yii;
  *
  * @property Chat $chat
  * @property User $updatedBy
+ *
+ * @package app\modules\bot\models
  */
-class ChatFaqQuestion extends \yii\db\ActiveRecord
+class ChatFaqQuestion extends ActiveRecord
 {
     /**
      * {@inheritdoc}

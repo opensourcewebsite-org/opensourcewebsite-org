@@ -374,6 +374,16 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->viaTable('{{%currency_exchange_order_buying_payment_method}}', ['order_id' => 'id']);
     }
 
+    public function getSellingPaymentMethodIds(): array
+    {
+        return ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
+    }
+
+    public function getBuyingPaymentMethodIds(): array
+    {
+        return ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
@@ -542,16 +552,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         }
 
         return false;
-    }
-
-    public function getSellingPaymentMethodIds(): array
-    {
-        return ArrayHelper::getColumn($this->getSellingPaymentMethods()->asArray()->all(), 'id');
-    }
-
-    public function getBuyingPaymentMethodIds(): array
-    {
-        return ArrayHelper::getColumn($this->getBuyingPaymentMethods()->asArray()->all(), 'id');
     }
 
     public function getFormatLimits(): string

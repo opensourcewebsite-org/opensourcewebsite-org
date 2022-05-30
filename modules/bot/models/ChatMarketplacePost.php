@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "bot_chat_marketplace_post".
@@ -18,8 +19,10 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property Chat $chat
  * @property User $user
+ *
+ * @package app\modules\bot\models
  */
-class ChatMarketplacePost extends \yii\db\ActiveRecord
+class ChatMarketplacePost extends ActiveRecord
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;

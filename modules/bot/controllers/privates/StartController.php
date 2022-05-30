@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\models\Language;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
+use Yii;
 
 /**
  * Class StartController
@@ -21,20 +21,16 @@ class StartController extends Controller
     public function actionIndex($start = null)
     {
         if (!empty($start) && ($start < 0)) {
-            $chat = Chat::find()
-                ->where([
-                    'chat_id' => $start,
-                ])
-                ->one();
+            $chat = Chat::findOne([
+                'chat_id' => $start,
+            ]);
 
             if (isset($chat)) {
                 if ($chat->isGroup()) {
                     return $this->run('group-guest/view', [
                         'chatId' => $chat->id,
                     ]);
-                }
-
-                if ($chat->isChannel()) {
+                } elseif ($chat->isChannel()) {
                     return $this->run('channel-guest/view', [
                         'chatId' => $chat->id,
                     ]);
@@ -42,7 +38,7 @@ class StartController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('search'));
+        $this->getState()->setName(self::createRoute('input-language'));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -82,7 +78,7 @@ class StartController extends Controller
             ->build();
     }
 
-    public function actionSearch()
+    public function actionInputLanguage()
     {
         $text = $this->getUpdate()->getMessage()->getText();
 
@@ -98,28 +94,14 @@ class StartController extends Controller
         }
 
         if (isset($language)) {
-            return $this->actionSave($language->code);
-        } else {
-            return $this->actionIndex();
-        }
-    }
+            $user = $this->getTelegramUser();
+            $user->language_id = $language->id;
 
-    public function actionSave($languageCode)
-    {
-        if ($languageCode) {
-            $language = Language::findOne(['code' => $languageCode]);
-            if ($language) {
-                $telegramUser = $this->getTelegramUser();
-                if ($telegramUser) {
-                    $telegramUser->language_id = $language->id;
-                    if ($telegramUser->save()) {
-                        Yii::$app->language = $language->code;
-                    }
-                }
+            if ($user->save()) {
+                Yii::$app->language = $language->code;
             }
-        } else {
-            return $this->actionIndex();
         }
+
         return $this->actionIndex();
     }
 }

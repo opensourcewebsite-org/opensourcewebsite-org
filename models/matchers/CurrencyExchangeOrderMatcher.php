@@ -29,12 +29,12 @@ final class CurrencyExchangeOrderMatcher
         $this->linker->unlinkMatches();
         $matchesQuery = $this->prepareMainQuery();
 
-        $buyingMethodsIds = ArrayHelper::getColumn($this->model->getBuyingPaymentMethods()->asArray()->all(), 'id');
-        $sellingMethodsIds = ArrayHelper::getColumn($this->model->getSellingPaymentMethods()->asArray()->all(), 'id');
+        $sellingPaymentMethodsIds = $this->model->getSellingPaymentMethodIds();
+        $buyingPaymentMethodsIds = $this->model->getBuyingPaymentMethodIds();
 
         $matchesQuery
-            ->joinWith('sellingPaymentMethods sm')
-            ->joinWith('buyingPaymentMethods bm');
+            ->joinWith('sellingPaymentMethods spm')
+            ->joinWith('buyingPaymentMethods bpm');
 
         if ($this->model->selling_cash_on && $this->model->selling_location_lat && $this->model->selling_location_lon) {
             $matchesQuery->andWhere(
@@ -46,11 +46,11 @@ final class CurrencyExchangeOrderMatcher
                             POINT({$this->comparingTable}.buying_location_lon, {$this->comparingTable}.buying_location_lat)
                             ) <= 1000 * ({$this->comparingTable}.buying_delivery_radius + " . ($this->model->selling_delivery_radius ?: 0) . ')'
                     ],
-                    ['in', 'sm.id', $buyingMethodsIds],
+                    ['in', 'spm.id', $buyingPaymentMethodsIds],
                 ]
             );
         } else {
-            $matchesQuery->andWhere(['in', 'sm.id', $buyingMethodsIds]);
+            $matchesQuery->andWhere(['in', 'spm.id', $buyingPaymentMethodsIds]);
         }
 
         if ($this->model->buying_cash_on && $this->model->buying_location_lat && $this->model->buying_location_lon) {
@@ -63,11 +63,11 @@ final class CurrencyExchangeOrderMatcher
                             POINT({$this->comparingTable}.selling_location_lon, {$this->comparingTable}.selling_location_lat)
                         ) <= 1000 * ({$this->comparingTable}.selling_delivery_radius + " . ($this->model->buying_delivery_radius ?: 0) . ')'
                     ],
-                    ['in', 'bm.id', $sellingMethodsIds],
+                    ['in', 'bpm.id', $sellingPaymentMethodsIds],
                 ]
             );
         } else {
-            $matchesQuery->andWhere(['in', 'bm.id', $sellingMethodsIds]);
+            $matchesQuery->andWhere(['in', 'bpm.id', $sellingPaymentMethodsIds]);
         }
 
         $counterMatchesQuery = clone $matchesQuery;

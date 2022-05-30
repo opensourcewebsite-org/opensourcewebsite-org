@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\Chat;
 use app\modules\bot\models\User;
+use Yii;
 
 /**
  * Class UserController
@@ -47,25 +48,22 @@ class UserController extends Controller
             }
         }
 
-        $telegramUser = User::findOne([
+        $user = User::findOne([
             'provider_user_id' => $providerUserId,
             'is_bot' => 0,
         ]);
 
-        if (!isset($telegramUser)) {
+        if (!isset($user)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $params = [
-            'telegramUser' => $telegramUser,
-            'user' => $telegramUser->globalUser,
-        ];
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', $params),
+                $this->render('index', [
+                    'user' => $user,
+                ]),
                 [
                     [
                         [
@@ -74,7 +72,7 @@ class UserController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('refresh', [
-                                'id' => $telegramUser->provider_user_id,
+                                'id' => $user->provider_user_id,
                             ]),
                             'text' => Emoji::REFRESH,
                         ],
@@ -94,29 +92,45 @@ class UserController extends Controller
     {
         if ($text = $this->getMessage()->getText()) {
             if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
-                $providerUserName = ltrim($matches[0], '@');
+                $username = ltrim($matches[0], '@');
             }
         }
 
-        if (!isset($providerUserName)) {
+        if (!isset($username)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $telegramUser = User::findOne([
-            'provider_user_name' => $providerUserName,
+        $user = User::findOne([
+            'provider_user_name' => $username,
             'is_bot' => 0,
         ]);
 
-        if (!isset($telegramUser)) {
+        if (!isset($user)) {
+            $chat = Chat::findOne([
+                'username' => $username,
+            ]);
+
+            if (isset($chat)) {
+                if ($chat->isGroup()) {
+                    return $this->run('group-guest/view', [
+                        'chatId' => $chat->id,
+                    ]);
+                } elseif ($chat->isChannel()) {
+                    return $this->run('channel-guest/view', [
+                        'chatId' => $chat->id,
+                    ]);
+                }
+            }
+
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
         return $this->runAction('id', [
-            'id' => $telegramUser->provider_user_id,
+            'id' => $user->provider_user_id,
         ]);
     }
 
@@ -131,33 +145,33 @@ class UserController extends Controller
                 ->build();
         }
 
-        $telegramUser = User::findOne([
+        $user = User::findOne([
             'provider_user_id' => $id,
             'is_bot' => 0,
         ]);
 
-        if (!isset($telegramUser)) {
+        if (!isset($user)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        foreach ($telegramUser->chatMembers as $chatMember) {
+        foreach ($user->chatMembers as $chatMember) {
             $botApiChatMember = $this->getBotApi()->getChatMember(
                 $chatMember->chat->getChatId(),
-                $telegramUser->provider_user_id
+                $user->provider_user_id
             );
 
             if ($botApiChatMember) {
                 $botApiUser = $botApiChatMember->getUser();
 
-                $telegramUser->setAttributes([
+                $user->setAttributes([
                     'provider_user_name' => $botApiUser->getUsername(),
                     'provider_user_first_name' => $botApiUser->getFirstName(),
                     'provider_user_last_name' => $botApiUser->getLastName(),
                 ]);
 
-                $telegramUser->save(false);
+                $user->save(false);
 
                 break;
             }

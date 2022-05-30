@@ -51,7 +51,6 @@ class GroupRefreshController extends Controller
 
             return $this->run('group/index');
         }
-
         // Update chat information
         $chat->setAttributes([
             'type' => $botApiChat->getType(),

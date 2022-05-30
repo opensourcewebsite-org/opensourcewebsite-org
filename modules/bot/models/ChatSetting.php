@@ -5,6 +5,11 @@ namespace app\modules\bot\models;
 use Yii;
 use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "bot_chat_setting".
+ *
+ * @package app\modules\bot\models
+ */
 class ChatSetting extends ActiveRecord
 {
     public const STATUS_ON = 'on';

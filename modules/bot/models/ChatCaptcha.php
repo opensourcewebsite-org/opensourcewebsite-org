@@ -17,6 +17,8 @@ use yii\db\ActiveRecord;
  *
  * @property Chat $chat
  * @property User $providerUser
+ *
+ * @package app\modules\bot\models
  */
 class ChatCaptcha extends ActiveRecord
 {
