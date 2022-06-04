@@ -57,4 +57,12 @@ class ExternalLink
     {
         return '<a href="https://stellar.expert/explorer/public/asset/' . $asset . '-' . $publicKey . '">' . ($name ?: $asset . '-' . $publicKey) . '</a>';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getTelegramAccountLink($username)
+    {
+        return 'https://t.me/' . $username;
+    }
 }

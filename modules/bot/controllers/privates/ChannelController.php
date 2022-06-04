@@ -214,10 +214,6 @@ class ChannelController extends Controller
             $pagination->pageSizeParam = false;
             $pagination->validatePage = true;
 
-            $administrators = $query->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
-
             $paginationButtons = PaginationButtons::build($pagination, function ($page) {
                 return self::createRoute('index', [
                     'page' => $page,
@@ -225,6 +221,10 @@ class ChannelController extends Controller
             });
 
             $buttons = [];
+
+            $administrators = $query->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
 
             if ($administrators) {
                 foreach ($administrators as $administrator) {

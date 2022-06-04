@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
@@ -36,6 +37,7 @@ class GroupGuestController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'chat' => $chat,
+                    'chatMember' => $chat->getChatMemberByUserId(),
                 ]),
                 [
                     [
@@ -52,7 +54,15 @@ class GroupGuestController extends Controller
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
+                        [
+                            'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                            'text' => Yii::t('bot', 'Group'),
+                            'visible' => (bool)$chat->getUsername(),
+                        ],
                     ]
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();

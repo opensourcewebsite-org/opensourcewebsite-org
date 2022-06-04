@@ -16,6 +16,7 @@ use yii\db\ActiveRecord;
  * @property int $role
  * @property int $slow_mode_messages
  * @property int|null $last_message_at
+ * @property string|null $limiter_date
  *
  * @package app\modules\bot\models
  */
@@ -55,6 +56,10 @@ class ChatMember extends ActiveRecord
             'active_bot_group_filter_quantity_value_per_one_rating',
             'active_bot_group_filter_min_quantity_value_per_one_user',
         ],
+        'limiter_status' => [
+            'active_bot_group_limiter_quantity_value_per_one_rating',
+            'active_bot_group_limiter_min_quantity_value_per_one_user',
+        ],
         'faq_status' => [
             'active_bot_group_faq_quantity_value_per_one_rating',
             'active_bot_group_faq_min_quantity_value_per_one_user',
@@ -77,7 +82,8 @@ class ChatMember extends ActiveRecord
             [['id', 'chat_id', 'user_id', 'role', 'last_message_at'], 'integer'],
             ['role', 'default', 'value' => 1],
             ['slow_mode_messages', 'default', 'value' => 0],
-            [['status'], 'string'],
+            ['status', 'string'],
+            ['limiter_date', 'date'],
         ];
     }
 
@@ -162,6 +168,24 @@ class ChatMember extends ActiveRecord
                     if ($chat->slow_mode_messages_limit <= $this->slow_mode_messages) {
                         return false;
                     }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+    * @return bool
+    */
+    public function checkLimiter()
+    {
+        if ($chat = $this->chat) {
+            if ($this->limiter_date) {
+                $date = new DateTime($this->limiter_date);
+
+                if (($date->getTimestamp() + $chat->timezone) <= time()) {
+                    return false;
                 }
             }
         }

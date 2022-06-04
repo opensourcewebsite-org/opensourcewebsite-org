@@ -75,6 +75,9 @@ class ChatSetting extends ActiveRecord
         'filter_remove_channels' => [
             'default' => self::STATUS_OFF,
         ],
+        'limiter_status' => [
+            'default' => self::STATUS_OFF,
+        ],
         'faq_status' => [
             'default' => self::STATUS_OFF,
         ],

@@ -324,4 +324,9 @@ class Chat extends ActiveRecord
             'user_id' => $userId,
         ]);
     }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
 }
