@@ -119,6 +119,16 @@ class Setting extends ActiveRecord
             'default' => 1,
             'more' => 0,
         ],
+        'active_bot_group_limiter_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_limiter_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
         'active_bot_group_faq_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
