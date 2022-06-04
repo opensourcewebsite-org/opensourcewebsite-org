@@ -218,20 +218,18 @@ class ChatMember extends ActiveRecord
     public function trySetChatSetting(string $setting, $value): bool
     {
         if (isset($this->settings[$setting])) {
-            if (Yii::$app->settings->{$this->settings[$setting][0]}) {
-                $activeModelsCount = $this->user->getAdministratedGroups()
-                    ->joinWith('settings')
-                    ->andWhere([
-                        'setting' => $setting,
-                        'value' => $value,
-                    ])
-                    ->count();
+            $activeModelsCount = $this->user->getAdministratedGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'setting' => $setting,
+                    'value' => $value,
+                ])
+                ->count();
 
-                $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
+            $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
 
-                if ($maxActiveModelsCount <= $activeModelsCount) {
-                    return false;
-                }
+            if ($maxActiveModelsCount <= $activeModelsCount) {
+                return false;
             }
         }
 
@@ -243,19 +241,17 @@ class ChatMember extends ActiveRecord
     public function getRequiredRatingForChatSetting(string $setting, $value): int
     {
         if (isset($this->settings[$setting])) {
-            if (Yii::$app->settings->{$this->settings[$setting][0]}) {
-                $activeModelsCount = $this->user->getAdministratedGroups()
-                    ->joinWith('settings')
-                    ->andWhere([
-                        'setting' => $setting,
-                        'value' => $value,
-                    ])
-                    ->count();
+            $activeModelsCount = $this->user->getAdministratedGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'setting' => $setting,
+                    'value' => $value,
+                ])
+                ->count();
 
-                $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
+            $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
 
-                return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
-            }
+            return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
         }
 
         return 1;

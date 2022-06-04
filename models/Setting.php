@@ -2,10 +2,10 @@
 
 namespace app\models;
 
-use Yii;
 use app\components\Converter;
-use yii\db\ActiveRecord;
 use app\models\queries\SettingQuery;
+use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "setting".
