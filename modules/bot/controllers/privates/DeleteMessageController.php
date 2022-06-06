@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use Yii;
 
 /**
  * Class DeleteMessageController

@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Send a minimum amount for selling currency') ?> (<?= $model->sellingCurrency->code ?>).</b><br/>
+<b><?= Yii::t('bot', 'Send a minimum amount limit of selling currency in one trade') ?> (<?= $model->sellingCurrency->code ?>).</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>

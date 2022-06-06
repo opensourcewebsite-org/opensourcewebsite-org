@@ -6,8 +6,8 @@ namespace app\models\matchers;
 
 use app\components\helpers\ArrayHelper;
 use app\models\LanguageLevel;
-use app\models\queries\builders\UserLanguagesMatchExpressionBuilder;
 use app\models\queries\builders\RadiusExpressionBuilder;
+use app\models\queries\builders\UserLanguagesMatchExpressionBuilder;
 use app\models\queries\ResumeQuery;
 use app\models\Resume;
 use app\models\UserLanguage;
@@ -70,11 +70,14 @@ final class VacancyMatcher
 
             foreach ($languages as $key => $vacancyLanguage) {
                 $languageLevel = $vacancyLanguage->level;
+
                 if ($key !== 0) {
                     $sql .= ' OR ';
                 }
+
                 $sql .= "lang.language_id = {$vacancyLanguage->language_id} AND $languageLevelTable.value >= $languageLevel->value";
             }
+
             $sql .= ")) = " . count($languages);
 
             return new Expression($sql);

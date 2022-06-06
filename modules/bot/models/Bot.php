@@ -3,9 +3,10 @@
 namespace app\modules\bot\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "support_group_bot".
+ * This is the model class for table "bot".
  *
  * @property int $id
  * @property string $name
@@ -13,8 +14,10 @@ use Yii;
  * @property integer $status
  *
  * @property Chat[] $chats
+ *
+ * @package app\modules\bot\models
  */
-class Bot extends \yii\db\ActiveRecord
+class Bot extends ActiveRecord
 {
     public const BOT_STATUS_DISABLED = 0;
     public const BOT_STATUS_ENABLED = 1;

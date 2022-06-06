@@ -2,24 +2,24 @@
 
 namespace app\controllers;
 
+use app\components\Controller;
+use app\models\Currency;
+use app\models\CurrencyExchangeOrder;
+use app\models\CurrencyExchangeOrderMatch;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
-use Yii;
-use app\models\Currency;
-use app\models\CurrencyExchangeOrderMatch;
+use app\models\PaymentMethod;
+use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateBuyingPaymentMethodsByIdsScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
 use app\models\search\CurrencyExchangeOrderSearch;
-use app\models\CurrencyExchangeOrder;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\filters\AccessControl;
-use app\components\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\models\PaymentMethod;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
-use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
-use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
-use app\models\scenarios\CurrencyExchangeOrder\UpdateBuyingPaymentMethodsByIdsScenario;
 
 /**
  * CurrencyExchangeOrderController implements the CRUD actions for CurrencyExchangeOrder model.

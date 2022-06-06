@@ -19,7 +19,6 @@ class AdminLteContributingAsset extends AssetBundle
         'https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css',
         'https://cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/jqvmap.min.css',
         'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700',
-
         'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css',
         'plugins/fontawesome-free/css/all.min.css',
 

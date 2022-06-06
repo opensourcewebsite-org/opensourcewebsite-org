@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\models\User;
+use app\models\User as GlobalUser;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use DateTime;
+use Yii;
 
 /**
  * Class MyBirthdayController
@@ -19,6 +20,8 @@ class MyBirthdayController extends Controller
      */
     public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         $user = $this->getUser();
 
         if (!$user->birthday) {
@@ -58,11 +61,9 @@ class MyBirthdayController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if ($this->validateDate($text, User::DATE_FORMAT)) {
+                if ($this->validateDate($text, GlobalUser::DATE_FORMAT)) {
                     $user->birthday = Yii::$app->formatter->format($text, 'date');
                     $user->save();
-
-                    $this->getState()->setName(null);
 
                     return $this->actionIndex();
                 }
@@ -86,7 +87,7 @@ class MyBirthdayController extends Controller
 
     private function validateDate($date, $format)
     {
-        $d = \DateTime::createFromFormat($format, $date);
+        $d = DateTime::createFromFormat($format, $date);
 
         return $d && $d->format($format) === $date;
     }

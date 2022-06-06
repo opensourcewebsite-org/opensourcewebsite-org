@@ -2,9 +2,9 @@
 
 namespace app\modules\bot\models;
 
+use DateTime;
 use Yii;
 use yii\db\ActiveRecord;
-use DateTime;
 
 /**
  * This is the model class for table "bot_chat_member".
@@ -16,7 +16,9 @@ use DateTime;
  * @property int $role
  * @property int $slow_mode_messages
  * @property int|null $last_message_at
+ * @property string|null $limiter_date
  *
+ * @package app\modules\bot\models
  */
 class ChatMember extends ActiveRecord
 {
@@ -54,6 +56,10 @@ class ChatMember extends ActiveRecord
             'active_bot_group_filter_quantity_value_per_one_rating',
             'active_bot_group_filter_min_quantity_value_per_one_user',
         ],
+        'limiter_status' => [
+            'active_bot_group_limiter_quantity_value_per_one_rating',
+            'active_bot_group_limiter_min_quantity_value_per_one_user',
+        ],
         'faq_status' => [
             'active_bot_group_faq_quantity_value_per_one_rating',
             'active_bot_group_faq_min_quantity_value_per_one_user',
@@ -76,7 +82,8 @@ class ChatMember extends ActiveRecord
             [['id', 'chat_id', 'user_id', 'role', 'last_message_at'], 'integer'],
             ['role', 'default', 'value' => 1],
             ['slow_mode_messages', 'default', 'value' => 0],
-            [['status'], 'string'],
+            ['status', 'string'],
+            ['limiter_date', 'date'],
         ];
     }
 
@@ -168,6 +175,24 @@ class ChatMember extends ActiveRecord
         return true;
     }
 
+    /**
+    * @return bool
+    */
+    public function checkLimiter()
+    {
+        if ($chat = $this->chat) {
+            if ($this->limiter_date) {
+                $date = new DateTime($this->limiter_date);
+
+                if (($date->getTimestamp() + $chat->timezone) <= time()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public function updateSlowMode($timestamp = null)
     {
         if (!$timestamp) {
@@ -193,20 +218,18 @@ class ChatMember extends ActiveRecord
     public function trySetChatSetting(string $setting, $value): bool
     {
         if (isset($this->settings[$setting])) {
-            if (Yii::$app->settings->{$this->settings[$setting][0]}) {
-                $activeModelsCount = $this->user->getAdministratedGroups()
-                    ->joinWith('settings')
-                    ->andWhere([
-                        'setting' => $setting,
-                        'value' => $value,
-                    ])
-                    ->count();
+            $activeModelsCount = $this->user->getAdministratedGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'setting' => $setting,
+                    'value' => $value,
+                ])
+                ->count();
 
-                $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
+            $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
 
-                if ($maxActiveModelsCount <= $activeModelsCount) {
-                    return false;
-                }
+            if ($maxActiveModelsCount <= $activeModelsCount) {
+                return false;
             }
         }
 
@@ -218,19 +241,17 @@ class ChatMember extends ActiveRecord
     public function getRequiredRatingForChatSetting(string $setting, $value): int
     {
         if (isset($this->settings[$setting])) {
-            if (Yii::$app->settings->{$this->settings[$setting][0]}) {
-                $activeModelsCount = $this->user->getAdministratedGroups()
-                    ->joinWith('settings')
-                    ->andWhere([
-                        'setting' => $setting,
-                        'value' => $value,
-                    ])
-                    ->count();
+            $activeModelsCount = $this->user->getAdministratedGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'setting' => $setting,
+                    'value' => $value,
+                ])
+                ->count();
 
-                $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
+            $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
 
-                return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
-            }
+            return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
         }
 
         return 1;

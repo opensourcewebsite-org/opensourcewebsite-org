@@ -2,16 +2,16 @@
 
 namespace app\modules\dataGenerator\components\generators;
 
-use Yii;
 use app\components\helpers\ArrayHelper;
+use app\helpers\LatLonHelper;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
+use app\models\matchers\ModelLinker;
 use app\models\PaymentMethod;
 use app\models\User;
-use app\helpers\LatLonHelper;
+use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Console;
-use app\models\matchers\ModelLinker;
 
 class CurrencyExchangeOrderFixture extends ARGenerator
 {
@@ -35,22 +35,22 @@ class CurrencyExchangeOrderFixture extends ARGenerator
         [$sellingLocationLat, $sellingLocationLon] = LatLonHelper::generateRandomPoint($londonCenter, 100);
         [$buyingLocationLat, $buyingLocationLon] = LatLonHelper::generateRandomPoint($londonCenter, 200);
 
-        $fee = $this->faker->optional(0.5, 0)->randomFloat(2, -20, 20);
+        $sellingRate = $this->faker->optional(0.75)->randomFloat(2, 0.01, 10);
+        $buyingRate = $sellingRate ? 1 / $sellingRate : null;
 
-        $min_amount = $this->faker->optional(0.5, null)->randomNumber(2);
-        $max_amount = $this->faker->boolean() ?
-            (isset($min_amount) ?
-                $min_amount + $this->faker->randomNumber(2)
-                : $this->faker->randomNumber(2))
+        $minAmount = $this->faker->optional(0.5)->randomNumber(2);
+        $maxAmount = $this->faker->boolean() ?
+            ($minAmount ? $minAmount + $this->faker->randomNumber(2) : $this->faker->randomNumber(2))
             : null;
 
         $model = new CurrencyExchangeOrder([
             'user_id' => $user->id,
             'selling_currency_id' => $sellingCurrency->id,
             'buying_currency_id' => $buyingCurrency->id,
-            'fee' => $fee,
-            'selling_currency_min_amount' => $min_amount,
-            'selling_currency_max_amount' => $max_amount,
+            'selling_rate' => $sellingRate,
+            'buying_rate' => $buyingRate,
+            'selling_currency_min_amount' => $minAmount,
+            'selling_currency_max_amount' => $maxAmount,
             'status' => CurrencyExchangeOrder::STATUS_ON,
             'selling_delivery_radius' => $this->faker->optional(0.5, null)->randomNumber(3),
             'buying_delivery_radius' => $this->faker->optional(0.5, null)->randomNumber(3),

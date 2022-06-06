@@ -6,7 +6,7 @@ use Yii;
 
 class Html extends \yii\helpers\Html
 {
-    // https://fontawesome.com/v5/changelog/latest
+    // https://fontawesome.com/icons
     public static array $icons = [
         'add' => [
             'class' => 'fa fa-plus',
@@ -15,14 +15,14 @@ class Html extends \yii\helpers\Html
             'class' => 'fas fa-edit',
         ],
         'private' => [
-            'class' => 'far fa-eye-slash',
+            'class' => 'fa-solid fa-eye-slash',
             'title' => 'Private',
         ],
         'trash' => [
             'class' => 'far fa-trash-alt',
         ],
         'eye' => [
-            'class' => 'fa fa-eye',
+            'class' => 'fa-solid fa-eye',
             'title' => 'View',
         ],
         'warning' => [

@@ -57,17 +57,32 @@ class MessageController extends Controller
 
         $deleteMessage = false;
 
-        if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && $this->getMessage()->isNew() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
-            if (!$chatMember->checkSlowMode()) {
+        if (($chat->limiter_status == ChatSetting::STATUS_ON) && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+            if (!$chatMember->checkLimiter()) {
                 $deleteMessage = true;
 
                 $telegramUser->sendMessage(
-                    $this->render('/privates/warning-slow-mode', [
+                    $this->render('/privates/warning-limiter', [
                         'chat' => $chat,
+                        'chatMember' => $chatMember,
                     ])
                 );
-            } else {
-                $isSlowModeOn = true;
+            }
+        }
+
+        if (!$deleteMessage) {
+            if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && $this->getMessage()->isNew() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+                if (!$chatMember->checkSlowMode()) {
+                    $deleteMessage = true;
+
+                    $telegramUser->sendMessage(
+                        $this->render('/privates/warning-slow-mode', [
+                            'chat' => $chat,
+                        ])
+                    );
+                } else {
+                    $isSlowModeOn = true;
+                }
             }
         }
 

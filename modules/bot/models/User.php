@@ -2,14 +2,14 @@
 
 namespace app\modules\bot\models;
 
-use Yii;
-use yii\db\ActiveRecord;
 use app\models\Language;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\controllers\privates\DeleteMessageController;
+use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "bot_user".
@@ -27,6 +27,8 @@ use app\modules\bot\controllers\privates\DeleteMessageController;
  * @property int $language_id
  * @property bool $is_bot
  * @property int $captcha_confirmed_at
+ *
+ * @package app\modules\bot\models
  */
 class User extends ActiveRecord
 {

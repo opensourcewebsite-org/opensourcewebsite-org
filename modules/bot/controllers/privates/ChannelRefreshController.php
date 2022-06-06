@@ -51,7 +51,6 @@ class ChannelRefreshController extends Controller
 
             return $this->run('channel/index');
         }
-
         // Update chat information
         $chat->setAttributes([
             'type' => $botApiChat->getType(),

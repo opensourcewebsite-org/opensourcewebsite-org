@@ -2,17 +2,17 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use yii\data\Pagination;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
+use Yii;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
-use app\modules\bot\components\helpers\ExternalLink;
 
 /**
  * Class GroupController
@@ -192,6 +192,14 @@ class GroupController extends Controller
                             ],
                             [
                                 [
+                                    'callback_data' => GroupLimiterController::createRoute('index', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => ($chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Time Limiter'),
+                                ],
+                            ],
+                            [
+                                [
                                     'callback_data' => GroupFaqController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
@@ -275,10 +283,6 @@ class GroupController extends Controller
             $pagination->pageSizeParam = false;
             $pagination->validatePage = true;
 
-            $administrators = $query->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
-
             $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
                 return self::createRoute('administrators', [
                     'chatId' => $chat->id,
@@ -287,6 +291,10 @@ class GroupController extends Controller
             });
 
             $buttons = [];
+
+            $administrators = $query->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
 
             if ($administrators) {
                 foreach ($administrators as $administrator) {

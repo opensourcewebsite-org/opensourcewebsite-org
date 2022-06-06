@@ -2,11 +2,16 @@
 
 namespace app\modules\bot\models;
 
-use Yii;
-use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
 use app\models\User as GlobalUser;
+use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "bot_chat".
+ *
+ * @package app\modules\bot\models
+ */
 class Chat extends ActiveRecord
 {
     public const TYPE_PRIVATE = 'private';
@@ -318,5 +323,10 @@ class Chat extends ActiveRecord
             'chat_id' => $this->id,
             'user_id' => $userId,
         ]);
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
     }
 }

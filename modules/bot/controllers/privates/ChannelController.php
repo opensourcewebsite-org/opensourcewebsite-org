@@ -4,15 +4,15 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
+use Yii;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -214,10 +214,6 @@ class ChannelController extends Controller
             $pagination->pageSizeParam = false;
             $pagination->validatePage = true;
 
-            $administrators = $query->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
-
             $paginationButtons = PaginationButtons::build($pagination, function ($page) {
                 return self::createRoute('index', [
                     'page' => $page,
@@ -225,6 +221,10 @@ class ChannelController extends Controller
             });
 
             $buttons = [];
+
+            $administrators = $query->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
 
             if ($administrators) {
                 foreach ($administrators as $administrator) {

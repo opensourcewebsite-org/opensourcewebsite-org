@@ -57,6 +57,7 @@ final class ResumeMatcher
     private function buildLocationRadiusCondition()
     {
         $radiusExpression = '';
+
         if ($this->model->search_radius && $this->model->location_lat && $this->model->location_lon) {
             $radiusExpression = new Expression(
                 "IF(
@@ -70,6 +71,7 @@ final class ResumeMatcher
 
         if ($this->model->remote_on == Resume::REMOTE_ON) {
             $remoteCondition = ["{$this->comparingTable}.remote_on" => Vacancy::REMOTE_ON];
+
             if ($radiusExpression) {
                 return new OrCondition([$remoteCondition, $radiusExpression]);
             } else {
@@ -90,17 +92,22 @@ final class ResumeMatcher
     {
         $userLanguages = $this->model->languages;
         $expression = '';
+
         if ($userLanguages) {
             $expression = '(SELECT COUNT(*) FROM ' . VacancyLanguage::tableName() . ' `lang` '
                 . 'INNER JOIN ' . LanguageLevel::tableName() . ' ON lang.language_level_id = ' . LanguageLevel::tableName() . '.id '
                 . 'WHERE ' . Vacancy::tableName() . '.`id` = `lang`.`vacancy_id` AND (';
+
             foreach ($userLanguages as $key => $userLanguage) {
                 $languageLevel = $userLanguage->level;
+
                 if ($key) {
                     $expression .= ' OR ';
                 }
+
                 $expression .= 'lang.language_id = ' . $userLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value <= ' . $languageLevel->value;
             }
+
             $expression .= ')) = (SELECT COUNT(*) FROM `vacancy_language` WHERE `vacancy`.`id` = `vacancy_language`.`vacancy_id`)';
         }
 

@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
+use app\components\helpers\Html;
 use app\models\Company;
 use app\models\search\ResumeSearch;
+use app\widgets\buttons\AddButton;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
+use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\web\View;
-use app\widgets\buttons\AddButton;
-use yii\grid\GridView;
 
 /**
  * @var View $this
@@ -70,8 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url) {
-                                        $icon = Html::tag('span', '', ['class' => 'fa fa-eye', 'data-toggle' => 'tooltip', 'title' => 'view']);
-                                        return Html::a($icon, $url, ['class' => 'btn btn-outline-primary']);
+                                        return Html::a(Html::icon('eye'), $url, ['class' => 'btn btn-outline-primary']);
                                     },
                                 ]
                             ],

@@ -1,5 +1,7 @@
 <?php
 
+use app\assets\LeafletLocateControlAsset;
+use app\components\helpers\Html;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
@@ -7,16 +9,15 @@ use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
 use app\widgets\LocationPickerWidget\LocationPickerWidget;
+use app\widgets\selects\CurrencySelect;
 use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
+use dosamigos\leaflet\LeafLet;
 use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\widgets\Map;
 use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
-use dosamigos\leaflet\LeafLet;
-use app\assets\LeafletLocateControlAsset;
-use app\widgets\selects\CurrencySelect;
 
 /* @var $this yii\web\View */
 /* @var $model CurrencyExchangeOrder */
@@ -26,7 +27,6 @@ use app\widgets\selects\CurrencySelect;
 LeafletLocateControlAsset::register($this);
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
-$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 
 $form = ActiveForm::begin(['id' => 'form']);
 ?>
@@ -55,7 +55,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                     ->textInput([
                                         'maxlength' => true,
                                     ])
-                                    ->label($iconPrivate . $model->getAttributeLabel('selling_currency_label') . $labelOptional); ?>
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_currency_label') . $labelOptional); ?>
                             </div>
                         </div>
                         <hr/>
@@ -79,20 +79,32 @@ $form = ActiveForm::begin(['id' => 'form']);
                                 ->textInput([
                                     'maxlength' => true,
                                 ])
-                                ->label($iconPrivate . $model->getAttributeLabel('buying_currency_label') . $labelOptional); ?>
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_currency_label') . $labelOptional); ?>
                         </div>
                     </div>
                     <hr/>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'fee')
+                            <?= $form->field($model, 'selling_rate')
                                 ->textInput([
+                                    'id' => 'selling_rate',
                                     'autocomplete' => 'off',
                                     'maxlength' => true,
-                                    'placeholder' => 0 . ', ' . Yii::t('app', 'Cross Rate'),
-                                    'value' => ($model->fee != 0 ? $model->fee : ''),
+                                    'placeholder' => '∞',
                                 ])
-                                ->label($model->getAttributeLabel('fee') . ', %' . $labelOptional); ?>
+                                ->label($model->getAttributeLabel('selling_rate') . $labelOptional); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <?= $form->field($model, 'buying_rate')
+                                ->textInput([
+                                    'id' => 'buying_rate',
+                                    'autocomplete' => 'off',
+                                    'maxlength' => true,
+                                    'placeholder' => '∞',
+                                ])
+                                ->label($model->getAttributeLabel('buying_rate') . $labelOptional); ?>
                         </div>
                     </div>
                     <hr/>
@@ -137,7 +149,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="col">
                                 <?= $form->field($model, 'selling_location')
                                     ->widget(LocationPickerWidget::class)
-                                    ->label($iconPrivate . $model->getAttributeLabel('selling_location'))
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_location'))
                                 ?>
                             </div>
                         </div>
@@ -148,7 +160,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                         'maxlength' => true,
                                         'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
                                     ])
-                                    ->label($iconPrivate . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
                                 ?>
                             </div>
                         </div>
@@ -172,7 +184,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="col">
                                 <?= $form->field($model, 'buying_location')
                                     ->widget(LocationPickerWidget::class)
-                                    ->label($iconPrivate . $model->getAttributeLabel('buying_location'))
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_location'))
                                 ?>
                             </div>
                         </div>
@@ -183,15 +195,31 @@ $form = ActiveForm::begin(['id' => 'form']);
                                         'maxlength' => true,
                                         'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
                                     ])
-                                    ->label($iconPrivate . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
+                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
                                 ?>
                             </div>
                         </div>
                     </div>
 
                     <?php
-                    $this->registerJs(
-                                    <<<JS
+                    $this->registerJs(<<<JS
+                    const calculateCrossRate = (rate) => {
+                        const curVal = parseFloat(rate);
+
+                        if (!isNaN(curVal) && curVal !== 0) {
+                            return (1/curVal).toFixed(8);
+                        }
+
+                        return '';
+                    }
+
+                    $('#selling_rate').on('input', function() {
+                        $('#buying_rate').val(calculateCrossRate($(this).val()));
+                    });
+
+                    $('#buying_rate').on('input', function() {
+                        $('#selling_rate').val(calculateCrossRate($(this).val()));
+                    });
 
                     function updateVisibility() {
                         const sellingLocationDiv = $('.selling-location-radius-div');
@@ -209,8 +237,8 @@ $form = ActiveForm::begin(['id' => 'form']);
                     })
 
                     updateVisibility();
-                    JS
-                                );
+
+                    JS);
                     ?>
 
                 </div>

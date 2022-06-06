@@ -1,13 +1,14 @@
 <?php
 
+use app\components\helpers\Html;
 use app\models\Currency;
 use app\models\Resume;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
+use app\widgets\buttons\SubmitButton;
+use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\selects\CurrencySelect;
 use app\widgets\selects\JobKeywordsSelect;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;
-use app\widgets\buttons\SubmitButton;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -19,7 +20,6 @@ use yii\widgets\ActiveForm;
 $showLocation = $model->location || $model->isNewRecord;
 
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
-$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 
 $form = ActiveForm::begin(['id' => 'form']);
 ?>
@@ -91,7 +91,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'location')
                                 ->widget(LocationPickerWidget::class)
-                                ->label($iconPrivate . $model->getAttributeLabel('location'))
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location'))
                             ?>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'search_radius')
                                 ->textInput(['maxlength' => true])
-                                ->label($iconPrivate . $model->getAttributeLabel('search_radius') . ', km')
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('search_radius') . ', km')
                             ?>
                         </div>
                     </div>

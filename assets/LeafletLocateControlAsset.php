@@ -2,9 +2,7 @@
 
 namespace app\assets;
 
-use dosamigos\leaflet\LeafLetAsset;
 use yii\web\AssetBundle;
-
 
 class LeafletLocateControlAsset extends AssetBundle
 {
@@ -19,6 +17,6 @@ class LeafletLocateControlAsset extends AssetBundle
     ];
 
     public $depends = [
-        LeafLetAsset::class,
+        LeafletAsset::class,
     ];
 }

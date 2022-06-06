@@ -2,10 +2,10 @@
 
 namespace app\models;
 
-use Yii;
 use app\components\Converter;
-use yii\db\ActiveRecord;
 use app\models\queries\SettingQuery;
+use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "setting".
@@ -115,6 +115,16 @@ class Setting extends ActiveRecord
             'more' => 0,
         ],
         'active_bot_group_filter_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_limiter_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_limiter_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
             'more' => 0,

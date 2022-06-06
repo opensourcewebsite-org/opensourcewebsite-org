@@ -1,12 +1,14 @@
 <?php
+
 declare(strict_types=1);
+
 namespace app\models\queries\builders;
 
 use app\models\interfaces\ModelWithLocationInterface;
 use yii\db\Expression;
 
-class RadiusExpressionBuilder implements ConditionExpressionBuilderInterface {
-
+class RadiusExpressionBuilder implements ConditionExpressionBuilderInterface
+{
     private ModelWithLocationInterface $model;
     private string $targetTableName;
 
@@ -28,6 +30,7 @@ class RadiusExpressionBuilder implements ConditionExpressionBuilderInterface {
     private function prepareRadiusExpression(): Expression
     {
         $tableName = $this->targetTableName;
+
         return new Expression(
             "IF(($tableName.location_lon AND $tableName.location_lat AND $tableName.search_radius > 0),
                     ST_Distance_Sphere(

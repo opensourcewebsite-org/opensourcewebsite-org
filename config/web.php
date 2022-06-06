@@ -50,18 +50,18 @@ $config = [
             'bundles' => [
                 'yii\bootstrap4\BootstrapAsset' => [
                     'css' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css',
-                        // TODO '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.1/css/bootstrap.min.css',
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css',
+                        // TODO '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css',
                     ],
                 ],
                 'yii\bootstrap4\BootstrapPluginAsset' => [
                     'js' => [
-                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js',
-                        // TODO '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js',
+                        '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js',
+                        // TODO '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js',
                     ],
                 ],
                 'yii\web\JqueryAsset' => [
-                    'sourcePath' => null,  
+                    'sourcePath' => null,
                     'js' => [
                         '//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js',
                         '//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js',

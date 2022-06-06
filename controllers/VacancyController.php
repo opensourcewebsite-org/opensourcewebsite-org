@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\components\Controller;
+use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
-use Yii;
-use app\models\Resume;
-use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
-use app\models\Currency;
-use app\models\scenarios\Vacancy\SetActiveScenario;
-use app\models\User;
-use app\models\Vacancy;
-use app\models\WebModels\WebVacancy;
-use app\models\search\VacancySearch;
-use yii\data\ActiveDataProvider;
-use yii\filters\VerbFilter;
-use app\components\Controller;
-use yii\filters\AccessControl;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
-use app\models\VacancyLanguage;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\models\Resume;
+use app\models\scenarios\Vacancy\SetActiveScenario;
+use app\models\scenarios\Vacancy\UpdateKeywordsByIdsScenario;
+use app\models\search\VacancySearch;
+use app\models\User;
+use app\models\Vacancy;
+use app\models\VacancyLanguage;
+use app\models\WebModels\WebVacancy;
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class VacancyController extends Controller
 {

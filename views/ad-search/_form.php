@@ -1,14 +1,15 @@
 <?php
 
+use app\components\helpers\Html;
 use app\models\AdSearch;
 use app\models\AdSection;
 use app\models\Currency;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
-use app\widgets\selects\CurrencySelect;
-use app\widgets\selects\AdKeywordsSelect;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;
 use app\widgets\buttons\SubmitButton;
+use app\widgets\LocationPickerWidget\LocationPickerWidget;
+use app\widgets\selects\AdKeywordsSelect;
+use app\widgets\selects\CurrencySelect;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -21,7 +22,6 @@ use yii\widgets\ActiveForm;
 
 $showLocation = $model->location || $model->isNewRecord;
 $labelOptional = ' (' . Yii::t('app', 'optional') . ')';
-$iconPrivate = '<i class="far fa-eye-slash" title="' . Yii::t('app', 'Private') . '"></i> ';
 
 $form = ActiveForm::begin(['id' => 'form']);
 ?>
@@ -69,7 +69,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'location')
                                 ->widget(LocationPickerWidget::class)
-                                ->label($iconPrivate . $model->getAttributeLabel('location'))
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location'))
                             ?>
                         </div>
                     </div>
@@ -81,7 +81,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                                     'placeholder' => 0  . ', ' . Yii::t('app', 'No pickup'),
                                     'value' => ($model->pickup_radius ?: ''),
                                 ])
-                                ->label($iconPrivate . $model->getAttributeLabel('pickup_radius') . ', km' . $labelOptional)
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('pickup_radius') . ', km' . $labelOptional)
                             ?>
                         </div>
                     </div>
