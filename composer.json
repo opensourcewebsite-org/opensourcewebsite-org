@@ -46,7 +46,7 @@
         "janisto/yii2-timepicker": "^1.1",
         "ivankff/yii2-modal-ajax": "^4.1",
         "2amigos/yii2-leaflet-extension": "^1.1",
-        "npm-asset/leaflet.locatecontrol": "*",
+        "npm-asset/leaflet.locatecontrol": "^0.76",
         "lstrojny/functional-php": "^1.17",
         "opensourcewebsite-org/php-stellar-sdk": "dev-master",
         "opensourcewebsite-org/php-telegram-sdk": "dev-master"
