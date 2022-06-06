@@ -1,60 +1,61 @@
 body.sidebar-collapse nav > .container {
-	margin-left:0;
-	max-width:100%;
+    margin-left: 0;
+    max-width: 100%;
 }
 
 .navbar {
-	margin-bottom:0;
+    margin-bottom: 0;
 }
 
 body.sidebar-open .brand-abbr,
-body.sidebar-collapse .main-sidebar:hover .brand-abbr{
-	display:none;
+body.sidebar-collapse .main-sidebar:hover .brand-abbr {
+    display: none;
 }
 
 .color-palette {
-  height: 35px;
-  line-height: 35px;
-  text-align: center;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
 }
 
 .color-palette-set {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .color-palette span {
-  display: none;
-  font-size: 12px;
+    display: none;
+    font-size: 12px;
 }
 
 .color-palette:hover span {
-  display: block;
+    display: block;
 }
 
 .color-palette-box h4 {
-  position: absolute;
-  top: 100%;
-  left: 25px;
-  margin-top: -40px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-  display: block;
-  z-index: 7;
+    position: absolute;
+    top: 100%;
+    left: 25px;
+    margin-top: -40px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    display: block;
+    z-index: 7;
 }
 
 .navbar-nav .dropdown-menu {
-  right: 0;
-  left: auto;
+    right: 0;
+    left: auto;
 }
 
 .wrapper {
-  overflow-x: visible;
+    overflow-x: visible;
 }
 
 .select2-selection__choice {
     background-color: #007bff !important;
     border: 1px solid #007bff !important;
 }
+
 .select2-selection__choice__remove {
     color: white !important;
 }
@@ -68,13 +69,24 @@ select.is-valid + .select2-container--krajee-bs4 .select2-selection--single, .ha
     border-color: #ced4da;
 }
 
-.has-error .help-block{
+.has-error .help-block {
     color: red;
 }
 
 .btn-outline-success {
     color: #28a745 !important;
 }
+
 .btn-outline-success:hover, .btn-outline-success:focus {
     color: white !important;
+}
+
+body.sidebar-open .brand-abbr, body.sidebar-collapse .main-sidebar:hover .brand-abbr {
+    display: block;
+}
+.fa-edit {
+    color: #007bff;
+}
+.fa-edit:hover {
+    color: #0056b3;
 }
