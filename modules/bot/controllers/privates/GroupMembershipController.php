@@ -7,9 +7,9 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
-use app\modules\bot\models\User;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 use yii\validators\DateValidator;
@@ -128,7 +128,7 @@ class GroupMembershipController extends Controller
                 'not', ['membership_date' => null],
             ])
             ->orderBy([
-                'limiter_date' => SORT_ASC,
+                'membership_date' => SORT_ASC,
             ]);
 
         $pagination = new Pagination([
