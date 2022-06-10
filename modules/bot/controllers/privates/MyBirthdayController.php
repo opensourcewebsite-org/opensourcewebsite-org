@@ -5,8 +5,8 @@ namespace app\modules\bot\controllers\privates;
 use app\models\User as GlobalUser;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use DateTime;
 use Yii;
+use yii\validators\DateValidator;
 
 /**
  * Class MyBirthdayController
@@ -22,16 +22,16 @@ class MyBirthdayController extends Controller
     {
         $this->getState()->setName(null);
 
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        if (!$user->birthday) {
-            return $this->actionUpdate();
+        if (!$globalUser->birthday) {
+            return $this->actionInput();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'birthday' => $user->birthday,
+                    'birthday' => $globalUser->birthday,
                 ]),
                 [
                     [
@@ -44,7 +44,7 @@ class MyBirthdayController extends Controller
                             'callback_data' => MenuController::createRoute(),
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('input'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -53,17 +53,19 @@ class MyBirthdayController extends Controller
             ->build();
     }
 
-    public function actionUpdate()
+    public function actionInput()
     {
-        $this->getState()->setName(self::createRoute('update'));
+        $this->getState()->setName(self::createRoute('input'));
 
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if ($this->validateDate($text, GlobalUser::DATE_FORMAT)) {
-                    $user->birthday = Yii::$app->formatter->format($text, 'date');
-                    $user->save();
+                $dateValidator = new DateValidator();
+
+                if ($dateValidator->validate($text)) {
+                    $globalUser->birthday = Yii::$app->formatter->format($text, 'date');
+                    $globalUser->save();
 
                     return $this->actionIndex();
                 }
@@ -72,23 +74,16 @@ class MyBirthdayController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
+                $this->render('input'),
                 [
                     [
                         [
-                            'callback_data' => ($user->birthday ? self::createRoute() : MyProfileController::createRoute()),
+                            'callback_data' => ($globalUser->birthday ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],
                 ]
             )
             ->build();
-    }
-
-    private function validateDate($date, $format)
-    {
-        $d = DateTime::createFromFormat($format, $date);
-
-        return $d && $d->format($format) === $date;
     }
 }

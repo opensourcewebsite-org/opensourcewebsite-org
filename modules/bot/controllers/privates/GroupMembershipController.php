@@ -15,11 +15,11 @@ use yii\data\Pagination;
 use yii\validators\DateValidator;
 
 /**
-* Class GroupLimiterController
+* Class GroupMembershipController
 *
 * @package app\modules\bot\controllers\privates
 */
-class GroupLimiterController extends Controller
+class GroupMembershipController extends Controller
 {
     /**
     * @return array
@@ -45,7 +45,7 @@ class GroupLimiterController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => $chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -81,19 +81,19 @@ class GroupLimiterController extends Controller
             return [];
         }
 
-        switch ($chat->limiter_status) {
+        switch ($chat->membership_status) {
             case ChatSetting::STATUS_ON:
-                $chat->limiter_status = ChatSetting::STATUS_OFF;
+                $chat->membership_status = ChatSetting::STATUS_OFF;
 
                 break;
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('limiter_status', ChatSetting::STATUS_ON)) {
+                 if (!$chatMember->trySetChatSetting('membership_status', ChatSetting::STATUS_ON)) {
                      return $this->getResponseBuilder()
                          ->answerCallbackQuery(
                              $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('limiter_status', ChatSetting::STATUS_ON),
+                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('membership_status', ChatSetting::STATUS_ON),
                              ]),
                              true
                          )
@@ -125,7 +125,7 @@ class GroupLimiterController extends Controller
                 'chat_id' => $chat->id,
             ])
             ->andWhere([
-                'not', ['limiter_date' => null],
+                'not', ['membership_date' => null],
             ])
             ->orderBy([
                 'limiter_date' => SORT_ASC,
@@ -162,7 +162,7 @@ class GroupLimiterController extends Controller
                         'chatId' => $chatId,
                         'memberId' => $member->id,
                     ]),
-                    'text' => $member->limiter_date . ' - ' . $member->user->getFullName() . ($member->user->provider_user_name ? ' @' . $member->user->provider_user_name : ''),
+                    'text' => $member->membership_date . ' - ' . $member->user->getFullName() . ($member->user->provider_user_name ? ' @' . $member->user->provider_user_name : ''),
                 ];
             }
 
@@ -232,7 +232,7 @@ class GroupLimiterController extends Controller
                 ->build();
         }
 
-        $member->limiter_date = Yii::$app->formatter->asDate('tomorrow');
+        $member->membership_date = Yii::$app->formatter->asDate('tomorrow');
         $member->save(false);
 
         return $this->runAction('member', [
@@ -328,7 +328,7 @@ class GroupLimiterController extends Controller
                 $dateValidator = new DateValidator();
 
                 if ($dateValidator->validate($text)) {
-                    $member->limiter_date = Yii::$app->formatter->format($text, 'date');
+                    $member->membership_date = Yii::$app->formatter->format($text, 'date');
                     $member->save();
 
                     return $this->runAction('member', [
@@ -365,7 +365,7 @@ class GroupLimiterController extends Controller
                 ->build();
         }
 
-        $member->limiter_date = null;
+        $member->membership_date = null;
         $member->save(false);
 
         return $this->runAction('members', [

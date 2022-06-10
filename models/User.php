@@ -2,17 +2,17 @@
 
 namespace app\models;
 
-use Yii;
 use app\components\Converter;
 use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\queries\UserQuery;
+use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
 use yii\db\Query;
+use yii\web\IdentityInterface;
 
 /**
  * User model
@@ -54,8 +54,6 @@ class User extends ActiveRecord implements IdentityInterface
     public const STATUS_DELETED = 0;
     public const STATUS_PENDING = 5;
     public const STATUS_ACTIVE = 10;
-
-    public const DATE_FORMAT = 'Y-m-d';
 
     /**
      * {@inheritdoc}

@@ -17,6 +17,7 @@ use yii\db\ActiveRecord;
  * @property int $slow_mode_messages
  * @property int|null $last_message_at
  * @property string|null $limiter_date
+ * @property string|null membership_date
  *
  * @package app\modules\bot\models
  */
@@ -47,6 +48,10 @@ class ChatMember extends ActiveRecord
         'greeting_status' => [
             'active_bot_group_greeting_quantity_value_per_one_rating',
             'active_bot_group_greeting_min_quantity_value_per_one_user',
+        ],
+        'membership_status' => [
+            'active_bot_group_membership_quantity_value_per_one_rating',
+            'active_bot_group_membership_min_quantity_value_per_one_user',
         ],
         'slow_mode_status' => [
             'active_bot_group_slow_mode_quantity_value_per_one_rating',
@@ -83,7 +88,7 @@ class ChatMember extends ActiveRecord
             ['role', 'default', 'value' => 1],
             ['slow_mode_messages', 'default', 'value' => 0],
             ['status', 'string'],
-            ['limiter_date', 'date'],
+            [['limiter_date', 'membership_date'], 'date'],
         ];
     }
 
@@ -183,6 +188,24 @@ class ChatMember extends ActiveRecord
         if ($chat = $this->chat) {
             if ($this->limiter_date) {
                 $date = new DateTime($this->limiter_date);
+
+                if (($date->getTimestamp() + $chat->timezone) <= time()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+    * @return bool
+    */
+    public function checkMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->membership_date) {
+                $date = new DateTime($this->membership_date);
 
                 if (($date->getTimestamp() + $chat->timezone) <= time()) {
                     return false;

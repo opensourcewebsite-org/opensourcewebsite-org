@@ -45,6 +45,9 @@ class ChatSetting extends ActiveRecord
             'min' => 1,
             'max' => 10000,
         ],
+        'membership_status' => [
+            'default' => self::STATUS_OFF,
+        ],
         'slow_mode_status' => [
             'default' => self::STATUS_OFF,
         ],

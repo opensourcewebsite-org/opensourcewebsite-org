@@ -71,6 +71,21 @@ class MessageController extends Controller
         }
 
         if (!$deleteMessage) {
+            if (($chat->membership_status == ChatSetting::STATUS_ON) && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+                if (!$chatMember->checkMembership()) {
+                    $deleteMessage = true;
+
+                    $telegramUser->sendMessage(
+                        $this->render('/privates/warning-membership', [
+                            'chat' => $chat,
+                            'chatMember' => $chatMember,
+                        ])
+                    );
+                }
+            }
+        }
+
+        if (!$deleteMessage) {
             if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && $this->getMessage()->isNew() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
                 if (!$chatMember->checkSlowMode()) {
                     $deleteMessage = true;

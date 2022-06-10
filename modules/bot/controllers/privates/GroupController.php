@@ -176,6 +176,14 @@ class GroupController extends Controller
                             ],
                             [
                                 [
+                                    'callback_data' => GroupMembershipController::createRoute('index', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => ($chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
+                                ],
+                            ],
+                            [
+                                [
                                     'callback_data' => GroupSlowModeController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
