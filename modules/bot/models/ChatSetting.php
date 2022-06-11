@@ -30,6 +30,9 @@ class ChatSetting extends ActiveRecord
     public const STELLAR_MODE_SIGNERS = 2;
 
     public static array $settings = [
+        'basic_commands_status' => [
+            'default' => self::STATUS_ON,
+        ],
         'join_hider_status' => [
             'default' => self::STATUS_OFF,
         ],

@@ -152,6 +152,14 @@ class GroupController extends Controller
                             ],
                             [
                                 [
+                                    'callback_data' => GroupBasicCommandsController::createRoute('index', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => ($chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Basic Commands'),
+                                ],
+                            ],
+                            [
+                                [
                                     'callback_data' => GroupJoinHiderController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),

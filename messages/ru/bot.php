@@ -534,4 +534,6 @@ return [
     'Can\'t delete this message automatically' => 'Невозможно удалить это сообщение автоматически',
     'Delete this message manually' => 'Удалите это сообщение вручную',
     'To activate this feature in the group please increase your Rating to at least {0}' => 'Чтобы активировать эту функцию в группе, пожалуйста, увеличьте ваш рейтинг как минимум до {0}',
+    'Basic Commands' => 'Базовые команды',
+    'built-in basic commands for the group' => 'встроенные базовые команды для группы',
 ];
