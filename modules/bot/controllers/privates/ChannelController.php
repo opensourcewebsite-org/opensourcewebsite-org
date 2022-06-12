@@ -119,13 +119,13 @@ class ChannelController extends Controller
 
             // TODO refactoring, для того чтобы ограничить доступ к настройкам группы
             if ($this->getUpdate()->getCallbackQuery()) {
-                $admins = $chat->getActiveAdministrators()->all();
+                $administrators = $chat->getActiveAdministrators()->all();
 
                 return $this->getResponseBuilder()
                     ->editMessageTextOrSendMessage(
                         $this->render('view', [
                             'chat' => $chat,
-                            'admins' => $admins,
+                            'administrators' => $administrators,
                         ]),
                         [
                             [
@@ -235,7 +235,7 @@ class ChannelController extends Controller
                             'chatId' => $chatId,
                             'administratorId' => $administrator->id,
                         ]),
-                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $administrator->getFullName() . ($administrator->provider_user_name ? ' @' . $administrator->provider_user_name : ''),
+                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . ($administrator->provider_user_name ? '@' . $administrator->provider_user_name . ' - ' : '') . $administrator->getFullName(),
                     ];
                 }
 

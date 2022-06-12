@@ -162,7 +162,7 @@ class GroupMembershipController extends Controller
                         'chatId' => $chatId,
                         'memberId' => $member->id,
                     ]),
-                    'text' => $member->membership_date . ' - ' . $member->user->getFullName() . ($member->user->provider_user_name ? ' @' . $member->user->provider_user_name : ''),
+                    'text' => $member->membership_date . ' - ' . ($member->user->provider_user_name ? '@' . $member->user->provider_user_name . ' - ' : '') . $member->user->getFullName(),
                 ];
             }
 
