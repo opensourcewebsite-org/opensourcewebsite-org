@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\components\response;
 
-use Yii;
+use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\helpers\Photo;
 use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
@@ -15,8 +15,8 @@ use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\response\commands\SendPhotoCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Update;
+use Yii;
 use yii\helpers\ArrayHelper;
-use app\modules\bot\components\api\BotApi;
 
 /**
  * Class ResponseBuilder
@@ -281,9 +281,9 @@ class ResponseBuilder
         array $optionalParams,
         array $optionalParamsFilter
     ): array {
-        // remove all items vith visible = 0
         foreach ($replyMarkup as $key1 => $array1) {
             foreach ($array1 as $key2 => $array2) {
+                // remove all items vith visible = 0
                 if (isset($array2['visible'])) {
                     if ($array2['visible']) {
                         unset($replyMarkup[$key1][$key2]['visible']);
