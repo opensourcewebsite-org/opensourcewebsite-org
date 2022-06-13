@@ -274,7 +274,7 @@ class ChatMember extends ActiveRecord
 
             $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
 
-            return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
+            return (int)ceil(($activeModelsCount + 1) / Yii::$app->settings->{$this->settings[$setting][0]});
         }
 
         return 1;
