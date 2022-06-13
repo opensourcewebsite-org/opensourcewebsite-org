@@ -11,7 +11,7 @@ use app\components\helpers\ExternalLink;
     <div class="intro-text">
       <div class="intro-heading">Open Source Website</div>
       <div class="intro-lead-in"><?= Yii::t('app', 'online community') ?></div>
-      <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services"><?= Yii::t('app', 'Tell Me More') ?></a>
+      <?= Html::a(Yii::t('app', 'Join us'), Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?>
     </div>
   </div>
 </header>
@@ -125,7 +125,7 @@ use app\components\helpers\ExternalLink;
         </div>
         <div class="col-md-12">
           <ul>
-              <li><?= Yii::t('bot', 'The power of user vote when voting for new features or changing existing features of the Bot and Website') ?>.</li>
+              <li><?= Yii::t('bot', 'The power of user vote when voting for new features and changing existing features of the Bot and Website') ?>.</li>
               <li><?= Yii::t('bot', 'More possibilities and less limits when using of the Bot and Website') ?>.</li>
               <li><?= Yii::t('bot', 'Passive income, such as dividends from the profits of the Bot and Website, which is distributed proportionally among all users in accordance with the value of their Ratings') ?>.</li>
           </ul>
@@ -229,7 +229,7 @@ use app\components\helpers\ExternalLink;
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p align="center"><?= Html::a(Yii::t('app', 'Join us and let’s build the future together') . '!', Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
+        <p align="center"><?= Html::a(Yii::t('app', 'Join us'), Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?></p>
       </div>
     </div>
   </div>
